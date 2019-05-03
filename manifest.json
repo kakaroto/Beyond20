@@ -6,6 +6,13 @@
     "permissions": [ "activeTab", "tabs", "*://app.roll20.net/editor/", "*://*.dndbeyond.com/*" ],
     "browser_action": {
     },
+    "icons": {
+        "16": "images/icons/icon16.png",
+        "32": "images/icons/icon32.png",
+        "64": "images/icons/icon64.png",
+        "128": "images/icons/icon128.png",
+        "256": "images/icons/icon256.png"
+    },
     "background": {
 	"persistent": true,
 	"scripts": [ "src/background.js" ]

@@ -4,7 +4,7 @@ Beyond20: D&D Beyond & Roll20 Integration
 Beyond20 is a chrome extension that integrates the Character Sheet from D&D Beyond into Roll20.
 This is a work in progress proof of concept, and for now, the structure is still not entirely defined.
 
-# Requirements
+# Build
 
 This extension is written in 'python', more precisely in RapydScript and you will need RapydScript installed to compile the .pyj source files into .js
 I don't know if it's totally compatible with rapydscript itself as I've used rapydscript-ng myself. 
@@ -12,19 +12,20 @@ I don't know if it's totally compatible with rapydscript itself as I've used rap
 To install :
 `sudo npm install rapydscript-ng -g`
 
-# Build
 Install RapidScript-NG then type 'make' to compile the *.pyj into *.js
 
+   Note: The .js files are already included in the source repository... I don't usually include built files in a repo, but I guess .js files are still source code and that makes it easier for people to just try the extension without having to first install rapydscript.
+
 # Installation
-Once the extension compiled, you just need to load it into Chrome, so go chrome extensions, enable developer mode, do 'load unpacked' and select the extension's directory.
+All you just need to do is load it into Chrome, so go to chrome extensions, enable developer mode, do 'load unpacked' and select the extension's directory.
 
 # Using it
 Open Roll20 VTT in a tab of chrome then your character sheet in D&D Beyond in another tab, click on the item you want to roll, whether it's initiative, a skill, ability or saving throw check (for now), and when the D&D Beyond character sheet shows the information about that in its side panel, click the Beyond20 icon from the toolbar. It will automatically pick up on what was selected, and send the roll to all roll20 tabs open.
 
 # License
-
 This extension is released under the GPL v3 license. Read the LICENSE file for more details.
 
+The icon image is based on a public domain image from openclipart. I downloaded it from https://commons.wikimedia.org/wiki/File:Twenty_sided_dice.svg and subsequently modified it.
 
 # TODO
 - Add support for attacks/spell attacks, and for casting spells (show its description as a spell card), as well as feats, class/race features, Hit Dice during short rest, and non-attack actions/reactions descriptions.
