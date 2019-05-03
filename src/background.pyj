@@ -1,0 +1,33 @@
+
+queryCB = def(tabs):
+    for tab in tabs:
+        chrome.tabs.sendMessage(tab.id, {"action": "execute"});
+onBrowserAction = def(tab):
+    chrome.tabs.query({"active": True, "currentWindow": True}, queryCB)
+# Send a message to the active tab
+chrome.browserAction.onClicked.addListener(onBrowserAction)
+
+def forwardMessage(tabs, request):
+    console.log("matching tabs : " + tabs)
+    for tab in tabs:
+        console.log("Sending roll " + str(request) + " to " + tab)
+        chrome.tabs.sendMessage(tab.id, request);
+
+def onMessage(request, sender, sendResponse):
+    if request.action == "roll":
+        cb = def(tabs):
+            forwardMessage(tabs, request)
+        chrome.tabs.query({"url": "*://app.roll20.net/editor/"}, cb)
+chrome.runtime.onMessage.addListener(onMessage)
+
+def executeScripts(tabs, js_files):
+    for tab in tabs:
+        for file in js_files:
+            chrome.tabs.executeScript(tab.id, { "file": file })
+
+cb = def(tabs):
+    executeScripts(tabs, ["src/roll20.js"])
+chrome.tabs.query({ "url": "*://app.roll20.net/editor/" }, cb)
+cb = def(tabs):
+    executeScripts(tabs, ["src/jquery-3.4.1.min.js", "src/dndbeyond.js"])
+chrome.tabs.query({ "url": "*://*.dndbeyond.com/profile/*/characters/*" }, cb)

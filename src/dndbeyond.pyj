@@ -1,0 +1,78 @@
+print("Beyond20: D&D Beyond module loaded.")
+
+ability_abbreviations = {"Strength": "STR",
+                         "Dexterity": "DEX",
+                         "Constitution": "CON",
+                         "Intelligence": "INT",
+                         "Wisdom": "WIS",
+                         "Charisma": "CHA"}
+
+def getInitiativeModifier():
+    initiative = $(".ct-initiative-box__value").text()
+    advantage = $(".ct-initiative-box__advantage").length > 0
+    if initiative == "":
+        initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text()
+        advantage = $(".ct-combat-mobile__advantage").length > 0
+    if initiative == "":
+        return "+0"
+    return (initiative, advantage)
+
+def parseModifier(element, name):
+    c = element.getElementsByClassName(name)
+    if len(c) > 0:
+        sign = c[0].getElementsByClassName("ct-signed-number__sign")[0].textContent
+        number = c[0].getElementsByClassName("ct-signed-number__number")[0].textContent
+        return sign + number
+    return "+0"
+
+
+def sendRoll(rollType, fallback, args):
+    char_name = $(".ct-character-tidbits__name").text()
+    req = {"action": "roll", "character": char_name, "type": rollType, "roll": fallback}
+    for key in args:
+        req[key] = args[key]
+    console.log("Sending message: " + str(req))
+    chrome.runtime.sendMessage(req);
+
+def onMessage(request, sender, sendResponse):
+    if request.action == "execute":
+        paneClass = $(".ct-sidebar__pane-content")[0].children[0].className
+        print("Beyond20: Current panel : " + paneClass)
+        if paneClass == "ct-skill-pane":
+            skill_name = $(".ct-skill-pane__header-name").text()
+            ability_name = $(".ct-skill-pane__header-ability").text()
+            modifier = $(".ct-skill-pane__header-modifier").text()
+            print("Skill " + skill_name + "(" + ability + ") : " + modifier)
+            sendRoll("skill", "1d20" + modifier, {"skill": skill_name,
+                                                  "ability": ability_name,
+                                                  "modifier": modifier} )
+        elif paneClass == "ct-ability-pane" or paneClass == "ct-ability-saving-throws-pane":
+            ability_string = $("." + paneClass + " .ct-sidebar__heading").text()
+            ability_name = ability_string.split(" ")[0]
+            modifier = $("." + paneClass + "__modifier .ct-signed-number").text()
+            ability = ability_abbreviations[ability_name]
+            if paneClass == "ct-ability-pane":
+                rollType = "ability"
+            else:
+                rollType = "saving-throw"
+            print(rollType + " " + ability_name + "(" + ability + ") : " + modifier)
+            sendRoll(rollType, "1d20" + modifier, {"name" : ability_name,
+                                                   "ability": ability,
+                                                   "modifier": modifier} )
+        elif paneClass == "ct-initiative-pane":
+            (modifier, advantage) = getInitiativeModifier()
+            roll = "2d20kh1" if advantage else "1d20"
+            print("Initiative " + ("with" if advantage else "without") + " advantage : " + modifier)
+            sendRoll("initiative", "1d20" + modifier, {"initiative": modifier, "advantage": advantage} )
+        elif paneClass == "ct-item-pane":
+            ability_string = $(".ct-sidebar__heading").text()
+            ability_name = ability_string.split(" ")[0]
+            modifier = $(".ct-ability-pane__modifier .ct-signed-number").text()
+            ability = ability_abbreviations[ability_name]
+            print("Saving Throw " + ability_name + "(" + ability + " : " + modifier)
+            sendRoll("ability", "1d20" + modifier,{"name" : ability_name, "ability": ability, "modifier": modifier} )
+        else:
+            console.log("Sidebar not open")
+
+
+chrome.runtime.onMessage.addListener(onMessage);

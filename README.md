@@ -1,0 +1,40 @@
+Beyond20: D&D Beyond & Roll20 Integration
+==
+
+Beyond20 is a chrome extension that integrates the Character Sheet from D&D Beyond into Roll20.
+This is a work in progress proof of concept, and for now, the structure is still not entirely defined.
+
+# Requirements
+
+This extension is written in 'python', more precisely in RapydScript and you will need RapydScript installed to compile the .pyj source files into .js
+I don't know if it's totally compatible with rapydscript itself as I've used rapydscript-ng myself. 
+
+To install :
+`sudo npm install rapydscript-ng -g`
+
+# Build
+Install RapidScript-NG then type 'make' to compile the *.pyj into *.js
+
+# Installation
+Once the extension compiled, you just need to load it into Chrome, so go chrome extensions, enable developer mode, do 'load unpacked' and select the extension's directory.
+
+# Using it
+Open Roll20 VTT in a tab of chrome then your character sheet in D&D Beyond in another tab, click on the item you want to roll, whether it's initiative, a skill, ability or saving throw check (for now), and when the D&D Beyond character sheet shows the information about that in its side panel, click the Beyond20 icon from the toolbar. It will automatically pick up on what was selected, and send the roll to all roll20 tabs open.
+
+# License
+
+This extension is released under the GPL v3 license. Read the LICENSE file for more details.
+
+
+# TODO
+- Add support for attacks/spell attacks, and for casting spells (show its description as a spell card), as well as feats, class/race features, Hit Dice during short rest, and non-attack actions/reactions descriptions.
+- Add support for skills/items that have advantage/disadvantage notes (like disadvantage on stealth for heavy armor users)
+- Add 'Roll' icon to the side panel itself so you can roll from the page rather than from the toolbar
+- Add ability to select which roll20 VTT page to send the rolls to
+- Add "Roll hit dice" icons next to every hit dice if multi-classing
+- Add a way to show errors (such as "can't find a roll20 tab")
+- Add a settings view to configure things like whisper rolls, roll with/without advantage, auto-roll damage, configure the macro to send to roll20, etc..
+- Add a dice roller so it can also be used to roll directly without roll20, if wanted.
+
+
+

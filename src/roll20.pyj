@@ -1,0 +1,34 @@
+print("Beyond20: Roll20 module loaded.")
+
+chat = document.getElementById("textchat-input")
+txt = chat.getElementsByTagName("textarea")[0]
+btn = chat.getElementsByTagName("button")[0]
+
+def postChatMessage(message):
+    txt.value = message
+    btn.click()
+
+def handleMessage (request, sender, sendResponse):
+    if request.action == "roll":
+        print("Got message : " + str(request))
+        if request.type == "skill":
+            roll = "&{template:default} {{name=Skill Check for " + request.character + "}} " + \
+                "{{" + request.skill + " " + request.modifier + "=" + \
+                "[[ 1d20 " + request.modifier + "[" + request.ability + "]]]}}"
+        elif request.type == "initiative":
+            dice = "2d20kh1" if request.advantage else "1d20"
+            roll = "&{template:default} {{name=" + request.character + " Rolled Initiative}} " + \
+                "{{initiative=[[ " + dice + " " + request.initiative + "]]}}"
+        elif request.type == "ability":
+            roll = "&{template:default} {{name=Ability Score for " + request.character + "}} " + \
+                "{{" + request.name + " " + request.modifier + "=" + \
+                "[[ 1d20 " + request.modifier + "[" + request.ability + "]]]}}"
+        elif request.type == "saving-throw":
+            roll = "&{template:default} {{name=Saving Throw for " + request.character + "}} " + \
+                "{{" + request.name + " " + request.modifier + "=" + \
+                "[[ 1d20 " + request.modifier + "[" + request.ability + "]]]}}"
+        else:
+            roll = "/roll " + request.roll + " " + request.rollType
+        postChatMessage(roll)
+
+chrome.runtime.onMessage.addListener(handleMessage)

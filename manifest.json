@@ -1,0 +1,24 @@
+{
+    "name": "Beyond 20",
+    "version": "0.0.1",
+    "manifest_version": 2,
+    "description": "Integrates the D&D Beyond Character Sheet to Roll20.",
+    "permissions": [ "activeTab", "tabs", "*://app.roll20.net/editor/", "*://*.dndbeyond.com/*" ],
+    "browser_action": {
+    },
+    "background": {
+	"persistent": true,
+	"scripts": [ "src/background.js" ]
+    },
+    "content_scripts": [{
+	"matches": [ "*://*.dndbeyond.com/profile/*/characters/*" ],
+	"js": [
+	    "src/jquery-3.4.1.min.js", "src/dndbeyond.js"
+	]
+    },{
+	"matches": [ "*://app.roll20.net/editor/" ],
+	"js": [
+	    "src/roll20.js"
+	]
+    }]
+}
