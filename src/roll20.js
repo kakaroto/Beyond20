@@ -3743,7 +3743,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, dice;
+            var roll, dice, crit1, crit2;
             if ((request.action === "roll" || typeof request.action === "object" && ρσ_equals(request.action, "roll"))) {
                 print("Got message : " + str(request));
                 if ((request.type === "skill" || typeof request.type === "object" && ρσ_equals(request.type, "skill"))) {
@@ -3755,6 +3755,18 @@ var str = ρσ_str, repr = ρσ_repr;;
                     roll = "&{template:default} {{name=Ability Score for " + request.character + "}} " + "{{" + request.name + " " + request.modifier + "=" + "[[ 1d20 " + request.modifier + "[" + request.ability + "]]]}}";
                 } else if ((request.type === "saving-throw" || typeof request.type === "object" && ρσ_equals(request.type, "saving-throw"))) {
                     roll = "&{template:default} {{name=Saving Throw for " + request.character + "}} " + "{{" + request.name + " " + request.modifier + "=" + "[[ 1d20 " + request.modifier + "[" + request.ability + "]]]}}";
+                } else if ((request.type === "attack" || typeof request.type === "object" && ρσ_equals(request.type, "attack"))) {
+                    roll = "&{template:atkdmg} {{mod=" + request["to-hit"] + "}} {{rname=" + request.weapon + "}} {{r1=[[1d20 " + request["to-hit"] + "]]}} {{always=1}} {{r2=[[1d20 " + request["to-hit"] + "]]}} {{attack=1}} ";
+                    if (ρσ_exists.n(request.range)) {
+                        roll += "{{range=" + request.range + "}}";
+                    }
+                    crit1 = request.damage.split((ρσ_in("+", request.damage)) ? "+" : "-")[0];
+                    roll += "{{damage=1}} {{dmg1flag=1}} {{dmg1=[[" + request.damage + "]]}} {{dmg1type=" + request["damage-type"] + "}} {{crit1=[[" + crit1 + "]]}} ";
+                    if (ρσ_exists.n(request["versatile-damage"])) {
+                        crit2 = request["versatile-damage"].split((ρσ_in("+", request["versatile-damage"])) ? "+" : "-")[0];
+                        roll += "{{dmg2flag=1}} {{dmg2=[[" + request["versatile-damage"] + "]]}} {{dmg2type=Two-Handed}} {{crit2=[[" + crit2 + "]]}} ";
+                    }
+                    roll += "{{charname=" + request.character + "}}";
                 } else {
                     roll = "/roll " + request.roll + " " + request.rollType;
                 }

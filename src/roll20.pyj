@@ -27,6 +27,23 @@ def handleMessage (request, sender, sendResponse):
             roll = "&{template:default} {{name=Saving Throw for " + request.character + "}} " + \
                 "{{" + request.name + " " + request.modifier + "=" + \
                 "[[ 1d20 " + request.modifier + "[" + request.ability + "]]]}}"
+        elif request.type == "attack":
+            roll = "&{template:atkdmg} {{mod=" + request["to-hit"] + \
+                "}} {{rname=" + request.weapon + \
+                "}} {{r1=[[1d20 " + request["to-hit"] + \
+                "]]}} {{always=1}} {{r2=[[1d20 " + request["to-hit"] + \
+                "]]}} {{attack=1}} "
+            if request.range?:
+                roll += "{{range=" + request.range + "}}"
+            crit1 = request.damage.split("+" if "+" in request.damage else "-")[0]
+            roll += "{{damage=1}} {{dmg1flag=1}} {{dmg1=[[" + request.damage + \
+                "]]}} {{dmg1type=" + request["damage-type"] + \
+                "}} {{crit1=[[" + crit1 + "]]}} "
+            if request["versatile-damage"]?:
+                crit2 = request["versatile-damage"].split("+" if "+" in request["versatile-damage"] else "-")[0]
+                roll += "{{dmg2flag=1}} {{dmg2=[[" + request["versatile-damage"] + \
+                    "]]}} {{dmg2type=Two-Handed}} {{crit2=[[" + crit2 + "]]}} "
+            roll += "{{charname=" + request.character + "}}"
         else:
             roll = "/roll " + request.roll + " " + request.rollType
         postChatMessage(roll)

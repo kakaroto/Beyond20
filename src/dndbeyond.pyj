@@ -17,14 +17,13 @@ def getInitiativeModifier():
         return "+0"
     return (initiative, advantage)
 
-def parseModifier(element, name):
-    c = element.getElementsByClassName(name)
-    if len(c) > 0:
-        sign = c[0].getElementsByClassName("ct-signed-number__sign")[0].textContent
-        number = c[0].getElementsByClassName("ct-signed-number__number")[0].textContent
-        return sign + number
-    return "+0"
-
+def propertyListToDict(propList):
+    properties = {}
+    for i in range(propList.length):
+        label = propList.eq(i).find(".ct-property-list__property-label").text()[:-1]
+        value = propList.eq(i).find(".ct-property-list__property-content").text()
+        properties[label] = value
+    return properties
 
 def sendRoll(rollType, fallback, args):
     char_name = $(".ct-character-tidbits__name").text()
@@ -36,7 +35,7 @@ def sendRoll(rollType, fallback, args):
 
 def onMessage(request, sender, sendResponse):
     if request.action == "execute":
-        paneClass = $(".ct-sidebar__pane-content")[0].children[0].className
+        paneClass = $(".ct-sidebar__pane-content > div")[0].className
         print("Beyond20: Current panel : " + paneClass)
         if paneClass == "ct-skill-pane":
             skill_name = $(".ct-skill-pane__header-name").text()
@@ -63,16 +62,41 @@ def onMessage(request, sender, sendResponse):
             (modifier, advantage) = getInitiativeModifier()
             roll = "2d20kh1" if advantage else "1d20"
             print("Initiative " + ("with" if advantage else "without") + " advantage : " + modifier)
-            sendRoll("initiative", "1d20" + modifier, {"initiative": modifier, "advantage": advantage} )
+            sendRoll("initiative", "1d20" + modifier, {"initiative": modifier,
+                                                       "advantage": advantage} )
         elif paneClass == "ct-item-pane":
-            ability_string = $(".ct-sidebar__heading").text()
-            ability_name = ability_string.split(" ")[0]
-            modifier = $(".ct-ability-pane__modifier .ct-signed-number").text()
-            ability = ability_abbreviations[ability_name]
-            print("Saving Throw " + ability_name + "(" + ability + " : " + modifier)
-            sendRoll("ability", "1d20" + modifier,{"name" : ability_name, "ability": ability, "modifier": modifier} )
+            item_name = $(".ct-item-pane .ct-item-name").text()
+            properties = $(".ct-item-pane .ct-property-list .ct-property-list__property")
+            properties = propertyListToDict(properties)
+            if "Damage" in properties:
+                items = $(".ct-combat-attack--item")
+                to_hit = "+0"
+                for i in range(items.length):
+                    if items.eq(i).find(".ct-item-name").text() == item_name:
+                        to_hit = items.eq(i).find(".ct-combat-attack__tohit").text()
+                        print("To hit for " + item_name + " is : " + to_hit)
+                print("Properties are : " + str(properties))
+                damage = properties["Damage"]
+                if "(" in damage:
+                    (damage, versatile_damage) = damage.split("(")
+                    versatile_damage = versatile_damage[:-1]
+                sendRoll("attack", properties["Damage"], {"weapon": item_name,
+                                                          "weapon-type": properties["Attack Type"],
+                                                          "to-hit": to_hit,
+                                                          "damage": damage,
+                                                          "versatile-damage": versatile_damage,
+                                                          "damage-type": properties["Damage Type"],
+                                                          "reach": properties["Reach"],
+                                                          "range": properties["Range"],
+                                                          "properties": properties["Properties"].split(", ")})
         else:
             console.log("Sidebar not open")
 
+def panelModified():
+    pane = $(".ct-sidebar__pane-content > div")
+    if pane.length > 0:
+        paneClass = pane[0].className
+        print("Beyond20: New side panel is : " + paneClass)
 
 chrome.runtime.onMessage.addListener(onMessage);
+#$(".ct-sidebar").on('DOMSubtreeModified', panelModified);

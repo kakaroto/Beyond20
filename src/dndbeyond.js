@@ -3755,18 +3755,19 @@ var str = ρσ_str, repr = ρσ_repr;;
             return [initiative, advantage];
         };
 
-        function parseModifier(element, name) {
-            var c, sign, number;
-            c = element.getElementsByClassName(name);
-            if (len(c) > 0) {
-                sign = c[0].getElementsByClassName("ct-signed-number__sign")[0].textContent;
-                number = c[0].getElementsByClassName("ct-signed-number__number")[0].textContent;
-                return sign + number;
+        function propertyListToDict(propList) {
+            var properties, label, value, i;
+            properties = {};
+            for (var ρσ_Index0 = 0; ρσ_Index0 < propList.length; ρσ_Index0++) {
+                i = ρσ_Index0;
+                label = propList.eq(i).find(".ct-property-list__property-label").text().slice(0, -1);
+                value = propList.eq(i).find(".ct-property-list__property-content").text();
+                properties[(typeof label === "number" && label < 0) ? properties.length + label : label] = value;
             }
-            return "+0";
+            return properties;
         };
-        if (!parseModifier.__argnames__) Object.defineProperties(parseModifier, {
-            __argnames__ : {value: ["element", "name"]}
+        if (!propertyListToDict.__argnames__) Object.defineProperties(propertyListToDict, {
+            __argnames__ : {value: ["propList"]}
         });
 
         function sendRoll(rollType, fallback, args) {
@@ -3780,9 +3781,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["roll"] = fallback;
                 return ρσ_d;
             }).call(this);
-            var ρσ_Iter0 = ρσ_Iterable(args);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                key = ρσ_Iter0[ρσ_Index0];
+            var ρσ_Iter1 = ρσ_Iterable(args);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                key = ρσ_Iter1[ρσ_Index1];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
             console.log("Sending message: " + str(req));
@@ -3793,9 +3794,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function onMessage(request, sender, sendResponse) {
-            var paneClass, skill_name, ability_name, modifier, ability_string, ability, rollType, ρσ_unpack, advantage, roll;
+            var paneClass, skill_name, ability_name, modifier, ability_string, ability, rollType, ρσ_unpack, advantage, roll, item_name, properties, items, to_hit, i, damage, versatile_damage;
             if ((request.action === "execute" || typeof request.action === "object" && ρσ_equals(request.action, "execute"))) {
-                paneClass = $(".ct-sidebar__pane-content")[0].children[0].className;
+                paneClass = $(".ct-sidebar__pane-content > div")[0].className;
                 print("Beyond20: Current panel : " + paneClass);
                 if ((paneClass === "ct-skill-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-skill-pane"))) {
                     skill_name = $(".ct-skill-pane__header-name").text();
@@ -3841,18 +3842,42 @@ var str = ρσ_str, repr = ρσ_repr;;
                         return ρσ_d;
                     }).call(this));
                 } else if ((paneClass === "ct-item-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-item-pane"))) {
-                    ability_string = $(".ct-sidebar__heading").text();
-                    ability_name = ability_string.split(" ")[0];
-                    modifier = $(".ct-ability-pane__modifier .ct-signed-number").text();
-                    ability = ability_abbreviations[(typeof ability_name === "number" && ability_name < 0) ? ability_abbreviations.length + ability_name : ability_name];
-                    print("Saving Throw " + ability_name + "(" + ability + " : " + modifier);
-                    sendRoll("ability", "1d20" + modifier, (function(){
-                        var ρσ_d = {};
-                        ρσ_d["name"] = ability_name;
-                        ρσ_d["ability"] = ability;
-                        ρσ_d["modifier"] = modifier;
-                        return ρσ_d;
-                    }).call(this));
+                    item_name = $(".ct-item-pane .ct-item-name").text();
+                    properties = $(".ct-item-pane .ct-property-list .ct-property-list__property");
+                    properties = propertyListToDict(properties);
+                    if (ρσ_in("Damage", properties)) {
+                        items = $(".ct-combat-attack--item");
+                        to_hit = "+0";
+                        for (var ρσ_Index2 = 0; ρσ_Index2 < items.length; ρσ_Index2++) {
+                            i = ρσ_Index2;
+                            if (ρσ_equals(items.eq(i).find(".ct-item-name").text(), item_name)) {
+                                to_hit = items.eq(i).find(".ct-combat-attack__tohit").text();
+                                print("To hit for " + item_name + " is : " + to_hit);
+                            }
+                        }
+                        print("Properties are : " + str(properties));
+                        damage = properties["Damage"];
+                        if (ρσ_in("(", damage)) {
+                            ρσ_unpack = damage.split("(");
+ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
+                            damage = ρσ_unpack[0];
+                            versatile_damage = ρσ_unpack[1];
+                            versatile_damage = versatile_damage.slice(0, -1);
+                        }
+                        sendRoll("attack", properties["Damage"], (function(){
+                            var ρσ_d = {};
+                            ρσ_d["weapon"] = item_name;
+                            ρσ_d["weapon-type"] = properties["Attack Type"];
+                            ρσ_d["to-hit"] = to_hit;
+                            ρσ_d["damage"] = damage;
+                            ρσ_d["versatile-damage"] = versatile_damage;
+                            ρσ_d["damage-type"] = properties["Damage Type"];
+                            ρσ_d["reach"] = properties["Reach"];
+                            ρσ_d["range"] = properties["Range"];
+                            ρσ_d["properties"] = properties["Properties"].split(", ");
+                            return ρσ_d;
+                        }).call(this));
+                    }
                 } else {
                     console.log("Sidebar not open");
                 }
@@ -3862,6 +3887,17 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request", "sender", "sendResponse"]}
         });
 
+        function panelModified() {
+            var pane, paneClass;
+            pane = $(".ct-sidebar__pane-content > div");
+            if (pane.length > 0) {
+                paneClass = pane[0].className;
+                print("Beyond20: New side panel is : " + paneClass);
+            }
+        };
+
         chrome.runtime.onMessage.addListener(onMessage);
+        //$(".ct-sidebar").on('DOMSubtreeModified', panelModified);
+        
     })();
 })();
