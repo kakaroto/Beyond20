@@ -3729,7 +3729,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var ability_abbreviations;
+        var ability_abbreviations, observer;
         print("Beyond20: D&D Beyond module loaded.");
         ability_abbreviations = (function(){
             var ρσ_d = {};
@@ -3741,20 +3741,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["Charisma"] = "CHA";
             return ρσ_d;
         }).call(this);
-        function getInitiativeModifier() {
-            var initiative, advantage;
-            initiative = $(".ct-initiative-box__value").text();
-            advantage = $(".ct-initiative-box__advantage").length > 0;
-            if ((initiative === "" || typeof initiative === "object" && ρσ_equals(initiative, ""))) {
-                initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text();
-                advantage = $(".ct-combat-mobile__advantage").length > 0;
-            }
-            if ((initiative === "" || typeof initiative === "object" && ρσ_equals(initiative, ""))) {
-                return "+0";
-            }
-            return [initiative, advantage];
-        };
-
         function propertyListToDict(propList) {
             var properties, label, value, i;
             properties = {};
@@ -3793,93 +3779,267 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["rollType", "fallback", "args"]}
         });
 
-        function onMessage(request, sender, sendResponse) {
-            var paneClass, skill_name, ability_name, modifier, ability_string, ability, rollType, ρσ_unpack, advantage, roll, item_name, properties, items, to_hit, i, damage, versatile_damage;
-            if ((request.action === "execute" || typeof request.action === "object" && ρσ_equals(request.action, "execute"))) {
-                paneClass = $(".ct-sidebar__pane-content > div")[0].className;
-                print("Beyond20: Current panel : " + paneClass);
-                if ((paneClass === "ct-skill-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-skill-pane"))) {
-                    skill_name = $(".ct-skill-pane__header-name").text();
-                    ability_name = $(".ct-skill-pane__header-ability").text();
-                    modifier = $(".ct-skill-pane__header-modifier").text();
-                    print("Skill " + skill_name + "(" + ability + ") : " + modifier);
-                    sendRoll("skill", "1d20" + modifier, (function(){
-                        var ρσ_d = {};
-                        ρσ_d["skill"] = skill_name;
-                        ρσ_d["ability"] = ability_name;
-                        ρσ_d["modifier"] = modifier;
-                        return ρσ_d;
-                    }).call(this));
-                } else if ((paneClass === "ct-ability-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-ability-pane")) || (paneClass === "ct-ability-saving-throws-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-ability-saving-throws-pane"))) {
-                    ability_string = $("." + paneClass + " .ct-sidebar__heading").text();
-                    ability_name = ability_string.split(" ")[0];
-                    modifier = $("." + paneClass + "__modifier .ct-signed-number").text();
-                    ability = ability_abbreviations[(typeof ability_name === "number" && ability_name < 0) ? ability_abbreviations.length + ability_name : ability_name];
-                    if ((paneClass === "ct-ability-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-ability-pane"))) {
-                        rollType = "ability";
-                    } else {
-                        rollType = "saving-throw";
+        function rollSkillCheck() {
+            var skill_name, ability, modifier;
+            skill_name = $(".ct-skill-pane__header-name").text();
+            ability = $(".ct-skill-pane__header-ability").text();
+            modifier = $(".ct-skill-pane__header-modifier").text();
+            print("Skill " + skill_name + "(" + ability + ") : " + modifier);
+            sendRoll("skill", "1d20" + modifier, (function(){
+                var ρσ_d = {};
+                ρσ_d["skill"] = skill_name;
+                ρσ_d["ability"] = ability;
+                ρσ_d["modifier"] = modifier;
+                return ρσ_d;
+            }).call(this));
+        };
+
+        function rollAbilityOrSavingThrow(paneClass, rollType) {
+            var ability_string, ability_name, modifier, ability;
+            ability_string = $("." + paneClass + " .ct-sidebar__heading").text();
+            ability_name = ability_string.split(" ")[0];
+            modifier = $("." + paneClass + "__modifier .ct-signed-number").text();
+            ability = ability_abbreviations[(typeof ability_name === "number" && ability_name < 0) ? ability_abbreviations.length + ability_name : ability_name];
+            print(rollType + " " + ability_name + "(" + ability + ") : " + modifier);
+            sendRoll(rollType, "1d20" + modifier, (function(){
+                var ρσ_d = {};
+                ρσ_d["name"] = ability_name;
+                ρσ_d["ability"] = ability;
+                ρσ_d["modifier"] = modifier;
+                return ρσ_d;
+            }).call(this));
+        };
+        if (!rollAbilityOrSavingThrow.__argnames__) Object.defineProperties(rollAbilityOrSavingThrow, {
+            __argnames__ : {value: ["paneClass", "rollType"]}
+        });
+
+        function rollAbilityCheck() {
+            rollAbilityOrSavingThrow("ct-ability-pane", "ability");
+        };
+
+        function rollSavingThrow() {
+            rollAbilityOrSavingThrow("ct-ability-saving-throws-pane", "saving-throw");
+        };
+
+        function rollInitiative() {
+            var initiative, advantage, roll;
+            initiative = $(".ct-initiative-box__value").text();
+            advantage = $(".ct-initiative-box__advantage").length > 0;
+            if ((initiative === "" || typeof initiative === "object" && ρσ_equals(initiative, ""))) {
+                initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text();
+                advantage = $(".ct-combat-mobile__advantage").length > 0;
+            }
+            roll = (advantage) ? "2d20kh1" : "1d20";
+            print("Initiative " + ((advantage) ? "with" : "without") + " advantage : " + initiative);
+            sendRoll("initiative", "1d20" + initiative, (function(){
+                var ρσ_d = {};
+                ρσ_d["initiative"] = initiative;
+                ρσ_d["advantage"] = advantage;
+                return ρσ_d;
+            }).call(this));
+        };
+
+        function rollItem() {
+            var item_name, properties, items, to_hit, i, damage, ρσ_unpack, versatile_damage;
+            item_name = $(".ct-item-pane .ct-item-name").text();
+            properties = $(".ct-item-pane .ct-property-list .ct-property-list__property");
+            properties = propertyListToDict(properties);
+            if (ρσ_in("Damage", properties)) {
+                items = $(".ct-combat-attack--item");
+                to_hit = "+0";
+                for (var ρσ_Index2 = 0; ρσ_Index2 < items.length; ρσ_Index2++) {
+                    i = ρσ_Index2;
+                    if (ρσ_equals(items.eq(i).find(".ct-item-name").text(), item_name)) {
+                        to_hit = items.eq(i).find(".ct-combat-attack__tohit").text();
+                        print("To hit for " + item_name + " is : " + to_hit);
                     }
-                    print(rollType + " " + ability_name + "(" + ability + ") : " + modifier);
-                    sendRoll(rollType, "1d20" + modifier, (function(){
-                        var ρσ_d = {};
-                        ρσ_d["name"] = ability_name;
-                        ρσ_d["ability"] = ability;
-                        ρσ_d["modifier"] = modifier;
-                        return ρσ_d;
-                    }).call(this));
-                } else if ((paneClass === "ct-initiative-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-initiative-pane"))) {
-                    ρσ_unpack = getInitiativeModifier();
+                }
+                print("Properties are : " + str(properties));
+                damage = properties["Damage"];
+                if (ρσ_in("(", damage)) {
+                    ρσ_unpack = damage.split("(");
 ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
-                    modifier = ρσ_unpack[0];
-                    advantage = ρσ_unpack[1];
-                    roll = (advantage) ? "2d20kh1" : "1d20";
-                    print("Initiative " + ((advantage) ? "with" : "without") + " advantage : " + modifier);
-                    sendRoll("initiative", "1d20" + modifier, (function(){
-                        var ρσ_d = {};
-                        ρσ_d["initiative"] = modifier;
-                        ρσ_d["advantage"] = advantage;
-                        return ρσ_d;
-                    }).call(this));
-                } else if ((paneClass === "ct-item-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-item-pane"))) {
-                    item_name = $(".ct-item-pane .ct-item-name").text();
-                    properties = $(".ct-item-pane .ct-property-list .ct-property-list__property");
-                    properties = propertyListToDict(properties);
-                    if (ρσ_in("Damage", properties)) {
-                        items = $(".ct-combat-attack--item");
-                        to_hit = "+0";
-                        for (var ρσ_Index2 = 0; ρσ_Index2 < items.length; ρσ_Index2++) {
-                            i = ρσ_Index2;
-                            if (ρσ_equals(items.eq(i).find(".ct-item-name").text(), item_name)) {
-                                to_hit = items.eq(i).find(".ct-combat-attack__tohit").text();
-                                print("To hit for " + item_name + " is : " + to_hit);
-                            }
-                        }
-                        print("Properties are : " + str(properties));
-                        damage = properties["Damage"];
-                        if (ρσ_in("(", damage)) {
-                            ρσ_unpack = damage.split("(");
-ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
-                            damage = ρσ_unpack[0];
-                            versatile_damage = ρσ_unpack[1];
-                            versatile_damage = versatile_damage.slice(0, -1);
-                        }
-                        sendRoll("attack", properties["Damage"], (function(){
-                            var ρσ_d = {};
-                            ρσ_d["weapon"] = item_name;
-                            ρσ_d["weapon-type"] = properties["Attack Type"];
-                            ρσ_d["to-hit"] = to_hit;
-                            ρσ_d["damage"] = damage;
-                            ρσ_d["versatile-damage"] = versatile_damage;
-                            ρσ_d["damage-type"] = properties["Damage Type"];
-                            ρσ_d["reach"] = properties["Reach"];
-                            ρσ_d["range"] = properties["Range"];
-                            ρσ_d["properties"] = properties["Properties"].split(", ");
-                            return ρσ_d;
-                        }).call(this));
+                    damage = ρσ_unpack[0];
+                    versatile_damage = ρσ_unpack[1];
+                    versatile_damage = versatile_damage.slice(0, -1);
+                }
+                sendRoll("attack", properties["Damage"], (function(){
+                    var ρσ_d = {};
+                    ρσ_d["weapon"] = item_name;
+                    ρσ_d["weapon-type"] = properties["Attack Type"];
+                    ρσ_d["to-hit"] = to_hit;
+                    ρσ_d["damage"] = damage;
+                    ρσ_d["versatile-damage"] = versatile_damage;
+                    ρσ_d["damage-type"] = properties["Damage Type"];
+                    ρσ_d["reach"] = properties["Reach"];
+                    ρσ_d["range"] = properties["Range"];
+                    ρσ_d["properties"] = properties["Properties"].split(", ");
+                    return ρσ_d;
+                }).call(this));
+            }
+        };
+
+        function rollHitDie(multiclass, index) {
+            var hitdie, class_name, text, die;
+            print("Rolling hit die index " + index);
+            hitdie = $(".ct-reset-pane__hitdie").eq(index);
+            class_name = hitdie.find(".ct-reset-pane__hitdie-heading-class").text();
+            text = hitdie.find(".ct-reset-pane__hitdie-heading").text();
+            die = text.split("Hit Die: ")[1].split(" ")[0];
+            sendRoll("hit-dice", die, (function(){
+                var ρσ_d = {};
+                ρσ_d["class"] = class_name;
+                ρσ_d["multiclass"] = multiclass;
+                ρσ_d["hit-dice"] = die;
+                return ρσ_d;
+            }).call(this));
+        };
+        if (!rollHitDie.__argnames__) Object.defineProperties(rollHitDie, {
+            __argnames__ : {value: ["multiclass", "index"]}
+        });
+
+        function execute(paneClass) {
+            print("Beyond20: Current panel : " + paneClass);
+            console.log(paneClass);
+            if ((paneClass === "ct-skill-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-skill-pane"))) {
+                rollSkillCheck();
+            } else if ((paneClass === "ct-ability-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-ability-pane"))) {
+                rollAbilityCheck();
+            } else if ((paneClass === "ct-ability-saving-throws-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-ability-saving-throws-pane"))) {
+                rollSavingThrow();
+            } else if ((paneClass === "ct-initiative-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-initiative-pane"))) {
+                rollInitiative();
+            } else if ((paneClass === "ct-item-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-item-pane"))) {
+                rollItem();
+            } else {
+                alert("Not recognizing the currently open sidebar");
+            }
+        };
+        if (!execute.__argnames__) Object.defineProperties(execute, {
+            __argnames__ : {value: ["paneClass"]}
+        });
+
+        function isRollButtonAdded() {
+            return $(".ct-beyond20-roll").length > 0;
+        };
+
+        function isHitDieButtonAdded() {
+            return $(".ct-beyond20-roll-hitdie").length > 0;
+        };
+
+        function addRollButton(paneClass, where) {
+            var icon32, button;
+            icon32 = chrome.extension.getURL("images/icons/icon32.png");
+            button = "<span class=\"ct-beyond20-roll\"><img class=\"ct-beyond20-roll ct-beyond20-icon\"></img><button class=\"ct-beyond20-roll ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button\"><span class=\"ct-button__content\">Beyond 20</span></button></span>";
+            $(where).after(button);
+            $(".ct-beyond20-icon").css("margin-right", "6px");
+            $(".ct-beyond20-icon").attr("src", icon32);
+            $(".ct-beyond20-roll").attr("float", "right");
+            $(".ct-beyond20-roll").bind("click", (function() {
+                var ρσ_anonfunc = function (event) {
+                    execute(paneClass);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["event"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!addRollButton.__argnames__) Object.defineProperties(addRollButton, {
+            __argnames__ : {value: ["paneClass", "where"]}
+        });
+
+        function addHitDieButtons() {
+            var icon16, button, hitdice, multiclass, cb, i;
+            icon16 = chrome.extension.getURL("images/icons/icon16.png");
+            button = "<span class=\"ct-beyond20-roll-hitdie\"><img class=\"ct-beyond20-roll ct-beyond20-icon\"></img><button class=\"ct-beyond20-roll ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button character-button-small\"><span class=\"ct-button__content\">Roll Hit Die</span></button></span>";
+            $(".ct-reset-pane__hitdie-heading").append(button);
+            $(".ct-beyond20-icon").css("margin-right", "6px");
+            $(".ct-beyond20-icon").attr("src", icon16);
+            $(".ct-beyond20-roll-hitdie").css("float", "right");
+            hitdice = $(".ct-reset-pane__hitdie");
+            multiclass = hitdice.length > 1;
+            for (var ρσ_Index3 = 0; ρσ_Index3 < hitdice.length; ρσ_Index3++) {
+                i = ρσ_Index3;
+                cb = (function() {
+                    var ρσ_anonfunc = function (index) {
+                        return (function() {
+                            var ρσ_anonfunc = function (event) {
+                                rollHitDie(multiclass, index);
+                            };
+                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                __argnames__ : {value: ["event"]}
+                            });
+                            return ρσ_anonfunc;
+                        })();
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["index"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                $(".ct-beyond20-roll-hitdie").eq(i).bind("click", cb(i));
+            }
+        };
+
+        function removeRollButtons() {
+            $(".ct-beyond20-roll").remove();
+            $(".ct-beyond20-roll-hitdie").remove();
+        };
+
+        function injectRollButton(paneClass) {
+            var properties, hitdice;
+            if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-skill-pane", "ct-ability-pane", "ct-ability-pane", "ct-ability-saving-throws-pane", "ct-initiative-pane" ]))) {
+                if (isRollButtonAdded()) {
+                    return;
+                }
+                addRollButton(paneClass, ".ct-sidebar__heading");
+            } else if ((paneClass === "ct-item-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-item-pane"))) {
+                properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"));
+                if (ρσ_in("Damage", properties)) {
+                    if (isRollButtonAdded()) {
+                        return;
                     }
+                    addRollButton(paneClass, ".ct-sidebar__heading");
                 } else {
-                    console.log("Sidebar not open");
+                    removeRollButtons();
+                }
+            } else if ((paneClass === "ct-reset-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-reset-pane"))) {
+                hitdice = $(".ct-reset-pane__hitdie");
+                console.log(hitdice);
+                if (hitdice.length > 0) {
+                    if (isHitDieButtonAdded()) {
+                        return;
+                    }
+                    removeRollButtons();
+                    addHitDieButtons();
+                } else {
+                    removeRollButtons();
+                }
+            } else {
+                removeRollButtons();
+            }
+        };
+        if (!injectRollButton.__argnames__) Object.defineProperties(injectRollButton, {
+            __argnames__ : {value: ["paneClass"]}
+        });
+
+        function onMessage(request, sender, sendResponse) {
+            var pane;
+            if ((request.action === "inject" || typeof request.action === "object" && ρσ_equals(request.action, "inject"))) {
+                pane = $(".ct-sidebar__pane-content > div");
+                if (pane.length > 0) {
+                    injectRollButton(pane[0].className);
+                } else {
+                    alert("Sidebar not open");
+                }
+            }
+            if ((request.action === "execute" || typeof request.action === "object" && ρσ_equals(request.action, "execute"))) {
+                pane = $(".ct-sidebar__pane-content > div");
+                if (pane.length > 0) {
+                    execute(pane[0].className);
+                } else {
+                    alert("Sidebar not open");
                 }
             }
         };
@@ -3887,17 +4047,30 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request", "sender", "sendResponse"]}
         });
 
-        function panelModified() {
+        function panelModified(mutations, observer) {
             var pane, paneClass;
+            if ($(".ct-beyond20-roll").length > 0) {
+                return;
+            }
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
                 paneClass = pane[0].className;
                 print("Beyond20: New side panel is : " + paneClass);
+                injectRollButton(paneClass);
+                print("Injection done");
             }
         };
+        if (!panelModified.__argnames__) Object.defineProperties(panelModified, {
+            __argnames__ : {value: ["mutations", "observer"]}
+        });
 
         chrome.runtime.onMessage.addListener(onMessage);
-        //$(".ct-sidebar").on('DOMSubtreeModified', panelModified);
-        
+        observer = new window.MutationObserver(panelModified);
+        observer.observe(document, (function(){
+            var ρσ_d = {};
+            ρσ_d["subtree"] = true;
+            ρσ_d["childList"] = true;
+            return ρσ_d;
+        }).call(this));
     })();
 })();

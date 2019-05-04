@@ -3743,7 +3743,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, dice, crit1, crit2;
+            var roll, dice, rname, crit1, crit2;
             if ((request.action === "roll" || typeof request.action === "object" && ρσ_equals(request.action, "roll"))) {
                 print("Got message : " + str(request));
                 if ((request.type === "skill" || typeof request.type === "object" && ρσ_equals(request.type, "skill"))) {
@@ -3755,6 +3755,13 @@ var str = ρσ_str, repr = ρσ_repr;;
                     roll = "&{template:default} {{name=Ability Score for " + request.character + "}} " + "{{" + request.name + " " + request.modifier + "=" + "[[ 1d20 " + request.modifier + "[" + request.ability + "]]]}}";
                 } else if ((request.type === "saving-throw" || typeof request.type === "object" && ρσ_equals(request.type, "saving-throw"))) {
                     roll = "&{template:default} {{name=Saving Throw for " + request.character + "}} " + "{{" + request.name + " " + request.modifier + "=" + "[[ 1d20 " + request.modifier + "[" + request.ability + "]]]}}";
+                } else if ((request.type === "hit-dice" || typeof request.type === "object" && ρσ_equals(request.type, "hit-dice"))) {
+                    if (request.multiclass) {
+                        rname = "Hit Dice (" + request.class + ")";
+                    } else {
+                        rname = "Hit Dice";
+                    }
+                    roll = "&{template:simple} {{rname=" + rname + "}} {{mod=" + request["hit-dice"] + "}} {{r1=[[" + request["hit-dice"] + "]]}} {{normal=1}} {{charname=" + request.character + "}}";
                 } else if ((request.type === "attack" || typeof request.type === "object" && ρσ_equals(request.type, "attack"))) {
                     roll = "&{template:atkdmg} {{mod=" + request["to-hit"] + "}} {{rname=" + request.weapon + "}} {{r1=[[1d20 " + request["to-hit"] + "]]}} {{always=1}} {{r2=[[1d20 " + request["to-hit"] + "]]}} {{attack=1}} ";
                     if (ρσ_exists.n(request.range)) {

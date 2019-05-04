@@ -7,16 +7,6 @@ ability_abbreviations = {"Strength": "STR",
                          "Wisdom": "WIS",
                          "Charisma": "CHA"}
 
-def getInitiativeModifier():
-    initiative = $(".ct-initiative-box__value").text()
-    advantage = $(".ct-initiative-box__advantage").length > 0
-    if initiative == "":
-        initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text()
-        advantage = $(".ct-combat-mobile__advantage").length > 0
-    if initiative == "":
-        return "+0"
-    return (initiative, advantage)
-
 def propertyListToDict(propList):
     properties = {}
     for i in range(propList.length):
@@ -33,70 +23,191 @@ def sendRoll(rollType, fallback, args):
     console.log("Sending message: " + str(req))
     chrome.runtime.sendMessage(req);
 
-def onMessage(request, sender, sendResponse):
-    if request.action == "execute":
-        paneClass = $(".ct-sidebar__pane-content > div")[0].className
-        print("Beyond20: Current panel : " + paneClass)
-        if paneClass == "ct-skill-pane":
-            skill_name = $(".ct-skill-pane__header-name").text()
-            ability_name = $(".ct-skill-pane__header-ability").text()
-            modifier = $(".ct-skill-pane__header-modifier").text()
-            print("Skill " + skill_name + "(" + ability + ") : " + modifier)
-            sendRoll("skill", "1d20" + modifier, {"skill": skill_name,
-                                                  "ability": ability_name,
-                                                  "modifier": modifier} )
-        elif paneClass == "ct-ability-pane" or paneClass == "ct-ability-saving-throws-pane":
-            ability_string = $("." + paneClass + " .ct-sidebar__heading").text()
-            ability_name = ability_string.split(" ")[0]
-            modifier = $("." + paneClass + "__modifier .ct-signed-number").text()
-            ability = ability_abbreviations[ability_name]
-            if paneClass == "ct-ability-pane":
-                rollType = "ability"
-            else:
-                rollType = "saving-throw"
-            print(rollType + " " + ability_name + "(" + ability + ") : " + modifier)
-            sendRoll(rollType, "1d20" + modifier, {"name" : ability_name,
-                                                   "ability": ability,
-                                                   "modifier": modifier} )
-        elif paneClass == "ct-initiative-pane":
-            (modifier, advantage) = getInitiativeModifier()
-            roll = "2d20kh1" if advantage else "1d20"
-            print("Initiative " + ("with" if advantage else "without") + " advantage : " + modifier)
-            sendRoll("initiative", "1d20" + modifier, {"initiative": modifier,
-                                                       "advantage": advantage} )
-        elif paneClass == "ct-item-pane":
-            item_name = $(".ct-item-pane .ct-item-name").text()
-            properties = $(".ct-item-pane .ct-property-list .ct-property-list__property")
-            properties = propertyListToDict(properties)
-            if "Damage" in properties:
-                items = $(".ct-combat-attack--item")
-                to_hit = "+0"
-                for i in range(items.length):
-                    if items.eq(i).find(".ct-item-name").text() == item_name:
-                        to_hit = items.eq(i).find(".ct-combat-attack__tohit").text()
-                        print("To hit for " + item_name + " is : " + to_hit)
-                print("Properties are : " + str(properties))
-                damage = properties["Damage"]
-                if "(" in damage:
-                    (damage, versatile_damage) = damage.split("(")
-                    versatile_damage = versatile_damage[:-1]
-                sendRoll("attack", properties["Damage"], {"weapon": item_name,
-                                                          "weapon-type": properties["Attack Type"],
-                                                          "to-hit": to_hit,
-                                                          "damage": damage,
-                                                          "versatile-damage": versatile_damage,
-                                                          "damage-type": properties["Damage Type"],
-                                                          "reach": properties["Reach"],
-                                                          "range": properties["Range"],
-                                                          "properties": properties["Properties"].split(", ")})
-        else:
-            console.log("Sidebar not open")
+def rollSkillCheck():
+    skill_name = $(".ct-skill-pane__header-name").text()
+    ability = $(".ct-skill-pane__header-ability").text()
+    modifier = $(".ct-skill-pane__header-modifier").text()
+    print("Skill " + skill_name + "(" + ability + ") : " + modifier)
+    sendRoll("skill", "1d20" + modifier, {"skill": skill_name,
+                                          "ability": ability,
+                                          "modifier": modifier} )
 
-def panelModified():
+def rollAbilityOrSavingThrow(paneClass, rollType):
+    ability_string = $("." + paneClass + " .ct-sidebar__heading").text()
+    ability_name = ability_string.split(" ")[0]
+    modifier = $("." + paneClass + "__modifier .ct-signed-number").text()
+    ability = ability_abbreviations[ability_name]
+    print(rollType + " " + ability_name + "(" + ability + ") : " + modifier)
+    sendRoll(rollType, "1d20" + modifier, {"name" : ability_name,
+                                           "ability": ability,
+                                           "modifier": modifier} )
+
+def rollAbilityCheck():
+    rollAbilityOrSavingThrow("ct-ability-pane", "ability")
+
+def rollSavingThrow():
+    rollAbilityOrSavingThrow("ct-ability-saving-throws-pane", "saving-throw")
+
+def rollInitiative():
+    initiative = $(".ct-initiative-box__value").text()
+    advantage = $(".ct-initiative-box__advantage").length > 0
+    if initiative == "":
+        initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text()
+        advantage = $(".ct-combat-mobile__advantage").length > 0
+    roll = "2d20kh1" if advantage else "1d20"
+    print("Initiative " + ("with" if advantage else "without") + " advantage : " + initiative)
+    sendRoll("initiative", "1d20" + initiative, {"initiative": initiative,
+                                                 "advantage": advantage} )
+
+def rollItem():
+    item_name = $(".ct-item-pane .ct-item-name").text()
+    properties = $(".ct-item-pane .ct-property-list .ct-property-list__property")
+    properties = propertyListToDict(properties)
+    if "Damage" in properties:
+        items = $(".ct-combat-attack--item")
+        to_hit = "+0"
+        for i in range(items.length):
+            if items.eq(i).find(".ct-item-name").text() == item_name:
+                to_hit = items.eq(i).find(".ct-combat-attack__tohit").text()
+                print("To hit for " + item_name + " is : " + to_hit)
+        print("Properties are : " + str(properties))
+        damage = properties["Damage"]
+        if "(" in damage:
+            (damage, versatile_damage) = damage.split("(")
+            versatile_damage = versatile_damage[:-1]
+        sendRoll("attack", properties["Damage"], {"weapon": item_name,
+                                                  "weapon-type": properties["Attack Type"],
+                                                  "to-hit": to_hit,
+                                                  "damage": damage,
+                                                  "versatile-damage": versatile_damage,
+                                                  "damage-type": properties["Damage Type"],
+                                                  "reach": properties["Reach"],
+                                                  "range": properties["Range"],
+                                                  "properties": properties["Properties"].split(", ")})
+
+def rollHitDie(multiclass, index):
+    print("Rolling hit die index " + index)
+    hitdie = $(".ct-reset-pane__hitdie").eq(index)
+    class_name = hitdie.find(".ct-reset-pane__hitdie-heading-class").text()
+    text = hitdie.find(".ct-reset-pane__hitdie-heading").text()
+    die = text.split("Hit Die: ")[1].split(" ")[0]
+    sendRoll("hit-dice", die, {"class": class_name,
+                               "multiclass": multiclass,
+                               "hit-dice": die} )
+    
+
+def execute(paneClass):
+    print("Beyond20: Current panel : " + paneClass)
+    console.log(paneClass)
+    if paneClass == "ct-skill-pane":
+        rollSkillCheck()
+    elif paneClass == "ct-ability-pane":
+        rollAbilityCheck()
+    elif paneClass == "ct-ability-saving-throws-pane":
+        rollSavingThrow()
+    elif paneClass == "ct-initiative-pane":
+        rollInitiative()
+    elif paneClass == "ct-item-pane":
+        rollItem()
+    else:
+        alert("Not recognizing the currently open sidebar")
+
+def isRollButtonAdded():
+    return $(".ct-beyond20-roll").length > 0
+
+def isHitDieButtonAdded():
+    return $(".ct-beyond20-roll-hitdie").length > 0
+
+def addRollButton(paneClass, where):
+    icon32 = chrome.extension.getURL("images/icons/icon32.png");
+    button = '<span class="ct-beyond20-roll"><img class="ct-beyond20-roll ct-beyond20-icon"></img><button class="ct-beyond20-roll ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button"><span class="ct-button__content">Beyond 20</span></button></span>'
+
+    $(where).after(button)
+    $(".ct-beyond20-icon").css("margin-right", "6px")
+    $(".ct-beyond20-icon").attr("src", icon32)
+    $(".ct-beyond20-roll").attr("float", "right")
+    $(".ct-beyond20-roll").bind('click', def(event):
+        execute(paneClass)
+    )
+
+def addHitDieButtons():
+    icon16 = chrome.extension.getURL("images/icons/icon16.png");
+    button = '<span class="ct-beyond20-roll-hitdie"><img class="ct-beyond20-roll ct-beyond20-icon"></img><button class="ct-beyond20-roll ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button character-button-small"><span class="ct-button__content">Roll Hit Die</span></button></span>'
+    $(".ct-reset-pane__hitdie-heading").append(button)
+    $(".ct-beyond20-icon").css("margin-right", "6px")
+    $(".ct-beyond20-icon").attr("src", icon16)
+    $(".ct-beyond20-roll-hitdie").css("float", "right")
+    hitdice = $(".ct-reset-pane__hitdie")
+    multiclass = hitdice.length > 1
+    for i in range(hitdice.length):
+        cb = def(index):
+            return def(event):
+                rollHitDie(multiclass, index)
+
+        $(".ct-beyond20-roll-hitdie").eq(i).bind('click', cb(i))
+
+def removeRollButtons():
+    $(".ct-beyond20-roll").remove()
+    $(".ct-beyond20-roll-hitdie").remove()
+
+
+def injectRollButton(paneClass):
+    if paneClass in ["ct-skill-pane",
+                     "ct-ability-pane",
+                     "ct-ability-pane",
+                     "ct-ability-saving-throws-pane",
+                     "ct-initiative-pane"]:
+        if isRollButtonAdded():
+            return
+        addRollButton(paneClass, ".ct-sidebar__heading")
+    elif paneClass == "ct-item-pane":
+        properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"))
+        if "Damage" in properties:
+            if isRollButtonAdded():
+                return
+            addRollButton(paneClass, ".ct-sidebar__heading")
+        else:
+            removeRollButtons()
+    elif paneClass == "ct-reset-pane":
+        hitdice = $(".ct-reset-pane__hitdie")
+        console.log(hitdice)
+        if hitdice.length > 0:
+            if isHitDieButtonAdded():
+                return
+            removeRollButtons()
+            addHitDieButtons()
+        else:
+            removeRollButtons()
+            
+    else:
+        removeRollButtons()
+
+def onMessage(request, sender, sendResponse):
+    if request.action == "inject":
+        pane = $(".ct-sidebar__pane-content > div")
+        if pane.length > 0:
+            injectRollButton(pane[0].className)
+        else:
+            alert("Sidebar not open")
+    if request.action == "execute":
+        pane = $(".ct-sidebar__pane-content > div")
+        if pane.length > 0:
+            execute(pane[0].className)
+        else:
+            alert("Sidebar not open")
+
+def panelModified(mutations, observer):
+    # We're already injected
+    if $(".ct-beyond20-roll").length > 0:
+        return
     pane = $(".ct-sidebar__pane-content > div")
     if pane.length > 0:
         paneClass = pane[0].className
         print("Beyond20: New side panel is : " + paneClass)
+        injectRollButton(paneClass)
+        print("Injection done")
 
 chrome.runtime.onMessage.addListener(onMessage);
-#$(".ct-sidebar").on('DOMSubtreeModified', panelModified);
+observer = new window.MutationObserver(panelModified)
+observer.observe(document, {"subtree": True, "childList": True})
+

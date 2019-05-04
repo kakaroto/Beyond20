@@ -27,6 +27,16 @@ def handleMessage (request, sender, sendResponse):
             roll = "&{template:default} {{name=Saving Throw for " + request.character + "}} " + \
                 "{{" + request.name + " " + request.modifier + "=" + \
                 "[[ 1d20 " + request.modifier + "[" + request.ability + "]]]}}"
+        elif request.type == "hit-dice":
+            if request.multiclass:
+                rname = "Hit Dice (" + request.class + ")"
+            else:
+                rname = "Hit Dice"
+
+            roll = "&{template:simple} {{rname=" + rname + \
+                "}} {{mod=" + request["hit-dice"] + \
+                "}} {{r1=[[" + request["hit-dice"] + \
+                "]]}} {{normal=1}} {{charname=" + request.character + "}}"
         elif request.type == "attack":
             roll = "&{template:atkdmg} {{mod=" + request["to-hit"] + \
                 "}} {{rname=" + request.weapon + \
