@@ -8,11 +8,14 @@
     },
     "icons": {
         "16": "images/icons/icon16.png",
+        "24": "images/icons/icon24.png",
         "32": "images/icons/icon32.png",
+        "48": "images/icons/icon48.png",
         "64": "images/icons/icon64.png",
         "128": "images/icons/icon128.png",
         "256": "images/icons/icon256.png"
     },
+    "web_accessible_resources": [ "images/*" ],
     "background": {
 	"persistent": true,
 	"scripts": [ "src/background.js" ]
