@@ -3927,13 +3927,30 @@ var str = ρσ_str, repr = ρσ_repr;;
             return $(".ct-beyond20-roll-hitdie").length > 0;
         };
 
-        function addRollButton(paneClass, where) {
-            var icon32, button;
+        function addRollButton() {
+            var paneClass = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var where = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var small = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.small : arguments[2];
+            var append = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.append : arguments[3];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "small")){
+                small = ρσ_kwargs_obj.small;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "append")){
+                append = ρσ_kwargs_obj.append;
+            }
+            var icon32, icon16, button;
             icon32 = chrome.extension.getURL("images/icons/icon32.png");
-            button = "<span class=\"ct-beyond20-roll\"><img class=\"ct-beyond20-roll ct-beyond20-icon\"></img><button class=\"ct-beyond20-roll ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button\"><span class=\"ct-button__content\">Beyond 20</span></button></span>";
-            $(where).after(button);
+            icon16 = chrome.extension.getURL("images/icons/icon16.png");
+            button = "<span class=\"ct-beyond20-roll\"><img class=\"ct-beyond20-icon\"></img><button class=\"ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button" + ((small) ? " character-button-small" : "") + "\"><span class=\"ct-button__content\">Beyond 20</span></button></span>";
+            if (append) {
+                $(where).append(button);
+            } else {
+                $(where).after(button);
+            }
             $(".ct-beyond20-icon").css("margin-right", "6px");
-            $(".ct-beyond20-icon").attr("src", icon32);
+            $(".ct-beyond20-icon").attr("src", (small) ? icon16 : icon32);
             $(".ct-beyond20-roll").attr("float", "right");
             $(".ct-beyond20-roll").bind("click", (function() {
                 var ρσ_anonfunc = function (event) {
@@ -3945,14 +3962,16 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_anonfunc;
             })());
         };
-        if (!addRollButton.__argnames__) Object.defineProperties(addRollButton, {
-            __argnames__ : {value: ["paneClass", "where"]}
+        if (!addRollButton.__defaults__) Object.defineProperties(addRollButton, {
+            __defaults__ : {value: {small:false, append:false}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["paneClass", "where", "small", "append"]}
         });
 
         function addHitDieButtons() {
             var icon16, button, hitdice, multiclass, cb, i;
             icon16 = chrome.extension.getURL("images/icons/icon16.png");
-            button = "<span class=\"ct-beyond20-roll-hitdie\"><img class=\"ct-beyond20-roll ct-beyond20-icon\"></img><button class=\"ct-beyond20-roll ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button character-button-small\"><span class=\"ct-button__content\">Roll Hit Die</span></button></span>";
+            button = "<span class=\"ct-beyond20-roll-hitdie\"><img class=\"ct-beyond20-icon\"></img><button class=\"ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button character-button-small\"><span class=\"ct-button__content\">Roll Hit Die</span></button></span>";
             $(".ct-reset-pane__hitdie-heading").append(button);
             $(".ct-beyond20-icon").css("margin-right", "6px");
             $(".ct-beyond20-icon").attr("src", icon16);
@@ -3983,6 +4002,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
 
         function removeRollButtons() {
+            print("Removing button");
             $(".ct-beyond20-roll").remove();
             $(".ct-beyond20-roll-hitdie").remove();
         };
@@ -3995,14 +4015,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 addRollButton(paneClass, ".ct-sidebar__heading");
             } else if ((paneClass === "ct-item-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-item-pane"))) {
+                if (isRollButtonAdded()) {
+                    return;
+                }
                 properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"));
                 if (ρσ_in("Damage", properties)) {
-                    if (isRollButtonAdded()) {
-                        return;
-                    }
                     addRollButton(paneClass, ".ct-sidebar__heading");
                 } else {
-                    removeRollButtons();
+                    ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-item-detail__actions"].concat([ρσ_desugar_kwargs({small: true, append: true})]));
                 }
             } else if ((paneClass === "ct-reset-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-reset-pane"))) {
                 hitdice = $(".ct-reset-pane__hitdie");
@@ -4049,9 +4069,6 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function panelModified(mutations, observer) {
             var pane, paneClass;
-            if ($(".ct-beyond20-roll").length > 0) {
-                return;
-            }
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
                 paneClass = pane[0].className;

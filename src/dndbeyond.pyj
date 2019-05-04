@@ -118,13 +118,17 @@ def isRollButtonAdded():
 def isHitDieButtonAdded():
     return $(".ct-beyond20-roll-hitdie").length > 0
 
-def addRollButton(paneClass, where):
+def addRollButton(paneClass, where, small=False, append=False):
     icon32 = chrome.extension.getURL("images/icons/icon32.png");
-    button = '<span class="ct-beyond20-roll"><img class="ct-beyond20-roll ct-beyond20-icon"></img><button class="ct-beyond20-roll ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button"><span class="ct-button__content">Beyond 20</span></button></span>'
+    icon16 = chrome.extension.getURL("images/icons/icon16.png");
+    button = '<span class="ct-beyond20-roll"><img class="ct-beyond20-icon"></img><button class="ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button' + (' character-button-small' if small else '') + '"><span class="ct-button__content">Beyond 20</span></button></span>'
 
-    $(where).after(button)
+    if append:
+        $(where).append(button)
+    else:
+        $(where).after(button)
     $(".ct-beyond20-icon").css("margin-right", "6px")
-    $(".ct-beyond20-icon").attr("src", icon32)
+    $(".ct-beyond20-icon").attr("src", icon16 if small else icon32)
     $(".ct-beyond20-roll").attr("float", "right")
     $(".ct-beyond20-roll").bind('click', def(event):
         execute(paneClass)
@@ -132,7 +136,7 @@ def addRollButton(paneClass, where):
 
 def addHitDieButtons():
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
-    button = '<span class="ct-beyond20-roll-hitdie"><img class="ct-beyond20-roll ct-beyond20-icon"></img><button class="ct-beyond20-roll ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button character-button-small"><span class="ct-button__content">Roll Hit Die</span></button></span>'
+    button = '<span class="ct-beyond20-roll-hitdie"><img class="ct-beyond20-icon"></img><button class="ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button character-button-small"><span class="ct-button__content">Roll Hit Die</span></button></span>'
     $(".ct-reset-pane__hitdie-heading").append(button)
     $(".ct-beyond20-icon").css("margin-right", "6px")
     $(".ct-beyond20-icon").attr("src", icon16)
@@ -161,13 +165,13 @@ def injectRollButton(paneClass):
             return
         addRollButton(paneClass, ".ct-sidebar__heading")
     elif paneClass == "ct-item-pane":
+        if isRollButtonAdded():
+            return
         properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"))
         if "Damage" in properties:
-            if isRollButtonAdded():
-                return
             addRollButton(paneClass, ".ct-sidebar__heading")
         else:
-            removeRollButtons()
+            addRollButton(paneClass, ".ct-item-detail__actions", small=True, append=True)
     elif paneClass == "ct-reset-pane":
         hitdice = $(".ct-reset-pane__hitdie")
         console.log(hitdice)
@@ -197,9 +201,6 @@ def onMessage(request, sender, sendResponse):
             alert("Sidebar not open")
 
 def panelModified(mutations, observer):
-    # We're already injected
-    if $(".ct-beyond20-roll").length > 0:
-        return
     pane = $(".ct-sidebar__pane-content > div")
     if pane.length > 0:
         paneClass = pane[0].className

@@ -3,59 +3,128 @@ print("Beyond20: Roll20 module loaded.")
 chat = document.getElementById("textchat-input")
 txt = chat.getElementsByTagName("textarea")[0]
 btn = chat.getElementsByTagName("button")[0]
+speakingas = document.getElementById("speakingas")
+whisper = False
 
-def postChatMessage(message):
+def postChatMessage(message, character=None):
+    set_speakingas = True
+    if character:
+        character = character.toLowerCase()
+        for i in range(speakingas.children.length):
+            if speakingas.children[i].text.toLowerCase() == character:
+                speakingas.children[i].selected = True
+                set_speakingas = False
+                break
+    if set_speakingas:
+        speakingas.children[0].selected = True
+
     txt.value = message
     btn.click()
 
+def genRoll(dice, modifiers=[]):
+    roll = "[[" + dice
+    for m in modifiers:
+        mod = modifiers[m]
+        if len(mod) > 0:
+            if mod[0] == '+' or mod[0] == '-':
+                roll += mod
+            else:
+                roll += "+" + mod
+            if len(m?) > 0:
+                roll += "[" + m + "]"
+    roll += "]]"
+    return roll
+
+def template(name, properties):
+    result = "&{template:" + name + "}"
+    for key in properties:
+        result += " {{" + key + "=" + properties[key] + "}}"
+    return result
+
 def handleMessage (request, sender, sendResponse):
-    if request.action == "roll":
+    nonlocal whisper
+    if request.action == "whisper":
+        whisper = request.whisper
+    elif request.action == "roll":
         print("Got message : " + str(request))
+        if whisper:
+            roll = "/w gm "
+        else:
+            roll = ""
         if request.type == "skill":
-            roll = "&{template:default} {{name=Skill Check for " + request.character + "}} " + \
-                "{{" + request.skill + " " + request.modifier + "=" + \
-                "[[ 1d20 " + request.modifier + "[" + request.ability + "]]]}}"
-        elif request.type == "initiative":
-            dice = "2d20kh1" if request.advantage else "1d20"
-            roll = "&{template:default} {{name=" + request.character + " Rolled Initiative}} " + \
-                "{{initiative=[[ " + dice + " " + request.initiative + "]]}}"
+            roll += template("simple",
+                             {"charname": request.character,
+                              "rname" : request.skill,
+                              "mod": request.modifier,
+                              "r1": genRoll("1d20", {request.ability: request.modifier}),
+                              "always":1,
+                              "r2": genRoll("1d20", {request.ability: request.modifier})})
         elif request.type == "ability":
-            roll = "&{template:default} {{name=Ability Score for " + request.character + "}} " + \
-                "{{" + request.name + " " + request.modifier + "=" + \
-                "[[ 1d20 " + request.modifier + "[" + request.ability + "]]]}}"
+            roll += template("simple",
+                             {"charname": request.character,
+                              "rname" : request.name,
+                              "mod": request.modifier,
+                              "r1": genRoll("1d20", {request.ability: request.modifier}),
+                              "always":1,
+                              "r2": genRoll("1d20", {request.ability: request.modifier})})
         elif request.type == "saving-throw":
-            roll = "&{template:default} {{name=Saving Throw for " + request.character + "}} " + \
-                "{{" + request.name + " " + request.modifier + "=" + \
-                "[[ 1d20 " + request.modifier + "[" + request.ability + "]]]}}"
+            roll += template("simple",
+                             {"charname": request.character,
+                              "rname" : request.name + " Save",
+                              "mod": request.modifier,
+                              "r1": genRoll("1d20", {request.ability: request.modifier}),
+                              "always":1,
+                              "r2": genRoll("1d20", {request.ability: request.modifier})})
+        elif request.type == "initiative":
+            roll += template("simple",
+                             {"charname": request.character,
+                              "rname" : "Initiative",
+                              "mod": request.initiative,
+                              "r1": genRoll("1d20", {"": request.initiative}),
+                              "advantage" if request.advantage else "normal": 1,
+                              "r2": genRoll("1d20", {"": request.initiative})})
         elif request.type == "hit-dice":
             if request.multiclass:
                 rname = "Hit Dice (" + request.class + ")"
             else:
                 rname = "Hit Dice"
 
-            roll = "&{template:simple} {{rname=" + rname + \
-                "}} {{mod=" + request["hit-dice"] + \
-                "}} {{r1=[[" + request["hit-dice"] + \
-                "]]}} {{normal=1}} {{charname=" + request.character + "}}"
+            roll += template("simple",
+                             {"charname": request.character,
+                              "rname" : rname,
+                              "mod": request["hit-dice"],
+                              "r1": request["hit-dice"],
+                              "normal": 1})
         elif request.type == "attack":
-            roll = "&{template:atkdmg} {{mod=" + request["to-hit"] + \
-                "}} {{rname=" + request.weapon + \
-                "}} {{r1=[[1d20 " + request["to-hit"] + \
-                "]]}} {{always=1}} {{r2=[[1d20 " + request["to-hit"] + \
-                "]]}} {{attack=1}} "
-            if request.range?:
-                roll += "{{range=" + request.range + "}}"
             crit1 = request.damage.split("+" if "+" in request.damage else "-")[0]
-            roll += "{{damage=1}} {{dmg1flag=1}} {{dmg1=[[" + request.damage + \
-                "]]}} {{dmg1type=" + request["damage-type"] + \
-                "}} {{crit1=[[" + crit1 + "]]}} "
+            properties = {"charname": request.character,
+                          "rname" : request.weapon,
+                          "mod": request["to-hit"],
+                          "r1": genRoll("1d20", {"": request["to-hit"]}),
+                          "always": 1,
+                          "r2": genRoll("1d20", {"": request["to-hit"]}),
+                          "attack": 1,
+                          "damage": 1,
+                          "dmg1flag": 1,
+                          "dmg1": genRoll(request.damage),
+                          "dmg1type": request["damage-type"],
+                          "crit1": genRoll(crit1)}
+            if request.range?:
+                properties["range"] = request.range
             if request["versatile-damage"]?:
                 crit2 = request["versatile-damage"].split("+" if "+" in request["versatile-damage"] else "-")[0]
-                roll += "{{dmg2flag=1}} {{dmg2=[[" + request["versatile-damage"] + \
-                    "]]}} {{dmg2type=Two-Handed}} {{crit2=[[" + crit2 + "]]}} "
-            roll += "{{charname=" + request.character + "}}"
+                properties["dmg2flag"] = 1
+                properties["dmg2"] = genRoll(request["versatile-damage"])
+                properties["dmg2type"] = "Two-Handed"
+                properties["crit2"] = genRoll(crit2)
+            roll += template("atkdmg", properties)
         else:
-            roll = "/roll " + request.roll + " " + request.rollType
-        postChatMessage(roll)
+            roll += template("simple",
+                             {"charname": request.character,
+                              "rname" : request.rollType,
+                              "mod": request.roll,
+                              "r1": request.roll,
+                              "normal": 1})
+        postChatMessage(roll, request.character)
 
 chrome.runtime.onMessage.addListener(handleMessage)

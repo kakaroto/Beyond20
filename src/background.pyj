@@ -1,23 +1,26 @@
 
-queryCB = def(tabs):
-    for tab in tabs:
-        chrome.tabs.sendMessage(tab.id, {"action": "execute"});
-onBrowserAction = def(tab):
-    chrome.tabs.query({"active": True, "currentWindow": True}, queryCB)
+whisper = False
+
+def onBrowserAction(tabs):
+    nonlocal whisper
+    whisper = not whisper
+    alert("Whispered rolls are now " + ("enabled" if whisper else "disabled"))
+    sendMessageToRoll20({"action": "whisper", "whisper": whisper})
+
 # Send a message to the active tab
 chrome.browserAction.onClicked.addListener(onBrowserAction)
 
-def forwardMessage(tabs, request):
-    console.log("matching tabs : " + tabs)
-    for tab in tabs:
-        console.log("Sending roll " + str(request) + " to " + tab)
-        chrome.tabs.sendMessage(tab.id, request);
+def sendMessageToRoll20(request):
+    chrome.tabs.query({"url": "*://app.roll20.net/editor/"}, def(tabs):
+        console.log("matching tabs : " + tabs)
+        for tab in tabs:
+            console.log("Sending roll " + str(request) + " to " + tab)
+            chrome.tabs.sendMessage(tab.id, request);
+    )
 
 def onMessage(request, sender, sendResponse):
     if request.action == "roll":
-        cb = def(tabs):
-            forwardMessage(tabs, request)
-        chrome.tabs.query({"url": "*://app.roll20.net/editor/"}, cb)
+        sendMessageToRoll20(request)
 chrome.runtime.onMessage.addListener(onMessage)
 
 def executeScripts(tabs, js_files):

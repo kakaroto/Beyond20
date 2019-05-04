@@ -3729,71 +3729,52 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var queryCB, onBrowserAction, cb;
-        queryCB = (function() {
-            var ρσ_anonfunc = function (tabs) {
-                var tab;
-                var ρσ_Iter0 = ρσ_Iterable(tabs);
-                for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                    tab = ρσ_Iter0[ρσ_Index0];
-                    chrome.tabs.sendMessage(tab.id, (function(){
-                        var ρσ_d = {};
-                        ρσ_d["action"] = "execute";
-                        return ρσ_d;
-                    }).call(this));
-                }
-            };
-            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                __argnames__ : {value: ["tabs"]}
-            });
-            return ρσ_anonfunc;
-        })();
-        onBrowserAction = (function() {
-            var ρσ_anonfunc = function (tab) {
-                chrome.tabs.query((function(){
-                    var ρσ_d = {};
-                    ρσ_d["active"] = true;
-                    ρσ_d["currentWindow"] = true;
-                    return ρσ_d;
-                }).call(this), queryCB);
-            };
-            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                __argnames__ : {value: ["tab"]}
-            });
-            return ρσ_anonfunc;
-        })();
-        chrome.browserAction.onClicked.addListener(onBrowserAction);
-        function forwardMessage(tabs, request) {
-            var tab;
-            console.log("matching tabs : " + tabs);
-            var ρσ_Iter1 = ρσ_Iterable(tabs);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                tab = ρσ_Iter1[ρσ_Index1];
-                console.log("Sending roll " + str(request) + " to " + tab);
-                chrome.tabs.sendMessage(tab.id, request);
-            }
+        var whisper, cb;
+        whisper = false;
+        function onBrowserAction(tabs) {
+            whisper = !whisper;
+            alert("Whispered rolls are now " + ((whisper) ? "enabled" : "disabled"));
+            sendMessageToRoll20((function(){
+                var ρσ_d = {};
+                ρσ_d["action"] = "whisper";
+                ρσ_d["whisper"] = whisper;
+                return ρσ_d;
+            }).call(this));
         };
-        if (!forwardMessage.__argnames__) Object.defineProperties(forwardMessage, {
-            __argnames__ : {value: ["tabs", "request"]}
+        if (!onBrowserAction.__argnames__) Object.defineProperties(onBrowserAction, {
+            __argnames__ : {value: ["tabs"]}
+        });
+
+        chrome.browserAction.onClicked.addListener(onBrowserAction);
+        function sendMessageToRoll20(request) {
+            chrome.tabs.query((function(){
+                var ρσ_d = {};
+                ρσ_d["url"] = "*://app.roll20.net/editor/";
+                return ρσ_d;
+            }).call(this), (function() {
+                var ρσ_anonfunc = function (tabs) {
+                    var tab;
+                    console.log("matching tabs : " + tabs);
+                    var ρσ_Iter0 = ρσ_Iterable(tabs);
+                    for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                        tab = ρσ_Iter0[ρσ_Index0];
+                        console.log("Sending roll " + str(request) + " to " + tab);
+                        chrome.tabs.sendMessage(tab.id, request);
+                    }
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["tabs"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!sendMessageToRoll20.__argnames__) Object.defineProperties(sendMessageToRoll20, {
+            __argnames__ : {value: ["request"]}
         });
 
         function onMessage(request, sender, sendResponse) {
-            var cb;
             if ((request.action === "roll" || typeof request.action === "object" && ρσ_equals(request.action, "roll"))) {
-                cb = (function() {
-                    var ρσ_anonfunc = function (tabs) {
-                        forwardMessage(tabs, request);
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["tabs"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                chrome.tabs.query((function(){
-                    var ρσ_d = {};
-                    ρσ_d["url"] = "*://app.roll20.net/editor/";
-                    return ρσ_d;
-                }).call(this), cb);
+                sendMessageToRoll20(request);
             }
         };
         if (!onMessage.__argnames__) Object.defineProperties(onMessage, {
@@ -3803,12 +3784,12 @@ var str = ρσ_str, repr = ρσ_repr;;
         chrome.runtime.onMessage.addListener(onMessage);
         function executeScripts(tabs, js_files) {
             var file, tab;
-            var ρσ_Iter2 = ρσ_Iterable(tabs);
-            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                tab = ρσ_Iter2[ρσ_Index2];
-                var ρσ_Iter3 = ρσ_Iterable(js_files);
-                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                    file = ρσ_Iter3[ρσ_Index3];
+            var ρσ_Iter1 = ρσ_Iterable(tabs);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                tab = ρσ_Iter1[ρσ_Index1];
+                var ρσ_Iter2 = ρσ_Iterable(js_files);
+                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                    file = ρσ_Iter2[ρσ_Index2];
                     chrome.tabs.executeScript(tab.id, (function(){
                         var ρσ_d = {};
                         ρσ_d["file"] = file;
