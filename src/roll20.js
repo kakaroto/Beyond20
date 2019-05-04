@@ -3820,7 +3820,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, rname, crit1, properties, crit2, source, description, higher, components, component;
+            var roll, rname, crit1, properties, crit2, source, description, higher, components;
             if ((request.action === "whisper" || typeof request.action === "object" && ρσ_equals(request.action, "whisper"))) {
                 whisper = request.whisper;
             } else if ((request.action === "roll" || typeof request.action === "object" && ρσ_equals(request.action, "roll"))) {
@@ -3944,7 +3944,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         ρσ_d["dmg1flag"] = 1;
                         ρσ_d["dmg1"] = genRoll(request.damage);
                         ρσ_d["dmg1type"] = request["damage-type"];
-                        ρσ_d["crit1"] = genRoll(crit1);
+                        ρσ_d["crit1"] = "Crit: " + genRoll(crit1);
                         return ρσ_d;
                     }).call(this);
                     if ((request["to-hit"] === "" || typeof request["to-hit"] === "object" && ρσ_equals(request["to-hit"], ""))) {
@@ -3958,7 +3958,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         properties["dmg2flag"] = 1;
                         properties["dmg2"] = genRoll(request["versatile-damage"]);
                         properties["dmg2type"] = "Two-Handed";
-                        properties["crit2"] = genRoll(crit2);
+                        properties["crit2"] = "Crit: " + genRoll(crit2);
                     }
                     if (ρσ_exists.n(request["save-dc"])) {
                         properties["save"] = 1;
@@ -3993,16 +3993,20 @@ var str = ρσ_str, repr = ρσ_repr;;
                         ρσ_d["description"] = request.description;
                         return ρσ_d;
                     }).call(this));
-                } else if ((request.type === "spellcard" || typeof request.type === "object" && ρσ_equals(request.type, "spellcard"))) {
+                } else if ((request.type === "spell-card" || typeof request.type === "object" && ρσ_equals(request.type, "spell-card"))) {
                     properties = (function(){
                         var ρσ_d = {};
-                        ρσ_d["level"] = request["level-school"];
                         ρσ_d["name"] = request.name;
                         ρσ_d["castingtime"] = request["casting-time"];
                         ρσ_d["range"] = request.range;
                         ρσ_d["duration"] = request.duration;
                         return ρσ_d;
                     }).call(this);
+                    if (ρσ_exists.n(request["cast-at"])) {
+                        properties["level"] = request["level-school"] + "(Cast at " + request["cast-at"] + " Level)";
+                    } else {
+                        properties["level"] = request["level-school"];
+                    }
                     if (request.ritual) {
                         properties["ritual"] = 1;
                     }
@@ -4016,27 +4020,77 @@ var str = ρσ_str, repr = ρσ_repr;;
                         description = description.slice(0, higher - 1);
                     }
                     properties["description"] = description;
-                    components = request.components.split(", ");
-                    var ρσ_Iter3 = ρσ_Iterable(components);
-                    for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                        component = ρσ_Iter3[ρσ_Index3];
-                        if ((component === "V" || typeof component === "object" && ρσ_equals(component, "V"))) {
+                    components = request.components;
+                    while ((components !== "" && (typeof components !== "object" || ρσ_not_equals(components, "")))) {
+                        if ((components[0] === "V" || typeof components[0] === "object" && ρσ_equals(components[0], "V"))) {
                             properties["v"] = 1;
-                        } else if ((component === "S" || typeof component === "object" && ρσ_equals(component, "S"))) {
+                            components = components.slice(1);
+                        }
+                        if ((components[0] === "S" || typeof components[0] === "object" && ρσ_equals(components[0], "S"))) {
                             properties["s"] = 1;
-                        } else {
+                            components = components.slice(1);
+                        }
+                        if ((components[0] === "M" || typeof components[0] === "object" && ρσ_equals(components[0], "M"))) {
                             properties["m"] = 1;
-                            properties["material"] = component.slice(2, -1);
+                            properties["material"] = components.slice(2, -1);
+                            components = "";
+                        }
+                        if (components.startsWith(", ")) {
+                            components = components.slice(2);
                         }
                     }
                     roll += template("spell", properties);
+                } else if ((request.type === "spell-attack" || typeof request.type === "object" && ρσ_equals(request.type, "spell-attack"))) {
+                    crit1 = request.damage.split((ρσ_in("+", request.damage)) ? "+" : "-")[0];
+                    properties = (function(){
+                        var ρσ_d = {};
+                        ρσ_d["charname"] = request.character;
+                        ρσ_d["rname"] = request.name;
+                        ρσ_d["r1"] = genRoll("1d20", (function(){
+                            var ρσ_d = {};
+                            ρσ_d[""] = request["to-hit"];
+                            return ρσ_d;
+                        }).call(this));
+                        ρσ_d["always"] = 1;
+                        ρσ_d["r2"] = genRoll("1d20", (function(){
+                            var ρσ_d = {};
+                            ρσ_d[""] = request["to-hit"];
+                            return ρσ_d;
+                        }).call(this));
+                        ρσ_d["attack"] = 1;
+                        ρσ_d["damage"] = 1;
+                        ρσ_d["dmg1flag"] = 1;
+                        ρσ_d["dmg1"] = genRoll(request.damage);
+                        ρσ_d["dmg1type"] = request["damage-type"];
+                        ρσ_d["crit1"] = genRoll(crit1);
+                        return ρσ_d;
+                    }).call(this);
+                    if ((request["to-hit"] === "" || typeof request["to-hit"] === "object" && ρσ_equals(request["to-hit"], ""))) {
+                        ρσ_delitem(properties, "attack");
+                    }
+                    if (ρσ_exists.n(request.range)) {
+                        properties["range"] = request.range;
+                    }
+                    if (ρσ_exists.n(request["versatile-damage"])) {
+                        crit2 = request["versatile-damage"].split((ρσ_in("+", request["versatile-damage"])) ? "+" : "-")[0];
+                        properties["dmg2flag"] = 1;
+                        properties["dmg2"] = genRoll(request["versatile-damage"]);
+                        properties["dmg2type"] = "Two-Handed";
+                        properties["crit2"] = genRoll(crit2);
+                    }
+                    if (ρσ_exists.n(request["save-dc"])) {
+                        properties["save"] = 1;
+                        properties["saveattr"] = request["save-ability"];
+                        properties["savedc"] = request["save-dc"];
+                    }
+                    roll += template("atkdmg", properties);
                 } else {
                     roll += template("simple", (function(){
                         var ρσ_d = {};
                         ρσ_d["charname"] = request.character;
                         ρσ_d["rname"] = request.rollType;
                         ρσ_d["mod"] = request.roll;
-                        ρσ_d["r1"] = request.roll;
+                        ρσ_d["r1"] = genRoll(request.roll);
                         ρσ_d["normal"] = 1;
                         return ρσ_d;
                     }).call(this));

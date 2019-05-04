@@ -15,6 +15,17 @@ def propertyListToDict(propList):
         properties[label] = value
     return properties
 
+def descriptionToString(selector, separator="\n"):
+    description_p = $(selector).children()
+    if description_p.length == 0:
+        return $(selector).text()
+    description = ""
+    for i in range(description_p.length):
+        if len(description) > 0:
+            description += separator
+        description += description_p.eq(i).text()
+    return description
+
 def sendRoll(rollType, fallback, args):
     char_name = $(".ct-character-tidbits__name").text()
     req = {"action": "roll", "character": char_name, "type": rollType, "roll": fallback}
@@ -59,16 +70,16 @@ def rollInitiative():
     sendRoll("initiative", "1d20" + initiative, {"initiative": initiative,
                                                  "advantage": advantage} )
 
-def descriptionToString(selector, separator="\n"):
-    description_p = $(selector).children()
-    if description_p.length == 0:
-        return $(selector).text()
-    description = ""
-    for i in range(description_p.length):
-        if len(description) > 0:
-            description += separator
-        description += description_p.eq(i).text()
-    return description
+        
+def rollHitDie(multiclass, index):
+    print("Rolling hit die index " + index)
+    hitdie = $(".ct-reset-pane__hitdie").eq(index)
+    class_name = hitdie.find(".ct-reset-pane__hitdie-heading-class").text()
+    text = hitdie.find(".ct-reset-pane__hitdie-heading").text()
+    die = text.split("Hit Die: ")[1].split(" ")[0]
+    sendRoll("hit-dice", die, {"class": class_name,
+                               "multiclass": multiclass,
+                               "hit-dice": die} )
 
 def rollItem():
     item_name = $(".ct-item-pane .ct-item-name").text()
@@ -159,6 +170,7 @@ def rollSpell():
     spell_name = $(".ct-sidebar__heading .ct-spell-name").text()
     properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
     damage = $(".ct-spell-pane .ct-spell-caster__modifier--damage .ct-spell-caster__modifier-amount").text()
+    castas = $(".ct-spell-caster__casting-level-current").text()
     if damage != "":
         print("Properties are : " + str(properties))
         damage = properties["Damage"]
@@ -180,7 +192,7 @@ def rollSpell():
                     save_ability = ability
                     break
 
-        sendRoll("attack", damage, {"weapon": action_name,
+        sendRoll("spell-attack", damage, {"weapon": action_name,
                                     "weapon-type": weapon_type,
                                     "to-hit": to_hit,
                                     "save-dc": save_dc,
@@ -201,26 +213,20 @@ def rollSpell():
             concentration = True
         else:
             concentration = False
-        sendRoll("spellcard", 0, {"name": spell_name,
-                                  "level-school": level,
-                                  "range": (properties["Range/Area"] ? ""),
-                                  "concentration": concentration,
-                                  "duration": duration,
-                                  "casting-time": (properties["Casting Time"] ? ""),
-                                  "components": (properties["Components"] ? ""),
-                                  "ritual": ritual,
-                                  "description" : description})
-        
-def rollHitDie(multiclass, index):
-    print("Rolling hit die index " + index)
-    hitdie = $(".ct-reset-pane__hitdie").eq(index)
-    class_name = hitdie.find(".ct-reset-pane__hitdie-heading-class").text()
-    text = hitdie.find(".ct-reset-pane__hitdie-heading").text()
-    die = text.split("Hit Die: ")[1].split(" ")[0]
-    sendRoll("hit-dice", die, {"class": class_name,
-                               "multiclass": multiclass,
-                               "hit-dice": die} )
-    
+        properties = {"name": spell_name,
+                      "level-school": level,
+                      "cast-as": level,
+                      "range": (properties["Range/Area"] ? ""),
+                      "concentration": concentration,
+                      "duration": duration,
+                      "casting-time": (properties["Casting Time"] ? ""),
+                      "components": (properties["Components"] ? ""),
+                      "ritual": ritual,
+                      "description" : description}
+        if castas != "" and not level.startsWith(castas):
+            properties["cast-at"] = castas
+        sendRoll("spell-card", 0, properties)
+
 def displayFeature(paneClass):
     source_types = {"ct-class-feature-pane": "Class",
                "ct-racial-trait-pane": "Race",
@@ -275,6 +281,7 @@ def addRollButton(paneClass, where, small=False, append=False, image=True, text=
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
     button = '<span class="ct-beyond20-roll"><img class="ct-beyond20-icon"></img><button class="ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button' + (' character-button-small' if small else '') + '"><span class="ct-button__content">' + text + '</span></button></span>'
 
+    print("Adding '" + text + "' button to " + where)
     if append:
         $(where).append(button)
     else:
@@ -290,6 +297,8 @@ def addRollButton(paneClass, where, small=False, append=False, image=True, text=
 def addHitDieButtons():
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
     button = '<span class="ct-beyond20-roll-hitdie"><img class="ct-beyond20-icon"></img><button class="ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button character-button-small"><span class="ct-button__content">Roll Hit Die</span></button></span>'
+    print("Adding Hit Dice buttons")
+
     $(".ct-reset-pane__hitdie-heading").append(button)
     $(".ct-beyond20-icon").css("margin-right", "6px")
     $(".ct-beyond20-icon").attr("src", icon16)
@@ -309,6 +318,7 @@ def removeRollButtons():
 
 
 lastItemName = ""
+lastSpellName = ""
 def injectRollButton(paneClass):
     if paneClass in ["ct-skill-pane",
                      "ct-ability-pane",
@@ -325,7 +335,7 @@ def injectRollButton(paneClass):
     elif paneClass == "ct-trait-pane":
         if isRollButtonAdded():
             return
-        addRollButton(paneClass, "ct-trait-pane__content", text="Display in Roll20", image=False)
+        addRollButton(paneClass, ".ct-trait-pane__content", text="Display in Roll20", image=False)
     elif paneClass == "ct-item-pane":
         nonlocal lastItemName
         item_name = $(".ct-item-pane .ct-item-name").text()
@@ -343,10 +353,14 @@ def injectRollButton(paneClass):
             return
         addRollButton(paneClass, ".ct-sidebar__heading")
     elif paneClass == "ct-spell-pane":
-        if isRollButtonAdded():
+        nonlocal lastSpellName
+        spell_name = $(".ct-sidebar__heading .ct-spell-name").text()
+        if isRollButtonAdded() and spell_name == lastSpellName:
             return
+        lastSpellName = spell_name
+        removeRollButtons()
         addRollButton(paneClass, ".ct-sidebar__heading", text="Cast on Roll20", image=False)
-        $(".ct-spell-caster__casting-action").bind('click', def(event):
+        $(".ct-spell-caster__casting-action > button").bind('click', def(event):
             execute(paneClass)
         )
     elif paneClass == "ct-reset-pane":

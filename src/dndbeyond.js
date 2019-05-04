@@ -3729,7 +3729,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var ability_abbreviations, lastItemName, observer;
+        var ability_abbreviations, lastItemName, lastSpellName, observer;
         print("Beyond20: D&D Beyond module loaded.");
         ability_abbreviations = (function(){
             var ρσ_d = {};
@@ -3756,6 +3756,35 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["propList"]}
         });
 
+        function descriptionToString() {
+            var selector = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var separator = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? descriptionToString.__defaults__.separator : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "separator")){
+                separator = ρσ_kwargs_obj.separator;
+            }
+            var description_p, description, i;
+            description_p = $(selector).children();
+            if ((description_p.length === 0 || typeof description_p.length === "object" && ρσ_equals(description_p.length, 0))) {
+                return $(selector).text();
+            }
+            description = "";
+            for (var ρσ_Index1 = 0; ρσ_Index1 < description_p.length; ρσ_Index1++) {
+                i = ρσ_Index1;
+                if (len(description) > 0) {
+                    description += separator;
+                }
+                description += description_p.eq(i).text();
+            }
+            return description;
+        };
+        if (!descriptionToString.__defaults__) Object.defineProperties(descriptionToString, {
+            __defaults__ : {value: {separator:"\n"}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["selector", "separator"]}
+        });
+
         function sendRoll(rollType, fallback, args) {
             var char_name, req, key;
             char_name = $(".ct-character-tidbits__name").text();
@@ -3767,9 +3796,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["roll"] = fallback;
                 return ρσ_d;
             }).call(this);
-            var ρσ_Iter1 = ρσ_Iterable(args);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                key = ρσ_Iter1[ρσ_Index1];
+            var ρσ_Iter2 = ρσ_Iterable(args);
+            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                key = ρσ_Iter2[ρσ_Index2];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
             console.log("Sending message: " + str(req));
@@ -3839,33 +3868,23 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this));
         };
 
-        function descriptionToString() {
-            var selector = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var separator = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? descriptionToString.__defaults__.separator : arguments[1];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "separator")){
-                separator = ρσ_kwargs_obj.separator;
-            }
-            var description_p, description, i;
-            description_p = $(selector).children();
-            if ((description_p.length === 0 || typeof description_p.length === "object" && ρσ_equals(description_p.length, 0))) {
-                return $(selector).text();
-            }
-            description = "";
-            for (var ρσ_Index2 = 0; ρσ_Index2 < description_p.length; ρσ_Index2++) {
-                i = ρσ_Index2;
-                if (len(description) > 0) {
-                    description += separator;
-                }
-                description += description_p.eq(i).text();
-            }
-            return description;
+        function rollHitDie(multiclass, index) {
+            var hitdie, class_name, text, die;
+            print("Rolling hit die index " + index);
+            hitdie = $(".ct-reset-pane__hitdie").eq(index);
+            class_name = hitdie.find(".ct-reset-pane__hitdie-heading-class").text();
+            text = hitdie.find(".ct-reset-pane__hitdie-heading").text();
+            die = text.split("Hit Die: ")[1].split(" ")[0];
+            sendRoll("hit-dice", die, (function(){
+                var ρσ_d = {};
+                ρσ_d["class"] = class_name;
+                ρσ_d["multiclass"] = multiclass;
+                ρσ_d["hit-dice"] = die;
+                return ρσ_d;
+            }).call(this));
         };
-        if (!descriptionToString.__defaults__) Object.defineProperties(descriptionToString, {
-            __defaults__ : {value: {separator:"\n"}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["selector", "separator"]}
+        if (!rollHitDie.__argnames__) Object.defineProperties(rollHitDie, {
+            __argnames__ : {value: ["multiclass", "index"]}
         });
 
         function rollItem() {
@@ -4001,10 +4020,11 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollSpell() {
-            var spell_name, properties, damage, to_hit, save, damage_type, range_area, reach, weapon_type, ρσ_unpack, save_ability, save_dc, ability, description, level, concentration, ritual, duration;
+            var spell_name, properties, damage, castas, to_hit, save, damage_type, range_area, reach, weapon_type, ρσ_unpack, save_ability, save_dc, ability, description, level, concentration, ritual, duration;
             spell_name = $(".ct-sidebar__heading .ct-spell-name").text();
             properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"));
             damage = $(".ct-spell-pane .ct-spell-caster__modifier--damage .ct-spell-caster__modifier-amount").text();
+            castas = $(".ct-spell-caster__casting-level-current").text();
             if ((damage !== "" && (typeof damage !== "object" || ρσ_not_equals(damage, "")))) {
                 print("Properties are : " + str(properties));
                 damage = properties["Damage"];
@@ -4034,7 +4054,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         }
                     }
                 }
-                sendRoll("attack", damage, (function(){
+                sendRoll("spell-attack", damage, (function(){
                     var ρσ_d = {};
                     ρσ_d["weapon"] = action_name;
                     ρσ_d["weapon-type"] = weapon_type;
@@ -4060,10 +4080,11 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else {
                     concentration = false;
                 }
-                sendRoll("spellcard", 0, (function(){
+                properties = (function(){
                     var ρσ_d = {};
                     ρσ_d["name"] = spell_name;
                     ρσ_d["level-school"] = level;
+                    ρσ_d["cast-as"] = level;
                     ρσ_d["range"] = ρσ_exists.e(properties["Range/Area"], "");
                     ρσ_d["concentration"] = concentration;
                     ρσ_d["duration"] = duration;
@@ -4072,28 +4093,13 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["ritual"] = ritual;
                     ρσ_d["description"] = description;
                     return ρσ_d;
-                }).call(this));
+                }).call(this);
+                if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
+                    properties["cast-at"] = castas;
+                }
+                sendRoll("spell-card", 0, properties);
             }
         };
-
-        function rollHitDie(multiclass, index) {
-            var hitdie, class_name, text, die;
-            print("Rolling hit die index " + index);
-            hitdie = $(".ct-reset-pane__hitdie").eq(index);
-            class_name = hitdie.find(".ct-reset-pane__hitdie-heading-class").text();
-            text = hitdie.find(".ct-reset-pane__hitdie-heading").text();
-            die = text.split("Hit Die: ")[1].split(" ")[0];
-            sendRoll("hit-dice", die, (function(){
-                var ρσ_d = {};
-                ρσ_d["class"] = class_name;
-                ρσ_d["multiclass"] = multiclass;
-                ρσ_d["hit-dice"] = die;
-                return ρσ_d;
-            }).call(this));
-        };
-        if (!rollHitDie.__argnames__) Object.defineProperties(rollHitDie, {
-            __argnames__ : {value: ["multiclass", "index"]}
-        });
 
         function displayFeature(paneClass) {
             var source_types, name, source, source_type, description;
@@ -4195,6 +4201,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             icon32 = chrome.extension.getURL("images/icons/icon32.png");
             icon16 = chrome.extension.getURL("images/icons/icon16.png");
             button = "<span class=\"ct-beyond20-roll\"><img class=\"ct-beyond20-icon\"></img><button class=\"ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button" + ((small) ? " character-button-small" : "") + "\"><span class=\"ct-button__content\">" + text + "</span></button></span>";
+            print("Adding '" + text + "' button to " + where);
             if (append) {
                 $(where).append(button);
             } else {
@@ -4225,6 +4232,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var icon16, button, hitdice, multiclass, cb, i;
             icon16 = chrome.extension.getURL("images/icons/icon16.png");
             button = "<span class=\"ct-beyond20-roll-hitdie\"><img class=\"ct-beyond20-icon\"></img><button class=\"ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button character-button-small\"><span class=\"ct-button__content\">Roll Hit Die</span></button></span>";
+            print("Adding Hit Dice buttons");
             $(".ct-reset-pane__hitdie-heading").append(button);
             $(".ct-beyond20-icon").css("margin-right", "6px");
             $(".ct-beyond20-icon").attr("src", icon16);
@@ -4260,8 +4268,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
 
         lastItemName = "";
+        lastSpellName = "";
         function injectRollButton(paneClass) {
-            var item_name, properties, hitdice;
+            var item_name, properties, spell_name, hitdice;
             if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-skill-pane", "ct-ability-pane", "ct-ability-pane", "ct-ability-saving-throws-pane", "ct-initiative-pane" ]))) {
                 if (isRollButtonAdded()) {
                     return;
@@ -4276,7 +4285,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if (isRollButtonAdded()) {
                     return;
                 }
-                ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, "ct-trait-pane__content"].concat([ρσ_desugar_kwargs({text: "Display in Roll20", image: false})]));
+                ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-trait-pane__content"].concat([ρσ_desugar_kwargs({text: "Display in Roll20", image: false})]));
             } else if ((paneClass === "ct-item-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-item-pane"))) {
                 item_name = $(".ct-item-pane .ct-item-name").text();
                 if (isRollButtonAdded() && (item_name === lastItemName || typeof item_name === "object" && ρσ_equals(item_name, lastItemName))) {
@@ -4296,11 +4305,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 addRollButton(paneClass, ".ct-sidebar__heading");
             } else if ((paneClass === "ct-spell-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-spell-pane"))) {
-                if (isRollButtonAdded()) {
+                spell_name = $(".ct-sidebar__heading .ct-spell-name").text();
+                if (isRollButtonAdded() && (spell_name === lastSpellName || typeof spell_name === "object" && ρσ_equals(spell_name, lastSpellName))) {
                     return;
                 }
+                lastSpellName = spell_name;
+                removeRollButtons();
                 ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({text: "Cast on Roll20", image: false})]));
-                $(".ct-spell-caster__casting-action").bind("click", (function() {
+                $(".ct-spell-caster__casting-action > button").bind("click", (function() {
                     var ρσ_anonfunc = function (event) {
                         execute(paneClass);
                     };

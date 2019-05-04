@@ -109,7 +109,7 @@ def handleMessage (request, sender, sendResponse):
                           "dmg1flag": 1,
                           "dmg1": genRoll(request.damage),
                           "dmg1type": request["damage-type"],
-                          "crit1": genRoll(crit1)}
+                          "crit1": "Crit: " + genRoll(crit1)}
             if request["to-hit"] == "":
                 del properties["attack"]
             if request.range?:
@@ -119,7 +119,7 @@ def handleMessage (request, sender, sendResponse):
                 properties["dmg2flag"] = 1
                 properties["dmg2"] = genRoll(request["versatile-damage"])
                 properties["dmg2type"] = "Two-Handed"
-                properties["crit2"] = genRoll(crit2)
+                properties["crit2"] = "Crit: " + genRoll(crit2)
             if request["save-dc"]?:
                 properties["save"] = 1
                 properties["saveattr"] = request["save-ability"]
@@ -139,13 +139,17 @@ def handleMessage (request, sender, sendResponse):
         elif request.type in ["trait", "action"]:
             roll += template("traits", {"name": request.name,
                                         "description": request.description})
-        elif request.type == "spellcard":
-            properties = {"level": request["level-school"],
-                          "name": request.name,
+        elif request.type == "spell-card":
+            properties = {"name": request.name,
                           "castingtime": request["casting-time"],
                           "range": request.range,
                           "duration": request.duration}
 
+            if request["cast-at"]?:
+                properties["level"] = request["level-school"] + "(Cast at " + request["cast-at"] + " Level)"
+            else:
+                properties["level"] = request["level-school"]
+                          
             if request.ritual:
                 properties["ritual"] = 1
             if request.concentration:
@@ -157,22 +161,27 @@ def handleMessage (request, sender, sendResponse):
                 description = description[:higher-1]
             properties["description"] = description
                           
-            components = request.components.split(", ")
-            for component in components:
-                if component == "V":
+            components = request.components
+            while components != "":
+                if components[0] == "V":
                     properties["v"] = 1
-                elif component == "S":
+                    components = components[1:]
+                if components[0] == "S":
                     properties["s"] = 1
-                else:
+                    components = components[1:]
+                if components[0] == "M":
                     properties["m"] = 1
-                    properties["material"] = component[2:-1]
+                    properties["material"] = components[2:-1]
+                    components = ""
+                if components.startsWith(", "):
+                    components = components[2:]
             roll += template("spell", properties)
         else:
             roll += template("simple",
                              {"charname": request.character,
                               "rname" : request.rollType,
                               "mod": request.roll,
-                              "r1": request.roll,
+                              "r1": genRoll(request.roll),
                               "normal": 1})
         postChatMessage(roll, request.character)
 
