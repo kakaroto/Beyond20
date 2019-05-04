@@ -3840,7 +3840,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
 
         function rollItem() {
-            var item_name, properties, items, to_hit, i, damage, ρσ_unpack, versatile_damage;
+            var item_name, properties, items, to_hit, i, damage, ρσ_unpack, versatile_damage, props;
             item_name = $(".ct-item-pane .ct-item-name").text();
             properties = $(".ct-item-pane .ct-property-list .ct-property-list__property");
             properties = propertyListToDict(properties);
@@ -3863,6 +3863,11 @@ var str = ρσ_str, repr = ρσ_repr;;
                     versatile_damage = ρσ_unpack[1];
                     versatile_damage = versatile_damage.slice(0, -1);
                 }
+                if (ρσ_exists.n(properties["Properties"])) {
+                    props = properties["Properties"].split(", ");
+                } else {
+                    props = ρσ_list_decorate([]);
+                }
                 sendRoll("attack", properties["Damage"], (function(){
                     var ρσ_d = {};
                     ρσ_d["weapon"] = item_name;
@@ -3873,7 +3878,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["damage-type"] = properties["Damage Type"];
                     ρσ_d["reach"] = properties["Reach"];
                     ρσ_d["range"] = properties["Range"];
-                    ρσ_d["properties"] = properties["Properties"].split(", ");
+                    ρσ_d["properties"] = props;
                     return ρσ_d;
                 }).call(this));
             }
@@ -4002,7 +4007,6 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
 
         function removeRollButtons() {
-            print("Removing button");
             $(".ct-beyond20-roll").remove();
             $(".ct-beyond20-roll-hitdie").remove();
         };

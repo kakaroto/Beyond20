@@ -75,6 +75,10 @@ def rollItem():
         if "(" in damage:
             (damage, versatile_damage) = damage.split("(")
             versatile_damage = versatile_damage[:-1]
+        if properties["Properties"]?:
+            props = properties["Properties"].split(", ")
+        else:
+            props = []
         sendRoll("attack", properties["Damage"], {"weapon": item_name,
                                                   "weapon-type": properties["Attack Type"],
                                                   "to-hit": to_hit,
@@ -83,7 +87,7 @@ def rollItem():
                                                   "damage-type": properties["Damage Type"],
                                                   "reach": properties["Reach"],
                                                   "range": properties["Range"],
-                                                  "properties": properties["Properties"].split(", ")})
+                                                  "properties": props})
 
 def rollHitDie(multiclass, index):
     print("Rolling hit die index " + index)
