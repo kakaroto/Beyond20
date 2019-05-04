@@ -59,13 +59,23 @@ def rollInitiative():
     sendRoll("initiative", "1d20" + initiative, {"initiative": initiative,
                                                  "advantage": advantage} )
 
+def descriptionToString(selector, separator="\n"):
+    description_p = $(selector).children()
+    if description_p.length == 0:
+        return $(selector).text()
+    description = ""
+    for i in range(description_p.length):
+        if len(description) > 0:
+            description += separator
+        description += description_p.eq(i).text()
+    return description
+
 def rollItem():
     item_name = $(".ct-item-pane .ct-item-name").text()
-    properties = $(".ct-item-pane .ct-property-list .ct-property-list__property")
-    properties = propertyListToDict(properties)
+    properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"))
     if "Damage" in properties:
         items = $(".ct-combat-attack--item")
-        to_hit = "+0"
+        to_hit = ""
         for i in range(items.length):
             if items.eq(i).find(".ct-item-name").text() == item_name:
                 to_hit = items.eq(i).find(".ct-combat-attack__tohit").text()
@@ -79,16 +89,128 @@ def rollItem():
             props = properties["Properties"].split(", ")
         else:
             props = []
+        save = properties["Attack/Save"] ? ""
+        if save:
+            (save_ability, save_dc) = save.split(" ")
+            for ability in ability_abbreviations:
+                if ability_abbreviations[ability] == save_ability:
+                    save_ability = ability
+                    break
         sendRoll("attack", properties["Damage"], {"weapon": item_name,
                                                   "weapon-type": properties["Attack Type"],
                                                   "to-hit": to_hit,
                                                   "damage": damage,
+                                                  "save-dc": save_dc,
+                                                  "save-ability": save_ability,
                                                   "versatile-damage": versatile_damage,
                                                   "damage-type": properties["Damage Type"],
                                                   "reach": properties["Reach"],
                                                   "range": properties["Range"],
                                                   "properties": props})
+    else:
+        item_type = $(".ct-item-detail__intro").text()
+        description = descriptionToString(".ct-item-detail__description")
+        sendRoll("item", 0, {"name": item_name,
+                             "description" : description,
+                             "item-type": item_type})
+        
 
+def rollAction(paneClass):
+    action_name = $(".ct-sidebar__heading").text()
+    properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"))
+    if "Damage" in properties and (properties["To Hit"]? or properties["Attack/Save"]?):
+        print("Properties are : " + str(properties))
+        damage = properties["Damage"]
+        to_hit = properties["To Hit"] ? ""
+        save = properties["Attack/Save"] ? ""
+        damage_type = properties["Damage Type"] ? ""
+        range_area = properties["Range/Area"] ? ""
+        if "Reach" in range_area:
+            reach = range_area.replace(" Reach", "")
+            range_area = ""
+            weapon_type = "Melee"
+        else:
+            reach = ""
+            weapon_type = "Ranged"
+        if save:
+            (save_ability, save_dc) = save.split(" ")
+            for ability in ability_abbreviations:
+                if ability_abbreviations[ability] == save_ability:
+                    save_ability = ability
+                    break
+
+        sendRoll("attack", damage, {"weapon": action_name,
+                                    "weapon-type": weapon_type,
+                                    "to-hit": to_hit,
+                                    "save-dc": save_dc,
+                                    "save-ability": save_ability,
+                                    "damage": damage,
+                                    "damage-type": damage_type,
+                                    "reach": reach,
+                                    "range": range_area,
+                                    "properties": []})
+    else:
+        description = descriptionToString(".ct-action-detail__description")
+        sendRoll("action", 0, {"name": action_name,
+                               "description" : description})
+        
+
+def rollSpell():
+    spell_name = $(".ct-sidebar__heading .ct-spell-name").text()
+    properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
+    damage = $(".ct-spell-pane .ct-spell-caster__modifier--damage .ct-spell-caster__modifier-amount").text()
+    if damage != "":
+        print("Properties are : " + str(properties))
+        damage = properties["Damage"]
+        to_hit = properties["To Hit"] ? ""
+        save = properties["Attack/Save"] ? ""
+        damage_type = properties["Damage Type"] ? ""
+        range_area = properties["Range/Area"] ? ""
+        if "Reach" in range_area:
+            reach = range_area.replace(" Reach", "")
+            range_area = ""
+            weapon_type = "Melee"
+        else:
+            reach = ""
+            weapon_type = "Ranged"
+        if save:
+            (save_ability, save_dc) = save.split(" ")
+            for ability in ability_abbreviations:
+                if ability_abbreviations[ability] == save_ability:
+                    save_ability = ability
+                    break
+
+        sendRoll("attack", damage, {"weapon": action_name,
+                                    "weapon-type": weapon_type,
+                                    "to-hit": to_hit,
+                                    "save-dc": save_dc,
+                                    "save-ability": save_ability,
+                                    "damage": damage,
+                                    "damage-type": damage_type,
+                                    "reach": reach,
+                                    "range": range_area,
+                                    "properties": []})
+    else:
+        description = descriptionToString(".ct-spell-pane .ct-spell-detail__description")
+        level = descriptionToString(".ct-spell-pane .ct-spell-detail__level-school", " ")
+        concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration").length > 0
+        ritual = $(".ct-spell-pane .ct-spell-name__icon--ritual").length > 0
+        duration = properties["Duration"] ? ""
+        if "Concentration" in duration:
+            duration = duration.replace("Concentration, ", "")
+            concentration = True
+        else:
+            concentration = False
+        sendRoll("spellcard", 0, {"name": spell_name,
+                                  "level-school": level,
+                                  "range": (properties["Range/Area"] ? ""),
+                                  "concentration": concentration,
+                                  "duration": duration,
+                                  "casting-time": (properties["Casting Time"] ? ""),
+                                  "components": (properties["Components"] ? ""),
+                                  "ritual": ritual,
+                                  "description" : description})
+        
 def rollHitDie(multiclass, index):
     print("Rolling hit die index " + index)
     hitdie = $(".ct-reset-pane__hitdie").eq(index)
@@ -99,6 +221,24 @@ def rollHitDie(multiclass, index):
                                "multiclass": multiclass,
                                "hit-dice": die} )
     
+def displayFeature(paneClass):
+    source_types = {"ct-class-feature-pane": "Class",
+               "ct-racial-trait-pane": "Race",
+               "ct-feat-pane": "Feat"}
+    name = $(".ct-sidebar__heading").text()
+    source = $(".ct-sidebar__header-parent").text()
+    source_type = source_types[paneClass]
+    description = descriptionToString(".ct-snippet__content")
+    sendRoll("feature", 0, {"name": name,
+                            "source": source,
+                            "source-type": source_type,
+                            "description": description} )
+
+def displayTrait():
+    trait = $(".ct-sidebar__heading").text()
+    description = $(".ct-trait-pane__input").text()
+    sendRoll("trait", 0, {"name": trait,
+                            "description": description} )
 
 def execute(paneClass):
     print("Beyond20: Current panel : " + paneClass)
@@ -113,6 +253,14 @@ def execute(paneClass):
         rollInitiative()
     elif paneClass == "ct-item-pane":
         rollItem()
+    elif paneClass in ["ct-action-pane", "ct-custom-action-pane"]:
+        rollAction(paneClass)
+    elif paneClass == "ct-spell-pane":
+        rollSpell()
+    elif paneClass in ["ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane"]:
+        displayFeature(paneClass)
+    elif paneClass == "ct-trait-pane":
+        displayTrait()
     else:
         alert("Not recognizing the currently open sidebar")
 
@@ -122,17 +270,18 @@ def isRollButtonAdded():
 def isHitDieButtonAdded():
     return $(".ct-beyond20-roll-hitdie").length > 0
 
-def addRollButton(paneClass, where, small=False, append=False):
+def addRollButton(paneClass, where, small=False, append=False, image=True, text="Beyond 20"):
     icon32 = chrome.extension.getURL("images/icons/icon32.png");
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
-    button = '<span class="ct-beyond20-roll"><img class="ct-beyond20-icon"></img><button class="ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button' + (' character-button-small' if small else '') + '"><span class="ct-button__content">Beyond 20</span></button></span>'
+    button = '<span class="ct-beyond20-roll"><img class="ct-beyond20-icon"></img><button class="ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button' + (' character-button-small' if small else '') + '"><span class="ct-button__content">' + text + '</span></button></span>'
 
     if append:
         $(where).append(button)
     else:
         $(where).after(button)
-    $(".ct-beyond20-icon").css("margin-right", "6px")
-    $(".ct-beyond20-icon").attr("src", icon16 if small else icon32)
+    if image:
+        $(".ct-beyond20-icon").css("margin-right", "6px")
+        $(".ct-beyond20-icon").attr("src", icon16 if small else icon32)
     $(".ct-beyond20-roll").attr("float", "right")
     $(".ct-beyond20-roll").bind('click', def(event):
         execute(paneClass)
@@ -159,6 +308,7 @@ def removeRollButtons():
     $(".ct-beyond20-roll-hitdie").remove()
 
 
+lastItemName = ""
 def injectRollButton(paneClass):
     if paneClass in ["ct-skill-pane",
                      "ct-ability-pane",
@@ -168,14 +318,37 @@ def injectRollButton(paneClass):
         if isRollButtonAdded():
             return
         addRollButton(paneClass, ".ct-sidebar__heading")
-    elif paneClass == "ct-item-pane":
+    elif paneClass in ["ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane"]:
         if isRollButtonAdded():
             return
+        addRollButton(paneClass, ".ct-sidebar__heading", text="Display in Roll20", image=False)
+    elif paneClass == "ct-trait-pane":
+        if isRollButtonAdded():
+            return
+        addRollButton(paneClass, "ct-trait-pane__content", text="Display in Roll20", image=False)
+    elif paneClass == "ct-item-pane":
+        nonlocal lastItemName
+        item_name = $(".ct-item-pane .ct-item-name").text()
+        if isRollButtonAdded() and item_name == lastItemName:
+            return
+        lastItemName = item_name
+        removeRollButtons()
         properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"))
         if "Damage" in properties:
             addRollButton(paneClass, ".ct-sidebar__heading")
         else:
             addRollButton(paneClass, ".ct-item-detail__actions", small=True, append=True)
+    elif paneClass in ["ct-action-pane", "ct-custom-action-pane"]:
+        if isRollButtonAdded():
+            return
+        addRollButton(paneClass, ".ct-sidebar__heading")
+    elif paneClass == "ct-spell-pane":
+        if isRollButtonAdded():
+            return
+        addRollButton(paneClass, ".ct-sidebar__heading", text="Cast on Roll20", image=False)
+        $(".ct-spell-caster__casting-action").bind('click', def(event):
+            execute(paneClass)
+        )
     elif paneClass == "ct-reset-pane":
         hitdice = $(".ct-reset-pane__hitdie")
         console.log(hitdice)
@@ -210,7 +383,6 @@ def panelModified(mutations, observer):
         paneClass = pane[0].className
         print("Beyond20: New side panel is : " + paneClass)
         injectRollButton(paneClass)
-        print("Injection done")
 
 chrome.runtime.onMessage.addListener(onMessage);
 observer = new window.MutationObserver(panelModified)

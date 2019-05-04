@@ -3744,7 +3744,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "character")){
                 character = ρσ_kwargs_obj.character;
             }
-            var set_speakingas, i;
+            var set_speakingas, i, old_text;
             set_speakingas = true;
             if (character) {
                 character = character.toLowerCase();
@@ -3760,8 +3760,10 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (set_speakingas) {
                 speakingas.children[0].selected = true;
             }
+            old_text = txt.value;
             txt.value = message;
             btn.click();
+            txt.value = old_text;
         };
         if (!postChatMessage.__defaults__) Object.defineProperties(postChatMessage, {
             __defaults__ : {value: {character:null}},
@@ -3818,7 +3820,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, rname, crit1, properties, crit2;
+            var roll, rname, crit1, properties, crit2, source, description, higher, components, component;
             if ((request.action === "whisper" || typeof request.action === "object" && ρσ_equals(request.action, "whisper"))) {
                 whisper = request.whisper;
             } else if ((request.action === "roll" || typeof request.action === "object" && ρσ_equals(request.action, "roll"))) {
@@ -3945,6 +3947,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                         ρσ_d["crit1"] = genRoll(crit1);
                         return ρσ_d;
                     }).call(this);
+                    if ((request["to-hit"] === "" || typeof request["to-hit"] === "object" && ρσ_equals(request["to-hit"], ""))) {
+                        ρσ_delitem(properties, "attack");
+                    }
                     if (ρσ_exists.n(request.range)) {
                         properties["range"] = request.range;
                     }
@@ -3955,7 +3960,76 @@ var str = ρσ_str, repr = ρσ_repr;;
                         properties["dmg2type"] = "Two-Handed";
                         properties["crit2"] = genRoll(crit2);
                     }
+                    if (ρσ_exists.n(request["save-dc"])) {
+                        properties["save"] = 1;
+                        properties["saveattr"] = request["save-ability"];
+                        properties["savedc"] = request["save-dc"];
+                    }
                     roll += template("atkdmg", properties);
+                } else if ((request.type === "item" || typeof request.type === "object" && ρσ_equals(request.type, "item"))) {
+                    roll += template("traits", (function(){
+                        var ρσ_d = {};
+                        ρσ_d["source"] = request["item-type"];
+                        ρσ_d["name"] = request.name;
+                        ρσ_d["description"] = request.description;
+                        return ρσ_d;
+                    }).call(this));
+                } else if ((request.type === "feature" || typeof request.type === "object" && ρσ_equals(request.type, "feature"))) {
+                    source = request["source-type"];
+                    if (request.source.length > 0) {
+                        source += ": " + request.source;
+                    }
+                    roll += template("traits", (function(){
+                        var ρσ_d = {};
+                        ρσ_d["source"] = source;
+                        ρσ_d["name"] = request.name;
+                        ρσ_d["description"] = request.description;
+                        return ρσ_d;
+                    }).call(this));
+                } else if (ρσ_in(request.type, ρσ_list_decorate([ "trait", "action" ]))) {
+                    roll += template("traits", (function(){
+                        var ρσ_d = {};
+                        ρσ_d["name"] = request.name;
+                        ρσ_d["description"] = request.description;
+                        return ρσ_d;
+                    }).call(this));
+                } else if ((request.type === "spellcard" || typeof request.type === "object" && ρσ_equals(request.type, "spellcard"))) {
+                    properties = (function(){
+                        var ρσ_d = {};
+                        ρσ_d["level"] = request["level-school"];
+                        ρσ_d["name"] = request.name;
+                        ρσ_d["castingtime"] = request["casting-time"];
+                        ρσ_d["range"] = request.range;
+                        ρσ_d["duration"] = request.duration;
+                        return ρσ_d;
+                    }).call(this);
+                    if (request.ritual) {
+                        properties["ritual"] = 1;
+                    }
+                    if (request.concentration) {
+                        properties["concentration"] = 1;
+                    }
+                    description = request.description;
+                    higher = description.indexOf("At Higher Levels.");
+                    if (higher > 0) {
+                        properties["athigherlevels"] = description.slice(higher + "At Higher Levels.".length);
+                        description = description.slice(0, higher - 1);
+                    }
+                    properties["description"] = description;
+                    components = request.components.split(", ");
+                    var ρσ_Iter3 = ρσ_Iterable(components);
+                    for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                        component = ρσ_Iter3[ρσ_Index3];
+                        if ((component === "V" || typeof component === "object" && ρσ_equals(component, "V"))) {
+                            properties["v"] = 1;
+                        } else if ((component === "S" || typeof component === "object" && ρσ_equals(component, "S"))) {
+                            properties["s"] = 1;
+                        } else {
+                            properties["m"] = 1;
+                            properties["material"] = component.slice(2, -1);
+                        }
+                    }
+                    roll += template("spell", properties);
                 } else {
                     roll += template("simple", (function(){
                         var ρσ_d = {};

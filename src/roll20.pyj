@@ -17,9 +17,10 @@ def postChatMessage(message, character=None):
                 break
     if set_speakingas:
         speakingas.children[0].selected = True
-
+    old_text = txt.value
     txt.value = message
     btn.click()
+    txt.value = old_text
 
 def genRoll(dice, modifiers=[]):
     roll = "[[" + dice
@@ -109,6 +110,8 @@ def handleMessage (request, sender, sendResponse):
                           "dmg1": genRoll(request.damage),
                           "dmg1type": request["damage-type"],
                           "crit1": genRoll(crit1)}
+            if request["to-hit"] == "":
+                del properties["attack"]
             if request.range?:
                 properties["range"] = request.range
             if request["versatile-damage"]?:
@@ -117,7 +120,53 @@ def handleMessage (request, sender, sendResponse):
                 properties["dmg2"] = genRoll(request["versatile-damage"])
                 properties["dmg2type"] = "Two-Handed"
                 properties["crit2"] = genRoll(crit2)
+            if request["save-dc"]?:
+                properties["save"] = 1
+                properties["saveattr"] = request["save-ability"]
+                properties["savedc"] = request["save-dc"]
             roll += template("atkdmg", properties)
+        elif request.type == "item":
+            roll += template("traits", {"source": request["item-type"],
+                                        "name": request.name,
+                                        "description": request.description})
+        elif request.type == "feature":
+            source = request["source-type"]
+            if request.source.length > 0:
+                source += ": " + request.source
+            roll += template("traits", {"source": source,
+                                        "name": request.name,
+                                        "description": request.description})
+        elif request.type in ["trait", "action"]:
+            roll += template("traits", {"name": request.name,
+                                        "description": request.description})
+        elif request.type == "spellcard":
+            properties = {"level": request["level-school"],
+                          "name": request.name,
+                          "castingtime": request["casting-time"],
+                          "range": request.range,
+                          "duration": request.duration}
+
+            if request.ritual:
+                properties["ritual"] = 1
+            if request.concentration:
+                properties["concentration"] = 1
+            description = request.description            
+            higher = description.indexOf("At Higher Levels.")
+            if higher > 0:
+                properties["athigherlevels"] = description[higher+"At Higher Levels.".length:]
+                description = description[:higher-1]
+            properties["description"] = description
+                          
+            components = request.components.split(", ")
+            for component in components:
+                if component == "V":
+                    properties["v"] = 1
+                elif component == "S":
+                    properties["s"] = 1
+                else:
+                    properties["m"] = 1
+                    properties["material"] = component[2:-1]
+            roll += template("spell", properties)
         else:
             roll += template("simple",
                              {"charname": request.character,
