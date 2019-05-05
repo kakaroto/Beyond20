@@ -331,18 +331,14 @@ def isHitDieButtonAdded():
     return $(".ct-beyond20-roll-hitdie").length > 0
 
 def addRollButton(paneClass, where, small=False, append=False, image=True, text="Beyond 20"):
-    icon32 = chrome.extension.getURL("images/icons/icon32.png");
-    icon16 = chrome.extension.getURL("images/icons/icon16.png");
-    button = '<span class="ct-beyond20-roll"><img class="ct-beyond20-icon"></img><button class="ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button' + (' character-button-small' if small else '') + '"><span class="ct-button__content">' + text + '</span></button></span>'
+    icon32 = chrome.extension.getURL("images/dice24.png");
+    icon16 = chrome.extension.getURL("images/dice16.png");
+    button = '<span class="ct-beyond20-roll"><button class="ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button' + (' character-button-small' if small else '') + '"><img class="ct-beyond20-icon" src="' + ((icon16 if small else icon32) if image else "") + '" style="' + ("margin-right:6px" if image else "") + '"></img><span class="ct-button__content">' + text + '</span></button></span>'
 
-    print("Adding '" + text + "' button to " + where)
     if append:
         $(where).append(button)
     else:
         $(where).after(button)
-    if image:
-        $(".ct-beyond20-icon").css("margin-right", "6px")
-        $(".ct-beyond20-icon").attr("src", icon16 if small else icon32)
     $(".ct-beyond20-roll").attr("float", "right")
     $(".ct-beyond20-roll").bind('click', def(event):
         execute(paneClass)
@@ -370,6 +366,28 @@ def removeRollButtons():
     $(".ct-beyond20-roll").remove()
     $(".ct-beyond20-roll-hitdie").remove()
 
+def injectDiceToRolls(selector, name=""):
+    text = $(selector).html()
+    icon16 = chrome.extension.getURL("images/icons/icon16.png");
+    pre_original='<u><strong class="ct-beyond20-custom-roll" x-beyond20-name="' + name + '">'
+    post_original='</strong></u>'
+    pre_dice='<img class="ct-beyond20-custom-icon ct-beyond20-custom-roll" x-beyond20-name="' + name + \
+        '" x-beyond20-roll="'
+    post_dice='"></img>'
+    text = replaceRolls(False, text, True, pre_original, post_original, pre_dice, post_dice)
+    text = replaceRolls(True, text, True, pre_original + '<span style="display:none">1d20</span>', post_original, pre_dice + "1d20", post_dice)
+    $(selector).html(text)
+    $(".ct-beyond20-custom-icon").css("margin-right", "3px")
+    $(".ct-beyond20-custom-icon").css("margin-left", "3px")
+    $(".ct-beyond20-custom-icon").attr("src", icon16)
+    $(".ct-beyond20-custom-roll").bind('click', def(event):
+        name = event.target.getAttribute("x-beyond20-name")
+        if event.target.tagName == "IMG":
+            roll = event.target.getAttribute("x-beyond20-roll")
+        else:
+            roll = event.target.textContent
+        sendRoll("custom", roll, {"name": name})
+    )
 
 lastItemName = ""
 lastSpellName = ""
@@ -387,6 +405,8 @@ def injectRollButton(paneClass):
         if isRollButtonAdded():
             return
         addRollButton(paneClass, ".ct-sidebar__heading", text="Display in Roll20", image=False)
+        name = $(".ct-sidebar__heading").text()
+        injectDiceToRolls(".ct-snippet__content", name)
     elif paneClass == "ct-trait-pane":
         if isRollButtonAdded():
             return
@@ -398,15 +418,20 @@ def injectRollButton(paneClass):
             return
         lastItemName = item_name
         removeRollButtons()
+
+        injectDiceToRolls(".ct-item-detail__description", item_name)
         properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"))
         if "Damage" in properties:
             addRollButton(paneClass, ".ct-sidebar__heading")
         else:
+            addRollButton(paneClass, ".ct-sidebar__heading", image=False)
             addRollButton(paneClass, ".ct-item-detail__actions", small=True, append=True, image=False)
     elif paneClass in ["ct-action-pane", "ct-custom-action-pane"]:
         if isRollButtonAdded():
             return
         addRollButton(paneClass, ".ct-sidebar__heading")
+        action_name = $(".ct-sidebar__heading").text()
+        injectDiceToRolls(".ct-action-detail__description", action_name)
     elif paneClass == "ct-spell-pane":
         nonlocal lastSpellName
         nonlocal lastSpellLevel
@@ -417,6 +442,7 @@ def injectRollButton(paneClass):
         lastSpellName = spell_name
         lastSpellLevel = spell_level
         removeRollButtons()
+        injectDiceToRolls(".ct-spell-pane .ct-spell-detail__description", spell_name)
         addRollButton(paneClass, ".ct-sidebar__heading", text="Cast on Roll20", image=False)
         $(".ct-spell-caster__casting-action > button").bind('click', def(event):
             execute(paneClass)

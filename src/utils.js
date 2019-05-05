@@ -5178,7 +5178,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (modifiers_only && ρσ_in((ρσ_expr_temp = match.string)[ρσ_bound_index(match.start() - 1, ρσ_expr_temp)], map(str, range(0, 10)))) {
                 return match.group(0);
             }
-            if (post < 100 && !ρσ_in(match.group(post), ρσ_list_decorate([ "", " ", ";", ",", "." ]))) {
+            if (post < 100 && !ρσ_in(match.group(post), ρσ_list_decorate([ "", " ", ";", ",", ".", ")", "(" ]))) {
                 return match.group(0);
             }
             result = (pre > 0) ? match.group(pre) : "";
@@ -5230,7 +5230,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 post_dice = ρσ_kwargs_obj.post_dice;
             }
             var dice_regexp, modifiers_regexp, regexp, pre, dice, post, new_text;
-            dice_regexp = "(^|\\s)([0-9]*d[0-9]+)((?:\\s*[-+]\\s*[0-9]+)?)($|\\s|.|;|,)";
+            dice_regexp = "(^|\\s|\\(|\\))([0-9]*d[0-9]+)((?:\\s*[-+]\\s*[0-9]+)?)($|\\s|.|;|,|\\)|\\()";
             modifiers_regexp = "(\\s+)([-+]\\s*[0-9]+)($|\\s|.|;|,)";
             if (modifiers_only) {
                 regexp = modifiers_regexp;

@@ -234,6 +234,13 @@ def handleMessage (request, sender, sendResponse):
                     properties["desc"] = components[2:-1]
                     components = ""
             roll += template("atkdmg", properties)
+        elif request.type == "custom":
+            roll += template("simple",
+                             {"charname": request.character,
+                              "rname" : request.name,
+                              "mod": request.roll,
+                              "r1": subRolls(request.roll),
+                              "normal": 1})
         else:
             roll += template("simple",
                              {"charname": request.character,

@@ -3,7 +3,7 @@ import re
 def replaceRollsCallback(match, modifiers_only, pre, dice, post, keep_original, pre_original, post_original, pre_dice, post_dice):
     if modifiers_only and match.string[match.start() - 1] in map(str, range(0, 10)):
         return match.group(0)
-    if post < 100 and match.group(post) not in ["", " ", ";", ",", "."]:
+    if post < 100 and match.group(post) not in ["", " ", ";", ",", ".", ")", "("]:
         return match.group(0)
 
     result = match.group(pre) if pre > 0 else ""
@@ -24,7 +24,7 @@ def replaceRollsCallback(match, modifiers_only, pre, dice, post, keep_original, 
 def replaceRolls(modifiers_only, text, keep_original=False, pre_original="", post_original="", pre_dice="", post_dice=""):
     #repl = "\\1[\\2\\3](!&#13;&#91;&#91;\\2\\3&#93;&#93;)\\4" if keep_original else "\\1[[\\2\\3]]\\4"
     #repl2 = "\\1(!&#13;&#91;&#91;1d20\\1&#93;&#93;)\\2" if keep_original else "[[1d20\\1]]\\2"
-    dice_regexp = "(^|\s)([0-9]*d[0-9]+)((?:\s*[-+]\s*[0-9]+)?)($|\s|.|;|,)"
+    dice_regexp = "(^|\s|\\(|\\))([0-9]*d[0-9]+)((?:\s*[-+]\s*[0-9]+)?)($|\s|.|;|,|\\)|\\()"
     modifiers_regexp = "(\s+)([-+]\s*[0-9]+)($|\s|.|;|,)"
     if modifiers_only:
         regexp = modifiers_regexp
