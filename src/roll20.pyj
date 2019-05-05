@@ -1,3 +1,4 @@
+import re
 print("Beyond20: Roll20 module loaded.")
 
 chat = document.getElementById("textchat-input")
@@ -35,6 +36,13 @@ def genRoll(dice, modifiers=[]):
                 roll += "[" + m + "]"
     roll += "]]"
     return roll
+
+def subRolls(text, keep_original=False):
+    repl = "\\1\\2\\3[[\\2\\3]]\\4" if keep_original else "\\1[[\\2\\3]]\\4"
+    new_text = re.sub("(^|\s)([0-9]*d[0-9]+)((?:\s*[-+]\s*[0-9]+)?)($|\s)", repl, text)
+    
+    print("Replacing '" + text + "' with : " + new_text)
+    return new_text
 
 def template(name, properties):
     result = "&{template:" + name + "}"
@@ -94,32 +102,31 @@ def handleMessage (request, sender, sendResponse):
                              {"charname": request.character,
                               "rname" : rname,
                               "mod": request["hit-dice"],
-                              "r1": request["hit-dice"],
+                              "r1": subRolls(request["hit-dice"]),
                               "normal": 1})
         elif request.type == "attack":
             crit1 = request.damage.split("+" if "+" in request.damage else "-")[0]
             properties = {"charname": request.character,
-                          "rname" : request.weapon,
-                          "mod": request["to-hit"],
-                          "r1": genRoll("1d20", {"": request["to-hit"]}),
-                          "always": 1,
-                          "r2": genRoll("1d20", {"": request["to-hit"]}),
-                          "attack": 1,
+                          "rname" : request.name,
                           "damage": 1,
                           "dmg1flag": 1,
-                          "dmg1": genRoll(request.damage),
+                          "dmg1": subRolls(request.damage),
                           "dmg1type": request["damage-type"],
-                          "crit1": "Crit: " + genRoll(crit1)}
-            if request["to-hit"] == "":
-                del properties["attack"]
+                          "crit1": subRolls("Crit: " + crit1)}
+            if request["to-hit"]?:
+                properties["mod"] = request["to-hit"]
+                properties["r1"] = genRoll("1d20", {"": request["to-hit"]})
+                properties["always"] = 1
+                properties["r2"] = genRoll("1d20", {"": request["to-hit"]})
+                properties["attack"] = 1
             if request.range?:
                 properties["range"] = request.range
-            if request["versatile-damage"]?:
-                crit2 = request["versatile-damage"].split("+" if "+" in request["versatile-damage"] else "-")[0]
+            if request["second-damage"]?:
+                crit2 = request["second-damage"].split("+" if "+" in request["second-damage"] else "-")[0]
                 properties["dmg2flag"] = 1
-                properties["dmg2"] = genRoll(request["versatile-damage"])
-                properties["dmg2type"] = "Two-Handed"
-                properties["crit2"] = "Crit: " + genRoll(crit2)
+                properties["dmg2"] = subRolls(request["second-damage"])
+                properties["dmg2type"] = request["second-damage-type"]
+                properties["crit2"] = subRolls("Crit: " + crit2)
             if request["save-dc"]?:
                 properties["save"] = 1
                 properties["saveattr"] = request["save-ability"]
@@ -128,7 +135,7 @@ def handleMessage (request, sender, sendResponse):
         elif request.type == "item":
             roll += template("traits", {"source": request["item-type"],
                                         "name": request.name,
-                                        "description": request.description})
+                                        "description": subRolls(request.description, True)})
         elif request.type == "feature":
             source = request["source-type"]
             if request.source.length > 0:
@@ -166,22 +173,65 @@ def handleMessage (request, sender, sendResponse):
                 if components[0] == "V":
                     properties["v"] = 1
                     components = components[1:]
-                if components[0] == "S":
+                elif components[0] == "S":
                     properties["s"] = 1
                     components = components[1:]
-                if components[0] == "M":
+                elif components[0] == "M":
                     properties["m"] = 1
                     properties["material"] = components[2:-1]
                     components = ""
                 if components.startsWith(", "):
                     components = components[2:]
             roll += template("spell", properties)
+        elif request.type == "spell-attack":
+            properties = {"charname": request.character,
+                          "rname" : request.name}
+            if request["to-hit"]?:
+                properties["mod"] = request["to-hit"]
+                properties["r1"] = genRoll("1d20", {"": request["to-hit"]})
+                properties["always"] = 1
+                properties["r2"] = genRoll("1d20", {"": request["to-hit"]})
+                properties["attack"] = 1
+            if request["damage"]?:
+                properties["damage"] = 1
+                properties["dmg1flag"] = 1
+                properties["dmg1"] = subRolls(request.damage)
+                properties["dmg1type"] = request["damage-type"]
+                if request["damage-type"] != "Healing":
+                    crit1 = request.damage.split("+" if "+" in request.damage else "-")[0]
+                    properties["crit1"] = subRolls("Crit: " + crit1)
+            if request.range?:
+                properties["range"] = request.range
+            if request["second-damage"]?:
+                properties["dmg2flag"] = 1
+                properties["dmg2"] = subRolls(request["second-damage"])
+                properties["dmg2type"] = request["second-damage-type"]
+                if request["second-damage-type"] != "Healing":
+                    crit2 = request["second-damage"].split("+" if "+" in request["second-damage"] else "-")[0]
+                    properties["crit2"] = subRolls("Crit: " + crit2)
+            if request["save-dc"]?:
+                properties["save"] = 1
+                properties["saveattr"] = request["save-ability"]
+                properties["savedc"] = request["save-dc"]
+            if request["cast-at"]?:
+                properties["hldmg"] = subRolls(request["cast-at"][0]) + request["cast-at"][1:] + " Level"
+            components = request.components
+            while components != "":
+                if components[0] in ["V", "S"]:
+                    components = components[1:]
+                    if components.startsWith(", "):
+                        components = components[2:]
+                print("Components: " + components)
+                if components[0] == "M":
+                    properties["desc"] = components[2:-1]
+                    components = ""
+            roll += template("atkdmg", properties)
         else:
             roll += template("simple",
                              {"charname": request.character,
                               "rname" : request.rollType,
                               "mod": request.roll,
-                              "r1": genRoll(request.roll),
+                              "r1": subRoll(request.roll),
                               "normal": 1})
         postChatMessage(roll, request.character)
 

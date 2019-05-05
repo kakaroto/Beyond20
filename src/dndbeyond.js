@@ -3729,7 +3729,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var ability_abbreviations, lastItemName, lastSpellName, observer;
+        var ability_abbreviations, lastItemName, lastSpellName, lastSpellLevel, observer;
         print("Beyond20: D&D Beyond module loaded.");
         ability_abbreviations = (function(){
             var ρσ_d = {};
@@ -3785,6 +3785,121 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["selector", "separator"]}
         });
 
+        function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
+            var items, to_hit, i;
+            items = $(items_selector);
+            for (var ρσ_Index2 = 0; ρσ_Index2 < items.length; ρσ_Index2++) {
+                i = ρσ_Index2;
+                if (ρσ_equals(items.eq(i).find(name_selector).text(), name_to_match)) {
+                    to_hit = items.eq(i).find(tohit_selector);
+                    if (to_hit.length > 0) {
+                        to_hit = to_hit.text();
+                        print("To hit for " + name_to_match + " is : " + to_hit);
+                        return to_hit;
+                    }
+                    break;
+                }
+            }
+            return null;
+        };
+        if (!findToHit.__argnames__) Object.defineProperties(findToHit, {
+            __argnames__ : {value: ["name_to_match", "items_selector", "name_selector", "tohit_selector"]}
+        });
+
+        function buildAttackRoll() {
+            var attack_source = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var name = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var description = ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[2];
+            var properties = ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[3];
+            var damage = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage : arguments[4];
+            var damage_type = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage_type : arguments[5];
+            var to_hit = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.to_hit : arguments[6];
+            var damage2 = (arguments[7] === undefined || ( 7 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage2 : arguments[7];
+            var damage_type2 = (arguments[8] === undefined || ( 8 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage_type2 : arguments[8];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage")){
+                damage = ρσ_kwargs_obj.damage;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage_type")){
+                damage_type = ρσ_kwargs_obj.damage_type;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "to_hit")){
+                to_hit = ρσ_kwargs_obj.to_hit;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage2")){
+                damage2 = ρσ_kwargs_obj.damage2;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage_type2")){
+                damage_type2 = ρσ_kwargs_obj.damage_type2;
+            }
+            var roll_properties, range_area, ρσ_unpack, save_ability, save_dc, ability;
+            roll_properties = (function(){
+                var ρσ_d = {};
+                ρσ_d["name"] = name;
+                ρσ_d["attack-source"] = attack_source;
+                ρσ_d["description"] = description;
+                ρσ_d["properties"] = ρσ_list_decorate([]);
+                return ρσ_d;
+            }).call(this);
+            if (to_hit) {
+                roll_properties["to-hit"] = to_hit;
+            }
+            if (ρσ_exists.n(properties["Reach"])) {
+                roll_properties["reach"] = properties["Reach"];
+                roll_properties["attack-type"] = "Melee";
+            } else if (ρσ_exists.n(properties["Range"])) {
+                roll_properties["range"] = properties["Range"];
+                roll_properties["attack-type"] = "Ranged";
+            } else {
+                range_area = ρσ_exists.e(properties["Range/Area"], "");
+                if (ρσ_in("Reach", range_area)) {
+                    roll_properties["attack-type"] = "Melee";
+                    roll_properties["reach"] = range_area.replace(" Reach", "");
+                } else {
+                    roll_properties["attack-type"] = "Ranged";
+                    roll_properties["range"] = range_area;
+                }
+            }
+            if (ρσ_exists.n(properties["Attack Type"])) {
+                roll_properties["attack-type"] = properties["Attack Type"];
+            }
+            if (ρσ_exists.n(properties["Attack/Save"])) {
+                ρσ_unpack = properties["Attack/Save"].split(" ");
+ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
+                save_ability = ρσ_unpack[0];
+                save_dc = ρσ_unpack[1];
+                roll_properties["save-ability"] = save_ability;
+                roll_properties["save-dc"] = save_dc;
+                var ρσ_Iter3 = ρσ_Iterable(ability_abbreviations);
+                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                    ability = ρσ_Iter3[ρσ_Index3];
+                    if ((ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === save_ability || typeof ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === "object" && ρσ_equals(ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability], save_ability))) {
+                        save_ability = ability;
+                        roll_properties["save-ability"] = ability;
+                        break;
+                    }
+                }
+            }
+            if (ρσ_exists.n(properties["Properties"])) {
+                roll_properties["properties"] = properties["Properties"].split(", ");
+            }
+            if (damage) {
+                roll_properties["damage"] = damage;
+                roll_properties["damage-type"] = damage_type;
+            }
+            if (damage2) {
+                roll_properties["second-damage"] = damage2;
+                roll_properties["second-damage-type"] = damage_type2;
+            }
+            return roll_properties;
+        };
+        if (!buildAttackRoll.__defaults__) Object.defineProperties(buildAttackRoll, {
+            __defaults__ : {value: {damage:null, damage_type:null, to_hit:null, damage2:null, damage_type2:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["attack_source", "name", "description", "properties", "damage", "damage_type", "to_hit", "damage2", "damage_type2"]}
+        });
+
         function sendRoll(rollType, fallback, args) {
             var char_name, req, key;
             char_name = $(".ct-character-tidbits__name").text();
@@ -3796,9 +3911,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["roll"] = fallback;
                 return ρσ_d;
             }).call(this);
-            var ρσ_Iter2 = ρσ_Iterable(args);
-            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                key = ρσ_Iter2[ρσ_Index2];
+            var ρσ_Iter4 = ρσ_Iterable(args);
+            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                key = ρσ_Iter4[ρσ_Index4];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
             console.log("Sending message: " + str(req));
@@ -3888,21 +4003,16 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollItem() {
-            var item_name, properties, items, to_hit, i, damage, ρσ_unpack, versatile_damage, props, save, save_ability, save_dc, ability, item_type, description;
-            item_name = $(".ct-item-pane .ct-item-name").text();
+            var properties, item_name, item_type, description, to_hit, damage, versatile_damage, ρσ_unpack, roll_properties;
             properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"));
+            print("Properties are : " + str(properties));
+            item_name = $(".ct-item-pane .ct-item-name").text();
+            item_type = $(".ct-item-detail__intro").text();
+            description = descriptionToString(".ct-item-detail__description");
             if (ρσ_in("Damage", properties)) {
-                items = $(".ct-combat-attack--item");
-                to_hit = "";
-                for (var ρσ_Index3 = 0; ρσ_Index3 < items.length; ρσ_Index3++) {
-                    i = ρσ_Index3;
-                    if (ρσ_equals(items.eq(i).find(".ct-item-name").text(), item_name)) {
-                        to_hit = items.eq(i).find(".ct-combat-attack__tohit").text();
-                        print("To hit for " + item_name + " is : " + to_hit);
-                    }
-                }
-                print("Properties are : " + str(properties));
+                to_hit = ρσ_exists.e(properties["To Hit"], findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit"));
                 damage = properties["Damage"];
+                versatile_damage = null;
                 if (ρσ_in("(", damage)) {
                     ρσ_unpack = damage.split("(");
 ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
@@ -3910,44 +4020,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                     versatile_damage = ρσ_unpack[1];
                     versatile_damage = versatile_damage.slice(0, -1);
                 }
-                if (ρσ_exists.n(properties["Properties"])) {
-                    props = properties["Properties"].split(", ");
-                } else {
-                    props = ρσ_list_decorate([]);
-                }
-                save = ρσ_exists.e(properties["Attack/Save"], "");
-                if (save) {
-                    ρσ_unpack = save.split(" ");
-ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
-                    save_ability = ρσ_unpack[0];
-                    save_dc = ρσ_unpack[1];
-                    var ρσ_Iter4 = ρσ_Iterable(ability_abbreviations);
-                    for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                        ability = ρσ_Iter4[ρσ_Index4];
-                        if ((ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === save_ability || typeof ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === "object" && ρσ_equals(ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability], save_ability))) {
-                            save_ability = ability;
-                            break;
-                        }
-                    }
-                }
-                sendRoll("attack", properties["Damage"], (function(){
-                    var ρσ_d = {};
-                    ρσ_d["weapon"] = item_name;
-                    ρσ_d["weapon-type"] = properties["Attack Type"];
-                    ρσ_d["to-hit"] = to_hit;
-                    ρσ_d["damage"] = damage;
-                    ρσ_d["save-dc"] = save_dc;
-                    ρσ_d["save-ability"] = save_ability;
-                    ρσ_d["versatile-damage"] = versatile_damage;
-                    ρσ_d["damage-type"] = properties["Damage Type"];
-                    ρσ_d["reach"] = properties["Reach"];
-                    ρσ_d["range"] = properties["Range"];
-                    ρσ_d["properties"] = props;
-                    return ρσ_d;
-                }).call(this));
+                roll_properties = buildAttackRoll("item", item_name, description, properties, damage, ρσ_exists.e(properties["Damage Type"], ""), to_hit, versatile_damage, (versatile_damage) ? "Two-Handed" : null);
+                roll_properties["item-type"] = item_type;
+                sendRoll("attack", damage, roll_properties);
             } else {
-                item_type = $(".ct-item-detail__intro").text();
-                description = descriptionToString(".ct-item-detail__description");
                 sendRoll("item", 0, (function(){
                     var ρσ_d = {};
                     ρσ_d["name"] = item_name;
@@ -3959,54 +4035,15 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
 
         function rollAction(paneClass) {
-            var action_name, properties, damage, to_hit, save, damage_type, range_area, reach, weapon_type, ρσ_unpack, save_ability, save_dc, ability, description;
-            action_name = $(".ct-sidebar__heading").text();
+            var properties, action_name, description, roll_properties;
             properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"));
+            print("Properties are : " + str(properties));
+            action_name = $(".ct-sidebar__heading").text();
+            description = descriptionToString(".ct-action-detail__description");
             if (ρσ_in("Damage", properties) && (ρσ_exists.n(properties["To Hit"]) || ρσ_exists.n(properties["Attack/Save"]))) {
-                print("Properties are : " + str(properties));
-                damage = properties["Damage"];
-                to_hit = ρσ_exists.e(properties["To Hit"], "");
-                save = ρσ_exists.e(properties["Attack/Save"], "");
-                damage_type = ρσ_exists.e(properties["Damage Type"], "");
-                range_area = ρσ_exists.e(properties["Range/Area"], "");
-                if (ρσ_in("Reach", range_area)) {
-                    reach = range_area.replace(" Reach", "");
-                    range_area = "";
-                    weapon_type = "Melee";
-                } else {
-                    reach = "";
-                    weapon_type = "Ranged";
-                }
-                if (save) {
-                    ρσ_unpack = save.split(" ");
-ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
-                    save_ability = ρσ_unpack[0];
-                    save_dc = ρσ_unpack[1];
-                    var ρσ_Iter5 = ρσ_Iterable(ability_abbreviations);
-                    for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                        ability = ρσ_Iter5[ρσ_Index5];
-                        if ((ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === save_ability || typeof ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === "object" && ρσ_equals(ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability], save_ability))) {
-                            save_ability = ability;
-                            break;
-                        }
-                    }
-                }
-                sendRoll("attack", damage, (function(){
-                    var ρσ_d = {};
-                    ρσ_d["weapon"] = action_name;
-                    ρσ_d["weapon-type"] = weapon_type;
-                    ρσ_d["to-hit"] = to_hit;
-                    ρσ_d["save-dc"] = save_dc;
-                    ρσ_d["save-ability"] = save_ability;
-                    ρσ_d["damage"] = damage;
-                    ρσ_d["damage-type"] = damage_type;
-                    ρσ_d["reach"] = reach;
-                    ρσ_d["range"] = range_area;
-                    ρσ_d["properties"] = ρσ_list_decorate([]);
-                    return ρσ_d;
-                }).call(this));
+                roll_properties = buildAttackRoll("action", action_name, description, properties, properties["Damage"], ρσ_exists.e(properties["Damage Type"], ""), ρσ_exists.e(properties["To Hit"], null));
+                sendRoll("attack", properties["Damage"], roll_properties);
             } else {
-                description = descriptionToString(".ct-action-detail__description");
                 sendRoll("action", 0, (function(){
                     var ρσ_d = {};
                     ρσ_d["name"] = action_name;
@@ -4020,71 +4057,91 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollSpell() {
-            var spell_name, properties, damage, castas, to_hit, save, damage_type, range_area, reach, weapon_type, ρσ_unpack, save_ability, save_dc, ability, description, level, concentration, ritual, duration;
-            spell_name = $(".ct-sidebar__heading .ct-spell-name").text();
+            var properties, spell_name, description, damages, healings, castas, level, concentration, ritual, duration, to_hit, num_damages, damage, damage2, dmg, dmgtype, damage_type, damage2_type, i, roll_properties, spell_properties, key;
             properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"));
-            damage = $(".ct-spell-pane .ct-spell-caster__modifier--damage .ct-spell-caster__modifier-amount").text();
+            print("Properties are : " + str(properties));
+            spell_name = $(".ct-sidebar__heading .ct-spell-name").text();
+            description = descriptionToString(".ct-spell-pane .ct-spell-detail__description");
+            damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage");
+            healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp");
             castas = $(".ct-spell-caster__casting-level-current").text();
-            if ((damage !== "" && (typeof damage !== "object" || ρσ_not_equals(damage, "")))) {
-                print("Properties are : " + str(properties));
-                damage = properties["Damage"];
-                to_hit = ρσ_exists.e(properties["To Hit"], "");
-                save = ρσ_exists.e(properties["Attack/Save"], "");
-                damage_type = ρσ_exists.e(properties["Damage Type"], "");
-                range_area = ρσ_exists.e(properties["Range/Area"], "");
-                if (ρσ_in("Reach", range_area)) {
-                    reach = range_area.replace(" Reach", "");
-                    range_area = "";
-                    weapon_type = "Melee";
-                } else {
-                    reach = "";
-                    weapon_type = "Ranged";
-                }
-                if (save) {
-                    ρσ_unpack = save.split(" ");
-ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
-                    save_ability = ρσ_unpack[0];
-                    save_dc = ρσ_unpack[1];
-                    var ρσ_Iter6 = ρσ_Iterable(ability_abbreviations);
-                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                        ability = ρσ_Iter6[ρσ_Index6];
-                        if ((ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === save_ability || typeof ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === "object" && ρσ_equals(ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability], save_ability))) {
-                            save_ability = ability;
-                            break;
-                        }
-                    }
-                }
-                sendRoll("spell-attack", damage, (function(){
-                    var ρσ_d = {};
-                    ρσ_d["weapon"] = action_name;
-                    ρσ_d["weapon-type"] = weapon_type;
-                    ρσ_d["to-hit"] = to_hit;
-                    ρσ_d["save-dc"] = save_dc;
-                    ρσ_d["save-ability"] = save_ability;
-                    ρσ_d["damage"] = damage;
-                    ρσ_d["damage-type"] = damage_type;
-                    ρσ_d["reach"] = reach;
-                    ρσ_d["range"] = range_area;
-                    ρσ_d["properties"] = ρσ_list_decorate([]);
-                    return ρσ_d;
-                }).call(this));
+            level = descriptionToString(".ct-spell-pane .ct-spell-detail__level-school", " ");
+            concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration").length > 0;
+            ritual = $(".ct-spell-pane .ct-spell-name__icon--ritual").length > 0;
+            duration = ρσ_exists.e(properties["Duration"], "");
+            if (ρσ_in("Concentration", duration)) {
+                duration = duration.replace("Concentration, ", "");
+                concentration = true;
             } else {
-                description = descriptionToString(".ct-spell-pane .ct-spell-detail__description");
-                level = descriptionToString(".ct-spell-pane .ct-spell-detail__level-school", " ");
-                concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration").length > 0;
-                ritual = $(".ct-spell-pane .ct-spell-name__icon--ritual").length > 0;
-                duration = ρσ_exists.e(properties["Duration"], "");
-                if (ρσ_in("Concentration", duration)) {
-                    duration = duration.replace("Concentration, ", "");
-                    concentration = true;
-                } else {
-                    concentration = false;
+                concentration = false;
+            }
+            to_hit = ρσ_exists.e(properties["To Hit"], findToHit(spell_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit"));
+            if (!to_hit) {
+                to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit");
+            }
+            if (damages.length > 0 || healings.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null)))) {
+                num_damages = 0;
+                damage = null;
+                damage2 = null;
+                for (var ρσ_Index5 = 0; ρσ_Index5 < damages.length; ρσ_Index5++) {
+                    i = ρσ_Index5;
+                    dmg = damages.eq(i).find(".ct-spell-caster__modifier-amount").text();
+                    dmgtype = damages.eq(i).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
+                    if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
+                        dmgtype = "";
+                    }
+                    if ((num_damages === 0 || typeof num_damages === "object" && ρσ_equals(num_damages, 0))) {
+                        damage = dmg;
+                        damage_type = dmgtype;
+                    } else if ((num_damages === 1 || typeof num_damages === "object" && ρσ_equals(num_damages, 1))) {
+                        damage2 = dmg;
+                        damage2_type = dmgtype;
+                    } else {
+                        damage2 += " - " + dmg;
+                        damage2_type += ", " + dmgtype;
+                    }
+                    num_damages += 1;
                 }
-                properties = (function(){
+                for (var ρσ_Index6 = 0; ρσ_Index6 < healings.length; ρσ_Index6++) {
+                    i = ρσ_Index6;
+                    dmg = healings.eq(i).find(".ct-spell-caster__modifier-amount").text();
+                    if ((num_damages === 0 || typeof num_damages === "object" && ρσ_equals(num_damages, 0))) {
+                        damage = dmg;
+                        damage_type = "Healing";
+                    } else if ((num_damages === 1 || typeof num_damages === "object" && ρσ_equals(num_damages, 1))) {
+                        damage2 = dmg;
+                        damage2_type = "Healing";
+                    } else {
+                        damage2 += " - " + dmg;
+                        damage2_type += ", " + "Healing";
+                    }
+                    num_damages += 1;
+                }
+                roll_properties = buildAttackRoll("spell", spell_name, description, properties, damage, damage_type, to_hit, damage2, damage2_type);
+                spell_properties = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["level-school"] = level;
+                    ρσ_d["concentration"] = concentration;
+                    ρσ_d["duration"] = duration;
+                    ρσ_d["casting-time"] = ρσ_exists.e(properties["Casting Time"], "");
+                    ρσ_d["components"] = ρσ_exists.e(properties["Components"], "");
+                    ρσ_d["ritual"] = ritual;
+                    return ρσ_d;
+                }).call(this);
+                var ρσ_Iter7 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                    key = ρσ_Iter7[ρσ_Index7];
+                    roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
+                }
+                if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
+                    roll_properties["cast-at"] = castas;
+                }
+                sendRoll("spell-attack", damage, roll_properties);
+            } else {
+                roll_properties = (function(){
                     var ρσ_d = {};
                     ρσ_d["name"] = spell_name;
                     ρσ_d["level-school"] = level;
-                    ρσ_d["cast-as"] = level;
                     ρσ_d["range"] = ρσ_exists.e(properties["Range/Area"], "");
                     ρσ_d["concentration"] = concentration;
                     ρσ_d["duration"] = duration;
@@ -4095,9 +4152,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     return ρσ_d;
                 }).call(this);
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
-                    properties["cast-at"] = castas;
+                    roll_properties["cast-at"] = castas;
                 }
-                sendRoll("spell-card", 0, properties);
+                sendRoll("spell-card", 0, roll_properties);
             }
         };
 
@@ -4239,8 +4296,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             $(".ct-beyond20-roll-hitdie").css("float", "right");
             hitdice = $(".ct-reset-pane__hitdie");
             multiclass = hitdice.length > 1;
-            for (var ρσ_Index7 = 0; ρσ_Index7 < hitdice.length; ρσ_Index7++) {
-                i = ρσ_Index7;
+            for (var ρσ_Index8 = 0; ρσ_Index8 < hitdice.length; ρσ_Index8++) {
+                i = ρσ_Index8;
                 cb = (function() {
                     var ρσ_anonfunc = function (index) {
                         return (function() {
@@ -4269,8 +4326,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         lastItemName = "";
         lastSpellName = "";
+        lastSpellLevel = "";
         function injectRollButton(paneClass) {
-            var item_name, properties, spell_name, hitdice;
+            var item_name, properties, spell_name, spell_level, hitdice;
             if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-skill-pane", "ct-ability-pane", "ct-ability-pane", "ct-ability-saving-throws-pane", "ct-initiative-pane" ]))) {
                 if (isRollButtonAdded()) {
                     return;
@@ -4297,7 +4355,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if (ρσ_in("Damage", properties)) {
                     addRollButton(paneClass, ".ct-sidebar__heading");
                 } else {
-                    ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-item-detail__actions"].concat([ρσ_desugar_kwargs({small: true, append: true})]));
+                    ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-item-detail__actions"].concat([ρσ_desugar_kwargs({small: true, append: true, image: false})]));
                 }
             } else if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-action-pane", "ct-custom-action-pane" ]))) {
                 if (isRollButtonAdded()) {
@@ -4306,10 +4364,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                 addRollButton(paneClass, ".ct-sidebar__heading");
             } else if ((paneClass === "ct-spell-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-spell-pane"))) {
                 spell_name = $(".ct-sidebar__heading .ct-spell-name").text();
-                if (isRollButtonAdded() && (spell_name === lastSpellName || typeof spell_name === "object" && ρσ_equals(spell_name, lastSpellName))) {
+                spell_level = $(".ct-spell-caster__casting-level-current").text();
+                if (isRollButtonAdded() && (spell_name === lastSpellName || typeof spell_name === "object" && ρσ_equals(spell_name, lastSpellName)) && (spell_level === lastSpellLevel || typeof spell_level === "object" && ρσ_equals(spell_level, lastSpellLevel))) {
                     return;
                 }
                 lastSpellName = spell_name;
+                lastSpellLevel = spell_level;
                 removeRollButtons();
                 ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({text: "Cast on Roll20", image: false})]));
                 $(".ct-spell-caster__casting-action > button").bind("click", (function() {
@@ -4341,43 +4401,25 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["paneClass"]}
         });
 
-        function onMessage(request, sender, sendResponse) {
-            var pane;
-            if ((request.action === "inject" || typeof request.action === "object" && ρσ_equals(request.action, "inject"))) {
-                pane = $(".ct-sidebar__pane-content > div");
-                if (pane.length > 0) {
-                    injectRollButton(pane[0].className);
-                } else {
-                    alert("Sidebar not open");
-                }
-            }
-            if ((request.action === "execute" || typeof request.action === "object" && ρσ_equals(request.action, "execute"))) {
-                pane = $(".ct-sidebar__pane-content > div");
-                if (pane.length > 0) {
-                    execute(pane[0].className);
-                } else {
-                    alert("Sidebar not open");
-                }
-            }
-        };
-        if (!onMessage.__argnames__) Object.defineProperties(onMessage, {
-            __argnames__ : {value: ["request", "sender", "sendResponse"]}
-        });
-
         function panelModified(mutations, observer) {
-            var pane, paneClass;
+            var pane, paneClass, div;
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                paneClass = pane[0].className;
-                print("Beyond20: New side panel is : " + paneClass);
-                injectRollButton(paneClass);
+                for (var ρσ_Index9 = 0; ρσ_Index9 < pane.length; ρσ_Index9++) {
+                    div = ρσ_Index9;
+                    paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
+                    if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls"))) {
+                        continue;
+                    }
+                    print("Beyond20: New side panel is : " + paneClass);
+                    injectRollButton(paneClass);
+                }
             }
         };
         if (!panelModified.__argnames__) Object.defineProperties(panelModified, {
             __argnames__ : {value: ["mutations", "observer"]}
         });
 
-        chrome.runtime.onMessage.addListener(onMessage);
         observer = new window.MutationObserver(panelModified);
         observer.observe(document, (function(){
             var ρσ_d = {};

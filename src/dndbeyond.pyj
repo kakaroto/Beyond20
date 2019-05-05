@@ -26,6 +26,65 @@ def descriptionToString(selector, separator="\n"):
         description += description_p.eq(i).text()
     return description
 
+def findToHit(name_to_match, items_selector, name_selector, tohit_selector):
+    items = $(items_selector)
+    for i in range(items.length):
+        if items.eq(i).find(name_selector).text() == name_to_match:
+            to_hit = items.eq(i).find(tohit_selector)
+            if to_hit.length > 0:
+                to_hit = to_hit.text()
+                print("To hit for " + name_to_match + " is : " + to_hit)
+                return to_hit
+            break
+    return None
+
+def buildAttackRoll(attack_source, name, description, properties, damage=None, damage_type=None, to_hit=None, damage2=None, damage_type2=None):
+    roll_properties = {"name": name,
+                       "attack-source": attack_source,
+                       "description": description,
+                       "properties": []}
+    if to_hit:
+        roll_properties["to-hit"] = to_hit
+
+    if properties["Reach"]?:
+        roll_properties["reach"] = properties["Reach"]
+        roll_properties["attack-type"] = "Melee"
+    elif properties["Range"]?:
+        roll_properties["range"] = properties["Range"]
+        roll_properties["attack-type"] = "Ranged"
+    else:
+        range_area = properties["Range/Area"] ? ""
+        if "Reach" in range_area:
+            roll_properties["attack-type"] = "Melee"
+            roll_properties["reach"] = range_area.replace(" Reach", "")
+        else:
+            roll_properties["attack-type"] = "Ranged"
+            roll_properties["range"] = range_area
+    if properties["Attack Type"]?:
+        roll_properties["attack-type"] = properties["Attack Type"]
+
+    if properties["Attack/Save"]?:
+        (save_ability, save_dc) = properties["Attack/Save"].split(" ")
+        roll_properties["save-ability"] = save_ability
+        roll_properties["save-dc"] = save_dc
+        for ability in ability_abbreviations:
+            if ability_abbreviations[ability] == save_ability:
+                save_ability = ability
+                roll_properties["save-ability"] = ability
+                break
+
+    if properties["Properties"]?:
+        roll_properties["properties"] = properties["Properties"].split(", ")
+
+    if damage:
+        roll_properties["damage"] = damage
+        roll_properties["damage-type"] = damage_type
+    if damage2:
+        roll_properties["second-damage"] = damage2
+        roll_properties["second-damage-type"] = damage_type2
+
+    return roll_properties
+
 def sendRoll(rollType, fallback, args):
     char_name = $(".ct-character-tidbits__name").text()
     req = {"action": "roll", "character": char_name, "type": rollType, "roll": fallback}
@@ -82,150 +141,144 @@ def rollHitDie(multiclass, index):
                                "hit-dice": die} )
 
 def rollItem():
-    item_name = $(".ct-item-pane .ct-item-name").text()
     properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"))
+    print("Properties are : " + str(properties))
+    item_name = $(".ct-item-pane .ct-item-name").text()
+    item_type = $(".ct-item-detail__intro").text()
+    description = descriptionToString(".ct-item-detail__description")
     if "Damage" in properties:
-        items = $(".ct-combat-attack--item")
-        to_hit = ""
-        for i in range(items.length):
-            if items.eq(i).find(".ct-item-name").text() == item_name:
-                to_hit = items.eq(i).find(".ct-combat-attack__tohit").text()
-                print("To hit for " + item_name + " is : " + to_hit)
-        print("Properties are : " + str(properties))
+        to_hit = properties["To Hit"] ? \
+            findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit")
         damage = properties["Damage"]
+        versatile_damage = None
         if "(" in damage:
             (damage, versatile_damage) = damage.split("(")
             versatile_damage = versatile_damage[:-1]
-        if properties["Properties"]?:
-            props = properties["Properties"].split(", ")
-        else:
-            props = []
-        save = properties["Attack/Save"] ? ""
-        if save:
-            (save_ability, save_dc) = save.split(" ")
-            for ability in ability_abbreviations:
-                if ability_abbreviations[ability] == save_ability:
-                    save_ability = ability
-                    break
-        sendRoll("attack", properties["Damage"], {"weapon": item_name,
-                                                  "weapon-type": properties["Attack Type"],
-                                                  "to-hit": to_hit,
-                                                  "damage": damage,
-                                                  "save-dc": save_dc,
-                                                  "save-ability": save_ability,
-                                                  "versatile-damage": versatile_damage,
-                                                  "damage-type": properties["Damage Type"],
-                                                  "reach": properties["Reach"],
-                                                  "range": properties["Range"],
-                                                  "properties": props})
+
+        roll_properties = buildAttackRoll("item",
+                                          item_name,
+                                          description,
+                                          properties,
+                                          damage,
+                                          properties["Damage Type"] ? "",
+                                          to_hit,
+                                          versatile_damage,
+                                          "Two-Handed" if versatile_damage else None)
+        roll_properties["item-type"] = item_type
+        sendRoll("attack", damage, roll_properties)
     else:
-        item_type = $(".ct-item-detail__intro").text()
-        description = descriptionToString(".ct-item-detail__description")
         sendRoll("item", 0, {"name": item_name,
                              "description" : description,
                              "item-type": item_type})
         
 
 def rollAction(paneClass):
-    action_name = $(".ct-sidebar__heading").text()
     properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"))
+    print("Properties are : " + str(properties))
+    action_name = $(".ct-sidebar__heading").text()
+    description = descriptionToString(".ct-action-detail__description")
     if "Damage" in properties and (properties["To Hit"]? or properties["Attack/Save"]?):
-        print("Properties are : " + str(properties))
-        damage = properties["Damage"]
-        to_hit = properties["To Hit"] ? ""
-        save = properties["Attack/Save"] ? ""
-        damage_type = properties["Damage Type"] ? ""
-        range_area = properties["Range/Area"] ? ""
-        if "Reach" in range_area:
-            reach = range_area.replace(" Reach", "")
-            range_area = ""
-            weapon_type = "Melee"
-        else:
-            reach = ""
-            weapon_type = "Ranged"
-        if save:
-            (save_ability, save_dc) = save.split(" ")
-            for ability in ability_abbreviations:
-                if ability_abbreviations[ability] == save_ability:
-                    save_ability = ability
-                    break
-
-        sendRoll("attack", damage, {"weapon": action_name,
-                                    "weapon-type": weapon_type,
-                                    "to-hit": to_hit,
-                                    "save-dc": save_dc,
-                                    "save-ability": save_ability,
-                                    "damage": damage,
-                                    "damage-type": damage_type,
-                                    "reach": reach,
-                                    "range": range_area,
-                                    "properties": []})
+        roll_properties = buildAttackRoll("action",
+                                          action_name,
+                                          description,
+                                          properties,
+                                          properties["Damage"],
+                                          properties["Damage Type"] ? "",
+                                          properties["To Hit"] ? None)
+        sendRoll("attack", properties["Damage"], roll_properties)
     else:
-        description = descriptionToString(".ct-action-detail__description")
         sendRoll("action", 0, {"name": action_name,
                                "description" : description})
         
 
 def rollSpell():
-    spell_name = $(".ct-sidebar__heading .ct-spell-name").text()
     properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
-    damage = $(".ct-spell-pane .ct-spell-caster__modifier--damage .ct-spell-caster__modifier-amount").text()
+    print("Properties are : " + str(properties))
+    spell_name = $(".ct-sidebar__heading .ct-spell-name").text()
+    description = descriptionToString(".ct-spell-pane .ct-spell-detail__description")
+    damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage")
+    healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp")
     castas = $(".ct-spell-caster__casting-level-current").text()
-    if damage != "":
-        print("Properties are : " + str(properties))
-        damage = properties["Damage"]
-        to_hit = properties["To Hit"] ? ""
-        save = properties["Attack/Save"] ? ""
-        damage_type = properties["Damage Type"] ? ""
-        range_area = properties["Range/Area"] ? ""
-        if "Reach" in range_area:
-            reach = range_area.replace(" Reach", "")
-            range_area = ""
-            weapon_type = "Melee"
-        else:
-            reach = ""
-            weapon_type = "Ranged"
-        if save:
-            (save_ability, save_dc) = save.split(" ")
-            for ability in ability_abbreviations:
-                if ability_abbreviations[ability] == save_ability:
-                    save_ability = ability
-                    break
-
-        sendRoll("spell-attack", damage, {"weapon": action_name,
-                                    "weapon-type": weapon_type,
-                                    "to-hit": to_hit,
-                                    "save-dc": save_dc,
-                                    "save-ability": save_ability,
-                                    "damage": damage,
-                                    "damage-type": damage_type,
-                                    "reach": reach,
-                                    "range": range_area,
-                                    "properties": []})
+    level = descriptionToString(".ct-spell-pane .ct-spell-detail__level-school", " ")
+    concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration").length > 0
+    ritual = $(".ct-spell-pane .ct-spell-name__icon--ritual").length > 0
+    duration = properties["Duration"] ? ""
+    if "Concentration" in duration:
+        duration = duration.replace("Concentration, ", "")
+        concentration = True
     else:
-        description = descriptionToString(".ct-spell-pane .ct-spell-detail__description")
-        level = descriptionToString(".ct-spell-pane .ct-spell-detail__level-school", " ")
-        concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration").length > 0
-        ritual = $(".ct-spell-pane .ct-spell-name__icon--ritual").length > 0
-        duration = properties["Duration"] ? ""
-        if "Concentration" in duration:
-            duration = duration.replace("Concentration, ", "")
-            concentration = True
-        else:
-            concentration = False
-        properties = {"name": spell_name,
-                      "level-school": level,
-                      "cast-as": level,
-                      "range": (properties["Range/Area"] ? ""),
-                      "concentration": concentration,
-                      "duration": duration,
-                      "casting-time": (properties["Casting Time"] ? ""),
-                      "components": (properties["Components"] ? ""),
-                      "ritual": ritual,
-                      "description" : description}
+        concentration = False
+    to_hit = properties["To Hit"] ? \
+        findToHit(spell_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit")
+    if not to_hit:
+        to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit")
+
+    if damages.length > 0 or healings.length > 0 or to_hit != None:
+        num_damages = 0
+        damage = None
+        damage2 = None
+        for i in range(damages.length):
+            dmg = damages.eq(i).find(".ct-spell-caster__modifier-amount").text()
+            dmgtype = damages.eq(i).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title")
+            if not dmgtype?:
+                dmgtype = ""
+            if num_damages == 0:
+                damage = dmg
+                damage_type = dmgtype
+            elif num_damages == 1:
+                damage2 = dmg
+                damage2_type = dmgtype
+            else:
+                damage2 += " - " + dmg
+                damage2_type += ", " + dmgtype
+            num_damages += 1
+        for i in range(healings.length):
+            dmg = healings.eq(i).find(".ct-spell-caster__modifier-amount").text()
+            if num_damages == 0:
+                damage = dmg
+                damage_type = "Healing"
+            elif num_damages == 1:
+                damage2 = dmg
+                damage2_type = "Healing"
+            else:
+                damage2 += " - " + dmg
+                damage2_type += ", " + "Healing"
+            num_damages += 1
+            
+                
+        roll_properties = buildAttackRoll("spell",
+                                          spell_name,
+                                          description,
+                                          properties,
+                                          damage,
+                                          damage_type,
+                                          to_hit,
+                                          damage2,
+                                          damage2_type)
+        spell_properties = {"level-school": level,
+                            "concentration": concentration,
+                            "duration": duration,
+                            "casting-time": (properties["Casting Time"] ? ""),
+                            "components": (properties["Components"] ? ""),
+                            "ritual": ritual}
+        for key in spell_properties:
+            roll_properties[key] = spell_properties[key]
         if castas != "" and not level.startsWith(castas):
-            properties["cast-at"] = castas
-        sendRoll("spell-card", 0, properties)
+            roll_properties["cast-at"] = castas
+        sendRoll("spell-attack", damage, roll_properties)
+    else:
+        roll_properties = {"name": spell_name,
+                           "level-school": level,
+                           "range": (properties["Range/Area"] ? ""),
+                           "concentration": concentration,
+                           "duration": duration,
+                           "casting-time": (properties["Casting Time"] ? ""),
+                           "components": (properties["Components"] ? ""),
+                           "ritual": ritual,
+                           "description" : description}
+        if castas != "" and not level.startsWith(castas):
+            roll_properties["cast-at"] = castas
+        sendRoll("spell-card", 0, roll_properties)
 
 def displayFeature(paneClass):
     source_types = {"ct-class-feature-pane": "Class",
@@ -319,6 +372,7 @@ def removeRollButtons():
 
 lastItemName = ""
 lastSpellName = ""
+lastSpellLevel = ""
 def injectRollButton(paneClass):
     if paneClass in ["ct-skill-pane",
                      "ct-ability-pane",
@@ -347,17 +401,20 @@ def injectRollButton(paneClass):
         if "Damage" in properties:
             addRollButton(paneClass, ".ct-sidebar__heading")
         else:
-            addRollButton(paneClass, ".ct-item-detail__actions", small=True, append=True)
+            addRollButton(paneClass, ".ct-item-detail__actions", small=True, append=True, image=False)
     elif paneClass in ["ct-action-pane", "ct-custom-action-pane"]:
         if isRollButtonAdded():
             return
         addRollButton(paneClass, ".ct-sidebar__heading")
     elif paneClass == "ct-spell-pane":
         nonlocal lastSpellName
+        nonlocal lastSpellLevel
         spell_name = $(".ct-sidebar__heading .ct-spell-name").text()
-        if isRollButtonAdded() and spell_name == lastSpellName:
+        spell_level = $(".ct-spell-caster__casting-level-current").text()
+        if isRollButtonAdded() and spell_name == lastSpellName and spell_level == lastSpellLevel:
             return
         lastSpellName = spell_name
+        lastSpellLevel = spell_level
         removeRollButtons()
         addRollButton(paneClass, ".ct-sidebar__heading", text="Cast on Roll20", image=False)
         $(".ct-spell-caster__casting-action > button").bind('click', def(event):
@@ -377,28 +434,16 @@ def injectRollButton(paneClass):
     else:
         removeRollButtons()
 
-def onMessage(request, sender, sendResponse):
-    if request.action == "inject":
-        pane = $(".ct-sidebar__pane-content > div")
-        if pane.length > 0:
-            injectRollButton(pane[0].className)
-        else:
-            alert("Sidebar not open")
-    if request.action == "execute":
-        pane = $(".ct-sidebar__pane-content > div")
-        if pane.length > 0:
-            execute(pane[0].className)
-        else:
-            alert("Sidebar not open")
-
 def panelModified(mutations, observer):
     pane = $(".ct-sidebar__pane-content > div")
     if pane.length > 0:
-        paneClass = pane[0].className
-        print("Beyond20: New side panel is : " + paneClass)
-        injectRollButton(paneClass)
+        for div in range(pane.length):
+            paneClass = pane[div].className
+            if paneClass == "ct-sidebar__pane-controls":
+                continue
+            print("Beyond20: New side panel is : " + paneClass)
+            injectRollButton(paneClass)
 
-chrome.runtime.onMessage.addListener(onMessage);
 observer = new window.MutationObserver(panelModified)
 observer.observe(document, {"subtree": True, "childList": True})
 
