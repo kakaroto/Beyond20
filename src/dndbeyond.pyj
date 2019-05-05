@@ -362,6 +362,16 @@ def addHitDieButtons():
 
         $(".ct-beyond20-roll-hitdie").eq(i).bind('click', cb(i))
 
+def addDeathSaveButton(paneClass, where):
+    icon16 = chrome.extension.getURL("images/icons/icon16.png");
+    button = '<span class="ct-beyond20-roll"><img class="ct-beyond20-icon" src="' + icon16 + '"></img></span>'
+
+    print("Adding")
+    $(where).after(button)
+    $(".ct-beyond20-roll").bind('click', def(event):
+        sendRoll("death-save", "1d20", {})
+    )
+
 def removeRollButtons():
     $(".ct-beyond20-roll").remove()
     $(".ct-beyond20-roll-hitdie").remove()
@@ -449,7 +459,6 @@ def injectRollButton(paneClass):
         )
     elif paneClass == "ct-reset-pane":
         hitdice = $(".ct-reset-pane__hitdie")
-        console.log(hitdice)
         if hitdice.length > 0:
             if isHitDieButtonAdded():
                 return
@@ -457,7 +466,14 @@ def injectRollButton(paneClass):
             addHitDieButtons()
         else:
             removeRollButtons()
+    elif paneClass == "ct-health-manage-pane":
+        if $(".ct-health-manage-pane .ct-health-manager__deathsaves").length > 0:
+            if isRollButtonAdded():
+                return
             
+            addDeathSaveButton(paneClass, ".ct-health-manager__deathsaves-group--fails")
+        else:
+            removeRollButtons()
     else:
         removeRollButtons()
 

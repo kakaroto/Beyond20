@@ -234,6 +234,12 @@ def handleMessage (request, sender, sendResponse):
                     properties["desc"] = components[2:-1]
                     components = ""
             roll += template("atkdmg", properties)
+        elif request.type == "death-save":
+            roll += template("simple",
+                             {"charname": request.character,
+                              "rname" : "Death Saving Throw",
+                              "r1": "[[1d20cs>9cf<10]]",
+                              "normal": 1})
         elif request.type == "custom":
             roll += template("simple",
                              {"charname": request.character,
@@ -244,7 +250,7 @@ def handleMessage (request, sender, sendResponse):
         else:
             roll += template("simple",
                              {"charname": request.character,
-                              "rname" : request.rollType,
+                              "rname" : request.type,
                               "mod": request.roll,
                               "r1": subRolls(request.roll),
                               "normal": 1})

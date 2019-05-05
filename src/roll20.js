@@ -5712,6 +5712,15 @@ var str = ρσ_str, repr = ρσ_repr;;
                         }
                     }
                     roll += template("atkdmg", properties);
+                } else if ((request.type === "death-save" || typeof request.type === "object" && ρσ_equals(request.type, "death-save"))) {
+                    roll += template("simple", (function(){
+                        var ρσ_d = {};
+                        ρσ_d["charname"] = request.character;
+                        ρσ_d["rname"] = "Death Saving Throw";
+                        ρσ_d["r1"] = "[[1d20cs>10cf<10]]";
+                        ρσ_d["normal"] = 1;
+                        return ρσ_d;
+                    }).call(this));
                 } else if ((request.type === "custom" || typeof request.type === "object" && ρσ_equals(request.type, "custom"))) {
                     roll += template("simple", (function(){
                         var ρσ_d = {};
@@ -5726,7 +5735,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     roll += template("simple", (function(){
                         var ρσ_d = {};
                         ρσ_d["charname"] = request.character;
-                        ρσ_d["rname"] = request.rollType;
+                        ρσ_d["rname"] = request.type;
                         ρσ_d["mod"] = request.roll;
                         ρσ_d["r1"] = subRolls(request.roll);
                         ρσ_d["normal"] = 1;

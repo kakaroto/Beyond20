@@ -5832,15 +5832,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             var icon32, icon16, button;
             icon32 = chrome.extension.getURL("images/dice24.png");
             icon16 = chrome.extension.getURL("images/dice16.png");
-            button = "<span class=\"ct-beyond20-roll\"><button class=\"ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button" + ((small) ? " character-button-small" : "") + "\"><img class=\"ct-beyond20-icon\" src=\"" + ((image) ? (small) ? icon16 : icon32 : "") + "\"></img><span class=\"ct-button__content\">" + text + "</span></button></span>";
-            print("Adding '" + text + "' button to " + where);
+            button = "<span class=\"ct-beyond20-roll\"><button class=\"ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button" + ((small) ? " character-button-small" : "") + "\"><img class=\"ct-beyond20-icon\" src=\"" + ((image) ? (small) ? icon16 : icon32 : "") + "\" style=\"" + ((image) ? "margin-right:6px" : "") + "\"></img><span class=\"ct-button__content\">" + text + "</span></button></span>";
+            print("Adding");
             if (append) {
                 $(where).append(button);
             } else {
                 $(where).after(button);
-            }
-            if (image) {
-                $(".ct-beyond20-icon").css("margin-right", "6px");
             }
             $(".ct-beyond20-roll").attr("float", "right");
             $(".ct-beyond20-roll").bind("click", (function() {
@@ -5892,6 +5889,26 @@ var str = ρσ_str, repr = ρσ_repr;;
                 $(".ct-beyond20-roll-hitdie").eq(i).bind("click", cb(i));
             }
         };
+
+        function addDeathSaveButton(paneClass, where) {
+            var icon16, button;
+            icon16 = chrome.extension.getURL("images/icons/icon16.png");
+            button = "<span class=\"ct-beyond20-roll\"><img class=\"ct-beyond20-icon\" src=\"" + icon16 + "\"></img></span>";
+            print("Adding");
+            $(where).after(button);
+            $(".ct-beyond20-roll").bind("click", (function() {
+                var ρσ_anonfunc = function (event) {
+                    sendRoll("death-save", "1d20", {});
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["event"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!addDeathSaveButton.__argnames__) Object.defineProperties(addDeathSaveButton, {
+            __argnames__ : {value: ["paneClass", "where"]}
+        });
 
         function removeRollButtons() {
             $(".ct-beyond20-roll").remove();
@@ -5981,7 +5998,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     addRollButton(paneClass, ".ct-sidebar__heading");
                 } else {
                     ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({image: false})]));
-                    ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-item-detail__actions"].concat([ρσ_desugar_kwargs({small: true, append: true, image: true})]));
+                    ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-item-detail__actions"].concat([ρσ_desugar_kwargs({small: true, append: true, image: false})]));
                 }
             } else if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-action-pane", "ct-custom-action-pane" ]))) {
                 if (isRollButtonAdded()) {
@@ -6012,13 +6029,21 @@ var str = ρσ_str, repr = ρσ_repr;;
                 })());
             } else if ((paneClass === "ct-reset-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-reset-pane"))) {
                 hitdice = $(".ct-reset-pane__hitdie");
-                console.log(hitdice);
                 if (hitdice.length > 0) {
                     if (isHitDieButtonAdded()) {
                         return;
                     }
                     removeRollButtons();
                     addHitDieButtons();
+                } else {
+                    removeRollButtons();
+                }
+            } else if ((paneClass === "ct-health-manage-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-health-manage-pane"))) {
+                if ($(".ct-health-manage-pane .ct-health-manager__deathsaves").length > 0) {
+                    if (isRollButtonAdded()) {
+                        return;
+                    }
+                    addDeathSaveButton(paneClass, ".ct-health-manager__deathsaves-group--fails");
                 } else {
                     removeRollButtons();
                 }
