@@ -29,7 +29,7 @@ This extension is released under the GPL v3 license. Read the LICENSE file for m
 The icon image is based on a public domain image from openclipart. I downloaded it from https://commons.wikimedia.org/wiki/File:Twenty_sided_dice.svg and subsequently modified it.
 
 # TODO
-- Add support for spell attacks, death saves
+- death saves
 - Add support for skills/items that have advantage/disadvantage notes (like disadvantage on stealth for heavy armor users)
 - Add ability to select which roll20 VTT page to send the rolls to
 - Add a way to show errors (such as "can't find a roll20 tab")

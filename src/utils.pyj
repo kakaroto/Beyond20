@@ -1,0 +1,61 @@
+import re
+
+def replaceRollsCallback(match, modifiers_only, pre, dice, post, keep_original, pre_original, post_original, pre_dice, post_dice):
+    if modifiers_only and match.string[match.start() - 1] in map(str, range(0, 10)):
+        return match.group(0)
+    if post < 100 and match.group(post) not in ["", " ", ";", ",", "."]:
+        return match.group(0)
+
+    result = match.group(pre) if pre > 0 else ""
+    if keep_original:
+        result += pre_original
+        for i in range(dice, post):
+            result += match.group(i)
+        result += post_original
+    
+    result += pre_dice
+    for i in range(dice, post):
+        result += match.group(i)
+    result += post_dice
+    result += match.group(post) if post < 100 else ""
+    print(result)
+    return result
+
+def replaceRolls(modifiers_only, text, keep_original=False, pre_original="", post_original="", pre_dice="", post_dice=""):
+    #repl = "\\1[\\2\\3](!&#13;&#91;&#91;\\2\\3&#93;&#93;)\\4" if keep_original else "\\1[[\\2\\3]]\\4"
+    #repl2 = "\\1(!&#13;&#91;&#91;1d20\\1&#93;&#93;)\\2" if keep_original else "[[1d20\\1]]\\2"
+    dice_regexp = "(^|\s)([0-9]*d[0-9]+)((?:\s*[-+]\s*[0-9]+)?)($|\s|.|;|,)"
+    modifiers_regexp = "(\s+)([-+]\s*[0-9]+)($|\s|.|;|,)"
+    if modifiers_only:
+        regexp = modifiers_regexp
+        pre = 1
+        dice = 2
+        post = 3
+    else:
+        regexp = dice_regexp
+        pre = 1
+        dice = 2
+        post = 4
+    new_text = re.sub(regexp, def(m):
+        return replaceRollsCallback(m, modifiers_only, pre, dice, \
+                                        post, keep_original, pre_original, post_original, pre_dice, post_dice)
+    ,
+    text)
+
+    
+    print("Replacing '" + text + "' with : " + new_text)
+    return new_text
+
+def subRolls(text, keep_original=False, escape=False):
+    if keep_original and escape:
+        pre_original="["
+        post_original="]"
+        pre_dice="(!&#13;&#91;&#91;"
+        post_dice="&#93;&#93;)"
+    else:
+        pre_original=""
+        post_original=""
+        pre_dice="[["
+        post_dice="]]"
+    text = replaceRolls(False, text, keep_original, pre_original, post_original, pre_dice, post_dice)
+    return replaceRolls(True, text, keep_original, pre_original, post_original, pre_dice + "1d20 ", post_dice)

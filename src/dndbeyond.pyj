@@ -1,3 +1,4 @@
+from utils import replaceRolls
 print("Beyond20: D&D Beyond module loaded.")
 
 ability_abbreviations = {"Strength": "STR",

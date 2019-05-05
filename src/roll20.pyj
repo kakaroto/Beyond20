@@ -1,4 +1,5 @@
-import re
+from utils import replaceRolls
+
 print("Beyond20: Roll20 module loaded.")
 
 chat = document.getElementById("textchat-input")
@@ -37,12 +38,19 @@ def genRoll(dice, modifiers=[]):
     roll += "]]"
     return roll
 
-def subRolls(text, keep_original=False):
-    repl = "\\1\\2\\3[[\\2\\3]]\\4" if keep_original else "\\1[[\\2\\3]]\\4"
-    new_text = re.sub("(^|\s)([0-9]*d[0-9]+)((?:\s*[-+]\s*[0-9]+)?)($|\s)", repl, text)
-    
-    print("Replacing '" + text + "' with : " + new_text)
-    return new_text
+def subRolls(text, keep_original=False, escape=False):
+    if keep_original and escape:
+        pre_original="["
+        post_original="]"
+        pre_dice="(!&#13;&#91;&#91;"
+        post_dice="&#93;&#93;)"
+    else:
+        pre_original=""
+        post_original=""
+        pre_dice="[["
+        post_dice="]]"
+    text = replaceRolls(False, text, keep_original, pre_original, post_original, pre_dice, post_dice)
+    return replaceRolls(True, text, keep_original, pre_original, post_original, pre_dice + "1d20", post_dice)
 
 def template(name, properties):
     result = "&{template:" + name + "}"
@@ -135,17 +143,17 @@ def handleMessage (request, sender, sendResponse):
         elif request.type == "item":
             roll += template("traits", {"source": request["item-type"],
                                         "name": request.name,
-                                        "description": subRolls(request.description, True)})
+                                        "description": subRolls(request.description, True, True)})
         elif request.type == "feature":
             source = request["source-type"]
             if request.source.length > 0:
                 source += ": " + request.source
             roll += template("traits", {"source": source,
                                         "name": request.name,
-                                        "description": request.description})
+                                        "description": subRolls(request.description, True, True)})
         elif request.type in ["trait", "action"]:
             roll += template("traits", {"name": request.name,
-                                        "description": request.description})
+                                        "description": subRolls(request.description, True, True)})
         elif request.type == "spell-card":
             properties = {"name": request.name,
                           "castingtime": request["casting-time"],
@@ -164,9 +172,9 @@ def handleMessage (request, sender, sendResponse):
             description = request.description            
             higher = description.indexOf("At Higher Levels.")
             if higher > 0:
-                properties["athigherlevels"] = description[higher+"At Higher Levels.".length:]
+                properties["athigherlevels"] = subRolls(description[higher+"At Higher Levels.".length:], True, True)
                 description = description[:higher-1]
-            properties["description"] = description
+            properties["description"] = subRolls(description, True, True)
                           
             components = request.components
             while components != "":
@@ -214,7 +222,7 @@ def handleMessage (request, sender, sendResponse):
                 properties["saveattr"] = request["save-ability"]
                 properties["savedc"] = request["save-dc"]
             if request["cast-at"]?:
-                properties["hldmg"] = subRolls(request["cast-at"][0]) + request["cast-at"][1:] + " Level"
+                properties["hldmg"] = genRoll(request["cast-at"][0]) + request["cast-at"][1:] + " Level"
             components = request.components
             while components != "":
                 if components[0] in ["V", "S"]:
@@ -231,7 +239,7 @@ def handleMessage (request, sender, sendResponse):
                              {"charname": request.character,
                               "rname" : request.rollType,
                               "mod": request.roll,
-                              "r1": subRoll(request.roll),
+                              "r1": subRolls(request.roll),
                               "normal": 1})
         postChatMessage(roll, request.character)
 
