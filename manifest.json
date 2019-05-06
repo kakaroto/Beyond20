@@ -1,9 +1,9 @@
 {
     "name": "Beyond 20",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "manifest_version": 2,
     "description": "Integrates the D&D Beyond Character Sheet to Roll20.",
-    "permissions": [ "activeTab", "tabs", "storage", "*://app.roll20.net/editor/", "*://*.dndbeyond.com/*" ],
+    "permissions": [ "activeTab", "tabs", "storage", "*://app.roll20.net/editor/", "*://*.dndbeyond.com/*characters/*" ],
     "icons": {
         "16": "images/icons/icon16.png",
         "24": "images/icons/icon24.png",

@@ -3729,20 +3729,20 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var cb;
-        function sendMessageToRoll20(request) {
+        var ROLL20_URL, DNDBEYOND_URL, cb;
+        ROLL20_URL = "*://app.roll20.net/editor/";
+        DNDBEYOND_URL = "*://*.dndbeyond.com/*characters/*";
+        function sendMessageTo(url, request) {
             chrome.tabs.query((function(){
                 var ρσ_d = {};
-                ρσ_d["url"] = "*://app.roll20.net/editor/";
+                ρσ_d["url"] = url;
                 return ρσ_d;
             }).call(this), (function() {
                 var ρσ_anonfunc = function (tabs) {
                     var tab;
-                    console.log("matching tabs : " + tabs);
                     var ρσ_Iter0 = ρσ_Iterable(tabs);
                     for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
                         tab = ρσ_Iter0[ρσ_Index0];
-                        console.log("Sending roll " + str(request) + " to " + tab);
                         chrome.tabs.sendMessage(tab.id, request);
                     }
                 };
@@ -3752,7 +3752,21 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_anonfunc;
             })());
         };
+        if (!sendMessageTo.__argnames__) Object.defineProperties(sendMessageTo, {
+            __argnames__ : {value: ["url", "request"]}
+        });
+
+        function sendMessageToRoll20(request) {
+            sendMessageTo(ROLL20_URL, request);
+        };
         if (!sendMessageToRoll20.__argnames__) Object.defineProperties(sendMessageToRoll20, {
+            __argnames__ : {value: ["request"]}
+        });
+
+        function sendMessageToBeyond(request) {
+            sendMessageTo(DNDBEYOND_URL, request);
+        };
+        if (!sendMessageToBeyond.__argnames__) Object.defineProperties(sendMessageToBeyond, {
             __argnames__ : {value: ["request"]}
         });
 
@@ -3761,6 +3775,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 sendMessageToRoll20(request);
             } else if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 sendMessageToRoll20(request);
+                sendMessageToBeyond(request);
             } else if ((request.action === "activate-icon" || typeof request.action === "object" && ρσ_equals(request.action, "activate-icon"))) {
                 console.log("Extension loaded into a new page. Activating icon");
                 chrome.pageAction.show(sender.tab.id);
@@ -3802,7 +3817,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         })();
         chrome.tabs.query((function(){
             var ρσ_d = {};
-            ρσ_d["url"] = "*://app.roll20.net/editor/";
+            ρσ_d["url"] = ROLL20_URL;
             return ρσ_d;
         }).call(this), cb);
         cb = (function() {
@@ -3816,7 +3831,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         })();
         chrome.tabs.query((function(){
             var ρσ_d = {};
-            ρσ_d["url"] = "*://*.dndbeyond.com/*characters/*";
+            ρσ_d["url"] = DNDBEYOND_URL;
             return ρσ_d;
         }).call(this), cb);
     })();

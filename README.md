@@ -45,8 +45,10 @@ The options page was copied in part from the `D&D Beyond Toolbox` extension avai
 - Add support for skills/items that have advantage/disadvantage notes (like disadvantage on stealth for heavy armor users)
 - Add ability to select which roll20 VTT page to send the rolls to
 - Add a way to show errors (such as "can't find a roll20 tab")
-- Add a settings view to configure things like whisper rolls, roll with/without advantage, auto-roll damage, configure the macro to send to roll20, etc..
+- Add support for more character sheet templates in roll20.
+- Add Option to select which Roll20 game to roll into.
 - Add a dice roller so it can also be used to roll directly without roll20, if wanted.
+- Add support for special cases, like Toll the Dead, Toll the Dead, Elemental Bane, etc..
 - Test and fix bugs
 
 

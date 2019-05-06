@@ -1,4 +1,6 @@
 from utils import replaceRolls
+from settings import getDefaultSettings, getStoredSettings
+
 print("Beyond20: D&D Beyond module loaded.")
 
 ability_abbreviations = {"Strength": "STR",
@@ -7,6 +9,7 @@ ability_abbreviations = {"Strength": "STR",
                          "Intelligence": "INT",
                          "Wisdom": "WIS",
                          "Charisma": "CHA"}
+settings = getDefaultSettings()
 
 def propertyListToDict(propList):
     properties = {}
@@ -378,6 +381,10 @@ def removeRollButtons():
     $(".ct-beyond20-roll-hitdie").remove()
 
 def injectDiceToRolls(selector, name=""):
+    nonlocal settings
+    if not settings["subst-dndbeyond"]:
+        return
+
     text = $(selector).html()
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
     pre_original='<u><strong class="ct-beyond20-custom-roll" x-beyond20-name="' + name + '">'
@@ -488,6 +495,23 @@ def panelModified(mutations, observer):
             print("Beyond20: New side panel is : " + paneClass)
             injectRollButton(paneClass)
 
+def updateSettings(new_settings=None):
+    nonlocal settings
+    if new_settings:
+        settings = new_settings
+    else:
+        getStoredSettings(def(saved_settings):
+            nonlocal settings
+            settings = saved_settings
+        )
+
+def handleMessage (request, sender, sendResponse):
+    nonlocal settings
+    if request.action == "settings":
+        updateSettings(request.settings)
+
+updateSettings()
+chrome.runtime.onMessage.addListener(handleMessage)
 observer = new window.MutationObserver(panelModified)
 observer.observe(document, {"subtree": True, "childList": True})
 chrome.runtime.sendMessage({"action": "activate-icon"});

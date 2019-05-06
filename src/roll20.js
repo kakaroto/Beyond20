@@ -3725,8 +3725,9 @@ define_str_func = undefined;
 var str = ρσ_str, repr = ρσ_repr;;
     var ρσ_modules = {};
     ρσ_modules.re = {};
-    ρσ_modules.elementmaker = {};
     ρσ_modules.utils = {};
+    ρσ_modules.elementmaker = {};
+    ρσ_modules.settings = {};
 
     (function(){
         var __name__ = "re";
@@ -5169,6 +5170,131 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
+        var __name__ = "utils";
+        var re = ρσ_modules.re;
+
+        function replaceRollsCallback(match, modifiers_only, pre, dice, post, keep_original, pre_original, post_original, pre_dice, post_dice) {
+            var result, i;
+            if (modifiers_only && ρσ_in((ρσ_expr_temp = match.string)[ρσ_bound_index(match.start() - 1, ρσ_expr_temp)], list(map(str, range(0, 10))))) {
+                return match.group(0);
+            }
+            result = (pre > 0) ? match.group(pre) : "";
+            if (keep_original) {
+                result += pre_original;
+                for (var ρσ_Index0 = dice; ρσ_Index0 < post; ρσ_Index0++) {
+                    i = ρσ_Index0;
+                    result += match.group(i);
+                }
+                result += post_original;
+            }
+            result += pre_dice;
+            for (var ρσ_Index1 = dice; ρσ_Index1 < post; ρσ_Index1++) {
+                i = ρσ_Index1;
+                result += match.group(i);
+            }
+            result += post_dice;
+            result += (post < 100) ? match.group(post) : "";
+            return result;
+        };
+        if (!replaceRollsCallback.__argnames__) Object.defineProperties(replaceRollsCallback, {
+            __argnames__ : {value: ["match", "modifiers_only", "pre", "dice", "post", "keep_original", "pre_original", "post_original", "pre_dice", "post_dice"]}
+        });
+
+        function replaceRolls() {
+            var modifiers_only = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var text = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var keep_original = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.keep_original : arguments[2];
+            var pre_original = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.pre_original : arguments[3];
+            var post_original = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.post_original : arguments[4];
+            var pre_dice = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.pre_dice : arguments[5];
+            var post_dice = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.post_dice : arguments[6];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "keep_original")){
+                keep_original = ρσ_kwargs_obj.keep_original;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "pre_original")){
+                pre_original = ρσ_kwargs_obj.pre_original;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "post_original")){
+                post_original = ρσ_kwargs_obj.post_original;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "pre_dice")){
+                pre_dice = ρσ_kwargs_obj.pre_dice;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "post_dice")){
+                post_dice = ρσ_kwargs_obj.post_dice;
+            }
+            var dice_regexp, modifiers_regexp, regexp, pre, dice, post, new_text;
+            dice_regexp = "(^|[^\\w])([0-9]*d[0-9]+)((?:\\s*[-+]\\s*[0-9]+)?)($|[^\\w])";
+            modifiers_regexp = "(\\s+)([-+]\\s*[0-9]+)($|[^\\w])";
+            if (modifiers_only) {
+                regexp = modifiers_regexp;
+                pre = 1;
+                dice = 2;
+                post = 3;
+            } else {
+                regexp = dice_regexp;
+                pre = 1;
+                dice = 2;
+                post = 4;
+            }
+            new_text = re.sub(regexp, (function() {
+                var ρσ_anonfunc = function (m) {
+                    return replaceRollsCallback(m, modifiers_only, pre, dice, post, keep_original, pre_original, post_original, pre_dice, post_dice);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["m"]}
+                });
+                return ρσ_anonfunc;
+            })(), text);
+            return new_text;
+        };
+        if (!replaceRolls.__defaults__) Object.defineProperties(replaceRolls, {
+            __defaults__ : {value: {keep_original:false, pre_original:"", post_original:"", pre_dice:"", post_dice:""}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["modifiers_only", "text", "keep_original", "pre_original", "post_original", "pre_dice", "post_dice"]}
+        });
+
+        function subRolls() {
+            var text = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var keep_original = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.keep_original : arguments[1];
+            var escape = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.escape : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "keep_original")){
+                keep_original = ρσ_kwargs_obj.keep_original;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "escape")){
+                escape = ρσ_kwargs_obj.escape;
+            }
+            var pre_original, post_original, pre_dice, post_dice;
+            if (keep_original && escape) {
+                pre_original = "[";
+                post_original = "]";
+                pre_dice = "(!&#13;&#91;&#91;";
+                post_dice = "&#93;&#93;)";
+            } else {
+                pre_original = "";
+                post_original = "";
+                pre_dice = "[[";
+                post_dice = "]]";
+            }
+            text = replaceRolls(false, text, keep_original, pre_original, post_original, pre_dice, post_dice);
+            return replaceRolls(true, text, keep_original, pre_original, post_original, pre_dice + "1d20 ", post_dice);
+        };
+        if (!subRolls.__defaults__) Object.defineProperties(subRolls, {
+            __defaults__ : {value: {keep_original:false, escape:false}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["text", "keep_original", "escape"]}
+        });
+
+        ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
+        ρσ_modules.utils.replaceRolls = replaceRolls;
+        ρσ_modules.utils.subRolls = subRolls;
+    })();
+
+    (function(){
         var __name__ = "elementmaker";
         var html_elements, mathml_elements, svg_elements, html5_tags, E;
         html_elements = (function(){
@@ -5468,41 +5594,117 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
-        var __name__ = "utils";
+        var __name__ = "settings";
         var options_list;
-        var re = ρσ_modules.re;
-
         var E = ρσ_modules.elementmaker.E;
 
-        options_list = ρσ_list_decorate([ ["whispers", "Whisper rolls", "Whisper rolls to the DM", 
-        "If enabled, all the rolls will be whispered to the DM", "bool", false], ["roll-advantage", 
-        "Roll with Advantage", "Always roll Advantange/Disadvantage", "Always roll a second dice for Advantage/Disadvantage", 
-        "bool", true], ["template", null, "Roll20 Character Sheet Setting", "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.", 
-        "combobox", "roll20", (function(){
+        options_list = (function(){
             var ρσ_d = {};
-            ρσ_d["roll20"] = "D&D 5E By Roll20";
+            ρσ_d["whispers"] = ρσ_list_decorate([ "Whisper rolls", "Whisper rolls to the DM", "If enabled, all the rolls will be whispered to the DM", "bool", false ]);
+            ρσ_d["roll-advantage"] = ρσ_list_decorate([ "Roll with Advantage", "Always roll Advantange/Disadvantage", "Always roll a second dice for Advantage/Disadvantage", "bool", true ]);
+            ρσ_d["subst-roll20"] = ρσ_list_decorate([ null, "Replace Dices formulas in Roll20", "In Roll20, if a spell card or an item or a feat has a dice formula in its description,\nenabling this will make the formula clickable to generate the roll in chat.", "bool", true ]);
+            ρσ_d["subst-dndbeyond"] = ρσ_list_decorate([ null, "Replace Dices formulas in D&D Beyond", "In the D&D Beyond side panel, if a spell, item, feat or action has a dice formula in its description,\nenabling this will add a dice icon next to the formula to allow you to roll it.", "bool", true ]);
+            ρσ_d["crit-prefix"] = ρσ_list_decorate([ null, "Critical Hit Prefix", "Prefix to add to the Critical Hit dice result.\nI've found it less confusing for players to point out that the '+ X' is the crit damage", "string", "Crit: " ]);
+            ρσ_d["template"] = ρσ_list_decorate([ null, "Roll20 Character Sheet Setting", "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.", "combobox", "roll20", (function(){
+                var ρσ_d = {};
+                ρσ_d["roll20"] = "D&D 5E By Roll20";
+                ρσ_d["default"] = "Others";
+                return ρσ_d;
+            }).call(this) ]);
+            ρσ_d["donate"] = ρσ_list_decorate([ "Buy me rations for 1 day", "Donate to show your appreciation!", "I know you already appreciate this extension, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active or just to say thank you, you can!", "link", "https://www.paypal.me/KaKaRoTo", "images/donate.png" ]);
             return ρσ_d;
-        }).call(this)], ["donate", "Want to donate?", "Donate to show your appreciation!", 
-        "I know you already appreciate this plugin, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active on this extension, you can!", 
-        "link", "https://www.paypal.me/KaKaRoTo", "images/donate.png"] ]);
+        }).call(this);
+        function getDefaultSettings() {
+            var settings, option;
+            settings = {};
+            var ρσ_Iter2 = ρσ_Iterable(options_list);
+            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                option = ρσ_Iter2[ρσ_Index2];
+                settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option][4];
+            }
+            console.log("Default settings :", settings);
+            return settings;
+        };
+
+        function getStoredSettings(cb) {
+            var settings;
+            settings = getDefaultSettings();
+            chrome.storage.sync.get((function(){
+                var ρσ_d = {};
+                ρσ_d["settings"] = settings;
+                return ρσ_d;
+            }).call(this), (function() {
+                var ρσ_anonfunc = function (items) {
+                    console.log("Stored settings :", settings);
+                    cb(items.settings);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["items"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!getStoredSettings.__argnames__) Object.defineProperties(getStoredSettings, {
+            __argnames__ : {value: ["cb"]}
+        });
+
+        function setSettings() {
+            var settings = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var cb = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? setSettings.__defaults__.cb : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
+                cb = ρσ_kwargs_obj.cb;
+            }
+            chrome.storage.sync.set((function(){
+                var ρσ_d = {};
+                ρσ_d["settings"] = settings;
+                return ρσ_d;
+            }).call(this), function () {
+                console.log("Saved settings : ", settings);
+                if (cb) {
+                    cb(settings);
+                }
+            });
+        };
+        if (!setSettings.__defaults__) Object.defineProperties(setSettings, {
+            __defaults__ : {value: {cb:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["settings", "cb"]}
+        });
+
+        function resetSettings() {
+            var cb = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? resetSettings.__defaults__.cb : arguments[0];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
+                cb = ρσ_kwargs_obj.cb;
+            }
+            setSettings(getDefaultSettings(), cb);
+        };
+        if (!resetSettings.__defaults__) Object.defineProperties(resetSettings, {
+            __defaults__ : {value: {cb:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["cb"]}
+        });
+
         function createHTMLOption() {
-            var option = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var short = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? createHTMLOption.__defaults__.short : arguments[1];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "short")){
                 short = ρσ_kwargs_obj.short;
             }
-            var ρσ_unpack, name, short_title, title, description, option_type, default_value, extra, description_p, e, make_li, dropdown_options;
-            ρσ_unpack = ρσ_flatten(option);
-ρσ_unpack = ρσ_unpack_asarray(7, ρσ_unpack);
-            name = ρσ_unpack[0];
-            short_title = ρσ_unpack[1];
-            title = ρσ_unpack[2];
-            description = ρσ_unpack[3];
-            option_type = ρσ_unpack[4];
-            default_value = ρσ_unpack[5];
-            extra = ρσ_unpack[6];
+            var ρσ_unpack, short_title, title, description, option_type, default_value, extra, description_p, e, make_li, dropdown_options, p;
+            ρσ_unpack = ρσ_flatten(options_list[(typeof name === "number" && name < 0) ? options_list.length + name : name]);
+ρσ_unpack = ρσ_unpack_asarray(6, ρσ_unpack);
+            short_title = ρσ_unpack[0];
+            title = ρσ_unpack[1];
+            description = ρσ_unpack[2];
+            option_type = ρσ_unpack[3];
+            default_value = ρσ_unpack[4];
+            extra = ρσ_unpack[5];
             if (short && short_title === null) {
                 return null;
             }
@@ -5510,6 +5712,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             description_p = list(map(E.p, description.split("\n")));
             if ((option_type === "bool" || typeof option_type === "object" && ρσ_equals(option_type, "bool"))) {
                 e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [E.h4((short) ? short_title : title)].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.input, [ρσ_desugar_kwargs({id: name, class_: "beyond20-option-input", name: name, type_: "checkbox"})]), ρσ_interpolate_kwargs.call(E, E.label, [ρσ_desugar_kwargs({for_: name, class_: "label-default"})])].concat([ρσ_desugar_kwargs({class_: "material-switch pull-right"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-bool"})]));
+            } else if ((option_type === "string" || typeof option_type === "object" && ρσ_equals(option_type, "string"))) {
+                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [E.h4((short) ? short_title : title)].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.input, [ρσ_desugar_kwargs({id: name, class_: "beyond20-option-input", name: name, type_: "text"})])]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name, style: "padding-right: 15px;"})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-string"})]));
             } else if ((option_type === "combobox" || typeof option_type === "object" && ρσ_equals(option_type, "combobox"))) {
                 make_li = (function() {
                     var ρσ_anonfunc = function (o) {
@@ -5521,7 +5725,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                     return ρσ_anonfunc;
                 })();
                 dropdown_options = list(map(make_li, Object.values(extra)));
-                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [(short) ? short_title : title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, [extra[(typeof default_value === "number" && default_value < 0) ? extra.length + default_value : default_value]].concat([ρσ_desugar_kwargs({class_: "input select", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({id: name, class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-combobox"})]));
+                var ρσ_Iter3 = ρσ_Iterable(description_p);
+                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                    p = ρσ_Iter3[ρσ_Index3];
+                    p.classList.add("select");
+                }
+                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [(short) ? short_title : title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, [extra[(typeof default_value === "number" && default_value < 0) ? extra.length + default_value : default_value]].concat([ρσ_desugar_kwargs({id: name, class_: "input select", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-combobox"})]));
             } else if ((option_type === "link" || typeof option_type === "object" && ρσ_equals(option_type, "link"))) {
                 e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4((short) ? short_title : title)].concat([ρσ_desugar_kwargs({href: default_value})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "link-image", src: chrome.extension.getURL(extra)})])].concat([ρσ_desugar_kwargs({class_: "image-link"})]))].concat([ρσ_desugar_kwargs({href: default_value})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", id: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-link"})]));
             }
@@ -5530,20 +5739,19 @@ var str = ρσ_str, repr = ρσ_repr;;
         if (!createHTMLOption.__defaults__) Object.defineProperties(createHTMLOption, {
             __defaults__ : {value: {short:false}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["option", "short"]}
+            __argnames__ : {value: ["name", "short"]}
         });
 
         function initializeMarka() {
             var groups, triggerOpen, triggerClose, dropdown_menu, marka, input, m, makeOpenCB, makeCloseCB, i;
             groups = $(".beyond20-option-combobox");
-            for (var ρσ_Index0 = 0; ρσ_Index0 < groups.length; ρσ_Index0++) {
-                i = ρσ_Index0;
+            for (var ρσ_Index4 = 0; ρσ_Index4 < groups.length; ρσ_Index4++) {
+                i = ρσ_Index4;
                 triggerOpen = groups.eq(i).find(".select");
                 triggerClose = groups.eq(i).find(".dropdown-menu li");
                 dropdown_menu = groups.eq(i).find(".dropdown-menu");
                 marka = groups.eq(i).find(".icon");
                 input = groups.eq(i).find(".input");
-                console.log(marka);
                 m = new Marka("#" + marka.attr("id"));
                 m.set("triangle").size(10);
                 m.rotate("down");
@@ -5553,7 +5761,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                         return (function() {
                             var ρσ_anonfunc = function (event) {
                                 event.preventDefault();
-                                console.log("Adding open for", dropdown_menu);
                                 dropdown_menu.toggleClass("open");
                                 if (icon.hasClass("marka-icon-times")) {
                                     m.set("triangle").size(10);
@@ -5578,7 +5785,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                             var ρσ_anonfunc = function (event) {
                                 event.preventDefault();
                                 input.text(this.innerText);
-                                console.log("Removing open for", dropdown_menu);
                                 dropdown_menu.removeClass("open");
                                 m.set("triangle").size(10);
                             };
@@ -5598,145 +5804,86 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
         };
 
-        function getDefaultSettings() {
-            var settings, option;
+        function extractSettingsData() {
+            var settings, o_type, val, options, key, option;
             settings = {};
-            var ρσ_Iter1 = ρσ_Iterable(options_list);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                option = ρσ_Iter1[ρσ_Index1];
-                settings[ρσ_bound_index(option[0], settings)] = option[5];
+            var ρσ_Iter5 = ρσ_Iterable(options_list);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                option = ρσ_Iter5[ρσ_Index5];
+                o_type = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option][3];
+                if ((o_type === "bool" || typeof o_type === "object" && ρσ_equals(o_type, "bool"))) {
+                    settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = $("#" + option).prop("checked");
+                } else if ((o_type === "combobox" || typeof o_type === "object" && ρσ_equals(o_type, "combobox"))) {
+                    val = $("#" + option).text();
+                    options = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option][5];
+                    var ρσ_Iter6 = ρσ_Iterable(options);
+                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                        key = ρσ_Iter6[ρσ_Index6];
+                        if ((options[(typeof key === "number" && key < 0) ? options.length + key : key] === val || typeof options[(typeof key === "number" && key < 0) ? options.length + key : key] === "object" && ρσ_equals(options[(typeof key === "number" && key < 0) ? options.length + key : key], val))) {
+                            settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = key;
+                            break;
+                        }
+                    }
+                } else if ((o_type === "string" || typeof o_type === "object" && ρσ_equals(o_type, "string"))) {
+                    settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = $("#" + option).val();
+                }
             }
             return settings;
         };
 
-        function replaceRollsCallback(match, modifiers_only, pre, dice, post, keep_original, pre_original, post_original, pre_dice, post_dice) {
-            var result, i;
-            if (modifiers_only && ρσ_in((ρσ_expr_temp = match.string)[ρσ_bound_index(match.start() - 1, ρσ_expr_temp)], map(str, range(0, 10)))) {
-                return match.group(0);
-            }
-            if (post < 100 && !ρσ_in(match.group(post), ρσ_list_decorate([ "", " ", ";", ",", ".", ")", "(" ]))) {
-                return match.group(0);
-            }
-            result = (pre > 0) ? match.group(pre) : "";
-            if (keep_original) {
-                result += pre_original;
-                for (var ρσ_Index2 = dice; ρσ_Index2 < post; ρσ_Index2++) {
-                    i = ρσ_Index2;
-                    result += match.group(i);
+        function loadSettings(settings) {
+            var o_type, val, extra, option;
+            var ρσ_Iter7 = ρσ_Iterable(settings);
+            for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                option = ρσ_Iter7[ρσ_Index7];
+                o_type = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option][3];
+                if ((o_type === "bool" || typeof o_type === "object" && ρσ_equals(o_type, "bool"))) {
+                    $("#" + option).prop("checked", settings[(typeof option === "number" && option < 0) ? settings.length + option : option]);
+                } else if ((o_type === "combobox" || typeof o_type === "object" && ρσ_equals(o_type, "combobox"))) {
+                    val = settings[(typeof option === "number" && option < 0) ? settings.length + option : option];
+                    extra = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option][5];
+                    $("#" + option).text(extra[(typeof val === "number" && val < 0) ? extra.length + val : val]);
+                } else if ((o_type === "string" || typeof o_type === "object" && ρσ_equals(o_type, "string"))) {
+                    $("#" + option).val(settings[(typeof option === "number" && option < 0) ? settings.length + option : option]);
                 }
-                result += post_original;
             }
-            result += pre_dice;
-            for (var ρσ_Index3 = dice; ρσ_Index3 < post; ρσ_Index3++) {
-                i = ρσ_Index3;
-                result += match.group(i);
-            }
-            result += post_dice;
-            result += (post < 100) ? match.group(post) : "";
-            print(result);
-            return result;
         };
-        if (!replaceRollsCallback.__argnames__) Object.defineProperties(replaceRollsCallback, {
-            __argnames__ : {value: ["match", "modifiers_only", "pre", "dice", "post", "keep_original", "pre_original", "post_original", "pre_dice", "post_dice"]}
+        if (!loadSettings.__argnames__) Object.defineProperties(loadSettings, {
+            __argnames__ : {value: ["settings"]}
         });
 
-        function replaceRolls() {
-            var modifiers_only = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var text = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
-            var keep_original = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.keep_original : arguments[2];
-            var pre_original = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.pre_original : arguments[3];
-            var post_original = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.post_original : arguments[4];
-            var pre_dice = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.pre_dice : arguments[5];
-            var post_dice = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.post_dice : arguments[6];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "keep_original")){
-                keep_original = ρσ_kwargs_obj.keep_original;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "pre_original")){
-                pre_original = ρσ_kwargs_obj.pre_original;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "post_original")){
-                post_original = ρσ_kwargs_obj.post_original;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "pre_dice")){
-                pre_dice = ρσ_kwargs_obj.pre_dice;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "post_dice")){
-                post_dice = ρσ_kwargs_obj.post_dice;
-            }
-            var dice_regexp, modifiers_regexp, regexp, pre, dice, post, new_text;
-            dice_regexp = "(^|\\s|\\(|\\))([0-9]*d[0-9]+)((?:\\s*[-+]\\s*[0-9]+)?)($|\\s|.|;|,|\\)|\\()";
-            modifiers_regexp = "(\\s+)([-+]\\s*[0-9]+)($|\\s|.|;|,)";
-            if (modifiers_only) {
-                regexp = modifiers_regexp;
-                pre = 1;
-                dice = 2;
-                post = 3;
-            } else {
-                regexp = dice_regexp;
-                pre = 1;
-                dice = 2;
-                post = 4;
-            }
-            new_text = re.sub(regexp, (function() {
-                var ρσ_anonfunc = function (m) {
-                    return replaceRollsCallback(m, modifiers_only, pre, dice, post, keep_original, pre_original, post_original, pre_dice, post_dice);
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["m"]}
-                });
-                return ρσ_anonfunc;
-            })(), text);
-            print("Replacing '" + text + "' with : " + new_text);
-            return new_text;
+        function restoreSavedSettings() {
+            var settings;
+            settings = getDefaultSettings();
+            getStoredSettings(loadSettings);
         };
-        if (!replaceRolls.__defaults__) Object.defineProperties(replaceRolls, {
-            __defaults__ : {value: {keep_original:false, pre_original:"", post_original:"", pre_dice:"", post_dice:""}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["modifiers_only", "text", "keep_original", "pre_original", "post_original", "pre_dice", "post_dice"]}
+
+        function saveSettings(cb) {
+            var settings;
+            settings = extractSettingsData();
+            setSettings(settings, cb);
+        };
+        if (!saveSettings.__argnames__) Object.defineProperties(saveSettings, {
+            __argnames__ : {value: ["cb"]}
         });
 
-        function subRolls() {
-            var text = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var keep_original = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.keep_original : arguments[1];
-            var escape = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.escape : arguments[2];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "keep_original")){
-                keep_original = ρσ_kwargs_obj.keep_original;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "escape")){
-                escape = ρσ_kwargs_obj.escape;
-            }
-            var pre_original, post_original, pre_dice, post_dice;
-            if (keep_original && escape) {
-                pre_original = "[";
-                post_original = "]";
-                pre_dice = "(!&#13;&#91;&#91;";
-                post_dice = "&#93;&#93;)";
-            } else {
-                pre_original = "";
-                post_original = "";
-                pre_dice = "[[";
-                post_dice = "]]";
-            }
-            text = replaceRolls(false, text, keep_original, pre_original, post_original, pre_dice, post_dice);
-            return replaceRolls(true, text, keep_original, pre_original, post_original, pre_dice + "1d20 ", post_dice);
+        function initializeSettings() {
+            initializeMarka();
+            restoreSavedSettings();
         };
-        if (!subRolls.__defaults__) Object.defineProperties(subRolls, {
-            __defaults__ : {value: {keep_original:false, escape:false}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["text", "keep_original", "escape"]}
-        });
 
-        ρσ_modules.utils.options_list = options_list;
-        ρσ_modules.utils.createHTMLOption = createHTMLOption;
-        ρσ_modules.utils.initializeMarka = initializeMarka;
-        ρσ_modules.utils.getDefaultSettings = getDefaultSettings;
-        ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
-        ρσ_modules.utils.replaceRolls = replaceRolls;
-        ρσ_modules.utils.subRolls = subRolls;
+        ρσ_modules.settings.options_list = options_list;
+        ρσ_modules.settings.getDefaultSettings = getDefaultSettings;
+        ρσ_modules.settings.getStoredSettings = getStoredSettings;
+        ρσ_modules.settings.setSettings = setSettings;
+        ρσ_modules.settings.resetSettings = resetSettings;
+        ρσ_modules.settings.createHTMLOption = createHTMLOption;
+        ρσ_modules.settings.initializeMarka = initializeMarka;
+        ρσ_modules.settings.extractSettingsData = extractSettingsData;
+        ρσ_modules.settings.loadSettings = loadSettings;
+        ρσ_modules.settings.restoreSavedSettings = restoreSavedSettings;
+        ρσ_modules.settings.saveSettings = saveSettings;
+        ρσ_modules.settings.initializeSettings = initializeSettings;
     })();
 
     (function(){
@@ -5746,7 +5893,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         var chat, txt, btn, speakingas, settings;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
-        var getDefaultSettings = ρσ_modules.utils.getDefaultSettings;
+
+        var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
+        var getStoredSettings = ρσ_modules.settings.getStoredSettings;
 
         print("Beyond20: Roll20 module loaded.");
         chat = document.getElementById("textchat-input");
@@ -5766,8 +5915,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             set_speakingas = true;
             if (character) {
                 character = character.toLowerCase();
-                for (var ρσ_Index4 = 0; ρσ_Index4 < speakingas.children.length; ρσ_Index4++) {
-                    i = ρσ_Index4;
+                for (var ρσ_Index8 = 0; ρσ_Index8 < speakingas.children.length; ρσ_Index8++) {
+                    i = ρσ_Index8;
                     if (ρσ_equals((ρσ_expr_temp = speakingas.children)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i].text.toLowerCase(), character)) {
                         (ρσ_expr_temp = speakingas.children)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i].selected = true;
                         set_speakingas = false;
@@ -5799,9 +5948,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var roll, mod, m;
             roll = "[[" + dice;
-            var ρσ_Iter5 = ρσ_Iterable(modifiers);
-            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                m = ρσ_Iter5[ρσ_Index5];
+            var ρσ_Iter9 = ρσ_Iterable(modifiers);
+            for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                m = ρσ_Iter9[ρσ_Index9];
                 mod = modifiers[(typeof m === "number" && m < 0) ? modifiers.length + m : m];
                 if (len(mod) > 0) {
                     if ((mod[0] === "+" || typeof mod[0] === "object" && ρσ_equals(mod[0], "+")) || (mod[0] === "-" || typeof mod[0] === "object" && ρσ_equals(mod[0], "-"))) {
@@ -5856,12 +6005,22 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["text", "keep_original", "escape"]}
         });
 
+        function subDescriptionRolls(description) {
+            if (!settings["subst-roll20"]) {
+                return description;
+            }
+            return subRolls(description, true, true);
+        };
+        if (!subDescriptionRolls.__argnames__) Object.defineProperties(subDescriptionRolls, {
+            __argnames__ : {value: ["description"]}
+        });
+
         function template(name, properties) {
             var result, key;
             result = "&{template:" + name + "}";
-            var ρσ_Iter6 = ρσ_Iterable(properties);
-            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                key = ρσ_Iter6[ρσ_Index6];
+            var ρσ_Iter10 = ρσ_Iterable(properties);
+            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                key = ρσ_Iter10[ρσ_Index10];
                 result += " {{" + key + "=" + properties[(typeof key === "number" && key < 0) ? properties.length + key : key] + "}}";
             }
             return result;
@@ -5880,16 +6039,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (new_settings) {
                 settings = new_settings;
             } else {
-                chrome.storage.sync.get((function(){
-                    var ρσ_d = {};
-                    ρσ_d["settings"] = settings;
-                    return ρσ_d;
-                }).call(this), (function() {
-                    var ρσ_anonfunc = function (items) {
-                        settings = items.settings;
+                getStoredSettings((function() {
+                    var ρσ_anonfunc = function (saved_settings) {
+                        settings = saved_settings;
                     };
                     if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["items"]}
+                        __argnames__ : {value: ["saved_settings"]}
                     });
                     return ρσ_anonfunc;
                 })());
@@ -6018,7 +6173,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         ρσ_d["dmg1flag"] = 1;
                         ρσ_d["dmg1"] = subRolls(request.damage);
                         ρσ_d["dmg1type"] = request["damage-type"];
-                        ρσ_d["crit1"] = subRolls("Crit: " + crit1);
+                        ρσ_d["crit1"] = subRolls(settings["crit-prefix"] + crit1);
                         return ρσ_d;
                     }).call(this);
                     if (ρσ_exists.n(request["to-hit"])) {
@@ -6044,7 +6199,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         properties["dmg2flag"] = 1;
                         properties["dmg2"] = subRolls(request["second-damage"]);
                         properties["dmg2type"] = request["second-damage-type"];
-                        properties["crit2"] = subRolls("Crit: " + crit2);
+                        properties["crit2"] = subRolls(settings["crit-prefix"] + crit2);
                     }
                     if (ρσ_exists.n(request["save-dc"])) {
                         properties["save"] = 1;
@@ -6057,7 +6212,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         var ρσ_d = {};
                         ρσ_d["source"] = request["item-type"];
                         ρσ_d["name"] = request.name;
-                        ρσ_d["description"] = subRolls(request.description, true, true);
+                        ρσ_d["description"] = subDescriptionRolls(request.description);
                         return ρσ_d;
                     }).call(this));
                 } else if ((request.type === "feature" || typeof request.type === "object" && ρσ_equals(request.type, "feature"))) {
@@ -6069,14 +6224,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                         var ρσ_d = {};
                         ρσ_d["source"] = source;
                         ρσ_d["name"] = request.name;
-                        ρσ_d["description"] = subRolls(request.description, true, true);
+                        ρσ_d["description"] = subDescriptionRolls(request.description);
                         return ρσ_d;
                     }).call(this));
                 } else if (ρσ_in(request.type, ρσ_list_decorate([ "trait", "action" ]))) {
                     roll += template("traits", (function(){
                         var ρσ_d = {};
                         ρσ_d["name"] = request.name;
-                        ρσ_d["description"] = subRolls(request.description, true, true);
+                        ρσ_d["description"] = subDescriptionRolls(request.description);
                         return ρσ_d;
                     }).call(this));
                 } else if ((request.type === "spell-card" || typeof request.type === "object" && ρσ_equals(request.type, "spell-card"))) {
@@ -6102,10 +6257,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                     description = request.description;
                     higher = description.indexOf("At Higher Levels.");
                     if (higher > 0) {
-                        properties["athigherlevels"] = subRolls(description.slice(higher + "At Higher Levels.".length), true, true);
+                        properties["athigherlevels"] = subDescriptionRolls(description.slice(higher + "At Higher Levels.".length), true, true);
                         description = description.slice(0, higher - 1);
                     }
-                    properties["description"] = subRolls(description, true, true);
+                    properties["description"] = subDescriptionRolls(description, true, true);
                     components = request.components;
                     while ((components !== "" && (typeof components !== "object" || ρσ_not_equals(components, "")))) {
                         if ((components[0] === "V" || typeof components[0] === "object" && ρσ_equals(components[0], "V"))) {
@@ -6153,7 +6308,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         properties["dmg1type"] = request["damage-type"];
                         if ((request["damage-type"] !== "Healing" && (typeof request["damage-type"] !== "object" || ρσ_not_equals(request["damage-type"], "Healing")))) {
                             crit1 = request.damage.split((ρσ_in("+", request.damage)) ? "+" : "-")[0];
-                            properties["crit1"] = subRolls("Crit: " + crit1);
+                            properties["crit1"] = subRolls(settings["crit-prefix"] + crit1);
                         }
                     }
                     if (ρσ_exists.n(request.range)) {
@@ -6165,7 +6320,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         properties["dmg2type"] = request["second-damage-type"];
                         if ((request["second-damage-type"] !== "Healing" && (typeof request["second-damage-type"] !== "object" || ρσ_not_equals(request["second-damage-type"], "Healing")))) {
                             crit2 = request["second-damage"].split((ρσ_in("+", request["second-damage"])) ? "+" : "-")[0];
-                            properties["crit2"] = subRolls("Crit: " + crit2);
+                            properties["crit2"] = subRolls(settings["crit-prefix"] + crit2);
                         }
                     }
                     if (ρσ_exists.n(request["save-dc"])) {

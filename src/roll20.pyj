@@ -1,4 +1,5 @@
-from utils import replaceRolls, getDefaultSettings
+from utils import replaceRolls
+from settings import getDefaultSettings, getStoredSettings
 
 print("Beyond20: Roll20 module loaded.")
 
@@ -52,6 +53,12 @@ def subRolls(text, keep_original=False, escape=False):
     text = replaceRolls(False, text, keep_original, pre_original, post_original, pre_dice, post_dice)
     return replaceRolls(True, text, keep_original, pre_original, post_original, pre_dice + "1d20", post_dice)
 
+def subDescriptionRolls(description):
+    nonlocal settings
+    if not settings["subst-roll20"]:
+        return description
+    return subRolls(description, True, True)
+
 def template(name, properties):
     result = "&{template:" + name + "}"
     for key in properties:
@@ -63,9 +70,9 @@ def updateSettings(new_settings=None):
     if new_settings:
         settings = new_settings
     else:
-        chrome.storage.sync.get({"settings": settings}, def(items):
+        getStoredSettings(def(saved_settings):
             nonlocal settings
-            settings = items.settings
+            settings = saved_settings
         )
 
 def handleMessage (request, sender, sendResponse):
@@ -134,7 +141,7 @@ def handleMessage (request, sender, sendResponse):
                           "dmg1flag": 1,
                           "dmg1": subRolls(request.damage),
                           "dmg1type": request["damage-type"],
-                          "crit1": subRolls("Crit: " + crit1)}
+                          "crit1": subRolls(settings["crit-prefix"] + crit1)}
             if request["to-hit"]?:
                 properties["mod"] = request["to-hit"]
                 properties["r1"] = genRoll("1d20", {"": request["to-hit"]})
@@ -148,7 +155,7 @@ def handleMessage (request, sender, sendResponse):
                 properties["dmg2flag"] = 1
                 properties["dmg2"] = subRolls(request["second-damage"])
                 properties["dmg2type"] = request["second-damage-type"]
-                properties["crit2"] = subRolls("Crit: " + crit2)
+                properties["crit2"] = subRolls(settings["crit-prefix"] + crit2)
             if request["save-dc"]?:
                 properties["save"] = 1
                 properties["saveattr"] = request["save-ability"]
@@ -157,17 +164,17 @@ def handleMessage (request, sender, sendResponse):
         elif request.type == "item":
             roll += template("traits", {"source": request["item-type"],
                                         "name": request.name,
-                                        "description": subRolls(request.description, True, True)})
+                                        "description": subDescriptionRolls(request.description)})
         elif request.type == "feature":
             source = request["source-type"]
             if request.source.length > 0:
                 source += ": " + request.source
             roll += template("traits", {"source": source,
                                         "name": request.name,
-                                        "description": subRolls(request.description, True, True)})
+                                        "description": subDescriptionRolls(request.description)})
         elif request.type in ["trait", "action"]:
             roll += template("traits", {"name": request.name,
-                                        "description": subRolls(request.description, True, True)})
+                                        "description": subDescriptionRolls(request.description)})
         elif request.type == "spell-card":
             properties = {"name": request.name,
                           "castingtime": request["casting-time"],
@@ -186,9 +193,9 @@ def handleMessage (request, sender, sendResponse):
             description = request.description            
             higher = description.indexOf("At Higher Levels.")
             if higher > 0:
-                properties["athigherlevels"] = subRolls(description[higher+"At Higher Levels.".length:], True, True)
+                properties["athigherlevels"] = subDescriptionRolls(description[higher+"At Higher Levels.".length:], True, True)
                 description = description[:higher-1]
-            properties["description"] = subRolls(description, True, True)
+            properties["description"] = subDescriptionRolls(description, True, True)
                           
             components = request.components
             while components != "":
@@ -221,7 +228,7 @@ def handleMessage (request, sender, sendResponse):
                 properties["dmg1type"] = request["damage-type"]
                 if request["damage-type"] != "Healing":
                     crit1 = request.damage.split("+" if "+" in request.damage else "-")[0]
-                    properties["crit1"] = subRolls("Crit: " + crit1)
+                    properties["crit1"] = subRolls(settings["crit-prefix"] + crit1)
             if request.range?:
                 properties["range"] = request.range
             if request["second-damage"]?:
@@ -230,7 +237,7 @@ def handleMessage (request, sender, sendResponse):
                 properties["dmg2type"] = request["second-damage-type"]
                 if request["second-damage-type"] != "Healing":
                     crit2 = request["second-damage"].split("+" if "+" in request["second-damage"] else "-")[0]
-                    properties["crit2"] = subRolls("Crit: " + crit2)
+                    properties["crit2"] = subRolls(settings["crit-prefix"] + crit2)
             if request["save-dc"]?:
                 properties["save"] = 1
                 properties["saveattr"] = request["save-ability"]
@@ -273,3 +280,4 @@ def handleMessage (request, sender, sendResponse):
 chrome.runtime.onMessage.addListener(handleMessage)
 updateSettings()
 chrome.runtime.sendMessage({"action": "activate-icon"});
+
