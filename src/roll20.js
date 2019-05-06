@@ -3725,6 +3725,7 @@ define_str_func = undefined;
 var str = ρσ_str, repr = ρσ_repr;;
     var ρσ_modules = {};
     ρσ_modules.re = {};
+    ρσ_modules.elementmaker = {};
     ρσ_modules.utils = {};
 
     (function(){
@@ -5168,8 +5169,445 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
+        var __name__ = "elementmaker";
+        var html_elements, mathml_elements, svg_elements, html5_tags, E;
+        html_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("a");
+            s.jsset.add("abbr");
+            s.jsset.add("acronym");
+            s.jsset.add("address");
+            s.jsset.add("area");
+            s.jsset.add("article");
+            s.jsset.add("aside");
+            s.jsset.add("audio");
+            s.jsset.add("b");
+            s.jsset.add("big");
+            s.jsset.add("blockquote");
+            s.jsset.add("br");
+            s.jsset.add("button");
+            s.jsset.add("canvas");
+            s.jsset.add("caption");
+            s.jsset.add("center");
+            s.jsset.add("cite");
+            s.jsset.add("code");
+            s.jsset.add("col");
+            s.jsset.add("colgroup");
+            s.jsset.add("command");
+            s.jsset.add("datagrid");
+            s.jsset.add("datalist");
+            s.jsset.add("dd");
+            s.jsset.add("del");
+            s.jsset.add("details");
+            s.jsset.add("dfn");
+            s.jsset.add("dialog");
+            s.jsset.add("dir");
+            s.jsset.add("div");
+            s.jsset.add("dl");
+            s.jsset.add("dt");
+            s.jsset.add("em");
+            s.jsset.add("event-source");
+            s.jsset.add("fieldset");
+            s.jsset.add("figcaption");
+            s.jsset.add("figure");
+            s.jsset.add("footer");
+            s.jsset.add("font");
+            s.jsset.add("form");
+            s.jsset.add("header");
+            s.jsset.add("h1");
+            s.jsset.add("h2");
+            s.jsset.add("h3");
+            s.jsset.add("h4");
+            s.jsset.add("h5");
+            s.jsset.add("h6");
+            s.jsset.add("hr");
+            s.jsset.add("i");
+            s.jsset.add("iframe");
+            s.jsset.add("img");
+            s.jsset.add("input");
+            s.jsset.add("ins");
+            s.jsset.add("keygen");
+            s.jsset.add("kbd");
+            s.jsset.add("label");
+            s.jsset.add("legend");
+            s.jsset.add("li");
+            s.jsset.add("m");
+            s.jsset.add("map");
+            s.jsset.add("menu");
+            s.jsset.add("meter");
+            s.jsset.add("multicol");
+            s.jsset.add("nav");
+            s.jsset.add("nextid");
+            s.jsset.add("ol");
+            s.jsset.add("output");
+            s.jsset.add("optgroup");
+            s.jsset.add("option");
+            s.jsset.add("p");
+            s.jsset.add("pre");
+            s.jsset.add("progress");
+            s.jsset.add("q");
+            s.jsset.add("s");
+            s.jsset.add("samp");
+            s.jsset.add("script");
+            s.jsset.add("section");
+            s.jsset.add("select");
+            s.jsset.add("small");
+            s.jsset.add("sound");
+            s.jsset.add("source");
+            s.jsset.add("spacer");
+            s.jsset.add("span");
+            s.jsset.add("strike");
+            s.jsset.add("strong");
+            s.jsset.add("style");
+            s.jsset.add("sub");
+            s.jsset.add("sup");
+            s.jsset.add("table");
+            s.jsset.add("tbody");
+            s.jsset.add("td");
+            s.jsset.add("textarea");
+            s.jsset.add("time");
+            s.jsset.add("tfoot");
+            s.jsset.add("th");
+            s.jsset.add("thead");
+            s.jsset.add("tr");
+            s.jsset.add("tt");
+            s.jsset.add("u");
+            s.jsset.add("ul");
+            s.jsset.add("var");
+            s.jsset.add("video");
+            return s;
+        })();
+        mathml_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("maction");
+            s.jsset.add("math");
+            s.jsset.add("merror");
+            s.jsset.add("mfrac");
+            s.jsset.add("mi");
+            s.jsset.add("mmultiscripts");
+            s.jsset.add("mn");
+            s.jsset.add("mo");
+            s.jsset.add("mover");
+            s.jsset.add("mpadded");
+            s.jsset.add("mphantom");
+            s.jsset.add("mprescripts");
+            s.jsset.add("mroot");
+            s.jsset.add("mrow");
+            s.jsset.add("mspace");
+            s.jsset.add("msqrt");
+            s.jsset.add("mstyle");
+            s.jsset.add("msub");
+            s.jsset.add("msubsup");
+            s.jsset.add("msup");
+            s.jsset.add("mtable");
+            s.jsset.add("mtd");
+            s.jsset.add("mtext");
+            s.jsset.add("mtr");
+            s.jsset.add("munder");
+            s.jsset.add("munderover");
+            s.jsset.add("none");
+            return s;
+        })();
+        svg_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("a");
+            s.jsset.add("animate");
+            s.jsset.add("animateColor");
+            s.jsset.add("animateMotion");
+            s.jsset.add("animateTransform");
+            s.jsset.add("clipPath");
+            s.jsset.add("circle");
+            s.jsset.add("defs");
+            s.jsset.add("desc");
+            s.jsset.add("ellipse");
+            s.jsset.add("font-face");
+            s.jsset.add("font-face-name");
+            s.jsset.add("font-face-src");
+            s.jsset.add("g");
+            s.jsset.add("glyph");
+            s.jsset.add("hkern");
+            s.jsset.add("linearGradient");
+            s.jsset.add("line");
+            s.jsset.add("marker");
+            s.jsset.add("metadata");
+            s.jsset.add("missing-glyph");
+            s.jsset.add("mpath");
+            s.jsset.add("path");
+            s.jsset.add("polygon");
+            s.jsset.add("polyline");
+            s.jsset.add("radialGradient");
+            s.jsset.add("rect");
+            s.jsset.add("set");
+            s.jsset.add("stop");
+            s.jsset.add("svg");
+            s.jsset.add("switch");
+            s.jsset.add("text");
+            s.jsset.add("title");
+            s.jsset.add("tspan");
+            s.jsset.add("use");
+            return s;
+        })();
+        html5_tags = html_elements.union(mathml_elements).union(svg_elements);
+        function _makeelement() {
+            var tag = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var kwargs = arguments[arguments.length-1];
+            if (kwargs === null || typeof kwargs !== "object" || kwargs [ρσ_kwargs_symbol] !== true) kwargs = {};
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (kwargs !== null && typeof kwargs === "object" && kwargs [ρσ_kwargs_symbol] === true) args.pop();
+            var ans, vattr, val, attr, arg;
+            ans = this.createElement(tag);
+            var ρσ_Iter0 = ρσ_Iterable(kwargs);
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                attr = ρσ_Iter0[ρσ_Index0];
+                vattr = str.replace(str.rstrip(attr, "_"), "_", "-");
+                val = kwargs[(typeof attr === "number" && attr < 0) ? kwargs.length + attr : attr];
+                if (callable(val)) {
+                    if (str.startswith(attr, "on")) {
+                        attr = attr.slice(2);
+                    }
+                    ans.addEventListener(attr, val);
+                } else if (val === true) {
+                    ans.setAttribute(vattr, vattr);
+                } else if (typeof val === "string") {
+                    ans.setAttribute(vattr, val);
+                }
+            }
+            var ρσ_Iter1 = ρσ_Iterable(args);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                arg = ρσ_Iter1[ρσ_Index1];
+                if (typeof arg === "string") {
+                    arg = this.createTextNode(arg);
+                }
+                ans.appendChild(arg);
+            }
+            return ans;
+        };
+        if (!_makeelement.__handles_kwarg_interpolation__) Object.defineProperties(_makeelement, {
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["tag"]}
+        });
+
+        function maker_for_document(document) {
+            var E;
+            E = _makeelement.bind(document);
+            Object.defineProperties(E, (function() {
+                var ρσ_Iter = ρσ_Iterable(html5_tags), ρσ_Result = {}, tag;
+                for (var ρσ_Index = 0; ρσ_Index < ρσ_Iter.length; ρσ_Index++) {
+                    tag = ρσ_Iter[ρσ_Index];
+                    ρσ_Result[tag] = ((function(){
+                        var ρσ_d = {};
+                        ρσ_d["value"] = _makeelement.bind(document, tag);
+                        return ρσ_d;
+                    }).call(this));
+                }
+                return ρσ_Result;
+            })());
+            return E;
+        };
+        if (!maker_for_document.__argnames__) Object.defineProperties(maker_for_document, {
+            __argnames__ : {value: ["document"]}
+        });
+
+        if (typeof document === "undefined") {
+            E = maker_for_document((function(){
+                var ρσ_d = {};
+                ρσ_d["createTextNode"] = (function() {
+                    var ρσ_anonfunc = function (value) {
+                        return value;
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["value"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                ρσ_d["createElement"] = (function() {
+                    var ρσ_anonfunc = function (name) {
+                        return (function(){
+                            var ρσ_d = {};
+                            ρσ_d["name"] = name;
+                            ρσ_d["children"] = ρσ_list_decorate([]);
+                            ρσ_d["attributes"] = {};
+                            ρσ_d["setAttribute"] = (function() {
+                                var ρσ_anonfunc = function (name, val) {
+                                    (ρσ_expr_temp = this.attributes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = val;
+                                };
+                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                    __argnames__ : {value: ["name", "val"]}
+                                });
+                                return ρσ_anonfunc;
+                            })();
+                            ρσ_d["appendChild"] = (function() {
+                                var ρσ_anonfunc = function (child) {
+                                    this.children.push(child);
+                                };
+                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                    __argnames__ : {value: ["child"]}
+                                });
+                                return ρσ_anonfunc;
+                            })();
+                            return ρσ_d;
+                        }).call(this);
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["name"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                return ρσ_d;
+            }).call(this));
+        } else {
+            E = maker_for_document(document);
+        }
+        ρσ_modules.elementmaker.html_elements = html_elements;
+        ρσ_modules.elementmaker.mathml_elements = mathml_elements;
+        ρσ_modules.elementmaker.svg_elements = svg_elements;
+        ρσ_modules.elementmaker.html5_tags = html5_tags;
+        ρσ_modules.elementmaker.E = E;
+        ρσ_modules.elementmaker._makeelement = _makeelement;
+        ρσ_modules.elementmaker.maker_for_document = maker_for_document;
+    })();
+
+    (function(){
         var __name__ = "utils";
+        var options_list;
         var re = ρσ_modules.re;
+
+        var E = ρσ_modules.elementmaker.E;
+
+        options_list = ρσ_list_decorate([ ["whispers", "Whisper rolls", "Whisper rolls to the DM", 
+        "If enabled, all the rolls will be whispered to the DM", "bool", false], ["roll-advantage", 
+        "Roll with Advantage", "Always roll Advantange/Disadvantage", "Always roll a second dice for Advantage/Disadvantage", 
+        "bool", true], ["template", null, "Roll20 Character Sheet Setting", "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.", 
+        "combobox", "roll20", (function(){
+            var ρσ_d = {};
+            ρσ_d["roll20"] = "D&D 5E By Roll20";
+            return ρσ_d;
+        }).call(this)], ["donate", "Want to donate?", "Donate to show your appreciation!", 
+        "I know you already appreciate this plugin, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active on this extension, you can!", 
+        "link", "https://www.paypal.me/KaKaRoTo", "images/donate.png"] ]);
+        function createHTMLOption() {
+            var option = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var short = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? createHTMLOption.__defaults__.short : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "short")){
+                short = ρσ_kwargs_obj.short;
+            }
+            var ρσ_unpack, name, short_title, title, description, option_type, default_value, extra, description_p, e, make_li, dropdown_options;
+            ρσ_unpack = ρσ_flatten(option);
+ρσ_unpack = ρσ_unpack_asarray(7, ρσ_unpack);
+            name = ρσ_unpack[0];
+            short_title = ρσ_unpack[1];
+            title = ρσ_unpack[2];
+            description = ρσ_unpack[3];
+            option_type = ρσ_unpack[4];
+            default_value = ρσ_unpack[5];
+            extra = ρσ_unpack[6];
+            if (short && short_title === null) {
+                return null;
+            }
+            description = (short) ? "" : description;
+            description_p = list(map(E.p, description.split("\n")));
+            if ((option_type === "bool" || typeof option_type === "object" && ρσ_equals(option_type, "bool"))) {
+                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [E.h4((short) ? short_title : title)].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.input, [ρσ_desugar_kwargs({id: name, class_: "beyond20-option-input", name: name, type_: "checkbox"})]), ρσ_interpolate_kwargs.call(E, E.label, [ρσ_desugar_kwargs({for_: name, class_: "label-default"})])].concat([ρσ_desugar_kwargs({class_: "material-switch pull-right"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-bool"})]));
+            } else if ((option_type === "combobox" || typeof option_type === "object" && ρσ_equals(option_type, "combobox"))) {
+                make_li = (function() {
+                    var ρσ_anonfunc = function (o) {
+                        return E.li(ρσ_interpolate_kwargs.call(E, E.a, [o].concat([ρσ_desugar_kwargs({href: "#"})])));
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["o"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                dropdown_options = list(map(make_li, Object.values(extra)));
+                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [(short) ? short_title : title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, [extra[(typeof default_value === "number" && default_value < 0) ? extra.length + default_value : default_value]].concat([ρσ_desugar_kwargs({class_: "input select", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({id: name, class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-combobox"})]));
+            } else if ((option_type === "link" || typeof option_type === "object" && ρσ_equals(option_type, "link"))) {
+                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4((short) ? short_title : title)].concat([ρσ_desugar_kwargs({href: default_value})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "link-image", src: chrome.extension.getURL(extra)})])].concat([ρσ_desugar_kwargs({class_: "image-link"})]))].concat([ρσ_desugar_kwargs({href: default_value})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", id: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-link"})]));
+            }
+            return e;
+        };
+        if (!createHTMLOption.__defaults__) Object.defineProperties(createHTMLOption, {
+            __defaults__ : {value: {short:false}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["option", "short"]}
+        });
+
+        function initializeMarka() {
+            var groups, triggerOpen, triggerClose, dropdown_menu, marka, input, m, makeOpenCB, makeCloseCB, i;
+            groups = $(".beyond20-option-combobox");
+            for (var ρσ_Index0 = 0; ρσ_Index0 < groups.length; ρσ_Index0++) {
+                i = ρσ_Index0;
+                triggerOpen = groups.eq(i).find(".select");
+                triggerClose = groups.eq(i).find(".dropdown-menu li");
+                dropdown_menu = groups.eq(i).find(".dropdown-menu");
+                marka = groups.eq(i).find(".icon");
+                input = groups.eq(i).find(".input");
+                console.log(marka);
+                m = new Marka("#" + marka.attr("id"));
+                m.set("triangle").size(10);
+                m.rotate("down");
+                groups.eq(i).find(".button-group").append(marka);
+                makeOpenCB = (function() {
+                    var ρσ_anonfunc = function (dropdown_menu, icon, m) {
+                        return (function() {
+                            var ρσ_anonfunc = function (event) {
+                                event.preventDefault();
+                                console.log("Adding open for", dropdown_menu);
+                                dropdown_menu.toggleClass("open");
+                                if (icon.hasClass("marka-icon-times")) {
+                                    m.set("triangle").size(10);
+                                } else {
+                                    m.set("times").size(15);
+                                }
+                            };
+                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                __argnames__ : {value: ["event"]}
+                            });
+                            return ρσ_anonfunc;
+                        })();
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["dropdown_menu", "icon", "m"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                makeCloseCB = (function() {
+                    var ρσ_anonfunc = function (dropdown_menu, input, m) {
+                        return (function() {
+                            var ρσ_anonfunc = function (event) {
+                                event.preventDefault();
+                                input.text(this.innerText);
+                                console.log("Removing open for", dropdown_menu);
+                                dropdown_menu.removeClass("open");
+                                m.set("triangle").size(10);
+                            };
+                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                __argnames__ : {value: ["event"]}
+                            });
+                            return ρσ_anonfunc;
+                        })();
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["dropdown_menu", "input", "m"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                triggerOpen.bind("click", makeOpenCB(dropdown_menu, marka, m));
+                triggerClose.bind("click", makeCloseCB(dropdown_menu, input, m));
+            }
+        };
+
+        function getDefaultSettings() {
+            var settings, option;
+            settings = {};
+            var ρσ_Iter1 = ρσ_Iterable(options_list);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                option = ρσ_Iter1[ρσ_Index1];
+                settings[ρσ_bound_index(option[0], settings)] = option[5];
+            }
+            return settings;
+        };
 
         function replaceRollsCallback(match, modifiers_only, pre, dice, post, keep_original, pre_original, post_original, pre_dice, post_dice) {
             var result, i;
@@ -5182,15 +5620,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             result = (pre > 0) ? match.group(pre) : "";
             if (keep_original) {
                 result += pre_original;
-                for (var ρσ_Index0 = dice; ρσ_Index0 < post; ρσ_Index0++) {
-                    i = ρσ_Index0;
+                for (var ρσ_Index2 = dice; ρσ_Index2 < post; ρσ_Index2++) {
+                    i = ρσ_Index2;
                     result += match.group(i);
                 }
                 result += post_original;
             }
             result += pre_dice;
-            for (var ρσ_Index1 = dice; ρσ_Index1 < post; ρσ_Index1++) {
-                i = ρσ_Index1;
+            for (var ρσ_Index3 = dice; ρσ_Index3 < post; ρσ_Index3++) {
+                i = ρσ_Index3;
                 result += match.group(i);
             }
             result += post_dice;
@@ -5292,6 +5730,10 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["text", "keep_original", "escape"]}
         });
 
+        ρσ_modules.utils.options_list = options_list;
+        ρσ_modules.utils.createHTMLOption = createHTMLOption;
+        ρσ_modules.utils.initializeMarka = initializeMarka;
+        ρσ_modules.utils.getDefaultSettings = getDefaultSettings;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.subRolls = subRolls;
@@ -5302,15 +5744,16 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var chat, txt, btn, speakingas, whisper;
+        var chat, txt, btn, speakingas, settings;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
+        var getDefaultSettings = ρσ_modules.utils.getDefaultSettings;
 
         print("Beyond20: Roll20 module loaded.");
         chat = document.getElementById("textchat-input");
         txt = chat.getElementsByTagName("textarea")[0];
         btn = chat.getElementsByTagName("button")[0];
         speakingas = document.getElementById("speakingas");
-        whisper = false;
+        settings = getDefaultSettings();
         function postChatMessage() {
             var message = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var character = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postChatMessage.__defaults__.character : arguments[1];
@@ -5323,8 +5766,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             set_speakingas = true;
             if (character) {
                 character = character.toLowerCase();
-                for (var ρσ_Index0 = 0; ρσ_Index0 < speakingas.children.length; ρσ_Index0++) {
-                    i = ρσ_Index0;
+                for (var ρσ_Index4 = 0; ρσ_Index4 < speakingas.children.length; ρσ_Index4++) {
+                    i = ρσ_Index4;
                     if (ρσ_equals((ρσ_expr_temp = speakingas.children)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i].text.toLowerCase(), character)) {
                         (ρσ_expr_temp = speakingas.children)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i].selected = true;
                         set_speakingas = false;
@@ -5356,9 +5799,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var roll, mod, m;
             roll = "[[" + dice;
-            var ρσ_Iter1 = ρσ_Iterable(modifiers);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                m = ρσ_Iter1[ρσ_Index1];
+            var ρσ_Iter5 = ρσ_Iterable(modifiers);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                m = ρσ_Iter5[ρσ_Index5];
                 mod = modifiers[(typeof m === "number" && m < 0) ? modifiers.length + m : m];
                 if (len(mod) > 0) {
                     if ((mod[0] === "+" || typeof mod[0] === "object" && ρσ_equals(mod[0], "+")) || (mod[0] === "-" || typeof mod[0] === "object" && ρσ_equals(mod[0], "-"))) {
@@ -5416,9 +5859,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         function template(name, properties) {
             var result, key;
             result = "&{template:" + name + "}";
-            var ρσ_Iter2 = ρσ_Iterable(properties);
-            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                key = ρσ_Iter2[ρσ_Index2];
+            var ρσ_Iter6 = ρσ_Iterable(properties);
+            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                key = ρσ_Iter6[ρσ_Index6];
                 result += " {{" + key + "=" + properties[(typeof key === "number" && key < 0) ? properties.length + key : key] + "}}";
             }
             return result;
@@ -5427,16 +5870,52 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["name", "properties"]}
         });
 
+        function updateSettings() {
+            var new_settings = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? updateSettings.__defaults__.new_settings : arguments[0];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "new_settings")){
+                new_settings = ρσ_kwargs_obj.new_settings;
+            }
+            if (new_settings) {
+                settings = new_settings;
+            } else {
+                chrome.storage.sync.get((function(){
+                    var ρσ_d = {};
+                    ρσ_d["settings"] = settings;
+                    return ρσ_d;
+                }).call(this), (function() {
+                    var ρσ_anonfunc = function (items) {
+                        settings = items.settings;
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["items"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
+            }
+        };
+        if (!updateSettings.__defaults__) Object.defineProperties(updateSettings, {
+            __defaults__ : {value: {new_settings:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["new_settings"]}
+        });
+
         function handleMessage(request, sender, sendResponse) {
-            var roll, rname, crit1, properties, crit2, source, description, higher, components;
-            if ((request.action === "whisper" || typeof request.action === "object" && ρσ_equals(request.action, "whisper"))) {
-                whisper = request.whisper;
+            var roll, advantage_type, rname, crit1, properties, crit2, source, description, higher, components;
+            if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
+                updateSettings(request.settings);
             } else if ((request.action === "roll" || typeof request.action === "object" && ρσ_equals(request.action, "roll"))) {
                 print("Got message : " + str(request));
-                if (whisper) {
+                if (settings["whispers"]) {
                     roll = "/w gm ";
                 } else {
                     roll = "";
+                }
+                if (settings["roll-advantage"]) {
+                    advantage_type = "always";
+                } else {
+                    advantage_type = "normal";
                 }
                 if ((request.type === "skill" || typeof request.type === "object" && ρσ_equals(request.type, "skill"))) {
                     roll += template("simple", (function(){
@@ -5449,7 +5928,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                             ρσ_d[request.ability] = request.modifier;
                             return ρσ_d;
                         }).call(this));
-                        ρσ_d["always"] = 1;
+                        ρσ_d[advantage_type] = 1;
                         ρσ_d["r2"] = genRoll("1d20", (function(){
                             var ρσ_d = {};
                             ρσ_d[request.ability] = request.modifier;
@@ -5468,7 +5947,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                             ρσ_d[request.ability] = request.modifier;
                             return ρσ_d;
                         }).call(this));
-                        ρσ_d["always"] = 1;
+                        ρσ_d[advantage_type] = 1;
                         ρσ_d["r2"] = genRoll("1d20", (function(){
                             var ρσ_d = {};
                             ρσ_d[request.ability] = request.modifier;
@@ -5487,7 +5966,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                             ρσ_d[request.ability] = request.modifier;
                             return ρσ_d;
                         }).call(this));
-                        ρσ_d["always"] = 1;
+                        ρσ_d[advantage_type] = 1;
                         ρσ_d["r2"] = genRoll("1d20", (function(){
                             var ρσ_d = {};
                             ρσ_d[request.ability] = request.modifier;
@@ -5549,7 +6028,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                             ρσ_d[""] = request["to-hit"];
                             return ρσ_d;
                         }).call(this));
-                        properties["always"] = 1;
+                        properties[(typeof advantage_type === "number" && advantage_type < 0) ? properties.length + advantage_type : advantage_type] = 1;
                         properties["r2"] = genRoll("1d20", (function(){
                             var ρσ_d = {};
                             ρσ_d[""] = request["to-hit"];
@@ -5659,7 +6138,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                             ρσ_d[""] = request["to-hit"];
                             return ρσ_d;
                         }).call(this));
-                        properties["always"] = 1;
+                        properties[(typeof advantage_type === "number" && advantage_type < 0) ? properties.length + advantage_type : advantage_type] = 1;
                         properties["r2"] = genRoll("1d20", (function(){
                             var ρσ_d = {};
                             ρσ_d[""] = request["to-hit"];
@@ -5717,7 +6196,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         var ρσ_d = {};
                         ρσ_d["charname"] = request.character;
                         ρσ_d["rname"] = "Death Saving Throw";
-                        ρσ_d["r1"] = "[[1d20cs>10cf<10]]";
+                        ρσ_d["r1"] = "[[1d20cs>9cf<10]]";
                         ρσ_d["normal"] = 1;
                         return ρσ_d;
                     }).call(this));
@@ -5750,5 +6229,11 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         chrome.runtime.onMessage.addListener(handleMessage);
+        updateSettings();
+        chrome.runtime.sendMessage((function(){
+            var ρσ_d = {};
+            ρσ_d["action"] = "activate-icon";
+            return ρσ_d;
+        }).call(this));
     })();
 })();

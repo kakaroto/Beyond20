@@ -1,15 +1,3 @@
-
-whisper = False
-
-def onBrowserAction(tabs):
-    nonlocal whisper
-    whisper = not whisper
-    alert("Whispered rolls are now " + ("enabled" if whisper else "disabled"))
-    sendMessageToRoll20({"action": "whisper", "whisper": whisper})
-
-# Send a message to the active tab
-chrome.browserAction.onClicked.addListener(onBrowserAction)
-
 def sendMessageToRoll20(request):
     chrome.tabs.query({"url": "*://app.roll20.net/editor/"}, def(tabs):
         console.log("matching tabs : " + tabs)
@@ -21,6 +9,12 @@ def sendMessageToRoll20(request):
 def onMessage(request, sender, sendResponse):
     if request.action == "roll":
         sendMessageToRoll20(request)
+    elif request.action == "settings":
+        sendMessageToRoll20(request)
+    elif request.action == "activate-icon":
+        console.log("Extension loaded into a new page. Activating icon")
+        chrome.pageAction.show(sender.tab.id);
+
 chrome.runtime.onMessage.addListener(onMessage)
 
 def executeScripts(tabs, js_files):
@@ -33,4 +27,4 @@ cb = def(tabs):
 chrome.tabs.query({ "url": "*://app.roll20.net/editor/" }, cb)
 cb = def(tabs):
     executeScripts(tabs, ["src/jquery-3.4.1.min.js", "src/dndbeyond.js"])
-chrome.tabs.query({ "url": "*://*.dndbeyond.com/profile/*/characters/*" }, cb)
+chrome.tabs.query({ "url": "*://*.dndbeyond.com/*characters/*" }, cb)

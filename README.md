@@ -5,7 +5,7 @@ Beyond20 is a chrome extension that integrates the Character Sheet from D&D Beyo
 
 # Build
 
-This extension is written in 'python', more precisely in RapydScript and you will need RapydScript-NG installed to compile the .pyj source files into .js
+This extension is written in 'python', more precisely in RapydScript and you will need [RapydScript-NG](https://github.com/kovidgoyal/rapydscript-ng) installed to compile the .pyj source files into .js
 I don't know if it's totally compatible with rapydscript itself as I've used rapydscript-ng myself. 
 
 To install :
@@ -35,7 +35,11 @@ If you click on the Beyond20 button in the toolbar, it will enable/disable whisp
 # License
 This extension is released under the GPL v3 license. Read the LICENSE file for more details.
 
-The icon image is based on a public domain image from openclipart. I downloaded it from https://commons.wikimedia.org/wiki/File:Twenty_sided_dice.svg and subsequently modified it.
+The icon image is based on a public domain image from openclipart. I downloaded it from [wikimedia](https://commons.wikimedia.org/wiki/File:Twenty_sided_dice.svg) and subsequently modified it.
+
+The donation icon is a public domain contribution by Fission Strategy, US, downloaded from [thenounproject](https://thenounproject.com/term/donation/15047/)
+
+The options page was copied in part from the `D&D Beyond Toolbox` extension available [here](https://github.com/mouse0270/Beyonds-Toolbox/). The html and css files are licensed under the MIT license which is provided in the LICENSE.MIT file
 
 # TODO
 - Add support for skills/items that have advantage/disadvantage notes (like disadvantage on stealth for heavy armor users)

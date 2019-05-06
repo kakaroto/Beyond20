@@ -1,4 +1,4 @@
-from utils import replaceRolls
+from utils import replaceRolls, getDefaultSettings
 
 print("Beyond20: Roll20 module loaded.")
 
@@ -6,7 +6,7 @@ chat = document.getElementById("textchat-input")
 txt = chat.getElementsByTagName("textarea")[0]
 btn = chat.getElementsByTagName("button")[0]
 speakingas = document.getElementById("speakingas")
-whisper = False
+settings = getDefaultSettings()
 
 def postChatMessage(message, character=None):
     set_speakingas = True
@@ -58,23 +58,37 @@ def template(name, properties):
         result += " {{" + key + "=" + properties[key] + "}}"
     return result
 
+def updateSettings(new_settings=None):
+    nonlocal settings
+    if new_settings:
+        settings = new_settings
+    else:
+        chrome.storage.sync.get({"settings": settings}, def(items):
+            nonlocal settings
+            settings = items.settings
+        )
+
 def handleMessage (request, sender, sendResponse):
-    nonlocal whisper
-    if request.action == "whisper":
-        whisper = request.whisper
+    nonlocal settings
+    if request.action == "settings":
+        updateSettings(request.settings)
     elif request.action == "roll":
         print("Got message : " + str(request))
-        if whisper:
+        if settings["whispers"]:
             roll = "/w gm "
         else:
             roll = ""
+        if settings["roll-advantage"]:
+            advantage_type = "always"
+        else:
+            advantage_type = "normal"
         if request.type == "skill":
             roll += template("simple",
                              {"charname": request.character,
                               "rname" : request.skill,
                               "mod": request.modifier,
                               "r1": genRoll("1d20", {request.ability: request.modifier}),
-                              "always":1,
+                              advantage_type:1,
                               "r2": genRoll("1d20", {request.ability: request.modifier})})
         elif request.type == "ability":
             roll += template("simple",
@@ -82,7 +96,7 @@ def handleMessage (request, sender, sendResponse):
                               "rname" : request.name,
                               "mod": request.modifier,
                               "r1": genRoll("1d20", {request.ability: request.modifier}),
-                              "always":1,
+                              advantage_type:1,
                               "r2": genRoll("1d20", {request.ability: request.modifier})})
         elif request.type == "saving-throw":
             roll += template("simple",
@@ -90,7 +104,7 @@ def handleMessage (request, sender, sendResponse):
                               "rname" : request.name + " Save",
                               "mod": request.modifier,
                               "r1": genRoll("1d20", {request.ability: request.modifier}),
-                              "always":1,
+                              advantage_type:1,
                               "r2": genRoll("1d20", {request.ability: request.modifier})})
         elif request.type == "initiative":
             roll += template("simple",
@@ -124,7 +138,7 @@ def handleMessage (request, sender, sendResponse):
             if request["to-hit"]?:
                 properties["mod"] = request["to-hit"]
                 properties["r1"] = genRoll("1d20", {"": request["to-hit"]})
-                properties["always"] = 1
+                properties[advantage_type] = 1
                 properties["r2"] = genRoll("1d20", {"": request["to-hit"]})
                 properties["attack"] = 1
             if request.range?:
@@ -197,7 +211,7 @@ def handleMessage (request, sender, sendResponse):
             if request["to-hit"]?:
                 properties["mod"] = request["to-hit"]
                 properties["r1"] = genRoll("1d20", {"": request["to-hit"]})
-                properties["always"] = 1
+                properties[advantage_type] = 1
                 properties["r2"] = genRoll("1d20", {"": request["to-hit"]})
                 properties["attack"] = 1
             if request["damage"]?:
@@ -257,3 +271,5 @@ def handleMessage (request, sender, sendResponse):
         postChatMessage(roll, request.character)
 
 chrome.runtime.onMessage.addListener(handleMessage)
+updateSettings()
+chrome.runtime.sendMessage({"action": "activate-icon"});

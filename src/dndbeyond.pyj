@@ -330,7 +330,7 @@ def isRollButtonAdded():
 def isHitDieButtonAdded():
     return $(".ct-beyond20-roll-hitdie").length > 0
 
-def addRollButton(paneClass, where, small=False, append=False, image=True, text="Beyond 20"):
+def addRollButton(paneClass, where, small=False, append=False, image=True, text="Beyond 20", bind=True):
     icon32 = chrome.extension.getURL("images/dice24.png");
     icon16 = chrome.extension.getURL("images/dice16.png");
     button = '<span class="ct-beyond20-roll"><button class="ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button' + (' character-button-small' if small else '') + '"><img class="ct-beyond20-icon" src="' + ((icon16 if small else icon32) if image else "") + '" style="' + ("margin-right:6px" if image else "") + '"></img><span class="ct-button__content">' + text + '</span></button></span>'
@@ -340,9 +340,10 @@ def addRollButton(paneClass, where, small=False, append=False, image=True, text=
     else:
         $(where).after(button)
     $(".ct-beyond20-roll").attr("float", "right")
-    $(".ct-beyond20-roll").bind('click', def(event):
-        execute(paneClass)
-    )
+    if bind:
+        $(".ct-beyond20-roll").bind('click', def(event):
+            execute(paneClass)
+        )
 
 def addHitDieButtons():
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
@@ -434,7 +435,7 @@ def injectRollButton(paneClass):
         if "Damage" in properties:
             addRollButton(paneClass, ".ct-sidebar__heading")
         else:
-            addRollButton(paneClass, ".ct-sidebar__heading", image=False)
+            addRollButton(paneClass, ".ct-sidebar__heading", image=False, bind=False)
             addRollButton(paneClass, ".ct-item-detail__actions", small=True, append=True, image=False)
     elif paneClass in ["ct-action-pane", "ct-custom-action-pane"]:
         if isRollButtonAdded():
@@ -489,4 +490,5 @@ def panelModified(mutations, observer):
 
 observer = new window.MutationObserver(panelModified)
 observer.observe(document, {"subtree": True, "childList": True})
+chrome.runtime.sendMessage({"action": "activate-icon"});
 

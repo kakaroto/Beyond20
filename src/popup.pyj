@@ -1,0 +1,48 @@
+from elementmaker import E
+from utils import options_list, createHTMLOption, getDefaultSettings, initializeMarka
+
+def createOptionList():
+    options = []
+    for option in options_list:
+        child = createHTMLOption(option, True)
+        if child:
+            options.append(child)
+    $("main").prepend(E.ul(class_="list-group beyond20-options", *options))
+    $(".beyond20-options").append(E.li(class_="list-group-item beyond20-option",
+                                       E.a(class_="list-content", href='chrome://extensions/?options=' + chrome.runtime.id,
+                                           E.h4("More Options")
+                                           )
+                                       )
+                                  )
+    img = $("#donate").find("img")
+    img.attr("src", img.attr("src").replace("donate.png", "donate32.png"))
+
+def save_settings():
+    settings = {}
+    for option in options_list:
+        settings[option[0]] = $("#" + option[0]).prop('checked')
+    cb = def(items):
+        if chrome.runtime.lastError:
+            console.log('Chrome Runtime Error', chrome.runtime.lastError.message);
+        else:
+            chrome.runtime.sendMessage({"action": "settings", "settings": settings});
+    chrome.storage.sync.set({"settings": settings}, cb)
+
+def setupHTML():
+    createOptionList()
+    settings = getDefaultSettings()
+
+    cb = def(items):
+        for option in items.settings:
+            $("#" + option).prop('checked', items.settings[option])
+
+    chrome.storage.sync.get({"settings": settings}, cb)
+
+setupHTML()
+initializeMarka()
+$('.beyond20-option-input').change(save_settings)
+$(document).on('click', 'a', def(ev):
+    href = this.getAttribute('href')
+    if len(href) > 0 and href != "#":
+        chrome.tabs.create({"url": this.href})
+    return False
