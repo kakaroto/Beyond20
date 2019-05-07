@@ -63,19 +63,47 @@ def template(name, properties):
     nonlocal settings
     if settings["template"] == "default":
         name = "default"
-        if properties["rname"]?:
-            properties["name"] = properties["rname"]
-            del properties["rname"]
-            del properties["attack"]
-            del properties["damage"]
-            del properties["save"]
-            del properties["dmg1flag"]
-            del properties["dmg2flag"]
-            del properties["always"]
-            del properties["normal"]
-            del properties["advantage"]
-            if not settings["roll-advantage"]:
-                del properties["r2"]
+
+        # Keeps the order of properties
+        renameProp = def(old_key, new_key):
+            nonlocal properties
+            new_properties = {}
+            for key in properties:
+                new_properties[new_key if key == old_key else key] = properties[key]
+            properties = new_properties
+            
+        if not settings["roll-advantage"]:
+            del properties["r2"]
+        renameProp("rname", "name")
+        renameProp("r1", "First Roll")
+        renameProp("r2", "Second Roll")
+        renameProp("mod", "Modifier")
+        if properties["dmg2"]?:
+            renameProp("dmg1", "First Damage")
+            renameProp("dmg1type", "First Damage Type")
+            renameProp("crit1", "First Damage IF Critical")
+            renameProp("dmg2", "Second Damage")
+            renameProp("dmg2type", "Second Damage Type")
+            renameProp("crit2", "Second Damage IF Critical")
+        if properties["dmg1"]?:
+            renameProp("dmg1", "Damage")
+            renameProp("dmg1type", "Damage Type")
+            renameProp("crit1", "Damage IF Critical")
+        renameProp("saveattr", "Save Ability")
+        renameProp("savedc", "Save DC")
+        renameProp("athigherlevels", "At Higher Levels")
+        renameProp("castingtime", "Casting Time")
+        renameProp("hldmg", "Higher level cast")
+
+        del properties["attack"]
+        del properties["damage"]
+        del properties["save"]
+        del properties["dmg1flag"]
+        del properties["dmg2flag"]
+        del properties["always"]
+        del properties["normal"]
+        del properties["advantage"]
+            
 
     result = "&{template:" + name + "}"
     for key in properties:
@@ -94,10 +122,10 @@ def updateSettings(new_settings=None):
 
 def handleMessage (request, sender, sendResponse):
     nonlocal settings
+    print("Got message : " + str(request))
     if request.action == "settings":
         updateSettings(request.settings)
     elif request.action == "roll":
-        print("Got message : " + str(request))
         if settings["whispers"]:
             roll = "/w gm "
         else:

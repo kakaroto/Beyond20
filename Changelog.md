@@ -1,3 +1,9 @@
+v0.0.5
+===
+
+- Fix issue with settings getting reset if we modify an option in the toolbar popup
+- Change tag names for default template rolls to make them more readable
+
 v0.0.4
 ===
 

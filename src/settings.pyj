@@ -158,16 +158,22 @@ def extractSettingsData():
     for option in options_list:
         o_type = options_list[option][3]
         if o_type == "bool":
-            settings[option] = $("#" + option).prop('checked')
+            e = $("#" + option)
+            if e.length > 0:
+                settings[option] = e.prop('checked')
         elif o_type == "combobox":
-            val = $("#" + option).text()
-            options = options_list[option][5]
-            for key in options:
-                if options[key] == val:
-                    settings[option] = key
-                    break
+            e = $("#" + option)
+            if e.length > 0:
+                val = e.text()
+                options = options_list[option][5]
+                for key in options:
+                    if options[key] == val:
+                        settings[option] = key
+                        break
         elif o_type == "string":
-            settings[option] = $("#" + option).val()
+            e = $("#" + option)
+            if e.length > 0:
+                settings[option] = e.val()
 
     return settings
 
@@ -189,7 +195,13 @@ def restoreSavedSettings():
 
 def saveSettings(cb):
     settings = extractSettingsData()
-    setSettings(settings, cb)
+    console.log("Saving new settings : ", settings)
+    def saveNewSettings(stored_settings):
+        for key in settings:
+            stored_settings[key] = settings[key]
+        setSettings(stored_settings, cb)
+
+    getStoredSettings(saveNewSettings)
 
 def initializeSettings():
     initializeMarka()

@@ -4238,27 +4238,36 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
 
         function extractSettingsData() {
-            var settings, o_type, val, options, key, option;
+            var settings, o_type, e, val, options, key, option;
             settings = {};
             var ρσ_Iter3 = ρσ_Iterable(options_list);
             for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
                 option = ρσ_Iter3[ρσ_Index3];
                 o_type = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option][3];
                 if ((o_type === "bool" || typeof o_type === "object" && ρσ_equals(o_type, "bool"))) {
-                    settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = $("#" + option).prop("checked");
+                    e = $("#" + option);
+                    if (e.length > 0) {
+                        settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = e.prop("checked");
+                    }
                 } else if ((o_type === "combobox" || typeof o_type === "object" && ρσ_equals(o_type, "combobox"))) {
-                    val = $("#" + option).text();
-                    options = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option][5];
-                    var ρσ_Iter4 = ρσ_Iterable(options);
-                    for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                        key = ρσ_Iter4[ρσ_Index4];
-                        if ((options[(typeof key === "number" && key < 0) ? options.length + key : key] === val || typeof options[(typeof key === "number" && key < 0) ? options.length + key : key] === "object" && ρσ_equals(options[(typeof key === "number" && key < 0) ? options.length + key : key], val))) {
-                            settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = key;
-                            break;
+                    e = $("#" + option);
+                    if (e.length > 0) {
+                        val = e.text();
+                        options = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option][5];
+                        var ρσ_Iter4 = ρσ_Iterable(options);
+                        for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                            key = ρσ_Iter4[ρσ_Index4];
+                            if ((options[(typeof key === "number" && key < 0) ? options.length + key : key] === val || typeof options[(typeof key === "number" && key < 0) ? options.length + key : key] === "object" && ρσ_equals(options[(typeof key === "number" && key < 0) ? options.length + key : key], val))) {
+                                settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = key;
+                                break;
+                            }
                         }
                     }
                 } else if ((o_type === "string" || typeof o_type === "object" && ρσ_equals(o_type, "string"))) {
-                    settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = $("#" + option).val();
+                    e = $("#" + option);
+                    if (e.length > 0) {
+                        settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = e.val();
+                    }
                 }
             }
             return settings;
@@ -4294,7 +4303,21 @@ var str = ρσ_str, repr = ρσ_repr;;
         function saveSettings(cb) {
             var settings;
             settings = extractSettingsData();
-            setSettings(settings, cb);
+            console.log("Saving new settings : ", settings);
+            function saveNewSettings(stored_settings) {
+                var key;
+                var ρσ_Iter6 = ρσ_Iterable(settings);
+                for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                    key = ρσ_Iter6[ρσ_Index6];
+                    stored_settings[(typeof key === "number" && key < 0) ? stored_settings.length + key : key] = settings[(typeof key === "number" && key < 0) ? settings.length + key : key];
+                }
+                setSettings(stored_settings, cb);
+            };
+            if (!saveNewSettings.__argnames__) Object.defineProperties(saveNewSettings, {
+                __argnames__ : {value: ["stored_settings"]}
+            });
+
+            getStoredSettings(saveNewSettings);
         };
         if (!saveSettings.__argnames__) Object.defineProperties(saveSettings, {
             __argnames__ : {value: ["cb"]}

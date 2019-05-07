@@ -511,6 +511,7 @@ def updateSettings(new_settings=None):
 
 def handleMessage (request, sender, sendResponse):
     nonlocal settings
+    print("Got message : " + str(request))
     if request.action == "settings":
         updateSettings(request.settings)
 
