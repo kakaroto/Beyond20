@@ -41,6 +41,10 @@ The donation icon is a public domain contribution by Fission Strategy, US, downl
 
 The options page was copied in part from the `D&D Beyond Toolbox` extension available [here](https://github.com/mouse0270/Beyonds-Toolbox/). The html and css files are licensed under the MIT license which is provided in the LICENSE.MIT file
 
+# FAQ
+**Q**: Is this extension the best thing ever or what?
+**A**: Yes. Yes, it is.
+
 # TODO
 - Add support for skills/items that have advantage/disadvantage notes (like disadvantage on stealth for heavy armor users)
 - Add ability to select which roll20 VTT page to send the rolls to
@@ -49,6 +53,7 @@ The options page was copied in part from the `D&D Beyond Toolbox` extension avai
 - Add Option to select which Roll20 game to roll into.
 - Add a dice roller so it can also be used to roll directly without roll20, if wanted.
 - Add support for special cases, like Toll the Dead, Toll the Dead, Elemental Bane, etc..
+- Add option to specify if initiative rolls send the result to the tracker or not
 - Test and fix bugs
 
 
