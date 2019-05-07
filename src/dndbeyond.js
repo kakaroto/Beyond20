@@ -5608,7 +5608,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["template"] = ρσ_list_decorate([ null, "Roll20 Character Sheet Setting", "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.", "combobox", "roll20", (function(){
                 var ρσ_d = {};
                 ρσ_d["roll20"] = "D&D 5E By Roll20";
-                ρσ_d["default"] = "Others";
+                ρσ_d["default"] = "Other templates";
                 return ρσ_d;
             }).call(this) ]);
             ρσ_d["donate"] = ρσ_list_decorate([ "Buy me rations for 1 day", "Donate to show your appreciation!", "I know you already appreciate this extension, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active or just to say thank you, you can!", "link", "https://www.paypal.me/KaKaRoTo", "images/donate.png" ]);
@@ -6509,8 +6509,15 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function removeRollButtons() {
+            var custom_rolls, i;
             $(".ct-beyond20-roll").remove();
             $(".ct-beyond20-roll-hitdie").remove();
+            $(".ct-beyond20-custom-icon").remove();
+            custom_rolls = $("u.ct-beyond20-custom-roll");
+            for (var ρσ_Index9 = 0; ρσ_Index9 < custom_rolls.length; ρσ_Index9++) {
+                i = ρσ_Index9;
+                custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
+            }
         };
 
         function injectDiceToRolls() {
@@ -6527,7 +6534,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             text = $(selector).html();
             icon16 = chrome.extension.getURL("images/icons/icon16.png");
-            pre_original = "<u><strong class=\"ct-beyond20-custom-roll\" x-beyond20-name=\"" + name + "\">";
+            pre_original = "<u class=\"ct-beyond20-custom-roll\" x-beyond20-name=\"" + name + "\"><strong>";
             post_original = "</strong></u>";
             pre_dice = "<img class=\"ct-beyond20-custom-icon ct-beyond20-custom-roll\" x-beyond20-name=\"" + name + "\" x-beyond20-roll=\"";
             post_dice = "\"></img>";
@@ -6660,8 +6667,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             var pane, paneClass, div;
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index9 = 0; ρσ_Index9 < pane.length; ρσ_Index9++) {
-                    div = ρσ_Index9;
+                for (var ρσ_Index10 = 0; ρσ_Index10 < pane.length; ρσ_Index10++) {
+                    div = ρσ_Index10;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls"))) {
                         continue;

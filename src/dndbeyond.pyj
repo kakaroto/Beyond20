@@ -379,6 +379,10 @@ def addDeathSaveButton(paneClass, where):
 def removeRollButtons():
     $(".ct-beyond20-roll").remove()
     $(".ct-beyond20-roll-hitdie").remove()
+    $(".ct-beyond20-custom-icon").remove()
+    custom_rolls = $("u.ct-beyond20-custom-roll")
+    for i in range(custom_rolls.length):
+        custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text())
 
 def injectDiceToRolls(selector, name=""):
     nonlocal settings
@@ -387,7 +391,7 @@ def injectDiceToRolls(selector, name=""):
 
     text = $(selector).html()
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
-    pre_original='<u><strong class="ct-beyond20-custom-roll" x-beyond20-name="' + name + '">'
+    pre_original='<u class="ct-beyond20-custom-roll" x-beyond20-name="' + name + '"><strong>'
     post_original='</strong></u>'
     pre_dice='<img class="ct-beyond20-custom-icon ct-beyond20-custom-roll" x-beyond20-name="' + name + \
         '" x-beyond20-roll="'

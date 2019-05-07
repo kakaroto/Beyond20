@@ -4041,7 +4041,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["template"] = ρσ_list_decorate([ null, "Roll20 Character Sheet Setting", "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.", "combobox", "roll20", (function(){
                 var ρσ_d = {};
                 ρσ_d["roll20"] = "D&D 5E By Roll20";
-                ρσ_d["default"] = "Others";
+                ρσ_d["default"] = "Other templates";
                 return ρσ_d;
             }).call(this) ]);
             ρσ_d["donate"] = ρσ_list_decorate([ "Buy me rations for 1 day", "Donate to show your appreciation!", "I know you already appreciate this extension, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active or just to say thank you, you can!", "link", "https://www.paypal.me/KaKaRoTo", "images/donate.png" ]);

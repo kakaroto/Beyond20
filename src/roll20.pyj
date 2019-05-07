@@ -60,6 +60,23 @@ def subDescriptionRolls(description):
     return subRolls(description, True, True)
 
 def template(name, properties):
+    nonlocal settings
+    if settings["template"] == "default":
+        name = "default"
+        if properties["rname"]?:
+            properties["name"] = properties["rname"]
+            del properties["rname"]
+            del properties["attack"]
+            del properties["damage"]
+            del properties["save"]
+            del properties["dmg1flag"]
+            del properties["dmg2flag"]
+            del properties["always"]
+            del properties["normal"]
+            del properties["advantage"]
+            if not settings["roll-advantage"]:
+                del properties["r2"]
+
     result = "&{template:" + name + "}"
     for key in properties:
         result += " {{" + key + "=" + properties[key] + "}}"
@@ -95,32 +112,32 @@ def handleMessage (request, sender, sendResponse):
                               "rname" : request.skill,
                               "mod": request.modifier,
                               "r1": genRoll("1d20", {request.ability: request.modifier}),
-                              advantage_type:1,
-                              "r2": genRoll("1d20", {request.ability: request.modifier})})
+                              "r2": genRoll("1d20", {request.ability: request.modifier}),
+                              advantage_type:1})
         elif request.type == "ability":
             roll += template("simple",
                              {"charname": request.character,
                               "rname" : request.name,
                               "mod": request.modifier,
                               "r1": genRoll("1d20", {request.ability: request.modifier}),
-                              advantage_type:1,
-                              "r2": genRoll("1d20", {request.ability: request.modifier})})
+                              "r2": genRoll("1d20", {request.ability: request.modifier}),
+                              advantage_type:1})
         elif request.type == "saving-throw":
             roll += template("simple",
                              {"charname": request.character,
                               "rname" : request.name + " Save",
                               "mod": request.modifier,
                               "r1": genRoll("1d20", {request.ability: request.modifier}),
-                              advantage_type:1,
-                              "r2": genRoll("1d20", {request.ability: request.modifier})})
+                              "r2": genRoll("1d20", {request.ability: request.modifier}),
+                              advantage_type:1})
         elif request.type == "initiative":
             roll += template("simple",
                              {"charname": request.character,
                               "rname" : "Initiative",
                               "mod": request.initiative,
                               "r1": genRoll("1d20", {"": request.initiative}),
-                              "advantage" if request.advantage else "normal": 1,
-                              "r2": genRoll("1d20", {"": request.initiative})})
+                              "r2": genRoll("1d20", {"": request.initiative}),
+                              "advantage" if request.advantage else "normal": 1})
         elif request.type == "hit-dice":
             if request.multiclass:
                 rname = "Hit Dice (" + request.class + ")"
@@ -136,41 +153,41 @@ def handleMessage (request, sender, sendResponse):
         elif request.type == "attack":
             crit1 = request.damage.split("+" if "+" in request.damage else "-")[0]
             properties = {"charname": request.character,
-                          "rname" : request.name,
-                          "damage": 1,
-                          "dmg1flag": 1,
-                          "dmg1": subRolls(request.damage),
-                          "dmg1type": request["damage-type"],
-                          "crit1": subRolls(settings["crit-prefix"] + crit1)}
+                          "rname" : request.name}
             if request["to-hit"]?:
                 properties["mod"] = request["to-hit"]
                 properties["r1"] = genRoll("1d20", {"": request["to-hit"]})
-                properties[advantage_type] = 1
                 properties["r2"] = genRoll("1d20", {"": request["to-hit"]})
+                properties[advantage_type] = 1
                 properties["attack"] = 1
-            if request.range?:
-                properties["range"] = request.range
+            properties["damage"] =1
+            properties["dmg1flag"] = 1
+            properties["dmg1"] = subRolls(request.damage)
+            properties["dmg1type"] = request["damage-type"]
+            properties["crit1"] = subRolls(settings["crit-prefix"] + crit1)
             if request["second-damage"]?:
                 crit2 = request["second-damage"].split("+" if "+" in request["second-damage"] else "-")[0]
                 properties["dmg2flag"] = 1
                 properties["dmg2"] = subRolls(request["second-damage"])
                 properties["dmg2type"] = request["second-damage-type"]
                 properties["crit2"] = subRolls(settings["crit-prefix"] + crit2)
+            if request.range?:
+                properties["range"] = request.range
             if request["save-dc"]?:
                 properties["save"] = 1
                 properties["saveattr"] = request["save-ability"]
                 properties["savedc"] = request["save-dc"]
             roll += template("atkdmg", properties)
         elif request.type == "item":
-            roll += template("traits", {"source": request["item-type"],
-                                        "name": request.name,
+            roll += template("traits", {"name": request.name,
+                                        "source": request["item-type"],
                                         "description": subDescriptionRolls(request.description)})
         elif request.type == "feature":
             source = request["source-type"]
             if request.source.length > 0:
                 source += ": " + request.source
-            roll += template("traits", {"source": source,
-                                        "name": request.name,
+            roll += template("traits", {"name": request.name,
+                                        "source": source,
                                         "description": subDescriptionRolls(request.description)})
         elif request.type in ["trait", "action"]:
             roll += template("traits", {"name": request.name,
@@ -185,18 +202,7 @@ def handleMessage (request, sender, sendResponse):
                 properties["level"] = request["level-school"] + "(Cast at " + request["cast-at"] + " Level)"
             else:
                 properties["level"] = request["level-school"]
-                          
-            if request.ritual:
-                properties["ritual"] = 1
-            if request.concentration:
-                properties["concentration"] = 1
-            description = request.description            
-            higher = description.indexOf("At Higher Levels.")
-            if higher > 0:
-                properties["athigherlevels"] = subDescriptionRolls(description[higher+"At Higher Levels.".length:], True, True)
-                description = description[:higher-1]
-            properties["description"] = subDescriptionRolls(description, True, True)
-                          
+                                                    
             components = request.components
             while components != "":
                 if components[0] == "V":
@@ -211,6 +217,18 @@ def handleMessage (request, sender, sendResponse):
                     components = ""
                 if components.startsWith(", "):
                     components = components[2:]
+            if request.ritual:
+                properties["ritual"] = 1
+            if request.concentration:
+                properties["concentration"] = 1
+            description = request.description            
+            higher = description.indexOf("At Higher Levels.")
+            if higher > 0:
+                properties["description"] = subDescriptionRolls(description[:higher-1])
+                properties["athigherlevels"] = subDescriptionRolls(description[higher+"At Higher Levels.".length:])
+            else:
+                properties["description"] = subDescriptionRolls(description)
+
             roll += template("spell", properties)
         elif request.type == "spell-attack":
             properties = {"charname": request.character,
@@ -218,8 +236,8 @@ def handleMessage (request, sender, sendResponse):
             if request["to-hit"]?:
                 properties["mod"] = request["to-hit"]
                 properties["r1"] = genRoll("1d20", {"": request["to-hit"]})
-                properties[advantage_type] = 1
                 properties["r2"] = genRoll("1d20", {"": request["to-hit"]})
+                properties[advantage_type] = 1
                 properties["attack"] = 1
             if request["damage"]?:
                 properties["damage"] = 1
@@ -229,8 +247,6 @@ def handleMessage (request, sender, sendResponse):
                 if request["damage-type"] != "Healing":
                     crit1 = request.damage.split("+" if "+" in request.damage else "-")[0]
                     properties["crit1"] = subRolls(settings["crit-prefix"] + crit1)
-            if request.range?:
-                properties["range"] = request.range
             if request["second-damage"]?:
                 properties["dmg2flag"] = 1
                 properties["dmg2"] = subRolls(request["second-damage"])
@@ -238,6 +254,8 @@ def handleMessage (request, sender, sendResponse):
                 if request["second-damage-type"] != "Healing":
                     crit2 = request["second-damage"].split("+" if "+" in request["second-damage"] else "-")[0]
                     properties["crit2"] = subRolls(settings["crit-prefix"] + crit2)
+            if request.range?:
+                properties["range"] = request.range
             if request["save-dc"]?:
                 properties["save"] = 1
                 properties["saveattr"] = request["save-ability"]

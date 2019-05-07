@@ -5608,7 +5608,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["template"] = ρσ_list_decorate([ null, "Roll20 Character Sheet Setting", "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.", "combobox", "roll20", (function(){
                 var ρσ_d = {};
                 ρσ_d["roll20"] = "D&D 5E By Roll20";
-                ρσ_d["default"] = "Others";
+                ρσ_d["default"] = "Other templates";
                 return ρσ_d;
             }).call(this) ]);
             ρσ_d["donate"] = ρσ_list_decorate([ "Buy me rations for 1 day", "Donate to show your appreciation!", "I know you already appreciate this extension, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active or just to say thank you, you can!", "link", "https://www.paypal.me/KaKaRoTo", "images/donate.png" ]);
@@ -5617,9 +5617,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         function getDefaultSettings() {
             var settings, option;
             settings = {};
-            var ρσ_Iter2 = ρσ_Iterable(options_list);
-            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                option = ρσ_Iter2[ρσ_Index2];
+            var ρσ_Iter0 = ρσ_Iterable(options_list);
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                option = ρσ_Iter0[ρσ_Index0];
                 settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option][4];
             }
             console.log("Default settings :", settings);
@@ -5725,9 +5725,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     return ρσ_anonfunc;
                 })();
                 dropdown_options = list(map(make_li, Object.values(extra)));
-                var ρσ_Iter3 = ρσ_Iterable(description_p);
-                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                    p = ρσ_Iter3[ρσ_Index3];
+                var ρσ_Iter1 = ρσ_Iterable(description_p);
+                for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                    p = ρσ_Iter1[ρσ_Index1];
                     p.classList.add("select");
                 }
                 e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [(short) ? short_title : title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, [extra[(typeof default_value === "number" && default_value < 0) ? extra.length + default_value : default_value]].concat([ρσ_desugar_kwargs({id: name, class_: "input select", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-combobox"})]));
@@ -5745,8 +5745,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         function initializeMarka() {
             var groups, triggerOpen, triggerClose, dropdown_menu, marka, input, m, makeOpenCB, makeCloseCB, i;
             groups = $(".beyond20-option-combobox");
-            for (var ρσ_Index4 = 0; ρσ_Index4 < groups.length; ρσ_Index4++) {
-                i = ρσ_Index4;
+            for (var ρσ_Index2 = 0; ρσ_Index2 < groups.length; ρσ_Index2++) {
+                i = ρσ_Index2;
                 triggerOpen = groups.eq(i).find(".select");
                 triggerClose = groups.eq(i).find(".dropdown-menu li");
                 dropdown_menu = groups.eq(i).find(".dropdown-menu");
@@ -5807,18 +5807,18 @@ var str = ρσ_str, repr = ρσ_repr;;
         function extractSettingsData() {
             var settings, o_type, val, options, key, option;
             settings = {};
-            var ρσ_Iter5 = ρσ_Iterable(options_list);
-            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                option = ρσ_Iter5[ρσ_Index5];
+            var ρσ_Iter3 = ρσ_Iterable(options_list);
+            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                option = ρσ_Iter3[ρσ_Index3];
                 o_type = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option][3];
                 if ((o_type === "bool" || typeof o_type === "object" && ρσ_equals(o_type, "bool"))) {
                     settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = $("#" + option).prop("checked");
                 } else if ((o_type === "combobox" || typeof o_type === "object" && ρσ_equals(o_type, "combobox"))) {
                     val = $("#" + option).text();
                     options = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option][5];
-                    var ρσ_Iter6 = ρσ_Iterable(options);
-                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                        key = ρσ_Iter6[ρσ_Index6];
+                    var ρσ_Iter4 = ρσ_Iterable(options);
+                    for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                        key = ρσ_Iter4[ρσ_Index4];
                         if ((options[(typeof key === "number" && key < 0) ? options.length + key : key] === val || typeof options[(typeof key === "number" && key < 0) ? options.length + key : key] === "object" && ρσ_equals(options[(typeof key === "number" && key < 0) ? options.length + key : key], val))) {
                             settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = key;
                             break;
@@ -5833,9 +5833,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function loadSettings(settings) {
             var o_type, val, extra, option;
-            var ρσ_Iter7 = ρσ_Iterable(settings);
-            for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                option = ρσ_Iter7[ρσ_Index7];
+            var ρσ_Iter5 = ρσ_Iterable(settings);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                option = ρσ_Iter5[ρσ_Index5];
                 o_type = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option][3];
                 if ((o_type === "bool" || typeof o_type === "object" && ρσ_equals(o_type, "bool"))) {
                     $("#" + option).prop("checked", settings[(typeof option === "number" && option < 0) ? settings.length + option : option]);
@@ -5915,8 +5915,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             set_speakingas = true;
             if (character) {
                 character = character.toLowerCase();
-                for (var ρσ_Index8 = 0; ρσ_Index8 < speakingas.children.length; ρσ_Index8++) {
-                    i = ρσ_Index8;
+                for (var ρσ_Index0 = 0; ρσ_Index0 < speakingas.children.length; ρσ_Index0++) {
+                    i = ρσ_Index0;
                     if (ρσ_equals((ρσ_expr_temp = speakingas.children)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i].text.toLowerCase(), character)) {
                         (ρσ_expr_temp = speakingas.children)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i].selected = true;
                         set_speakingas = false;
@@ -5948,9 +5948,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var roll, mod, m;
             roll = "[[" + dice;
-            var ρσ_Iter9 = ρσ_Iterable(modifiers);
-            for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
-                m = ρσ_Iter9[ρσ_Index9];
+            var ρσ_Iter1 = ρσ_Iterable(modifiers);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                m = ρσ_Iter1[ρσ_Index1];
                 mod = modifiers[(typeof m === "number" && m < 0) ? modifiers.length + m : m];
                 if (len(mod) > 0) {
                     if ((mod[0] === "+" || typeof mod[0] === "object" && ρσ_equals(mod[0], "+")) || (mod[0] === "-" || typeof mod[0] === "object" && ρσ_equals(mod[0], "-"))) {
@@ -6017,10 +6017,28 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function template(name, properties) {
             var result, key;
+            if ((settings["template"] === "default" || typeof settings["template"] === "object" && ρσ_equals(settings["template"], "default"))) {
+                name = "default";
+                if (ρσ_exists.n(properties["rname"])) {
+                    properties["name"] = properties["rname"];
+                    ρσ_delitem(properties, "rname");
+                    ρσ_delitem(properties, "attack");
+                    ρσ_delitem(properties, "damage");
+                    ρσ_delitem(properties, "save");
+                    ρσ_delitem(properties, "dmg1flag");
+                    ρσ_delitem(properties, "dmg2flag");
+                    ρσ_delitem(properties, "always");
+                    ρσ_delitem(properties, "normal");
+                    ρσ_delitem(properties, "advantage");
+                    if (!settings["roll-advantage"]) {
+                        ρσ_delitem(properties, "r2");
+                    }
+                }
+            }
             result = "&{template:" + name + "}";
-            var ρσ_Iter10 = ρσ_Iterable(properties);
-            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
-                key = ρσ_Iter10[ρσ_Index10];
+            var ρσ_Iter2 = ρσ_Iterable(properties);
+            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                key = ρσ_Iter2[ρσ_Index2];
                 result += " {{" + key + "=" + properties[(typeof key === "number" && key < 0) ? properties.length + key : key] + "}}";
             }
             return result;
@@ -6057,7 +6075,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, advantage_type, rname, crit1, properties, crit2, source, description, higher, components;
+            var roll, advantage_type, rname, crit1, properties, crit2, source, components, description, higher;
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 updateSettings(request.settings);
             } else if ((request.action === "roll" || typeof request.action === "object" && ρσ_equals(request.action, "roll"))) {
@@ -6083,12 +6101,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                             ρσ_d[request.ability] = request.modifier;
                             return ρσ_d;
                         }).call(this));
-                        ρσ_d[advantage_type] = 1;
                         ρσ_d["r2"] = genRoll("1d20", (function(){
                             var ρσ_d = {};
                             ρσ_d[request.ability] = request.modifier;
                             return ρσ_d;
                         }).call(this));
+                        ρσ_d[advantage_type] = 1;
                         return ρσ_d;
                     }).call(this));
                 } else if ((request.type === "ability" || typeof request.type === "object" && ρσ_equals(request.type, "ability"))) {
@@ -6102,12 +6120,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                             ρσ_d[request.ability] = request.modifier;
                             return ρσ_d;
                         }).call(this));
-                        ρσ_d[advantage_type] = 1;
                         ρσ_d["r2"] = genRoll("1d20", (function(){
                             var ρσ_d = {};
                             ρσ_d[request.ability] = request.modifier;
                             return ρσ_d;
                         }).call(this));
+                        ρσ_d[advantage_type] = 1;
                         return ρσ_d;
                     }).call(this));
                 } else if ((request.type === "saving-throw" || typeof request.type === "object" && ρσ_equals(request.type, "saving-throw"))) {
@@ -6121,12 +6139,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                             ρσ_d[request.ability] = request.modifier;
                             return ρσ_d;
                         }).call(this));
-                        ρσ_d[advantage_type] = 1;
                         ρσ_d["r2"] = genRoll("1d20", (function(){
                             var ρσ_d = {};
                             ρσ_d[request.ability] = request.modifier;
                             return ρσ_d;
                         }).call(this));
+                        ρσ_d[advantage_type] = 1;
                         return ρσ_d;
                     }).call(this));
                 } else if ((request.type === "initiative" || typeof request.type === "object" && ρσ_equals(request.type, "initiative"))) {
@@ -6140,12 +6158,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                             ρσ_d[""] = request.initiative;
                             return ρσ_d;
                         }).call(this));
-                        ρσ_d[(request.advantage) ? "advantage" : "normal"] = 1;
                         ρσ_d["r2"] = genRoll("1d20", (function(){
                             var ρσ_d = {};
                             ρσ_d[""] = request.initiative;
                             return ρσ_d;
                         }).call(this));
+                        ρσ_d[(request.advantage) ? "advantage" : "normal"] = 1;
                         return ρσ_d;
                     }).call(this));
                 } else if ((request.type === "hit-dice" || typeof request.type === "object" && ρσ_equals(request.type, "hit-dice"))) {
@@ -6169,11 +6187,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                         var ρσ_d = {};
                         ρσ_d["charname"] = request.character;
                         ρσ_d["rname"] = request.name;
-                        ρσ_d["damage"] = 1;
-                        ρσ_d["dmg1flag"] = 1;
-                        ρσ_d["dmg1"] = subRolls(request.damage);
-                        ρσ_d["dmg1type"] = request["damage-type"];
-                        ρσ_d["crit1"] = subRolls(settings["crit-prefix"] + crit1);
                         return ρσ_d;
                     }).call(this);
                     if (ρσ_exists.n(request["to-hit"])) {
@@ -6183,23 +6196,28 @@ var str = ρσ_str, repr = ρσ_repr;;
                             ρσ_d[""] = request["to-hit"];
                             return ρσ_d;
                         }).call(this));
-                        properties[(typeof advantage_type === "number" && advantage_type < 0) ? properties.length + advantage_type : advantage_type] = 1;
                         properties["r2"] = genRoll("1d20", (function(){
                             var ρσ_d = {};
                             ρσ_d[""] = request["to-hit"];
                             return ρσ_d;
                         }).call(this));
+                        properties[(typeof advantage_type === "number" && advantage_type < 0) ? properties.length + advantage_type : advantage_type] = 1;
                         properties["attack"] = 1;
                     }
-                    if (ρσ_exists.n(request.range)) {
-                        properties["range"] = request.range;
-                    }
+                    properties["damage"] = 1;
+                    properties["dmg1flag"] = 1;
+                    properties["dmg1"] = subRolls(request.damage);
+                    properties["dmg1type"] = request["damage-type"];
+                    properties["crit1"] = subRolls(settings["crit-prefix"] + crit1);
                     if (ρσ_exists.n(request["second-damage"])) {
                         crit2 = request["second-damage"].split((ρσ_in("+", request["second-damage"])) ? "+" : "-")[0];
                         properties["dmg2flag"] = 1;
                         properties["dmg2"] = subRolls(request["second-damage"]);
                         properties["dmg2type"] = request["second-damage-type"];
                         properties["crit2"] = subRolls(settings["crit-prefix"] + crit2);
+                    }
+                    if (ρσ_exists.n(request.range)) {
+                        properties["range"] = request.range;
                     }
                     if (ρσ_exists.n(request["save-dc"])) {
                         properties["save"] = 1;
@@ -6210,8 +6228,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else if ((request.type === "item" || typeof request.type === "object" && ρσ_equals(request.type, "item"))) {
                     roll += template("traits", (function(){
                         var ρσ_d = {};
-                        ρσ_d["source"] = request["item-type"];
                         ρσ_d["name"] = request.name;
+                        ρσ_d["source"] = request["item-type"];
                         ρσ_d["description"] = subDescriptionRolls(request.description);
                         return ρσ_d;
                     }).call(this));
@@ -6222,8 +6240,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }
                     roll += template("traits", (function(){
                         var ρσ_d = {};
-                        ρσ_d["source"] = source;
                         ρσ_d["name"] = request.name;
+                        ρσ_d["source"] = source;
                         ρσ_d["description"] = subDescriptionRolls(request.description);
                         return ρσ_d;
                     }).call(this));
@@ -6248,19 +6266,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                     } else {
                         properties["level"] = request["level-school"];
                     }
-                    if (request.ritual) {
-                        properties["ritual"] = 1;
-                    }
-                    if (request.concentration) {
-                        properties["concentration"] = 1;
-                    }
-                    description = request.description;
-                    higher = description.indexOf("At Higher Levels.");
-                    if (higher > 0) {
-                        properties["athigherlevels"] = subDescriptionRolls(description.slice(higher + "At Higher Levels.".length), true, true);
-                        description = description.slice(0, higher - 1);
-                    }
-                    properties["description"] = subDescriptionRolls(description, true, true);
                     components = request.components;
                     while ((components !== "" && (typeof components !== "object" || ρσ_not_equals(components, "")))) {
                         if ((components[0] === "V" || typeof components[0] === "object" && ρσ_equals(components[0], "V"))) {
@@ -6278,6 +6283,20 @@ var str = ρσ_str, repr = ρσ_repr;;
                             components = components.slice(2);
                         }
                     }
+                    if (request.ritual) {
+                        properties["ritual"] = 1;
+                    }
+                    if (request.concentration) {
+                        properties["concentration"] = 1;
+                    }
+                    description = request.description;
+                    higher = description.indexOf("At Higher Levels.");
+                    if (higher > 0) {
+                        properties["description"] = subDescriptionRolls(description.slice(0, higher - 1));
+                        properties["athigherlevels"] = subDescriptionRolls(description.slice(higher + "At Higher Levels.".length));
+                    } else {
+                        properties["description"] = subDescriptionRolls(description);
+                    }
                     roll += template("spell", properties);
                 } else if ((request.type === "spell-attack" || typeof request.type === "object" && ρσ_equals(request.type, "spell-attack"))) {
                     properties = (function(){
@@ -6293,12 +6312,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                             ρσ_d[""] = request["to-hit"];
                             return ρσ_d;
                         }).call(this));
-                        properties[(typeof advantage_type === "number" && advantage_type < 0) ? properties.length + advantage_type : advantage_type] = 1;
                         properties["r2"] = genRoll("1d20", (function(){
                             var ρσ_d = {};
                             ρσ_d[""] = request["to-hit"];
                             return ρσ_d;
                         }).call(this));
+                        properties[(typeof advantage_type === "number" && advantage_type < 0) ? properties.length + advantage_type : advantage_type] = 1;
                         properties["attack"] = 1;
                     }
                     if (ρσ_exists.n(request["damage"])) {
@@ -6311,9 +6330,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                             properties["crit1"] = subRolls(settings["crit-prefix"] + crit1);
                         }
                     }
-                    if (ρσ_exists.n(request.range)) {
-                        properties["range"] = request.range;
-                    }
                     if (ρσ_exists.n(request["second-damage"])) {
                         properties["dmg2flag"] = 1;
                         properties["dmg2"] = subRolls(request["second-damage"]);
@@ -6322,6 +6338,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                             crit2 = request["second-damage"].split((ρσ_in("+", request["second-damage"])) ? "+" : "-")[0];
                             properties["crit2"] = subRolls(settings["crit-prefix"] + crit2);
                         }
+                    }
+                    if (ρσ_exists.n(request.range)) {
+                        properties["range"] = request.range;
                     }
                     if (ρσ_exists.n(request["save-dc"])) {
                         properties["save"] = 1;

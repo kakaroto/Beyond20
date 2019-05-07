@@ -3,7 +3,7 @@
 
 
 JS_FILES=src/background.js src/roll20.js src/dndbeyond.js src/options.js  src/popup.js
-PYJ_DEPS=src/utils.pyj
+PYJ_DEPS=src/utils.pyj src/settings.pyj
 
 all: $(JS_FILES)
 
