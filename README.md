@@ -3,6 +3,16 @@ Beyond20: D&D Beyond & Roll20 Integration
 
 Beyond20 is a chrome extension that integrates the Character Sheet from D&D Beyond into Roll20.
 
+# Install and Use
+
+To install Beyond 20, simply head over to the [Chrome Web Store](https://chrome.google.com/webstore/detail/beyond-20/gnblbpbepfbfmoobegdogkglpbhcjofh) and click "Add to Chrome" to get it installed.
+
+To use it, simply open your character sheet in D&D Beyond in Chrome, and your Roll 20 game in another tab, then click on the "Beyond 20" or "Cast in Roll20" buttons that appear in the side panels.
+
+**Important**: For the extension to work (for now), you need to have the game in Roll20 set up to use the "D&D 5e By Roll20" Character Sheet Template in the game settings.
+
+To install the development version from git, read below, for more details on use, read below.
+
 # Build
 
 This extension is written in 'python', more precisely in RapydScript and you will need [RapydScript-NG](https://github.com/kovidgoyal/rapydscript-ng) installed to compile the .pyj source files into .js
@@ -15,7 +25,7 @@ Install RapidScript-NG then type 'make' to compile the *.pyj into *.js
 
     Note: The .js files are already included in the source repository... I don't usually include built files in a repo, but I guess .js files are still source code and that makes it easier for people to just try the extension without having to first install rapydscript.
 
-# Installation
+# Developer mode Installation
 All you need is to load the extension into Chrome :
 
 1. Go to Chrome Extensions page (Menu->More Tools->Extensions)
@@ -43,7 +53,16 @@ The options page was copied in part from the `D&D Beyond Toolbox` extension avai
 
 # FAQ
 **Q**: Is this extension the best thing ever or what?
+
 **A**: Yes. Yes, it is.
+
+---
+
+**Q**: All I see in Roll20 is an empty message
+
+**A**: That's because the game in Roll20 is set up to use a character sheet template other than "D&D 5e By Roll20". 
+Beyond20 uses display templates from that character sheet template to make the rolls, so if it's not the one used, it won't work.
+Support for other character sheet templates will be added in the future.
 
 # TODO
 - Add support for skills/items that have advantage/disadvantage notes (like disadvantage on stealth for heavy armor users)
