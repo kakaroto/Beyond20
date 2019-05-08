@@ -5602,6 +5602,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var ρσ_d = {};
             ρσ_d["whispers"] = ρσ_list_decorate([ "Whisper rolls", "Whisper rolls to the DM", "If enabled, all the rolls will be whispered to the DM", "bool", false ]);
             ρσ_d["roll-advantage"] = ρσ_list_decorate([ "Roll with Advantage", "Always roll Advantange/Disadvantage", "Always roll a second dice for Advantage/Disadvantage", "bool", true ]);
+            ρσ_d["initiative-tracker"] = ρσ_list_decorate([ "Add Initiative to tracker", "Add initiative roll to the Turn Tracker", "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in Roll20, and will also change the way the output of 'Advantage on initiative' rolls appear", "bool", true ]);
             ρσ_d["subst-roll20"] = ρσ_list_decorate([ null, "Replace Dices formulas in Roll20", "In Roll20, if a spell card or an item or a feat has a dice formula in its description,\nenabling this will make the formula clickable to generate the roll in chat.", "bool", true ]);
             ρσ_d["subst-dndbeyond"] = ρσ_list_decorate([ null, "Replace Dices formulas in D&D Beyond", "In the D&D Beyond side panel, if a spell, item, feat or action has a dice formula in its description,\nenabling this will add a dice icon next to the formula to allow you to roll it.", "bool", true ]);
             ρσ_d["crit-prefix"] = ρσ_list_decorate([ null, "Critical Hit Prefix", "Prefix to add to the Critical Hit dice result.\nI've found it less confusing for players to point out that the '+ X' is the crit damage", "string", "Crit: " ]);
@@ -5976,12 +5977,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                 m = ρσ_Iter1[ρσ_Index1];
                 mod = modifiers[(typeof m === "number" && m < 0) ? modifiers.length + m : m];
                 if (len(mod) > 0) {
-                    if ((mod[0] === "+" || typeof mod[0] === "object" && ρσ_equals(mod[0], "+")) || (mod[0] === "-" || typeof mod[0] === "object" && ρσ_equals(mod[0], "-"))) {
-                        roll += mod;
+                    if ((mod[0] === "+" || typeof mod[0] === "object" && ρσ_equals(mod[0], "+")) || (mod[0] === "-" || typeof mod[0] === "object" && ρσ_equals(mod[0], "-")) || (mod[0] === "&" || typeof mod[0] === "object" && ρσ_equals(mod[0], "&"))) {
+                        roll += " " + mod;
                     } else {
                         roll += "+" + mod;
                     }
-                    if (len((typeof m !== "undefined" && m !== null)) > 0) {
+                    if (len(m) > 0) {
                         roll += "[" + m + "]";
                     }
                 }
@@ -6132,7 +6133,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, advantage_type, rname, crit1, properties, crit2, source, components, description, higher;
+            var roll, advantage_type, roll_properties, dice, dice_formula, rname, crit1, properties, crit2, source, components, description, higher;
             print("Got message : " + str(request));
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 updateSettings(request.settings);
@@ -6205,24 +6206,35 @@ var str = ρσ_str, repr = ρσ_repr;;
                         return ρσ_d;
                     }).call(this));
                 } else if ((request.type === "initiative" || typeof request.type === "object" && ρσ_equals(request.type, "initiative"))) {
-                    roll += template("simple", (function(){
+                    roll_properties = (function(){
                         var ρσ_d = {};
                         ρσ_d["charname"] = request.character;
                         ρσ_d["rname"] = "Initiative";
                         ρσ_d["mod"] = request.initiative;
-                        ρσ_d["r1"] = genRoll("1d20", (function(){
-                            var ρσ_d = {};
-                            ρσ_d[""] = request.initiative;
-                            return ρσ_d;
-                        }).call(this));
-                        ρσ_d["r2"] = genRoll("1d20", (function(){
-                            var ρσ_d = {};
-                            ρσ_d[""] = request.initiative;
-                            return ρσ_d;
-                        }).call(this));
-                        ρσ_d[(request.advantage) ? "advantage" : "normal"] = 1;
                         return ρσ_d;
-                    }).call(this));
+                    }).call(this);
+                    if (settings["initiative-tracker"]) {
+                        dice = (request.advantage) ? "2d20kh1" : "1d20";
+                        roll_properties["r1"] = genRoll(dice, (function(){
+                            var ρσ_d = {};
+                            ρσ_d["INIT"] = request.initiative;
+                            ρσ_d[""] = "&{tracker}";
+                            return ρσ_d;
+                        }).call(this));
+                        roll_properties["normal"] = 1;
+                    } else {
+                        dice_formula = genRoll("1d20", (function(){
+                            var ρσ_d = {};
+                            ρσ_d["INIT"] = request.initiative;
+                            return ρσ_d;
+                        }).call(this));
+                        roll_properties["r1"] = dice_formula;
+                        if (request.advantage) {
+                            roll_properties["r2"] = dice_formula;
+                        }
+                        roll_properties[ρσ_bound_index((request.advantage) ? "advantage" : "normal", roll_properties)] = 1;
+                    }
+                    roll += template("simple", roll_properties);
                 } else if ((request.type === "hit-dice" || typeof request.type === "object" && ρσ_equals(request.type, "hit-dice"))) {
                     if (request.multiclass) {
                         rname = "Hit Dice (" + request.class + ")";

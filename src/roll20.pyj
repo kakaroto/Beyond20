@@ -30,11 +30,11 @@ def genRoll(dice, modifiers=[]):
     for m in modifiers:
         mod = modifiers[m]
         if len(mod) > 0:
-            if mod[0] == '+' or mod[0] == '-':
-                roll += mod
+            if mod[0] == '+' or mod[0] == '-' or mod[0] == '&':
+                roll += " " + mod
             else:
                 roll += "+" + mod
-            if len(m?) > 0:
+            if len(m) > 0:
                 roll += "[" + m + "]"
     roll += "]]"
     return roll
@@ -159,13 +159,20 @@ def handleMessage (request, sender, sendResponse):
                               "r2": genRoll("1d20", {request.ability: request.modifier}),
                               advantage_type:1})
         elif request.type == "initiative":
-            roll += template("simple",
-                             {"charname": request.character,
-                              "rname" : "Initiative",
-                              "mod": request.initiative,
-                              "r1": genRoll("1d20", {"": request.initiative}),
-                              "r2": genRoll("1d20", {"": request.initiative}),
-                              "advantage" if request.advantage else "normal": 1})
+            roll_properties = {"charname": request.character,
+                               "rname" : "Initiative",
+                               "mod": request.initiative}
+            if settings["initiative-tracker"]:
+                dice = "2d20kh1" if request.advantage else "1d20"
+                roll_properties["r1"] = genRoll(dice, {"INIT": request.initiative, "": "&{tracker}"})
+                roll_properties["normal"] = 1
+            else:
+                dice_formula = genRoll("1d20", {"INIT": request.initiative})
+                roll_properties["r1"] = dice_formula
+                if request.advantage:
+                    roll_properties["r2"] = dice_formula
+                roll_properties["advantage" if request.advantage else "normal"] = 1
+            roll += template("simple", roll_properties)
         elif request.type == "hit-dice":
             if request.multiclass:
                 rname = "Hit Dice (" + request.class + ")"

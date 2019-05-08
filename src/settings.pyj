@@ -12,6 +12,10 @@ options_list = {
          "Always roll a second dice for Advantage/Disadvantage", \
          "bool", True],
 
+    "initiative-tracker": ["Add Initiative to tracker", "Add initiative roll to the Turn Tracker", \
+         "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in Roll20, and will also change the way the output of 'Advantage on initiative' rolls appear", \
+         "bool", True],
+
     "subst-roll20": [None, "Replace Dices formulas in Roll20", \
          "In Roll20, if a spell card or an item or a feat has a dice formula in its description,\nenabling this will make the formula clickable to generate the roll in chat.", \
          "bool", True],
