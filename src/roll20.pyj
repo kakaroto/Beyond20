@@ -75,8 +75,11 @@ def template(name, properties):
         if not settings["roll-advantage"]:
             del properties["r2"]
         renameProp("rname", "name")
-        renameProp("r1", "First Roll")
-        renameProp("r2", "Second Roll")
+        if properties["r2"]?:
+            renameProp("r1", "Regular Roll")
+            renameProp("r2", "Roll with [Dis]Advantage")
+        else:
+            renameProp("r1", "Dice Roll")
         renameProp("mod", "Modifier")
         if properties["dmg2"]?:
             renameProp("dmg1", "First Damage")

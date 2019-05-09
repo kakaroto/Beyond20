@@ -390,23 +390,20 @@ def injectDiceToRolls(selector, name=""):
 
     text = $(selector).html()
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
-    pre_original='<u class="ct-beyond20-custom-roll" x-beyond20-name="' + name + '"><strong>'
-    post_original='</strong></u>'
-    pre_dice='<img class="ct-beyond20-custom-icon ct-beyond20-custom-roll" x-beyond20-name="' + name + \
+    pre_original='<u class="ct-beyond20-custom-roll"><strong>'
+    post_original='</strong>'
+    pre_dice='<img class="ct-beyond20-custom-icon" x-beyond20-name="' + name + \
         '" x-beyond20-roll="'
-    post_dice='"></img>'
+    post_dice='"></img></u>'
     text = replaceRolls(False, text, True, pre_original, post_original, pre_dice, post_dice)
-    text = replaceRolls(True, text, True, pre_original + '<span style="display:none">1d20</span>', post_original, pre_dice + "1d20", post_dice)
+    text = replaceRolls(True, text, True, pre_original, post_original, pre_dice + "1d20", post_dice)
     $(selector).html(text)
     $(".ct-beyond20-custom-icon").css("margin-right", "3px")
     $(".ct-beyond20-custom-icon").css("margin-left", "3px")
     $(".ct-beyond20-custom-icon").attr("src", icon16)
     $(".ct-beyond20-custom-roll").bind('click', def(event):
-        name = event.target.getAttribute("x-beyond20-name")
-        if event.target.tagName == "IMG":
-            roll = event.target.getAttribute("x-beyond20-roll")
-        else:
-            roll = event.target.textContent
+        name = $(event.currentTarget).find("img").attr("x-beyond20-name")
+        roll = $(event.currentTarget).find("img").attr("x-beyond20-roll")
         sendRoll("custom", roll, {"name": name})
     )
 

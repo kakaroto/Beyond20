@@ -5966,8 +5966,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             set_speakingas = true;
             if (character) {
                 character = character.toLowerCase();
-                for (var ρσ_Index7 = 0; ρσ_Index7 < speakingas.children.length; ρσ_Index7++) {
-                    i = ρσ_Index7;
+                for (var ρσ_Index0 = 0; ρσ_Index0 < speakingas.children.length; ρσ_Index0++) {
+                    i = ρσ_Index0;
                     if (ρσ_equals((ρσ_expr_temp = speakingas.children)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i].text.toLowerCase(), character)) {
                         (ρσ_expr_temp = speakingas.children)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i].selected = true;
                         set_speakingas = false;
@@ -5999,9 +5999,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var roll, mod, m;
             roll = "[[" + dice;
-            var ρσ_Iter8 = ρσ_Iterable(modifiers);
-            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                m = ρσ_Iter8[ρσ_Index8];
+            var ρσ_Iter1 = ρσ_Iterable(modifiers);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                m = ρσ_Iter1[ρσ_Index1];
                 mod = modifiers[(typeof m === "number" && m < 0) ? modifiers.length + m : m];
                 if (len(mod) > 0) {
                     if ((mod[0] === "+" || typeof mod[0] === "object" && ρσ_equals(mod[0], "+")) || (mod[0] === "-" || typeof mod[0] === "object" && ρσ_equals(mod[0], "-")) || (mod[0] === "&" || typeof mod[0] === "object" && ρσ_equals(mod[0], "&"))) {
@@ -6074,9 +6074,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_anonfunc = function (old_key, new_key) {
                         var new_properties, key;
                         new_properties = {};
-                        var ρσ_Iter9 = ρσ_Iterable(properties);
-                        for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
-                            key = ρσ_Iter9[ρσ_Index9];
+                        var ρσ_Iter2 = ρσ_Iterable(properties);
+                        for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                            key = ρσ_Iter2[ρσ_Index2];
                             new_properties[ρσ_bound_index(((key === old_key || typeof key === "object" && ρσ_equals(key, old_key))) ? new_key : key, new_properties)] = properties[(typeof key === "number" && key < 0) ? properties.length + key : key];
                         }
                         properties = new_properties;
@@ -6090,8 +6090,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_delitem(properties, "r2");
                 }
                 renameProp("rname", "name");
-                renameProp("r1", "First Roll");
-                renameProp("r2", "Second Roll");
+                if (ρσ_exists.n(properties["r2"])) {
+                    renameProp("r1", "Regular Roll");
+                    renameProp("r2", "Roll with [Dis]Advantage");
+                } else {
+                    renameProp("r1", "Dice Roll");
+                }
                 renameProp("mod", "Modifier");
                 if (ρσ_exists.n(properties["dmg2"])) {
                     renameProp("dmg1", "First Damage");
@@ -6121,9 +6125,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_delitem(properties, "advantage");
             }
             result = "&{template:" + name + "}";
-            var ρσ_Iter10 = ρσ_Iterable(properties);
-            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
-                key = ρσ_Iter10[ρσ_Index10];
+            var ρσ_Iter3 = ρσ_Iterable(properties);
+            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                key = ρσ_Iter3[ρσ_Index3];
                 result += " {{" + key + "=" + properties[(typeof key === "number" && key < 0) ? properties.length + key : key] + "}}";
             }
             return result;

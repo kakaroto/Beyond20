@@ -6584,12 +6584,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             text = $(selector).html();
             icon16 = chrome.extension.getURL("images/icons/icon16.png");
-            pre_original = "<u class=\"ct-beyond20-custom-roll\" x-beyond20-name=\"" + name + "\"><strong>";
-            post_original = "</strong></u>";
-            pre_dice = "<img class=\"ct-beyond20-custom-icon ct-beyond20-custom-roll\" x-beyond20-name=\"" + name + "\" x-beyond20-roll=\"";
-            post_dice = "\"></img>";
+            pre_original = "<u class=\"ct-beyond20-custom-roll\"><strong>";
+            post_original = "</strong>";
+            pre_dice = "<img class=\"ct-beyond20-custom-icon\" x-beyond20-name=\"" + name + "\" x-beyond20-roll=\"";
+            post_dice = "\"></img></u>";
             text = replaceRolls(false, text, true, pre_original, post_original, pre_dice, post_dice);
-            text = replaceRolls(true, text, true, pre_original + "<span style=\"display:none\">1d20</span>", post_original, pre_dice + "1d20", post_dice);
+            text = replaceRolls(true, text, true, pre_original, post_original, pre_dice + "1d20", post_dice);
             $(selector).html(text);
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");
             $(".ct-beyond20-custom-icon").css("margin-left", "3px");
@@ -6597,12 +6597,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             $(".ct-beyond20-custom-roll").bind("click", (function() {
                 var ρσ_anonfunc = function (event) {
                     var name, roll;
-                    name = event.target.getAttribute("x-beyond20-name");
-                    if ((event.target.tagName === "IMG" || typeof event.target.tagName === "object" && ρσ_equals(event.target.tagName, "IMG"))) {
-                        roll = event.target.getAttribute("x-beyond20-roll");
-                    } else {
-                        roll = event.target.textContent;
-                    }
+                    name = $(event.currentTarget).find("img").attr("x-beyond20-name");
+                    roll = $(event.currentTarget).find("img").attr("x-beyond20-roll");
                     sendRoll("custom", roll, (function(){
                         var ρσ_d = {};
                         ρσ_d["name"] = name;
