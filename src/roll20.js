@@ -5289,9 +5289,22 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["text", "keep_original", "escape"]}
         });
 
+        function getBrowser() {
+            if ((typeof chrome !== "undefined" && (typeof typeof chrome !== "object" || ρσ_not_equals(typeof chrome, "undefined")))) {
+                if ((typeof browser !== "undefined" && (typeof typeof browser !== "object" || ρσ_not_equals(typeof browser, "undefined")))) {
+                    return "Firefox";
+                } else {
+                    return "Chrome";
+                }
+            } else {
+                return "Edge";
+            }
+        };
+
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.subRolls = subRolls;
+        ρσ_modules.utils.getBrowser = getBrowser;
     })();
 
     (function(){
@@ -5598,6 +5611,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         var options_list;
         var E = ρσ_modules.elementmaker.E;
 
+        var getBrowser = ρσ_modules.utils.getBrowser;
+
         options_list = (function(){
             var ρσ_d = {};
             ρσ_d["whispers"] = ρσ_list_decorate([ "Whisper rolls", "Whisper rolls to the DM", "If enabled, all the rolls will be whispered to the DM", "bool", false ]);
@@ -5627,16 +5642,27 @@ var str = ρσ_str, repr = ρσ_repr;;
             return settings;
         };
 
+        function getStorage() {
+            var browser;
+            browser = getBrowser();
+            if ((browser === "Chrome" || typeof browser === "object" && ρσ_equals(browser, "Chrome"))) {
+                return chrome.storage.sync;
+            } else {
+                return chrome.storage.local;
+            }
+        };
+
         function getStoredSettings(cb) {
             var settings;
             settings = getDefaultSettings();
-            chrome.storage.sync.get((function(){
+            getStorage().get((function(){
                 var ρσ_d = {};
                 ρσ_d["settings"] = settings;
                 return ρσ_d;
             }).call(this), (function() {
                 var ρσ_anonfunc = function (items) {
-                    console.log("Stored settings :", settings);
+                    console.log("args: ", items);
+                    console.log("Stored settings :", items.settings);
                     cb(items.settings);
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
@@ -5657,7 +5683,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
                 cb = ρσ_kwargs_obj.cb;
             }
-            chrome.storage.sync.set((function(){
+            getStorage().set((function(){
                 var ρσ_d = {};
                 ρσ_d["settings"] = settings;
                 return ρσ_d;
@@ -5898,6 +5924,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         ρσ_modules.settings.options_list = options_list;
         ρσ_modules.settings.getDefaultSettings = getDefaultSettings;
+        ρσ_modules.settings.getStorage = getStorage;
         ρσ_modules.settings.getStoredSettings = getStoredSettings;
         ρσ_modules.settings.setSettings = setSettings;
         ρσ_modules.settings.resetSettings = resetSettings;
@@ -5939,8 +5966,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             set_speakingas = true;
             if (character) {
                 character = character.toLowerCase();
-                for (var ρσ_Index0 = 0; ρσ_Index0 < speakingas.children.length; ρσ_Index0++) {
-                    i = ρσ_Index0;
+                for (var ρσ_Index7 = 0; ρσ_Index7 < speakingas.children.length; ρσ_Index7++) {
+                    i = ρσ_Index7;
                     if (ρσ_equals((ρσ_expr_temp = speakingas.children)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i].text.toLowerCase(), character)) {
                         (ρσ_expr_temp = speakingas.children)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i].selected = true;
                         set_speakingas = false;
@@ -5972,9 +5999,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var roll, mod, m;
             roll = "[[" + dice;
-            var ρσ_Iter1 = ρσ_Iterable(modifiers);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                m = ρσ_Iter1[ρσ_Index1];
+            var ρσ_Iter8 = ρσ_Iterable(modifiers);
+            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                m = ρσ_Iter8[ρσ_Index8];
                 mod = modifiers[(typeof m === "number" && m < 0) ? modifiers.length + m : m];
                 if (len(mod) > 0) {
                     if ((mod[0] === "+" || typeof mod[0] === "object" && ρσ_equals(mod[0], "+")) || (mod[0] === "-" || typeof mod[0] === "object" && ρσ_equals(mod[0], "-")) || (mod[0] === "&" || typeof mod[0] === "object" && ρσ_equals(mod[0], "&"))) {
@@ -6047,9 +6074,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_anonfunc = function (old_key, new_key) {
                         var new_properties, key;
                         new_properties = {};
-                        var ρσ_Iter2 = ρσ_Iterable(properties);
-                        for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                            key = ρσ_Iter2[ρσ_Index2];
+                        var ρσ_Iter9 = ρσ_Iterable(properties);
+                        for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                            key = ρσ_Iter9[ρσ_Index9];
                             new_properties[ρσ_bound_index(((key === old_key || typeof key === "object" && ρσ_equals(key, old_key))) ? new_key : key, new_properties)] = properties[(typeof key === "number" && key < 0) ? properties.length + key : key];
                         }
                         properties = new_properties;
@@ -6094,9 +6121,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_delitem(properties, "advantage");
             }
             result = "&{template:" + name + "}";
-            var ρσ_Iter3 = ρσ_Iterable(properties);
-            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                key = ρσ_Iter3[ρσ_Index3];
+            var ρσ_Iter10 = ρσ_Iterable(properties);
+            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                key = ρσ_Iter10[ρσ_Index10];
                 result += " {{" + key + "=" + properties[(typeof key === "number" && key < 0) ? properties.length + key : key] + "}}";
             }
             return result;

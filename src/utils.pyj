@@ -54,3 +54,12 @@ def subRolls(text, keep_original=False, escape=False):
     text = replaceRolls(False, text, keep_original, pre_original, post_original, pre_dice, post_dice)
     return replaceRolls(True, text, keep_original, pre_original, post_original, pre_dice + "1d20 ", post_dice)
 
+# Taken from https://stackoverflow.com/questions/45985198/the-best-practice-to-detect-whether-a-browser-extension-is-running-on-chrome-or
+def getBrowser():
+    if jstype(chrome) != "undefined":
+        if jstype(browser) != "undefined":
+            return "Firefox"
+        else:
+            return "Chrome"
+    else:
+        return "Edge"

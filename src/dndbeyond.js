@@ -5289,9 +5289,22 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["text", "keep_original", "escape"]}
         });
 
+        function getBrowser() {
+            if ((typeof chrome !== "undefined" && (typeof typeof chrome !== "object" || ρσ_not_equals(typeof chrome, "undefined")))) {
+                if ((typeof browser !== "undefined" && (typeof typeof browser !== "object" || ρσ_not_equals(typeof browser, "undefined")))) {
+                    return "Firefox";
+                } else {
+                    return "Chrome";
+                }
+            } else {
+                return "Edge";
+            }
+        };
+
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.subRolls = subRolls;
+        ρσ_modules.utils.getBrowser = getBrowser;
     })();
 
     (function(){
@@ -5598,6 +5611,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         var options_list;
         var E = ρσ_modules.elementmaker.E;
 
+        var getBrowser = ρσ_modules.utils.getBrowser;
+
         options_list = (function(){
             var ρσ_d = {};
             ρσ_d["whispers"] = ρσ_list_decorate([ "Whisper rolls", "Whisper rolls to the DM", "If enabled, all the rolls will be whispered to the DM", "bool", false ]);
@@ -5627,16 +5642,27 @@ var str = ρσ_str, repr = ρσ_repr;;
             return settings;
         };
 
+        function getStorage() {
+            var browser;
+            browser = getBrowser();
+            if ((browser === "Chrome" || typeof browser === "object" && ρσ_equals(browser, "Chrome"))) {
+                return chrome.storage.sync;
+            } else {
+                return chrome.storage.local;
+            }
+        };
+
         function getStoredSettings(cb) {
             var settings;
             settings = getDefaultSettings();
-            chrome.storage.sync.get((function(){
+            getStorage().get((function(){
                 var ρσ_d = {};
                 ρσ_d["settings"] = settings;
                 return ρσ_d;
             }).call(this), (function() {
                 var ρσ_anonfunc = function (items) {
-                    console.log("Stored settings :", settings);
+                    console.log("args: ", items);
+                    console.log("Stored settings :", items.settings);
                     cb(items.settings);
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
@@ -5657,7 +5683,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
                 cb = ρσ_kwargs_obj.cb;
             }
-            chrome.storage.sync.set((function(){
+            getStorage().set((function(){
                 var ρσ_d = {};
                 ρσ_d["settings"] = settings;
                 return ρσ_d;
@@ -5898,6 +5924,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         ρσ_modules.settings.options_list = options_list;
         ρσ_modules.settings.getDefaultSettings = getDefaultSettings;
+        ρσ_modules.settings.getStorage = getStorage;
         ρσ_modules.settings.getStoredSettings = getStoredSettings;
         ρσ_modules.settings.setSettings = setSettings;
         ρσ_modules.settings.resetSettings = resetSettings;
@@ -6031,7 +6058,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["name"] = name;
                 ρσ_d["attack-source"] = attack_source;
                 ρσ_d["description"] = description;
-                ρσ_d["properties"] = ρσ_list_decorate([]);
                 return ρσ_d;
             }).call(this);
             if (to_hit) {

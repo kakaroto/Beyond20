@@ -1,4 +1,5 @@
 from elementmaker import E 
+from utils import getBrowser
 
 # key: [short title, title, description, type, default, extra_options]
 # Types: bool, string, combobox, link
@@ -44,15 +45,23 @@ def getDefaultSettings():
     console.log("Default settings :", settings)
     return settings
 
+def getStorage():
+    browser = getBrowser()
+    if browser == "Chrome":
+        return chrome.storage.sync
+    else:
+        return chrome.storage.local
+
 def getStoredSettings(cb):
     settings = getDefaultSettings()
-    chrome.storage.sync.get({"settings": settings}, def(items):
-        console.log("Stored settings :", settings)
+    getStorage().get({"settings": settings}, def (items):
+        console.log("args: ", items)
+        console.log("Stored settings :", items.settings)
         cb(items.settings)
     )
 
 def setSettings(settings, cb=None):
-    chrome.storage.sync.set({"settings": settings}, def():
+    getStorage().set({"settings": settings}, def():
         console.log("Saved settings : ", settings)
         if cb:
             cb(settings)

@@ -18,7 +18,8 @@
 	"open_in_tab": false
     },
     "page_action": {
-      "default_popup": "popup.html"
+	"default_popup": "popup.html",
+	"default_icon": "images/icons/icon16.png"
     },
     "web_accessible_resources": [ "images/*" ],
     "background": {

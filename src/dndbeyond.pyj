@@ -45,8 +45,7 @@ def findToHit(name_to_match, items_selector, name_selector, tohit_selector):
 def buildAttackRoll(attack_source, name, description, properties, damage=None, damage_type=None, to_hit=None, damage2=None, damage_type2=None):
     roll_properties = {"name": name,
                        "attack-source": attack_source,
-                       "description": description,
-                       "properties": []}
+                       "description": description}
     if to_hit:
         roll_properties["to-hit"] = to_hit
 
