@@ -2,6 +2,9 @@ v0.0.6
 ===
 
 - Add option to send initiative to the turn tracker
+- Add support for Firefox and fix firefox specific issues
+- Fix 1d20 added to spell description for +x modifiers
+- Change the "First/Second Roll" for other templates into a better name
 
 v0.0.5
 ===
