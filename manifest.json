@@ -4,6 +4,11 @@
     "manifest_version": 2,
     "description": "Integrates the D&D Beyond Character Sheet to Roll20.",
     "permissions": [ "activeTab", "tabs", "storage", "*://app.roll20.net/editor/", "*://*.dndbeyond.com/*characters/*" ],
+    "browser_specific_settings": {
+	"gecko": {
+	    "id": "beyond20@kakaroto.homelinux.net"
+	}
+    },
     "icons": {
         "16": "images/icons/icon16.png",
         "24": "images/icons/icon24.png",
