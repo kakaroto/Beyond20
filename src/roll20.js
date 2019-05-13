@@ -5951,8 +5951,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "character")){
                 character = ρσ_kwargs_obj.character;
             }
-            var set_speakingas, i, old_text;
+            var set_speakingas, old_as, i, old_text;
             set_speakingas = true;
+            old_as = speakingas.value;
             if (character) {
                 character = character.toLowerCase();
                 for (var ρσ_Index0 = 0; ρσ_Index0 < speakingas.children.length; ρσ_Index0++) {
@@ -5971,6 +5972,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             txt.value = message;
             btn.click();
             txt.value = old_text;
+            speakingas.value = old_as;
         };
         if (!postChatMessage.__defaults__) Object.defineProperties(postChatMessage, {
             __defaults__ : {value: {character:null}},
@@ -5993,7 +5995,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 m = ρσ_Iter1[ρσ_Index1];
                 mod = modifiers[(typeof m === "number" && m < 0) ? modifiers.length + m : m];
                 if (len(mod) > 0) {
-                    if ((mod[0] === "+" || typeof mod[0] === "object" && ρσ_equals(mod[0], "+")) || (mod[0] === "-" || typeof mod[0] === "object" && ρσ_equals(mod[0], "-")) || (mod[0] === "&" || typeof mod[0] === "object" && ρσ_equals(mod[0], "&"))) {
+                    if ((mod[0] === "+" || typeof mod[0] === "object" && ρσ_equals(mod[0], "+")) || (mod[0] === "-" || typeof mod[0] === "object" && ρσ_equals(mod[0], "-")) || (mod[0] === "?" || typeof mod[0] === "object" && ρσ_equals(mod[0], "?")) || (mod[0] === "&" || typeof mod[0] === "object" && ρσ_equals(mod[0], "&"))) {
                         roll += " " + mod;
                     } else {
                         roll += "+" + mod;
@@ -6156,7 +6158,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, advantage_type, roll_properties, dice, dice_formula, rname, crit1, properties, crit2, source, components, description, higher;
+            var roll, advantage_type, modifier, ability, prof, prof_val, roll_properties, dice, dice_formula, rname, crit1, properties, crit2, source, components, description, higher;
             print("Got message : " + str(request));
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 updateSettings(request.settings);
@@ -6172,28 +6174,71 @@ var str = ρσ_str, repr = ρσ_repr;;
                     advantage_type = "normal";
                 }
                 if ((request.type === "skill" || typeof request.type === "object" && ρσ_equals(request.type, "skill"))) {
-                    roll += template("simple", (function(){
-                        var ρσ_d = {};
-                        ρσ_d["charname"] = request.character;
-                        ρσ_d["rname"] = request.skill;
-                        ρσ_d["mod"] = request.modifier;
-                        ρσ_d["r1"] = genRoll("1d20", (function(){
+                    modifier = request.modifier;
+                    if ((modifier === "--" || typeof modifier === "object" && ρσ_equals(modifier, "--")) && request.character.abilities.length > 0) {
+                        modifier = "?{Choose Ability";
+                        var ρσ_Iter4 = ρσ_Iterable(request.character.abilities);
+                        for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                            ability = ρσ_Iter4[ρσ_Index4];
+                            modifier += "|" + ability[0] + ", " + ability[3];
+                        }
+                        modifier += "}";
+                        prof = "";
+                        prof_val = "";
+                        if ((request.proficiency === "Proficiency" || typeof request.proficiency === "object" && ρσ_equals(request.proficiency, "Proficiency"))) {
+                            prof = "PROF";
+                            prof_val += request.character.proficiency;
+                        } else if ((request.proficiency === "Half Proficiency" || typeof request.proficiency === "object" && ρσ_equals(request.proficiency, "Half Proficiency"))) {
+                            prof = "HALF-PROFICIENCY";
+                            prof_val += "+[[floor(" + request.character.proficiency + " / 2)]]";
+                        } else if ((request.proficiency === "Expertise" || typeof request.proficiency === "object" && ρσ_equals(request.proficiency, "Expertise"))) {
+                            prof = "EXPERTISE";
+                            prof_val += "+[[" + request.character.proficiency + " * 2]]";
+                        }
+                        roll += template("simple", (function(){
                             var ρσ_d = {};
-                            ρσ_d[request.ability] = request.modifier;
+                            ρσ_d["charname"] = request.character.name;
+                            ρσ_d["rname"] = request.skill;
+                            ρσ_d["mod"] = "[[" + modifier + prof_val + "]]";
+                            ρσ_d["r1"] = genRoll("1d20", (function(){
+                                var ρσ_d = {};
+                                ρσ_d["--"] = modifier;
+                                ρσ_d[prof] = prof_val;
+                                return ρσ_d;
+                            }).call(this));
+                            ρσ_d["r2"] = genRoll("1d20", (function(){
+                                var ρσ_d = {};
+                                ρσ_d["--"] = modifier;
+                                ρσ_d[prof] = prof_val;
+                                return ρσ_d;
+                            }).call(this));
+                            ρσ_d[advantage_type] = 1;
                             return ρσ_d;
                         }).call(this));
-                        ρσ_d["r2"] = genRoll("1d20", (function(){
+                    } else {
+                        roll += template("simple", (function(){
                             var ρσ_d = {};
-                            ρσ_d[request.ability] = request.modifier;
+                            ρσ_d["charname"] = request.character.name;
+                            ρσ_d["rname"] = request.skill;
+                            ρσ_d["mod"] = modifier;
+                            ρσ_d["r1"] = genRoll("1d20", (function(){
+                                var ρσ_d = {};
+                                ρσ_d[request.ability] = modifier;
+                                return ρσ_d;
+                            }).call(this));
+                            ρσ_d["r2"] = genRoll("1d20", (function(){
+                                var ρσ_d = {};
+                                ρσ_d[request.ability] = modifier;
+                                return ρσ_d;
+                            }).call(this));
+                            ρσ_d[advantage_type] = 1;
                             return ρσ_d;
                         }).call(this));
-                        ρσ_d[advantage_type] = 1;
-                        return ρσ_d;
-                    }).call(this));
+                    }
                 } else if ((request.type === "ability" || typeof request.type === "object" && ρσ_equals(request.type, "ability"))) {
                     roll += template("simple", (function(){
                         var ρσ_d = {};
-                        ρσ_d["charname"] = request.character;
+                        ρσ_d["charname"] = request.character.name;
                         ρσ_d["rname"] = request.name;
                         ρσ_d["mod"] = request.modifier;
                         ρσ_d["r1"] = genRoll("1d20", (function(){
@@ -6212,7 +6257,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else if ((request.type === "saving-throw" || typeof request.type === "object" && ρσ_equals(request.type, "saving-throw"))) {
                     roll += template("simple", (function(){
                         var ρσ_d = {};
-                        ρσ_d["charname"] = request.character;
+                        ρσ_d["charname"] = request.character.name;
                         ρσ_d["rname"] = request.name + " Save";
                         ρσ_d["mod"] = request.modifier;
                         ρσ_d["r1"] = genRoll("1d20", (function(){
@@ -6231,7 +6276,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else if ((request.type === "initiative" || typeof request.type === "object" && ρσ_equals(request.type, "initiative"))) {
                     roll_properties = (function(){
                         var ρσ_d = {};
-                        ρσ_d["charname"] = request.character;
+                        ρσ_d["charname"] = request.character.name;
                         ρσ_d["rname"] = "Initiative";
                         ρσ_d["mod"] = request.initiative;
                         return ρσ_d;
@@ -6266,7 +6311,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }
                     roll += template("simple", (function(){
                         var ρσ_d = {};
-                        ρσ_d["charname"] = request.character;
+                        ρσ_d["charname"] = request.character.name;
                         ρσ_d["rname"] = rname;
                         ρσ_d["mod"] = request["hit-dice"];
                         ρσ_d["r1"] = subRolls(request["hit-dice"]);
@@ -6277,7 +6322,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     crit1 = request.damage.split((ρσ_in("+", request.damage)) ? "+" : "-")[0];
                     properties = (function(){
                         var ρσ_d = {};
-                        ρσ_d["charname"] = request.character;
+                        ρσ_d["charname"] = request.character.name;
                         ρσ_d["rname"] = request.name;
                         return ρσ_d;
                     }).call(this);
@@ -6393,7 +6438,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else if ((request.type === "spell-attack" || typeof request.type === "object" && ρσ_equals(request.type, "spell-attack"))) {
                     properties = (function(){
                         var ρσ_d = {};
-                        ρσ_d["charname"] = request.character;
+                        ρσ_d["charname"] = request.character.name;
                         ρσ_d["rname"] = request.name;
                         return ρσ_d;
                     }).call(this);
@@ -6460,7 +6505,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else if ((request.type === "death-save" || typeof request.type === "object" && ρσ_equals(request.type, "death-save"))) {
                     roll += template("simple", (function(){
                         var ρσ_d = {};
-                        ρσ_d["charname"] = request.character;
+                        ρσ_d["charname"] = request.character.name;
                         ρσ_d["rname"] = "Death Saving Throw";
                         ρσ_d["r1"] = "[[1d20cs>9cf<10]]";
                         ρσ_d["normal"] = 1;
@@ -6469,7 +6514,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else if ((request.type === "custom" || typeof request.type === "object" && ρσ_equals(request.type, "custom"))) {
                     roll += template("simple", (function(){
                         var ρσ_d = {};
-                        ρσ_d["charname"] = request.character;
+                        ρσ_d["charname"] = request.character.name;
                         ρσ_d["rname"] = request.name;
                         ρσ_d["mod"] = request.roll;
                         ρσ_d["r1"] = subRolls(request.roll);
@@ -6479,7 +6524,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else {
                     roll += template("simple", (function(){
                         var ρσ_d = {};
-                        ρσ_d["charname"] = request.character;
+                        ρσ_d["charname"] = request.character.name;
                         ρσ_d["rname"] = request.type;
                         ρσ_d["mod"] = request.roll;
                         ρσ_d["r1"] = subRolls(request.roll);
@@ -6487,7 +6532,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         return ρσ_d;
                     }).call(this));
                 }
-                postChatMessage(roll, request.character);
+                postChatMessage(roll, request.character.name);
             }
         };
         if (!handleMessage.__argnames__) Object.defineProperties(handleMessage, {

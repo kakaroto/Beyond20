@@ -11,6 +11,79 @@ ability_abbreviations = {"Strength": "STR",
                          "Charisma": "CHA"}
 settings = getDefaultSettings()
 
+class Character:
+    def __init__(self):
+        self._abilities = []
+        self._name = None
+        self._race = None
+        self._level = None
+        self._classes = None
+        self._ac = None
+        self._speed = None
+        self._proficiency = None
+
+    def updateInfo(self):
+        if self._name is None:
+            self._name = $(".ct-character-tidbits__name").text()
+        if self._ac is None:
+            self._ac = $(".ct-armor-class-box__value").text()
+            if self._ac == "":
+                self._ac = $(".ct-combat-mobile__extra--ac .ct-combat-mobile__extra-value").text()
+                if self._ac == "":
+                    self._ac = None
+        if self._proficiency is None:
+            self._proficiency = $(".ct-proficiency-bonus-box__value").text()
+            if self._proficiency == "":
+                self._proficiency = $(".ct-combat-mobile__extra--proficiency .ct-combat-mobile__extra-value").text()
+                if self._proficiency == "":
+                    self._proficiency = None
+        if self._speed is None:
+            self._speed = $(".ct-speed-box__box-value .ct-distance-number__number").text()
+            if self._speed == "":
+                self._speed = $(".ct-combat-mobile__extra--speed .ct-combat-mobile__extra-value .ct-distance-number__number").text()
+                if self._speed == "":
+                    self._speed = None
+        if len(self._abilities) == 0:
+            abilities = $(".ct-quick-info__ability")
+            for i in range(abilities.length):
+                name = abilities.eq(i).find(".ct-ability-summary__heading .ct-ability-summary__label").text()
+                abbr = abilities.eq(i).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text()
+                modifier = abilities.eq(i).find(".ct-ability-summary__primary .ct-signed-number").text()
+                value = abilities.eq(i).find(".ct-ability-summary__secondary").text()
+                if modifier == "":
+                    modifier = abilities.eq(i).find(".ct-ability-summary__secondary .ct-signed-number").text()
+                    value = abilities.eq(i).find(".ct-ability-summary__primary").text()
+                self._abilities.append([name, abbr, value, modifier])
+        if self._race is None:
+            self._race = $(".ct-character-tidbits__race").text()
+        if self._classes is None:
+            classes = $(".ct-character-tidbits__classes")
+            if classes.length > 0:
+                classes = classes.text().split(" / ")
+                self._classes = {}
+                for class_ in classes:
+                    (name, level) = class_.split(" ")
+                    self._classes[name] = level
+        if self._level is None:
+            level = $(".ct-character-tidbits__xp-level")
+            xp = $(".ct-character-tidbits__xp-bar .ct-xp-bar__item--cur .ct-xp-bar__label")
+            if level.length > 0:
+                self._level = level.text().replace("Level ", "")
+            elif xp.length > 0:
+                self._level = xp.text().replace("LVL ", "")
+            
+    def getDict(self):
+        return {"name": self._name,
+                "abilities": self._abilities,
+                "classes": self._classes,
+                "level": self._level,
+                "race": self._race,
+                "ac": self._ac,
+                "proficiency": self._proficiency,
+                "speed": self._speed}
+
+character = Character()
+
 def propertyListToDict(propList):
     properties = {}
     for i in range(propList.length):
@@ -72,7 +145,6 @@ def buildAttackRoll(attack_source, name, description, properties, damage=None, d
         roll_properties["save-dc"] = save_dc
         for ability in ability_abbreviations:
             if ability_abbreviations[ability] == save_ability:
-                save_ability = ability
                 roll_properties["save-ability"] = ability
                 break
 
@@ -89,21 +161,24 @@ def buildAttackRoll(attack_source, name, description, properties, damage=None, d
     return roll_properties
 
 def sendRoll(rollType, fallback, args):
-    char_name = $(".ct-character-tidbits__name").text()
-    req = {"action": "roll", "character": char_name, "type": rollType, "roll": fallback}
+    nonlocal character
+
+    req = {"action": "roll", "character": character.getDict(), "type": rollType, "roll": fallback}
     for key in args:
         req[key] = args[key]
     console.log("Sending message: " + str(req))
     chrome.runtime.sendMessage(req);
 
-def rollSkillCheck():
-    skill_name = $(".ct-skill-pane__header-name").text()
-    ability = $(".ct-skill-pane__header-ability").text()
-    modifier = $(".ct-skill-pane__header-modifier").text()
+def rollSkillCheck(paneClass):
+    skill_name = $("." + paneClass + "__header-name").text()
+    ability = $("." + paneClass + "__header-ability").text()
+    modifier = $("." + paneClass + "__header-modifier").text()
+    proficiency = $("." + paneClass + "__header-icon .ct-tooltip").attr("data-original-title")
     print("Skill " + skill_name + "(" + ability + ") : " + modifier)
     sendRoll("skill", "1d20" + modifier, {"skill": skill_name,
                                           "ability": ability,
-                                          "modifier": modifier} )
+                                          "modifier": modifier,
+                                          "proficiency": proficiency})
 
 def rollAbilityOrSavingThrow(paneClass, rollType):
     ability_string = $("." + paneClass + " .ct-sidebar__heading").text()
@@ -305,8 +380,8 @@ def displayTrait():
 def execute(paneClass):
     print("Beyond20: Current panel : " + paneClass)
     console.log(paneClass)
-    if paneClass == "ct-skill-pane":
-        rollSkillCheck()
+    if paneClass in ["ct-skill-pane", "ct-custom-skill-pane"]:
+        rollSkillCheck(paneClass)
     elif paneClass == "ct-ability-pane":
         rollAbilityCheck()
     elif paneClass == "ct-ability-saving-throws-pane":
@@ -411,7 +486,8 @@ lastItemName = ""
 lastSpellName = ""
 lastSpellLevel = ""
 def injectRollButton(paneClass):
-    if paneClass in ["ct-skill-pane",
+    if paneClass in ["ct-custom-skill-pane",
+                     "ct-skill-pane",
                      "ct-ability-pane",
                      "ct-ability-pane",
                      "ct-ability-saving-throws-pane",
@@ -486,6 +562,8 @@ def injectRollButton(paneClass):
         removeRollButtons()
 
 def panelModified(mutations, observer):
+    nonlocal character
+
     pane = $(".ct-sidebar__pane-content > div")
     if pane.length > 0:
         for div in range(pane.length):
@@ -493,6 +571,7 @@ def panelModified(mutations, observer):
             if paneClass == "ct-sidebar__pane-controls":
                 continue
             print("Beyond20: New side panel is : " + paneClass)
+            character.updateInfo()
             injectRollButton(paneClass)
 
 def updateSettings(new_settings=None):

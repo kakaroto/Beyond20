@@ -10,7 +10,10 @@ speakingas = document.getElementById("speakingas")
 settings = getDefaultSettings()
 
 def postChatMessage(message, character=None):
+    nonlocal txt, btn, speakingas
+
     set_speakingas = True
+    old_as = speakingas.value
     if character:
         character = character.toLowerCase()
         for i in range(speakingas.children.length):
@@ -24,13 +27,14 @@ def postChatMessage(message, character=None):
     txt.value = message
     btn.click()
     txt.value = old_text
+    speakingas.value = old_as
 
 def genRoll(dice, modifiers=[]):
     roll = "[[" + dice
     for m in modifiers:
         mod = modifiers[m]
         if len(mod) > 0:
-            if mod[0] == '+' or mod[0] == '-' or mod[0] == '&':
+            if mod[0] == '+' or mod[0] == '-' or mod[0] == '?' or mod[0] == '&':
                 roll += " " + mod
             else:
                 roll += "+" + mod
@@ -142,16 +146,17 @@ def handleMessage (request, sender, sendResponse):
         else:
             advantage_type = "normal"
         if request.type == "skill":
+            modifier = request.modifier
             roll += template("simple",
-                             {"charname": request.character,
+                             {"charname": request.character.name,
                               "rname" : request.skill,
-                              "mod": request.modifier,
-                              "r1": genRoll("1d20", {request.ability: request.modifier}),
-                              "r2": genRoll("1d20", {request.ability: request.modifier}),
+                              "mod": modifier,
+                              "r1": genRoll("1d20", {request.ability: modifier}),
+                              "r2": genRoll("1d20", {request.ability: modifier}),
                               advantage_type:1})
         elif request.type == "ability":
             roll += template("simple",
-                             {"charname": request.character,
+                             {"charname": request.character.name,
                               "rname" : request.name,
                               "mod": request.modifier,
                               "r1": genRoll("1d20", {request.ability: request.modifier}),
@@ -159,14 +164,14 @@ def handleMessage (request, sender, sendResponse):
                               advantage_type:1})
         elif request.type == "saving-throw":
             roll += template("simple",
-                             {"charname": request.character,
+                             {"charname": request.character.name,
                               "rname" : request.name + " Save",
                               "mod": request.modifier,
                               "r1": genRoll("1d20", {request.ability: request.modifier}),
                               "r2": genRoll("1d20", {request.ability: request.modifier}),
                               advantage_type:1})
         elif request.type == "initiative":
-            roll_properties = {"charname": request.character,
+            roll_properties = {"charname": request.character.name,
                                "rname" : "Initiative",
                                "mod": request.initiative}
             if settings["initiative-tracker"]:
@@ -187,14 +192,14 @@ def handleMessage (request, sender, sendResponse):
                 rname = "Hit Dice"
 
             roll += template("simple",
-                             {"charname": request.character,
+                             {"charname": request.character.name,
                               "rname" : rname,
                               "mod": request["hit-dice"],
                               "r1": subRolls(request["hit-dice"]),
                               "normal": 1})
         elif request.type == "attack":
             crit1 = request.damage.split("+" if "+" in request.damage else "-")[0]
-            properties = {"charname": request.character,
+            properties = {"charname": request.character.name,
                           "rname" : request.name}
             if request["to-hit"]?:
                 properties["mod"] = request["to-hit"]
@@ -273,7 +278,7 @@ def handleMessage (request, sender, sendResponse):
 
             roll += template("spell", properties)
         elif request.type == "spell-attack":
-            properties = {"charname": request.character,
+            properties = {"charname": request.character.name,
                           "rname" : request.name}
             if request["to-hit"]?:
                 properties["mod"] = request["to-hit"]
@@ -317,25 +322,25 @@ def handleMessage (request, sender, sendResponse):
             roll += template("atkdmg", properties)
         elif request.type == "death-save":
             roll += template("simple",
-                             {"charname": request.character,
+                             {"charname": request.character.name,
                               "rname" : "Death Saving Throw",
                               "r1": "[[1d20cs>9cf<10]]",
                               "normal": 1})
         elif request.type == "custom":
             roll += template("simple",
-                             {"charname": request.character,
+                             {"charname": request.character.name,
                               "rname" : request.name,
                               "mod": request.roll,
                               "r1": subRolls(request.roll),
                               "normal": 1})
         else:
             roll += template("simple",
-                             {"charname": request.character,
+                             {"charname": request.character.name,
                               "rname" : request.type,
                               "mod": request.roll,
                               "r1": subRolls(request.roll),
                               "normal": 1})
-        postChatMessage(roll, request.character)
+        postChatMessage(roll, request.character.name)
 
 chrome.runtime.onMessage.addListener(handleMessage)
 updateSettings()
