@@ -79,10 +79,10 @@ def buildAttackRoll(attack_source, name, description, properties, damage=None, d
     if properties["Properties"]?:
         roll_properties["properties"] = properties["Properties"].split(", ")
 
-    if damage:
+    if damage is not None:
         roll_properties["damage"] = damage
         roll_properties["damage-type"] = damage_type
-    if damage2:
+    if damage2 is not None:
         roll_properties["second-damage"] = damage2
         roll_properties["second-damage-type"] = damage_type2
 

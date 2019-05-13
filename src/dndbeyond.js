@@ -5642,20 +5642,10 @@ var str = ρσ_str, repr = ρσ_repr;;
             return settings;
         };
 
-        function getStorage() {
-            var browser;
-            browser = getBrowser();
-            if ((browser === "Chrome" || typeof browser === "object" && ρσ_equals(browser, "Chrome"))) {
-                return chrome.storage.sync;
-            } else {
-                return chrome.storage.local;
-            }
-        };
-
         function getStoredSettings(cb) {
             var settings;
             settings = getDefaultSettings();
-            getStorage().get((function(){
+            chrome.storage.sync.get((function(){
                 var ρσ_d = {};
                 ρσ_d["settings"] = settings;
                 return ρσ_d;
@@ -5683,7 +5673,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
                 cb = ρσ_kwargs_obj.cb;
             }
-            getStorage().set((function(){
+            chrome.storage.sync.set((function(){
                 var ρσ_d = {};
                 ρσ_d["settings"] = settings;
                 return ρσ_d;
@@ -5924,7 +5914,6 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         ρσ_modules.settings.options_list = options_list;
         ρσ_modules.settings.getDefaultSettings = getDefaultSettings;
-        ρσ_modules.settings.getStorage = getStorage;
         ρσ_modules.settings.getStoredSettings = getStoredSettings;
         ρσ_modules.settings.setSettings = setSettings;
         ρσ_modules.settings.resetSettings = resetSettings;
@@ -6102,11 +6091,11 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_exists.n(properties["Properties"])) {
                 roll_properties["properties"] = properties["Properties"].split(", ");
             }
-            if (damage) {
+            if (damage !== null) {
                 roll_properties["damage"] = damage;
                 roll_properties["damage-type"] = damage_type;
             }
-            if (damage2) {
+            if (damage2 !== null) {
                 roll_properties["second-damage"] = damage2;
                 roll_properties["second-damage-type"] = damage_type2;
             }
