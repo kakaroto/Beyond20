@@ -61,6 +61,10 @@ def subDescriptionRolls(description):
 
 def template(name, properties):
     nonlocal settings
+
+    if properties["normal"]?:
+        del properties["r2"]
+
     if settings["template"] == "default":
         name = "default"
 
