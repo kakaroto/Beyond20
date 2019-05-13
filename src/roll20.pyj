@@ -147,13 +147,39 @@ def handleMessage (request, sender, sendResponse):
             advantage_type = "normal"
         if request.type == "skill":
             modifier = request.modifier
-            roll += template("simple",
-                             {"charname": request.character.name,
-                              "rname" : request.skill,
-                              "mod": modifier,
-                              "r1": genRoll("1d20", {request.ability: modifier}),
-                              "r2": genRoll("1d20", {request.ability: modifier}),
-                              advantage_type:1})
+            # Custom skill
+            if modifier == "--" and request.character.abilities.length > 0:
+                modifier = "?{Choose Ability"
+                # [name, abbr, value, mod]
+                for ability in request.character.abilities:
+                    modifier += "|" + ability[0] + ", " + ability[3]
+                modifier += "}"
+                prof = ""
+                prof_val = ""
+                if request.proficiency == "Proficiency":
+                    prof = "PROF"
+                    prof_val += request.character.proficiency
+                elif request.proficiency == "Half Proficiency":
+                    prof = "HALF-PROFICIENCY"
+                    prof_val += "+[[floor(" + request.character.proficiency + " / 2)]]"
+                elif request.proficiency == "Expertise":
+                    prof = "EXPERTISE"
+                    prof_val += "+[[" + request.character.proficiency + " * 2]]"
+                roll += template("simple",
+                                 {"charname": request.character.name,
+                                  "rname" : request.skill,
+                                  "mod": "[[" + modifier + prof_val + "]]",
+                                  "r1": genRoll("1d20", {"--": modifier, prof: prof_val}),
+                                  "r2": genRoll("1d20", {"--": modifier, prof: prof_val}),
+                                  advantage_type:1})
+            else:
+                roll += template("simple",
+                                 {"charname": request.character.name,
+                                  "rname" : request.skill,
+                                  "mod": modifier,
+                                  "r1": genRoll("1d20", {request.ability: modifier}),
+                                  "r2": genRoll("1d20", {request.ability: modifier}),
+                                  advantage_type:1})
         elif request.type == "ability":
             roll += template("simple",
                              {"charname": request.character.name,
