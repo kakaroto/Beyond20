@@ -5642,20 +5642,10 @@ var str = ρσ_str, repr = ρσ_repr;;
             return settings;
         };
 
-        function getStorage() {
-            var browser;
-            browser = getBrowser();
-            if ((browser === "Chrome" || typeof browser === "object" && ρσ_equals(browser, "Chrome"))) {
-                return chrome.storage.sync;
-            } else {
-                return chrome.storage.local;
-            }
-        };
-
         function getStoredSettings(cb) {
             var settings;
             settings = getDefaultSettings();
-            getStorage().get((function(){
+            chrome.storage.sync.get((function(){
                 var ρσ_d = {};
                 ρσ_d["settings"] = settings;
                 return ρσ_d;
@@ -5683,7 +5673,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
                 cb = ρσ_kwargs_obj.cb;
             }
-            getStorage().set((function(){
+            chrome.storage.sync.set((function(){
                 var ρσ_d = {};
                 ρσ_d["settings"] = settings;
                 return ρσ_d;
@@ -5924,7 +5914,6 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         ρσ_modules.settings.options_list = options_list;
         ρσ_modules.settings.getDefaultSettings = getDefaultSettings;
-        ρσ_modules.settings.getStorage = getStorage;
         ρσ_modules.settings.getStoredSettings = getStoredSettings;
         ρσ_modules.settings.setSettings = setSettings;
         ρσ_modules.settings.resetSettings = resetSettings;
@@ -5961,9 +5950,18 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
             }
             $("main").prepend(ρσ_interpolate_kwargs.call(E, E.ul, options.concat([ρσ_desugar_kwargs({class_: "list-group beyond20-options"})])));
-            $(".beyond20-options").append(ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4("More Options")].concat([ρσ_desugar_kwargs({class_: "list-content", href: "chrome://extensions/?options=" + chrome.runtime.id})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option"})])));
+            $(".beyond20-options").append(ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4("More Options")].concat([ρσ_desugar_kwargs({id: "openOptions", class_: "list-content", href: "#"})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option"})])));
             img = $("#donate").find("img");
             img.attr("src", img.attr("src").replace("donate.png", "donate32.png"));
+            $("#openOptions").bind("click", (function() {
+                var ρσ_anonfunc = function (ev) {
+                    chrome.runtime.openOptionsPage();
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["ev"]}
+                });
+                return ρσ_anonfunc;
+            })());
         };
 
         function save_settings() {

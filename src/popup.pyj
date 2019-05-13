@@ -9,13 +9,16 @@ def createOptionList():
             options.append(child)
     $("main").prepend(E.ul(class_="list-group beyond20-options", *options))
     $(".beyond20-options").append(E.li(class_="list-group-item beyond20-option",
-                                       E.a(class_="list-content", href='chrome://extensions/?options=' + chrome.runtime.id,
+                                       E.a(id="openOptions", class_="list-content", href='#',
                                            E.h4("More Options")
                                            )
                                        )
                                   )
     img = $("#donate").find("img")
     img.attr("src", img.attr("src").replace("donate.png", "donate32.png"))
+    $("#openOptions").bind('click', def (ev):
+        chrome.runtime.openOptionsPage()
+    )
 
 def save_settings():
     cb = def(settings):
