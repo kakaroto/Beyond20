@@ -5931,11 +5931,13 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var ability_abbreviations, settings, character, lastItemName, lastSpellName, lastSpellLevel, observer;
+        var ability_abbreviations, settings, character, button_class, button_class_small, lastItemName, lastSpellName, lastSpellLevel, observer;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
 
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
+
+        var E = ρσ_modules.elementmaker.E;
 
         print("Beyond20: D&D Beyond module loaded.");
         ability_abbreviations = (function(){
@@ -6331,13 +6333,19 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollItem() {
+            var force_display = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollItem.__defaults__.force_display : arguments[0];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
+                force_display = ρσ_kwargs_obj.force_display;
+            }
             var properties, item_name, item_type, description, to_hit, damage, versatile_damage, ρσ_unpack, roll_properties;
             properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"));
             print("Properties are : " + str(properties));
             item_name = $(".ct-item-pane .ct-item-name").text();
             item_type = $(".ct-item-detail__intro").text();
             description = descriptionToString(".ct-item-detail__description");
-            if (ρσ_in("Damage", properties)) {
+            if (force_display === false && ρσ_in("Damage", properties)) {
                 to_hit = ρσ_exists.e(properties["To Hit"], findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit"));
                 damage = properties["Damage"];
                 versatile_damage = null;
@@ -6361,6 +6369,11 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }).call(this));
             }
         };
+        if (!rollItem.__defaults__) Object.defineProperties(rollItem, {
+            __defaults__ : {value: {force_display:false}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["force_display"]}
+        });
 
         function rollAction(paneClass) {
             var properties, action_name, description, roll_properties;
@@ -6385,6 +6398,12 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollSpell() {
+            var force_display = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollSpell.__defaults__.force_display : arguments[0];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
+                force_display = ρσ_kwargs_obj.force_display;
+            }
             var properties, spell_name, description, damages, healings, castas, level, concentration, ritual, duration, to_hit, num_damages, damage, damage2, dmg, dmgtype, damage_type, damage2_type, i, roll_properties, spell_properties, key;
             properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"));
             print("Properties are : " + str(properties));
@@ -6407,7 +6426,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (!to_hit) {
                 to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit");
             }
-            if (damages.length > 0 || healings.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null)))) {
+            if (force_display === false && (damages.length > 0 || healings.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null))))) {
                 num_damages = 0;
                 damage = null;
                 damage2 = null;
@@ -6485,6 +6504,19 @@ var str = ρσ_str, repr = ρσ_repr;;
                 sendRoll("spell-card", 0, roll_properties);
             }
         };
+        if (!rollSpell.__defaults__) Object.defineProperties(rollSpell, {
+            __defaults__ : {value: {force_display:false}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["force_display"]}
+        });
+
+        function displayItem() {
+            rollItem(true);
+        };
+
+        function displaySpell() {
+            rollSpell(true);
+        };
 
         function displayFeature(paneClass) {
             var source_types, name, source, source_type, description;
@@ -6525,8 +6557,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
 
         function execute(paneClass) {
-            print("Beyond20: Current panel : " + paneClass);
-            console.log(paneClass);
+            print("Beyond20: Executing panel : " + paneClass);
             if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-skill-pane", "ct-custom-skill-pane" ]))) {
                 rollSkillCheck(paneClass);
             } else if ((paneClass === "ct-ability-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-ability-pane"))) {
@@ -6541,6 +6572,20 @@ var str = ρσ_str, repr = ρσ_repr;;
                 rollAction(paneClass);
             } else if ((paneClass === "ct-spell-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-spell-pane"))) {
                 rollSpell();
+            } else {
+                displayPanel(paneClass);
+            }
+        };
+        if (!execute.__argnames__) Object.defineProperties(execute, {
+            __argnames__ : {value: ["paneClass"]}
+        });
+
+        function displayPanel(paneClass) {
+            print("Beyond20: Displaying panel : " + paneClass);
+            if ((paneClass === "ct-item-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-item-pane"))) {
+                displayItem();
+            } else if ((paneClass === "ct-spell-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-spell-pane"))) {
+                displaySpell();
             } else if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane" ]))) {
                 displayFeature(paneClass);
             } else if ((paneClass === "ct-trait-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-trait-pane"))) {
@@ -6549,7 +6594,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 alert("Not recognizing the currently open sidebar");
             }
         };
-        if (!execute.__argnames__) Object.defineProperties(execute, {
+        if (!displayPanel.__argnames__) Object.defineProperties(displayPanel, {
             __argnames__ : {value: ["paneClass"]}
         });
 
@@ -6561,6 +6606,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             return $(".ct-beyond20-roll-hitdie").length > 0;
         };
 
+        button_class = "ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button";
+        button_class_small = button_class + " character-button-small";
         function addRollButton() {
             var paneClass = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var where = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
@@ -6589,15 +6636,21 @@ var str = ρσ_str, repr = ρσ_repr;;
             var icon32, icon16, button;
             icon32 = chrome.extension.getURL("images/dice24.png");
             icon16 = chrome.extension.getURL("images/dice16.png");
-            button = "<span class=\"ct-beyond20-roll\"><button class=\"ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button" + ((small) ? " character-button-small" : "") + "\"><img class=\"ct-beyond20-icon\" src=\"" + ((image) ? (small) ? icon16 : icon32 : "") + "\" style=\"" + ((image) ? "margin-right:6px" : "") + "\"></img><span class=\"ct-button__content\">" + text + "</span></button></span>";
+            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.button, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: (image) ? (small) ? icon16 : icon32 : "", style: (image) ? "margin-right: 6px;" : ""})]), ρσ_interpolate_kwargs.call(E, E.span, [text].concat([ρσ_desugar_kwargs({class_: "ct-button__content"})]))].concat([ρσ_desugar_kwargs({class_: (small) ? button_class_small : button_class})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll"})]));
             if (append) {
                 $(where).append(button);
             } else {
                 $(where).after(button);
             }
-            $(".ct-beyond20-roll").attr("float", "right");
+            $(".ct-beyond20-roll").css((function(){
+                var ρσ_d = {};
+                ρσ_d["float"] = "right";
+                ρσ_d["display"] = "block";
+                ρσ_d["text-align"] = "center";
+                return ρσ_d;
+            }).call(this));
             if (bind) {
-                $(".ct-beyond20-roll").bind("click", (function() {
+                $(".ct-beyond20-roll-button").bind("click", (function() {
                     var ρσ_anonfunc = function (event) {
                         execute(paneClass);
                     };
@@ -6614,15 +6667,46 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["paneClass", "where", "small", "append", "image", "text", "bind"]}
         });
 
+        function addDisplayButton() {
+            var paneClass = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var where = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var text = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addDisplayButton.__defaults__.text : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "text")){
+                text = ρσ_kwargs_obj.text;
+            }
+            var button;
+            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.button, [ρσ_interpolate_kwargs.call(E, E.span, [text].concat([ρσ_desugar_kwargs({class_: "ct-button__content"})]))].concat([ρσ_desugar_kwargs({class_: button_class_small.replace("filled", "outline")})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll-display"})]));
+            $(where).append(button);
+            $(".ct-beyond20-roll-button").css((function(){
+                var ρσ_d = {};
+                ρσ_d["margin-left"] = "auto";
+                ρσ_d["margin-right"] = "auto";
+                return ρσ_d;
+            }).call(this));
+            $(".ct-beyond20-roll-display").bind("click", (function() {
+                var ρσ_anonfunc = function (event) {
+                    displayPanel(paneClass);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["event"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!addDisplayButton.__defaults__) Object.defineProperties(addDisplayButton, {
+            __defaults__ : {value: {text:"Display in Roll20"}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["paneClass", "where", "text"]}
+        });
+
         function addHitDieButtons() {
             var icon16, button, hitdice, multiclass, cb, i;
             icon16 = chrome.extension.getURL("images/icons/icon16.png");
-            button = "<span class=\"ct-beyond20-roll-hitdie\"><img class=\"ct-beyond20-icon\"></img><button class=\"ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button character-button-small\"><span class=\"ct-button__content\">Roll Hit Die</span></button></span>";
+            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon16, style: "margin-right: 6px;"})]), ρσ_interpolate_kwargs.call(E, E.button, [ρσ_interpolate_kwargs.call(E, E.span, ["Roll Hit Die"].concat([ρσ_desugar_kwargs({class_: "ct-button__content"})]))].concat([ρσ_desugar_kwargs({class_: button_class_small})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll-hitdie", style: "float: right;"})]));
             print("Adding Hit Dice buttons");
             $(".ct-reset-pane__hitdie-heading").append(button);
-            $(".ct-beyond20-icon").css("margin-right", "6px");
-            $(".ct-beyond20-icon").attr("src", icon16);
-            $(".ct-beyond20-roll-hitdie").css("float", "right");
             hitdice = $(".ct-reset-pane__hitdie");
             multiclass = hitdice.length > 1;
             for (var ρσ_Index10 = 0; ρσ_Index10 < hitdice.length; ρσ_Index10++) {
@@ -6651,7 +6735,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         function addDeathSaveButton(paneClass, where) {
             var icon16, button;
             icon16 = chrome.extension.getURL("images/icons/icon16.png");
-            button = "<span class=\"ct-beyond20-roll\"><img class=\"ct-beyond20-icon\" src=\"" + icon16 + "\"></img></span>";
+            button = ρσ_interpolate_kwargs.call(E, E.span, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon16})])].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll"})]));
             print("Adding");
             $(where).after(button);
             $(".ct-beyond20-roll").bind("click", (function() {
@@ -6672,6 +6756,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var custom_rolls, i;
             $(".ct-beyond20-roll").remove();
             $(".ct-beyond20-roll-hitdie").remove();
+            $(".ct-beyond20-roll-display").remove();
             $(".ct-beyond20-custom-icon").remove();
             custom_rolls = $("u.ct-beyond20-custom-roll");
             for (var ρσ_Index11 = 0; ρσ_Index11 < custom_rolls.length; ρσ_Index11++) {
@@ -6731,7 +6816,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         lastSpellName = "";
         lastSpellLevel = "";
         function injectRollButton(paneClass) {
-            var name, item_name, properties, action_name, spell_name, spell_level, hitdice;
+            var name, item_name, properties, action_name, spell_name, spell_level, damages, healings, to_hit, hitdice;
             if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-custom-skill-pane", "ct-skill-pane", "ct-ability-pane", "ct-ability-pane", "ct-ability-saving-throws-pane", "ct-initiative-pane" ]))) {
                 if (isRollButtonAdded()) {
                     return;
@@ -6759,7 +6844,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 injectDiceToRolls(".ct-item-detail__description", item_name);
                 properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"));
                 if (ρσ_in("Damage", properties)) {
-                    addRollButton(paneClass, ".ct-sidebar__heading");
+                    ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({small: true})]));
+                    addDisplayButton(paneClass, ".ct-beyond20-roll");
                 } else {
                     ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({image: false, bind: false})]));
                     ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-item-detail__actions"].concat([ρσ_desugar_kwargs({small: true, append: true, image: false})]));
@@ -6781,7 +6867,19 @@ var str = ρσ_str, repr = ρσ_repr;;
                 lastSpellLevel = spell_level;
                 removeRollButtons();
                 injectDiceToRolls(".ct-spell-pane .ct-spell-detail__description", spell_name);
-                ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({text: "Cast on Roll20", image: false})]));
+                damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage");
+                healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp");
+                properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"));
+                to_hit = ρσ_exists.e(properties["To Hit"], findToHit(spell_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit"));
+                if (!to_hit) {
+                    to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit");
+                }
+                if (damages.length > 0 || healings.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null)))) {
+                    ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({text: "Cast on Roll20", small: true})]));
+                    addDisplayButton(paneClass, ".ct-beyond20-roll");
+                } else {
+                    ρσ_interpolate_kwargs.call(this, addRollButton, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({text: "Cast on Roll20", image: false})]));
+                }
                 $(".ct-spell-caster__casting-action > button").bind("click", (function() {
                     var ρσ_anonfunc = function (event) {
                         execute(paneClass);

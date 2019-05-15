@@ -1,5 +1,6 @@
 from utils import replaceRolls
 from settings import getDefaultSettings, getStoredSettings
+from elementmaker import E
 
 print("Beyond20: D&D Beyond module loaded.")
 
@@ -218,13 +219,13 @@ def rollHitDie(multiclass, index):
                                "multiclass": multiclass,
                                "hit-dice": die} )
 
-def rollItem():
+def rollItem(force_display=False):
     properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"))
     print("Properties are : " + str(properties))
     item_name = $(".ct-item-pane .ct-item-name").text()
     item_type = $(".ct-item-detail__intro").text()
     description = descriptionToString(".ct-item-detail__description")
-    if "Damage" in properties:
+    if force_display is False and "Damage" in properties:
         to_hit = properties["To Hit"] ? \
             findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit")
         damage = properties["Damage"]
@@ -247,8 +248,7 @@ def rollItem():
     else:
         sendRoll("item", 0, {"name": item_name,
                              "description" : description,
-                             "item-type": item_type})
-        
+                             "item-type": item_type})        
 
 def rollAction(paneClass):
     properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"))
@@ -268,8 +268,7 @@ def rollAction(paneClass):
         sendRoll("action", 0, {"name": action_name,
                                "description" : description})
         
-
-def rollSpell():
+def rollSpell(force_display=False):
     properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
     print("Properties are : " + str(properties))
     spell_name = $(".ct-sidebar__heading .ct-spell-name").text()
@@ -291,7 +290,7 @@ def rollSpell():
     if not to_hit:
         to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit")
 
-    if damages.length > 0 or healings.length > 0 or to_hit != None:
+    if force_display is False and (damages.length > 0 or healings.length > 0 or to_hit != None):
         num_damages = 0
         damage = None
         damage2 = None
@@ -358,6 +357,12 @@ def rollSpell():
             roll_properties["cast-at"] = castas
         sendRoll("spell-card", 0, roll_properties)
 
+def displayItem():
+    rollItem(True)
+
+def displaySpell():
+    rollSpell(True)
+
 def displayFeature(paneClass):
     source_types = {"ct-class-feature-pane": "Class",
                "ct-racial-trait-pane": "Race",
@@ -378,8 +383,7 @@ def displayTrait():
                             "description": description} )
 
 def execute(paneClass):
-    print("Beyond20: Current panel : " + paneClass)
-    console.log(paneClass)
+    print("Beyond20: Executing panel : " + paneClass)
     if paneClass in ["ct-skill-pane", "ct-custom-skill-pane"]:
         rollSkillCheck(paneClass)
     elif paneClass == "ct-ability-pane":
@@ -394,6 +398,15 @@ def execute(paneClass):
         rollAction(paneClass)
     elif paneClass == "ct-spell-pane":
         rollSpell()
+    else:
+        displayPanel(paneClass)
+
+def displayPanel(paneClass):
+    print("Beyond20: Displaying panel : " + paneClass)
+    if paneClass == "ct-item-pane":
+        displayItem()
+    elif paneClass == "ct-spell-pane":
+        displaySpell()
     elif paneClass in ["ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane"]:
         displayFeature(paneClass)
     elif paneClass == "ct-trait-pane":
@@ -407,30 +420,54 @@ def isRollButtonAdded():
 def isHitDieButtonAdded():
     return $(".ct-beyond20-roll-hitdie").length > 0
 
+button_class = "ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button"
+button_class_small = button_class + " character-button-small"
 def addRollButton(paneClass, where, small=False, append=False, image=True, text="Beyond 20", bind=True):
     icon32 = chrome.extension.getURL("images/dice24.png");
     icon16 = chrome.extension.getURL("images/dice16.png");
-    button = '<span class="ct-beyond20-roll"><button class="ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button' + (' character-button-small' if small else '') + '"><img class="ct-beyond20-icon" src="' + ((icon16 if small else icon32) if image else "") + '" style="' + ("margin-right:6px" if image else "") + '"></img><span class="ct-button__content">' + text + '</span></button></span>'
+    button = E.div(class_="ct-beyond20-roll",
+                    E.button(class_=(button_class_small if small else button_class),
+                             E.img(class_="ct-beyond20-icon", src=((icon16 if small else icon32) if image else ""),
+                                   style=("margin-right: 6px;" if image else "")),
+                             E.span(class_="ct-button__content", text)
+                             )
+                    )
 
     if append:
         $(where).append(button)
     else:
         $(where).after(button)
-    $(".ct-beyond20-roll").attr("float", "right")
+    $(".ct-beyond20-roll").css({"float": "right",
+                                "display": "block",
+                                "text-align": "center"})
     if bind:
-        $(".ct-beyond20-roll").bind('click', def(event):
+        $(".ct-beyond20-roll-button").bind('click', def(event):
             execute(paneClass)
         )
 
+def addDisplayButton(paneClass, where, text="Display in Roll20"):
+    button = E.div(class_="ct-beyond20-roll-display",
+                   E.button(class_=button_class_small.replace("filled", "outline"),
+                            E.span(class_="ct-button__content", text)
+                            )
+                   )
+    $(where).append(button)
+    $(".ct-beyond20-roll-button").css({"margin-left": "auto",
+                                       "margin-right": "auto"})
+    $(".ct-beyond20-roll-display").bind('click', def(event):
+        displayPanel(paneClass)
+    )
 def addHitDieButtons():
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
-    button = '<span class="ct-beyond20-roll-hitdie"><img class="ct-beyond20-icon"></img><button class="ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button character-button-small"><span class="ct-button__content">Roll Hit Die</span></button></span>'
+    button = E.div(class_="ct-beyond20-roll-hitdie", style="float: right;",
+                    E.img(class_="ct-beyond20-icon", src=icon16, style="margin-right: 6px;"),
+                    E.button(class_= button_class_small,
+                             E.span(class_="ct-button__content", "Roll Hit Die")
+                             )
+                    )
     print("Adding Hit Dice buttons")
 
     $(".ct-reset-pane__hitdie-heading").append(button)
-    $(".ct-beyond20-icon").css("margin-right", "6px")
-    $(".ct-beyond20-icon").attr("src", icon16)
-    $(".ct-beyond20-roll-hitdie").css("float", "right")
     hitdice = $(".ct-reset-pane__hitdie")
     multiclass = hitdice.length > 1
     for i in range(hitdice.length):
@@ -442,7 +479,8 @@ def addHitDieButtons():
 
 def addDeathSaveButton(paneClass, where):
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
-    button = '<span class="ct-beyond20-roll"><img class="ct-beyond20-icon" src="' + icon16 + '"></img></span>'
+    button = E.span(class_="ct-beyond20-roll",
+                    E.img(class_="ct-beyond20-icon", src=icon16))
 
     print("Adding")
     $(where).after(button)
@@ -453,6 +491,7 @@ def addDeathSaveButton(paneClass, where):
 def removeRollButtons():
     $(".ct-beyond20-roll").remove()
     $(".ct-beyond20-roll-hitdie").remove()
+    $(".ct-beyond20-roll-display").remove()
     $(".ct-beyond20-custom-icon").remove()
     custom_rolls = $("u.ct-beyond20-custom-roll")
     for i in range(custom_rolls.length):
@@ -516,7 +555,8 @@ def injectRollButton(paneClass):
         injectDiceToRolls(".ct-item-detail__description", item_name)
         properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"))
         if "Damage" in properties:
-            addRollButton(paneClass, ".ct-sidebar__heading")
+            addRollButton(paneClass, ".ct-sidebar__heading", small=True)
+            addDisplayButton(paneClass, ".ct-beyond20-roll")
         else:
             addRollButton(paneClass, ".ct-sidebar__heading", image=False, bind=False)
             addRollButton(paneClass, ".ct-item-detail__actions", small=True, append=True, image=False)
@@ -537,7 +577,21 @@ def injectRollButton(paneClass):
         lastSpellLevel = spell_level
         removeRollButtons()
         injectDiceToRolls(".ct-spell-pane .ct-spell-detail__description", spell_name)
-        addRollButton(paneClass, ".ct-sidebar__heading", text="Cast on Roll20", image=False)
+
+        damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage")
+        healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp")
+        properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
+        to_hit = properties["To Hit"] ? \
+            findToHit(spell_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit")
+        if not to_hit:
+            to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit")
+
+        if damages.length > 0 or healings.length > 0 or to_hit != None:
+            addRollButton(paneClass, ".ct-sidebar__heading", text="Cast on Roll20", small=True)
+            addDisplayButton(paneClass, ".ct-beyond20-roll")
+        else:
+            addRollButton(paneClass, ".ct-sidebar__heading", text="Cast on Roll20", image=False)
+
         $(".ct-spell-caster__casting-action > button").bind('click', def(event):
             execute(paneClass)
         )
