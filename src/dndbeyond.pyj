@@ -220,7 +220,8 @@ def rollHitDie(multiclass, index):
                                "hit-dice": die} )
 
 def rollItem(force_display=False):
-    properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"))
+    prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property")
+    properties = propertyListToDict(prop_list)
     print("Properties are : " + str(properties))
     item_name = $(".ct-item-pane .ct-item-name").text()
     item_type = $(".ct-item-detail__intro").text()
@@ -228,6 +229,35 @@ def rollItem(force_display=False):
     if force_display is False and "Damage" in properties:
         to_hit = properties["To Hit"] ? \
             findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit")
+
+        damage = None
+        damage2 = None
+        damage2_type = None
+        for i in range(prop_list.length):
+            if prop_list.eq(i).find(".ct-property-list__property-label").text() == "Damage:":
+                value = prop_list.eq(i).find(".ct-property-list__property-content")
+                damage = value.find(".ct-damage__value").text()
+                versatile_damage = value.find(".ct-item-detail__versatile-damage").text()
+                if versatile_damage != "":
+                    damage2 = versatile_damage[1:-1]
+                    damage2_type = "Two-Handed"
+                additional_damages = value.find(".ct-item-detail__additional-damage")
+                for j in range(additional_damages.length):
+                    dmg = additional_damages.eq(j).text()
+                    dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title")
+                    dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text()
+                    if dmg != "":
+                        dmg = dmg.replace(dmg_info, "")
+                        if damage2 is None:
+                            damage2 = dmg
+                            damage2_type = dmg_type
+                        else:
+                            damage2 += " | " + dmg
+                            damage2_type += " | " + dmg_type
+                            if dmg_info != "":
+                                damage2_type += "(" + dmg_info + ")"
+                            
+                break
         damage = properties["Damage"]
         versatile_damage = None
         if "(" in damage:
@@ -241,8 +271,8 @@ def rollItem(force_display=False):
                                           damage,
                                           properties["Damage Type"] ? "",
                                           to_hit,
-                                          versatile_damage,
-                                          "Two-Handed" if versatile_damage else None)
+                                          damage2,
+                                          damage2_type)
         roll_properties["item-type"] = item_type
         sendRoll("attack", damage, roll_properties)
     else:
@@ -306,8 +336,8 @@ def rollSpell(force_display=False):
                 damage2 = dmg
                 damage2_type = dmgtype
             else:
-                damage2 += " - " + dmg
-                damage2_type += ", " + dmgtype
+                damage2 += " | " + dmg
+                damage2_type += " | " + dmgtype
             num_damages += 1
         for i in range(healings.length):
             dmg = healings.eq(i).find(".ct-spell-caster__modifier-amount").text()
@@ -318,8 +348,8 @@ def rollSpell(force_display=False):
                 damage2 = dmg
                 damage2_type = "Healing"
             else:
-                damage2 += " - " + dmg
-                damage2_type += ", " + "Healing"
+                damage2 += " | " + dmg
+                damage2_type += " | " + "Healing"
             num_damages += 1
             
                 

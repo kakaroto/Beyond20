@@ -6017,17 +6017,17 @@ var str = ρσ_str, repr = ρσ_repr;;
         function subRolls() {
             var text = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var keep_original = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.keep_original : arguments[1];
-            var escape = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.escape : arguments[2];
+            var damage_only = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.damage_only : arguments[2];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "keep_original")){
                 keep_original = ρσ_kwargs_obj.keep_original;
             }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "escape")){
-                escape = ρσ_kwargs_obj.escape;
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage_only")){
+                damage_only = ρσ_kwargs_obj.damage_only;
             }
             var pre_original, post_original, pre_dice, post_dice;
-            if (keep_original && escape) {
+            if (keep_original) {
                 pre_original = "[";
                 post_original = "]";
                 pre_dice = "(!&#13;&#91;&#91;";
@@ -6039,22 +6039,32 @@ var str = ρσ_str, repr = ρσ_repr;;
                 post_dice = "]]";
             }
             text = replaceRolls(false, text, keep_original, pre_original, post_original, pre_dice, post_dice);
+            if (damage_only) {
+                return text;
+            }
             return replaceRolls(true, text, keep_original, pre_original, post_original, pre_dice + "1d20", post_dice);
         };
         if (!subRolls.__defaults__) Object.defineProperties(subRolls, {
-            __defaults__ : {value: {keep_original:false, escape:false}},
+            __defaults__ : {value: {keep_original:false, damage_only:false}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["text", "keep_original", "escape"]}
+            __argnames__ : {value: ["text", "keep_original", "damage_only"]}
         });
 
         function subDescriptionRolls(description) {
             if (!settings["subst-roll20"]) {
                 return description;
             }
-            return subRolls(description, true, true);
+            return subRolls(description, true);
         };
         if (!subDescriptionRolls.__argnames__) Object.defineProperties(subDescriptionRolls, {
             __argnames__ : {value: ["description"]}
+        });
+
+        function subDamageRolls(text) {
+            return ρσ_interpolate_kwargs.call(this, subRolls, [text].concat([ρσ_desugar_kwargs({damage_only: true})]));
+        };
+        if (!subDamageRolls.__argnames__) Object.defineProperties(subDamageRolls, {
+            __argnames__ : {value: ["text"]}
         });
 
         function template(name, properties) {
@@ -6343,15 +6353,15 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }
                     properties["damage"] = 1;
                     properties["dmg1flag"] = 1;
-                    properties["dmg1"] = subRolls(request.damage);
+                    properties["dmg1"] = subDamageRolls(request.damage);
                     properties["dmg1type"] = request["damage-type"];
-                    properties["crit1"] = subRolls(settings["crit-prefix"] + crit1);
+                    properties["crit1"] = subDamageRolls(settings["crit-prefix"] + crit1);
                     if (ρσ_exists.n(request["second-damage"])) {
                         crit2 = request["second-damage"].split((ρσ_in("+", request["second-damage"])) ? "+" : "-")[0];
                         properties["dmg2flag"] = 1;
-                        properties["dmg2"] = subRolls(request["second-damage"]);
+                        properties["dmg2"] = subDamageRolls(request["second-damage"]);
                         properties["dmg2type"] = request["second-damage-type"];
-                        properties["crit2"] = subRolls(settings["crit-prefix"] + crit2);
+                        properties["crit2"] = subDamageRolls(settings["crit-prefix"] + crit2);
                     }
                     if (ρσ_exists.n(request.range)) {
                         properties["range"] = request.range;
@@ -6460,20 +6470,20 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if (ρσ_exists.n(request["damage"])) {
                         properties["damage"] = 1;
                         properties["dmg1flag"] = 1;
-                        properties["dmg1"] = subRolls(request.damage);
+                        properties["dmg1"] = subDamageRolls(request.damage);
                         properties["dmg1type"] = request["damage-type"];
                         if ((request["damage-type"] !== "Healing" && (typeof request["damage-type"] !== "object" || ρσ_not_equals(request["damage-type"], "Healing")))) {
                             crit1 = request.damage.split((ρσ_in("+", request.damage)) ? "+" : "-")[0];
-                            properties["crit1"] = subRolls(settings["crit-prefix"] + crit1);
+                            properties["crit1"] = subDamageRolls(settings["crit-prefix"] + crit1);
                         }
                     }
                     if (ρσ_exists.n(request["second-damage"])) {
                         properties["dmg2flag"] = 1;
-                        properties["dmg2"] = subRolls(request["second-damage"]);
+                        properties["dmg2"] = subDamageRolls(request["second-damage"]);
                         properties["dmg2type"] = request["second-damage-type"];
                         if ((request["second-damage-type"] !== "Healing" && (typeof request["second-damage-type"] !== "object" || ρσ_not_equals(request["second-damage-type"], "Healing")))) {
                             crit2 = request["second-damage"].split((ρσ_in("+", request["second-damage"])) ? "+" : "-")[0];
-                            properties["crit2"] = subRolls(settings["crit-prefix"] + crit2);
+                            properties["crit2"] = subDamageRolls(settings["crit-prefix"] + crit2);
                         }
                     }
                     if (ρσ_exists.n(request.range)) {
