@@ -1,3 +1,13 @@
+v0.0.7
+===
+
+- Add support for Firefox
+- Don't roll the second dice in 3D dice roller if not rolling with advantage
+- Fix damage output with multiple additional damages in custom weapons
+- Add a "Display in Roll20" button for weapons and attack spells
+- Add support for custom skills
+- Fix GreenFlame Blade damage output when level < 5
+
 v0.0.6
 ===
 
