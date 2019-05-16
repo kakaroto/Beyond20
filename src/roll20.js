@@ -5301,10 +5301,58 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
         };
 
+        function injectPageScript(url) {
+            var s;
+            s = document.createElement("script");
+            s.src = url;
+            s.onload = function () {
+                this.remove();
+            };
+            (document.head || document.documentElement).appendChild(s);
+        };
+        if (!injectPageScript.__argnames__) Object.defineProperties(injectPageScript, {
+            __argnames__ : {value: ["url"]}
+        });
+
+        function sendCustomEvent(name, data) {
+            var event;
+            event = new CustomEvent("Beyond20_" + name, (function(){
+                var ρσ_d = {};
+                ρσ_d["detail"] = data;
+                return ρσ_d;
+            }).call(this));
+            document.dispatchEvent(event);
+        };
+        if (!sendCustomEvent.__argnames__) Object.defineProperties(sendCustomEvent, {
+            __argnames__ : {value: ["name", "data"]}
+        });
+
+        function addCustomEventListener(name, callback) {
+            var cb, event;
+            cb = (function() {
+                var ρσ_anonfunc = function (evt) {
+                    callback.apply(this, evt.detail);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["evt"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            event = ρσ_list_decorate([ "Beyond20_" + name, cb, false ]);
+            document.addEventListener.apply(document, event);
+            return event;
+        };
+        if (!addCustomEventListener.__argnames__) Object.defineProperties(addCustomEventListener, {
+            __argnames__ : {value: ["name", "callback"]}
+        });
+
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.subRolls = subRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
+        ρσ_modules.utils.injectPageScript = injectPageScript;
+        ρσ_modules.utils.sendCustomEvent = sendCustomEvent;
+        ρσ_modules.utils.addCustomEventListener = addCustomEventListener;
     })();
 
     (function(){
@@ -5933,6 +5981,8 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         var chat, txt, btn, speakingas, settings;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
+        var injectPageScript = ρσ_modules.utils.injectPageScript;
+        var sendCustomEvent = ρσ_modules.utils.sendCustomEvent;
 
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
@@ -5956,8 +6006,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             old_as = speakingas.value;
             if (character) {
                 character = character.toLowerCase();
-                for (var ρσ_Index0 = 0; ρσ_Index0 < speakingas.children.length; ρσ_Index0++) {
-                    i = ρσ_Index0;
+                for (var ρσ_Index2 = 0; ρσ_Index2 < speakingas.children.length; ρσ_Index2++) {
+                    i = ρσ_Index2;
                     if (ρσ_equals((ρσ_expr_temp = speakingas.children)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i].text.toLowerCase(), character)) {
                         (ρσ_expr_temp = speakingas.children)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i].selected = true;
                         set_speakingas = false;
@@ -5990,9 +6040,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var roll, mod, m;
             roll = "[[" + dice;
-            var ρσ_Iter1 = ρσ_Iterable(modifiers);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                m = ρσ_Iter1[ρσ_Index1];
+            var ρσ_Iter3 = ρσ_Iterable(modifiers);
+            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                m = ρσ_Iter3[ρσ_Index3];
                 mod = modifiers[(typeof m === "number" && m < 0) ? modifiers.length + m : m];
                 if (len(mod) > 0) {
                     if ((mod[0] === "+" || typeof mod[0] === "object" && ρσ_equals(mod[0], "+")) || (mod[0] === "-" || typeof mod[0] === "object" && ρσ_equals(mod[0], "-")) || (mod[0] === "?" || typeof mod[0] === "object" && ρσ_equals(mod[0], "?")) || (mod[0] === "&" || typeof mod[0] === "object" && ρσ_equals(mod[0], "&"))) {
@@ -6078,9 +6128,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_anonfunc = function (old_key, new_key) {
                         var new_properties, key;
                         new_properties = {};
-                        var ρσ_Iter2 = ρσ_Iterable(properties);
-                        for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                            key = ρσ_Iter2[ρσ_Index2];
+                        var ρσ_Iter4 = ρσ_Iterable(properties);
+                        for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                            key = ρσ_Iter4[ρσ_Index4];
                             new_properties[ρσ_bound_index(((key === old_key || typeof key === "object" && ρσ_equals(key, old_key))) ? new_key : key, new_properties)] = properties[(typeof key === "number" && key < 0) ? properties.length + key : key];
                         }
                         properties = new_properties;
@@ -6129,9 +6179,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_delitem(properties, "advantage");
             }
             result = "&{template:" + name + "}";
-            var ρσ_Iter3 = ρσ_Iterable(properties);
-            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                key = ρσ_Iter3[ρσ_Index3];
+            var ρσ_Iter5 = ρσ_Iterable(properties);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                key = ρσ_Iter5[ρσ_Index5];
                 result += " {{" + key + "=" + properties[(typeof key === "number" && key < 0) ? properties.length + key : key] + "}}";
             }
             return result;
@@ -6172,6 +6222,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             print("Got message : " + str(request));
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 updateSettings(request.settings);
+            } else if ((request.action === "hp-update" || typeof request.action === "object" && ρσ_equals(request.action, "hp-update"))) {
+                sendCustomEvent("UpdateHP", [request.character.name, request.character.hp, request.character["max-hp"]]);
             } else if ((request.action === "roll" || typeof request.action === "object" && ρσ_equals(request.action, "roll"))) {
                 if (settings["whispers"]) {
                     roll = "/w gm ";
@@ -6187,9 +6239,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     modifier = request.modifier;
                     if ((modifier === "--" || typeof modifier === "object" && ρσ_equals(modifier, "--")) && request.character.abilities.length > 0) {
                         modifier = "?{Choose Ability";
-                        var ρσ_Iter4 = ρσ_Iterable(request.character.abilities);
-                        for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                            ability = ρσ_Iter4[ρσ_Index4];
+                        var ρσ_Iter6 = ρσ_Iterable(request.character.abilities);
+                        for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                            ability = ρσ_Iter6[ρσ_Index6];
                             modifier += "|" + ability[0] + ", " + ability[3];
                         }
                         modifier += "}";
@@ -6556,5 +6608,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["action"] = "activate-icon";
             return ρσ_d;
         }).call(this));
+        sendCustomEvent("disconnect");
+        injectPageScript(chrome.runtime.getURL("src/roll20_script.js"));
     })();
 })();

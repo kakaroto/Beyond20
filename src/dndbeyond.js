@@ -5301,10 +5301,58 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
         };
 
+        function injectPageScript(url) {
+            var s;
+            s = document.createElement("script");
+            s.src = url;
+            s.onload = function () {
+                this.remove();
+            };
+            (document.head || document.documentElement).appendChild(s);
+        };
+        if (!injectPageScript.__argnames__) Object.defineProperties(injectPageScript, {
+            __argnames__ : {value: ["url"]}
+        });
+
+        function sendCustomEvent(name, data) {
+            var event;
+            event = new CustomEvent("Beyond20_" + name, (function(){
+                var ρσ_d = {};
+                ρσ_d["detail"] = data;
+                return ρσ_d;
+            }).call(this));
+            document.dispatchEvent(event);
+        };
+        if (!sendCustomEvent.__argnames__) Object.defineProperties(sendCustomEvent, {
+            __argnames__ : {value: ["name", "data"]}
+        });
+
+        function addCustomEventListener(name, callback) {
+            var cb, event;
+            cb = (function() {
+                var ρσ_anonfunc = function (evt) {
+                    callback.apply(this, evt.detail);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["evt"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            event = ρσ_list_decorate([ "Beyond20_" + name, cb, false ]);
+            document.addEventListener.apply(document, event);
+            return event;
+        };
+        if (!addCustomEventListener.__argnames__) Object.defineProperties(addCustomEventListener, {
+            __argnames__ : {value: ["name", "callback"]}
+        });
+
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.subRolls = subRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
+        ρσ_modules.utils.injectPageScript = injectPageScript;
+        ρσ_modules.utils.sendCustomEvent = sendCustomEvent;
+        ρσ_modules.utils.addCustomEventListener = addCustomEventListener;
     })();
 
     (function(){
@@ -5965,6 +6013,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             self._ac = null;
             self._speed = null;
             self._proficiency = null;
+            self._hp = 0;
+            self._max_hp = 0;
         };
         Character.__argnames__ = Character.prototype.__init__.__argnames__;
         Character.__handles_kwarg_interpolation__ = Character.prototype.__init__.__handles_kwarg_interpolation__;
@@ -6044,6 +6094,44 @@ var str = ρσ_str, repr = ρσ_repr;;
                     self._level = xp.text().replace("LVL ", "");
                 }
             }
+            character.updateHP();
+        };
+        Character.prototype.updateHP = function updateHP() {
+            var self = this;
+            var hp, max_hp, hp_items, label, number, item, mobile_hp, req;
+            hp = max_hp = null;
+            hp_items = $(".ct-health-summary__hp-group--primary .ct-health-summary__hp-item");
+            var ρσ_Iter2 = ρσ_Iterable(hp_items);
+            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                item = ρσ_Iter2[ρσ_Index2];
+                label = $(item).find(".ct-health-summary__hp-item-label").text();
+                if ((label === "Current" || typeof label === "object" && ρσ_equals(label, "Current"))) {
+                    number = $(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number");
+                    if (number.length > 0) {
+                        hp = int(number.text());
+                    }
+                } else if ((label === "Max" || typeof label === "object" && ρσ_equals(label, "Max"))) {
+                    max_hp = int($(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number").text());
+                }
+            }
+            mobile_hp = $(".ct-status-summary-mobile__hp-current");
+            if (mobile_hp.length > 0) {
+                hp = int(mobile_hp.text());
+                max_hp = int($(".ct-status-summary-mobile__hp-max").text());
+            }
+            if (hp && max_hp && ((self._hp !== hp && (typeof self._hp !== "object" || ρσ_not_equals(self._hp, hp))) || (self._max_hp !== max_hp && (typeof self._max_hp !== "object" || ρσ_not_equals(self._max_hp, max_hp))))) {
+                self._hp = hp;
+                self._max_hp = max_hp;
+                print("HP updated to : " + hp + "/" + max_hp);
+                req = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["action"] = "hp-update";
+                    ρσ_d["character"] = self.getDict();
+                    return ρσ_d;
+                }).call(this);
+                console.log("Sending message: " + str(req));
+                chrome.runtime.sendMessage(req);
+            }
         };
         Character.prototype.getDict = function getDict() {
             var self = this;
@@ -6057,6 +6145,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["ac"] = self._ac;
                 ρσ_d["proficiency"] = self._proficiency;
                 ρσ_d["speed"] = self._speed;
+                ρσ_d["hp"] = self._hp;
+                ρσ_d["max-hp"] = self._max_hp;
                 return ρσ_d;
             }).call(this);
         };
@@ -6072,8 +6162,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         function propertyListToDict(propList) {
             var properties, label, value, i;
             properties = {};
-            for (var ρσ_Index2 = 0; ρσ_Index2 < propList.length; ρσ_Index2++) {
-                i = ρσ_Index2;
+            for (var ρσ_Index3 = 0; ρσ_Index3 < propList.length; ρσ_Index3++) {
+                i = ρσ_Index3;
                 label = propList.eq(i).find(".ct-property-list__property-label").text().slice(0, -1);
                 value = propList.eq(i).find(".ct-property-list__property-content").text();
                 properties[(typeof label === "number" && label < 0) ? properties.length + label : label] = value;
@@ -6098,8 +6188,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return $(selector).text();
             }
             description = "";
-            for (var ρσ_Index3 = 0; ρσ_Index3 < description_p.length; ρσ_Index3++) {
-                i = ρσ_Index3;
+            for (var ρσ_Index4 = 0; ρσ_Index4 < description_p.length; ρσ_Index4++) {
+                i = ρσ_Index4;
                 if (len(description) > 0) {
                     description += separator;
                 }
@@ -6116,8 +6206,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
             var items, to_hit, i;
             items = $(items_selector);
-            for (var ρσ_Index4 = 0; ρσ_Index4 < items.length; ρσ_Index4++) {
-                i = ρσ_Index4;
+            for (var ρσ_Index5 = 0; ρσ_Index5 < items.length; ρσ_Index5++) {
+                i = ρσ_Index5;
                 if (ρσ_equals(items.eq(i).find(name_selector).text(), name_to_match)) {
                     to_hit = items.eq(i).find(tohit_selector);
                     if (to_hit.length > 0) {
@@ -6198,9 +6288,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 save_dc = ρσ_unpack[1];
                 roll_properties["save-ability"] = save_ability;
                 roll_properties["save-dc"] = save_dc;
-                var ρσ_Iter5 = ρσ_Iterable(ability_abbreviations);
-                for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                    ability = ρσ_Iter5[ρσ_Index5];
+                var ρσ_Iter6 = ρσ_Iterable(ability_abbreviations);
+                for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                    ability = ρσ_Iter6[ρσ_Index6];
                     if ((ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === save_ability || typeof ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === "object" && ρσ_equals(ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability], save_ability))) {
                         roll_properties["save-ability"] = ability;
                         break;
@@ -6236,9 +6326,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["roll"] = fallback;
                 return ρσ_d;
             }).call(this);
-            var ρσ_Iter6 = ρσ_Iterable(args);
-            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                key = ρσ_Iter6[ρσ_Index6];
+            var ρσ_Iter7 = ρσ_Iterable(args);
+            for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                key = ρσ_Iter7[ρσ_Index7];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
             console.log("Sending message: " + str(req));
@@ -6351,8 +6441,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damage = null;
                 damage2 = null;
                 damage2_type = null;
-                for (var ρσ_Index7 = 0; ρσ_Index7 < prop_list.length; ρσ_Index7++) {
-                    i = ρσ_Index7;
+                for (var ρσ_Index8 = 0; ρσ_Index8 < prop_list.length; ρσ_Index8++) {
+                    i = ρσ_Index8;
                     if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
                         value = prop_list.eq(i).find(".ct-property-list__property-content");
                         damage = value.find(".ct-damage__value").text();
@@ -6362,8 +6452,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                             damage2_type = "Two-Handed";
                         }
                         additional_damages = value.find(".ct-item-detail__additional-damage");
-                        for (var ρσ_Index8 = 0; ρσ_Index8 < additional_damages.length; ρσ_Index8++) {
-                            j = ρσ_Index8;
+                        for (var ρσ_Index9 = 0; ρσ_Index9 < additional_damages.length; ρσ_Index9++) {
+                            j = ρσ_Index9;
                             dmg = additional_damages.eq(j).text();
                             dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                             dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
@@ -6467,8 +6557,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 num_damages = 0;
                 damage = null;
                 damage2 = null;
-                for (var ρσ_Index9 = 0; ρσ_Index9 < damages.length; ρσ_Index9++) {
-                    i = ρσ_Index9;
+                for (var ρσ_Index10 = 0; ρσ_Index10 < damages.length; ρσ_Index10++) {
+                    i = ρσ_Index10;
                     dmg = damages.eq(i).find(".ct-spell-caster__modifier-amount").text();
                     dmgtype = damages.eq(i).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                     if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
@@ -6486,8 +6576,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }
                     num_damages += 1;
                 }
-                for (var ρσ_Index10 = 0; ρσ_Index10 < healings.length; ρσ_Index10++) {
-                    i = ρσ_Index10;
+                for (var ρσ_Index11 = 0; ρσ_Index11 < healings.length; ρσ_Index11++) {
+                    i = ρσ_Index11;
                     dmg = healings.eq(i).find(".ct-spell-caster__modifier-amount").text();
                     if ((num_damages === 0 || typeof num_damages === "object" && ρσ_equals(num_damages, 0))) {
                         damage = dmg;
@@ -6512,9 +6602,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["ritual"] = ritual;
                     return ρσ_d;
                 }).call(this);
-                var ρσ_Iter11 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
-                    key = ρσ_Iter11[ρσ_Index11];
+                var ρσ_Iter12 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                    key = ρσ_Iter12[ρσ_Index12];
                     roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
                 }
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
@@ -6746,8 +6836,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             $(".ct-reset-pane__hitdie-heading").append(button);
             hitdice = $(".ct-reset-pane__hitdie");
             multiclass = hitdice.length > 1;
-            for (var ρσ_Index12 = 0; ρσ_Index12 < hitdice.length; ρσ_Index12++) {
-                i = ρσ_Index12;
+            for (var ρσ_Index13 = 0; ρσ_Index13 < hitdice.length; ρσ_Index13++) {
+                i = ρσ_Index13;
                 cb = (function() {
                     var ρσ_anonfunc = function (index) {
                         return (function() {
@@ -6796,8 +6886,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             $(".ct-beyond20-roll-display").remove();
             $(".ct-beyond20-custom-icon").remove();
             custom_rolls = $("u.ct-beyond20-custom-roll");
-            for (var ρσ_Index13 = 0; ρσ_Index13 < custom_rolls.length; ρσ_Index13++) {
-                i = ρσ_Index13;
+            for (var ρσ_Index14 = 0; ρσ_Index14 < custom_rolls.length; ρσ_Index14++) {
+                i = ρσ_Index14;
                 custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
             }
         };
@@ -6956,16 +7046,26 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function panelModified(mutations, observer) {
             var pane, paneClass, div;
+            try {
+                chrome.extension.getURL("");
+            } catch (ρσ_Exception) {
+                ρσ_last_exception = ρσ_Exception;
+                {
+                    console.log("This extension is DOWN!");
+                    observer.disconnect();
+                    return;
+                } 
+            }
             pane = $(".ct-sidebar__pane-content > div");
+            character.updateInfo();
             if (pane.length > 0) {
-                for (var ρσ_Index14 = 0; ρσ_Index14 < pane.length; ρσ_Index14++) {
-                    div = ρσ_Index14;
+                for (var ρσ_Index15 = 0; ρσ_Index15 < pane.length; ρσ_Index15++) {
+                    div = ρσ_Index15;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls"))) {
                         continue;
                     }
                     print("Beyond20: New side panel is : " + paneClass);
-                    character.updateInfo();
                     injectRollButton(paneClass);
                 }
             }
@@ -7005,6 +7105,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             print("Got message : " + str(request));
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 updateSettings(request.settings);
+            } else if ((request.action === "get-character" || typeof request.action === "object" && ρσ_equals(request.action, "get-character"))) {
+                character.updateInfo();
+                sendResponse(character.getDict());
             }
         };
         if (!handleMessage.__argnames__) Object.defineProperties(handleMessage, {
@@ -7020,6 +7123,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["childList"] = true;
             return ρσ_d;
         }).call(this));
+        panelModified();
         chrome.runtime.sendMessage((function(){
             var ρσ_d = {};
             ρσ_d["action"] = "activate-icon";

@@ -1,4 +1,4 @@
-from utils import replaceRolls
+from utils import replaceRolls, injectPageScript, sendCustomEvent
 from settings import getDefaultSettings, getStoredSettings
 
 print("Beyond20: Roll20 module loaded.")
@@ -141,6 +141,8 @@ def handleMessage (request, sender, sendResponse):
     print("Got message : " + str(request))
     if request.action == "settings":
         updateSettings(request.settings)
+    elif request.action == "hp-update":
+        sendCustomEvent("UpdateHP", (request.character.name, request.character.hp, request.character["max-hp"]))
     elif request.action == "roll":
         if settings["whispers"]:
             roll = "/w gm "
@@ -376,4 +378,5 @@ def handleMessage (request, sender, sendResponse):
 chrome.runtime.onMessage.addListener(handleMessage)
 updateSettings()
 chrome.runtime.sendMessage({"action": "activate-icon"});
-
+sendCustomEvent("disconnect")
+injectPageScript(chrome.runtime.getURL('src/roll20_script.js'))

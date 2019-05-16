@@ -63,3 +63,23 @@ def getBrowser():
             return "Chrome"
     else:
         return "Edge"
+
+
+# Taken from https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script
+def injectPageScript(url):
+    s = document.createElement('script');
+    s.src = url;
+    s.onload = def():
+        this.remove()
+    (document.head or document.documentElement).appendChild(s);
+
+def sendCustomEvent(name, data):
+    event = new CustomEvent("Beyond20_" + name, {"detail": data})
+    document.dispatchEvent(event)
+
+def addCustomEventListener(name, callback):
+    cb = def(evt):
+        callback(*evt.detail)
+    event = ["Beyond20_" + name, cb, False]
+    document.addEventListener(*event)
+    return event

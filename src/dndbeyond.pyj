@@ -22,6 +22,8 @@ class Character:
         self._ac = None
         self._speed = None
         self._proficiency = None
+        self._hp = 0
+        self._max_hp = 0
 
     def updateInfo(self):
         if self._name is None:
@@ -72,7 +74,37 @@ class Character:
                 self._level = level.text().replace("Level ", "")
             elif xp.length > 0:
                 self._level = xp.text().replace("LVL ", "")
+
+        character.updateHP()
+
+    def updateHP(self):
+        hp = max_hp = None
+        hp_items = $(".ct-health-summary__hp-group--primary .ct-health-summary__hp-item")
+        for item in hp_items:
+            label = $(item).find(".ct-health-summary__hp-item-label").text() 
+            if label == "Current":
+                # Make sure it's not an input being modified
+                number = $(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number")
+                if number.length > 0:
+                    hp = int(number.text())
+            elif label == "Max":
+                max_hp = int($(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number").text())
+
+        mobile_hp = $(".ct-status-summary-mobile__hp-current")
+        if mobile_hp.length > 0:
+            hp = int(mobile_hp.text())
+            max_hp = int($(".ct-status-summary-mobile__hp-max").text())
+
+        if hp and max_hp and (self._hp != hp or self._max_hp != max_hp):
+            self._hp = hp
+            self._max_hp = max_hp
+            print("HP updated to : " + hp + "/" + max_hp)
+
+            req = {"action": "hp-update", "character": self.getDict()}
+            console.log("Sending message: " + str(req))
+            chrome.runtime.sendMessage(req);
             
+
     def getDict(self):
         return {"name": self._name,
                 "abilities": self._abilities,
@@ -81,7 +113,9 @@ class Character:
                 "race": self._race,
                 "ac": self._ac,
                 "proficiency": self._proficiency,
-                "speed": self._speed}
+                "speed": self._speed,
+                "hp": self._hp,
+                "max-hp": self._max_hp}
 
 character = Character()
 
@@ -648,14 +682,21 @@ def injectRollButton(paneClass):
 def panelModified(mutations, observer):
     nonlocal character
 
+    try:
+        chrome.extension.getURL("")
+    except:
+        console.log("This extension is DOWN!")
+        observer.disconnect()
+        return
+
     pane = $(".ct-sidebar__pane-content > div")
+    character.updateInfo()
     if pane.length > 0:
         for div in range(pane.length):
             paneClass = pane[div].className
             if paneClass == "ct-sidebar__pane-controls":
                 continue
             print("Beyond20: New side panel is : " + paneClass)
-            character.updateInfo()
             injectRollButton(paneClass)
 
 def updateSettings(new_settings=None):
@@ -670,13 +711,18 @@ def updateSettings(new_settings=None):
 
 def handleMessage (request, sender, sendResponse):
     nonlocal settings
+    nonlocal character
     print("Got message : " + str(request))
     if request.action == "settings":
         updateSettings(request.settings)
+    elif request.action == "get-character":
+        character.updateInfo()
+        sendResponse(character.getDict())
 
 updateSettings()
 chrome.runtime.onMessage.addListener(handleMessage)
 observer = new window.MutationObserver(panelModified)
 observer.observe(document, {"subtree": True, "childList": True})
+panelModified()
 chrome.runtime.sendMessage({"action": "activate-icon"});
 

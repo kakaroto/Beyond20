@@ -26,7 +26,7 @@
 	"default_popup": "popup.html",
 	"default_icon": "images/icons/icon16.png"
     },
-    "web_accessible_resources": [ "images/*" ],
+    "web_accessible_resources": [ "images/*", "src/roll20_script.js"],
     "background": {
 	"persistent": true,
 	"scripts": [ "src/background.js" ]

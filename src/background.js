@@ -3771,7 +3771,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function onMessage(request, sender, sendResponse) {
-            if ((request.action === "roll" || typeof request.action === "object" && ρσ_equals(request.action, "roll"))) {
+            if (ρσ_in(request.action, ρσ_list_decorate([ "roll", "hp-update" ]))) {
                 sendMessageToRoll20(request);
             } else if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 sendMessageToRoll20(request);
