@@ -1,5 +1,5 @@
 from elementmaker import E
-from settings import options_list, character_settings, createHTMLOption, initializeSettings, saveSettings, setCurrentTab, restoreSavedSettings
+from settings import options_list, character_settings, createHTMLOption, initializeSettings, saveSettings, setCurrentTab, restoreSavedSettings, loadSettings
 from utils import ROLL20_URL, DNDBEYOND_URL
 
 character = None
@@ -53,14 +53,16 @@ def populateCharacter(response):
                         E.p(response.name, style="margin: 0px;"))
                    )
 
-    for class_ in response.classes:
-        if class_ == "Rogue":
-            e = createHTMLOption("rogue-sneak-attack", False, character_settings)
-            options.append(e)
-        elif class_ == "Cleric":
-            e = createHTMLOption("cleric-disciple-life", False, character_settings)
-            options.append(e)
-    restoreSavedSettings("character-" + response.id, character_settings)
+    if "Rogue" in response.classes:
+        e = createHTMLOption("rogue-sneak-attack", False, character_settings)
+        options.append(e)
+    if "Cleric" in response.classes:
+        e = createHTMLOption("cleric-disciple-life", False, character_settings)
+        options.append(e)
+    if "Bard" in response.classes:
+        e = createHTMLOption("bard-joat", False, character_settings)
+        options.append(e)
+    loadSettings(response.settings, character_settings)
     $('.beyond20-option-input').off('change', save_settings)
     $('.beyond20-option-input').change(save_settings)
     initializeSettings()

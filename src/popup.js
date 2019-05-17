@@ -5775,7 +5775,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["cleric-disciple-life"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Cleric: Disciple of Life";
-                ρσ_d["description"] = "Send Disciple of Life extra healing";
+                ρσ_d["description"] = "Send Disciple of Life healing bonus";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["bard-joat"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Bard: Jack of All Trades";
+                ρσ_d["description"] = "Add JoaT bonus to raw ability checks";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
@@ -6419,6 +6427,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var saveSettings = ρσ_modules.settings.saveSettings;
         var setCurrentTab = ρσ_modules.settings.setCurrentTab;
         var restoreSavedSettings = ρσ_modules.settings.restoreSavedSettings;
+        var loadSettings = ρσ_modules.settings.loadSettings;
 
         var ROLL20_URL = ρσ_modules.utils.ROLL20_URL;
         var DNDBEYOND_URL = ρσ_modules.utils.DNDBEYOND_URL;
@@ -6511,23 +6520,24 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
 
         function populateCharacter(response) {
-            var options, e, class_;
+            var options, e;
             character = response;
             console.log("Received character: ", response);
             options = $(".beyond20-options");
             options.append(ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.h4, [" == Character Specific Options =="].concat([ρσ_desugar_kwargs({style: "margin: 0px;"})])), ρσ_interpolate_kwargs.call(E, E.p, [response.name].concat([ρσ_desugar_kwargs({style: "margin: 0px;"})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option", style: "text-align: center; padding: 10px 15px;"})])));
-            var ρσ_Iter1 = ρσ_Iterable(response.classes);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                class_ = ρσ_Iter1[ρσ_Index1];
-                if ((class_ === "Rogue" || typeof class_ === "object" && ρσ_equals(class_, "Rogue"))) {
-                    e = createHTMLOption("rogue-sneak-attack", false, character_settings);
-                    options.append(e);
-                } else if ((class_ === "Cleric" || typeof class_ === "object" && ρσ_equals(class_, "Cleric"))) {
-                    e = createHTMLOption("cleric-disciple-life", false, character_settings);
-                    options.append(e);
-                }
+            if (ρσ_in("Rogue", response.classes)) {
+                e = createHTMLOption("rogue-sneak-attack", false, character_settings);
+                options.append(e);
             }
-            restoreSavedSettings("character-" + response.id, character_settings);
+            if (ρσ_in("Cleric", response.classes)) {
+                e = createHTMLOption("cleric-disciple-life", false, character_settings);
+                options.append(e);
+            }
+            if (ρσ_in("Bard", response.classes)) {
+                e = createHTMLOption("bard-joat", false, character_settings);
+                options.append(e);
+            }
+            loadSettings(response.settings, character_settings);
             $(".beyond20-option-input").off("change", save_settings);
             $(".beyond20-option-input").change(save_settings);
             initializeSettings();

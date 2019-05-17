@@ -5775,7 +5775,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["cleric-disciple-life"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Cleric: Disciple of Life";
-                ρσ_d["description"] = "Send Disciple of Life extra healing";
+                ρσ_d["description"] = "Send Disciple of Life healing bonus";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["bard-joat"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Bard: Jack of All Trades";
+                ρσ_d["description"] = "Add JoaT bonus to raw ability checks";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;

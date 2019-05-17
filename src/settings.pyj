@@ -64,7 +64,11 @@ character_settings = {
                            "type": "bool",
                            "default": True},
     "cleric-disciple-life": {"title": "Cleric: Disciple of Life",
-                             "description": "Send Disciple of Life extra healing",
+                             "description": "Send Disciple of Life healing bonus",
+                             "type": "bool",
+                             "default": False},
+    "bard-joat": {"title": "Bard: Jack of All Trades",
+                             "description": "Add JoaT bonus to raw ability checks",
                              "type": "bool",
                              "default": True}
 }

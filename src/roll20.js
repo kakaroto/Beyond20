@@ -5775,7 +5775,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["cleric-disciple-life"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Cleric: Disciple of Life";
-                ρσ_d["description"] = "Send Disciple of Life extra healing";
+                ρσ_d["description"] = "Send Disciple of Life healing bonus";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["bard-joat"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Bard: Jack of All Trades";
+                ρσ_d["description"] = "Add JoaT bonus to raw ability checks";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
@@ -6648,7 +6656,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, advantage_type, modifier, ability, prof, prof_val, roll_properties, dice, dice_formula, rname, crit1, properties, crit2, source, components, description, higher;
+            var roll, advantage_type, modifier, ability, prof, prof_val, half_prof, dice_roll, roll_properties, dice, dice_formula, rname, crit1, properties, crit2, sneak_attack, source, components, description, higher, healing_spell, level;
             print("Got message : " + str(request));
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
@@ -6730,21 +6738,30 @@ var str = ρσ_str, repr = ρσ_repr;;
                         }).call(this));
                     }
                 } else if ((request.type === "ability" || typeof request.type === "object" && ρσ_equals(request.type, "ability"))) {
+                    if (ρσ_in("Bard", request.character.classes) && request.character.classes["Bard"] >= 2 && request.character.settings["bard-joat"]) {
+                        half_prof = "+[[floor(" + request.character.proficiency + " / 2)]]";
+                        dice_roll = genRoll("1d20", (function(){
+                            var ρσ_d = {};
+                            ρσ_d[request.ability] = request.modifier;
+                            ρσ_d["JoaT"] = half_prof;
+                            return ρσ_d;
+                        }).call(this));
+                        modifier = request.modifier + " +[[" + half_prof + "]]";
+                    } else {
+                        dice_roll = genRoll("1d20", (function(){
+                            var ρσ_d = {};
+                            ρσ_d[request.ability] = request.modifier;
+                            return ρσ_d;
+                        }).call(this));
+                        modifier = request.modifier;
+                    }
                     roll += template("simple", (function(){
                         var ρσ_d = {};
                         ρσ_d["charname"] = request.character.name;
                         ρσ_d["rname"] = request.name;
-                        ρσ_d["mod"] = request.modifier;
-                        ρσ_d["r1"] = genRoll("1d20", (function(){
-                            var ρσ_d = {};
-                            ρσ_d[request.ability] = request.modifier;
-                            return ρσ_d;
-                        }).call(this));
-                        ρσ_d["r2"] = genRoll("1d20", (function(){
-                            var ρσ_d = {};
-                            ρσ_d[request.ability] = request.modifier;
-                            return ρσ_d;
-                        }).call(this));
+                        ρσ_d["mod"] = modifier;
+                        ρσ_d["r1"] = dice_roll;
+                        ρσ_d["r2"] = dice_roll;
                         ρσ_d[advantage_type] = 1;
                         return ρσ_d;
                     }).call(this));
@@ -6856,6 +6873,22 @@ var str = ρσ_str, repr = ρσ_repr;;
                         properties["savedc"] = request["save-dc"];
                     }
                     roll += template("atkdmg", properties);
+                    if (ρσ_in("Rogue", request.character.classes) && request.character.settings["rogue-sneak-attack"] && ((request["attack-type"] === "Ranged" || typeof request["attack-type"] === "object" && ρσ_equals(request["attack-type"], "Ranged")) || ρσ_exists.n(request["properties"]) && ρσ_in("Finesse", request["properties"]))) {
+                        sneak_attack = "[[ceil(" + request.character.classes["Rogue"] + " / 2)]]d6";
+                        if (settings["whispers"]) {
+                            roll += "\n/w gm ";
+                        } else {
+                            roll += "\n";
+                        }
+                        roll += template("simple", (function(){
+                            var ρσ_d = {};
+                            ρσ_d["rname"] = "Sneak Attack";
+                            ρσ_d["mod"] = sneak_attack;
+                            ρσ_d["r1"] = "[[" + sneak_attack + "]]";
+                            ρσ_d["normal"] = 1;
+                            return ρσ_d;
+                        }).call(this));
+                    }
                 } else if ((request.type === "item" || typeof request.type === "object" && ρσ_equals(request.type, "item"))) {
                     roll += template("traits", (function(){
                         var ρσ_d = {};
@@ -6936,6 +6969,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         ρσ_d["rname"] = request.name;
                         return ρσ_d;
                     }).call(this);
+                    healing_spell = false;
                     if (ρσ_exists.n(request["to-hit"])) {
                         properties["mod"] = request["to-hit"];
                         properties["r1"] = genRoll("1d20", (function(){
@@ -6956,7 +6990,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                         properties["dmg1flag"] = 1;
                         properties["dmg1"] = subDamageRolls(request.damage);
                         properties["dmg1type"] = request["damage-type"];
-                        if ((request["damage-type"] !== "Healing" && (typeof request["damage-type"] !== "object" || ρσ_not_equals(request["damage-type"], "Healing")))) {
+                        if ((request["damage-type"] === "Healing" || typeof request["damage-type"] === "object" && ρσ_equals(request["damage-type"], "Healing"))) {
+                            healing_spell = true;
+                        } else {
                             crit1 = request.damage.split((ρσ_in("+", request.damage)) ? "+" : "-")[0];
                             properties["crit1"] = subDamageRolls(settings["crit-prefix"] + crit1);
                         }
@@ -6965,7 +7001,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                         properties["dmg2flag"] = 1;
                         properties["dmg2"] = subDamageRolls(request["second-damage"]);
                         properties["dmg2type"] = request["second-damage-type"];
-                        if ((request["second-damage-type"] !== "Healing" && (typeof request["second-damage-type"] !== "object" || ρσ_not_equals(request["second-damage-type"], "Healing")))) {
+                        if ((request["second-damage-type"] === "Healing" || typeof request["second-damage-type"] === "object" && ρσ_equals(request["second-damage-type"], "Healing"))) {
+                            healing_spell = true;
+                        } else {
                             crit2 = request["second-damage"].split((ρσ_in("+", request["second-damage"])) ? "+" : "-")[0];
                             properties["crit2"] = subDamageRolls(settings["crit-prefix"] + crit2);
                         }
@@ -6996,6 +7034,26 @@ var str = ρσ_str, repr = ρσ_repr;;
                         }
                     }
                     roll += template("atkdmg", properties);
+                    if (healing_spell && ρσ_in("Cleric", request.character.classes) && request.character.settings["cleric-disciple-life"]) {
+                        if (ρσ_exists.n(request["cast-at"])) {
+                            level = request["cast-at"][0];
+                        } else {
+                            level = request["level-school"][0];
+                        }
+                        if (settings["whispers"]) {
+                            roll += "\n/w gm ";
+                        } else {
+                            roll += "\n";
+                        }
+                        roll += template("simple", (function(){
+                            var ρσ_d = {};
+                            ρσ_d["rname"] = "Disciple of Life";
+                            ρσ_d["mod"] = "2 + " + level;
+                            ρσ_d["r1"] = "[[2 + " + level + "]]";
+                            ρσ_d["normal"] = 1;
+                            return ρσ_d;
+                        }).call(this));
+                    }
                 } else if ((request.type === "death-save" || typeof request.type === "object" && ρσ_equals(request.type, "death-save"))) {
                     roll += template("simple", (function(){
                         var ρσ_d = {};

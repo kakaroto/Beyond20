@@ -43,6 +43,7 @@ def sendMessageToBeyond(request):
 def onMessage(request, sender, sendResponse):
     nonlocal settings
 
+    console.log("Received message: ", request)
     if request.action in ["roll", "hp-update"]:
         sendMessageToRoll20(request, settings["roll20-tab"])
     elif request.action == "settings":

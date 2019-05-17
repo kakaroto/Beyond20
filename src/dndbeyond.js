@@ -5775,7 +5775,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["cleric-disciple-life"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Cleric: Disciple of Life";
-                ρσ_d["description"] = "Send Disciple of Life extra healing";
+                ρσ_d["description"] = "Send Disciple of Life healing bonus";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["bard-joat"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Bard: Jack of All Trades";
+                ρσ_d["description"] = "Add JoaT bonus to raw ability checks";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
@@ -6414,6 +6422,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
+        var character_settings = ρσ_modules.settings.character_settings;
 
         var E = ρσ_modules.elementmaker.E;
 
@@ -6446,6 +6455,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             self._proficiency = null;
             self._hp = 0;
             self._max_hp = 0;
+            self._settings = null;
         };
         Character.__argnames__ = Character.prototype.__init__.__argnames__;
         Character.__handles_kwarg_interpolation__ = Character.prototype.__init__.__handles_kwarg_interpolation__;
@@ -6453,6 +6463,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             var self = this;
             var abilities, name, abbr, modifier, value, ability, classes, ρσ_unpack, level, class_, xp;
             self._id = $("#character-sheet-target").attr("data-character-id");
+            if (self._settings === null) {
+                self.updateSettings();
+            }
             if (self._name === null) {
                 self._name = $(".ct-character-tidbits__name").text();
             }
@@ -6569,6 +6582,33 @@ var str = ρσ_str, repr = ρσ_repr;;
                 chrome.runtime.sendMessage(req);
             }
         };
+        Character.prototype.updateSettings = function updateSettings() {
+            var self = this;
+            var new_settings = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? updateSettings.__defaults__.new_settings : arguments[0];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "new_settings")){
+                new_settings = ρσ_kwargs_obj.new_settings;
+            }
+            if (new_settings) {
+                self._settings = new_settings;
+            } else {
+                getStoredSettings((function() {
+                    var ρσ_anonfunc = function (saved_settings) {
+                        self._settings = saved_settings;
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["saved_settings"]}
+                    });
+                    return ρσ_anonfunc;
+                })(), "character-" + self._id, character_settings);
+            }
+        };
+        if (!Character.prototype.updateSettings.__defaults__) Object.defineProperties(Character.prototype.updateSettings, {
+            __defaults__ : {value: {new_settings:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["new_settings"]}
+        });
         Character.prototype.getDict = function getDict() {
             var self = this;
             return (function(){
@@ -6584,6 +6624,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["speed"] = self._speed;
                 ρσ_d["hp"] = self._hp;
                 ρσ_d["max-hp"] = self._max_hp;
+                ρσ_d["settings"] = self._settings;
                 return ρσ_d;
             }).call(this);
         };
@@ -7543,6 +7584,10 @@ var str = ρσ_str, repr = ρσ_repr;;
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
                     updateSettings(request.settings);
+                } else if ((request.type === "character" || typeof request.type === "object" && ρσ_equals(request.type, "character")) && (request.id === character._id || typeof request.id === "object" && ρσ_equals(request.id, character._id))) {
+                    character.updateSettings(request.settings);
+                } else {
+                    console.log("Ignoring character settings, not for ID: ", character._id);
                 }
             } else if ((request.action === "get-character" || typeof request.action === "object" && ρσ_equals(request.action, "get-character"))) {
                 character.updateInfo();

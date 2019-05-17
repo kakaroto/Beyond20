@@ -1,5 +1,5 @@
 from utils import replaceRolls
-from settings import getDefaultSettings, getStoredSettings
+from settings import getDefaultSettings, getStoredSettings, character_settings
 from elementmaker import E
 
 print("Beyond20: D&D Beyond module loaded.")
@@ -25,9 +25,13 @@ class Character:
         self._proficiency = None
         self._hp = 0
         self._max_hp = 0
+        self._settings = None
 
     def updateInfo(self):
         self._id = $("#character-sheet-target").attr("data-character-id")
+        if self._settings is None:
+            self.updateSettings()
+
         if self._name is None:
             self._name = $(".ct-character-tidbits__name").text()
         if self._ac is None:
@@ -78,7 +82,6 @@ class Character:
                 self._level = level.text().replace("Level ", "")
             elif xp.length > 0:
                 self._level = xp.text().replace("LVL ", "")
-
         character.updateHP()
 
     def updateHP(self):
@@ -109,6 +112,14 @@ class Character:
             chrome.runtime.sendMessage(req);
             
 
+    def updateSettings(self, new_settings=None):
+        if new_settings:
+            self._settings = new_settings
+        else:
+            getStoredSettings(def(saved_settings):
+                self._settings = saved_settings
+            , "character-" + self._id, character_settings)
+
     def getDict(self):
         return {"name": self._name,
                 "id": self._id,
@@ -120,7 +131,8 @@ class Character:
                 "proficiency": self._proficiency,
                 "speed": self._speed,
                 "hp": self._hp,
-                "max-hp": self._max_hp}
+                "max-hp": self._max_hp,
+                "settings": self._settings}
 
 character = Character()
 
@@ -721,6 +733,10 @@ def handleMessage (request, sender, sendResponse):
     if request.action == "settings":
         if request.type == "general":
             updateSettings(request.settings)
+        elif request.type == "character" and request.id == character._id:
+            character.updateSettings(request.settings)
+        else:
+            console.log("Ignoring character settings, not for ID: ", character._id)
     elif request.action == "get-character":
         character.updateInfo()
         sendResponse(character.getDict())

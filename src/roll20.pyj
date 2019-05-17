@@ -189,12 +189,21 @@ def handleMessage (request, sender, sendResponse):
                                   "r2": genRoll("1d20", {request.ability: modifier}),
                                   advantage_type:1})
         elif request.type == "ability":
+            if "Bard" in request.character.classes and \
+                    request.character.classes["Bard"] >= 2 and \
+                    request.character.settings["bard-joat"]:
+                half_prof = "+[[floor(" + request.character.proficiency + " / 2)]]"
+                dice_roll = genRoll("1d20", {request.ability: request.modifier, "JoaT": half_prof})
+                modifier = request.modifier + " +[[" + half_prof + "]]"
+            else:
+                dice_roll = genRoll("1d20", {request.ability: request.modifier})
+                modifier = request.modifier
             roll += template("simple",
                              {"charname": request.character.name,
                               "rname" : request.name,
-                              "mod": request.modifier,
-                              "r1": genRoll("1d20", {request.ability: request.modifier}),
-                              "r2": genRoll("1d20", {request.ability: request.modifier}),
+                              "mod": modifier,
+                              "r1": dice_roll,
+                              "r2": dice_roll,
                               advantage_type:1})
         elif request.type == "saving-throw":
             roll += template("simple",
@@ -259,6 +268,19 @@ def handleMessage (request, sender, sendResponse):
                 properties["saveattr"] = request["save-ability"]
                 properties["savedc"] = request["save-dc"]
             roll += template("atkdmg", properties)
+            if "Rogue" in request.character.classes and \
+                    request.character.settings["rogue-sneak-attack"] and \
+                    (request["attack-type"] == "Ranged" or (request["properties"]? and "Finesse" in request["properties"])):
+                sneak_attack = "[[ceil(" + request.character.classes["Rogue"] + " / 2)]]d6"
+                if settings["whispers"]:
+                    roll += "\n/w gm "
+                else:
+                    roll += "\n"
+                roll += template("simple",
+                                 {"rname" : "Sneak Attack",
+                                  "mod": sneak_attack,
+                                  "r1": "[[" + sneak_attack + "]]",
+                                  "normal": 1})
         elif request.type == "item":
             roll += template("traits", {"name": request.name,
                                         "source": request["item-type"],
@@ -314,6 +336,7 @@ def handleMessage (request, sender, sendResponse):
         elif request.type == "spell-attack":
             properties = {"charname": request.character.name,
                           "rname" : request.name}
+            healing_spell = False
             if request["to-hit"]?:
                 properties["mod"] = request["to-hit"]
                 properties["r1"] = genRoll("1d20", {"": request["to-hit"]})
@@ -325,14 +348,18 @@ def handleMessage (request, sender, sendResponse):
                 properties["dmg1flag"] = 1
                 properties["dmg1"] = subDamageRolls(request.damage)
                 properties["dmg1type"] = request["damage-type"]
-                if request["damage-type"] != "Healing":
+                if request["damage-type"] == "Healing":
+                    healing_spell = True
+                else:
                     crit1 = request.damage.split("+" if "+" in request.damage else "-")[0]
                     properties["crit1"] = subDamageRolls(settings["crit-prefix"] + crit1)
             if request["second-damage"]?:
                 properties["dmg2flag"] = 1
                 properties["dmg2"] = subDamageRolls(request["second-damage"])
                 properties["dmg2type"] = request["second-damage-type"]
-                if request["second-damage-type"] != "Healing":
+                if request["second-damage-type"] == "Healing":
+                    healing_spell = True
+                else:
                     crit2 = request["second-damage"].split("+" if "+" in request["second-damage"] else "-")[0]
                     properties["crit2"] = subDamageRolls(settings["crit-prefix"] + crit2)
             if request.range?:
@@ -354,6 +381,22 @@ def handleMessage (request, sender, sendResponse):
                     properties["desc"] = components[2:-1]
                     components = ""
             roll += template("atkdmg", properties)
+            if healing_spell and \
+                    "Cleric" in request.character.classes and \
+                    request.character.settings["cleric-disciple-life"]:
+                if request["cast-at"]?:
+                    level = request["cast-at"][0]
+                else:
+                    level = request["level-school"][0]
+                if settings["whispers"]:
+                    roll += "\n/w gm "
+                else:
+                    roll += "\n"
+                roll += template("simple",
+                                 {"rname" : "Disciple of Life",
+                                  "mod": "2 + " + level,
+                                  "r1": "[[2 + " + level + "]]",
+                                  "normal": 1})
         elif request.type == "death-save":
             roll += template("simple",
                              {"charname": request.character.name,
