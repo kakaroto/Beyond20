@@ -6312,7 +6312,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         Character.__handles_kwarg_interpolation__ = Character.prototype.__init__.__handles_kwarg_interpolation__;
         Character.prototype.updateInfo = function updateInfo() {
             var self = this;
-            var abilities, name, abbr, modifier, value, i, classes, ρσ_unpack, level, class_, xp;
+            var abilities, name, abbr, modifier, value, ability, classes, ρσ_unpack, level, class_, xp;
             if (self._name === null) {
                 self._name = $(".ct-character-tidbits__name").text();
             }
@@ -6345,15 +6345,19 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             if (ρσ_equals(len(self._abilities), 0)) {
                 abilities = $(".ct-quick-info__ability");
-                for (var ρσ_Index0 = 0; ρσ_Index0 < abilities.length; ρσ_Index0++) {
-                    i = ρσ_Index0;
-                    name = abilities.eq(i).find(".ct-ability-summary__heading .ct-ability-summary__label").text();
-                    abbr = abilities.eq(i).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text();
-                    modifier = abilities.eq(i).find(".ct-ability-summary__primary .ct-signed-number").text();
-                    value = abilities.eq(i).find(".ct-ability-summary__secondary").text();
+                if ((abilities.length === 0 || typeof abilities.length === "object" && ρσ_equals(abilities.length, 0))) {
+                    abilities = $(".ct-main-mobile__ability");
+                }
+                var ρσ_Iter0 = ρσ_Iterable(abilities);
+                for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                    ability = ρσ_Iter0[ρσ_Index0];
+                    name = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__label").text();
+                    abbr = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text();
+                    modifier = $(ability).find(".ct-ability-summary__primary .ct-signed-number").text();
+                    value = $(ability).find(".ct-ability-summary__secondary").text();
                     if ((modifier === "" || typeof modifier === "object" && ρσ_equals(modifier, ""))) {
-                        modifier = abilities.eq(i).find(".ct-ability-summary__secondary .ct-signed-number").text();
-                        value = abilities.eq(i).find(".ct-ability-summary__primary").text();
+                        modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number").text();
+                        value = $(ability).find(".ct-ability-summary__primary").text();
                     }
                     self._abilities.append(ρσ_list_decorate([ name, abbr, value, modifier ]));
                 }

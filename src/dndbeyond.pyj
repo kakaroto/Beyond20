@@ -48,14 +48,16 @@ class Character:
                     self._speed = None
         if len(self._abilities) == 0:
             abilities = $(".ct-quick-info__ability")
-            for i in range(abilities.length):
-                name = abilities.eq(i).find(".ct-ability-summary__heading .ct-ability-summary__label").text()
-                abbr = abilities.eq(i).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text()
-                modifier = abilities.eq(i).find(".ct-ability-summary__primary .ct-signed-number").text()
-                value = abilities.eq(i).find(".ct-ability-summary__secondary").text()
+            if abilities.length == 0:
+                abilities = $(".ct-main-mobile__ability")
+            for ability in abilities:
+                name = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__label").text()
+                abbr = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text()
+                modifier = $(ability).find(".ct-ability-summary__primary .ct-signed-number").text()
+                value = $(ability).find(".ct-ability-summary__secondary").text()
                 if modifier == "":
-                    modifier = abilities.eq(i).find(".ct-ability-summary__secondary .ct-signed-number").text()
-                    value = abilities.eq(i).find(".ct-ability-summary__primary").text()
+                    modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number").text()
+                    value = $(ability).find(".ct-ability-summary__primary").text()
                 self._abilities.append([name, abbr, value, modifier])
         if self._race is None:
             self._race = $(".ct-character-tidbits__race").text()
