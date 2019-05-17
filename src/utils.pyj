@@ -1,5 +1,8 @@
 import re
 
+ROLL20_URL = "*://app.roll20.net/editor/"
+DNDBEYOND_URL = "*://*.dndbeyond.com/*characters/*"
+
 def replaceRollsCallback(match, modifiers_only, pre, dice, post, keep_original, pre_original, post_original, pre_dice, post_dice):
     if modifiers_only and match.string[match.start() - 1] in list(map(str, range(0, 10))):
         return match.group(0)
@@ -83,3 +86,6 @@ def addCustomEventListener(name, callback):
     event = ["Beyond20_" + name, cb, False]
     document.addEventListener(*event)
     return event
+
+def roll20TabTitle(tab):
+    return tab.title.replace(" | Roll20", "")

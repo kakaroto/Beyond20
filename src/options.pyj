@@ -4,7 +4,9 @@ from settings import options_list, createHTMLOption, initializeSettings, saveSet
 def createOptionList():
     options = []
     for option in options_list:
-        options.append(createHTMLOption(option))
+        child = createHTMLOption(option)
+        if child:
+            options.append(child)
     $("main").prepend(E.ul(class_="list-group beyond20-options", *options))
 
 def save_settings():
@@ -23,6 +25,8 @@ def setupHTML():
     createOptionList()
     initializeSettings()
     $('#save').bind('click', save_settings)
+    $('.beyond20-option-input').change(save_settings)
+    $(".beyond20-options").on("markaChanged", save_settings)
 
 
 setupHTML()

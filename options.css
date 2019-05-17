@@ -148,7 +148,7 @@
   right: 0;
   margin: 1em auto;
   padding: 1em 1.35em 1em;
-  width: 120px;
+  width: max-content;
   list-style: none;
   text-align: left;
   border-radius: 2px;

@@ -1,5 +1,7 @@
 from elementmaker import E
-from settings import options_list, createHTMLOption, initializeSettings, saveSettings
+from settings import options_list, createHTMLOption, initializeSettings, saveSettings, setCurrentTab, restoreSavedSettings
+from utils import ROLL20_URL, DNDBEYOND_URL
+
 
 def createOptionList():
     options = []
@@ -30,8 +32,8 @@ def save_settings():
 
 def setupHTML():
     createOptionList()
-    initializeSettings()
     $('.beyond20-option-input').change(save_settings)
+    $(".beyond20-options").on("markaChanged", save_settings)
     $(document).on('click', 'a', def(ev):
         href = this.getAttribute('href')
         if len(href) > 0 and href != "#":
@@ -39,6 +41,24 @@ def setupHTML():
         return False
     )
 
+def populateCharacter(response):
+    console.log("Received character: ", response)
+    initializeSettings()
+
+def actOnCurrentTab(tabs):
+    if tabs[0].url.match(ROLL20_URL.replace(/\*/g, "[^]*")) != None:
+        setCurrentTab(tabs[0])
+
+        e = options_list["roll20-tab"].createHTMLElement("roll20-tab", True)
+        options = $(".beyond20-options")
+        options.append(E.li(class_="list-group-item beyond20-option", style="text-align: center; margin: 10px;",
+                                           E.h4(" == Roll20 Tab Specific Options ==")
+                                           ))
+        options.append(e)
+        initializeSettings()
+    else:
+        chrome.tabs.sendMessage(tabs[0].id, {"action": "get-character"}, populateCharacter)
+
 
 setupHTML()
-
+chrome.tabs.query({"active": True, "currentWindow": True}, actOnCurrentTab)
