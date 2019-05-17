@@ -1,8 +1,8 @@
 from elementmaker import E
-from settings import options_list, createHTMLOption, initializeSettings, saveSettings, setCurrentTab, restoreSavedSettings
+from settings import options_list, character_settings, createHTMLOption, initializeSettings, saveSettings, setCurrentTab, restoreSavedSettings
 from utils import ROLL20_URL, DNDBEYOND_URL
 
-
+character = None
 def createOptionList():
     options = []
     for option in options_list:
@@ -23,12 +23,14 @@ def createOptionList():
     )
 
 def save_settings():
-    cb = def(settings):
-        if chrome.runtime.lastError:
-            console.log('Chrome Runtime Error', chrome.runtime.lastError.message);
-        else:
-            chrome.runtime.sendMessage({"action": "settings", "settings": settings});
-    saveSettings(cb)
+    nonlocal character
+    saveSettings(def(settings):
+                     chrome.runtime.sendMessage({"action": "settings", "type": "general", "settings": settings})
+                 )
+    if character is not None:
+        saveSettings(def(settings):
+                         chrome.runtime.sendMessage({"action": "settings", "type": "character", "id": character.id, "settings": settings})
+                     , "character-" + character.id, character_settings)
 
 def setupHTML():
     createOptionList()
@@ -42,13 +44,30 @@ def setupHTML():
     )
 
 def populateCharacter(response):
+    nonlocal character
+    character = response
     console.log("Received character: ", response)
+    options = $(".beyond20-options")
+    options.append(E.li(class_="list-group-item beyond20-option", style="text-align: center; padding: 10px 15px;",
+                        E.h4(" == Character Specific Options ==", style="margin: 0px;"),
+                        E.p(response.name, style="margin: 0px;"))
+                   )
+
+    for class_ in response.classes:
+        if class_ == "Rogue":
+            e = createHTMLOption("rogue-sneak-attack", False, character_settings)
+            options.append(e)
+        elif class_ == "Cleric":
+            e = createHTMLOption("cleric-disciple-life", False, character_settings)
+            options.append(e)
+    restoreSavedSettings("character-" + response.id, character_settings)
+    $('.beyond20-option-input').off('change', save_settings)
+    $('.beyond20-option-input').change(save_settings)
     initializeSettings()
 
 def actOnCurrentTab(tabs):
+    setCurrentTab(tabs[0])
     if tabs[0].url.match(ROLL20_URL.replace(/\*/g, "[^]*")) != None:
-        setCurrentTab(tabs[0])
-
         e = options_list["roll20-tab"].createHTMLElement("roll20-tab", True)
         options = $(".beyond20-options")
         options.append(E.li(class_="list-group-item beyond20-option", style="text-align: center; margin: 10px;",

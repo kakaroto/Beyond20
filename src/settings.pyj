@@ -58,6 +58,17 @@ options_list = {
                    "default": None}, # callbacks will be added after the functions are defined
     }
 
+character_settings = {
+    "rogue-sneak-attack": {"title": "Rogue: Sneak Attack",
+                           "description": "Send Sneak Attack damage with each attack roll",
+                           "type": "bool",
+                           "default": True},
+    "cleric-disciple-life": {"title": "Cleric: Disciple of Life",
+                             "description": "Send Disciple of Life extra healing",
+                             "type": "bool",
+                             "default": True}
+}
+
 
 def storageGet(name, default_value, cb):
     chrome.storage.sync.get({name: default_value}, def (items):
@@ -68,45 +79,44 @@ def storageSet(name, value, cb=None):
     chrome.storage.sync.set({name: value}, def ():
         if chrome.runtime.lastError:
             console.log('Chrome Runtime Error', chrome.runtime.lastError.message);
-        if cb:
+        elif cb:
             cb(value)
     )
 
-def getDefaultSettings():
+def getDefaultSettings(_list=options_list):
     settings = {}
-    for option in options_list:
-        settings[option] = options_list[option].default
+    for option in _list:
+        settings[option] = _list[option].default
     console.log("Default settings :", settings)
     return settings
 
-def getStoredSettings(cb):
-    settings = getDefaultSettings()
-    storageGet("settings", settings, def(stored_settings):
-        print("Beyond20: Stored settings :", stored_settings)
+def getStoredSettings(cb, key="settings", _list=options_list):
+    settings = getDefaultSettings(_list)
+    storageGet(key, settings, def(stored_settings):
+        print("Beyond20: Stored settings (" + key + "):", stored_settings)
         cb(stored_settings)
     )
 
-def setSettings(settings, cb=None):
-    storageSet("settings", settings, def(settings):
-        console.log("Beyond20: Saved settings : ", settings)
+def setSettings(settings, cb=None, key="settings"):
+    storageSet(key, settings, def(settings):
+        console.log("Beyond20: Saved settings (" + key + "): ", settings)
         if cb:
             cb(settings)
     )
 
-def mergeSettings(settings, cb=None):
-    console.log("Saving new settings : ", settings)
+def mergeSettings(settings, cb=None, key="settings", _list=options_list):
+    console.log("Saving new settings (" + key + "): ", settings)
     def setNewSettings(stored_settings):
-        for key in settings:
-            stored_settings[key] = settings[key]
-        setSettings(stored_settings, cb)
+        for k in settings:
+            stored_settings[k] = settings[k]
+        setSettings(stored_settings, cb, key)
 
-    getStoredSettings(setNewSettings)
+    getStoredSettings(setNewSettings, key, _list)
 
-def resetSettings(cb=None):
-    setSettings(getDefaultSettings(), cb)
+def resetSettings(cb=None, _list=options_list):
+    setSettings(getDefaultSettings(_list), cb)
 
-def createHTMLOption(name, short=False):
-    option = options_list[name]
+def createHTMLOptionEx(name, option, short=False):
     if (option.type == "hidden") or \
             (short and not option.short?) or \
             (not option.title?):
@@ -169,6 +179,9 @@ def createHTMLOption(name, short=False):
 
     return e
 
+def createHTMLOption(name, short=False, _list=options_list):
+    return createHTMLOptionEx(name, _list[name], short)
+
 def initializeMarkaGroup(group):
     triggerOpen = $(group).find('.select')
     triggerClose = $(group).find('.dropdown-menu li')
@@ -210,17 +223,17 @@ def initializeMarka():
     for group in groups:
         initializeMarkaGroup(group)
 
-def extractSettingsData():
+def extractSettingsData(_list=options_list):
     settings = {}
-    for option in options_list:
+    for option in _list:
         e = $("#" + option)
         if e.length > 0:
-            o_type = options_list[option].type
+            o_type = _list[option].type
             if o_type == "bool":
                 settings[option] = e.prop('checked')
             elif o_type == "combobox":
                 val = e.text()
-                choices = options_list[option].choices
+                choices = _list[option].choices
                 for key in choices:
                     if choices[key] == val:
                         settings[option] = key
@@ -228,29 +241,31 @@ def extractSettingsData():
             elif o_type == "string":
                 settings[option] = e.val()
             elif o_type == "special":
-                settings[option] = options_list[option].get(option)
+                settings[option] = _list[option].get(option)
     return settings
 
-def loadSettings(settings):
+def loadSettings(settings, _list=options_list):
     for option in settings:
-        o_type = options_list[option].type
+        o_type = _list[option].type
         if o_type == "bool":
             $("#" + option).prop('checked', settings[option])
         elif o_type == "combobox":
             val = settings[option]
-            choices = options_list[option].choices
+            choices = _list[option].choices
             $("#" + option).text(choices[val])
         elif o_type == "string":
             $("#" + option).val(settings[option])
         elif o_type == "special":
-            options_list[option].set(option, settings)
+            _list[option].set(option, settings)
 
-def restoreSavedSettings():
-    settings = getDefaultSettings()
-    getStoredSettings(loadSettings)
+def restoreSavedSettings(key="settings", _list=options_list):
+    settings = getDefaultSettings(_list)
+    load = def(stored_settings):
+        loadSettings(stored_settings, _list)
+    getStoredSettings(load, key, _list)
 
-def saveSettings(cb):
-    mergeSettings(extractSettingsData(), cb)
+def saveSettings(cb, key="settings", _list=options_list):
+    mergeSettings(extractSettingsData(_list), cb, key, _list)
 
 def initializeSettings():
     initializeMarka()

@@ -16,6 +16,7 @@ class Character:
     def __init__(self):
         self._abilities = []
         self._name = None
+        self._id = None
         self._race = None
         self._level = None
         self._classes = None
@@ -26,6 +27,7 @@ class Character:
         self._max_hp = 0
 
     def updateInfo(self):
+        self._id = $("#character-sheet-target").attr("data-character-id")
         if self._name is None:
             self._name = $(".ct-character-tidbits__name").text()
         if self._ac is None:
@@ -109,6 +111,7 @@ class Character:
 
     def getDict(self):
         return {"name": self._name,
+                "id": self._id,
                 "abilities": self._abilities,
                 "classes": self._classes,
                 "level": self._level,
@@ -716,7 +719,8 @@ def handleMessage (request, sender, sendResponse):
     nonlocal character
     print("Got message : " + str(request))
     if request.action == "settings":
-        updateSettings(request.settings)
+        if request.type == "general":
+            updateSettings(request.settings)
     elif request.action == "get-character":
         character.updateInfo()
         sendResponse(character.getDict())

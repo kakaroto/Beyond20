@@ -46,7 +46,8 @@ def onMessage(request, sender, sendResponse):
     if request.action in ["roll", "hp-update"]:
         sendMessageToRoll20(request, settings["roll20-tab"])
     elif request.action == "settings":
-        updateSettings(request.settings)
+        if request.type == "general":
+            updateSettings(request.settings)
         sendMessageToRoll20(request)
         sendMessageToBeyond(request)
     elif request.action == "activate-icon":

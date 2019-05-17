@@ -5669,7 +5669,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "settings";
-        var options_list, current_tab;
+        var options_list, character_settings, current_tab;
         var E = ρσ_modules.elementmaker.E;
 
         var getBrowser = ρσ_modules.utils.getBrowser;
@@ -5762,6 +5762,26 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             return ρσ_d;
         }).call(this);
+        character_settings = (function(){
+            var ρσ_d = {};
+            ρσ_d["rogue-sneak-attack"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Rogue: Sneak Attack";
+                ρσ_d["description"] = "Send Sneak Attack damage with each attack roll";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["cleric-disciple-life"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Cleric: Disciple of Life";
+                ρσ_d["description"] = "Send Disciple of Life extra healing";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            return ρσ_d;
+        }).call(this);
         function storageGet(name, default_value, cb) {
             chrome.storage.sync.get((function(){
                 var ρσ_d = {};
@@ -5797,8 +5817,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this), function () {
                 if (chrome.runtime.lastError) {
                     console.log("Chrome Runtime Error", chrome.runtime.lastError.message);
-                }
-                if (cb) {
+                } else if (cb) {
                     cb(value);
                 }
             });
@@ -5810,23 +5829,45 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function getDefaultSettings() {
+            var _list = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? getDefaultSettings.__defaults__._list : arguments[0];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
             var settings, option;
             settings = {};
-            var ρσ_Iter0 = ρσ_Iterable(options_list);
+            var ρσ_Iter0 = ρσ_Iterable(_list);
             for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
                 option = ρσ_Iter0[ρσ_Index0];
-                settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option].default;
+                settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].default;
             }
             console.log("Default settings :", settings);
             return settings;
         };
+        if (!getDefaultSettings.__defaults__) Object.defineProperties(getDefaultSettings, {
+            __defaults__ : {value: {_list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["_list"]}
+        });
 
-        function getStoredSettings(cb) {
+        function getStoredSettings() {
+            var cb = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var key = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? getStoredSettings.__defaults__.key : arguments[1];
+            var _list = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? getStoredSettings.__defaults__._list : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
+                key = ρσ_kwargs_obj.key;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
             var settings;
-            settings = getDefaultSettings();
-            storageGet("settings", settings, (function() {
+            settings = getDefaultSettings(_list);
+            storageGet(key, settings, (function() {
                 var ρσ_anonfunc = function (stored_settings) {
-                    print("Beyond20: Stored settings :", stored_settings);
+                    print("Beyond20: Stored settings (" + key + "):", stored_settings);
                     cb(stored_settings);
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
@@ -5835,21 +5876,27 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_anonfunc;
             })());
         };
-        if (!getStoredSettings.__argnames__) Object.defineProperties(getStoredSettings, {
-            __argnames__ : {value: ["cb"]}
+        if (!getStoredSettings.__defaults__) Object.defineProperties(getStoredSettings, {
+            __defaults__ : {value: {key:"settings", _list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["cb", "key", "_list"]}
         });
 
         function setSettings() {
             var settings = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var cb = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? setSettings.__defaults__.cb : arguments[1];
+            var key = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? setSettings.__defaults__.key : arguments[2];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
                 cb = ρσ_kwargs_obj.cb;
             }
-            storageSet("settings", settings, (function() {
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
+                key = ρσ_kwargs_obj.key;
+            }
+            storageSet(key, settings, (function() {
                 var ρσ_anonfunc = function (settings) {
-                    console.log("Beyond20: Saved settings : ", settings);
+                    console.log("Beyond20: Saved settings (" + key + "): ", settings);
                     if (cb) {
                         cb(settings);
                     }
@@ -5861,66 +5908,78 @@ var str = ρσ_str, repr = ρσ_repr;;
             })());
         };
         if (!setSettings.__defaults__) Object.defineProperties(setSettings, {
-            __defaults__ : {value: {cb:null}},
+            __defaults__ : {value: {cb:null, key:"settings"}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["settings", "cb"]}
+            __argnames__ : {value: ["settings", "cb", "key"]}
         });
 
         function mergeSettings() {
             var settings = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var cb = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? mergeSettings.__defaults__.cb : arguments[1];
+            var key = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? mergeSettings.__defaults__.key : arguments[2];
+            var _list = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? mergeSettings.__defaults__._list : arguments[3];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
                 cb = ρσ_kwargs_obj.cb;
             }
-            console.log("Saving new settings : ", settings);
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
+                key = ρσ_kwargs_obj.key;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
+            console.log("Saving new settings (" + key + "): ", settings);
             function setNewSettings(stored_settings) {
-                var key;
+                var k;
                 var ρσ_Iter1 = ρσ_Iterable(settings);
                 for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                    key = ρσ_Iter1[ρσ_Index1];
-                    stored_settings[(typeof key === "number" && key < 0) ? stored_settings.length + key : key] = settings[(typeof key === "number" && key < 0) ? settings.length + key : key];
+                    k = ρσ_Iter1[ρσ_Index1];
+                    stored_settings[(typeof k === "number" && k < 0) ? stored_settings.length + k : k] = settings[(typeof k === "number" && k < 0) ? settings.length + k : k];
                 }
-                setSettings(stored_settings, cb);
+                setSettings(stored_settings, cb, key);
             };
             if (!setNewSettings.__argnames__) Object.defineProperties(setNewSettings, {
                 __argnames__ : {value: ["stored_settings"]}
             });
 
-            getStoredSettings(setNewSettings);
+            getStoredSettings(setNewSettings, key, _list);
         };
         if (!mergeSettings.__defaults__) Object.defineProperties(mergeSettings, {
-            __defaults__ : {value: {cb:null}},
+            __defaults__ : {value: {cb:null, key:"settings", _list:options_list}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["settings", "cb"]}
+            __argnames__ : {value: ["settings", "cb", "key", "_list"]}
         });
 
         function resetSettings() {
             var cb = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? resetSettings.__defaults__.cb : arguments[0];
+            var _list = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? resetSettings.__defaults__._list : arguments[1];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
                 cb = ρσ_kwargs_obj.cb;
             }
-            setSettings(getDefaultSettings(), cb);
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
+            setSettings(getDefaultSettings(_list), cb);
         };
         if (!resetSettings.__defaults__) Object.defineProperties(resetSettings, {
-            __defaults__ : {value: {cb:null}},
+            __defaults__ : {value: {cb:null, _list:options_list}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["cb"]}
+            __argnames__ : {value: ["cb", "_list"]}
         });
 
-        function createHTMLOption() {
+        function createHTMLOptionEx() {
             var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var short = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? createHTMLOption.__defaults__.short : arguments[1];
+            var option = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var short = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? createHTMLOptionEx.__defaults__.short : arguments[2];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "short")){
                 short = ρσ_kwargs_obj.short;
             }
-            var option, description, title, description_p, e, make_li, dropdown_options, p;
-            option = options_list[(typeof name === "number" && name < 0) ? options_list.length + name : name];
+            var description, title, description_p, e, make_li, dropdown_options, p;
             if ((option.type === "hidden" || typeof option.type === "object" && ρσ_equals(option.type, "hidden")) || short && !ρσ_exists.n(option.short) || !ρσ_exists.n(option.title)) {
                 return null;
             }
@@ -5955,10 +6014,30 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             return e;
         };
-        if (!createHTMLOption.__defaults__) Object.defineProperties(createHTMLOption, {
+        if (!createHTMLOptionEx.__defaults__) Object.defineProperties(createHTMLOptionEx, {
             __defaults__ : {value: {short:false}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["name", "short"]}
+            __argnames__ : {value: ["name", "option", "short"]}
+        });
+
+        function createHTMLOption() {
+            var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var short = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? createHTMLOption.__defaults__.short : arguments[1];
+            var _list = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? createHTMLOption.__defaults__._list : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "short")){
+                short = ρσ_kwargs_obj.short;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
+            return createHTMLOptionEx(name, _list[(typeof name === "number" && name < 0) ? _list.length + name : name], short);
+        };
+        if (!createHTMLOption.__defaults__) Object.defineProperties(createHTMLOption, {
+            __defaults__ : {value: {short:false, _list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["name", "short", "_list"]}
         });
 
         function initializeMarkaGroup(group) {
@@ -6034,19 +6113,25 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
 
         function extractSettingsData() {
+            var _list = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? extractSettingsData.__defaults__._list : arguments[0];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
             var settings, e, o_type, val, choices, key, option;
             settings = {};
-            var ρσ_Iter4 = ρσ_Iterable(options_list);
+            var ρσ_Iter4 = ρσ_Iterable(_list);
             for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
                 option = ρσ_Iter4[ρσ_Index4];
                 e = $("#" + option);
                 if (e.length > 0) {
-                    o_type = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option].type;
+                    o_type = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].type;
                     if ((o_type === "bool" || typeof o_type === "object" && ρσ_equals(o_type, "bool"))) {
                         settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = e.prop("checked");
                     } else if ((o_type === "combobox" || typeof o_type === "object" && ρσ_equals(o_type, "combobox"))) {
                         val = e.text();
-                        choices = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option].choices;
+                        choices = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].choices;
                         var ρσ_Iter5 = ρσ_Iterable(choices);
                         for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
                             key = ρσ_Iter5[ρσ_Index5];
@@ -6058,47 +6143,98 @@ var str = ρσ_str, repr = ρσ_repr;;
                     } else if ((o_type === "string" || typeof o_type === "object" && ρσ_equals(o_type, "string"))) {
                         settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = e.val();
                     } else if ((o_type === "special" || typeof o_type === "object" && ρσ_equals(o_type, "special"))) {
-                        settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option].get(option);
+                        settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].get(option);
                     }
                 }
             }
             return settings;
         };
+        if (!extractSettingsData.__defaults__) Object.defineProperties(extractSettingsData, {
+            __defaults__ : {value: {_list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["_list"]}
+        });
 
-        function loadSettings(settings) {
+        function loadSettings() {
+            var settings = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var _list = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? loadSettings.__defaults__._list : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
             var o_type, val, choices, option;
             var ρσ_Iter6 = ρσ_Iterable(settings);
             for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
                 option = ρσ_Iter6[ρσ_Index6];
-                o_type = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option].type;
+                o_type = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].type;
                 if ((o_type === "bool" || typeof o_type === "object" && ρσ_equals(o_type, "bool"))) {
                     $("#" + option).prop("checked", settings[(typeof option === "number" && option < 0) ? settings.length + option : option]);
                 } else if ((o_type === "combobox" || typeof o_type === "object" && ρσ_equals(o_type, "combobox"))) {
                     val = settings[(typeof option === "number" && option < 0) ? settings.length + option : option];
-                    choices = options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option].choices;
+                    choices = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].choices;
                     $("#" + option).text(choices[(typeof val === "number" && val < 0) ? choices.length + val : val]);
                 } else if ((o_type === "string" || typeof o_type === "object" && ρσ_equals(o_type, "string"))) {
                     $("#" + option).val(settings[(typeof option === "number" && option < 0) ? settings.length + option : option]);
                 } else if ((o_type === "special" || typeof o_type === "object" && ρσ_equals(o_type, "special"))) {
-                    options_list[(typeof option === "number" && option < 0) ? options_list.length + option : option].set(option, settings);
+                    _list[(typeof option === "number" && option < 0) ? _list.length + option : option].set(option, settings);
                 }
             }
         };
-        if (!loadSettings.__argnames__) Object.defineProperties(loadSettings, {
-            __argnames__ : {value: ["settings"]}
+        if (!loadSettings.__defaults__) Object.defineProperties(loadSettings, {
+            __defaults__ : {value: {_list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["settings", "_list"]}
         });
 
         function restoreSavedSettings() {
-            var settings;
-            settings = getDefaultSettings();
-            getStoredSettings(loadSettings);
+            var key = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? restoreSavedSettings.__defaults__.key : arguments[0];
+            var _list = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? restoreSavedSettings.__defaults__._list : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
+                key = ρσ_kwargs_obj.key;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
+            var settings, load;
+            settings = getDefaultSettings(_list);
+            load = (function() {
+                var ρσ_anonfunc = function (stored_settings) {
+                    loadSettings(stored_settings, _list);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["stored_settings"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            getStoredSettings(load, key, _list);
         };
+        if (!restoreSavedSettings.__defaults__) Object.defineProperties(restoreSavedSettings, {
+            __defaults__ : {value: {key:"settings", _list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["key", "_list"]}
+        });
 
-        function saveSettings(cb) {
-            mergeSettings(extractSettingsData(), cb);
+        function saveSettings() {
+            var cb = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var key = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? saveSettings.__defaults__.key : arguments[1];
+            var _list = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? saveSettings.__defaults__._list : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
+                key = ρσ_kwargs_obj.key;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
+            mergeSettings(extractSettingsData(_list), cb, key, _list);
         };
-        if (!saveSettings.__argnames__) Object.defineProperties(saveSettings, {
-            __argnames__ : {value: ["cb"]}
+        if (!saveSettings.__defaults__) Object.defineProperties(saveSettings, {
+            __defaults__ : {value: {key:"settings", _list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["cb", "key", "_list"]}
         });
 
         function initializeSettings() {
@@ -6243,6 +6379,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         options_list["roll20-tab"]["set"] = setRoll20TabSetting;
         options_list["roll20-tab"]["get"] = getRoll20TabSetting;
         ρσ_modules.settings.options_list = options_list;
+        ρσ_modules.settings.character_settings = character_settings;
         ρσ_modules.settings.current_tab = current_tab;
         ρσ_modules.settings.storageGet = storageGet;
         ρσ_modules.settings.storageSet = storageSet;
@@ -6251,6 +6388,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.settings.setSettings = setSettings;
         ρσ_modules.settings.mergeSettings = mergeSettings;
         ρσ_modules.settings.resetSettings = resetSettings;
+        ρσ_modules.settings.createHTMLOptionEx = createHTMLOptionEx;
         ρσ_modules.settings.createHTMLOption = createHTMLOption;
         ρσ_modules.settings.initializeMarkaGroup = initializeMarkaGroup;
         ρσ_modules.settings.initializeMarka = initializeMarka;
@@ -6401,7 +6539,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_in(request.action, ρσ_list_decorate([ "roll", "hp-update" ]))) {
                 sendMessageToRoll20(request, settings["roll20-tab"]);
             } else if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
-                updateSettings(request.settings);
+                if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
+                    updateSettings(request.settings);
+                }
                 sendMessageToRoll20(request);
                 sendMessageToBeyond(request);
             } else if ((request.action === "activate-icon" || typeof request.action === "object" && ρσ_equals(request.action, "activate-icon"))) {

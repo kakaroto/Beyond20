@@ -140,7 +140,8 @@ def handleMessage (request, sender, sendResponse):
     nonlocal settings
     print("Got message : " + str(request))
     if request.action == "settings":
-        updateSettings(request.settings)
+        if request.type == "general":
+            updateSettings(request.settings)
     elif request.action == "hp-update":
         sendCustomEvent("UpdateHP", (request.character.name, request.character.hp, request.character["max-hp"]))
     elif request.action == "roll":
