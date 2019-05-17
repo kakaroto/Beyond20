@@ -53,6 +53,8 @@ def populateCharacter(response):
                         E.p(response.name, style="margin: 0px;"))
                    )
 
+    e = createHTMLOption("update-hp", False, character_settings)
+    options.append(e)
     if "Rogue" in response.classes:
         e = createHTMLOption("rogue-sneak-attack", False, character_settings)
         options.append(e)

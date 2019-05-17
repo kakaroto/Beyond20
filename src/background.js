@@ -5788,6 +5788,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["update-hp"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Update Roll20 Token HP";
+                ρσ_d["description"] = "When changing HP here, update it in Roll20 tokens and sheets";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function storageGet(name, default_value, cb) {
@@ -6462,9 +6470,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this), (function() {
                 var ρσ_anonfunc = function (tabs) {
                     var tab;
-                    var ρσ_Iter0 = ρσ_Iterable(tabs);
-                    for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                        tab = ρσ_Iter0[ρσ_Index0];
+                    var ρσ_Iter8 = ρσ_Iterable(tabs);
+                    for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                        tab = ρσ_Iter8[ρσ_Index8];
                         chrome.tabs.sendMessage(tab.id, request);
                     }
                 };
@@ -6495,9 +6503,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_anonfunc = function (tabs) {
                         var found, tab;
                         found = false;
-                        var ρσ_Iter1 = ρσ_Iterable(tabs);
-                        for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                            tab = ρσ_Iter1[ρσ_Index1];
+                        var ρσ_Iter9 = ρσ_Iterable(tabs);
+                        for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                            tab = ρσ_Iter9[ρσ_Index9];
                             if (((limit.id === 0 || typeof limit.id === "object" && ρσ_equals(limit.id, 0)) || (tab.id === limit.id || typeof tab.id === "object" && ρσ_equals(tab.id, limit.id))) && ρσ_equals(roll20TabTitle(tab), limit.title)) {
                                 chrome.tabs.sendMessage(tab.id, request);
                                 found = true;
@@ -6511,9 +6519,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                                 ρσ_d["roll20-tab"] = limit;
                                 return ρσ_d;
                             }).call(this));
-                            var ρσ_Iter2 = ρσ_Iterable(tabs);
-                            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                                tab = ρσ_Iter2[ρσ_Index2];
+                            var ρσ_Iter10 = ρσ_Iterable(tabs);
+                            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                                tab = ρσ_Iter10[ρσ_Index10];
                                 if (ρσ_equals(roll20TabTitle(tab), limit.title)) {
                                     chrome.tabs.sendMessage(tab.id, request);
                                     break;
@@ -6564,12 +6572,12 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function executeScripts(tabs, js_files) {
             var file, tab;
-            var ρσ_Iter3 = ρσ_Iterable(tabs);
-            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                tab = ρσ_Iter3[ρσ_Index3];
-                var ρσ_Iter4 = ρσ_Iterable(js_files);
-                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                    file = ρσ_Iter4[ρσ_Index4];
+            var ρσ_Iter11 = ρσ_Iterable(tabs);
+            for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                tab = ρσ_Iter11[ρσ_Index11];
+                var ρσ_Iter12 = ρσ_Iterable(js_files);
+                for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                    file = ρσ_Iter12[ρσ_Index12];
                     chrome.tabs.executeScript(tab.id, (function(){
                         var ρσ_d = {};
                         ρσ_d["file"] = file;

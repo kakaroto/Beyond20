@@ -5788,6 +5788,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["update-hp"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Update Roll20 Token HP";
+                ρσ_d["description"] = "When changing HP here, update it in Roll20 tokens and sheets";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function storageGet(name, default_value, cb) {
@@ -6468,6 +6476,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             if (self._name === null) {
                 self._name = $(".ct-character-tidbits__name").text();
+                if ((self._name === "" || typeof self._name === "object" && ρσ_equals(self._name, ""))) {
+                    self._name = null;
+                }
             }
             if (self._ac === null) {
                 self._ac = $(".ct-armor-class-box__value").text();
@@ -6517,6 +6528,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             if (self._race === null) {
                 self._race = $(".ct-character-tidbits__race").text();
+                if ((self._race === "" || typeof self._race === "object" && ρσ_equals(self._race, ""))) {
+                    self._race = null;
+                }
             }
             if (self._classes === null) {
                 classes = $(".ct-character-tidbits__classes");
@@ -6572,14 +6586,16 @@ var str = ρσ_str, repr = ρσ_repr;;
                 self._hp = hp;
                 self._max_hp = max_hp;
                 print("HP updated to : " + hp + "/" + max_hp);
-                req = (function(){
-                    var ρσ_d = {};
-                    ρσ_d["action"] = "hp-update";
-                    ρσ_d["character"] = self.getDict();
-                    return ρσ_d;
-                }).call(this);
-                console.log("Sending message: " + str(req));
-                chrome.runtime.sendMessage(req);
+                if (ρσ_exists.n(self._settings["update-hp"]) && self._settings["update-hp"]) {
+                    req = (function(){
+                        var ρσ_d = {};
+                        ρσ_d["action"] = "hp-update";
+                        ρσ_d["character"] = self.getDict();
+                        return ρσ_d;
+                    }).call(this);
+                    console.log("Sending message: " + str(req));
+                    chrome.runtime.sendMessage(req);
+                }
             }
         };
         Character.prototype.updateSettings = function updateSettings() {
@@ -7607,11 +7623,11 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["childList"] = true;
             return ρσ_d;
         }).call(this));
-        panelModified();
         chrome.runtime.sendMessage((function(){
             var ρσ_d = {};
             ρσ_d["action"] = "activate-icon";
             return ρσ_d;
         }).call(this));
+        panelModified();
     })();
 })();

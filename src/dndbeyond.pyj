@@ -34,6 +34,9 @@ class Character:
 
         if self._name is None:
             self._name = $(".ct-character-tidbits__name").text()
+            # This can happen when you reload the page
+            if self._name == "":
+                self._name = None
         if self._ac is None:
             self._ac = $(".ct-armor-class-box__value").text()
             if self._ac == "":
@@ -67,6 +70,8 @@ class Character:
                 self._abilities.append([name, abbr, value, modifier])
         if self._race is None:
             self._race = $(".ct-character-tidbits__race").text()
+            if self._race == "":
+                self._race = None
         if self._classes is None:
             classes = $(".ct-character-tidbits__classes")
             if classes.length > 0:
@@ -107,9 +112,10 @@ class Character:
             self._max_hp = max_hp
             print("HP updated to : " + hp + "/" + max_hp)
 
-            req = {"action": "hp-update", "character": self.getDict()}
-            console.log("Sending message: " + str(req))
-            chrome.runtime.sendMessage(req);
+            if self._settings["update-hp"]? and self._settings["update-hp"]:
+                req = {"action": "hp-update", "character": self.getDict()}
+                console.log("Sending message: " + str(req))
+                chrome.runtime.sendMessage(req);
             
 
     def updateSettings(self, new_settings=None):
@@ -745,6 +751,6 @@ updateSettings()
 chrome.runtime.onMessage.addListener(handleMessage)
 observer = new window.MutationObserver(panelModified)
 observer.observe(document, {"subtree": True, "childList": True})
-panelModified()
 chrome.runtime.sendMessage({"action": "activate-icon"});
+panelModified()
 

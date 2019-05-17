@@ -5788,6 +5788,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["update-hp"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Update Roll20 Token HP";
+                ρσ_d["description"] = "When changing HP here, update it in Roll20 tokens and sheets";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function storageGet(name, default_value, cb) {
@@ -6525,6 +6533,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             console.log("Received character: ", response);
             options = $(".beyond20-options");
             options.append(ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.h4, [" == Character Specific Options =="].concat([ρσ_desugar_kwargs({style: "margin: 0px;"})])), ρσ_interpolate_kwargs.call(E, E.p, [response.name].concat([ρσ_desugar_kwargs({style: "margin: 0px;"})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option", style: "text-align: center; padding: 10px 15px;"})])));
+            e = createHTMLOption("update-hp", false, character_settings);
+            options.append(e);
             if (ρσ_in("Rogue", response.classes)) {
                 e = createHTMLOption("rogue-sneak-attack", false, character_settings);
                 options.append(e);

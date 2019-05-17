@@ -68,9 +68,13 @@ character_settings = {
                              "type": "bool",
                              "default": False},
     "bard-joat": {"title": "Bard: Jack of All Trades",
-                             "description": "Add JoaT bonus to raw ability checks",
-                             "type": "bool",
-                             "default": True}
+                  "description": "Add JoaT bonus to raw ability checks",
+                  "type": "bool",
+                  "default": True},
+    "update-hp": {"title": "Update Roll20 Token HP",
+                  "description": "When changing HP here, update it in Roll20 tokens and sheets",
+                  "type": "bool",
+                  "default": True}
 }
 
 

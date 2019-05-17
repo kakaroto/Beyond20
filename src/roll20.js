@@ -5788,6 +5788,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["update-hp"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Update Roll20 Token HP";
+                ρσ_d["description"] = "When changing HP here, update it in Roll20 tokens and sheets";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function storageGet(name, default_value, cb) {
