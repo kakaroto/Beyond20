@@ -1,6 +1,6 @@
 {% include_relative navigation.html %}
 
-### Beyond20 has just been updated!
+## Beyond20 has just been installed or updated
 
 Congratulations! Beyond20 was just updated to the latest version.
 
