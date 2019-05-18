@@ -26,4 +26,10 @@ if (underline != "") {
     u.innerHTML = a.outerHTML;
     a.replaceWith(u);
 }
+/* I should really just change the theme's layout.html instead of modifying the page with js */
+img = document.createElement("IMG");
+img.src = "https://github.com/kakaroto/Beyond20/raw/master/images/icons/icon128.png"
+img.style = 'float: right;'
+h = document.getElementsByTagName("header")
+h[0].insertBefore(img, h[0].childNodes[0])
 </script>
