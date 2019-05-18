@@ -541,6 +541,7 @@ def addDisplayButton(paneClass, where, text="Display in Roll20"):
     $(where).append(button)
     $(".ct-beyond20-roll-button").css({"margin-left": "auto",
                                        "margin-right": "auto"})
+    $(".ct-beyond20-roll-display").css("margin-top", "2px")
     $(".ct-beyond20-roll-display").bind('click', def(event):
         displayPanel(paneClass)
     )
@@ -614,7 +615,6 @@ lastSpellLevel = ""
 def injectRollButton(paneClass):
     if paneClass in ["ct-custom-skill-pane",
                      "ct-skill-pane",
-                     "ct-ability-pane",
                      "ct-ability-pane",
                      "ct-ability-saving-throws-pane",
                      "ct-initiative-pane"]:

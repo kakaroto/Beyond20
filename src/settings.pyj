@@ -56,6 +56,14 @@ options_list = {
                    "description": "Select the tab to send rolls to or the specific campaign name.\nYou can select the campaign or tab from the extension's popup menu in the Roll20 tab itself.\nAfter a specific tab is selected and that tab is closed, it will revert to sending rolls to the same campaign.",
                    "type": "special",
                    "default": None}, # callbacks will be added after the functions are defined
+
+    "show-changelog": {"title": "Show Changelog when installing a new version",
+                       "description": "When a new version is released and the extension has been updated,\nopen the changelog in a new window",
+                       "type": "bool",
+                       "default": True},
+    "last-version": {"description": "Last version that was installed. Used to check if an update just happened",
+                     "type": "hidden",
+                     "default": ""}
     }
 
 character_settings = {

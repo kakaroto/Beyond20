@@ -1,4 +1,4 @@
-from utils import ROLL20_URL, DNDBEYOND_URL, roll20TabTitle
+from utils import ROLL20_URL, DNDBEYOND_URL, CHANGELOG_URL, roll20TabTitle
 from settings import getDefaultSettings, getStoredSettings, mergeSettings
 
 settings = getDefaultSettings()
@@ -10,6 +10,10 @@ def updateSettings(new_settings=None):
         getStoredSettings(def(saved_settings):
             nonlocal settings
             settings = saved_settings
+            version = chrome.runtime.getManifest().version
+            if settings["show-changelog"] and settings["last-version"] != version:
+                mergeSettings({"last-version": version})
+                chrome.tabs.create({"url": CHANGELOG_URL})
         )
 
 def sendMessageTo(url, request):

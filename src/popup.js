@@ -5470,11 +5470,12 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "utils";
-        var ROLL20_URL, DNDBEYOND_URL;
+        var ROLL20_URL, DNDBEYOND_URL, CHANGELOG_URL;
         var re = ρσ_modules.re;
 
         ROLL20_URL = "*://app.roll20.net/editor/";
         DNDBEYOND_URL = "*://*.dndbeyond.com/*characters/*";
+        CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
         function replaceRollsCallback(match, modifiers_only, pre, dice, post, keep_original, pre_original, post_original, pre_dice, post_dice) {
             var result, i;
             if (modifiers_only && ρσ_in((ρσ_expr_temp = match.string)[ρσ_bound_index(match.start() - 1, ρσ_expr_temp)], list(map(str, range(0, 10))))) {
@@ -5657,6 +5658,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         ρσ_modules.utils.ROLL20_URL = ROLL20_URL;
         ρσ_modules.utils.DNDBEYOND_URL = DNDBEYOND_URL;
+        ρσ_modules.utils.CHANGELOG_URL = CHANGELOG_URL;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.subRolls = subRolls;
@@ -5758,6 +5760,21 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["description"] = "Select the tab to send rolls to or the specific campaign name.\nYou can select the campaign or tab from the extension's popup menu in the Roll20 tab itself.\nAfter a specific tab is selected and that tab is closed, it will revert to sending rolls to the same campaign.";
                 ρσ_d["type"] = "special";
                 ρσ_d["default"] = null;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["show-changelog"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Show Changelog when installing a new version";
+                ρσ_d["description"] = "When a new version is released and the extension has been updated,\nopen the changelog in a new window";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["last-version"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["description"] = "Last version that was installed. Used to check if an update just happened";
+                ρσ_d["type"] = "hidden";
+                ρσ_d["default"] = "";
                 return ρσ_d;
             }).call(this);
             return ρσ_d;

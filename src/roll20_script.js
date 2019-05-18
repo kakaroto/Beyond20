@@ -5169,11 +5169,12 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "utils";
-        var ROLL20_URL, DNDBEYOND_URL;
+        var ROLL20_URL, DNDBEYOND_URL, CHANGELOG_URL;
         var re = ρσ_modules.re;
 
         ROLL20_URL = "*://app.roll20.net/editor/";
         DNDBEYOND_URL = "*://*.dndbeyond.com/*characters/*";
+        CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
         function replaceRollsCallback(match, modifiers_only, pre, dice, post, keep_original, pre_original, post_original, pre_dice, post_dice) {
             var result, i;
             if (modifiers_only && ρσ_in((ρσ_expr_temp = match.string)[ρσ_bound_index(match.start() - 1, ρσ_expr_temp)], list(map(str, range(0, 10))))) {
@@ -5356,6 +5357,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         ρσ_modules.utils.ROLL20_URL = ROLL20_URL;
         ρσ_modules.utils.DNDBEYOND_URL = DNDBEYOND_URL;
+        ρσ_modules.utils.CHANGELOG_URL = CHANGELOG_URL;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.subRolls = subRolls;
