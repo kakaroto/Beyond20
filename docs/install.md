@@ -1,4 +1,3 @@
-{% include_relative navigation.html %}
 
 [![Chrome Webstore](https://developer.chrome.com/webstore/images/ChromeWebStore_BadgeWBorder_v2_206x58.png)](https://chrome.google.com/webstore/detail/beyond-20/gnblbpbepfbfmoobegdogkglpbhcjofh)
 

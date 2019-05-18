@@ -1,5 +1,3 @@
-{% include_relative navigation.html %}
-
 Beyond20 integrates the D&D Beyond Character Sheet seamlessly into Roll20.
 
 ![Cast on Roll20](images/cast-on-roll20.png)

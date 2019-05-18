@@ -1,5 +1,3 @@
-{% include_relative navigation.html %}
-
 ## Beyond20 has just been installed or updated
 
 Congratulations! Beyond20 was just updated to the latest version.
@@ -12,4 +10,4 @@ If you don't like seeing this update page every time the extension is updated, y
 
 # Changelog
 
-{% include_relative Changelog_file.md %}
+{% include_relative Changelog.md %}

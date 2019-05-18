@@ -21,6 +21,7 @@ url: "https://beyond20.here-for-more.info" # the base hostname & protocol for yo
 twitter_username: KaKaRoToKS
 github_username:  kakaroto
 google_analytics: UA-10205391-2
+logo: images/icon128.png
 
 # Build settings
 markdown: kramdown

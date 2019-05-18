@@ -1,5 +1,3 @@
-{% include_relative navigation.html %}
-
 # Feature list
 
 ## Rolls

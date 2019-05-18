@@ -1,5 +1,3 @@
-{% include_relative navigation.html %}
-
 I've made a [video](https://www.youtube.com/watch?v=mY0MNNrHHdM) tour of all the features of Beyond20 when it was first released. While majorly outdated, it's still a useful thing to watch.
 
 <iframe width="480" height="360" src="https://www.youtube.com/embed/mY0MNNrHHdM" frameborder="0"> </iframe>
