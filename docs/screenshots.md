@@ -6,7 +6,7 @@ I've made a [video](https://www.youtube.com/watch?v=mY0MNNrHHdM) tour of all the
 
 Here are some screenshots to show you how amazing Beyond20 is:
 
-Screenshots were last updated in v0.0.1. You can see the [changelog](/Changelog) to see if any new features were added since.
+Screenshots were last updated in v0.0.1. You can see the [changelog](Changelog) to see if any new features were added since.
 
 ![s1](https://lh3.googleusercontent.com/HH_vr8XrWxnNXfs1Nlo6Lybv5_zpmsA3k_nSBq_6bvQttkBCZY3dd4WYhLNmsLJ0L0md3zW2TSo=w640-h400-e365)
 

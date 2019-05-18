@@ -8,7 +8,7 @@ If you've found a bug or an issue, or if you have a feature or suggestion to mak
 
 ## Changelog
 
-Here is the full [changelog](/Changelog) for the extension.
+Here is the full [changelog](Changelog) for the extension.
 
 ## FAQ
 There's not much yet in terms of FAQ or support questions, I'm sure this FAQ will grow with time, but for now, here's what I got :
