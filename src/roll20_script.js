@@ -5387,7 +5387,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var characters, attr, char;
             console.log("Updating HP for " + name + " : " + current + "/" + total, arguments);
-            characters = window.d20.Campaign.characters;
+            characters = window.Campaign.characters;
             name = name.toLowerCase();
             var ρσ_Iter0 = ρσ_Iterable(characters.models);
             for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
