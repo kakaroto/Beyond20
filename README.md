@@ -1,7 +1,7 @@
 Beyond20: D&D Beyond & Roll20 Integration
 ==
 
-Beyond20 is a chrome extension that integrates the Character Sheet from D&D Beyond into Roll20.
+[Beyond20](https://kakaroto.github.io/Beyond20/) is a chrome extension that integrates the Character Sheet from D&D Beyond into Roll20.
 
 # Install and Use
 
@@ -51,18 +51,6 @@ The donation icon is a public domain contribution by Fission Strategy, US, downl
 
 The options page was copied in part from the `D&D Beyond Toolbox` extension available [here](https://github.com/mouse0270/Beyonds-Toolbox/). The html and css files are licensed under the MIT license which is provided in the LICENSE.MIT file
 
-# FAQ
-**Q**: Is this extension the best thing ever or what?
-
-**A**: Yes. Yes, it is.
-
----
-
-**Q**: All I see in Roll20 is an empty message
-
-**A**: That's because the game in Roll20 is set up to use a character sheet template other than "D&D 5e By Roll20". 
-Beyond20 uses display templates from that character sheet template to make the rolls, so if it's not the one used, it won't work.
-Support for other character sheet templates will be added in the future.
 
 # TODO
 - Add support for skills/items that have advantage/disadvantage notes (like disadvantage on stealth for heavy armor users)
