@@ -12,4 +12,4 @@ If you don't like seeing this update page every time the extension is updated, y
 
 # Changelog
 
-{% include_relative changelog_file.md %}
+{% include_relative Changelog_file.md %}

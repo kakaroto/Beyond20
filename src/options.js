@@ -5475,7 +5475,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         ROLL20_URL = "*://app.roll20.net/editor/";
         DNDBEYOND_URL = "*://*.dndbeyond.com/*characters/*";
-        CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
+        CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
         function replaceRollsCallback(match, modifiers_only, pre, dice, post, keep_original, pre_original, post_original, pre_dice, post_dice) {
             var result, i;
             if (modifiers_only && ρσ_in((ρσ_expr_temp = match.string)[ρσ_bound_index(match.start() - 1, ρσ_expr_temp)], list(map(str, range(0, 10))))) {
