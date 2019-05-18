@@ -1,3 +1,11 @@
+v0.0.8
+===
+- Added support for HP management
+- Added ability to select which Roll20 page to send the rolls to
+- Add per-character settings to roll Sneak Attack, Disciple of Life, Jack of all Trades
+- Add roll dice icon to spell attack modifier
+- Brand new website!
+
 v0.0.7
 ===
 
