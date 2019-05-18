@@ -404,10 +404,11 @@ def handleMessage (request, sender, sendResponse):
                               "r1": "[[1d20cs>9cf<10]]",
                               "normal": 1})
         elif request.type == "custom":
+            mod = request.modifier if request.modifier? else request.roll
             roll += template("simple",
                              {"charname": request.character.name,
                               "rname" : request.name,
-                              "mod": request.roll,
+                              "mod": mod,
                               "r1": subRolls(request.roll),
                               "normal": 1})
         else:

@@ -6664,7 +6664,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, advantage_type, modifier, ability, prof, prof_val, half_prof, dice_roll, roll_properties, dice, dice_formula, rname, crit1, properties, crit2, sneak_attack, source, components, description, higher, healing_spell, level;
+            var roll, advantage_type, modifier, ability, prof, prof_val, half_prof, dice_roll, roll_properties, dice, dice_formula, rname, crit1, properties, crit2, sneak_attack, source, components, description, higher, healing_spell, level, mod;
             print("Got message : " + str(request));
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
@@ -7072,11 +7072,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                         return ρσ_d;
                     }).call(this));
                 } else if ((request.type === "custom" || typeof request.type === "object" && ρσ_equals(request.type, "custom"))) {
+                    mod = (ρσ_exists.n(request.modifier)) ? request.modifier : request.roll;
                     roll += template("simple", (function(){
                         var ρσ_d = {};
                         ρσ_d["charname"] = request.character.name;
                         ρσ_d["rname"] = request.name;
-                        ρσ_d["mod"] = request.roll;
+                        ρσ_d["mod"] = mod;
                         ρσ_d["r1"] = subRolls(request.roll);
                         ρσ_d["normal"] = 1;
                         return ρσ_d;

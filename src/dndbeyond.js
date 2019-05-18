@@ -6586,7 +6586,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 self._hp = hp;
                 self._max_hp = max_hp;
                 print("HP updated to : " + hp + "/" + max_hp);
-                if (ρσ_exists.n(self._settings["update-hp"]) && self._settings["update-hp"]) {
+                if (self._settings && self._settings["update-hp"]) {
                     req = (function(){
                         var ρσ_d = {};
                         ρσ_d["action"] = "hp-update";
@@ -7538,7 +7538,55 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["paneClass"]}
         });
 
-        function panelModified(mutations, observer) {
+        function injectRollToSpellAttack() {
+            var groups, label, icon16, items, modifier, name, img, item, group;
+            groups = $(".ct-spells-level-casting__info-group");
+            var ρσ_Iter15 = ρσ_Iterable(groups);
+            for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
+                group = ρσ_Iter15[ρσ_Index15];
+                label = $(group).find(".ct-spells-level-casting__info-label");
+                if (ρσ_equals(label.text(), "Spell Attack")) {
+                    if (label.hasClass("beyond20-rolls-added")) {
+                        return;
+                    }
+                    label.addClass("beyond20-rolls-added");
+                    icon16 = chrome.extension.getURL("images/icons/icon16.png");
+                    items = $(group).find(".ct-spells-level-casting__info-item");
+                    var ρσ_Iter16 = ρσ_Iterable(items);
+                    for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
+                        item = ρσ_Iter16[ρσ_Index16];
+                        modifier = item.textContent;
+                        name = "Spell Attack";
+                        if (items.length > 1) {
+                            name += "(" + item.getAttribute("data-original-title") + ")";
+                        }
+                        img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-custom-icon ct-beyond20-spell-attack", x_beyond20_name: name, x_beyond20_modifier: modifier, src: icon16})]);
+                        item.append(img);
+                        console.log(item);
+                    }
+                    $(".ct-beyond20-custom-icon").css("margin-left", "3px");
+                    $(".ct-beyond20-spell-attack").bind("click", (function() {
+                        var ρσ_anonfunc = function (event) {
+                            var name, mod;
+                            name = $(event.currentTarget).attr("x-beyond20-name");
+                            mod = $(event.currentTarget).attr("x-beyond20-modifier");
+                            sendRoll("custom", "1d20" + mod, (function(){
+                                var ρσ_d = {};
+                                ρσ_d["name"] = name;
+                                ρσ_d["modifier"] = mod;
+                                return ρσ_d;
+                            }).call(this));
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["event"]}
+                        });
+                        return ρσ_anonfunc;
+                    })());
+                }
+            }
+        };
+
+        function documentModified(mutations, observer) {
             var pane, paneClass, div;
             try {
                 chrome.extension.getURL("");
@@ -7550,11 +7598,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                     return;
                 } 
             }
+            injectRollToSpellAttack();
             pane = $(".ct-sidebar__pane-content > div");
             character.updateInfo();
             if (pane.length > 0) {
-                for (var ρσ_Index15 = 0; ρσ_Index15 < pane.length; ρσ_Index15++) {
-                    div = ρσ_Index15;
+                for (var ρσ_Index17 = 0; ρσ_Index17 < pane.length; ρσ_Index17++) {
+                    div = ρσ_Index17;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls"))) {
                         continue;
@@ -7564,7 +7613,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
             }
         };
-        if (!panelModified.__argnames__) Object.defineProperties(panelModified, {
+        if (!documentModified.__argnames__) Object.defineProperties(documentModified, {
             __argnames__ : {value: ["mutations", "observer"]}
         });
 
@@ -7616,7 +7665,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         updateSettings();
         chrome.runtime.onMessage.addListener(handleMessage);
-        observer = new window.MutationObserver(panelModified);
+        observer = new window.MutationObserver(documentModified);
         observer.observe(document, (function(){
             var ρσ_d = {};
             ρσ_d["subtree"] = true;
@@ -7628,6 +7677,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["action"] = "activate-icon";
             return ρσ_d;
         }).call(this));
-        panelModified();
+        documentModified();
     })();
 })();

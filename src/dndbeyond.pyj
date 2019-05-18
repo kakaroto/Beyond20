@@ -112,7 +112,7 @@ class Character:
             self._max_hp = max_hp
             print("HP updated to : " + hp + "/" + max_hp)
 
-            if self._settings["update-hp"]? and self._settings["update-hp"]:
+            if self._settings and self._settings["update-hp"]:
                 req = {"action": "hp-update", "character": self.getDict()}
                 console.log("Sending message: " + str(req))
                 chrome.runtime.sendMessage(req);
@@ -702,7 +702,35 @@ def injectRollButton(paneClass):
     else:
         removeRollButtons()
 
-def panelModified(mutations, observer):
+
+def injectRollToSpellAttack():
+    groups = $(".ct-spells-level-casting__info-group")
+
+    for group in groups:
+        label = $(group).find(".ct-spells-level-casting__info-label")
+        if label.text() == "Spell Attack":
+            if label.hasClass("beyond20-rolls-added"):
+                return
+            label.addClass("beyond20-rolls-added")
+            icon16 = chrome.extension.getURL("images/icons/icon16.png");
+            items = $(group).find(".ct-spells-level-casting__info-item")
+            for item in items:
+                modifier = item.textContent
+                name = "Spell Attack"
+                if items.length > 1:
+                    name += "(" + item.getAttribute("data-original-title") + ")"
+                img = E.img(class_="ct-beyond20-custom-icon ct-beyond20-spell-attack",
+                            x_beyond20_name=name, x_beyond20_modifier=modifier, src=icon16)
+                item.append(img)
+                console.log(item)
+            $(".ct-beyond20-custom-icon").css("margin-left", "3px")
+            $(".ct-beyond20-spell-attack").bind('click', def(event):
+                name = $(event.currentTarget).attr("x-beyond20-name")
+                mod = $(event.currentTarget).attr("x-beyond20-modifier")
+                sendRoll("custom", "1d20" + mod, {"name": name, "modifier": mod})
+            )
+        
+def documentModified(mutations, observer):
     nonlocal character
 
     try:
@@ -711,6 +739,8 @@ def panelModified(mutations, observer):
         console.log("This extension is DOWN!")
         observer.disconnect()
         return
+
+    injectRollToSpellAttack()
 
     pane = $(".ct-sidebar__pane-content > div")
     character.updateInfo()
@@ -749,8 +779,8 @@ def handleMessage (request, sender, sendResponse):
 
 updateSettings()
 chrome.runtime.onMessage.addListener(handleMessage)
-observer = new window.MutationObserver(panelModified)
+observer = new window.MutationObserver(documentModified)
 observer.observe(document, {"subtree": True, "childList": True})
 chrome.runtime.sendMessage({"action": "activate-icon"});
-panelModified()
+documentModified()
 
