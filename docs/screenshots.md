@@ -2,7 +2,7 @@
 
 I've made a [video](https://www.youtube.com/watch?v=mY0MNNrHHdM) tour of all the features of Beyond20 when it was first released. While majorly outdated, it's still a useful thing to watch.
 
-<iframe width="480" height="360" src="http://www.youtube.com/embed/mY0MNNrHHdM" frameborder="0"> </iframe>
+<iframe width="480" height="360" src="https://www.youtube.com/embed/mY0MNNrHHdM" frameborder="0"> </iframe>
 
 Here are some screenshots to show you how amazing Beyond20 is:
 

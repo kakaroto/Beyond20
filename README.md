@@ -1,15 +1,25 @@
 Beyond20: D&D Beyond & Roll20 Integration
 ==
 
-[Beyond20](https://kakaroto.github.io/Beyond20/) is a chrome extension that integrates the Character Sheet from D&D Beyond into Roll20.
+[Beyond20](https://beyond20.here-for-more.info/) is a browser extension that integrates the Character Sheet from D&D Beyond into Roll20.
 
 # Install and Use
 
+## Chrome
+
 To install Beyond 20, simply head over to the [Chrome Web Store](https://chrome.google.com/webstore/detail/beyond-20/gnblbpbepfbfmoobegdogkglpbhcjofh) and click "Add to Chrome" to get it installed.
 
-To use it, simply open your character sheet in D&D Beyond in Chrome, and your Roll 20 game in another tab, then click on the "Beyond 20" or "Cast in Roll20" buttons that appear in the side panels.
+## Firefox
 
-**Important**: For the extension to work (for now), you need to have the game in Roll20 set up to use the "D&D 5e By Roll20" Character Sheet Template in the game settings.
+You should soon be able to install it directly from the [Mozilla Add-ons](https://addons.mozilla.org/en-CA/firefox/) website, but it's not there yet. In the meantime, you can do it this way :
+
+* Download the extension from [github](https://github.com/kakaroto/Beyond20/archive/master.zip)
+* Extract the zip file in a directory of your choice
+* Open "[about:debugging](about:debugging)" in Firefox
+* Click "Load Temporary Add-on"
+* Select the `manifest.json` file from the extension's directory
+
+To use it, simply open your character sheet in D&D Beyond in Chrome, and your Roll 20 game in another tab, then click on the "Beyond 20" or "Cast in Roll20" buttons that appear in the side panels.
 
 To install the development version from git, read below, for more details on use, read below.
 

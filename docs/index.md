@@ -10,3 +10,6 @@ Head over to the [Screenshots](screenshots) page to see it in action.
 
 Seriously, what more can you ask for? :-)
 
+If you want to help me feed my familiar, you can donate with [Paypal](https://paypal.me/KaKaRoTo)
+
+[![Donate](images/donate.png){:width="200px"}](https://paypal.me/KaKaRoTo)

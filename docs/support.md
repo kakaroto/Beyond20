@@ -1,6 +1,14 @@
 {% include_relative navigation.html %}
 
+## Support me?
+
+Oh, you want to help support the development of this extension, how nice! You can do so by either contributing in some way (telling your friends about it, reporting bug reports, suggesting awesome features or contributing to the code) or by sending some copper pieces to my [Coin pouch](https://paypal.me/KaKaRoTo) (*I prefer silver*).
+
+
+
 ## Support and issues
+
+Oh, I misunderstood, you're the ones in need of support! Well, fear not, I am here to help!
 
 If you want to discuss an issue, you can join our [discord server](https://discord.gg/ZAasSVS)
 

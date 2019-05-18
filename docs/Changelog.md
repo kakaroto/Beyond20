@@ -1,3 +1,5 @@
+{% include_relative navigation.html %}
+
 v0.0.7
 ===
 
