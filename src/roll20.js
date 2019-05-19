@@ -6462,6 +6462,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
 
+        var re = ρσ_modules.re;
+
         print("Beyond20: Roll20 module loaded.");
         chat = document.getElementById("textchat-input");
         txt = chat.getElementsByTagName("textarea")[0];
@@ -6592,6 +6594,26 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["text"]}
         });
 
+        function damageToCrit(damage) {
+            var crits, damages, match;
+            crits = ρσ_list_decorate([]);
+            damages = damage.split(" | ");
+            var ρσ_Iter2 = ρσ_Iterable(damages);
+            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                damage = ρσ_Iter2[ρσ_Index2];
+                match = re.search("[0-9]*d[0-9]+", damage);
+                if ((typeof match !== "undefined" && match !== null)) {
+                    crits.append(subDamageRolls(match.group(0)));
+                } else {
+                    crits.append("");
+                }
+            }
+            return settings["crit-prefix"] + crits.join(" | ");
+        };
+        if (!damageToCrit.__argnames__) Object.defineProperties(damageToCrit, {
+            __argnames__ : {value: ["damage"]}
+        });
+
         function template(name, properties) {
             var renameProp, result, key;
             if (ρσ_exists.n(properties["normal"])) {
@@ -6603,9 +6625,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_anonfunc = function (old_key, new_key) {
                         var new_properties, key;
                         new_properties = {};
-                        var ρσ_Iter2 = ρσ_Iterable(properties);
-                        for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                            key = ρσ_Iter2[ρσ_Index2];
+                        var ρσ_Iter3 = ρσ_Iterable(properties);
+                        for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                            key = ρσ_Iter3[ρσ_Index3];
                             new_properties[ρσ_bound_index(((key === old_key || typeof key === "object" && ρσ_equals(key, old_key))) ? new_key : key, new_properties)] = properties[(typeof key === "number" && key < 0) ? properties.length + key : key];
                         }
                         properties = new_properties;
@@ -6654,9 +6676,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_delitem(properties, "advantage");
             }
             result = "&{template:" + name + "}";
-            var ρσ_Iter3 = ρσ_Iterable(properties);
-            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                key = ρσ_Iter3[ρσ_Index3];
+            var ρσ_Iter4 = ρσ_Iterable(properties);
+            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                key = ρσ_Iter4[ρσ_Index4];
                 result += " {{" + key + "=" + properties[(typeof key === "number" && key < 0) ? properties.length + key : key] + "}}";
             }
             return result;
@@ -6693,7 +6715,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, advantage_type, modifier, ability, prof, prof_val, half_prof, dice_roll, roll_properties, dice, dice_formula, rname, crit1, properties, crit2, sneak_attack, source, components, description, higher, healing_spell, level, mod;
+            var roll, advantage_type, modifier, ability, prof, prof_val, half_prof, dice_roll, roll_properties, dice, dice_formula, rname, properties, sneak_attack, source, components, description, higher, healing_spell, level, mod;
             print("Got message : " + str(request));
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
@@ -6716,9 +6738,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     modifier = request.modifier;
                     if ((modifier === "--" || typeof modifier === "object" && ρσ_equals(modifier, "--")) && request.character.abilities.length > 0) {
                         modifier = "?{Choose Ability";
-                        var ρσ_Iter4 = ρσ_Iterable(request.character.abilities);
-                        for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                            ability = ρσ_Iter4[ρσ_Index4];
+                        var ρσ_Iter5 = ρσ_Iterable(request.character.abilities);
+                        for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                            ability = ρσ_Iter5[ρσ_Index5];
                             modifier += "|" + ability[0] + ", " + ability[3];
                         }
                         modifier += "}";
@@ -6867,7 +6889,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                         return ρσ_d;
                     }).call(this));
                 } else if ((request.type === "attack" || typeof request.type === "object" && ρσ_equals(request.type, "attack"))) {
-                    crit1 = request.damage.split((ρσ_in("+", request.damage)) ? "+" : "-")[0];
                     properties = (function(){
                         var ρσ_d = {};
                         ρσ_d["charname"] = request.character.name;
@@ -6893,13 +6914,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                     properties["dmg1flag"] = 1;
                     properties["dmg1"] = subDamageRolls(request.damage);
                     properties["dmg1type"] = request["damage-type"];
-                    properties["crit1"] = subDamageRolls(settings["crit-prefix"] + crit1);
+                    properties["crit1"] = damageToCrit(request.damage);
                     if (ρσ_exists.n(request["second-damage"])) {
-                        crit2 = request["second-damage"].split((ρσ_in("+", request["second-damage"])) ? "+" : "-")[0];
                         properties["dmg2flag"] = 1;
                         properties["dmg2"] = subDamageRolls(request["second-damage"]);
                         properties["dmg2type"] = request["second-damage-type"];
-                        properties["crit2"] = subDamageRolls(settings["crit-prefix"] + crit2);
+                        properties["crit2"] = damageToCrit(request["second-damage"]);
                     }
                     if (ρσ_exists.n(request.range)) {
                         properties["range"] = request.range;
@@ -7030,8 +7050,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         if ((request["damage-type"] === "Healing" || typeof request["damage-type"] === "object" && ρσ_equals(request["damage-type"], "Healing"))) {
                             healing_spell = true;
                         } else {
-                            crit1 = request.damage.split((ρσ_in("+", request.damage)) ? "+" : "-")[0];
-                            properties["crit1"] = subDamageRolls(settings["crit-prefix"] + crit1);
+                            properties["crit1"] = damageToCrit(request.damage);
                         }
                     }
                     if (ρσ_exists.n(request["second-damage"])) {
@@ -7041,8 +7060,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         if ((request["second-damage-type"] === "Healing" || typeof request["second-damage-type"] === "object" && ρσ_equals(request["second-damage-type"], "Healing"))) {
                             healing_spell = true;
                         } else {
-                            crit2 = request["second-damage"].split((ρσ_in("+", request["second-damage"])) ? "+" : "-")[0];
-                            properties["crit2"] = subDamageRolls(settings["crit-prefix"] + crit2);
+                            properties["crit2"] = damageToCrit(request["second-damage"]);
                         }
                     }
                     if (ρσ_exists.n(request.range)) {
