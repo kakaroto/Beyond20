@@ -7,11 +7,17 @@ from utils import getBrowser, roll20TabTitle
 # special extra_options: [setup, set, get]
 
 options_list = {
-    "whispers": {"short": "Whisper rolls",
-                 "title": "Whisper rolls to the DM",
+    "whispers": {"short": "Whisper all rolls",
+                 "title": "Whisper all rolls to the DM",
                  "description": "If enabled, all the rolls will be whispered to the DM",
                  "type": "bool",
                  "default": False},
+
+    "whisper-monsters": {"short": "Whisper monster rolls",
+                         "title": "Whisper monster rolls to the DM",
+                         "description": "If enabled, all the rolls from monster stat blocks will be whispered to the DM",
+                         "type": "bool",
+                         "default": True},
 
     "roll-advantage": {"short": "Roll with Advantage",
                        "title": "Always roll Advantange/Disadvantage",

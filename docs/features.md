@@ -18,7 +18,6 @@
   * Support for multiple damages
   * Support spells with saving throw or To-Hit, or with straight damage
   * Can display the spell instead of rolling it if wanted
-  * Spells with 
 * Hit dice
   * Supports multi-classing
 * Death saving throws
@@ -28,12 +27,14 @@
   * Dice formulas are detected in items, spells, actions or custom actions, class features, racial traits or Feats
   * The dice formula is clickable in the D&D beyond side panel, as well as in the Roll20 chat text
   * The clickable dice can be disabled to not show in the D&D Beyond page or in the Roll20 text, separately
+* Character creatures and Monster pages also have clickable dice formulas
 
 
 ## Information sharing
 * Spell cards can be displayed in Roll20
   * Higher level casts will be detected and shown
 * Attack spells can also be displayed instead of rolled
+* Attack spells with material components will have the material printed
 * Equipment Items
 * Weapons can also be displayed instead of rolled
 * Actions and custom actions
@@ -41,6 +42,7 @@
 * Racial traits
 * Feats
 * Character traits
+
 
 ## Configurable options
 * Whisper rolls

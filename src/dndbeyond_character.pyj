@@ -1,0 +1,486 @@
+from settings import getDefaultSettings, getStoredSettings
+from elementmaker import E
+from dndbeyond import Character, buildAttackRoll, sendRoll, \
+    ability_abbreviations, findToHit, descriptionToString, propertyListToDict, \
+    injectDiceToRolls, addDeathSaveButton, addHitDieButtons, addDisplayButton, addRollButton, \
+    isHitDieButtonAdded, isRollButtonAdded, isCustomRollIconsAdded, removeRollButtons
+
+print("Beyond20: D&D Beyond module loaded.")
+
+settings = getDefaultSettings()
+
+character = Character()
+
+def sendRollWithCharacter(rollType, fallback, args):
+    nonlocal character
+    sendRoll(character, rollType, fallback, args)
+
+
+def rollSkillCheck(paneClass):
+    skill_name = $("." + paneClass + "__header-name").text()
+    ability = $("." + paneClass + "__header-ability").text()
+    modifier = $("." + paneClass + "__header-modifier").text()
+    proficiency = $("." + paneClass + "__header-icon .ct-tooltip").attr("data-original-title")
+    print("Skill " + skill_name + "(" + ability + ") : " + modifier)
+    sendRollWithCharacter("skill", "1d20" + modifier, {"skill": skill_name,
+                                          "ability": ability,
+                                          "modifier": modifier,
+                                          "proficiency": proficiency})
+
+def rollAbilityOrSavingThrow(paneClass, rollType):
+    ability_string = $("." + paneClass + " .ct-sidebar__heading").text()
+    ability_name = ability_string.split(" ")[0]
+    modifier = $("." + paneClass + "__modifier .ct-signed-number").text()
+    ability = ability_abbreviations[ability_name]
+    print(rollType + " " + ability_name + "(" + ability + ") : " + modifier)
+    sendRollWithCharacter(rollType, "1d20" + modifier, {"name" : ability_name,
+                                           "ability": ability,
+                                           "modifier": modifier} )
+
+def rollAbilityCheck():
+    rollAbilityOrSavingThrow("ct-ability-pane", "ability")
+
+def rollSavingThrow():
+    rollAbilityOrSavingThrow("ct-ability-saving-throws-pane", "saving-throw")
+
+def rollInitiative():
+    initiative = $(".ct-initiative-box__value").text()
+    advantage = $(".ct-initiative-box__advantage").length > 0
+    if initiative == "":
+        initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text()
+        advantage = $(".ct-combat-mobile__advantage").length > 0
+    roll = "2d20kh1" if advantage else "1d20"
+    print("Initiative " + ("with" if advantage else "without") + " advantage : " + initiative)
+    sendRollWithCharacter("initiative", "1d20" + initiative, {"initiative": initiative,
+                                                 "advantage": advantage} )
+
+        
+def rollHitDie(multiclass, index):
+    print("Rolling hit die index " + index)
+    hitdie = $(".ct-reset-pane__hitdie").eq(index)
+    class_name = hitdie.find(".ct-reset-pane__hitdie-heading-class").text()
+    text = hitdie.find(".ct-reset-pane__hitdie-heading").text()
+    die = text.split("Hit Die: ")[1].split(" ")[0]
+    sendRollWithCharacter("hit-dice", die, {"class": class_name,
+                               "multiclass": multiclass,
+                               "hit-dice": die} )
+
+def rollItem(force_display=False):
+    prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property")
+    properties = propertyListToDict(prop_list)
+    print("Properties are : " + str(properties))
+    item_name = $(".ct-item-pane .ct-item-name").text()
+    item_type = $(".ct-item-detail__intro").text()
+    description = descriptionToString(".ct-item-detail__description")
+    if force_display is False and "Damage" in properties:
+        to_hit = properties["To Hit"] ? \
+            findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit")
+
+        damage = None
+        damage2 = None
+        damage2_type = None
+        for i in range(prop_list.length):
+            if prop_list.eq(i).find(".ct-property-list__property-label").text() == "Damage:":
+                value = prop_list.eq(i).find(".ct-property-list__property-content")
+                damage = value.find(".ct-damage__value").text()
+                versatile_damage = value.find(".ct-item-detail__versatile-damage").text()
+                if versatile_damage != "":
+                    damage2 = versatile_damage[1:-1]
+                    damage2_type = "Two-Handed"
+                additional_damages = value.find(".ct-item-detail__additional-damage")
+                for j in range(additional_damages.length):
+                    dmg = additional_damages.eq(j).text()
+                    dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title")
+                    dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text()
+                    if dmg != "":
+                        dmg = dmg.replace(dmg_info, "")
+                        if damage2 is None:
+                            damage2 = dmg
+                            damage2_type = dmg_type
+                        else:
+                            damage2 += " | " + dmg
+                            damage2_type += " | " + dmg_type
+                            if dmg_info != "":
+                                damage2_type += "(" + dmg_info + ")"
+                            
+                break
+
+        roll_properties = buildAttackRoll("item",
+                                          item_name,
+                                          description,
+                                          properties,
+                                          damage,
+                                          properties["Damage Type"] ? "",
+                                          to_hit,
+                                          damage2,
+                                          damage2_type)
+        roll_properties["item-type"] = item_type
+        sendRollWithCharacter("attack", damage, roll_properties)
+    else:
+        sendRollWithCharacter("item", 0, {"name": item_name,
+                             "description" : description,
+                             "item-type": item_type})        
+
+def rollAction(paneClass):
+    properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"))
+    print("Properties are : " + str(properties))
+    action_name = $(".ct-sidebar__heading").text()
+    description = descriptionToString(".ct-action-detail__description")
+    if "Damage" in properties and (properties["To Hit"]? or properties["Attack/Save"]?):
+        roll_properties = buildAttackRoll("action",
+                                          action_name,
+                                          description,
+                                          properties,
+                                          properties["Damage"],
+                                          properties["Damage Type"] ? "",
+                                          properties["To Hit"] ? None)
+        sendRollWithCharacter("attack", properties["Damage"], roll_properties)
+    else:
+        sendRollWithCharacter("action", 0, {"name": action_name,
+                               "description" : description})
+        
+def rollSpell(force_display=False):
+    properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
+    print("Properties are : " + str(properties))
+    spell_name = $(".ct-sidebar__heading .ct-spell-name").text()
+    description = descriptionToString(".ct-spell-pane .ct-spell-detail__description")
+    damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage")
+    healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp")
+    castas = $(".ct-spell-caster__casting-level-current").text()
+    level = descriptionToString(".ct-spell-pane .ct-spell-detail__level-school", " ")
+    concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration").length > 0
+    ritual = $(".ct-spell-pane .ct-spell-name__icon--ritual").length > 0
+    duration = properties["Duration"] ? ""
+    if "Concentration" in duration:
+        duration = duration.replace("Concentration, ", "")
+        concentration = True
+    else:
+        concentration = False
+    to_hit = properties["To Hit"] ? \
+        findToHit(spell_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit")
+    if not to_hit:
+        to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit")
+
+    if force_display is False and (damages.length > 0 or healings.length > 0 or to_hit != None):
+        num_damages = 0
+        damage = None
+        damage2 = None
+        for i in range(damages.length):
+            dmg = damages.eq(i).find(".ct-spell-caster__modifier-amount").text()
+            dmgtype = damages.eq(i).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title")
+            if not dmgtype?:
+                dmgtype = ""
+            if num_damages == 0:
+                damage = dmg
+                damage_type = dmgtype
+            elif num_damages == 1:
+                damage2 = dmg
+                damage2_type = dmgtype
+            else:
+                damage2 += " | " + dmg
+                damage2_type += " | " + dmgtype
+            num_damages += 1
+        for i in range(healings.length):
+            dmg = healings.eq(i).find(".ct-spell-caster__modifier-amount").text()
+            if num_damages == 0:
+                damage = dmg
+                damage_type = "Healing"
+            elif num_damages == 1:
+                damage2 = dmg
+                damage2_type = "Healing"
+            else:
+                damage2 += " | " + dmg
+                damage2_type += " | " + "Healing"
+            num_damages += 1
+            
+                
+        roll_properties = buildAttackRoll("spell",
+                                          spell_name,
+                                          description,
+                                          properties,
+                                          damage,
+                                          damage_type,
+                                          to_hit,
+                                          damage2,
+                                          damage2_type)
+        spell_properties = {"level-school": level,
+                            "concentration": concentration,
+                            "duration": duration,
+                            "casting-time": (properties["Casting Time"] ? ""),
+                            "components": (properties["Components"] ? ""),
+                            "ritual": ritual}
+        for key in spell_properties:
+            roll_properties[key] = spell_properties[key]
+        if castas != "" and not level.startsWith(castas):
+            roll_properties["cast-at"] = castas
+        sendRollWithCharacter("spell-attack", damage, roll_properties)
+    else:
+        roll_properties = {"name": spell_name,
+                           "level-school": level,
+                           "range": (properties["Range/Area"] ? ""),
+                           "concentration": concentration,
+                           "duration": duration,
+                           "casting-time": (properties["Casting Time"] ? ""),
+                           "components": (properties["Components"] ? ""),
+                           "ritual": ritual,
+                           "description" : description}
+        if castas != "" and not level.startsWith(castas):
+            roll_properties["cast-at"] = castas
+        sendRollWithCharacter("spell-card", 0, roll_properties)
+
+def displayItem():
+    rollItem(True)
+
+def displaySpell():
+    rollSpell(True)
+
+def displayFeature(paneClass):
+    source_types = {"ct-class-feature-pane": "Class",
+               "ct-racial-trait-pane": "Race",
+               "ct-feat-pane": "Feat"}
+    name = $(".ct-sidebar__heading").text()
+    source = $(".ct-sidebar__header-parent").text()
+    source_type = source_types[paneClass]
+    description = descriptionToString(".ct-snippet__content")
+    sendRollWithCharacter("feature", 0, {"name": name,
+                            "source": source,
+                            "source-type": source_type,
+                            "description": description} )
+
+def displayTrait():
+    trait = $(".ct-sidebar__heading").text()
+    description = $(".ct-trait-pane__input").text()
+    sendRollWithCharacter("trait", 0, {"name": trait,
+                            "description": description} )
+
+def execute(paneClass):
+    print("Beyond20: Executing panel : " + paneClass)
+    if paneClass in ["ct-skill-pane", "ct-custom-skill-pane"]:
+        rollSkillCheck(paneClass)
+    elif paneClass == "ct-ability-pane":
+        rollAbilityCheck()
+    elif paneClass == "ct-ability-saving-throws-pane":
+        rollSavingThrow()
+    elif paneClass == "ct-initiative-pane":
+        rollInitiative()
+    elif paneClass == "ct-item-pane":
+        rollItem()
+    elif paneClass in ["ct-action-pane", "ct-custom-action-pane"]:
+        rollAction(paneClass)
+    elif paneClass == "ct-spell-pane":
+        rollSpell()
+    else:
+        displayPanel(paneClass)
+
+def displayPanel(paneClass):
+    print("Beyond20: Displaying panel : " + paneClass)
+    if paneClass == "ct-item-pane":
+        displayItem()
+    elif paneClass == "ct-spell-pane":
+        displaySpell()
+    elif paneClass in ["ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane"]:
+        displayFeature(paneClass)
+    elif paneClass == "ct-trait-pane":
+        displayTrait()
+    else:
+        alert("Not recognizing the currently open sidebar")
+
+def checkAndInjectDiceToRolls(selector, name=""):
+    nonlocal settings
+    nonlocal character
+    if not settings["subst-dndbeyond"]:
+        return
+
+    injectDiceToRolls(selector, character, name)
+
+def addRollButtonEx(paneClass, where, small=False, append=False, image=True, text="Beyond 20", bind=True):
+    callback = def():
+        execute(paneClass)
+    addRollButton(callback, where, small, append, image, text, bind)
+
+def addDisplayButtonEx(paneClass, where, text="Display in Roll20"):
+    callback = def():
+        displayPanel(paneClass)
+    addDisplayButton(callback, where, text)
+
+lastItemName = ""
+lastSpellName = ""
+lastSpellLevel = ""
+def injectRollButton(paneClass):
+    if paneClass in ["ct-custom-skill-pane",
+                     "ct-skill-pane",
+                     "ct-ability-pane",
+                     "ct-ability-saving-throws-pane",
+                     "ct-initiative-pane"]:
+        if isRollButtonAdded():
+            return
+        addRollButtonEx(paneClass, ".ct-sidebar__heading")
+    elif paneClass in ["ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane"]:
+        if isRollButtonAdded():
+            return
+        addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Display in Roll20", image=False)
+        name = $(".ct-sidebar__heading").text()
+        checkAndInjectDiceToRolls(".ct-snippet__content", name)
+    elif paneClass == "ct-trait-pane":
+        if isRollButtonAdded():
+            return
+        addRollButtonEx(paneClass, ".ct-trait-pane__content", text="Display in Roll20", image=False)
+    elif paneClass == "ct-item-pane":
+        nonlocal lastItemName
+        item_name = $(".ct-item-pane .ct-item-name").text()
+        if isRollButtonAdded() and item_name == lastItemName:
+            return
+        lastItemName = item_name
+        removeRollButtons()
+
+        checkAndInjectDiceToRolls(".ct-item-detail__description", item_name)
+        properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"))
+        if "Damage" in properties:
+            addRollButtonEx(paneClass, ".ct-sidebar__heading", small=True)
+            addDisplayButtonEx(paneClass, ".ct-beyond20-roll")
+        else:
+            addRollButtonEx(paneClass, ".ct-sidebar__heading", image=False, bind=False)
+            addRollButtonEx(paneClass, ".ct-item-detail__actions", small=True, append=True, image=False)
+    elif paneClass in ["ct-action-pane", "ct-custom-action-pane"]:
+        if isRollButtonAdded():
+            return
+        addRollButtonEx(paneClass, ".ct-sidebar__heading")
+        action_name = $(".ct-sidebar__heading").text()
+        checkAndInjectDiceToRolls(".ct-action-detail__description", action_name)
+    elif paneClass == "ct-spell-pane":
+        nonlocal lastSpellName
+        nonlocal lastSpellLevel
+        spell_name = $(".ct-sidebar__heading .ct-spell-name").text()
+        spell_level = $(".ct-spell-caster__casting-level-current").text()
+        if isRollButtonAdded() and spell_name == lastSpellName and spell_level == lastSpellLevel:
+            return
+        lastSpellName = spell_name
+        lastSpellLevel = spell_level
+        removeRollButtons()
+        checkAndInjectDiceToRolls(".ct-spell-pane .ct-spell-detail__description", spell_name)
+
+        damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage")
+        healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp")
+        properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
+        to_hit = properties["To Hit"] ? \
+            findToHit(spell_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit")
+        if not to_hit:
+            to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit")
+
+        if damages.length > 0 or healings.length > 0 or to_hit != None:
+            addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on Roll20", small=True)
+            addDisplayButtonEx(paneClass, ".ct-beyond20-roll")
+        else:
+            addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on Roll20", image=False)
+
+        $(".ct-spell-caster__casting-action > button").bind('click', def(event):
+            execute(paneClass)
+        )
+    elif paneClass == "ct-reset-pane":
+        hitdice = $(".ct-reset-pane__hitdie")
+        if hitdice.length > 0:
+            if isHitDieButtonAdded():
+                return
+            removeRollButtons()
+            addHitDieButtons(rollHitDie)
+        else:
+            removeRollButtons()
+    elif paneClass == "ct-health-manage-pane":
+        if $(".ct-health-manage-pane .ct-health-manager__deathsaves").length > 0:
+            if isRollButtonAdded():
+                return
+            cb = def():
+                sendRollWithCharacter("death-save", "1d20", {})
+            addDeathSaveButton(cb, ".ct-health-manager__deathsaves-group--fails")
+        else:
+            removeRollButtons()
+    elif paneClass == "ct-creature-pane":
+        if isCustomRollIconsAdded():
+            return
+        creature_name = $(".ct-sidebar__heading").text()
+        checkAndInjectDiceToRolls(".ct-creature-block__description-blocks", creature_name)
+    else:
+        removeRollButtons()
+
+
+def injectRollToSpellAttack():
+    groups = $(".ct-spells-level-casting__info-group")
+
+    for group in groups:
+        label = $(group).find(".ct-spells-level-casting__info-label")
+        if label.text() == "Spell Attack":
+            if label.hasClass("beyond20-rolls-added"):
+                return
+            label.addClass("beyond20-rolls-added")
+            icon16 = chrome.extension.getURL("images/icons/icon16.png");
+            items = $(group).find(".ct-spells-level-casting__info-item")
+            for item in items:
+                modifier = item.textContent
+                name = "Spell Attack"
+                if items.length > 1:
+                    name += "(" + item.getAttribute("data-original-title") + ")"
+                img = E.img(class_="ct-beyond20-custom-icon ct-beyond20-spell-attack",
+                            x_beyond20_name=name, x_beyond20_modifier=modifier, src=icon16)
+                item.append(img)
+                console.log(item)
+            $(".ct-beyond20-custom-icon").css("margin-left", "3px")
+            $(".ct-beyond20-spell-attack").bind('click', def(event):
+                name = $(event.currentTarget).attr("x-beyond20-name")
+                mod = $(event.currentTarget).attr("x-beyond20-modifier")
+                sendRollWithCharacter("custom", "1d20" + mod, {"name": name, "modifier": mod})
+            )
+        
+def documentModified(mutations, observer):
+    nonlocal character
+
+    try:
+        chrome.extension.getURL("")
+    except:
+        console.log("This extension is DOWN!")
+        observer.disconnect()
+        return
+
+    injectRollToSpellAttack()
+
+    pane = $(".ct-sidebar__pane-content > div")
+    character.updateInfo()
+    if pane.length > 0:
+        for div in range(pane.length):
+            paneClass = pane[div].className
+            if paneClass == "ct-sidebar__pane-controls":
+                continue
+            print("Beyond20: New side panel is : " + paneClass)
+            injectRollButton(paneClass)
+
+def updateSettings(new_settings=None):
+    nonlocal settings
+    if new_settings:
+        settings = new_settings
+    else:
+        getStoredSettings(def(saved_settings):
+            nonlocal settings
+            settings = saved_settings
+        )
+
+def handleMessage (request, sender, sendResponse):
+    nonlocal settings
+    nonlocal character
+    print("Got message : " + str(request))
+    if request.action == "settings":
+        if request.type == "general":
+            updateSettings(request.settings)
+        elif request.type == "character" and request.id == character._id:
+            character.updateSettings(request.settings)
+        else:
+            console.log("Ignoring character settings, not for ID: ", character._id)
+    elif request.action == "get-character":
+        character.updateInfo()
+        sendResponse(character.getDict())
+
+updateSettings()
+chrome.runtime.onMessage.addListener(handleMessage)
+observer = new window.MutationObserver(documentModified)
+observer.observe(document, {"subtree": True, "childList": True})
+chrome.runtime.sendMessage({"action": "activate-icon"});
+documentModified()
+

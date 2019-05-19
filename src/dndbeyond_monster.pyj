@@ -1,0 +1,23 @@
+from dndbeyond import Monster, injectDiceToRolls, isCustomRollIconsAdded, abbreviationToAbility
+
+print("Beyond20: D&D Beyond Monster module loaded.")
+
+character = Monster("Monster")
+
+def documentLoaded():
+    nonlocal character
+
+    try:
+        chrome.extension.getURL("")
+    except:
+        console.log("This extension is DOWN!")
+        observer.disconnect()
+        return
+
+    character.parseStatBlock(".mon-stat-block")
+    if not isCustomRollIconsAdded():
+        injectDiceToRolls(".mon-stat-block__description-blocks", character, character._name)
+
+chrome.runtime.sendMessage({"action": "activate-icon"});
+documentLoaded()
+

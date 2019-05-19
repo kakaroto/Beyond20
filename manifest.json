@@ -34,7 +34,12 @@
     "content_scripts": [{
 	"matches": [ "*://*.dndbeyond.com/*characters/*" ],
 	"js": [
-	    "src/jquery-3.4.1.min.js", "src/dndbeyond.js"
+	    "src/jquery-3.4.1.min.js", "src/dndbeyond_character.js"
+	]
+    },{
+	"matches": [ "*://*.dndbeyond.com/monsters/*" ],
+	"js": [
+	    "src/jquery-3.4.1.min.js", "src/dndbeyond_monster.js"
 	]
     },{
 	"matches": [ "*://app.roll20.net/editor/" ],

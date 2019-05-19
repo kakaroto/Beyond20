@@ -1,8 +1,10 @@
 %.js: %.pyj
 	rapydscript $< --output $@
 
-JS_FILES=src/background.js src/roll20.js src/roll20_script.js src/dndbeyond.js src/options.js  src/popup.js 
-PYJ_DEPS=src/utils.pyj src/settings.pyj
+JS_FILES=src/background.js src/roll20.js src/roll20_script.js \
+	src/dndbeyond_character.js src/dndbeyond_monster.js \
+	src/options.js  src/popup.js 
+PYJ_DEPS=src/utils.pyj src/settings.pyj src/dndbeyond.pyj
 
 all: $(JS_FILES)
 

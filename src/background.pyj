@@ -68,10 +68,10 @@ updateSettings()
 chrome.runtime.onMessage.addListener(onMessage)
 
 if getBrowser() == "Chrome":
-    chrome.tabs.query({ "url": ROLL20_URL }, def(tabs):
-        executeScripts(tabs, ["src/roll20.js"])
-    )
-    chrome.tabs.query({ "url": DNDBEYOND_URL }, def(tabs):
-        executeScripts(tabs, ["src/jquery-3.4.1.min.js", "src/dndbeyond.js"])
-    )
+    manifest = chrome.runtime.getManifest()
+    for script in manifest.content_scripts:
+        cb = def(files):
+            return def(tabs):
+                executeScripts(tabs, files)
+        chrome.tabs.query({ "url": script.matches}, cb(script.js))
 

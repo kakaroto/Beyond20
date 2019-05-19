@@ -46,25 +46,26 @@ def setupHTML():
 def populateCharacter(response):
     nonlocal character
     character = response
-    console.log("Received character: ", response)
-    options = $(".beyond20-options")
-    options.append(E.li(class_="list-group-item beyond20-option", style="text-align: center; padding: 10px 15px;",
-                        E.h4(" == Character Specific Options ==", style="margin: 0px;"),
-                        E.p(response.name, style="margin: 0px;"))
-                   )
+    if response?:
+        console.log("Received character: ", response)
+        options = $(".beyond20-options")
+        options.append(E.li(class_="list-group-item beyond20-option", style="text-align: center; padding: 10px 15px;",
+                            E.h4(" == Character Specific Options ==", style="margin: 0px;"),
+                            E.p(response.name, style="margin: 0px;"))
+                       )
 
-    e = createHTMLOption("update-hp", False, character_settings)
-    options.append(e)
-    if "Rogue" in response.classes:
-        e = createHTMLOption("rogue-sneak-attack", False, character_settings)
+        e = createHTMLOption("update-hp", False, character_settings)
         options.append(e)
-    if "Cleric" in response.classes:
-        e = createHTMLOption("cleric-disciple-life", False, character_settings)
-        options.append(e)
-    if "Bard" in response.classes:
-        e = createHTMLOption("bard-joat", False, character_settings)
-        options.append(e)
-    loadSettings(response.settings, character_settings)
+        if "Rogue" in response.classes:
+            e = createHTMLOption("rogue-sneak-attack", False, character_settings)
+            options.append(e)
+        if "Cleric" in response.classes:
+            e = createHTMLOption("cleric-disciple-life", False, character_settings)
+            options.append(e)
+        if "Bard" in response.classes:
+            e = createHTMLOption("bard-joat", False, character_settings)
+            options.append(e)
+        loadSettings(response.settings, character_settings)
     $('.beyond20-option-input').off('change', save_settings)
     $('.beyond20-option-input').change(save_settings)
     initializeSettings()

@@ -3724,10 +3724,310 @@ define_str_func("zfill", (function() {
 define_str_func = undefined;
 var str = ρσ_str, repr = ρσ_repr;;
     var ρσ_modules = {};
+    ρσ_modules.elementmaker = {};
     ρσ_modules.re = {};
     ρσ_modules.utils = {};
-    ρσ_modules.elementmaker = {};
     ρσ_modules.settings = {};
+    ρσ_modules.dndbeyond = {};
+
+    (function(){
+        var __name__ = "elementmaker";
+        var html_elements, mathml_elements, svg_elements, html5_tags, E;
+        html_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("a");
+            s.jsset.add("abbr");
+            s.jsset.add("acronym");
+            s.jsset.add("address");
+            s.jsset.add("area");
+            s.jsset.add("article");
+            s.jsset.add("aside");
+            s.jsset.add("audio");
+            s.jsset.add("b");
+            s.jsset.add("big");
+            s.jsset.add("blockquote");
+            s.jsset.add("br");
+            s.jsset.add("button");
+            s.jsset.add("canvas");
+            s.jsset.add("caption");
+            s.jsset.add("center");
+            s.jsset.add("cite");
+            s.jsset.add("code");
+            s.jsset.add("col");
+            s.jsset.add("colgroup");
+            s.jsset.add("command");
+            s.jsset.add("datagrid");
+            s.jsset.add("datalist");
+            s.jsset.add("dd");
+            s.jsset.add("del");
+            s.jsset.add("details");
+            s.jsset.add("dfn");
+            s.jsset.add("dialog");
+            s.jsset.add("dir");
+            s.jsset.add("div");
+            s.jsset.add("dl");
+            s.jsset.add("dt");
+            s.jsset.add("em");
+            s.jsset.add("event-source");
+            s.jsset.add("fieldset");
+            s.jsset.add("figcaption");
+            s.jsset.add("figure");
+            s.jsset.add("footer");
+            s.jsset.add("font");
+            s.jsset.add("form");
+            s.jsset.add("header");
+            s.jsset.add("h1");
+            s.jsset.add("h2");
+            s.jsset.add("h3");
+            s.jsset.add("h4");
+            s.jsset.add("h5");
+            s.jsset.add("h6");
+            s.jsset.add("hr");
+            s.jsset.add("i");
+            s.jsset.add("iframe");
+            s.jsset.add("img");
+            s.jsset.add("input");
+            s.jsset.add("ins");
+            s.jsset.add("keygen");
+            s.jsset.add("kbd");
+            s.jsset.add("label");
+            s.jsset.add("legend");
+            s.jsset.add("li");
+            s.jsset.add("m");
+            s.jsset.add("map");
+            s.jsset.add("menu");
+            s.jsset.add("meter");
+            s.jsset.add("multicol");
+            s.jsset.add("nav");
+            s.jsset.add("nextid");
+            s.jsset.add("ol");
+            s.jsset.add("output");
+            s.jsset.add("optgroup");
+            s.jsset.add("option");
+            s.jsset.add("p");
+            s.jsset.add("pre");
+            s.jsset.add("progress");
+            s.jsset.add("q");
+            s.jsset.add("s");
+            s.jsset.add("samp");
+            s.jsset.add("script");
+            s.jsset.add("section");
+            s.jsset.add("select");
+            s.jsset.add("small");
+            s.jsset.add("sound");
+            s.jsset.add("source");
+            s.jsset.add("spacer");
+            s.jsset.add("span");
+            s.jsset.add("strike");
+            s.jsset.add("strong");
+            s.jsset.add("style");
+            s.jsset.add("sub");
+            s.jsset.add("sup");
+            s.jsset.add("table");
+            s.jsset.add("tbody");
+            s.jsset.add("td");
+            s.jsset.add("textarea");
+            s.jsset.add("time");
+            s.jsset.add("tfoot");
+            s.jsset.add("th");
+            s.jsset.add("thead");
+            s.jsset.add("tr");
+            s.jsset.add("tt");
+            s.jsset.add("u");
+            s.jsset.add("ul");
+            s.jsset.add("var");
+            s.jsset.add("video");
+            return s;
+        })();
+        mathml_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("maction");
+            s.jsset.add("math");
+            s.jsset.add("merror");
+            s.jsset.add("mfrac");
+            s.jsset.add("mi");
+            s.jsset.add("mmultiscripts");
+            s.jsset.add("mn");
+            s.jsset.add("mo");
+            s.jsset.add("mover");
+            s.jsset.add("mpadded");
+            s.jsset.add("mphantom");
+            s.jsset.add("mprescripts");
+            s.jsset.add("mroot");
+            s.jsset.add("mrow");
+            s.jsset.add("mspace");
+            s.jsset.add("msqrt");
+            s.jsset.add("mstyle");
+            s.jsset.add("msub");
+            s.jsset.add("msubsup");
+            s.jsset.add("msup");
+            s.jsset.add("mtable");
+            s.jsset.add("mtd");
+            s.jsset.add("mtext");
+            s.jsset.add("mtr");
+            s.jsset.add("munder");
+            s.jsset.add("munderover");
+            s.jsset.add("none");
+            return s;
+        })();
+        svg_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("a");
+            s.jsset.add("animate");
+            s.jsset.add("animateColor");
+            s.jsset.add("animateMotion");
+            s.jsset.add("animateTransform");
+            s.jsset.add("clipPath");
+            s.jsset.add("circle");
+            s.jsset.add("defs");
+            s.jsset.add("desc");
+            s.jsset.add("ellipse");
+            s.jsset.add("font-face");
+            s.jsset.add("font-face-name");
+            s.jsset.add("font-face-src");
+            s.jsset.add("g");
+            s.jsset.add("glyph");
+            s.jsset.add("hkern");
+            s.jsset.add("linearGradient");
+            s.jsset.add("line");
+            s.jsset.add("marker");
+            s.jsset.add("metadata");
+            s.jsset.add("missing-glyph");
+            s.jsset.add("mpath");
+            s.jsset.add("path");
+            s.jsset.add("polygon");
+            s.jsset.add("polyline");
+            s.jsset.add("radialGradient");
+            s.jsset.add("rect");
+            s.jsset.add("set");
+            s.jsset.add("stop");
+            s.jsset.add("svg");
+            s.jsset.add("switch");
+            s.jsset.add("text");
+            s.jsset.add("title");
+            s.jsset.add("tspan");
+            s.jsset.add("use");
+            return s;
+        })();
+        html5_tags = html_elements.union(mathml_elements).union(svg_elements);
+        function _makeelement() {
+            var tag = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var kwargs = arguments[arguments.length-1];
+            if (kwargs === null || typeof kwargs !== "object" || kwargs [ρσ_kwargs_symbol] !== true) kwargs = {};
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (kwargs !== null && typeof kwargs === "object" && kwargs [ρσ_kwargs_symbol] === true) args.pop();
+            var ans, vattr, val, attr, arg;
+            ans = this.createElement(tag);
+            var ρσ_Iter0 = ρσ_Iterable(kwargs);
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                attr = ρσ_Iter0[ρσ_Index0];
+                vattr = str.replace(str.rstrip(attr, "_"), "_", "-");
+                val = kwargs[(typeof attr === "number" && attr < 0) ? kwargs.length + attr : attr];
+                if (callable(val)) {
+                    if (str.startswith(attr, "on")) {
+                        attr = attr.slice(2);
+                    }
+                    ans.addEventListener(attr, val);
+                } else if (val === true) {
+                    ans.setAttribute(vattr, vattr);
+                } else if (typeof val === "string") {
+                    ans.setAttribute(vattr, val);
+                }
+            }
+            var ρσ_Iter1 = ρσ_Iterable(args);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                arg = ρσ_Iter1[ρσ_Index1];
+                if (typeof arg === "string") {
+                    arg = this.createTextNode(arg);
+                }
+                ans.appendChild(arg);
+            }
+            return ans;
+        };
+        if (!_makeelement.__handles_kwarg_interpolation__) Object.defineProperties(_makeelement, {
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["tag"]}
+        });
+
+        function maker_for_document(document) {
+            var E;
+            E = _makeelement.bind(document);
+            Object.defineProperties(E, (function() {
+                var ρσ_Iter = ρσ_Iterable(html5_tags), ρσ_Result = {}, tag;
+                for (var ρσ_Index = 0; ρσ_Index < ρσ_Iter.length; ρσ_Index++) {
+                    tag = ρσ_Iter[ρσ_Index];
+                    ρσ_Result[tag] = ((function(){
+                        var ρσ_d = {};
+                        ρσ_d["value"] = _makeelement.bind(document, tag);
+                        return ρσ_d;
+                    }).call(this));
+                }
+                return ρσ_Result;
+            })());
+            return E;
+        };
+        if (!maker_for_document.__argnames__) Object.defineProperties(maker_for_document, {
+            __argnames__ : {value: ["document"]}
+        });
+
+        if (typeof document === "undefined") {
+            E = maker_for_document((function(){
+                var ρσ_d = {};
+                ρσ_d["createTextNode"] = (function() {
+                    var ρσ_anonfunc = function (value) {
+                        return value;
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["value"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                ρσ_d["createElement"] = (function() {
+                    var ρσ_anonfunc = function (name) {
+                        return (function(){
+                            var ρσ_d = {};
+                            ρσ_d["name"] = name;
+                            ρσ_d["children"] = ρσ_list_decorate([]);
+                            ρσ_d["attributes"] = {};
+                            ρσ_d["setAttribute"] = (function() {
+                                var ρσ_anonfunc = function (name, val) {
+                                    (ρσ_expr_temp = this.attributes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = val;
+                                };
+                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                    __argnames__ : {value: ["name", "val"]}
+                                });
+                                return ρσ_anonfunc;
+                            })();
+                            ρσ_d["appendChild"] = (function() {
+                                var ρσ_anonfunc = function (child) {
+                                    this.children.push(child);
+                                };
+                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                    __argnames__ : {value: ["child"]}
+                                });
+                                return ρσ_anonfunc;
+                            })();
+                            return ρσ_d;
+                        }).call(this);
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["name"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                return ρσ_d;
+            }).call(this));
+        } else {
+            E = maker_for_document(document);
+        }
+        ρσ_modules.elementmaker.html_elements = html_elements;
+        ρσ_modules.elementmaker.mathml_elements = mathml_elements;
+        ρσ_modules.elementmaker.svg_elements = svg_elements;
+        ρσ_modules.elementmaker.html5_tags = html5_tags;
+        ρσ_modules.elementmaker.E = E;
+        ρσ_modules.elementmaker._makeelement = _makeelement;
+        ρσ_modules.elementmaker.maker_for_document = maker_for_document;
+    })();
 
     (function(){
         var __name__ = "re";
@@ -5374,305 +5674,6 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
-        var __name__ = "elementmaker";
-        var html_elements, mathml_elements, svg_elements, html5_tags, E;
-        html_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("a");
-            s.jsset.add("abbr");
-            s.jsset.add("acronym");
-            s.jsset.add("address");
-            s.jsset.add("area");
-            s.jsset.add("article");
-            s.jsset.add("aside");
-            s.jsset.add("audio");
-            s.jsset.add("b");
-            s.jsset.add("big");
-            s.jsset.add("blockquote");
-            s.jsset.add("br");
-            s.jsset.add("button");
-            s.jsset.add("canvas");
-            s.jsset.add("caption");
-            s.jsset.add("center");
-            s.jsset.add("cite");
-            s.jsset.add("code");
-            s.jsset.add("col");
-            s.jsset.add("colgroup");
-            s.jsset.add("command");
-            s.jsset.add("datagrid");
-            s.jsset.add("datalist");
-            s.jsset.add("dd");
-            s.jsset.add("del");
-            s.jsset.add("details");
-            s.jsset.add("dfn");
-            s.jsset.add("dialog");
-            s.jsset.add("dir");
-            s.jsset.add("div");
-            s.jsset.add("dl");
-            s.jsset.add("dt");
-            s.jsset.add("em");
-            s.jsset.add("event-source");
-            s.jsset.add("fieldset");
-            s.jsset.add("figcaption");
-            s.jsset.add("figure");
-            s.jsset.add("footer");
-            s.jsset.add("font");
-            s.jsset.add("form");
-            s.jsset.add("header");
-            s.jsset.add("h1");
-            s.jsset.add("h2");
-            s.jsset.add("h3");
-            s.jsset.add("h4");
-            s.jsset.add("h5");
-            s.jsset.add("h6");
-            s.jsset.add("hr");
-            s.jsset.add("i");
-            s.jsset.add("iframe");
-            s.jsset.add("img");
-            s.jsset.add("input");
-            s.jsset.add("ins");
-            s.jsset.add("keygen");
-            s.jsset.add("kbd");
-            s.jsset.add("label");
-            s.jsset.add("legend");
-            s.jsset.add("li");
-            s.jsset.add("m");
-            s.jsset.add("map");
-            s.jsset.add("menu");
-            s.jsset.add("meter");
-            s.jsset.add("multicol");
-            s.jsset.add("nav");
-            s.jsset.add("nextid");
-            s.jsset.add("ol");
-            s.jsset.add("output");
-            s.jsset.add("optgroup");
-            s.jsset.add("option");
-            s.jsset.add("p");
-            s.jsset.add("pre");
-            s.jsset.add("progress");
-            s.jsset.add("q");
-            s.jsset.add("s");
-            s.jsset.add("samp");
-            s.jsset.add("script");
-            s.jsset.add("section");
-            s.jsset.add("select");
-            s.jsset.add("small");
-            s.jsset.add("sound");
-            s.jsset.add("source");
-            s.jsset.add("spacer");
-            s.jsset.add("span");
-            s.jsset.add("strike");
-            s.jsset.add("strong");
-            s.jsset.add("style");
-            s.jsset.add("sub");
-            s.jsset.add("sup");
-            s.jsset.add("table");
-            s.jsset.add("tbody");
-            s.jsset.add("td");
-            s.jsset.add("textarea");
-            s.jsset.add("time");
-            s.jsset.add("tfoot");
-            s.jsset.add("th");
-            s.jsset.add("thead");
-            s.jsset.add("tr");
-            s.jsset.add("tt");
-            s.jsset.add("u");
-            s.jsset.add("ul");
-            s.jsset.add("var");
-            s.jsset.add("video");
-            return s;
-        })();
-        mathml_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("maction");
-            s.jsset.add("math");
-            s.jsset.add("merror");
-            s.jsset.add("mfrac");
-            s.jsset.add("mi");
-            s.jsset.add("mmultiscripts");
-            s.jsset.add("mn");
-            s.jsset.add("mo");
-            s.jsset.add("mover");
-            s.jsset.add("mpadded");
-            s.jsset.add("mphantom");
-            s.jsset.add("mprescripts");
-            s.jsset.add("mroot");
-            s.jsset.add("mrow");
-            s.jsset.add("mspace");
-            s.jsset.add("msqrt");
-            s.jsset.add("mstyle");
-            s.jsset.add("msub");
-            s.jsset.add("msubsup");
-            s.jsset.add("msup");
-            s.jsset.add("mtable");
-            s.jsset.add("mtd");
-            s.jsset.add("mtext");
-            s.jsset.add("mtr");
-            s.jsset.add("munder");
-            s.jsset.add("munderover");
-            s.jsset.add("none");
-            return s;
-        })();
-        svg_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("a");
-            s.jsset.add("animate");
-            s.jsset.add("animateColor");
-            s.jsset.add("animateMotion");
-            s.jsset.add("animateTransform");
-            s.jsset.add("clipPath");
-            s.jsset.add("circle");
-            s.jsset.add("defs");
-            s.jsset.add("desc");
-            s.jsset.add("ellipse");
-            s.jsset.add("font-face");
-            s.jsset.add("font-face-name");
-            s.jsset.add("font-face-src");
-            s.jsset.add("g");
-            s.jsset.add("glyph");
-            s.jsset.add("hkern");
-            s.jsset.add("linearGradient");
-            s.jsset.add("line");
-            s.jsset.add("marker");
-            s.jsset.add("metadata");
-            s.jsset.add("missing-glyph");
-            s.jsset.add("mpath");
-            s.jsset.add("path");
-            s.jsset.add("polygon");
-            s.jsset.add("polyline");
-            s.jsset.add("radialGradient");
-            s.jsset.add("rect");
-            s.jsset.add("set");
-            s.jsset.add("stop");
-            s.jsset.add("svg");
-            s.jsset.add("switch");
-            s.jsset.add("text");
-            s.jsset.add("title");
-            s.jsset.add("tspan");
-            s.jsset.add("use");
-            return s;
-        })();
-        html5_tags = html_elements.union(mathml_elements).union(svg_elements);
-        function _makeelement() {
-            var tag = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var kwargs = arguments[arguments.length-1];
-            if (kwargs === null || typeof kwargs !== "object" || kwargs [ρσ_kwargs_symbol] !== true) kwargs = {};
-            var args = Array.prototype.slice.call(arguments, 1);
-            if (kwargs !== null && typeof kwargs === "object" && kwargs [ρσ_kwargs_symbol] === true) args.pop();
-            var ans, vattr, val, attr, arg;
-            ans = this.createElement(tag);
-            var ρσ_Iter0 = ρσ_Iterable(kwargs);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                attr = ρσ_Iter0[ρσ_Index0];
-                vattr = str.replace(str.rstrip(attr, "_"), "_", "-");
-                val = kwargs[(typeof attr === "number" && attr < 0) ? kwargs.length + attr : attr];
-                if (callable(val)) {
-                    if (str.startswith(attr, "on")) {
-                        attr = attr.slice(2);
-                    }
-                    ans.addEventListener(attr, val);
-                } else if (val === true) {
-                    ans.setAttribute(vattr, vattr);
-                } else if (typeof val === "string") {
-                    ans.setAttribute(vattr, val);
-                }
-            }
-            var ρσ_Iter1 = ρσ_Iterable(args);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                arg = ρσ_Iter1[ρσ_Index1];
-                if (typeof arg === "string") {
-                    arg = this.createTextNode(arg);
-                }
-                ans.appendChild(arg);
-            }
-            return ans;
-        };
-        if (!_makeelement.__handles_kwarg_interpolation__) Object.defineProperties(_makeelement, {
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["tag"]}
-        });
-
-        function maker_for_document(document) {
-            var E;
-            E = _makeelement.bind(document);
-            Object.defineProperties(E, (function() {
-                var ρσ_Iter = ρσ_Iterable(html5_tags), ρσ_Result = {}, tag;
-                for (var ρσ_Index = 0; ρσ_Index < ρσ_Iter.length; ρσ_Index++) {
-                    tag = ρσ_Iter[ρσ_Index];
-                    ρσ_Result[tag] = ((function(){
-                        var ρσ_d = {};
-                        ρσ_d["value"] = _makeelement.bind(document, tag);
-                        return ρσ_d;
-                    }).call(this));
-                }
-                return ρσ_Result;
-            })());
-            return E;
-        };
-        if (!maker_for_document.__argnames__) Object.defineProperties(maker_for_document, {
-            __argnames__ : {value: ["document"]}
-        });
-
-        if (typeof document === "undefined") {
-            E = maker_for_document((function(){
-                var ρσ_d = {};
-                ρσ_d["createTextNode"] = (function() {
-                    var ρσ_anonfunc = function (value) {
-                        return value;
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["value"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                ρσ_d["createElement"] = (function() {
-                    var ρσ_anonfunc = function (name) {
-                        return (function(){
-                            var ρσ_d = {};
-                            ρσ_d["name"] = name;
-                            ρσ_d["children"] = ρσ_list_decorate([]);
-                            ρσ_d["attributes"] = {};
-                            ρσ_d["setAttribute"] = (function() {
-                                var ρσ_anonfunc = function (name, val) {
-                                    (ρσ_expr_temp = this.attributes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = val;
-                                };
-                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                    __argnames__ : {value: ["name", "val"]}
-                                });
-                                return ρσ_anonfunc;
-                            })();
-                            ρσ_d["appendChild"] = (function() {
-                                var ρσ_anonfunc = function (child) {
-                                    this.children.push(child);
-                                };
-                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                    __argnames__ : {value: ["child"]}
-                                });
-                                return ρσ_anonfunc;
-                            })();
-                            return ρσ_d;
-                        }).call(this);
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["name"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                return ρσ_d;
-            }).call(this));
-        } else {
-            E = maker_for_document(document);
-        }
-        ρσ_modules.elementmaker.html_elements = html_elements;
-        ρσ_modules.elementmaker.mathml_elements = mathml_elements;
-        ρσ_modules.elementmaker.svg_elements = svg_elements;
-        ρσ_modules.elementmaker.html5_tags = html5_tags;
-        ρσ_modules.elementmaker.E = E;
-        ρσ_modules.elementmaker._makeelement = _makeelement;
-        ρσ_modules.elementmaker.maker_for_document = maker_for_document;
-    })();
-
-    (function(){
         var __name__ = "settings";
         var options_list, character_settings, current_tab;
         var E = ρσ_modules.elementmaker.E;
@@ -6450,219 +6451,1466 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
+        var __name__ = "dndbeyond";
+        var ability_abbreviations, button_class, button_class_small;
+        var replaceRolls = ρσ_modules.utils.replaceRolls;
+
+        var getStoredSettings = ρσ_modules.settings.getStoredSettings;
+        var character_settings = ρσ_modules.settings.character_settings;
+
+        var E = ρσ_modules.elementmaker.E;
+
+        ability_abbreviations = (function(){
+            var ρσ_d = {};
+            ρσ_d["Strength"] = "STR";
+            ρσ_d["Dexterity"] = "DEX";
+            ρσ_d["Constitution"] = "CON";
+            ρσ_d["Intelligence"] = "INT";
+            ρσ_d["Wisdom"] = "WIS";
+            ρσ_d["Charisma"] = "CHA";
+            return ρσ_d;
+        }).call(this);
+        function Character() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            Character.prototype.__init__.apply(this, arguments);
+        }
+        Character.prototype.__init__ = function __init__() {
+            var self = this;
+            self._abilities = ρσ_list_decorate([]);
+            self._name = null;
+            self._id = null;
+            self._race = null;
+            self._level = null;
+            self._classes = null;
+            self._ac = null;
+            self._speed = null;
+            self._proficiency = null;
+            self._hp = 0;
+            self._max_hp = 0;
+            self._settings = null;
+        };
+        Character.__argnames__ = Character.prototype.__init__.__argnames__;
+        Character.__handles_kwarg_interpolation__ = Character.prototype.__init__.__handles_kwarg_interpolation__;
+        Character.prototype.updateInfo = function updateInfo() {
+            var self = this;
+            var abilities, name, abbr, modifier, value, ability, classes, ρσ_unpack, level, class_, xp;
+            self._id = $("#character-sheet-target").attr("data-character-id");
+            if (self._settings === null) {
+                self.updateSettings();
+            }
+            if (self._name === null) {
+                self._name = $(".ct-character-tidbits__name").text();
+                if ((self._name === "" || typeof self._name === "object" && ρσ_equals(self._name, ""))) {
+                    self._name = null;
+                }
+            }
+            if (self._ac === null) {
+                self._ac = $(".ct-armor-class-box__value").text();
+                if ((self._ac === "" || typeof self._ac === "object" && ρσ_equals(self._ac, ""))) {
+                    self._ac = $(".ct-combat-mobile__extra--ac .ct-combat-mobile__extra-value").text();
+                    if ((self._ac === "" || typeof self._ac === "object" && ρσ_equals(self._ac, ""))) {
+                        self._ac = null;
+                    }
+                }
+            }
+            if (self._proficiency === null) {
+                self._proficiency = $(".ct-proficiency-bonus-box__value").text();
+                if ((self._proficiency === "" || typeof self._proficiency === "object" && ρσ_equals(self._proficiency, ""))) {
+                    self._proficiency = $(".ct-combat-mobile__extra--proficiency .ct-combat-mobile__extra-value").text();
+                    if ((self._proficiency === "" || typeof self._proficiency === "object" && ρσ_equals(self._proficiency, ""))) {
+                        self._proficiency = null;
+                    }
+                }
+            }
+            if (self._speed === null) {
+                self._speed = $(".ct-speed-box__box-value .ct-distance-number__number").text();
+                if ((self._speed === "" || typeof self._speed === "object" && ρσ_equals(self._speed, ""))) {
+                    self._speed = $(".ct-combat-mobile__extra--speed .ct-combat-mobile__extra-value .ct-distance-number__number").text();
+                    if ((self._speed === "" || typeof self._speed === "object" && ρσ_equals(self._speed, ""))) {
+                        self._speed = null;
+                    }
+                }
+            }
+            if (ρσ_equals(len(self._abilities), 0)) {
+                abilities = $(".ct-quick-info__ability");
+                if ((abilities.length === 0 || typeof abilities.length === "object" && ρσ_equals(abilities.length, 0))) {
+                    abilities = $(".ct-main-mobile__ability");
+                }
+                if ((abilities.length === 0 || typeof abilities.length === "object" && ρσ_equals(abilities.length, 0))) {
+                    abilities = $(".ct-main-tablet__ability");
+                }
+                var ρσ_Iter0 = ρσ_Iterable(abilities);
+                for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                    ability = ρσ_Iter0[ρσ_Index0];
+                    name = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__label").text();
+                    abbr = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text();
+                    modifier = $(ability).find(".ct-ability-summary__primary .ct-signed-number").text();
+                    value = $(ability).find(".ct-ability-summary__secondary").text();
+                    if ((modifier === "" || typeof modifier === "object" && ρσ_equals(modifier, ""))) {
+                        modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number").text();
+                        value = $(ability).find(".ct-ability-summary__primary").text();
+                    }
+                    self._abilities.append(ρσ_list_decorate([ name, abbr, value, modifier ]).as_array());
+                }
+            }
+            if (self._race === null) {
+                self._race = $(".ct-character-tidbits__race").text();
+                if ((self._race === "" || typeof self._race === "object" && ρσ_equals(self._race, ""))) {
+                    self._race = null;
+                }
+            }
+            if (self._classes === null) {
+                classes = $(".ct-character-tidbits__classes");
+                if (classes.length > 0) {
+                    classes = classes.text().split(" / ");
+                    self._classes = {};
+                    var ρσ_Iter1 = ρσ_Iterable(classes);
+                    for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                        class_ = ρσ_Iter1[ρσ_Index1];
+                        ρσ_unpack = class_.split(" ");
+ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
+                        name = ρσ_unpack[0];
+                        level = ρσ_unpack[1];
+                        (ρσ_expr_temp = self._classes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = level;
+                    }
+                }
+            }
+            if (self._level === null) {
+                level = $(".ct-character-tidbits__xp-level");
+                xp = $(".ct-character-tidbits__xp-bar .ct-xp-bar__item--cur .ct-xp-bar__label");
+                if (level.length > 0) {
+                    self._level = level.text().replace("Level ", "");
+                } else if (xp.length > 0) {
+                    self._level = xp.text().replace("LVL ", "");
+                }
+            }
+            self.updateHP();
+        };
+        Character.prototype.updateHP = function updateHP() {
+            var self = this;
+            var hp, max_hp, hp_items, label, number, item, mobile_hp, req;
+            hp = max_hp = null;
+            hp_items = $(".ct-health-summary__hp-group--primary .ct-health-summary__hp-item");
+            var ρσ_Iter2 = ρσ_Iterable(hp_items);
+            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                item = ρσ_Iter2[ρσ_Index2];
+                label = $(item).find(".ct-health-summary__hp-item-label").text();
+                if ((label === "Current" || typeof label === "object" && ρσ_equals(label, "Current"))) {
+                    number = $(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number");
+                    if (number.length > 0) {
+                        hp = int(number.text());
+                    }
+                } else if ((label === "Max" || typeof label === "object" && ρσ_equals(label, "Max"))) {
+                    max_hp = int($(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number").text());
+                }
+            }
+            mobile_hp = $(".ct-status-summary-mobile__hp-current");
+            if (mobile_hp.length > 0) {
+                hp = int(mobile_hp.text());
+                max_hp = int($(".ct-status-summary-mobile__hp-max").text());
+            }
+            if (hp && max_hp && ((self._hp !== hp && (typeof self._hp !== "object" || ρσ_not_equals(self._hp, hp))) || (self._max_hp !== max_hp && (typeof self._max_hp !== "object" || ρσ_not_equals(self._max_hp, max_hp))))) {
+                self._hp = hp;
+                self._max_hp = max_hp;
+                print("HP updated to : " + hp + "/" + max_hp);
+                if (self._settings && self._settings["update-hp"]) {
+                    req = (function(){
+                        var ρσ_d = {};
+                        ρσ_d["action"] = "hp-update";
+                        ρσ_d["character"] = self.getDict();
+                        return ρσ_d;
+                    }).call(this);
+                    console.log("Sending message: " + str(req));
+                    chrome.runtime.sendMessage(req);
+                }
+            }
+        };
+        Character.prototype.updateSettings = function updateSettings() {
+            var self = this;
+            var new_settings = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? updateSettings.__defaults__.new_settings : arguments[0];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "new_settings")){
+                new_settings = ρσ_kwargs_obj.new_settings;
+            }
+            if (new_settings) {
+                self._settings = new_settings;
+            } else {
+                getStoredSettings((function() {
+                    var ρσ_anonfunc = function (saved_settings) {
+                        self._settings = saved_settings;
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["saved_settings"]}
+                    });
+                    return ρσ_anonfunc;
+                })(), "character-" + self._id, character_settings);
+            }
+        };
+        if (!Character.prototype.updateSettings.__defaults__) Object.defineProperties(Character.prototype.updateSettings, {
+            __defaults__ : {value: {new_settings:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["new_settings"]}
+        });
+        Character.prototype.getDict = function getDict() {
+            var self = this;
+            return (function(){
+                var ρσ_d = {};
+                ρσ_d["name"] = self._name;
+                ρσ_d["id"] = self._id;
+                ρσ_d["type"] = "Character";
+                ρσ_d["abilities"] = self._abilities.as_array();
+                ρσ_d["classes"] = self._classes;
+                ρσ_d["level"] = self._level;
+                ρσ_d["race"] = self._race;
+                ρσ_d["ac"] = self._ac;
+                ρσ_d["proficiency"] = self._proficiency;
+                ρσ_d["speed"] = self._speed;
+                ρσ_d["hp"] = self._hp;
+                ρσ_d["max-hp"] = self._max_hp;
+                ρσ_d["settings"] = self._settings;
+                return ρσ_d;
+            }).call(this);
+        };
+        Character.prototype.__repr__ = function __repr__ () {
+                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        Character.prototype.__str__ = function __str__ () {
+            return this.__repr__();
+        };
+        Object.defineProperty(Character.prototype, "__bases__", {value: []});
+
+        function Monster() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            Monster.prototype.__init__.apply(this, arguments);
+        }
+        Monster.prototype.__init__ = function __init__(_type) {
+            var self = this;
+            self._id = null;
+            self._type = _type;
+            self._name = null;
+            self._meta = null;
+            self._attributes = {};
+            self._ac = null;
+            self._hp = null;
+            self._hp_formula = null;
+            self._speed = null;
+            self._abilities = ρσ_list_decorate([]);
+            self._tidbits = {};
+            self._saves = ρσ_list_decorate([]);
+            self._skills = ρσ_list_decorate([]);
+            self._cr = null;
+        };
+        if (!Monster.prototype.__init__.__argnames__) Object.defineProperties(Monster.prototype.__init__, {
+            __argnames__ : {value: ["_type"]}
+        });
+        Monster.__argnames__ = Monster.prototype.__init__.__argnames__;
+        Monster.__handles_kwarg_interpolation__ = Monster.prototype.__init__.__handles_kwarg_interpolation__;
+        Monster.prototype.parseStatBlock = function parseStatBlock(base) {
+            var self = this;
+            var stat_block, a, attributes, label, value, attr, abilities, prefix, abbr, score, modifier, ability, tidbits, tidbit;
+            stat_block = $(base);
+            self._name = stat_block.find(base + "__name").text().trim();
+            a = stat_block.find(base + "__name-link");
+            if (a.length > 0) {
+                self._id = a.attr("href").replace("/monsters/", "");
+            } else {
+                self._id = self._name;
+            }
+            self._meta = stat_block.find(base + "__meta").text().trim();
+            attributes = stat_block.find(base + "__attributes " + base + "__attribute");
+            var ρσ_Iter3 = ρσ_Iterable(attributes);
+            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                attr = ρσ_Iter3[ρσ_Index3];
+                label = $(attr).find(base + "__attribute-label").text().trim();
+                value = $(attr).find(base + "__attribute-value").text().trim();
+                if ((value === "" || typeof value === "object" && ρσ_equals(value, ""))) {
+                    value = $(attr).find(base + "__attribute-data").text().trim();
+                }
+                if ((label === "Armor Class" || typeof label === "object" && ρσ_equals(label, "Armor Class"))) {
+                    self._ac = $(attr).find(base + "__attribute-data-value").text().trim();
+                } else if ((label === "Hit Points" || typeof label === "object" && ρσ_equals(label, "Hit Points"))) {
+                    self._hp = $(attr).find(base + "__attribute-data-value").text().trim();
+                    self._hp_formula = $(attr).find(base + "__attribute-data-extra").text().trim().slice(1, -1);
+                } else if ((label === "Speed" || typeof label === "object" && ρσ_equals(label, "Speed"))) {
+                    self._speed = value;
+                }
+                (ρσ_expr_temp = self._attributes)[(typeof label === "number" && label < 0) ? ρσ_expr_temp.length + label : label] = value;
+            }
+            abilities = stat_block.find(base + "__abilities");
+            if (abilities.length > 0) {
+                prefix = base + "__ability-";
+                abilities = abilities.find("> div");
+            } else {
+                abilities = stat_block.find(".ability-block > div");
+                prefix = ".ability-block__";
+            }
+            var ρσ_Iter4 = ρσ_Iterable(abilities);
+            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                ability = ρσ_Iter4[ρσ_Index4];
+                abbr = $(ability).find(prefix + "heading").text();
+                score = $(ability).find(prefix + "score").text();
+                modifier = $(ability).find(prefix + "modifier").text().slice(1, -1);
+                self._abilities.append(ρσ_list_decorate([ abbreviationToAbility(abbr), abbr, score, modifier ]).as_array());
+            }
+            tidbits = stat_block.find(base + "__tidbits " + base + "__tidbit");
+            var ρσ_Iter5 = ρσ_Iterable(tidbits);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                tidbit = ρσ_Iter5[ρσ_Index5];
+                label = $(tidbit).find(base + "__tidbit-label").text();
+                value = $(tidbit).find(base + "__tidbit-data").text().trim();
+                if ((label === "Saving Throws" || typeof label === "object" && ρσ_equals(label, "Saving Throws"))) {
+                    self._saves = value.split(", ");
+                } else if ((label === "Skills" || typeof label === "object" && ρσ_equals(label, "Skills"))) {
+                    self._skills = value.split(", ");
+                } else if ((label === "Challenge" || typeof label === "object" && ρσ_equals(label, "Challenge"))) {
+                    self._cr = value.split(" ")[0];
+                }
+                (ρσ_expr_temp = self._tidbits)[(typeof label === "number" && label < 0) ? ρσ_expr_temp.length + label : label] = value;
+            }
+            console.log("Done parsing stat block:", self);
+        };
+        if (!Monster.prototype.parseStatBlock.__argnames__) Object.defineProperties(Monster.prototype.parseStatBlock, {
+            __argnames__ : {value: ["base"]}
+        });
+        Monster.prototype.getDict = function getDict() {
+            var self = this;
+            return (function(){
+                var ρσ_d = {};
+                ρσ_d["name"] = self._name;
+                ρσ_d["type"] = self._type;
+                ρσ_d["id"] = self._id;
+                ρσ_d["ac"] = self._ac;
+                ρσ_d["hp"] = self._hp;
+                ρσ_d["hp-formula"] = self._hp_formula;
+                ρσ_d["speed"] = self._speed;
+                ρσ_d["abilities"] = self._abilities.as_array();
+                ρσ_d["saves"] = self._saves;
+                ρσ_d["skills"] = self._skills;
+                ρσ_d["cr"] = self._cr;
+                return ρσ_d;
+            }).call(this);
+        };
+        Monster.prototype.__repr__ = function __repr__ () {
+                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        Monster.prototype.__str__ = function __str__ () {
+            return this.__repr__();
+        };
+        Object.defineProperty(Monster.prototype, "__bases__", {value: []});
+
+        function abbreviationToAbility(abbr) {
+            var ability;
+            var ρσ_Iter6 = ρσ_Iterable(ability_abbreviations);
+            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                ability = ρσ_Iter6[ρσ_Index6];
+                if ((ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === abbr || typeof ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === "object" && ρσ_equals(ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability], abbr))) {
+                    return ability;
+                }
+            }
+            return abbr;
+        };
+        if (!abbreviationToAbility.__argnames__) Object.defineProperties(abbreviationToAbility, {
+            __argnames__ : {value: ["abbr"]}
+        });
+
+        function propertyListToDict(propList) {
+            var properties, label, value, i;
+            properties = {};
+            for (var ρσ_Index7 = 0; ρσ_Index7 < propList.length; ρσ_Index7++) {
+                i = ρσ_Index7;
+                label = propList.eq(i).find(".ct-property-list__property-label").text().slice(0, -1);
+                value = propList.eq(i).find(".ct-property-list__property-content").text();
+                properties[(typeof label === "number" && label < 0) ? properties.length + label : label] = value;
+            }
+            return properties;
+        };
+        if (!propertyListToDict.__argnames__) Object.defineProperties(propertyListToDict, {
+            __argnames__ : {value: ["propList"]}
+        });
+
+        function descriptionToString() {
+            var selector = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var separator = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? descriptionToString.__defaults__.separator : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "separator")){
+                separator = ρσ_kwargs_obj.separator;
+            }
+            var description_p, description, i;
+            description_p = $(selector).children();
+            if ((description_p.length === 0 || typeof description_p.length === "object" && ρσ_equals(description_p.length, 0))) {
+                return $(selector).text();
+            }
+            description = "";
+            for (var ρσ_Index8 = 0; ρσ_Index8 < description_p.length; ρσ_Index8++) {
+                i = ρσ_Index8;
+                if (len(description) > 0) {
+                    description += separator;
+                }
+                description += description_p.eq(i).text();
+            }
+            return description;
+        };
+        if (!descriptionToString.__defaults__) Object.defineProperties(descriptionToString, {
+            __defaults__ : {value: {separator:"\n"}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["selector", "separator"]}
+        });
+
+        function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
+            var items, to_hit, i;
+            items = $(items_selector);
+            for (var ρσ_Index9 = 0; ρσ_Index9 < items.length; ρσ_Index9++) {
+                i = ρσ_Index9;
+                if (ρσ_equals(items.eq(i).find(name_selector).text(), name_to_match)) {
+                    to_hit = items.eq(i).find(tohit_selector);
+                    if (to_hit.length > 0) {
+                        to_hit = to_hit.text();
+                        print("To hit for " + name_to_match + " is : " + to_hit);
+                        return to_hit;
+                    }
+                    break;
+                }
+            }
+            return null;
+        };
+        if (!findToHit.__argnames__) Object.defineProperties(findToHit, {
+            __argnames__ : {value: ["name_to_match", "items_selector", "name_selector", "tohit_selector"]}
+        });
+
+        function buildAttackRoll() {
+            var attack_source = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var name = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var description = ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[2];
+            var properties = ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[3];
+            var damage = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage : arguments[4];
+            var damage_type = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage_type : arguments[5];
+            var to_hit = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.to_hit : arguments[6];
+            var damage2 = (arguments[7] === undefined || ( 7 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage2 : arguments[7];
+            var damage_type2 = (arguments[8] === undefined || ( 8 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage_type2 : arguments[8];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage")){
+                damage = ρσ_kwargs_obj.damage;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage_type")){
+                damage_type = ρσ_kwargs_obj.damage_type;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "to_hit")){
+                to_hit = ρσ_kwargs_obj.to_hit;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage2")){
+                damage2 = ρσ_kwargs_obj.damage2;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage_type2")){
+                damage_type2 = ρσ_kwargs_obj.damage_type2;
+            }
+            var roll_properties, range_area, ρσ_unpack, save_ability, save_dc;
+            roll_properties = (function(){
+                var ρσ_d = {};
+                ρσ_d["name"] = name;
+                ρσ_d["attack-source"] = attack_source;
+                ρσ_d["description"] = description;
+                return ρσ_d;
+            }).call(this);
+            if (to_hit) {
+                roll_properties["to-hit"] = to_hit;
+            }
+            if (ρσ_exists.n(properties["Reach"])) {
+                roll_properties["reach"] = properties["Reach"];
+                roll_properties["attack-type"] = "Melee";
+            } else if (ρσ_exists.n(properties["Range"])) {
+                roll_properties["range"] = properties["Range"];
+                roll_properties["attack-type"] = "Ranged";
+            } else {
+                range_area = ρσ_exists.e(properties["Range/Area"], "");
+                if (ρσ_in("Reach", range_area)) {
+                    roll_properties["attack-type"] = "Melee";
+                    roll_properties["reach"] = range_area.replace(" Reach", "");
+                } else {
+                    roll_properties["attack-type"] = "Ranged";
+                    roll_properties["range"] = range_area;
+                }
+            }
+            if (ρσ_exists.n(properties["Attack Type"])) {
+                roll_properties["attack-type"] = properties["Attack Type"];
+            }
+            if (ρσ_exists.n(properties["Attack/Save"])) {
+                ρσ_unpack = properties["Attack/Save"].split(" ");
+ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
+                save_ability = ρσ_unpack[0];
+                save_dc = ρσ_unpack[1];
+                roll_properties["save-ability"] = abbreviationToAbility(save_ability);
+                roll_properties["save-dc"] = save_dc;
+            }
+            if (ρσ_exists.n(properties["Properties"])) {
+                roll_properties["properties"] = properties["Properties"].split(", ");
+            }
+            if (damage !== null) {
+                roll_properties["damage"] = damage;
+                roll_properties["damage-type"] = damage_type;
+            }
+            if (damage2 !== null) {
+                roll_properties["second-damage"] = damage2;
+                roll_properties["second-damage-type"] = damage_type2;
+            }
+            return roll_properties;
+        };
+        if (!buildAttackRoll.__defaults__) Object.defineProperties(buildAttackRoll, {
+            __defaults__ : {value: {damage:null, damage_type:null, to_hit:null, damage2:null, damage_type2:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["attack_source", "name", "description", "properties", "damage", "damage_type", "to_hit", "damage2", "damage_type2"]}
+        });
+
+        function sendRoll(character, rollType, fallback, args) {
+            var req, key;
+            req = (function(){
+                var ρσ_d = {};
+                ρσ_d["action"] = "roll";
+                ρσ_d["character"] = character.getDict();
+                ρσ_d["type"] = rollType;
+                ρσ_d["roll"] = fallback;
+                return ρσ_d;
+            }).call(this);
+            var ρσ_Iter10 = ρσ_Iterable(args);
+            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                key = ρσ_Iter10[ρσ_Index10];
+                req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
+            }
+            console.log("Sending message: " + str(req));
+            chrome.runtime.sendMessage(req);
+        };
+        if (!sendRoll.__argnames__) Object.defineProperties(sendRoll, {
+            __argnames__ : {value: ["character", "rollType", "fallback", "args"]}
+        });
+
+        function isRollButtonAdded() {
+            return $(".ct-beyond20-roll").length > 0;
+        };
+
+        function isCustomRollIconsAdded() {
+            return $(".ct-beyond20-custom-roll").length > 0;
+        };
+
+        function isHitDieButtonAdded() {
+            return $(".ct-beyond20-roll-hitdie").length > 0;
+        };
+
+        button_class = "ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button";
+        button_class_small = button_class + " character-button-small";
+        function addRollButton() {
+            var callback = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var where = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var small = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.small : arguments[2];
+            var append = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.append : arguments[3];
+            var image = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.image : arguments[4];
+            var text = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.text : arguments[5];
+            var bind = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.bind : arguments[6];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "small")){
+                small = ρσ_kwargs_obj.small;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "append")){
+                append = ρσ_kwargs_obj.append;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "image")){
+                image = ρσ_kwargs_obj.image;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "text")){
+                text = ρσ_kwargs_obj.text;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "bind")){
+                bind = ρσ_kwargs_obj.bind;
+            }
+            var icon32, icon16, button;
+            icon32 = chrome.extension.getURL("images/dice24.png");
+            icon16 = chrome.extension.getURL("images/dice16.png");
+            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.button, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: (image) ? (small) ? icon16 : icon32 : "", style: (image) ? "margin-right: 6px;" : ""})]), ρσ_interpolate_kwargs.call(E, E.span, [text].concat([ρσ_desugar_kwargs({class_: "ct-button__content"})]))].concat([ρσ_desugar_kwargs({class_: (small) ? button_class_small : button_class})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll"})]));
+            if (append) {
+                $(where).append(button);
+            } else {
+                $(where).after(button);
+            }
+            $(".ct-beyond20-roll").css((function(){
+                var ρσ_d = {};
+                ρσ_d["float"] = "right";
+                ρσ_d["display"] = "block";
+                ρσ_d["text-align"] = "center";
+                return ρσ_d;
+            }).call(this));
+            if (bind) {
+                $(".ct-beyond20-roll-button").bind("click", (function() {
+                    var ρσ_anonfunc = function (event) {
+                        callback();
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["event"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
+            }
+        };
+        if (!addRollButton.__defaults__) Object.defineProperties(addRollButton, {
+            __defaults__ : {value: {small:false, append:false, image:true, text:"Beyond 20", bind:true}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["callback", "where", "small", "append", "image", "text", "bind"]}
+        });
+
+        function addDisplayButton() {
+            var callback = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var where = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var text = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addDisplayButton.__defaults__.text : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "text")){
+                text = ρσ_kwargs_obj.text;
+            }
+            var button;
+            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.button, [ρσ_interpolate_kwargs.call(E, E.span, [text].concat([ρσ_desugar_kwargs({class_: "ct-button__content"})]))].concat([ρσ_desugar_kwargs({class_: button_class_small.replace("filled", "outline")})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll-display"})]));
+            $(where).append(button);
+            $(".ct-beyond20-roll-button").css((function(){
+                var ρσ_d = {};
+                ρσ_d["margin-left"] = "auto";
+                ρσ_d["margin-right"] = "auto";
+                return ρσ_d;
+            }).call(this));
+            $(".ct-beyond20-roll-display").css("margin-top", "2px");
+            $(".ct-beyond20-roll-display").bind("click", (function() {
+                var ρσ_anonfunc = function (event) {
+                    callback();
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["event"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!addDisplayButton.__defaults__) Object.defineProperties(addDisplayButton, {
+            __defaults__ : {value: {text:"Display in Roll20"}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["callback", "where", "text"]}
+        });
+
+        function addHitDieButtons(rollCallback) {
+            var icon16, button, hitdice, multiclass, cb, i;
+            icon16 = chrome.extension.getURL("images/icons/icon16.png");
+            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon16, style: "margin-right: 6px;"})]), ρσ_interpolate_kwargs.call(E, E.button, [ρσ_interpolate_kwargs.call(E, E.span, ["Roll Hit Die"].concat([ρσ_desugar_kwargs({class_: "ct-button__content"})]))].concat([ρσ_desugar_kwargs({class_: button_class_small})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll-hitdie", style: "float: right;"})]));
+            print("Adding Hit Dice buttons");
+            $(".ct-reset-pane__hitdie-heading").append(button);
+            hitdice = $(".ct-reset-pane__hitdie");
+            multiclass = hitdice.length > 1;
+            for (var ρσ_Index11 = 0; ρσ_Index11 < hitdice.length; ρσ_Index11++) {
+                i = ρσ_Index11;
+                cb = (function() {
+                    var ρσ_anonfunc = function (rollCallback, index) {
+                        return (function() {
+                            var ρσ_anonfunc = function (event) {
+                                rollCallback(multiclass, index);
+                            };
+                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                __argnames__ : {value: ["event"]}
+                            });
+                            return ρσ_anonfunc;
+                        })();
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["rollCallback", "index"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                $(".ct-beyond20-roll-hitdie").eq(i).bind("click", cb(rollCallback, i));
+            }
+        };
+        if (!addHitDieButtons.__argnames__) Object.defineProperties(addHitDieButtons, {
+            __argnames__ : {value: ["rollCallback"]}
+        });
+
+        function addDeathSaveButton(callback, where) {
+            var icon16, button;
+            icon16 = chrome.extension.getURL("images/icons/icon16.png");
+            button = ρσ_interpolate_kwargs.call(E, E.span, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon16})])].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll"})]));
+            print("Adding");
+            $(where).after(button);
+            $(".ct-beyond20-roll").bind("click", (function() {
+                var ρσ_anonfunc = function (event) {
+                    callback();
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["event"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!addDeathSaveButton.__argnames__) Object.defineProperties(addDeathSaveButton, {
+            __argnames__ : {value: ["callback", "where"]}
+        });
+
+        function removeRollButtons() {
+            var custom_rolls, i;
+            $(".ct-beyond20-roll").remove();
+            $(".ct-beyond20-roll-hitdie").remove();
+            $(".ct-beyond20-roll-display").remove();
+            $(".ct-beyond20-custom-icon").remove();
+            custom_rolls = $("u.ct-beyond20-custom-roll");
+            for (var ρσ_Index12 = 0; ρσ_Index12 < custom_rolls.length; ρσ_Index12++) {
+                i = ρσ_Index12;
+                custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
+            }
+        };
+
+        function injectDiceToRolls() {
+            var selector = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var character = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var name = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? injectDiceToRolls.__defaults__.name : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "name")){
+                name = ρσ_kwargs_obj.name;
+            }
+            var text, icon16, pre_original, post_original, pre_dice, post_dice;
+            text = $(selector).html();
+            icon16 = chrome.extension.getURL("images/icons/icon16.png");
+            pre_original = "<u class=\"ct-beyond20-custom-roll\"><strong>";
+            post_original = "</strong>";
+            pre_dice = "<img class=\"ct-beyond20-custom-icon\" x-beyond20-name=\"" + name + "\" x-beyond20-roll=\"";
+            post_dice = "\"></img></u>";
+            text = replaceRolls(false, text, true, pre_original, post_original, pre_dice, post_dice);
+            text = replaceRolls(true, text, true, pre_original, post_original, pre_dice + "1d20", post_dice);
+            $(selector).html(text);
+            $(".ct-beyond20-custom-icon").css("margin-right", "3px");
+            $(".ct-beyond20-custom-icon").css("margin-left", "3px");
+            $(".ct-beyond20-custom-icon").attr("src", icon16);
+            $(".ct-beyond20-custom-roll").bind("click", (function() {
+                var ρσ_anonfunc = function (event) {
+                    var name, roll;
+                    name = $(event.currentTarget).find("img").attr("x-beyond20-name");
+                    roll = $(event.currentTarget).find("img").attr("x-beyond20-roll");
+                    sendRoll(character, "custom", roll, (function(){
+                        var ρσ_d = {};
+                        ρσ_d["name"] = name;
+                        return ρσ_d;
+                    }).call(this));
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["event"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!injectDiceToRolls.__defaults__) Object.defineProperties(injectDiceToRolls, {
+            __defaults__ : {value: {name:""}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["selector", "character", "name"]}
+        });
+
+        ρσ_modules.dndbeyond.ability_abbreviations = ability_abbreviations;
+        ρσ_modules.dndbeyond.button_class = button_class;
+        ρσ_modules.dndbeyond.button_class_small = button_class_small;
+        ρσ_modules.dndbeyond.Character = Character;
+        ρσ_modules.dndbeyond.Monster = Monster;
+        ρσ_modules.dndbeyond.abbreviationToAbility = abbreviationToAbility;
+        ρσ_modules.dndbeyond.propertyListToDict = propertyListToDict;
+        ρσ_modules.dndbeyond.descriptionToString = descriptionToString;
+        ρσ_modules.dndbeyond.findToHit = findToHit;
+        ρσ_modules.dndbeyond.buildAttackRoll = buildAttackRoll;
+        ρσ_modules.dndbeyond.sendRoll = sendRoll;
+        ρσ_modules.dndbeyond.isRollButtonAdded = isRollButtonAdded;
+        ρσ_modules.dndbeyond.isCustomRollIconsAdded = isCustomRollIconsAdded;
+        ρσ_modules.dndbeyond.isHitDieButtonAdded = isHitDieButtonAdded;
+        ρσ_modules.dndbeyond.addRollButton = addRollButton;
+        ρσ_modules.dndbeyond.addDisplayButton = addDisplayButton;
+        ρσ_modules.dndbeyond.addHitDieButtons = addHitDieButtons;
+        ρσ_modules.dndbeyond.addDeathSaveButton = addDeathSaveButton;
+        ρσ_modules.dndbeyond.removeRollButtons = removeRollButtons;
+        ρσ_modules.dndbeyond.injectDiceToRolls = injectDiceToRolls;
+    })();
+
+    (function(){
 
         var __name__ = "__main__";
 
 
-        var chat, txt, btn, speakingas, settings;
-        var replaceRolls = ρσ_modules.utils.replaceRolls;
-        var injectPageScript = ρσ_modules.utils.injectPageScript;
-        var sendCustomEvent = ρσ_modules.utils.sendCustomEvent;
-
+        var settings, character, lastItemName, lastSpellName, lastSpellLevel, observer;
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
 
-        print("Beyond20: Roll20 module loaded.");
-        chat = document.getElementById("textchat-input");
-        txt = chat.getElementsByTagName("textarea")[0];
-        btn = chat.getElementsByTagName("button")[0];
-        speakingas = document.getElementById("speakingas");
+        var E = ρσ_modules.elementmaker.E;
+
+        var Character = ρσ_modules.dndbeyond.Character;
+        var buildAttackRoll = ρσ_modules.dndbeyond.buildAttackRoll;
+        var sendRoll = ρσ_modules.dndbeyond.sendRoll;
+        var ability_abbreviations = ρσ_modules.dndbeyond.ability_abbreviations;
+        var findToHit = ρσ_modules.dndbeyond.findToHit;
+        var descriptionToString = ρσ_modules.dndbeyond.descriptionToString;
+        var propertyListToDict = ρσ_modules.dndbeyond.propertyListToDict;
+        var injectDiceToRolls = ρσ_modules.dndbeyond.injectDiceToRolls;
+        var addDeathSaveButton = ρσ_modules.dndbeyond.addDeathSaveButton;
+        var addHitDieButtons = ρσ_modules.dndbeyond.addHitDieButtons;
+        var addDisplayButton = ρσ_modules.dndbeyond.addDisplayButton;
+        var addRollButton = ρσ_modules.dndbeyond.addRollButton;
+        var isHitDieButtonAdded = ρσ_modules.dndbeyond.isHitDieButtonAdded;
+        var isRollButtonAdded = ρσ_modules.dndbeyond.isRollButtonAdded;
+        var isCustomRollIconsAdded = ρσ_modules.dndbeyond.isCustomRollIconsAdded;
+        var removeRollButtons = ρσ_modules.dndbeyond.removeRollButtons;
+
+        print("Beyond20: D&D Beyond module loaded.");
         settings = getDefaultSettings();
-        function postChatMessage() {
-            var message = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var character = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postChatMessage.__defaults__.character : arguments[1];
+        character = new Character;
+        function sendRollWithCharacter(rollType, fallback, args) {
+            sendRoll(character, rollType, fallback, args);
+        };
+        if (!sendRollWithCharacter.__argnames__) Object.defineProperties(sendRollWithCharacter, {
+            __argnames__ : {value: ["rollType", "fallback", "args"]}
+        });
+
+        function rollSkillCheck(paneClass) {
+            var skill_name, ability, modifier, proficiency;
+            skill_name = $("." + paneClass + "__header-name").text();
+            ability = $("." + paneClass + "__header-ability").text();
+            modifier = $("." + paneClass + "__header-modifier").text();
+            proficiency = $("." + paneClass + "__header-icon .ct-tooltip").attr("data-original-title");
+            print("Skill " + skill_name + "(" + ability + ") : " + modifier);
+            sendRollWithCharacter("skill", "1d20" + modifier, (function(){
+                var ρσ_d = {};
+                ρσ_d["skill"] = skill_name;
+                ρσ_d["ability"] = ability;
+                ρσ_d["modifier"] = modifier;
+                ρσ_d["proficiency"] = proficiency;
+                return ρσ_d;
+            }).call(this));
+        };
+        if (!rollSkillCheck.__argnames__) Object.defineProperties(rollSkillCheck, {
+            __argnames__ : {value: ["paneClass"]}
+        });
+
+        function rollAbilityOrSavingThrow(paneClass, rollType) {
+            var ability_string, ability_name, modifier, ability;
+            ability_string = $("." + paneClass + " .ct-sidebar__heading").text();
+            ability_name = ability_string.split(" ")[0];
+            modifier = $("." + paneClass + "__modifier .ct-signed-number").text();
+            ability = ability_abbreviations[(typeof ability_name === "number" && ability_name < 0) ? ability_abbreviations.length + ability_name : ability_name];
+            print(rollType + " " + ability_name + "(" + ability + ") : " + modifier);
+            sendRollWithCharacter(rollType, "1d20" + modifier, (function(){
+                var ρσ_d = {};
+                ρσ_d["name"] = ability_name;
+                ρσ_d["ability"] = ability;
+                ρσ_d["modifier"] = modifier;
+                return ρσ_d;
+            }).call(this));
+        };
+        if (!rollAbilityOrSavingThrow.__argnames__) Object.defineProperties(rollAbilityOrSavingThrow, {
+            __argnames__ : {value: ["paneClass", "rollType"]}
+        });
+
+        function rollAbilityCheck() {
+            rollAbilityOrSavingThrow("ct-ability-pane", "ability");
+        };
+
+        function rollSavingThrow() {
+            rollAbilityOrSavingThrow("ct-ability-saving-throws-pane", "saving-throw");
+        };
+
+        function rollInitiative() {
+            var initiative, advantage, roll;
+            initiative = $(".ct-initiative-box__value").text();
+            advantage = $(".ct-initiative-box__advantage").length > 0;
+            if ((initiative === "" || typeof initiative === "object" && ρσ_equals(initiative, ""))) {
+                initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text();
+                advantage = $(".ct-combat-mobile__advantage").length > 0;
+            }
+            roll = (advantage) ? "2d20kh1" : "1d20";
+            print("Initiative " + ((advantage) ? "with" : "without") + " advantage : " + initiative);
+            sendRollWithCharacter("initiative", "1d20" + initiative, (function(){
+                var ρσ_d = {};
+                ρσ_d["initiative"] = initiative;
+                ρσ_d["advantage"] = advantage;
+                return ρσ_d;
+            }).call(this));
+        };
+
+        function rollHitDie(multiclass, index) {
+            var hitdie, class_name, text, die;
+            print("Rolling hit die index " + index);
+            hitdie = $(".ct-reset-pane__hitdie").eq(index);
+            class_name = hitdie.find(".ct-reset-pane__hitdie-heading-class").text();
+            text = hitdie.find(".ct-reset-pane__hitdie-heading").text();
+            die = text.split("Hit Die: ")[1].split(" ")[0];
+            sendRollWithCharacter("hit-dice", die, (function(){
+                var ρσ_d = {};
+                ρσ_d["class"] = class_name;
+                ρσ_d["multiclass"] = multiclass;
+                ρσ_d["hit-dice"] = die;
+                return ρσ_d;
+            }).call(this));
+        };
+        if (!rollHitDie.__argnames__) Object.defineProperties(rollHitDie, {
+            __argnames__ : {value: ["multiclass", "index"]}
+        });
+
+        function rollItem() {
+            var force_display = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollItem.__defaults__.force_display : arguments[0];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "character")){
-                character = ρσ_kwargs_obj.character;
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
+                force_display = ρσ_kwargs_obj.force_display;
             }
-            var set_speakingas, old_as, i, old_text;
-            set_speakingas = true;
-            old_as = speakingas.value;
-            if (character) {
-                character = character.toLowerCase();
-                for (var ρσ_Index0 = 0; ρσ_Index0 < speakingas.children.length; ρσ_Index0++) {
-                    i = ρσ_Index0;
-                    if (ρσ_equals((ρσ_expr_temp = speakingas.children)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i].text.toLowerCase(), character)) {
-                        (ρσ_expr_temp = speakingas.children)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i].selected = true;
-                        set_speakingas = false;
+            var prop_list, properties, item_name, item_type, description, to_hit, damage, damage2, damage2_type, value, versatile_damage, additional_damages, dmg, dmg_type, dmg_info, j, i, roll_properties;
+            prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property");
+            properties = propertyListToDict(prop_list);
+            print("Properties are : " + str(properties));
+            item_name = $(".ct-item-pane .ct-item-name").text();
+            item_type = $(".ct-item-detail__intro").text();
+            description = descriptionToString(".ct-item-detail__description");
+            if (force_display === false && ρσ_in("Damage", properties)) {
+                to_hit = ρσ_exists.e(properties["To Hit"], findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit"));
+                damage = null;
+                damage2 = null;
+                damage2_type = null;
+                for (var ρσ_Index13 = 0; ρσ_Index13 < prop_list.length; ρσ_Index13++) {
+                    i = ρσ_Index13;
+                    if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
+                        value = prop_list.eq(i).find(".ct-property-list__property-content");
+                        damage = value.find(".ct-damage__value").text();
+                        versatile_damage = value.find(".ct-item-detail__versatile-damage").text();
+                        if ((versatile_damage !== "" && (typeof versatile_damage !== "object" || ρσ_not_equals(versatile_damage, "")))) {
+                            damage2 = versatile_damage.slice(1, -1);
+                            damage2_type = "Two-Handed";
+                        }
+                        additional_damages = value.find(".ct-item-detail__additional-damage");
+                        for (var ρσ_Index14 = 0; ρσ_Index14 < additional_damages.length; ρσ_Index14++) {
+                            j = ρσ_Index14;
+                            dmg = additional_damages.eq(j).text();
+                            dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
+                            dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
+                            if ((dmg !== "" && (typeof dmg !== "object" || ρσ_not_equals(dmg, "")))) {
+                                dmg = dmg.replace(dmg_info, "");
+                                if (damage2 === null) {
+                                    damage2 = dmg;
+                                    damage2_type = dmg_type;
+                                } else {
+                                    damage2 += " | " + dmg;
+                                    damage2_type += " | " + dmg_type;
+                                    if ((dmg_info !== "" && (typeof dmg_info !== "object" || ρσ_not_equals(dmg_info, "")))) {
+                                        damage2_type += "(" + dmg_info + ")";
+                                    }
+                                }
+                            }
+                        }
                         break;
                     }
                 }
-            }
-            if (set_speakingas) {
-                speakingas.children[0].selected = true;
-            }
-            old_text = txt.value;
-            txt.value = message;
-            btn.click();
-            txt.value = old_text;
-            speakingas.value = old_as;
-        };
-        if (!postChatMessage.__defaults__) Object.defineProperties(postChatMessage, {
-            __defaults__ : {value: {character:null}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["message", "character"]}
-        });
-
-        function genRoll() {
-            var dice = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var modifiers = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? genRoll.__defaults__.modifiers : arguments[1];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "modifiers")){
-                modifiers = ρσ_kwargs_obj.modifiers;
-            }
-            var roll, mod, m;
-            roll = "[[" + dice;
-            var ρσ_Iter1 = ρσ_Iterable(modifiers);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                m = ρσ_Iter1[ρσ_Index1];
-                mod = modifiers[(typeof m === "number" && m < 0) ? modifiers.length + m : m];
-                if (len(mod) > 0) {
-                    if ((mod[0] === "+" || typeof mod[0] === "object" && ρσ_equals(mod[0], "+")) || (mod[0] === "-" || typeof mod[0] === "object" && ρσ_equals(mod[0], "-")) || (mod[0] === "?" || typeof mod[0] === "object" && ρσ_equals(mod[0], "?")) || (mod[0] === "&" || typeof mod[0] === "object" && ρσ_equals(mod[0], "&"))) {
-                        roll += " " + mod;
-                    } else {
-                        roll += "+" + mod;
-                    }
-                    if (len(m) > 0) {
-                        roll += "[" + m + "]";
-                    }
-                }
-            }
-            roll += "]]";
-            return roll;
-        };
-        if (!genRoll.__defaults__) Object.defineProperties(genRoll, {
-            __defaults__ : {value: {modifiers:ρσ_list_decorate([])}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["dice", "modifiers"]}
-        });
-
-        function subRolls() {
-            var text = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var keep_original = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.keep_original : arguments[1];
-            var damage_only = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.damage_only : arguments[2];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "keep_original")){
-                keep_original = ρσ_kwargs_obj.keep_original;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage_only")){
-                damage_only = ρσ_kwargs_obj.damage_only;
-            }
-            var pre_original, post_original, pre_dice, post_dice;
-            if (keep_original) {
-                pre_original = "[";
-                post_original = "]";
-                pre_dice = "(!&#13;&#91;&#91;";
-                post_dice = "&#93;&#93;)";
+                roll_properties = buildAttackRoll("item", item_name, description, properties, damage, ρσ_exists.e(properties["Damage Type"], ""), to_hit, damage2, damage2_type);
+                roll_properties["item-type"] = item_type;
+                sendRollWithCharacter("attack", damage, roll_properties);
             } else {
-                pre_original = "";
-                post_original = "";
-                pre_dice = "[[";
-                post_dice = "]]";
+                sendRollWithCharacter("item", 0, (function(){
+                    var ρσ_d = {};
+                    ρσ_d["name"] = item_name;
+                    ρσ_d["description"] = description;
+                    ρσ_d["item-type"] = item_type;
+                    return ρσ_d;
+                }).call(this));
             }
-            text = replaceRolls(false, text, keep_original, pre_original, post_original, pre_dice, post_dice);
-            if (damage_only) {
-                return text;
-            }
-            return replaceRolls(true, text, keep_original, pre_original, post_original, pre_dice + "1d20", post_dice);
         };
-        if (!subRolls.__defaults__) Object.defineProperties(subRolls, {
-            __defaults__ : {value: {keep_original:false, damage_only:false}},
+        if (!rollItem.__defaults__) Object.defineProperties(rollItem, {
+            __defaults__ : {value: {force_display:false}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["text", "keep_original", "damage_only"]}
+            __argnames__ : {value: ["force_display"]}
         });
 
-        function subDescriptionRolls(description) {
-            if (!settings["subst-roll20"]) {
-                return description;
+        function rollAction(paneClass) {
+            var properties, action_name, description, roll_properties;
+            properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"));
+            print("Properties are : " + str(properties));
+            action_name = $(".ct-sidebar__heading").text();
+            description = descriptionToString(".ct-action-detail__description");
+            if (ρσ_in("Damage", properties) && (ρσ_exists.n(properties["To Hit"]) || ρσ_exists.n(properties["Attack/Save"]))) {
+                roll_properties = buildAttackRoll("action", action_name, description, properties, properties["Damage"], ρσ_exists.e(properties["Damage Type"], ""), ρσ_exists.e(properties["To Hit"], null));
+                sendRollWithCharacter("attack", properties["Damage"], roll_properties);
+            } else {
+                sendRollWithCharacter("action", 0, (function(){
+                    var ρσ_d = {};
+                    ρσ_d["name"] = action_name;
+                    ρσ_d["description"] = description;
+                    return ρσ_d;
+                }).call(this));
             }
-            return subRolls(description, true);
         };
-        if (!subDescriptionRolls.__argnames__) Object.defineProperties(subDescriptionRolls, {
-            __argnames__ : {value: ["description"]}
+        if (!rollAction.__argnames__) Object.defineProperties(rollAction, {
+            __argnames__ : {value: ["paneClass"]}
         });
 
-        function subDamageRolls(text) {
-            return ρσ_interpolate_kwargs.call(this, subRolls, [text].concat([ρσ_desugar_kwargs({damage_only: true})]));
-        };
-        if (!subDamageRolls.__argnames__) Object.defineProperties(subDamageRolls, {
-            __argnames__ : {value: ["text"]}
-        });
-
-        function template(name, properties) {
-            var renameProp, result, key;
-            if (ρσ_exists.n(properties["normal"])) {
-                ρσ_delitem(properties, "r2");
+        function rollSpell() {
+            var force_display = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollSpell.__defaults__.force_display : arguments[0];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
+                force_display = ρσ_kwargs_obj.force_display;
             }
-            if ((settings["template"] === "default" || typeof settings["template"] === "object" && ρσ_equals(settings["template"], "default"))) {
-                name = "default";
-                renameProp = (function() {
-                    var ρσ_anonfunc = function (old_key, new_key) {
-                        var new_properties, key;
-                        new_properties = {};
-                        var ρσ_Iter2 = ρσ_Iterable(properties);
-                        for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                            key = ρσ_Iter2[ρσ_Index2];
-                            new_properties[ρσ_bound_index(((key === old_key || typeof key === "object" && ρσ_equals(key, old_key))) ? new_key : key, new_properties)] = properties[(typeof key === "number" && key < 0) ? properties.length + key : key];
-                        }
-                        properties = new_properties;
+            var properties, spell_name, description, damages, healings, castas, level, concentration, ritual, duration, to_hit, num_damages, damage, damage2, dmg, dmgtype, damage_type, damage2_type, i, roll_properties, spell_properties, key;
+            properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"));
+            print("Properties are : " + str(properties));
+            spell_name = $(".ct-sidebar__heading .ct-spell-name").text();
+            description = descriptionToString(".ct-spell-pane .ct-spell-detail__description");
+            damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage");
+            healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp");
+            castas = $(".ct-spell-caster__casting-level-current").text();
+            level = descriptionToString(".ct-spell-pane .ct-spell-detail__level-school", " ");
+            concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration").length > 0;
+            ritual = $(".ct-spell-pane .ct-spell-name__icon--ritual").length > 0;
+            duration = ρσ_exists.e(properties["Duration"], "");
+            if (ρσ_in("Concentration", duration)) {
+                duration = duration.replace("Concentration, ", "");
+                concentration = true;
+            } else {
+                concentration = false;
+            }
+            to_hit = ρσ_exists.e(properties["To Hit"], findToHit(spell_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit"));
+            if (!to_hit) {
+                to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit");
+            }
+            if (force_display === false && (damages.length > 0 || healings.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null))))) {
+                num_damages = 0;
+                damage = null;
+                damage2 = null;
+                for (var ρσ_Index15 = 0; ρσ_Index15 < damages.length; ρσ_Index15++) {
+                    i = ρσ_Index15;
+                    dmg = damages.eq(i).find(".ct-spell-caster__modifier-amount").text();
+                    dmgtype = damages.eq(i).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
+                    if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
+                        dmgtype = "";
+                    }
+                    if ((num_damages === 0 || typeof num_damages === "object" && ρσ_equals(num_damages, 0))) {
+                        damage = dmg;
+                        damage_type = dmgtype;
+                    } else if ((num_damages === 1 || typeof num_damages === "object" && ρσ_equals(num_damages, 1))) {
+                        damage2 = dmg;
+                        damage2_type = dmgtype;
+                    } else {
+                        damage2 += " | " + dmg;
+                        damage2_type += " | " + dmgtype;
+                    }
+                    num_damages += 1;
+                }
+                for (var ρσ_Index16 = 0; ρσ_Index16 < healings.length; ρσ_Index16++) {
+                    i = ρσ_Index16;
+                    dmg = healings.eq(i).find(".ct-spell-caster__modifier-amount").text();
+                    if ((num_damages === 0 || typeof num_damages === "object" && ρσ_equals(num_damages, 0))) {
+                        damage = dmg;
+                        damage_type = "Healing";
+                    } else if ((num_damages === 1 || typeof num_damages === "object" && ρσ_equals(num_damages, 1))) {
+                        damage2 = dmg;
+                        damage2_type = "Healing";
+                    } else {
+                        damage2 += " | " + dmg;
+                        damage2_type += " | " + "Healing";
+                    }
+                    num_damages += 1;
+                }
+                roll_properties = buildAttackRoll("spell", spell_name, description, properties, damage, damage_type, to_hit, damage2, damage2_type);
+                spell_properties = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["level-school"] = level;
+                    ρσ_d["concentration"] = concentration;
+                    ρσ_d["duration"] = duration;
+                    ρσ_d["casting-time"] = ρσ_exists.e(properties["Casting Time"], "");
+                    ρσ_d["components"] = ρσ_exists.e(properties["Components"], "");
+                    ρσ_d["ritual"] = ritual;
+                    return ρσ_d;
+                }).call(this);
+                var ρσ_Iter17 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
+                    key = ρσ_Iter17[ρσ_Index17];
+                    roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
+                }
+                if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
+                    roll_properties["cast-at"] = castas;
+                }
+                sendRollWithCharacter("spell-attack", damage, roll_properties);
+            } else {
+                roll_properties = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["name"] = spell_name;
+                    ρσ_d["level-school"] = level;
+                    ρσ_d["range"] = ρσ_exists.e(properties["Range/Area"], "");
+                    ρσ_d["concentration"] = concentration;
+                    ρσ_d["duration"] = duration;
+                    ρσ_d["casting-time"] = ρσ_exists.e(properties["Casting Time"], "");
+                    ρσ_d["components"] = ρσ_exists.e(properties["Components"], "");
+                    ρσ_d["ritual"] = ritual;
+                    ρσ_d["description"] = description;
+                    return ρσ_d;
+                }).call(this);
+                if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
+                    roll_properties["cast-at"] = castas;
+                }
+                sendRollWithCharacter("spell-card", 0, roll_properties);
+            }
+        };
+        if (!rollSpell.__defaults__) Object.defineProperties(rollSpell, {
+            __defaults__ : {value: {force_display:false}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["force_display"]}
+        });
+
+        function displayItem() {
+            rollItem(true);
+        };
+
+        function displaySpell() {
+            rollSpell(true);
+        };
+
+        function displayFeature(paneClass) {
+            var source_types, name, source, source_type, description;
+            source_types = (function(){
+                var ρσ_d = {};
+                ρσ_d["ct-class-feature-pane"] = "Class";
+                ρσ_d["ct-racial-trait-pane"] = "Race";
+                ρσ_d["ct-feat-pane"] = "Feat";
+                return ρσ_d;
+            }).call(this);
+            name = $(".ct-sidebar__heading").text();
+            source = $(".ct-sidebar__header-parent").text();
+            source_type = source_types[(typeof paneClass === "number" && paneClass < 0) ? source_types.length + paneClass : paneClass];
+            description = descriptionToString(".ct-snippet__content");
+            sendRollWithCharacter("feature", 0, (function(){
+                var ρσ_d = {};
+                ρσ_d["name"] = name;
+                ρσ_d["source"] = source;
+                ρσ_d["source-type"] = source_type;
+                ρσ_d["description"] = description;
+                return ρσ_d;
+            }).call(this));
+        };
+        if (!displayFeature.__argnames__) Object.defineProperties(displayFeature, {
+            __argnames__ : {value: ["paneClass"]}
+        });
+
+        function displayTrait() {
+            var trait, description;
+            trait = $(".ct-sidebar__heading").text();
+            description = $(".ct-trait-pane__input").text();
+            sendRollWithCharacter("trait", 0, (function(){
+                var ρσ_d = {};
+                ρσ_d["name"] = trait;
+                ρσ_d["description"] = description;
+                return ρσ_d;
+            }).call(this));
+        };
+
+        function execute(paneClass) {
+            print("Beyond20: Executing panel : " + paneClass);
+            if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-skill-pane", "ct-custom-skill-pane" ]))) {
+                rollSkillCheck(paneClass);
+            } else if ((paneClass === "ct-ability-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-ability-pane"))) {
+                rollAbilityCheck();
+            } else if ((paneClass === "ct-ability-saving-throws-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-ability-saving-throws-pane"))) {
+                rollSavingThrow();
+            } else if ((paneClass === "ct-initiative-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-initiative-pane"))) {
+                rollInitiative();
+            } else if ((paneClass === "ct-item-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-item-pane"))) {
+                rollItem();
+            } else if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-action-pane", "ct-custom-action-pane" ]))) {
+                rollAction(paneClass);
+            } else if ((paneClass === "ct-spell-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-spell-pane"))) {
+                rollSpell();
+            } else {
+                displayPanel(paneClass);
+            }
+        };
+        if (!execute.__argnames__) Object.defineProperties(execute, {
+            __argnames__ : {value: ["paneClass"]}
+        });
+
+        function displayPanel(paneClass) {
+            print("Beyond20: Displaying panel : " + paneClass);
+            if ((paneClass === "ct-item-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-item-pane"))) {
+                displayItem();
+            } else if ((paneClass === "ct-spell-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-spell-pane"))) {
+                displaySpell();
+            } else if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane" ]))) {
+                displayFeature(paneClass);
+            } else if ((paneClass === "ct-trait-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-trait-pane"))) {
+                displayTrait();
+            } else {
+                alert("Not recognizing the currently open sidebar");
+            }
+        };
+        if (!displayPanel.__argnames__) Object.defineProperties(displayPanel, {
+            __argnames__ : {value: ["paneClass"]}
+        });
+
+        function checkAndInjectDiceToRolls() {
+            var selector = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var name = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? checkAndInjectDiceToRolls.__defaults__.name : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "name")){
+                name = ρσ_kwargs_obj.name;
+            }
+            if (!settings["subst-dndbeyond"]) {
+                return;
+            }
+            injectDiceToRolls(selector, character, name);
+        };
+        if (!checkAndInjectDiceToRolls.__defaults__) Object.defineProperties(checkAndInjectDiceToRolls, {
+            __defaults__ : {value: {name:""}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["selector", "name"]}
+        });
+
+        function addRollButtonEx() {
+            var paneClass = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var where = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var small = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButtonEx.__defaults__.small : arguments[2];
+            var append = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButtonEx.__defaults__.append : arguments[3];
+            var image = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButtonEx.__defaults__.image : arguments[4];
+            var text = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButtonEx.__defaults__.text : arguments[5];
+            var bind = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButtonEx.__defaults__.bind : arguments[6];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "small")){
+                small = ρσ_kwargs_obj.small;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "append")){
+                append = ρσ_kwargs_obj.append;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "image")){
+                image = ρσ_kwargs_obj.image;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "text")){
+                text = ρσ_kwargs_obj.text;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "bind")){
+                bind = ρσ_kwargs_obj.bind;
+            }
+            var callback;
+            callback = function () {
+                execute(paneClass);
+            };
+            addRollButton(callback, where, small, append, image, text, bind);
+        };
+        if (!addRollButtonEx.__defaults__) Object.defineProperties(addRollButtonEx, {
+            __defaults__ : {value: {small:false, append:false, image:true, text:"Beyond 20", bind:true}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["paneClass", "where", "small", "append", "image", "text", "bind"]}
+        });
+
+        function addDisplayButtonEx() {
+            var paneClass = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var where = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var text = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addDisplayButtonEx.__defaults__.text : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "text")){
+                text = ρσ_kwargs_obj.text;
+            }
+            var callback;
+            callback = function () {
+                displayPanel(paneClass);
+            };
+            addDisplayButton(callback, where, text);
+        };
+        if (!addDisplayButtonEx.__defaults__) Object.defineProperties(addDisplayButtonEx, {
+            __defaults__ : {value: {text:"Display in Roll20"}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["paneClass", "where", "text"]}
+        });
+
+        lastItemName = "";
+        lastSpellName = "";
+        lastSpellLevel = "";
+        function injectRollButton(paneClass) {
+            var name, item_name, properties, action_name, spell_name, spell_level, damages, healings, to_hit, hitdice, cb, creature_name;
+            if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-custom-skill-pane", "ct-skill-pane", "ct-ability-pane", "ct-ability-saving-throws-pane", "ct-initiative-pane" ]))) {
+                if (isRollButtonAdded()) {
+                    return;
+                }
+                addRollButtonEx(paneClass, ".ct-sidebar__heading");
+            } else if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane" ]))) {
+                if (isRollButtonAdded()) {
+                    return;
+                }
+                ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({text: "Display in Roll20", image: false})]));
+                name = $(".ct-sidebar__heading").text();
+                checkAndInjectDiceToRolls(".ct-snippet__content", name);
+            } else if ((paneClass === "ct-trait-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-trait-pane"))) {
+                if (isRollButtonAdded()) {
+                    return;
+                }
+                ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-trait-pane__content"].concat([ρσ_desugar_kwargs({text: "Display in Roll20", image: false})]));
+            } else if ((paneClass === "ct-item-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-item-pane"))) {
+                item_name = $(".ct-item-pane .ct-item-name").text();
+                if (isRollButtonAdded() && (item_name === lastItemName || typeof item_name === "object" && ρσ_equals(item_name, lastItemName))) {
+                    return;
+                }
+                lastItemName = item_name;
+                removeRollButtons();
+                checkAndInjectDiceToRolls(".ct-item-detail__description", item_name);
+                properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"));
+                if (ρσ_in("Damage", properties)) {
+                    ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({small: true})]));
+                    addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
+                } else {
+                    ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({image: false, bind: false})]));
+                    ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-item-detail__actions"].concat([ρσ_desugar_kwargs({small: true, append: true, image: false})]));
+                }
+            } else if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-action-pane", "ct-custom-action-pane" ]))) {
+                if (isRollButtonAdded()) {
+                    return;
+                }
+                addRollButtonEx(paneClass, ".ct-sidebar__heading");
+                action_name = $(".ct-sidebar__heading").text();
+                checkAndInjectDiceToRolls(".ct-action-detail__description", action_name);
+            } else if ((paneClass === "ct-spell-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-spell-pane"))) {
+                spell_name = $(".ct-sidebar__heading .ct-spell-name").text();
+                spell_level = $(".ct-spell-caster__casting-level-current").text();
+                if (isRollButtonAdded() && (spell_name === lastSpellName || typeof spell_name === "object" && ρσ_equals(spell_name, lastSpellName)) && (spell_level === lastSpellLevel || typeof spell_level === "object" && ρσ_equals(spell_level, lastSpellLevel))) {
+                    return;
+                }
+                lastSpellName = spell_name;
+                lastSpellLevel = spell_level;
+                removeRollButtons();
+                checkAndInjectDiceToRolls(".ct-spell-pane .ct-spell-detail__description", spell_name);
+                damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage");
+                healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp");
+                properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"));
+                to_hit = ρσ_exists.e(properties["To Hit"], findToHit(spell_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit"));
+                if (!to_hit) {
+                    to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit");
+                }
+                if (damages.length > 0 || healings.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null)))) {
+                    ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({text: "Cast on Roll20", small: true})]));
+                    addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
+                } else {
+                    ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({text: "Cast on Roll20", image: false})]));
+                }
+                $(".ct-spell-caster__casting-action > button").bind("click", (function() {
+                    var ρσ_anonfunc = function (event) {
+                        execute(paneClass);
                     };
                     if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["old_key", "new_key"]}
+                        __argnames__ : {value: ["event"]}
                     });
                     return ρσ_anonfunc;
-                })();
-                if (!settings["roll-advantage"]) {
-                    ρσ_delitem(properties, "r2");
-                }
-                renameProp("rname", "name");
-                if (ρσ_exists.n(properties["r2"])) {
-                    renameProp("r1", "Regular Roll");
-                    renameProp("r2", "Roll with [Dis]Advantage");
+                })());
+            } else if ((paneClass === "ct-reset-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-reset-pane"))) {
+                hitdice = $(".ct-reset-pane__hitdie");
+                if (hitdice.length > 0) {
+                    if (isHitDieButtonAdded()) {
+                        return;
+                    }
+                    removeRollButtons();
+                    addHitDieButtons(rollHitDie);
                 } else {
-                    renameProp("r1", "Dice Roll");
+                    removeRollButtons();
                 }
-                renameProp("mod", "Modifier");
-                if (ρσ_exists.n(properties["dmg2"])) {
-                    renameProp("dmg1", "First Damage");
-                    renameProp("dmg1type", "First Damage Type");
-                    renameProp("crit1", "First Damage IF Critical");
-                    renameProp("dmg2", "Second Damage");
-                    renameProp("dmg2type", "Second Damage Type");
-                    renameProp("crit2", "Second Damage IF Critical");
+            } else if ((paneClass === "ct-health-manage-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-health-manage-pane"))) {
+                if ($(".ct-health-manage-pane .ct-health-manager__deathsaves").length > 0) {
+                    if (isRollButtonAdded()) {
+                        return;
+                    }
+                    cb = function () {
+                        sendRollWithCharacter("death-save", "1d20", {});
+                    };
+                    addDeathSaveButton(cb, ".ct-health-manager__deathsaves-group--fails");
+                } else {
+                    removeRollButtons();
                 }
-                if (ρσ_exists.n(properties["dmg1"])) {
-                    renameProp("dmg1", "Damage");
-                    renameProp("dmg1type", "Damage Type");
-                    renameProp("crit1", "Damage IF Critical");
+            } else if ((paneClass === "ct-creature-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-creature-pane"))) {
+                if (isCustomRollIconsAdded()) {
+                    return;
                 }
-                renameProp("saveattr", "Save Ability");
-                renameProp("savedc", "Save DC");
-                renameProp("athigherlevels", "At Higher Levels");
-                renameProp("castingtime", "Casting Time");
-                renameProp("hldmg", "Higher level cast");
-                ρσ_delitem(properties, "attack");
-                ρσ_delitem(properties, "damage");
-                ρσ_delitem(properties, "save");
-                ρσ_delitem(properties, "dmg1flag");
-                ρσ_delitem(properties, "dmg2flag");
-                ρσ_delitem(properties, "always");
-                ρσ_delitem(properties, "normal");
-                ρσ_delitem(properties, "advantage");
+                creature_name = $(".ct-sidebar__heading").text();
+                checkAndInjectDiceToRolls(".ct-creature-block__description-blocks", creature_name);
+            } else {
+                removeRollButtons();
             }
-            result = "&{template:" + name + "}";
-            var ρσ_Iter3 = ρσ_Iterable(properties);
-            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                key = ρσ_Iter3[ρσ_Index3];
-                result += " {{" + key + "=" + properties[(typeof key === "number" && key < 0) ? properties.length + key : key] + "}}";
-            }
-            return result;
         };
-        if (!template.__argnames__) Object.defineProperties(template, {
-            __argnames__ : {value: ["name", "properties"]}
+        if (!injectRollButton.__argnames__) Object.defineProperties(injectRollButton, {
+            __argnames__ : {value: ["paneClass"]}
+        });
+
+        function injectRollToSpellAttack() {
+            var groups, label, icon16, items, modifier, name, img, item, group;
+            groups = $(".ct-spells-level-casting__info-group");
+            var ρσ_Iter18 = ρσ_Iterable(groups);
+            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
+                group = ρσ_Iter18[ρσ_Index18];
+                label = $(group).find(".ct-spells-level-casting__info-label");
+                if (ρσ_equals(label.text(), "Spell Attack")) {
+                    if (label.hasClass("beyond20-rolls-added")) {
+                        return;
+                    }
+                    label.addClass("beyond20-rolls-added");
+                    icon16 = chrome.extension.getURL("images/icons/icon16.png");
+                    items = $(group).find(".ct-spells-level-casting__info-item");
+                    var ρσ_Iter19 = ρσ_Iterable(items);
+                    for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
+                        item = ρσ_Iter19[ρσ_Index19];
+                        modifier = item.textContent;
+                        name = "Spell Attack";
+                        if (items.length > 1) {
+                            name += "(" + item.getAttribute("data-original-title") + ")";
+                        }
+                        img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-custom-icon ct-beyond20-spell-attack", x_beyond20_name: name, x_beyond20_modifier: modifier, src: icon16})]);
+                        item.append(img);
+                        console.log(item);
+                    }
+                    $(".ct-beyond20-custom-icon").css("margin-left", "3px");
+                    $(".ct-beyond20-spell-attack").bind("click", (function() {
+                        var ρσ_anonfunc = function (event) {
+                            var name, mod;
+                            name = $(event.currentTarget).attr("x-beyond20-name");
+                            mod = $(event.currentTarget).attr("x-beyond20-modifier");
+                            sendRollWithCharacter("custom", "1d20" + mod, (function(){
+                                var ρσ_d = {};
+                                ρσ_d["name"] = name;
+                                ρσ_d["modifier"] = mod;
+                                return ρσ_d;
+                            }).call(this));
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["event"]}
+                        });
+                        return ρσ_anonfunc;
+                    })());
+                }
+            }
+        };
+
+        function documentModified(mutations, observer) {
+            var pane, paneClass, div;
+            try {
+                chrome.extension.getURL("");
+            } catch (ρσ_Exception) {
+                ρσ_last_exception = ρσ_Exception;
+                {
+                    console.log("This extension is DOWN!");
+                    observer.disconnect();
+                    return;
+                } 
+            }
+            injectRollToSpellAttack();
+            pane = $(".ct-sidebar__pane-content > div");
+            character.updateInfo();
+            if (pane.length > 0) {
+                for (var ρσ_Index20 = 0; ρσ_Index20 < pane.length; ρσ_Index20++) {
+                    div = ρσ_Index20;
+                    paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
+                    if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls"))) {
+                        continue;
+                    }
+                    print("Beyond20: New side panel is : " + paneClass);
+                    injectRollButton(paneClass);
+                }
+            }
+        };
+        if (!documentModified.__argnames__) Object.defineProperties(documentModified, {
+            __argnames__ : {value: ["mutations", "observer"]}
         });
 
         function updateSettings() {
@@ -6693,450 +7941,38 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, advantage_type, modifier, ability, prof, prof_val, half_prof, dice_roll, roll_properties, dice, dice_formula, rname, crit1, properties, crit2, sneak_attack, source, components, description, higher, healing_spell, level, mod;
             print("Got message : " + str(request));
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
                     updateSettings(request.settings);
-                }
-            } else if ((request.action === "hp-update" || typeof request.action === "object" && ρσ_equals(request.action, "hp-update"))) {
-                sendCustomEvent("UpdateHP", [request.character.name, request.character.hp, request.character["max-hp"]]);
-            } else if ((request.action === "roll" || typeof request.action === "object" && ρσ_equals(request.action, "roll"))) {
-                if (settings["whispers"] || (request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"]) {
-                    roll = "/w gm ";
+                } else if ((request.type === "character" || typeof request.type === "object" && ρσ_equals(request.type, "character")) && (request.id === character._id || typeof request.id === "object" && ρσ_equals(request.id, character._id))) {
+                    character.updateSettings(request.settings);
                 } else {
-                    roll = "";
+                    console.log("Ignoring character settings, not for ID: ", character._id);
                 }
-                if (settings["roll-advantage"]) {
-                    advantage_type = "always";
-                } else {
-                    advantage_type = "normal";
-                }
-                if ((request.type === "skill" || typeof request.type === "object" && ρσ_equals(request.type, "skill"))) {
-                    modifier = request.modifier;
-                    if ((modifier === "--" || typeof modifier === "object" && ρσ_equals(modifier, "--")) && request.character.abilities.length > 0) {
-                        modifier = "?{Choose Ability";
-                        var ρσ_Iter4 = ρσ_Iterable(request.character.abilities);
-                        for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                            ability = ρσ_Iter4[ρσ_Index4];
-                            modifier += "|" + ability[0] + ", " + ability[3];
-                        }
-                        modifier += "}";
-                        prof = "";
-                        prof_val = "";
-                        if ((request.proficiency === "Proficiency" || typeof request.proficiency === "object" && ρσ_equals(request.proficiency, "Proficiency"))) {
-                            prof = "PROF";
-                            prof_val += request.character.proficiency;
-                        } else if ((request.proficiency === "Half Proficiency" || typeof request.proficiency === "object" && ρσ_equals(request.proficiency, "Half Proficiency"))) {
-                            prof = "HALF-PROFICIENCY";
-                            prof_val += "+[[floor(" + request.character.proficiency + " / 2)]]";
-                        } else if ((request.proficiency === "Expertise" || typeof request.proficiency === "object" && ρσ_equals(request.proficiency, "Expertise"))) {
-                            prof = "EXPERTISE";
-                            prof_val += "+[[" + request.character.proficiency + " * 2]]";
-                        }
-                        roll += template("simple", (function(){
-                            var ρσ_d = {};
-                            ρσ_d["charname"] = request.character.name;
-                            ρσ_d["rname"] = request.skill;
-                            ρσ_d["mod"] = "[[" + modifier + prof_val + "]]";
-                            ρσ_d["r1"] = genRoll("1d20", (function(){
-                                var ρσ_d = {};
-                                ρσ_d["--"] = modifier;
-                                ρσ_d[prof] = prof_val;
-                                return ρσ_d;
-                            }).call(this));
-                            ρσ_d["r2"] = genRoll("1d20", (function(){
-                                var ρσ_d = {};
-                                ρσ_d["--"] = modifier;
-                                ρσ_d[prof] = prof_val;
-                                return ρσ_d;
-                            }).call(this));
-                            ρσ_d[advantage_type] = 1;
-                            return ρσ_d;
-                        }).call(this));
-                    } else {
-                        roll += template("simple", (function(){
-                            var ρσ_d = {};
-                            ρσ_d["charname"] = request.character.name;
-                            ρσ_d["rname"] = request.skill;
-                            ρσ_d["mod"] = modifier;
-                            ρσ_d["r1"] = genRoll("1d20", (function(){
-                                var ρσ_d = {};
-                                ρσ_d[request.ability] = modifier;
-                                return ρσ_d;
-                            }).call(this));
-                            ρσ_d["r2"] = genRoll("1d20", (function(){
-                                var ρσ_d = {};
-                                ρσ_d[request.ability] = modifier;
-                                return ρσ_d;
-                            }).call(this));
-                            ρσ_d[advantage_type] = 1;
-                            return ρσ_d;
-                        }).call(this));
-                    }
-                } else if ((request.type === "ability" || typeof request.type === "object" && ρσ_equals(request.type, "ability"))) {
-                    if (ρσ_in("Bard", request.character.classes) && request.character.classes["Bard"] >= 2 && request.character.settings["bard-joat"]) {
-                        half_prof = "+[[floor(" + request.character.proficiency + " / 2)]]";
-                        dice_roll = genRoll("1d20", (function(){
-                            var ρσ_d = {};
-                            ρσ_d[request.ability] = request.modifier;
-                            ρσ_d["JoaT"] = half_prof;
-                            return ρσ_d;
-                        }).call(this));
-                        modifier = request.modifier + " +[[" + half_prof + "]]";
-                    } else {
-                        dice_roll = genRoll("1d20", (function(){
-                            var ρσ_d = {};
-                            ρσ_d[request.ability] = request.modifier;
-                            return ρσ_d;
-                        }).call(this));
-                        modifier = request.modifier;
-                    }
-                    roll += template("simple", (function(){
-                        var ρσ_d = {};
-                        ρσ_d["charname"] = request.character.name;
-                        ρσ_d["rname"] = request.name;
-                        ρσ_d["mod"] = modifier;
-                        ρσ_d["r1"] = dice_roll;
-                        ρσ_d["r2"] = dice_roll;
-                        ρσ_d[advantage_type] = 1;
-                        return ρσ_d;
-                    }).call(this));
-                } else if ((request.type === "saving-throw" || typeof request.type === "object" && ρσ_equals(request.type, "saving-throw"))) {
-                    roll += template("simple", (function(){
-                        var ρσ_d = {};
-                        ρσ_d["charname"] = request.character.name;
-                        ρσ_d["rname"] = request.name + " Save";
-                        ρσ_d["mod"] = request.modifier;
-                        ρσ_d["r1"] = genRoll("1d20", (function(){
-                            var ρσ_d = {};
-                            ρσ_d[request.ability] = request.modifier;
-                            return ρσ_d;
-                        }).call(this));
-                        ρσ_d["r2"] = genRoll("1d20", (function(){
-                            var ρσ_d = {};
-                            ρσ_d[request.ability] = request.modifier;
-                            return ρσ_d;
-                        }).call(this));
-                        ρσ_d[advantage_type] = 1;
-                        return ρσ_d;
-                    }).call(this));
-                } else if ((request.type === "initiative" || typeof request.type === "object" && ρσ_equals(request.type, "initiative"))) {
-                    roll_properties = (function(){
-                        var ρσ_d = {};
-                        ρσ_d["charname"] = request.character.name;
-                        ρσ_d["rname"] = "Initiative";
-                        ρσ_d["mod"] = request.initiative;
-                        return ρσ_d;
-                    }).call(this);
-                    if (settings["initiative-tracker"]) {
-                        dice = (request.advantage) ? "2d20kh1" : "1d20";
-                        roll_properties["r1"] = genRoll(dice, (function(){
-                            var ρσ_d = {};
-                            ρσ_d["INIT"] = request.initiative;
-                            ρσ_d[""] = "&{tracker}";
-                            return ρσ_d;
-                        }).call(this));
-                        roll_properties["normal"] = 1;
-                    } else {
-                        dice_formula = genRoll("1d20", (function(){
-                            var ρσ_d = {};
-                            ρσ_d["INIT"] = request.initiative;
-                            return ρσ_d;
-                        }).call(this));
-                        roll_properties["r1"] = dice_formula;
-                        if (request.advantage) {
-                            roll_properties["r2"] = dice_formula;
-                        }
-                        roll_properties[ρσ_bound_index((request.advantage) ? "advantage" : "normal", roll_properties)] = 1;
-                    }
-                    roll += template("simple", roll_properties);
-                } else if ((request.type === "hit-dice" || typeof request.type === "object" && ρσ_equals(request.type, "hit-dice"))) {
-                    if (request.multiclass) {
-                        rname = "Hit Dice (" + request.class + ")";
-                    } else {
-                        rname = "Hit Dice";
-                    }
-                    roll += template("simple", (function(){
-                        var ρσ_d = {};
-                        ρσ_d["charname"] = request.character.name;
-                        ρσ_d["rname"] = rname;
-                        ρσ_d["mod"] = request["hit-dice"];
-                        ρσ_d["r1"] = subRolls(request["hit-dice"]);
-                        ρσ_d["normal"] = 1;
-                        return ρσ_d;
-                    }).call(this));
-                } else if ((request.type === "attack" || typeof request.type === "object" && ρσ_equals(request.type, "attack"))) {
-                    crit1 = request.damage.split((ρσ_in("+", request.damage)) ? "+" : "-")[0];
-                    properties = (function(){
-                        var ρσ_d = {};
-                        ρσ_d["charname"] = request.character.name;
-                        ρσ_d["rname"] = request.name;
-                        return ρσ_d;
-                    }).call(this);
-                    if (ρσ_exists.n(request["to-hit"])) {
-                        properties["mod"] = request["to-hit"];
-                        properties["r1"] = genRoll("1d20", (function(){
-                            var ρσ_d = {};
-                            ρσ_d[""] = request["to-hit"];
-                            return ρσ_d;
-                        }).call(this));
-                        properties["r2"] = genRoll("1d20", (function(){
-                            var ρσ_d = {};
-                            ρσ_d[""] = request["to-hit"];
-                            return ρσ_d;
-                        }).call(this));
-                        properties[(typeof advantage_type === "number" && advantage_type < 0) ? properties.length + advantage_type : advantage_type] = 1;
-                        properties["attack"] = 1;
-                    }
-                    properties["damage"] = 1;
-                    properties["dmg1flag"] = 1;
-                    properties["dmg1"] = subDamageRolls(request.damage);
-                    properties["dmg1type"] = request["damage-type"];
-                    properties["crit1"] = subDamageRolls(settings["crit-prefix"] + crit1);
-                    if (ρσ_exists.n(request["second-damage"])) {
-                        crit2 = request["second-damage"].split((ρσ_in("+", request["second-damage"])) ? "+" : "-")[0];
-                        properties["dmg2flag"] = 1;
-                        properties["dmg2"] = subDamageRolls(request["second-damage"]);
-                        properties["dmg2type"] = request["second-damage-type"];
-                        properties["crit2"] = subDamageRolls(settings["crit-prefix"] + crit2);
-                    }
-                    if (ρσ_exists.n(request.range)) {
-                        properties["range"] = request.range;
-                    }
-                    if (ρσ_exists.n(request["save-dc"])) {
-                        properties["save"] = 1;
-                        properties["saveattr"] = request["save-ability"];
-                        properties["savedc"] = request["save-dc"];
-                    }
-                    roll += template("atkdmg", properties);
-                    if (ρσ_in("Rogue", request.character.classes) && request.character.settings["rogue-sneak-attack"] && ((request["attack-type"] === "Ranged" || typeof request["attack-type"] === "object" && ρσ_equals(request["attack-type"], "Ranged")) || ρσ_exists.n(request["properties"]) && ρσ_in("Finesse", request["properties"]))) {
-                        sneak_attack = "[[ceil(" + request.character.classes["Rogue"] + " / 2)]]d6";
-                        if (settings["whispers"]) {
-                            roll += "\n/w gm ";
-                        } else {
-                            roll += "\n";
-                        }
-                        roll += template("simple", (function(){
-                            var ρσ_d = {};
-                            ρσ_d["rname"] = "Sneak Attack";
-                            ρσ_d["mod"] = sneak_attack;
-                            ρσ_d["r1"] = "[[" + sneak_attack + "]]";
-                            ρσ_d["normal"] = 1;
-                            return ρσ_d;
-                        }).call(this));
-                    }
-                } else if ((request.type === "item" || typeof request.type === "object" && ρσ_equals(request.type, "item"))) {
-                    roll += template("traits", (function(){
-                        var ρσ_d = {};
-                        ρσ_d["name"] = request.name;
-                        ρσ_d["source"] = request["item-type"];
-                        ρσ_d["description"] = subDescriptionRolls(request.description);
-                        return ρσ_d;
-                    }).call(this));
-                } else if ((request.type === "feature" || typeof request.type === "object" && ρσ_equals(request.type, "feature"))) {
-                    source = request["source-type"];
-                    if (request.source.length > 0) {
-                        source += ": " + request.source;
-                    }
-                    roll += template("traits", (function(){
-                        var ρσ_d = {};
-                        ρσ_d["name"] = request.name;
-                        ρσ_d["source"] = source;
-                        ρσ_d["description"] = subDescriptionRolls(request.description);
-                        return ρσ_d;
-                    }).call(this));
-                } else if (ρσ_in(request.type, ρσ_list_decorate([ "trait", "action" ]))) {
-                    roll += template("traits", (function(){
-                        var ρσ_d = {};
-                        ρσ_d["name"] = request.name;
-                        ρσ_d["description"] = subDescriptionRolls(request.description);
-                        return ρσ_d;
-                    }).call(this));
-                } else if ((request.type === "spell-card" || typeof request.type === "object" && ρσ_equals(request.type, "spell-card"))) {
-                    properties = (function(){
-                        var ρσ_d = {};
-                        ρσ_d["name"] = request.name;
-                        ρσ_d["castingtime"] = request["casting-time"];
-                        ρσ_d["range"] = request.range;
-                        ρσ_d["duration"] = request.duration;
-                        return ρσ_d;
-                    }).call(this);
-                    if (ρσ_exists.n(request["cast-at"])) {
-                        properties["level"] = request["level-school"] + "(Cast at " + request["cast-at"] + " Level)";
-                    } else {
-                        properties["level"] = request["level-school"];
-                    }
-                    components = request.components;
-                    while ((components !== "" && (typeof components !== "object" || ρσ_not_equals(components, "")))) {
-                        if ((components[0] === "V" || typeof components[0] === "object" && ρσ_equals(components[0], "V"))) {
-                            properties["v"] = 1;
-                            components = components.slice(1);
-                        } else if ((components[0] === "S" || typeof components[0] === "object" && ρσ_equals(components[0], "S"))) {
-                            properties["s"] = 1;
-                            components = components.slice(1);
-                        } else if ((components[0] === "M" || typeof components[0] === "object" && ρσ_equals(components[0], "M"))) {
-                            properties["m"] = 1;
-                            properties["material"] = components.slice(2, -1);
-                            components = "";
-                        }
-                        if (components.startsWith(", ")) {
-                            components = components.slice(2);
-                        }
-                    }
-                    if (request.ritual) {
-                        properties["ritual"] = 1;
-                    }
-                    if (request.concentration) {
-                        properties["concentration"] = 1;
-                    }
-                    description = request.description;
-                    higher = description.indexOf("At Higher Levels.");
-                    if (higher > 0) {
-                        properties["description"] = subDescriptionRolls(description.slice(0, higher - 1));
-                        properties["athigherlevels"] = subDescriptionRolls(description.slice(higher + "At Higher Levels.".length));
-                    } else {
-                        properties["description"] = subDescriptionRolls(description);
-                    }
-                    roll += template("spell", properties);
-                } else if ((request.type === "spell-attack" || typeof request.type === "object" && ρσ_equals(request.type, "spell-attack"))) {
-                    properties = (function(){
-                        var ρσ_d = {};
-                        ρσ_d["charname"] = request.character.name;
-                        ρσ_d["rname"] = request.name;
-                        return ρσ_d;
-                    }).call(this);
-                    healing_spell = false;
-                    if (ρσ_exists.n(request["to-hit"])) {
-                        properties["mod"] = request["to-hit"];
-                        properties["r1"] = genRoll("1d20", (function(){
-                            var ρσ_d = {};
-                            ρσ_d[""] = request["to-hit"];
-                            return ρσ_d;
-                        }).call(this));
-                        properties["r2"] = genRoll("1d20", (function(){
-                            var ρσ_d = {};
-                            ρσ_d[""] = request["to-hit"];
-                            return ρσ_d;
-                        }).call(this));
-                        properties[(typeof advantage_type === "number" && advantage_type < 0) ? properties.length + advantage_type : advantage_type] = 1;
-                        properties["attack"] = 1;
-                    }
-                    if (ρσ_exists.n(request["damage"])) {
-                        properties["damage"] = 1;
-                        properties["dmg1flag"] = 1;
-                        properties["dmg1"] = subDamageRolls(request.damage);
-                        properties["dmg1type"] = request["damage-type"];
-                        if ((request["damage-type"] === "Healing" || typeof request["damage-type"] === "object" && ρσ_equals(request["damage-type"], "Healing"))) {
-                            healing_spell = true;
-                        } else {
-                            crit1 = request.damage.split((ρσ_in("+", request.damage)) ? "+" : "-")[0];
-                            properties["crit1"] = subDamageRolls(settings["crit-prefix"] + crit1);
-                        }
-                    }
-                    if (ρσ_exists.n(request["second-damage"])) {
-                        properties["dmg2flag"] = 1;
-                        properties["dmg2"] = subDamageRolls(request["second-damage"]);
-                        properties["dmg2type"] = request["second-damage-type"];
-                        if ((request["second-damage-type"] === "Healing" || typeof request["second-damage-type"] === "object" && ρσ_equals(request["second-damage-type"], "Healing"))) {
-                            healing_spell = true;
-                        } else {
-                            crit2 = request["second-damage"].split((ρσ_in("+", request["second-damage"])) ? "+" : "-")[0];
-                            properties["crit2"] = subDamageRolls(settings["crit-prefix"] + crit2);
-                        }
-                    }
-                    if (ρσ_exists.n(request.range)) {
-                        properties["range"] = request.range;
-                    }
-                    if (ρσ_exists.n(request["save-dc"])) {
-                        properties["save"] = 1;
-                        properties["saveattr"] = request["save-ability"];
-                        properties["savedc"] = request["save-dc"];
-                    }
-                    if (ρσ_exists.n(request["cast-at"])) {
-                        properties["hldmg"] = genRoll(request["cast-at"][0]) + request["cast-at"].slice(1) + " Level";
-                    }
-                    components = request.components;
-                    while ((components !== "" && (typeof components !== "object" || ρσ_not_equals(components, "")))) {
-                        if (ρσ_in(components[0], ρσ_list_decorate([ "V", "S" ]))) {
-                            components = components.slice(1);
-                            if (components.startsWith(", ")) {
-                                components = components.slice(2);
-                            }
-                        }
-                        print("Components: " + components);
-                        if ((components[0] === "M" || typeof components[0] === "object" && ρσ_equals(components[0], "M"))) {
-                            properties["desc"] = components.slice(2, -1);
-                            components = "";
-                        }
-                    }
-                    roll += template("atkdmg", properties);
-                    if (healing_spell && ρσ_in("Cleric", request.character.classes) && request.character.settings["cleric-disciple-life"]) {
-                        if (ρσ_exists.n(request["cast-at"])) {
-                            level = request["cast-at"][0];
-                        } else {
-                            level = request["level-school"][0];
-                        }
-                        if (settings["whispers"]) {
-                            roll += "\n/w gm ";
-                        } else {
-                            roll += "\n";
-                        }
-                        roll += template("simple", (function(){
-                            var ρσ_d = {};
-                            ρσ_d["rname"] = "Disciple of Life";
-                            ρσ_d["mod"] = "2 + " + level;
-                            ρσ_d["r1"] = "[[2 + " + level + "]]";
-                            ρσ_d["normal"] = 1;
-                            return ρσ_d;
-                        }).call(this));
-                    }
-                } else if ((request.type === "death-save" || typeof request.type === "object" && ρσ_equals(request.type, "death-save"))) {
-                    roll += template("simple", (function(){
-                        var ρσ_d = {};
-                        ρσ_d["charname"] = request.character.name;
-                        ρσ_d["rname"] = "Death Saving Throw";
-                        ρσ_d["r1"] = "[[1d20cs>9cf<10]]";
-                        ρσ_d["normal"] = 1;
-                        return ρσ_d;
-                    }).call(this));
-                } else if ((request.type === "custom" || typeof request.type === "object" && ρσ_equals(request.type, "custom"))) {
-                    mod = (ρσ_exists.n(request.modifier)) ? request.modifier : request.roll;
-                    roll += template("simple", (function(){
-                        var ρσ_d = {};
-                        ρσ_d["charname"] = request.character.name;
-                        ρσ_d["rname"] = request.name;
-                        ρσ_d["mod"] = mod;
-                        ρσ_d["r1"] = subRolls(request.roll);
-                        ρσ_d["normal"] = 1;
-                        return ρσ_d;
-                    }).call(this));
-                } else {
-                    roll += template("simple", (function(){
-                        var ρσ_d = {};
-                        ρσ_d["charname"] = request.character.name;
-                        ρσ_d["rname"] = request.type;
-                        ρσ_d["mod"] = request.roll;
-                        ρσ_d["r1"] = subRolls(request.roll);
-                        ρσ_d["normal"] = 1;
-                        return ρσ_d;
-                    }).call(this));
-                }
-                postChatMessage(roll, request.character.name);
+            } else if ((request.action === "get-character" || typeof request.action === "object" && ρσ_equals(request.action, "get-character"))) {
+                character.updateInfo();
+                sendResponse(character.getDict());
             }
         };
         if (!handleMessage.__argnames__) Object.defineProperties(handleMessage, {
             __argnames__ : {value: ["request", "sender", "sendResponse"]}
         });
 
-        chrome.runtime.onMessage.addListener(handleMessage);
         updateSettings();
+        chrome.runtime.onMessage.addListener(handleMessage);
+        observer = new window.MutationObserver(documentModified);
+        observer.observe(document, (function(){
+            var ρσ_d = {};
+            ρσ_d["subtree"] = true;
+            ρσ_d["childList"] = true;
+            return ρσ_d;
+        }).call(this));
         chrome.runtime.sendMessage((function(){
             var ρσ_d = {};
             ρσ_d["action"] = "activate-icon";
             return ρσ_d;
         }).call(this));
-        sendCustomEvent("disconnect");
-        injectPageScript(chrome.runtime.getURL("src/roll20_script.js"));
+        documentModified();
     })();
 })();

@@ -145,7 +145,8 @@ def handleMessage (request, sender, sendResponse):
     elif request.action == "hp-update":
         sendCustomEvent("UpdateHP", (request.character.name, request.character.hp, request.character["max-hp"]))
     elif request.action == "roll":
-        if settings["whispers"]:
+        if settings["whispers"] or \
+                (request.character.type == "Monster" and settings["whisper-monsters"]):
             roll = "/w gm "
         else:
             roll = ""

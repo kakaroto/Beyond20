@@ -5684,11 +5684,20 @@ var str = ρσ_str, repr = ρσ_repr;;
             var ρσ_d = {};
             ρσ_d["whispers"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["short"] = "Whisper rolls";
-                ρσ_d["title"] = "Whisper rolls to the DM";
+                ρσ_d["short"] = "Whisper all rolls";
+                ρσ_d["title"] = "Whisper all rolls to the DM";
                 ρσ_d["description"] = "If enabled, all the rolls will be whispered to the DM";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["whisper-monsters"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["short"] = "Whisper monster rolls";
+                ρσ_d["title"] = "Whisper monster rolls to the DM";
+                ρσ_d["description"] = "If enabled, all the rolls from monster stat blocks will be whispered to the DM";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
             ρσ_d["roll-advantage"] = (function(){
@@ -5873,9 +5882,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var settings, option;
             settings = {};
-            var ρσ_Iter0 = ρσ_Iterable(_list);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                option = ρσ_Iter0[ρσ_Index0];
+            var ρσ_Iter2 = ρσ_Iterable(_list);
+            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                option = ρσ_Iter2[ρσ_Index2];
                 settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].default;
             }
             console.log("Default settings :", settings);
@@ -5968,9 +5977,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             console.log("Saving new settings (" + key + "): ", settings);
             function setNewSettings(stored_settings) {
                 var k;
-                var ρσ_Iter1 = ρσ_Iterable(settings);
-                for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                    k = ρσ_Iter1[ρσ_Index1];
+                var ρσ_Iter3 = ρσ_Iterable(settings);
+                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                    k = ρσ_Iter3[ρσ_Index3];
                     stored_settings[(typeof k === "number" && k < 0) ? stored_settings.length + k : k] = settings[(typeof k === "number" && k < 0) ? settings.length + k : k];
                 }
                 setSettings(stored_settings, cb, key);
@@ -6037,9 +6046,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     return ρσ_anonfunc;
                 })();
                 dropdown_options = list(map(make_li, Object.values(option.choices)));
-                var ρσ_Iter2 = ρσ_Iterable(description_p);
-                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                    p = ρσ_Iter2[ρσ_Index2];
+                var ρσ_Iter4 = ρσ_Iterable(description_p);
+                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                    p = ρσ_Iter4[ρσ_Index4];
                     p.classList.add("select");
                 }
                 e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, [(ρσ_expr_temp = option.choices)[ρσ_bound_index(option.default, ρσ_expr_temp)]].concat([ρσ_desugar_kwargs({id: name, class_: "input select beyond20-option-input", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-combobox"})]));
@@ -6141,9 +6150,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         function initializeMarka() {
             var groups, group;
             groups = $(".beyond20-option-combobox");
-            var ρσ_Iter3 = ρσ_Iterable(groups);
-            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                group = ρσ_Iter3[ρσ_Index3];
+            var ρσ_Iter5 = ρσ_Iterable(groups);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                group = ρσ_Iter5[ρσ_Index5];
                 initializeMarkaGroup(group);
             }
         };
@@ -6157,9 +6166,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var settings, e, o_type, val, choices, key, option;
             settings = {};
-            var ρσ_Iter4 = ρσ_Iterable(_list);
-            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                option = ρσ_Iter4[ρσ_Index4];
+            var ρσ_Iter6 = ρσ_Iterable(_list);
+            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                option = ρσ_Iter6[ρσ_Index6];
                 e = $("#" + option);
                 if (e.length > 0) {
                     o_type = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].type;
@@ -6168,9 +6177,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     } else if ((o_type === "combobox" || typeof o_type === "object" && ρσ_equals(o_type, "combobox"))) {
                         val = e.text();
                         choices = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].choices;
-                        var ρσ_Iter5 = ρσ_Iterable(choices);
-                        for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                            key = ρσ_Iter5[ρσ_Index5];
+                        var ρσ_Iter7 = ρσ_Iterable(choices);
+                        for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                            key = ρσ_Iter7[ρσ_Index7];
                             if ((choices[(typeof key === "number" && key < 0) ? choices.length + key : key] === val || typeof choices[(typeof key === "number" && key < 0) ? choices.length + key : key] === "object" && ρσ_equals(choices[(typeof key === "number" && key < 0) ? choices.length + key : key], val))) {
                                 settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = key;
                                 break;
@@ -6200,9 +6209,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 _list = ρσ_kwargs_obj._list;
             }
             var o_type, val, choices, option;
-            var ρσ_Iter6 = ρσ_Iterable(settings);
-            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                option = ρσ_Iter6[ρσ_Index6];
+            var ρσ_Iter8 = ρσ_Iterable(settings);
+            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                option = ρσ_Iter8[ρσ_Index8];
                 o_type = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].type;
                 if ((o_type === "bool" || typeof o_type === "object" && ρσ_equals(o_type, "bool"))) {
                     $("#" + option).prop("checked", settings[(typeof option === "number" && option < 0) ? settings.length + option : option]);
@@ -6284,9 +6293,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             description = (short) ? "Restrict where rolls are sent.\nUseful if you have multiple Roll20 windows open" : option.description;
             title = (short) ? "Send Beyond 20 rolls to" : option.title;
             description_p = list(map(E.p, description.split("\n")));
-            var ρσ_Iter7 = ρσ_Iterable(description_p);
-            for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                p = ρσ_Iter7[ρσ_Index7];
+            var ρσ_Iter9 = ρσ_Iterable(description_p);
+            for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                p = ρσ_Iter9[ρσ_Index9];
                 p.classList.add("select");
             }
             return ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, ["All Roll20 Tabs"].concat([ρσ_desugar_kwargs({id: name, class_: "input select beyond20-option-input", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({id: "beyond20-option-roll20-tab", class_: "list-group-item beyond20-option beyond20-option-combobox" + ((short) ? " roll20-tab-short" : "")})]));
@@ -6445,7 +6454,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var settings;
+        var settings, manifest, cb, script;
         var ROLL20_URL = ρσ_modules.utils.ROLL20_URL;
         var DNDBEYOND_URL = ρσ_modules.utils.DNDBEYOND_URL;
         var CHANGELOG_URL = ρσ_modules.utils.CHANGELOG_URL;
@@ -6506,9 +6515,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this), (function() {
                 var ρσ_anonfunc = function (tabs) {
                     var tab;
-                    var ρσ_Iter2 = ρσ_Iterable(tabs);
-                    for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                        tab = ρσ_Iter2[ρσ_Index2];
+                    var ρσ_Iter10 = ρσ_Iterable(tabs);
+                    for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                        tab = ρσ_Iter10[ρσ_Index10];
                         chrome.tabs.sendMessage(tab.id, request);
                     }
                 };
@@ -6539,9 +6548,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_anonfunc = function (tabs) {
                         var found, tab;
                         found = false;
-                        var ρσ_Iter3 = ρσ_Iterable(tabs);
-                        for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                            tab = ρσ_Iter3[ρσ_Index3];
+                        var ρσ_Iter11 = ρσ_Iterable(tabs);
+                        for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                            tab = ρσ_Iter11[ρσ_Index11];
                             if (((limit.id === 0 || typeof limit.id === "object" && ρσ_equals(limit.id, 0)) || (tab.id === limit.id || typeof tab.id === "object" && ρσ_equals(tab.id, limit.id))) && ρσ_equals(roll20TabTitle(tab), limit.title)) {
                                 chrome.tabs.sendMessage(tab.id, request);
                                 found = true;
@@ -6555,9 +6564,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                                 ρσ_d["roll20-tab"] = limit;
                                 return ρσ_d;
                             }).call(this));
-                            var ρσ_Iter4 = ρσ_Iterable(tabs);
-                            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                                tab = ρσ_Iter4[ρσ_Index4];
+                            var ρσ_Iter12 = ρσ_Iterable(tabs);
+                            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                                tab = ρσ_Iter12[ρσ_Index12];
                                 if (ρσ_equals(roll20TabTitle(tab), limit.title)) {
                                     chrome.tabs.sendMessage(tab.id, request);
                                     break;
@@ -6608,12 +6617,12 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function executeScripts(tabs, js_files) {
             var file, tab;
-            var ρσ_Iter5 = ρσ_Iterable(tabs);
-            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                tab = ρσ_Iter5[ρσ_Index5];
-                var ρσ_Iter6 = ρσ_Iterable(js_files);
-                for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                    file = ρσ_Iter6[ρσ_Index6];
+            var ρσ_Iter13 = ρσ_Iterable(tabs);
+            for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
+                tab = ρσ_Iter13[ρσ_Index13];
+                var ρσ_Iter14 = ρσ_Iterable(js_files);
+                for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
+                    file = ρσ_Iter14[ρσ_Index14];
                     chrome.tabs.executeScript(tab.id, (function(){
                         var ρσ_d = {};
                         ρσ_d["file"] = file;
@@ -6629,32 +6638,33 @@ var str = ρσ_str, repr = ρσ_repr;;
         updateSettings();
         chrome.runtime.onMessage.addListener(onMessage);
         if (ρσ_equals(getBrowser(), "Chrome")) {
-            chrome.tabs.query((function(){
-                var ρσ_d = {};
-                ρσ_d["url"] = ROLL20_URL;
-                return ρσ_d;
-            }).call(this), (function() {
-                var ρσ_anonfunc = function (tabs) {
-                    executeScripts(tabs, ρσ_list_decorate([ "src/roll20.js" ]));
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["tabs"]}
-                });
-                return ρσ_anonfunc;
-            })());
-            chrome.tabs.query((function(){
-                var ρσ_d = {};
-                ρσ_d["url"] = DNDBEYOND_URL;
-                return ρσ_d;
-            }).call(this), (function() {
-                var ρσ_anonfunc = function (tabs) {
-                    executeScripts(tabs, ρσ_list_decorate([ "src/jquery-3.4.1.min.js", "src/dndbeyond.js" ]));
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["tabs"]}
-                });
-                return ρσ_anonfunc;
-            })());
+            manifest = chrome.runtime.getManifest();
+            var ρσ_Iter15 = ρσ_Iterable(manifest.content_scripts);
+            for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
+                script = ρσ_Iter15[ρσ_Index15];
+                cb = (function() {
+                    var ρσ_anonfunc = function (files) {
+                        return (function() {
+                            var ρσ_anonfunc = function (tabs) {
+                                executeScripts(tabs, files);
+                            };
+                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                __argnames__ : {value: ["tabs"]}
+                            });
+                            return ρσ_anonfunc;
+                        })();
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["files"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                chrome.tabs.query((function(){
+                    var ρσ_d = {};
+                    ρσ_d["url"] = script.matches;
+                    return ρσ_d;
+                }).call(this), cb(script.js));
+            }
         }
     })();
 })();

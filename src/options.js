@@ -5684,11 +5684,20 @@ var str = ρσ_str, repr = ρσ_repr;;
             var ρσ_d = {};
             ρσ_d["whispers"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["short"] = "Whisper rolls";
-                ρσ_d["title"] = "Whisper rolls to the DM";
+                ρσ_d["short"] = "Whisper all rolls";
+                ρσ_d["title"] = "Whisper all rolls to the DM";
                 ρσ_d["description"] = "If enabled, all the rolls will be whispered to the DM";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["whisper-monsters"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["short"] = "Whisper monster rolls";
+                ρσ_d["title"] = "Whisper monster rolls to the DM";
+                ρσ_d["description"] = "If enabled, all the rolls from monster stat blocks will be whispered to the DM";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
             ρσ_d["roll-advantage"] = (function(){

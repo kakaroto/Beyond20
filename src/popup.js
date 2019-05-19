@@ -5684,11 +5684,20 @@ var str = ρσ_str, repr = ρσ_repr;;
             var ρσ_d = {};
             ρσ_d["whispers"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["short"] = "Whisper rolls";
-                ρσ_d["title"] = "Whisper rolls to the DM";
+                ρσ_d["short"] = "Whisper all rolls";
+                ρσ_d["title"] = "Whisper all rolls to the DM";
                 ρσ_d["description"] = "If enabled, all the rolls will be whispered to the DM";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["whisper-monsters"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["short"] = "Whisper monster rolls";
+                ρσ_d["title"] = "Whisper monster rolls to the DM";
+                ρσ_d["description"] = "If enabled, all the rolls from monster stat blocks will be whispered to the DM";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
             ρσ_d["roll-advantage"] = (function(){
@@ -6550,24 +6559,26 @@ var str = ρσ_str, repr = ρσ_repr;;
         function populateCharacter(response) {
             var options, e;
             character = response;
-            console.log("Received character: ", response);
-            options = $(".beyond20-options");
-            options.append(ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.h4, [" == Character Specific Options =="].concat([ρσ_desugar_kwargs({style: "margin: 0px;"})])), ρσ_interpolate_kwargs.call(E, E.p, [response.name].concat([ρσ_desugar_kwargs({style: "margin: 0px;"})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option", style: "text-align: center; padding: 10px 15px;"})])));
-            e = createHTMLOption("update-hp", false, character_settings);
-            options.append(e);
-            if (ρσ_in("Rogue", response.classes)) {
-                e = createHTMLOption("rogue-sneak-attack", false, character_settings);
+            if ((typeof response !== "undefined" && response !== null)) {
+                console.log("Received character: ", response);
+                options = $(".beyond20-options");
+                options.append(ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.h4, [" == Character Specific Options =="].concat([ρσ_desugar_kwargs({style: "margin: 0px;"})])), ρσ_interpolate_kwargs.call(E, E.p, [response.name].concat([ρσ_desugar_kwargs({style: "margin: 0px;"})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option", style: "text-align: center; padding: 10px 15px;"})])));
+                e = createHTMLOption("update-hp", false, character_settings);
                 options.append(e);
+                if (ρσ_in("Rogue", response.classes)) {
+                    e = createHTMLOption("rogue-sneak-attack", false, character_settings);
+                    options.append(e);
+                }
+                if (ρσ_in("Cleric", response.classes)) {
+                    e = createHTMLOption("cleric-disciple-life", false, character_settings);
+                    options.append(e);
+                }
+                if (ρσ_in("Bard", response.classes)) {
+                    e = createHTMLOption("bard-joat", false, character_settings);
+                    options.append(e);
+                }
+                loadSettings(response.settings, character_settings);
             }
-            if (ρσ_in("Cleric", response.classes)) {
-                e = createHTMLOption("cleric-disciple-life", false, character_settings);
-                options.append(e);
-            }
-            if (ρσ_in("Bard", response.classes)) {
-                e = createHTMLOption("bard-joat", false, character_settings);
-                options.append(e);
-            }
-            loadSettings(response.settings, character_settings);
             $(".beyond20-option-input").off("change", save_settings);
             $(".beyond20-option-input").change(save_settings);
             initializeSettings();
