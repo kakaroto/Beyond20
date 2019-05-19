@@ -13,12 +13,6 @@ To install Beyond 20, simply head over to the [Chrome Web Store](https://chrome.
 
 You should soon be able to install it directly from the [Mozilla Add-ons](https://addons.mozilla.org/en-CA/firefox/) website, but it's not there yet. In the meantime, you can do it this way :
 
-* Download the extension from [github](https://github.com/kakaroto/Beyond20/archive/master.zip)
-* Extract the zip file in a directory of your choice
-* Open "[about:debugging](about:debugging)" in Firefox
-* Click "Load Temporary Add-on"
-* Select the `manifest.json` file from the extension's directory
-
 To use it, simply open your character sheet in D&D Beyond in Chrome, and your Roll 20 game in another tab, then click on the "Beyond 20" or "Cast in Roll20" buttons that appear in the side panels.
 
 To install the development version from git, read below, for more details on use, read below.
@@ -36,12 +30,23 @@ Install RapidScript-NG then type 'make' to compile the *.pyj into *.js
     Note: The .js files are already included in the source repository... I don't usually include built files in a repo, but I guess .js files are still source code and that makes it easier for people to just try the extension without having to first install rapydscript.
 
 # Developer mode Installation
-All you need is to load the extension into Chrome :
 
-1. Go to Chrome Extensions page (Menu->More Tools->Extensions)
-2. Enable Developer Mode (Top-right corner)
-3. Click on the 'Load Unpacked' button
-4. Select the Directory where you extracted this extension
+All you need is to load the extension from the source :
+
+1. Download the extension from [github](https://github.com/kakaroto/Beyond20/archive/master.zip)
+2. Extract the zip file in a directory of your choice
+
+## Chrome
+3. Go to Chrome Extensions page (Menu->More Tools->Extensions)
+4. Enable Developer Mode (Top-right corner)
+5. Click on the 'Load Unpacked' button
+6. Select the Directory where you extracted this extension
+
+## Firefox
+
+3. Open "[about:debugging](about:debugging)" in Firefox
+4. Click "Load Temporary Add-on"
+5. Select the `manifest.json` file from the extension's directory
 
 # Using it
 Open Roll20 VTT in a tab of chrome then your character sheet in D&D Beyond in another tab, click on the item you want to roll, whether it's initiative, a skill, ability or saving throw check, a weapon or spell attack, a class/racial feat or trait or hit dice, death saving throw, etc...

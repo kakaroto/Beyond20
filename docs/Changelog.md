@@ -1,6 +1,12 @@
+v0.0.8.1 (minor bugfix release, not published to Chrome)
+===
+
+- Fix bug where HP management only works if VTT ES extension is installed
+- First release submitted to Firefox
+
 v0.0.8
 ===
-- Added support for HP management
+- Added support for HP management (Requires VTT ES extension installed, for now)
 - Added ability to select which Roll20 page to send the rolls to
 - Add per-character settings to roll Sneak Attack, Disciple of Life, Jack of all Trades
 - Add roll dice icon to spell attack modifier
