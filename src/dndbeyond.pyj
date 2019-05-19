@@ -160,8 +160,8 @@ class Monster:
         self._speed = None
         self._abilities = []
         self._tidbits = {}
-        self._saves = []
-        self._skills = []
+        self._saves = [].as_array()
+        self._skills = [].as_array()
         self._cr = None
 
     def parseStatBlock(self, base):
@@ -343,7 +343,7 @@ def addRollButton(callback, where, small=False, append=False, image=True, text="
                                 "display": "block",
                                 "text-align": "center"})
     if bind:
-        $(".ct-beyond20-roll-button").bind('click', def(event):
+        $(".ct-beyond20-roll-button").on('click', def(event):
             callback()
         )
 
@@ -357,7 +357,7 @@ def addDisplayButton(callback, where, text="Display in Roll20"):
     $(".ct-beyond20-roll-button").css({"margin-left": "auto",
                                        "margin-right": "auto"})
     $(".ct-beyond20-roll-display").css("margin-top", "2px")
-    $(".ct-beyond20-roll-display").bind('click', def(event):
+    $(".ct-beyond20-roll-display").on('click', def(event):
         callback()
     )
 
@@ -379,7 +379,7 @@ def addHitDieButtons(rollCallback):
             return def(event):
                 rollCallback(multiclass, index)
 
-        $(".ct-beyond20-roll-hitdie").eq(i).bind('click', cb(rollCallback, i))
+        $(".ct-beyond20-roll-hitdie").eq(i).on('click', cb(rollCallback, i))
 
 def addDeathSaveButton(callback, where):
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
@@ -387,7 +387,7 @@ def addDeathSaveButton(callback, where):
                     E.img(class_="ct-beyond20-icon", src=icon16))
 
     $(where).after(button)
-    $(".ct-beyond20-roll").bind('click', def(event):
+    $(".ct-beyond20-roll").on('click', def(event):
         callback()
     )
 
@@ -414,7 +414,7 @@ def injectDiceToRolls(selector, character, name=""):
     $(".ct-beyond20-custom-icon").css("margin-right", "3px")
     $(".ct-beyond20-custom-icon").css("margin-left", "3px")
     $(".ct-beyond20-custom-icon").attr("src", icon16)
-    $(".ct-beyond20-custom-roll").bind('click', def(event):
+    $(".ct-beyond20-custom-roll").on('click', def(event):
         name = $(event.currentTarget).find("img").attr("x-beyond20-name")
         roll = $(event.currentTarget).find("img").attr("x-beyond20-roll")
         sendRoll(character, "custom", roll, {"name": name})

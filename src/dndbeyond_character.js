@@ -6704,8 +6704,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             self._speed = null;
             self._abilities = ρσ_list_decorate([]);
             self._tidbits = {};
-            self._saves = ρσ_list_decorate([]);
-            self._skills = ρσ_list_decorate([]);
+            self._saves = ρσ_list_decorate([]).as_array();
+            self._skills = ρσ_list_decorate([]).as_array();
             self._cr = null;
         };
         if (!Monster.prototype.__init__.__argnames__) Object.defineProperties(Monster.prototype.__init__, {
@@ -7048,7 +7048,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_d;
             }).call(this));
             if (bind) {
-                $(".ct-beyond20-roll-button").bind("click", (function() {
+                $(".ct-beyond20-roll-button").on("click", (function() {
                     var ρσ_anonfunc = function (event) {
                         callback();
                     };
@@ -7084,7 +7084,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_d;
             }).call(this));
             $(".ct-beyond20-roll-display").css("margin-top", "2px");
-            $(".ct-beyond20-roll-display").bind("click", (function() {
+            $(".ct-beyond20-roll-display").on("click", (function() {
                 var ρσ_anonfunc = function (event) {
                     callback();
                 };
@@ -7127,7 +7127,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     });
                     return ρσ_anonfunc;
                 })();
-                $(".ct-beyond20-roll-hitdie").eq(i).bind("click", cb(rollCallback, i));
+                $(".ct-beyond20-roll-hitdie").eq(i).on("click", cb(rollCallback, i));
             }
         };
         if (!addHitDieButtons.__argnames__) Object.defineProperties(addHitDieButtons, {
@@ -7139,7 +7139,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             icon16 = chrome.extension.getURL("images/icons/icon16.png");
             button = ρσ_interpolate_kwargs.call(E, E.span, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon16})])].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll"})]));
             $(where).after(button);
-            $(".ct-beyond20-roll").bind("click", (function() {
+            $(".ct-beyond20-roll").on("click", (function() {
                 var ρσ_anonfunc = function (event) {
                     callback();
                 };
@@ -7188,7 +7188,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");
             $(".ct-beyond20-custom-icon").css("margin-left", "3px");
             $(".ct-beyond20-custom-icon").attr("src", icon16);
-            $(".ct-beyond20-custom-roll").bind("click", (function() {
+            $(".ct-beyond20-custom-roll").on("click", (function() {
                 var ρσ_anonfunc = function (event) {
                     var name, roll;
                     name = $(event.currentTarget).find("img").attr("x-beyond20-name");
@@ -7794,7 +7794,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else {
                     ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({text: "Cast on Roll20", image: false})]));
                 }
-                $(".ct-spell-caster__casting-action > button").bind("click", (function() {
+                $(".ct-spell-caster__casting-action > button").on("click", (function() {
                     var ρσ_anonfunc = function (event) {
                         execute(paneClass);
                     };
@@ -7867,7 +7867,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         console.log(item);
                     }
                     $(".ct-beyond20-custom-icon").css("margin-left", "3px");
-                    $(".ct-beyond20-spell-attack").bind("click", (function() {
+                    $(".ct-beyond20-spell-attack").on("click", (function() {
                         var ρσ_anonfunc = function (event) {
                             var name, mod;
                             name = $(event.currentTarget).attr("x-beyond20-name");

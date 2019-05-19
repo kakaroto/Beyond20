@@ -373,7 +373,7 @@ def injectRollButton(paneClass):
         else:
             addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on Roll20", image=False)
 
-        $(".ct-spell-caster__casting-action > button").bind('click', def(event):
+        $(".ct-spell-caster__casting-action > button").on('click', def(event):
             execute(paneClass)
         )
     elif paneClass == "ct-reset-pane":
@@ -406,6 +406,8 @@ def injectRollButton(paneClass):
 def injectRollToSpellAttack():
     groups = $(".ct-spells-level-casting__info-group")
 
+    # FIXME: bug here, it doesn't seem to want to add them in mobile mode
+    # looks like the page itself removes them continuously?
     for group in groups:
         label = $(group).find(".ct-spells-level-casting__info-label")
         if label.text() == "Spell Attack":
@@ -424,7 +426,7 @@ def injectRollToSpellAttack():
                 item.append(img)
                 console.log(item)
             $(".ct-beyond20-custom-icon").css("margin-left", "3px")
-            $(".ct-beyond20-spell-attack").bind('click', def(event):
+            $(".ct-beyond20-spell-attack").on('click', def(event):
                 name = $(event.currentTarget).attr("x-beyond20-name")
                 mod = $(event.currentTarget).attr("x-beyond20-modifier")
                 sendRollWithCharacter("custom", "1d20" + mod, {"name": name, "modifier": mod})
