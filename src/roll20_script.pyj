@@ -1,7 +1,7 @@
 from utils import addCustomEventListener
 
 def updateHP(name, current, total=None):
-    console.log("Updating HP for " + name + " : " + current + "/" + total, arguments )
+    console.log("Updating HP for " + name + " : " + current + "/" + total)
     characters = window.Campaign.characters
     name = name.toLowerCase()
 

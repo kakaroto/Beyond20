@@ -5320,6 +5320,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function sendCustomEvent(name, data) {
             var event;
+            if (ρσ_equals(getBrowser(), "Firefox")) {
+                data = cloneInto(data, window);
+            }
             event = new CustomEvent("Beyond20_" + name, (function(){
                 var ρσ_d = {};
                 ρσ_d["detail"] = data;
@@ -6447,6 +6450,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var DNDBEYOND_URL = ρσ_modules.utils.DNDBEYOND_URL;
         var CHANGELOG_URL = ρσ_modules.utils.CHANGELOG_URL;
         var roll20TabTitle = ρσ_modules.utils.roll20TabTitle;
+        var getBrowser = ρσ_modules.utils.getBrowser;
 
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
@@ -6624,31 +6628,33 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         updateSettings();
         chrome.runtime.onMessage.addListener(onMessage);
-        chrome.tabs.query((function(){
-            var ρσ_d = {};
-            ρσ_d["url"] = ROLL20_URL;
-            return ρσ_d;
-        }).call(this), (function() {
-            var ρσ_anonfunc = function (tabs) {
-                executeScripts(tabs, ρσ_list_decorate([ "src/roll20.js" ]));
-            };
-            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                __argnames__ : {value: ["tabs"]}
-            });
-            return ρσ_anonfunc;
-        })());
-        chrome.tabs.query((function(){
-            var ρσ_d = {};
-            ρσ_d["url"] = DNDBEYOND_URL;
-            return ρσ_d;
-        }).call(this), (function() {
-            var ρσ_anonfunc = function (tabs) {
-                executeScripts(tabs, ρσ_list_decorate([ "src/jquery-3.4.1.min.js", "src/dndbeyond.js" ]));
-            };
-            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                __argnames__ : {value: ["tabs"]}
-            });
-            return ρσ_anonfunc;
-        })());
+        if (ρσ_equals(getBrowser(), "Chrome")) {
+            chrome.tabs.query((function(){
+                var ρσ_d = {};
+                ρσ_d["url"] = ROLL20_URL;
+                return ρσ_d;
+            }).call(this), (function() {
+                var ρσ_anonfunc = function (tabs) {
+                    executeScripts(tabs, ρσ_list_decorate([ "src/roll20.js" ]));
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["tabs"]}
+                });
+                return ρσ_anonfunc;
+            })());
+            chrome.tabs.query((function(){
+                var ρσ_d = {};
+                ρσ_d["url"] = DNDBEYOND_URL;
+                return ρσ_d;
+            }).call(this), (function() {
+                var ρσ_anonfunc = function (tabs) {
+                    executeScripts(tabs, ρσ_list_decorate([ "src/jquery-3.4.1.min.js", "src/dndbeyond.js" ]));
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["tabs"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        }
     })();
 })();

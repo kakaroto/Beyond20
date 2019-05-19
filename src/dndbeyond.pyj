@@ -67,7 +67,7 @@ class Character:
                 if modifier == "":
                     modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number").text()
                     value = $(ability).find(".ct-ability-summary__primary").text()
-                self._abilities.append([name, abbr, value, modifier])
+                self._abilities.append([name, abbr, value, modifier].as_array())
         if self._race is None:
             self._race = $(".ct-character-tidbits__race").text()
             if self._race == "":
@@ -129,7 +129,7 @@ class Character:
     def getDict(self):
         return {"name": self._name,
                 "id": self._id,
-                "abilities": self._abilities,
+                "abilities": self._abilities.as_array(),
                 "classes": self._classes,
                 "level": self._level,
                 "race": self._race,

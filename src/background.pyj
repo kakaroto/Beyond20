@@ -1,4 +1,4 @@
-from utils import ROLL20_URL, DNDBEYOND_URL, CHANGELOG_URL, roll20TabTitle
+from utils import ROLL20_URL, DNDBEYOND_URL, CHANGELOG_URL, roll20TabTitle, getBrowser
 from settings import getDefaultSettings, getStoredSettings, mergeSettings
 
 settings = getDefaultSettings()
@@ -67,10 +67,11 @@ def executeScripts(tabs, js_files):
 updateSettings()
 chrome.runtime.onMessage.addListener(onMessage)
 
-chrome.tabs.query({ "url": ROLL20_URL }, def(tabs):
-    executeScripts(tabs, ["src/roll20.js"])
-)
-chrome.tabs.query({ "url": DNDBEYOND_URL }, def(tabs):
-    executeScripts(tabs, ["src/jquery-3.4.1.min.js", "src/dndbeyond.js"])
-)
+if getBrowser() == "Chrome":
+    chrome.tabs.query({ "url": ROLL20_URL }, def(tabs):
+        executeScripts(tabs, ["src/roll20.js"])
+    )
+    chrome.tabs.query({ "url": DNDBEYOND_URL }, def(tabs):
+        executeScripts(tabs, ["src/jquery-3.4.1.min.js", "src/dndbeyond.js"])
+    )
 

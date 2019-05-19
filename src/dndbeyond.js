@@ -5320,6 +5320,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function sendCustomEvent(name, data) {
             var event;
+            if (ρσ_equals(getBrowser(), "Firefox")) {
+                data = cloneInto(data, window);
+            }
             event = new CustomEvent("Beyond20_" + name, (function(){
                 var ρσ_d = {};
                 ρσ_d["detail"] = data;
@@ -6540,7 +6543,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number").text();
                         value = $(ability).find(".ct-ability-summary__primary").text();
                     }
-                    self._abilities.append(ρσ_list_decorate([ name, abbr, value, modifier ]));
+                    self._abilities.append(ρσ_list_decorate([ name, abbr, value, modifier ]).as_array());
                 }
             }
             if (self._race === null) {
@@ -6648,7 +6651,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 var ρσ_d = {};
                 ρσ_d["name"] = self._name;
                 ρσ_d["id"] = self._id;
-                ρσ_d["abilities"] = self._abilities;
+                ρσ_d["abilities"] = self._abilities.as_array();
                 ρσ_d["classes"] = self._classes;
                 ρσ_d["level"] = self._level;
                 ρσ_d["race"] = self._race;

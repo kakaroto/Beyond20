@@ -5318,6 +5318,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function sendCustomEvent(name, data) {
             var event;
+            if (ρσ_equals(getBrowser(), "Firefox")) {
+                data = cloneInto(data, window);
+            }
             event = new CustomEvent("Beyond20_" + name, (function(){
                 var ρσ_d = {};
                 ρσ_d["detail"] = data;
@@ -5386,7 +5389,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 total = ρσ_kwargs_obj.total;
             }
             var characters, attr, char;
-            console.log("Updating HP for " + name + " : " + current + "/" + total, arguments);
+            console.log("Updating HP for " + name + " : " + current + "/" + total);
             characters = window.Campaign.characters;
             name = name.toLowerCase();
             var ρσ_Iter0 = ρσ_Iterable(characters.models);

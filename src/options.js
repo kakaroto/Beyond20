@@ -5619,6 +5619,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function sendCustomEvent(name, data) {
             var event;
+            if (ρσ_equals(getBrowser(), "Firefox")) {
+                data = cloneInto(data, window);
+            }
             event = new CustomEvent("Beyond20_" + name, (function(){
                 var ρσ_d = {};
                 ρσ_d["detail"] = data;
