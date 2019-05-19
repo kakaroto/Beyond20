@@ -36,6 +36,6 @@ If you cannot do that (you're not the DM) or you don't wish to do it (you prefer
 
 ---
 
-**Q**: In update v0.0.8, it says it can sync up HP from D&D Beyond to Roll20, but it doesn't work. Am I doing something wrong ?
+**Q**: HP from D&D Beyond doesn't synchronize to Roll20. Am I doing something wrong ?
 
-**A**: No, sorry about that, that's a bug from my side, it would only work if the [VTT ES](https://chrome.google.com/webstore/detail/vtt-enhancement-suite/fadcomaehamhdhekodcpiglabcjkepff?hl=en-GB) extension was enabled, but I've already fixed the bug, so once v0.0.9 is released, the HP management should work for everybody.
+**A**: Make sure you have at least version 0.0.9. Make sure the HP syncing is enable for that character (click the Beyond20 icon in the toolbar when in the character sheet) and make sure the names match between the character in Roll20 and D&D Beyond.

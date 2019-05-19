@@ -1,8 +1,16 @@
-v0.0.8.1 (minor bugfix release, not published to Chrome)
+v0.0.9
+===
+
+- Add preliminary Monster support (only dice formulas are clickable for now)
+- Fix Firefox support which got completely broken in 0.0.8
+- Correctly fix the HP syncing feature and add support for HP=0.
+- Fix wrong damage value in with weapons that have multiple types of damages
+- Fix critical damage rolls for multi-damage attacks
+
+v0.0.8.1 (Firefox-only)
 ===
 
 - Fix bug where HP management only works if VTT ES extension is installed
-- First release submitted to Firefox
 
 v0.0.8
 ===
