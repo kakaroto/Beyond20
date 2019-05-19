@@ -6584,7 +6584,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     self._level = xp.text().replace("LVL ", "");
                 }
             }
-            self.updateHP();
+            if (ρσ_exists.n(self._settings)) {
+                self.updateHP();
+            }
         };
         Character.prototype.updateHP = function updateHP() {
             var self = this;
@@ -6609,7 +6611,11 @@ var str = ρσ_str, repr = ρσ_repr;;
                 hp = int(mobile_hp.text());
                 max_hp = int($(".ct-status-summary-mobile__hp-max").text());
             }
-            if (hp && max_hp && ((self._hp !== hp && (typeof self._hp !== "object" || ρσ_not_equals(self._hp, hp))) || (self._max_hp !== max_hp && (typeof self._max_hp !== "object" || ρσ_not_equals(self._max_hp, max_hp))))) {
+            if ($(".ct-status-summary-mobile__deathsaves-group").length > 0 || $(".ct-health-summary__deathsaves").length > 0) {
+                hp = 0;
+                max_hp = self._max_hp;
+            }
+            if (hp !== null && max_hp !== null && ((self._hp !== hp && (typeof self._hp !== "object" || ρσ_not_equals(self._hp, hp))) || (self._max_hp !== max_hp && (typeof self._max_hp !== "object" || ρσ_not_equals(self._max_hp, max_hp))))) {
                 self._hp = hp;
                 self._max_hp = max_hp;
                 print("HP updated to : " + hp + "/" + max_hp);
@@ -6639,6 +6645,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 getStoredSettings((function() {
                     var ρσ_anonfunc = function (saved_settings) {
                         self._settings = saved_settings;
+                        self.updateHP();
                     };
                     if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                         __argnames__ : {value: ["saved_settings"]}
@@ -7131,7 +7138,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             var icon16, button;
             icon16 = chrome.extension.getURL("images/icons/icon16.png");
             button = ρσ_interpolate_kwargs.call(E, E.span, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon16})])].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll"})]));
-            print("Adding");
             $(where).after(button);
             $(".ct-beyond20-roll").bind("click", (function() {
                 var ρσ_anonfunc = function (event) {

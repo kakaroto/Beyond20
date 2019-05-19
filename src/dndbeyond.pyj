@@ -87,7 +87,8 @@ class Character:
                 self._level = level.text().replace("Level ", "")
             elif xp.length > 0:
                 self._level = xp.text().replace("LVL ", "")
-        self.updateHP()
+        if self._settings?:
+            self.updateHP()
 
     def updateHP(self):
         hp = max_hp = None
@@ -106,8 +107,12 @@ class Character:
         if mobile_hp.length > 0:
             hp = int(mobile_hp.text())
             max_hp = int($(".ct-status-summary-mobile__hp-max").text())
-
-        if hp and max_hp and (self._hp != hp or self._max_hp != max_hp):
+        if $(".ct-status-summary-mobile__deathsaves-group").length > 0 or \
+                $(".ct-health-summary__deathsaves").length > 0:
+            # if we find death saving section, then it means the HP is 0
+            hp = 0
+            max_hp = self._max_hp
+        if hp is not None and max_hp is not None and (self._hp != hp or self._max_hp != max_hp):
             self._hp = hp
             self._max_hp = max_hp
             print("HP updated to : " + hp + "/" + max_hp)
@@ -124,6 +129,7 @@ class Character:
         else:
             getStoredSettings(def(saved_settings):
                 self._settings = saved_settings
+                self.updateHP()
             , "character-" + self._id, character_settings)
 
     def getDict(self):
@@ -380,7 +386,6 @@ def addDeathSaveButton(callback, where):
     button = E.span(class_="ct-beyond20-roll",
                     E.img(class_="ct-beyond20-icon", src=icon16))
 
-    print("Adding")
     $(where).after(button)
     $(".ct-beyond20-roll").bind('click', def(event):
         callback()

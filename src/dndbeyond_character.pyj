@@ -440,10 +440,10 @@ def documentModified(mutations, observer):
         observer.disconnect()
         return
 
+    character.updateInfo()
     injectRollToSpellAttack()
 
     pane = $(".ct-sidebar__pane-content > div")
-    character.updateInfo()
     if pane.length > 0:
         for div in range(pane.length):
             paneClass = pane[div].className
@@ -460,6 +460,7 @@ def updateSettings(new_settings=None):
         getStoredSettings(def(saved_settings):
             nonlocal settings
             settings = saved_settings
+            documentModified()
         )
 
 def handleMessage (request, sender, sendResponse):
@@ -482,5 +483,4 @@ chrome.runtime.onMessage.addListener(handleMessage)
 observer = new window.MutationObserver(documentModified)
 observer.observe(document, {"subtree": True, "childList": True})
 chrome.runtime.sendMessage({"action": "activate-icon"});
-documentModified()
 

@@ -14,7 +14,7 @@ def save_settings():
         if chrome.runtime.lastError:
             console.log('Chrome Runtime Error', chrome.runtime.lastError.message);
         else:
-            chrome.runtime.sendMessage({"action": "settings", "settings": settings});
+            chrome.runtime.sendMessage({"action": "settings",  "type": "general", "settings": settings});
             $('.success').toggleClass('show')
             setTimeout(def():
                 $('.success').toggleClass('show')

@@ -6485,6 +6485,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         chrome.runtime.sendMessage((function(){
                             var ρσ_d = {};
                             ρσ_d["action"] = "settings";
+                            ρσ_d["type"] = "general";
                             ρσ_d["settings"] = settings;
                             return ρσ_d;
                         }).call(this));
