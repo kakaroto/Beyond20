@@ -1,7 +1,7 @@
 v0.0.9
 ===
 
-- Add preliminary Monster support (only dice formulas are clickable for now)
+- Add preliminary Monster and Creatures support (only dice formulas are clickable for now)
 - Fix Firefox support which got completely broken in 0.0.8
 - Correctly fix the HP syncing feature and add support for HP=0.
 - Fix wrong damage value in with weapons that have multiple types of damages
