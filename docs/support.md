@@ -12,6 +12,12 @@ If you want to discuss an issue, you can join our [discord server](https://disco
 
 If you've found a bug or an issue, or if you have a feature or suggestion to make, head over to github's [issue tracker](https://github.com/kakaroto/Beyond20/issues) and submit your bug report or feature request.
 
+## Known Issues
+
+Some issues are already known and being worked on. This list might not always be up-to-date, and there might be newly reported bugs in the [issue tracker](https://github.com/kakaroto/Beyond20/issues).
+
+{% include_relative known_issues.md %}
+
 ## Changelog
 
 Here is the full [changelog](Changelog) for the extension.
