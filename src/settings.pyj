@@ -43,7 +43,19 @@ options_list = {
 
     "crit-prefix": {"title": "Critical Hit Prefix",
                     "description": "Prefix to add to the Critical Hit dice result.\nI've found it less confusing for players to point out that the '+ X' is the crit damage",
-                    "type": "string", "default": "Crit: "},
+                    "type": "string",
+                    "default": "Crit: "},
+
+    "components-display": {"title": "Components to display in spell attacks",
+                           "description": "When doing a spell attack, what components to show alongside the spell roll.",
+                           "type": "combobox",
+                           "default": "all",
+                           "choices": {"all": "All components", "material": "Only material components", "none": "Do not display anything"}},
+    
+    "component-prefix": {"title": "Component Prefix",
+                         "description": "Prefix to add to the display of the components of a spell during an attack.\nYou may want to change it to 'Materials used :' for example, if only displaying material components",
+                         "type": "string",
+                         "default": "Components: "},
 
     "template": {"title": "Roll20 Character Sheet Setting",
                  "description": "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.",

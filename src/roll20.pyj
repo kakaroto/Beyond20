@@ -370,15 +370,19 @@ def handleMessage (request, sender, sendResponse):
             if request["cast-at"]?:
                 properties["hldmg"] = genRoll(request["cast-at"][0]) + request["cast-at"][1:] + " Level"
             components = request.components
-            while components != "":
-                if components[0] in ["V", "S"]:
-                    components = components[1:]
-                    if components.startsWith(", "):
-                        components = components[2:]
-                print("Components: " + components)
-                if components[0] == "M":
-                    properties["desc"] = components[2:-1]
+            if settings["components-display"] == "all":
+                if components != "":
+                    properties["desc"] = settings["component-prefix"] + components
                     components = ""
+            elif settings["components-display"] == "material":
+                while components != "":
+                    if components[0] in ["V", "S"]:
+                        components = components[1:]
+                        if components.startsWith(", "):
+                            components = components[2:]
+                    if components[0] == "M":
+                        properties["desc"] = settings["component-prefix"] + components[2:-1]
+                        components = ""
             roll += template("atkdmg", properties)
             if healing_spell and \
                     "Cleric" in request.character.classes and \

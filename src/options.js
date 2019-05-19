@@ -5742,6 +5742,29 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = "Crit: ";
                 return ρσ_d;
             }).call(this);
+            ρσ_d["components-display"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Components to display in spell attacks";
+                ρσ_d["description"] = "When doing a spell attack, what components to show alongside the spell roll.";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = "all";
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["all"] = "All components";
+                    ρσ_d["material"] = "Only material components";
+                    ρσ_d["none"] = "Do not display anything";
+                    return ρσ_d;
+                }).call(this);
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["component-prefix"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Component Prefix";
+                ρσ_d["description"] = "Prefix to add to the display of the components of a spell during an attack.\nYou may want to change it to 'Materials used :' for example, if only displaying material components";
+                ρσ_d["type"] = "string";
+                ρσ_d["default"] = "Components: ";
+                return ρσ_d;
+            }).call(this);
             ρσ_d["template"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Roll20 Character Sheet Setting";

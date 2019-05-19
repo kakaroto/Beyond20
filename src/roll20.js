@@ -5742,6 +5742,29 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = "Crit: ";
                 return ρσ_d;
             }).call(this);
+            ρσ_d["components-display"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Components to display in spell attacks";
+                ρσ_d["description"] = "When doing a spell attack, what components to show alongside the spell roll.";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = "all";
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["all"] = "All components";
+                    ρσ_d["material"] = "Only material components";
+                    ρσ_d["none"] = "Do not display anything";
+                    return ρσ_d;
+                }).call(this);
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["component-prefix"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Component Prefix";
+                ρσ_d["description"] = "Prefix to add to the display of the components of a spell during an attack.\nYou may want to change it to 'Materials used :' for example, if only displaying material components";
+                ρσ_d["type"] = "string";
+                ρσ_d["default"] = "Components: ";
+                return ρσ_d;
+            }).call(this);
             ρσ_d["template"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Roll20 Character Sheet Setting";
@@ -7059,17 +7082,23 @@ var str = ρσ_str, repr = ρσ_repr;;
                         properties["hldmg"] = genRoll(request["cast-at"][0]) + request["cast-at"].slice(1) + " Level";
                     }
                     components = request.components;
-                    while ((components !== "" && (typeof components !== "object" || ρσ_not_equals(components, "")))) {
-                        if (ρσ_in(components[0], ρσ_list_decorate([ "V", "S" ]))) {
-                            components = components.slice(1);
-                            if (components.startsWith(", ")) {
-                                components = components.slice(2);
-                            }
-                        }
-                        print("Components: " + components);
-                        if ((components[0] === "M" || typeof components[0] === "object" && ρσ_equals(components[0], "M"))) {
-                            properties["desc"] = components.slice(2, -1);
+                    if ((settings["components-display"] === "all" || typeof settings["components-display"] === "object" && ρσ_equals(settings["components-display"], "all"))) {
+                        if ((components !== "" && (typeof components !== "object" || ρσ_not_equals(components, "")))) {
+                            properties["desc"] = settings["component-prefix"] + components;
                             components = "";
+                        }
+                    } else if ((settings["components-display"] === "material" || typeof settings["components-display"] === "object" && ρσ_equals(settings["components-display"], "material"))) {
+                        while ((components !== "" && (typeof components !== "object" || ρσ_not_equals(components, "")))) {
+                            if (ρσ_in(components[0], ρσ_list_decorate([ "V", "S" ]))) {
+                                components = components.slice(1);
+                                if (components.startsWith(", ")) {
+                                    components = components.slice(2);
+                                }
+                            }
+                            if ((components[0] === "M" || typeof components[0] === "object" && ρσ_equals(components[0], "M"))) {
+                                properties["desc"] = settings["component-prefix"] + components.slice(2, -1);
+                                components = "";
+                            }
                         }
                     }
                     roll += template("atkdmg", properties);
