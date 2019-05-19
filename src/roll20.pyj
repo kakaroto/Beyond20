@@ -282,19 +282,6 @@ def handleMessage (request, sender, sendResponse):
                 properties["saveattr"] = request["save-ability"]
                 properties["savedc"] = request["save-dc"]
             roll += template("atkdmg", properties)
-            if "Rogue" in request.character.classes and \
-                    request.character.settings["rogue-sneak-attack"] and \
-                    (request["attack-type"] == "Ranged" or (request["properties"]? and "Finesse" in request["properties"])):
-                sneak_attack = "[[ceil(" + request.character.classes["Rogue"] + " / 2)]]d6"
-                if settings["whispers"]:
-                    roll += "\n/w gm "
-                else:
-                    roll += "\n"
-                roll += template("simple",
-                                 {"rname" : "Sneak Attack",
-                                  "mod": sneak_attack,
-                                  "r1": "[[" + sneak_attack + "]]",
-                                  "normal": 1})
         elif request.type == "item":
             roll += template("traits", {"name": request.name,
                                         "source": request["item-type"],

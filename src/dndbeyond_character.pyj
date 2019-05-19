@@ -1,5 +1,6 @@
 from settings import getDefaultSettings, getStoredSettings
 from elementmaker import E
+import math
 from dndbeyond import Character, buildAttackRoll, sendRoll, \
     ability_abbreviations, findToHit, descriptionToString, propertyListToDict, \
     injectDiceToRolls, addDeathSaveButton, addHitDieButtons, addDisplayButton, addRollButton, \
@@ -66,6 +67,8 @@ def rollHitDie(multiclass, index):
                                "hit-dice": die} )
 
 def rollItem(force_display=False):
+    nonlocal character
+
     prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property")
     properties = propertyListToDict(prop_list)
     print("Properties are : " + str(properties))
@@ -105,6 +108,19 @@ def rollItem(force_display=False):
                             
                 break
 
+        if "Rogue" in character._classes and \
+                character._settings["rogue-sneak-attack"] and \
+                (properties["Attack Type"] == "Ranged" or \
+                     (properties["Properties"]? and properties["Properties"].includes("Finesse"))):
+            sneak_attack = int(math.ceil(float(character._classes["Rogue"]) / 2)) + "d6"
+            dmg_type = "Sneak Attack"
+            console.log("Sneak attack:", sneak_attack)
+            if damage2 is None:
+                damage2 = sneak_attack
+                damage2_type = dmg_type
+            else:
+                damage2 += " | " + sneak_attack
+                damage2_type += " | " + dmg_type
         roll_properties = buildAttackRoll("item",
                                           item_name,
                                           description,

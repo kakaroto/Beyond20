@@ -6715,7 +6715,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, advantage_type, modifier, ability, prof, prof_val, half_prof, dice_roll, roll_properties, dice, dice_formula, rname, properties, sneak_attack, source, components, description, higher, healing_spell, level, mod;
+            var roll, advantage_type, modifier, ability, prof, prof_val, half_prof, dice_roll, roll_properties, dice, dice_formula, rname, properties, source, components, description, higher, healing_spell, level, mod;
             print("Got message : " + str(request));
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
@@ -6930,22 +6930,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                         properties["savedc"] = request["save-dc"];
                     }
                     roll += template("atkdmg", properties);
-                    if (ρσ_in("Rogue", request.character.classes) && request.character.settings["rogue-sneak-attack"] && ((request["attack-type"] === "Ranged" || typeof request["attack-type"] === "object" && ρσ_equals(request["attack-type"], "Ranged")) || ρσ_exists.n(request["properties"]) && ρσ_in("Finesse", request["properties"]))) {
-                        sneak_attack = "[[ceil(" + request.character.classes["Rogue"] + " / 2)]]d6";
-                        if (settings["whispers"]) {
-                            roll += "\n/w gm ";
-                        } else {
-                            roll += "\n";
-                        }
-                        roll += template("simple", (function(){
-                            var ρσ_d = {};
-                            ρσ_d["rname"] = "Sneak Attack";
-                            ρσ_d["mod"] = sneak_attack;
-                            ρσ_d["r1"] = "[[" + sneak_attack + "]]";
-                            ρσ_d["normal"] = 1;
-                            return ρσ_d;
-                        }).call(this));
-                    }
                 } else if ((request.type === "item" || typeof request.type === "object" && ρσ_equals(request.type, "item"))) {
                     roll += template("traits", (function(){
                         var ρσ_d = {};
