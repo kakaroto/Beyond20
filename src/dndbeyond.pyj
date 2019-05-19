@@ -315,11 +315,6 @@ def rollItem(force_display=False):
                                 damage2_type += "(" + dmg_info + ")"
                             
                 break
-        damage = properties["Damage"]
-        versatile_damage = None
-        if "(" in damage:
-            (damage, versatile_damage) = damage.split("(")
-            versatile_damage = versatile_damage[:-1]
 
         roll_properties = buildAttackRoll("item",
                                           item_name,

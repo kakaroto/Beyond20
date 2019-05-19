@@ -6943,7 +6943,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
                 force_display = ρσ_kwargs_obj.force_display;
             }
-            var prop_list, properties, item_name, item_type, description, to_hit, damage, damage2, damage2_type, value, versatile_damage, additional_damages, dmg, dmg_type, dmg_info, j, i, ρσ_unpack, roll_properties;
+            var prop_list, properties, item_name, item_type, description, to_hit, damage, damage2, damage2_type, value, versatile_damage, additional_damages, dmg, dmg_type, dmg_info, j, i, roll_properties;
             prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property");
             properties = propertyListToDict(prop_list);
             print("Properties are : " + str(properties));
@@ -6987,15 +6987,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                         }
                         break;
                     }
-                }
-                damage = properties["Damage"];
-                versatile_damage = null;
-                if (ρσ_in("(", damage)) {
-                    ρσ_unpack = damage.split("(");
-ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
-                    damage = ρσ_unpack[0];
-                    versatile_damage = ρσ_unpack[1];
-                    versatile_damage = versatile_damage.slice(0, -1);
                 }
                 roll_properties = buildAttackRoll("item", item_name, description, properties, damage, ρσ_exists.e(properties["Damage Type"], ""), to_hit, damage2, damage2_type);
                 roll_properties["item-type"] = item_type;
