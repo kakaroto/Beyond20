@@ -1,4 +1,5 @@
-from dndbeyond import injectDiceToRolls, isCustomRollIconsAdded
+from dndbeyond import injectDiceToRolls, isCustomRollIconsAdded, isRollButtonAdded, sendRoll
+from elementmaker import E
 
 print("Beyond20: D&D Beyond Spell module loaded.")
 
@@ -6,12 +7,74 @@ class FakeCharacter:
     def getDict(self):
         return {"name": ""}
 
-def documentLoaded():
-    character = FakeCharacter()
+character = FakeCharacter()
 
-    if isCustomRollIconsAdded():
+def displaySpell():
+    nonlocal character
+
+    def get_statblock(label):
+        return $(".ddb-statblock-item-" + label + " .ddb-statblock-item-value").text().trim()
+
+    spell_name = $(".page-title").text().trim()
+    level = get_statblock("level")
+    casting_time = get_statblock("casting-time")
+    range_area = get_statblock("range-area")
+    components = get_statblock("components")
+    duration = get_statblock("duration")
+    school = get_statblock("school")
+    description = $(".spell-details .more-info-content").text().trim()
+
+    if level == "Cantrip":
+        level_school = school + " " + level
+    else:
+        level_school = level + " Level " + school
+    if duration.startsWith("Concentration"):
+        concentration = True
+        duration = duration.replace("Concentration", "").trim()
+    else:
+        concentration = False
+    ritual = ($(".ddb-statblock-item-casting-time .i-ritual").length > 0)
+    if components[-1] == "*":
+        materials = $(".more-info-content .components-blurb").text().trim()
+        material_len = len(materials)
+        description = description[:-material_len].trim()
+        components = components[:-2] + materials[4:]
+    aoe = $(".ddb-statblock-item-range-area .aoe-size").text().trim()
+    if aoe != "":
+        aoe_len = len(aoe)
+        range_area = range_area[:-aoe_len].trim() + " " + aoe.trim()
+
+    sendRoll(character, "spell-card", 0, {"name": spell_name,
+                                            "level-school": level_school,
+                                            "range": range_area,
+                                            "concentration": concentration,
+                                            "duration": duration,
+                                            "casting-time": casting_time,
+                                            "components": components,
+                                            "ritual": ritual,
+                                            "description" : description})
+
+def addDisplayButton():
+    icon32 = chrome.extension.getURL("images/icons/icon32.png");
+    button = E.a(class_="ct-beyond20-roll button-alt", href="#",
+                 E.span(class_="label",
+                        E.img(class_="ct-beyond20-icon", src=icon32, style="margin-right: 10px;"),
+                        "Display Spell Card on Roll 20")
+                 )
+    $(".page-heading__content").append(button)
+    $(".ct-beyond20-roll").css({"float": "right",
+                                "display": "inline-block"})
+    $(".ct-beyond20-roll").on('click', def(event):
+        displaySpell()
+    )
+
+def documentLoaded():
+    nonlocal character
+
+    if isRollButtonAdded():
         chrome.runtime.sendMessage({"action": "reload-me"});
     else:
+        addDisplayButton()
         spell_name = $(".page-title").text().trim()
         injectDiceToRolls(".spell-details .more-info-content", character, spell_name)
 

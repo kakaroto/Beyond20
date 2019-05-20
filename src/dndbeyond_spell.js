@@ -7696,8 +7696,13 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
+        var character;
         var injectDiceToRolls = ρσ_modules.dndbeyond.injectDiceToRolls;
         var isCustomRollIconsAdded = ρσ_modules.dndbeyond.isCustomRollIconsAdded;
+        var isRollButtonAdded = ρσ_modules.dndbeyond.isRollButtonAdded;
+        var sendRoll = ρσ_modules.dndbeyond.sendRoll;
+
+        var E = ρσ_modules.elementmaker.E;
 
         print("Beyond20: D&D Beyond Spell module loaded.");
         function FakeCharacter() {
@@ -7722,16 +7727,94 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
         Object.defineProperty(FakeCharacter.prototype, "__bases__", {value: []});
 
+        character = new FakeCharacter;
+        function displaySpell() {
+            var spell_name, level, casting_time, range_area, components, duration, school, description, level_school, concentration, ritual, materials, material_len, aoe, aoe_len;
+            function get_statblock(label) {
+                return $(".ddb-statblock-item-" + label + " .ddb-statblock-item-value").text().trim();
+            };
+            if (!get_statblock.__argnames__) Object.defineProperties(get_statblock, {
+                __argnames__ : {value: ["label"]}
+            });
+
+            spell_name = $(".page-title").text().trim();
+            level = get_statblock("level");
+            casting_time = get_statblock("casting-time");
+            range_area = get_statblock("range-area");
+            components = get_statblock("components");
+            duration = get_statblock("duration");
+            school = get_statblock("school");
+            description = $(".spell-details .more-info-content").text().trim();
+            if ((level === "Cantrip" || typeof level === "object" && ρσ_equals(level, "Cantrip"))) {
+                level_school = school + " " + level;
+            } else {
+                level_school = level + " Level " + school;
+            }
+            if (duration.startsWith("Concentration")) {
+                concentration = true;
+                duration = duration.replace("Concentration", "").trim();
+            } else {
+                concentration = false;
+            }
+            ritual = $(".ddb-statblock-item-casting-time .i-ritual").length > 0;
+            if ((components[components.length-1] === "*" || typeof components[components.length-1] === "object" && ρσ_equals(components[components.length-1], "*"))) {
+                materials = $(".more-info-content .components-blurb").text().trim();
+                material_len = len(materials);
+                description = description.slice(0, -material_len).trim();
+                components = components.slice(0, -2) + materials.slice(4);
+            }
+            aoe = $(".ddb-statblock-item-range-area .aoe-size").text().trim();
+            if ((aoe !== "" && (typeof aoe !== "object" || ρσ_not_equals(aoe, "")))) {
+                aoe_len = len(aoe);
+                range_area = range_area.slice(0, -aoe_len).trim() + " " + aoe.trim();
+            }
+            sendRoll(character, "spell-card", 0, (function(){
+                var ρσ_d = {};
+                ρσ_d["name"] = spell_name;
+                ρσ_d["level-school"] = level_school;
+                ρσ_d["range"] = range_area;
+                ρσ_d["concentration"] = concentration;
+                ρσ_d["duration"] = duration;
+                ρσ_d["casting-time"] = casting_time;
+                ρσ_d["components"] = components;
+                ρσ_d["ritual"] = ritual;
+                ρσ_d["description"] = description;
+                return ρσ_d;
+            }).call(this));
+        };
+
+        function addDisplayButton() {
+            var icon32, button;
+            icon32 = chrome.extension.getURL("images/icons/icon32.png");
+            button = ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.span, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon32, style: "margin-right: 10px;"})]), "Display Spell Card on Roll 20"].concat([ρσ_desugar_kwargs({class_: "label"})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll button-alt", href: "#"})]));
+            $(".page-heading__content").append(button);
+            $(".ct-beyond20-roll").css((function(){
+                var ρσ_d = {};
+                ρσ_d["float"] = "right";
+                ρσ_d["display"] = "inline-block";
+                return ρσ_d;
+            }).call(this));
+            $(".ct-beyond20-roll").on("click", (function() {
+                var ρσ_anonfunc = function (event) {
+                    displaySpell();
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["event"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+
         function documentLoaded() {
-            var character, spell_name;
-            character = new FakeCharacter;
-            if (isCustomRollIconsAdded()) {
+            var spell_name;
+            if (isRollButtonAdded()) {
                 chrome.runtime.sendMessage((function(){
                     var ρσ_d = {};
                     ρσ_d["action"] = "reload-me";
                     return ρσ_d;
                 }).call(this));
             } else {
+                addDisplayButton();
                 spell_name = $(".page-title").text().trim();
                 injectDiceToRolls(".spell-details .more-info-content", character, spell_name);
             }
