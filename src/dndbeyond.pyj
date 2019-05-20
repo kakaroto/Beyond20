@@ -2,6 +2,7 @@ from utils import replaceRolls
 from settings import getStoredSettings, character_settings
 from elementmaker import E
 import uuid
+import re
 
 ability_abbreviations = {"Strength": "STR",
                          "Dexterity": "DEX",
@@ -282,7 +283,7 @@ class Monster:
             elif label == "Challenge":
                 self._cr = value.split(" ")[0]
             self._tidbits[label] = value
-        self.addDiceIcons(stat_block)
+        self.lookForActions(stat_block)
         console.log("Done parsing stat block:", self)
 
     def rollHitPoints(self):
@@ -311,10 +312,103 @@ class Monster:
         sendRoll(self, "skill", "1d20" + modifier, {"skill": skill,
                                                     "ability": ability,
                                                     "modifier": modifier})
-        
-    def addDiceIcons(self, stat_block):
-        descriptions = stat_block.find(self._base + "__description-block-content p")
-        injectDiceToRolls(descriptions, self, self._name)
+
+    def parseAttackInfo(self, description):
+        m = re.search("(Melee|Ranged) Weapon Attack:.*?(\+[0-9]+) to hit.*?, (?:reach|range) (.*?),.*?.", description)
+        if m:
+            return (m.group(1), m.group(2), m.group(3))
+        else:
+            return None
+
+    def parseHitInfo(self, description):
+        damages = None
+        save = None
+        hit_idx = description.indexOf("Hit:")
+        if hit_idx > 0:
+            hit = description[hit_idx:]
+        else:
+            return None
+        damage_regexp = " (?:([0-9]+))?(?: *\(?([0-9]*d[0-9]+(?:\s*[-+]\s*[0-9]+)?)\)?)? ([\w ]+?) damage"
+        damage_matches = re.finditer(damage_regexp, hit)
+        damages = []
+        damage_types = []
+        for dmg in damage_matches:
+            if dmg.group(2)?:
+                damages.append(dmg.group(2))
+            else:
+                damages.append(dmg.group(1))
+            damage_types.append(dmg.group(3))
+        m = re.search("DC ([0-9]+) (.*?) saving throw", hit)
+        if m:
+            save = (m.group(2), m.group(1))
+        return (damages, damage_types, save)
+
+    def buildAttackRoll(self, name, description):
+        roll_properties = {"name": name,
+                           "attack-source": "monster-action",
+                           "description": description}
+
+        attackInfo = self.parseAttackInfo(description)
+        if not attackInfo:
+            return None
+        (attack_type, to_hit, reach_range) = attackInfo
+        roll_properties["to-hit"] = to_hit
+        roll_properties["attack-type"] = attack_type
+        roll_properties["reach" if attack_type == "Melee" else "range"] = reach_range
+
+
+        hitInfo = self.parseHitInfo(description)
+        if hitInfo:
+            # Can't use '(damages, damage_types, save) = hitInfo' because rapydscript flattens
+            # the lists within the list and assigns the strings to each of the 3 vars instead of lists
+            damages = hitInfo[0]
+            damage_types = hitInfo[1]
+            save = hitInfo[2]
+            if len(damages) > 0:
+                roll_properties["damage"] = damages[0]
+                roll_properties["damage-type"] = damage_types[0]
+            if len(damages) > 1:
+                console.log(damages[1:])
+                roll_properties["second-damage"] = str.join(" | ", list(damages[1:]))
+                roll_properties["second-damage-type"] = str.join(" | ", list(damage_types[1:]))
+            if save:
+                roll_properties["save-ability"] = save[0]
+                roll_properties["save-dc"] = save[1]
+ 
+        return roll_properties
+
+    def lookForActions(self, stat_block):
+        blocks = stat_block.find(self._base + "__description-block")
+        makeCB = def(props):
+            return def():
+                sendRoll(self, "attack", "1d20" + props["to-hit"], props)
+        for block in blocks:
+            section_name = $(block).find(self._base + "__description-block-heading").text()
+            actions = $(block).find(self._base + "__description-block-content p")
+            for action in actions:
+                console.log("Found action: ", action)
+                firstChild = action.firstElementChild
+                if firstChild and firstChild.tagName == "EM":
+                    action_name = firstChild.textContent[:-1]
+                else:
+                    injectDiceToRolls(action, self, self._name)
+                    continue
+                if section_name == "Actions":
+                    description = ""
+                    nextSibling = firstChild.nextSibling
+                    while nextSibling is not None:
+                        description += nextSibling.textContent.trim() + " "
+                        nextSibling = nextSibling.nextSibling
+                    if description[-1] == " ":
+                        description = description[:-1]
+
+                    roll_properties = self.buildAttackRoll(action_name, description)
+                    if roll_properties:
+                        console.log("Roll: ", roll_properties)
+                        id = addRollButton(makeCB(roll_properties), action,
+                                           small=True, prepend=True, image=True, text=action_name)
+                        $("#" + id).css({"float": "", "text-align": ""})
+                injectDiceToRolls(action, self, action_name)
 
     def getDict(self):
         return {"name": self._name,
@@ -432,10 +526,11 @@ def isHitDieButtonAdded():
 
 button_class = "ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button"
 button_class_small = button_class + " character-button-small"
-def addRollButton(callback, where, small=False, append=False, image=True, text="Beyond 20", bind=True):
+def addRollButton(callback, where, small=False, append=False, prepend=False, image=True, text="Beyond 20"):
     icon32 = chrome.extension.getURL("images/dice24.png");
     icon16 = chrome.extension.getURL("images/dice16.png");
-    button = E.div(class_="ct-beyond20-roll",
+    id = uuid.uuid4()
+    button = E.div(class_="ct-beyond20-roll", id=str(id),
                     E.button(class_=(button_class_small if small else button_class),
                              E.img(class_="ct-beyond20-icon", src=((icon16 if small else icon32) if image else ""),
                                    style=("margin-right: 6px;" if image else "")),
@@ -445,15 +540,17 @@ def addRollButton(callback, where, small=False, append=False, image=True, text="
 
     if append:
         $(where).append(button)
+    elif prepend:
+        $(where).prepend(button)
     else:
         $(where).after(button)
-    $(".ct-beyond20-roll").css({"float": "right",
+    $("#" + str(id)).css({"float": "right",
                                 "display": "block",
                                 "text-align": "center"})
-    if bind:
-        $(".ct-beyond20-roll-button").on('click', def(event):
-            callback()
-        )
+    $("#" + str(id)).on('click', def(event):
+        callback()
+    )
+    return id
 
 def addDisplayButton(callback, where, text="Display in Roll20"):
     button = E.div(class_="ct-beyond20-roll-display",

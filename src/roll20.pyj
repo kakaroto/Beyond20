@@ -267,11 +267,12 @@ def handleMessage (request, sender, sendResponse):
                 properties["r2"] = genRoll("1d20", {"": request["to-hit"]})
                 properties[advantage_type] = 1
                 properties["attack"] = 1
-            properties["damage"] =1
-            properties["dmg1flag"] = 1
-            properties["dmg1"] = subDamageRolls(request.damage)
-            properties["dmg1type"] = request["damage-type"]
-            properties["crit1"] = damageToCrit(request.damage)
+            if request["damage"]?:
+                properties["damage"] =1
+                properties["dmg1flag"] = 1
+                properties["dmg1"] = subDamageRolls(request.damage)
+                properties["dmg1type"] = request["damage-type"]
+                properties["crit1"] = damageToCrit(request.damage)
             if request["second-damage"]?:
                 properties["dmg2flag"] = 1
                 properties["dmg2"] = subDamageRolls(request["second-damage"])

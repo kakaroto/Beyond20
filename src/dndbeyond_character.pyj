@@ -316,10 +316,10 @@ def checkAndInjectDiceToRolls(selector, name=""):
 
     injectDiceToRolls(selector, character, name)
 
-def addRollButtonEx(paneClass, where, small=False, append=False, image=True, text="Beyond 20", bind=True):
+def addRollButtonEx(paneClass, where, small=False, append=False, prepend=False, image=True, text="Beyond 20"):
     callback = def():
         execute(paneClass)
-    addRollButton(callback, where, small, append, image, text, bind)
+    addRollButton(callback, where, small, append, prepend, image, text)
 
 def addDisplayButtonEx(paneClass, where, text="Display in Roll20"):
     callback = def():
@@ -362,7 +362,7 @@ def injectRollButton(paneClass):
             addRollButtonEx(paneClass, ".ct-sidebar__heading", small=True)
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll")
         else:
-            addRollButtonEx(paneClass, ".ct-sidebar__heading", image=False, bind=False)
+            addRollButtonEx(paneClass, ".ct-sidebar__heading", image=False)
             addRollButtonEx(paneClass, ".ct-item-detail__actions", small=True, append=True, image=False)
     elif paneClass in ["ct-action-pane", "ct-custom-action-pane"]:
         if isRollButtonAdded():

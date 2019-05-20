@@ -5519,7 +5519,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         function replaceRolls(modifiers_only, text, replaceCB) {
             var dice_regexp, modifiers_regexp, regexp, pre, dice, post, new_text;
             dice_regexp = "(^|[^\\w])([0-9]*d[0-9]+)((?:\\s*[-+]\\s*[0-9]+)?)($|[^\\w])";
-            modifiers_regexp = "(\\s+)([-+]\\s*[0-9]+)($|[^\\w])";
+            modifiers_regexp = "(^|[^\\w])([-+]\\s*[0-9]+)($|[^\\w])";
             if (modifiers_only) {
                 regexp = modifiers_regexp;
                 pre = 1;

@@ -29,7 +29,7 @@ def replaceRollsCallback(match, modifiers_only, pre, dice, post, replaceCB):
 
 def replaceRolls(modifiers_only, text, replaceCB):
     dice_regexp = "(^|[^\w])([0-9]*d[0-9]+)((?:\s*[-+]\s*[0-9]+)?)($|[^\w])"
-    modifiers_regexp = "(\s+)([-+]\s*[0-9]+)($|[^\w])"
+    modifiers_regexp = "(^|[^\w])([-+]\s*[0-9]+)($|[^\w])"
     if modifiers_only:
         regexp = modifiers_regexp
         pre = 1

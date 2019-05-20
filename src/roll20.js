@@ -5220,7 +5220,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         function replaceRolls(modifiers_only, text, replaceCB) {
             var dice_regexp, modifiers_regexp, regexp, pre, dice, post, new_text;
             dice_regexp = "(^|[^\\w])([0-9]*d[0-9]+)((?:\\s*[-+]\\s*[0-9]+)?)($|[^\\w])";
-            modifiers_regexp = "(\\s+)([-+]\\s*[0-9]+)($|[^\\w])";
+            modifiers_regexp = "(^|[^\\w])([-+]\\s*[0-9]+)($|[^\\w])";
             if (modifiers_only) {
                 regexp = modifiers_regexp;
                 pre = 1;
@@ -6925,11 +6925,13 @@ var str = ρσ_str, repr = ρσ_repr;;
                         properties[(typeof advantage_type === "number" && advantage_type < 0) ? properties.length + advantage_type : advantage_type] = 1;
                         properties["attack"] = 1;
                     }
-                    properties["damage"] = 1;
-                    properties["dmg1flag"] = 1;
-                    properties["dmg1"] = subDamageRolls(request.damage);
-                    properties["dmg1type"] = request["damage-type"];
-                    properties["crit1"] = damageToCrit(request.damage);
+                    if (ρσ_exists.n(request["damage"])) {
+                        properties["damage"] = 1;
+                        properties["dmg1flag"] = 1;
+                        properties["dmg1"] = subDamageRolls(request.damage);
+                        properties["dmg1type"] = request["damage-type"];
+                        properties["crit1"] = damageToCrit(request.damage);
+                    }
                     if (ρσ_exists.n(request["second-damage"])) {
                         properties["dmg2flag"] = 1;
                         properties["dmg2"] = subDamageRolls(request["second-damage"]);
