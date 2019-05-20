@@ -2,7 +2,7 @@ from settings import getDefaultSettings, getStoredSettings
 from utils import isExtensionDisconnected
 from elementmaker import E
 import math
-from dndbeyond import Character, buildAttackRoll, sendRoll, \
+from dndbeyond import Character, Monster, buildAttackRoll, sendRoll, \
     ability_abbreviations, findToHit, descriptionToString, propertyListToDict, \
     injectDiceToRolls, addIconButton, addHitDieButtons, addDisplayButton, addRollButton, \
     isHitDieButtonAdded, isRollButtonAdded, isCustomRollIconsAdded, removeRollButtons
@@ -418,10 +418,10 @@ def injectRollButton(paneClass):
         else:
             removeRollButtons()
     elif paneClass == "ct-creature-pane":
-        if isCustomRollIconsAdded():
+        if isRollButtonAdded():
             return
-        creature_name = $(".ct-sidebar__heading").text()
-        checkAndInjectDiceToRolls(".ct-creature-block__description-blocks", creature_name)
+        character = Monster("Creature")
+        character.parseStatBlock()
     else:
         removeRollButtons()
 

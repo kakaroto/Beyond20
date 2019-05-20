@@ -7435,7 +7435,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "stat_block")){
                 stat_block = ρσ_kwargs_obj.stat_block;
             }
-            var base, a, attributes, label, value, cb, attr, abilities, prefix, abbr, score, modifier, makeCB, ability, tidbits, data, saves, ρσ_unpack, mod, save, skills, name, skill, text, last, tidbit;
+            var base, a, attributes, label, value, cb, attr, abilities, prefix, abbr, score, modifier, makeCB, ability, tidbits, data, saves, ρσ_unpack, mod, save, skills, name, skill, text, last, first, tidbit;
             base = self._base;
             if (stat_block === null) {
                 stat_block = $(base);
@@ -7509,6 +7509,17 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if ((label === "Saving Throws" || typeof label === "object" && ρσ_equals(label, "Saving Throws"))) {
                     saves = value.split(", ");
                     data.html("");
+                    makeCB = (function() {
+                        var ρσ_anonfunc = function (a) {
+                            return function () {
+                                self.rollSavingThrow(a);
+                            };
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["a"]}
+                        });
+                        return ρσ_anonfunc;
+                    })();
                     var ρσ_Iter6 = ρσ_Iterable(saves);
                     for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
                         save = ρσ_Iter6[ρσ_Index6];
@@ -7517,17 +7528,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                         abbr = ρσ_unpack[0];
                         mod = ρσ_unpack[1];
                         (ρσ_expr_temp = self._saves)[(typeof abbr === "number" && abbr < 0) ? ρσ_expr_temp.length + abbr : abbr] = mod;
-                        makeCB = (function() {
-                            var ρσ_anonfunc = function (a) {
-                                return function () {
-                                    self.rollSavingThrow(a);
-                                };
-                            };
-                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                __argnames__ : {value: ["a"]}
-                            });
-                            return ρσ_anonfunc;
-                        })();
                         data.append(abbr + " " + mod);
                         ρσ_interpolate_kwargs.call(this, addIconButton, [makeCB(abbr), data].concat([ρσ_desugar_kwargs({append: true})]));
                         if (len(saves) > len(self._saves)) {
@@ -7545,31 +7545,46 @@ var str = ρσ_str, repr = ρσ_repr;;
                         mod = ρσ_unpack[1];
                         (ρσ_expr_temp = self._skills)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = mod;
                     }
-                    skills = data.find("> a");
-                    var ρσ_Iter8 = ρσ_Iterable(skills);
-                    for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                        a = ρσ_Iter8[ρσ_Index8];
-                        skill = a.textContent;
-                        text = a.nextSibling;
-                        last = true;
-                        if (text.textContent.endsWith(", ")) {
-                            text.textContent = text.textContent.slice(0, -2);
-                            last = false;
-                        }
-                        makeCB = (function() {
-                            var ρσ_anonfunc = function (a) {
-                                return function () {
-                                    self.rollSkillCheck(a);
-                                };
+                    makeCB = (function() {
+                        var ρσ_anonfunc = function (a) {
+                            return function () {
+                                self.rollSkillCheck(a);
                             };
-                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                __argnames__ : {value: ["a"]}
-                            });
-                            return ρσ_anonfunc;
-                        })();
-                        addIconButton(makeCB(skill), a.nextSibling);
-                        if (!last) {
-                            $(a.nextElementSibling).after(", ");
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["a"]}
+                        });
+                        return ρσ_anonfunc;
+                    })();
+                    if ((self._type === "Monster" || typeof self._type === "object" && ρσ_equals(self._type, "Monster"))) {
+                        skills = data.find("> a");
+                        var ρσ_Iter8 = ρσ_Iterable(skills);
+                        for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                            a = ρσ_Iter8[ρσ_Index8];
+                            skill = a.textContent;
+                            text = a.nextSibling;
+                            last = true;
+                            if (text.textContent.endsWith(", ")) {
+                                text.textContent = text.textContent.slice(0, -2);
+                                last = false;
+                            }
+                            addIconButton(makeCB(skill), a.nextSibling);
+                            if (!last) {
+                                $(a.nextElementSibling).after(", ");
+                            }
+                        }
+                    } else {
+                        data.html("");
+                        first = true;
+                        var ρσ_Iter9 = ρσ_Iterable(self._skills);
+                        for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                            skill = ρσ_Iter9[ρσ_Index9];
+                            if (!first) {
+                                data.append(", ");
+                            }
+                            first = false;
+                            data.append(skill + " " + (ρσ_expr_temp = self._skills)[(typeof skill === "number" && skill < 0) ? ρσ_expr_temp.length + skill : skill]);
+                            ρσ_interpolate_kwargs.call(this, addIconButton, [makeCB(skill), data].concat([ρσ_desugar_kwargs({append: true})]));
                         }
                     }
                 } else if ((label === "Challenge" || typeof label === "object" && ρσ_equals(label, "Challenge"))) {
@@ -7597,9 +7612,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         Monster.prototype.rollAbilityCheck = function rollAbilityCheck(abbr) {
             var self = this;
             var ρσ_unpack, name, score, modifier, ability;
-            var ρσ_Iter9 = ρσ_Iterable(self._abilities);
-            for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
-                ability = ρσ_Iter9[ρσ_Index9];
+            var ρσ_Iter10 = ρσ_Iterable(self._abilities);
+            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                ability = ρσ_Iter10[ρσ_Index10];
                 if ((ability[1] === abbr || typeof ability[1] === "object" && ρσ_equals(ability[1], abbr))) {
                     ρσ_unpack = ρσ_flatten(ability);
 ρσ_unpack = ρσ_unpack_asarray(4, ρσ_unpack);
@@ -7700,9 +7715,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function abbreviationToAbility(abbr) {
             var ability;
-            var ρσ_Iter10 = ρσ_Iterable(ability_abbreviations);
-            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
-                ability = ρσ_Iter10[ρσ_Index10];
+            var ρσ_Iter11 = ρσ_Iterable(ability_abbreviations);
+            for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                ability = ρσ_Iter11[ρσ_Index11];
                 if ((ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === abbr || typeof ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === "object" && ρσ_equals(ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability], abbr))) {
                     return ability;
                 }
@@ -7716,8 +7731,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         function propertyListToDict(propList) {
             var properties, label, value, i;
             properties = {};
-            for (var ρσ_Index11 = 0; ρσ_Index11 < propList.length; ρσ_Index11++) {
-                i = ρσ_Index11;
+            for (var ρσ_Index12 = 0; ρσ_Index12 < propList.length; ρσ_Index12++) {
+                i = ρσ_Index12;
                 label = propList.eq(i).find(".ct-property-list__property-label").text().slice(0, -1);
                 value = propList.eq(i).find(".ct-property-list__property-content").text();
                 properties[(typeof label === "number" && label < 0) ? properties.length + label : label] = value;
@@ -7742,8 +7757,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return $(selector).text();
             }
             description = "";
-            for (var ρσ_Index12 = 0; ρσ_Index12 < description_p.length; ρσ_Index12++) {
-                i = ρσ_Index12;
+            for (var ρσ_Index13 = 0; ρσ_Index13 < description_p.length; ρσ_Index13++) {
+                i = ρσ_Index13;
                 if (len(description) > 0) {
                     description += separator;
                 }
@@ -7760,8 +7775,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
             var items, to_hit, i;
             items = $(items_selector);
-            for (var ρσ_Index13 = 0; ρσ_Index13 < items.length; ρσ_Index13++) {
-                i = ρσ_Index13;
+            for (var ρσ_Index14 = 0; ρσ_Index14 < items.length; ρσ_Index14++) {
+                i = ρσ_Index14;
                 if (ρσ_equals(items.eq(i).find(name_selector).text(), name_to_match)) {
                     to_hit = items.eq(i).find(tohit_selector);
                     if (to_hit.length > 0) {
@@ -7872,9 +7887,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["roll"] = fallback;
                 return ρσ_d;
             }).call(this);
-            var ρσ_Iter14 = ρσ_Iterable(args);
-            for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
-                key = ρσ_Iter14[ρσ_Index14];
+            var ρσ_Iter15 = ρσ_Iterable(args);
+            for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
+                key = ρσ_Iter15[ρσ_Index15];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
             console.log("Sending message: " + str(req));
@@ -8000,8 +8015,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             $(".ct-reset-pane__hitdie-heading").append(button);
             hitdice = $(".ct-reset-pane__hitdie");
             multiclass = hitdice.length > 1;
-            for (var ρσ_Index15 = 0; ρσ_Index15 < hitdice.length; ρσ_Index15++) {
-                i = ρσ_Index15;
+            for (var ρσ_Index16 = 0; ρσ_Index16 < hitdice.length; ρσ_Index16++) {
+                i = ρσ_Index16;
                 cb = (function() {
                     var ρσ_anonfunc = function (rollCallback, index) {
                         return (function() {
@@ -8073,8 +8088,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             $(".ct-beyond20-roll-display").remove();
             $(".ct-beyond20-custom-icon").remove();
             custom_rolls = $("u.ct-beyond20-custom-roll");
-            for (var ρσ_Index16 = 0; ρσ_Index16 < custom_rolls.length; ρσ_Index16++) {
-                i = ρσ_Index16;
+            for (var ρσ_Index17 = 0; ρσ_Index17 < custom_rolls.length; ρσ_Index17++) {
+                i = ρσ_Index17;
                 custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
             }
         };
@@ -8093,9 +8108,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             var children, child, text, document_fragment;
             if (node.hasChildNodes()) {
                 children = list(node.childNodes);
-                var ρσ_Iter17 = ρσ_Iterable(children);
-                for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
-                    child = ρσ_Iter17[ρσ_Index17];
+                var ρσ_Iter18 = ρσ_Iterable(children);
+                for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
+                    child = ρσ_Iter18[ρσ_Index18];
                     recursiveDiceReplace(child, cb);
                 }
             } else if ((node.nodeName === "#text" || typeof node.nodeName === "object" && ρσ_equals(node.nodeName, "#text"))) {
@@ -8132,9 +8147,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_anonfunc;
             })();
             items = $(selector);
-            var ρσ_Iter18 = ρσ_Iterable(items);
-            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
-                item = ρσ_Iter18[ρσ_Index18];
+            var ρσ_Iter19 = ρσ_Iterable(items);
+            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
+                item = ρσ_Iter19[ρσ_Index19];
                 recursiveDiceReplace(item, replaceCB);
             }
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");
@@ -8206,6 +8221,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var math = ρσ_modules.math;
 
         var Character = ρσ_modules.dndbeyond.Character;
+        var Monster = ρσ_modules.dndbeyond.Monster;
         var buildAttackRoll = ρσ_modules.dndbeyond.buildAttackRoll;
         var sendRoll = ρσ_modules.dndbeyond.sendRoll;
         var ability_abbreviations = ρσ_modules.dndbeyond.ability_abbreviations;
@@ -8338,8 +8354,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damage = null;
                 damage2 = null;
                 damage2_type = null;
-                for (var ρσ_Index19 = 0; ρσ_Index19 < prop_list.length; ρσ_Index19++) {
-                    i = ρσ_Index19;
+                for (var ρσ_Index20 = 0; ρσ_Index20 < prop_list.length; ρσ_Index20++) {
+                    i = ρσ_Index20;
                     if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
                         value = prop_list.eq(i).find(".ct-property-list__property-content");
                         damage = value.find(".ct-damage__value").text();
@@ -8349,8 +8365,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                             damage2_type = "Two-Handed";
                         }
                         additional_damages = value.find(".ct-item-detail__additional-damage");
-                        for (var ρσ_Index20 = 0; ρσ_Index20 < additional_damages.length; ρσ_Index20++) {
-                            j = ρσ_Index20;
+                        for (var ρσ_Index21 = 0; ρσ_Index21 < additional_damages.length; ρσ_Index21++) {
+                            j = ρσ_Index21;
                             dmg = additional_damages.eq(j).text();
                             dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                             dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
@@ -8457,8 +8473,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 num_damages = 0;
                 damage = null;
                 damage2 = null;
-                for (var ρσ_Index21 = 0; ρσ_Index21 < damages.length; ρσ_Index21++) {
-                    i = ρσ_Index21;
+                for (var ρσ_Index22 = 0; ρσ_Index22 < damages.length; ρσ_Index22++) {
+                    i = ρσ_Index22;
                     dmg = damages.eq(i).find(".ct-spell-caster__modifier-amount").text();
                     dmgtype = damages.eq(i).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                     if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
@@ -8476,8 +8492,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }
                     num_damages += 1;
                 }
-                for (var ρσ_Index22 = 0; ρσ_Index22 < healings.length; ρσ_Index22++) {
-                    i = ρσ_Index22;
+                for (var ρσ_Index23 = 0; ρσ_Index23 < healings.length; ρσ_Index23++) {
+                    i = ρσ_Index23;
                     dmg = healings.eq(i).find(".ct-spell-caster__modifier-amount").text();
                     if ((num_damages === 0 || typeof num_damages === "object" && ρσ_equals(num_damages, 0))) {
                         damage = dmg;
@@ -8502,9 +8518,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["ritual"] = ritual;
                     return ρσ_d;
                 }).call(this);
-                var ρσ_Iter23 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
-                    key = ρσ_Iter23[ρσ_Index23];
+                var ρσ_Iter24 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
+                    key = ρσ_Iter24[ρσ_Index24];
                     roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
                 }
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
@@ -8706,7 +8722,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         lastSpellName = "";
         lastSpellLevel = "";
         function injectRollButton(paneClass) {
-            var name, item_name, properties, action_name, spell_name, spell_level, damages, healings, to_hit, hitdice, cb, creature_name;
+            var name, item_name, properties, action_name, spell_name, spell_level, damages, healings, to_hit, hitdice, cb, character;
             if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-custom-skill-pane", "ct-skill-pane", "ct-ability-pane", "ct-ability-saving-throws-pane", "ct-initiative-pane" ]))) {
                 if (isRollButtonAdded()) {
                     return;
@@ -8803,11 +8819,11 @@ var str = ρσ_str, repr = ρσ_repr;;
                     removeRollButtons();
                 }
             } else if ((paneClass === "ct-creature-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-creature-pane"))) {
-                if (isCustomRollIconsAdded()) {
+                if (isRollButtonAdded()) {
                     return;
                 }
-                creature_name = $(".ct-sidebar__heading").text();
-                checkAndInjectDiceToRolls(".ct-creature-block__description-blocks", creature_name);
+                character = new Monster("Creature");
+                character.parseStatBlock();
             } else {
                 removeRollButtons();
             }
@@ -8819,9 +8835,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter24 = ρσ_Iterable(groups);
-            for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
-                group = ρσ_Iter24[ρσ_Index24];
+            var ρσ_Iter25 = ρσ_Iterable(groups);
+            for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
+                group = ρσ_Iter25[ρσ_Index25];
                 label = $(group).find(".ct-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -8830,9 +8846,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter25 = ρσ_Iterable(items);
-                    for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
-                        item = ρσ_Iter25[ρσ_Index25];
+                    var ρσ_Iter26 = ρσ_Iterable(items);
+                    for (var ρσ_Index26 = 0; ρσ_Index26 < ρσ_Iter26.length; ρσ_Index26++) {
+                        item = ρσ_Iter26[ρσ_Index26];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -8874,8 +8890,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             injectRollToSpellAttack();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index26 = 0; ρσ_Index26 < pane.length; ρσ_Index26++) {
-                    div = ρσ_Index26;
+                for (var ρσ_Index27 = 0; ρσ_Index27 < pane.length; ρσ_Index27++) {
+                    div = ρσ_Index27;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls"))) {
                         continue;

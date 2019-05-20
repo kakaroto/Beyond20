@@ -239,12 +239,12 @@ class Monster:
             if label == "Saving Throws":
                 saves = value.split(", ")
                 data.html("")
+                makeCB = def(a):
+                    return def():
+                        self.rollSavingThrow(a)
                 for save in saves:
                     (abbr, mod) = save.split(" ")
                     self._saves[abbr] = mod
-                    makeCB = def(a):
-                        return def():
-                            self.rollSavingThrow(a)
                     data.append(abbr + " " + mod)
                     addIconButton(makeCB(abbr), data, append=True)
                     if len(saves) > len(self._saves):
@@ -254,20 +254,30 @@ class Monster:
                 for skill in skills:
                     (name, mod) = skill.split(" ")
                     self._skills[name] = mod
-                skills = data.find("> a")
-                for a in skills:
-                    skill = a.textContent
-                    text = a.nextSibling
-                    last = True
-                    if text.textContent.endsWith(", "):
-                        text.textContent = text.textContent[:-2]
-                        last = False
-                    makeCB = def(a):
-                        return def():
-                            self.rollSkillCheck(a)
-                    addIconButton(makeCB(skill), a.nextSibling)
-                    if not last:
-                        $(a.nextElementSibling).after(", ")
+                makeCB = def(a):
+                    return def():
+                        self.rollSkillCheck(a)
+                if self._type == "Monster":
+                    skills = data.find("> a")
+                    for a in skills:
+                        skill = a.textContent
+                        text = a.nextSibling
+                        last = True
+                        if text.textContent.endsWith(", "):
+                            text.textContent = text.textContent[:-2]
+                            last = False
+                        addIconButton(makeCB(skill), a.nextSibling)
+                        if not last:
+                            $(a.nextElementSibling).after(", ")
+                else:
+                    data.html("")
+                    first = True
+                    for skill in self._skills:
+                        if not first:
+                            data.append(", ")
+                        first = False
+                        data.append(skill + " " + self._skills[skill])
+                        addIconButton(makeCB(skill), data, append=True)
                         
             elif label == "Challenge":
                 self._cr = value.split(" ")[0]
