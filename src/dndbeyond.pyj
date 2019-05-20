@@ -400,16 +400,39 @@ def removeRollButtons():
     for i in range(custom_rolls.length):
         custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text())
 
+# From https://stackoverflow.com/questions/494143/creating-a-new-dom-element-from-an-html-string-using-built-in-dom-methods-or-pro/35385518#35385518
+
+def htmlToFragment(html):
+    template = document.createElement('template')
+    template.innerHTML = html
+    return template.content
+
+def recursiveDiceReplace(node, cb):
+    if node.hasChildNodes():
+        # We need to copy the list since its size could change as we modify it
+        children = list(node.childNodes)
+        for child in children:
+            recursiveDiceReplace(child, cb)
+    elif node.nodeName == "#text":
+        text = replaceRolls(False, node.textContent, cb)
+        text = replaceRolls(True, text, cb)
+        # Only replace if we changed it, otherwise we might break existing html code bindings
+        if text != node.textContent:
+            console.log("We change ", node.textContent, "into :", text)
+            document_fragment = htmlToFragment(text)
+            node.parentElement.replaceChild(document_fragment, node)
+
 def injectDiceToRolls(selector, character, name=""):
-    text = $(selector).html()
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
-    def replaceCB(dice_formula, modifier):
+    replaceCB = def(dice_formula, modifier):
         return '<u class="ct-beyond20-custom-roll"><strong>' + dice_formula + '</strong>' + \
             '<img class="ct-beyond20-custom-icon" x-beyond20-name="' + name + \
             '" x-beyond20-roll="' + ("1d20" if modifier else "") + dice_formula + '"></img></u>'
-    text = replaceRolls(False, text, replaceCB)
-    text = replaceRolls(True, text, replaceCB)
-    $(selector).html(text)
+
+    items = $(selector)
+    for item in items:
+        recursiveDiceReplace(item, replaceCB)
+
     $(".ct-beyond20-custom-icon").css("margin-right", "3px")
     $(".ct-beyond20-custom-icon").css("margin-left", "3px")
     $(".ct-beyond20-custom-icon").attr("src", icon16)

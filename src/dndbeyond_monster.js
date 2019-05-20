@@ -7143,6 +7143,39 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
         };
 
+        function htmlToFragment(html) {
+            var template;
+            template = document.createElement("template");
+            template.innerHTML = html;
+            return template.content;
+        };
+        if (!htmlToFragment.__argnames__) Object.defineProperties(htmlToFragment, {
+            __argnames__ : {value: ["html"]}
+        });
+
+        function recursiveDiceReplace(node, cb) {
+            var children, child, text, document_fragment;
+            if (node.hasChildNodes()) {
+                children = list(node.childNodes);
+                var ρσ_Iter13 = ρσ_Iterable(children);
+                for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
+                    child = ρσ_Iter13[ρσ_Index13];
+                    recursiveDiceReplace(child, cb);
+                }
+            } else if ((node.nodeName === "#text" || typeof node.nodeName === "object" && ρσ_equals(node.nodeName, "#text"))) {
+                text = replaceRolls(false, node.textContent, cb);
+                text = replaceRolls(true, text, cb);
+                if ((text !== node.textContent && (typeof text !== "object" || ρσ_not_equals(text, node.textContent)))) {
+                    console.log("We change ", node.textContent, "into :", text);
+                    document_fragment = htmlToFragment(text);
+                    node.parentElement.replaceChild(document_fragment, node);
+                }
+            }
+        };
+        if (!recursiveDiceReplace.__argnames__) Object.defineProperties(recursiveDiceReplace, {
+            __argnames__ : {value: ["node", "cb"]}
+        });
+
         function injectDiceToRolls() {
             var selector = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var character = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
@@ -7152,19 +7185,23 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "name")){
                 name = ρσ_kwargs_obj.name;
             }
-            var text, icon16;
-            text = $(selector).html();
+            var icon16, replaceCB, items, item;
             icon16 = chrome.extension.getURL("images/icons/icon16.png");
-            function replaceCB(dice_formula, modifier) {
-                return "<u class=\"ct-beyond20-custom-roll\"><strong>" + dice_formula + "</strong>" + "<img class=\"ct-beyond20-custom-icon\" x-beyond20-name=\"" + name + "\" x-beyond20-roll=\"" + ((modifier) ? "1d20" : "") + dice_formula + "\"></img></u>";
-            };
-            if (!replaceCB.__argnames__) Object.defineProperties(replaceCB, {
-                __argnames__ : {value: ["dice_formula", "modifier"]}
-            });
-
-            text = replaceRolls(false, text, replaceCB);
-            text = replaceRolls(true, text, replaceCB);
-            $(selector).html(text);
+            replaceCB = (function() {
+                var ρσ_anonfunc = function (dice_formula, modifier) {
+                    return "<u class=\"ct-beyond20-custom-roll\"><strong>" + dice_formula + "</strong>" + "<img class=\"ct-beyond20-custom-icon\" x-beyond20-name=\"" + name + "\" x-beyond20-roll=\"" + ((modifier) ? "1d20" : "") + dice_formula + "\"></img></u>";
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["dice_formula", "modifier"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            items = $(selector);
+            var ρσ_Iter14 = ρσ_Iterable(items);
+            for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
+                item = ρσ_Iter14[ρσ_Index14];
+                recursiveDiceReplace(item, replaceCB);
+            }
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");
             $(".ct-beyond20-custom-icon").css("margin-left", "3px");
             $(".ct-beyond20-custom-icon").attr("src", icon16);
@@ -7210,6 +7247,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.dndbeyond.addHitDieButtons = addHitDieButtons;
         ρσ_modules.dndbeyond.addDeathSaveButton = addDeathSaveButton;
         ρσ_modules.dndbeyond.removeRollButtons = removeRollButtons;
+        ρσ_modules.dndbeyond.htmlToFragment = htmlToFragment;
+        ρσ_modules.dndbeyond.recursiveDiceReplace = recursiveDiceReplace;
         ρσ_modules.dndbeyond.injectDiceToRolls = injectDiceToRolls;
     })();
 
