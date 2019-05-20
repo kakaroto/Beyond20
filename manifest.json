@@ -42,6 +42,11 @@
 	    "src/jquery-3.4.1.min.js", "src/dndbeyond_monster.js"
 	]
     },{
+	"matches": [ "*://*.dndbeyond.com/spells/*" ],
+	"js": [
+	    "src/jquery-3.4.1.min.js", "src/dndbeyond_spell.js"
+	]
+    },{
 	"matches": [ "*://app.roll20.net/editor/" ],
 	"js": [
 	    "src/roll20.js"

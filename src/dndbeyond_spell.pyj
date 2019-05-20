@@ -1,0 +1,20 @@
+from dndbeyond import injectDiceToRolls, isCustomRollIconsAdded
+
+print("Beyond20: D&D Beyond Spell module loaded.")
+
+class FakeCharacter:
+    def getDict(self):
+        return {"name": ""}
+
+def documentLoaded():
+    character = FakeCharacter()
+
+    if isCustomRollIconsAdded():
+        chrome.runtime.sendMessage({"action": "reload-me"});
+    else:
+        spell_name = $(".page-title").text().trim()
+        injectDiceToRolls(".spell-details .more-info-content", character, spell_name)
+
+chrome.runtime.sendMessage({"action": "activate-icon"});
+documentLoaded()
+

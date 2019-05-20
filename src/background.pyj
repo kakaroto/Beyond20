@@ -56,8 +56,9 @@ def onMessage(request, sender, sendResponse):
         sendMessageToRoll20(request)
         sendMessageToBeyond(request)
     elif request.action == "activate-icon":
-        console.log("Extension loaded into a new page. Activating icon")
         chrome.pageAction.show(sender.tab.id);
+    elif request.action == "reload-me":
+        chrome.tabs.reload(sender.tab.id);
 
 def executeScripts(tabs, js_files):
     for tab in tabs:
