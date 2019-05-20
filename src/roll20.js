@@ -5177,58 +5177,47 @@ var str = ρσ_str, repr = ρσ_repr;;
         ROLL20_URL = "*://app.roll20.net/editor/";
         DNDBEYOND_URL = "*://*.dndbeyond.com/*characters/*";
         CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
-        function replaceRollsCallback(match, modifiers_only, pre, dice, post, keep_original, pre_original, post_original, pre_dice, post_dice) {
-            var result, i;
+        function escapeRoll20Macro(text) {
+            var to_escape;
+            function escapeCB(m) {
+                var o;
+                o = ord(m.group(0));
+                if ((o === 10 || typeof o === "object" && ρσ_equals(o, 10))) {
+                    o = 13;
+                }
+                return "&#" + str(o) + ";";
+            };
+            if (!escapeCB.__argnames__) Object.defineProperties(escapeCB, {
+                __argnames__ : {value: ["m"]}
+            });
+
+            to_escape = str.join("|\\", "\n[]{}()%@&?".split(""));
+            return re.sub(to_escape, escapeCB, text);
+        };
+        if (!escapeRoll20Macro.__argnames__) Object.defineProperties(escapeRoll20Macro, {
+            __argnames__ : {value: ["text"]}
+        });
+
+        function replaceRollsCallback(match, modifiers_only, pre, dice, post, replaceCB) {
+            var dice_formula, i, result;
             if (modifiers_only && ρσ_in((ρσ_expr_temp = match.string)[ρσ_bound_index(match.start() - 1, ρσ_expr_temp)], list(map(str, range(0, 10))))) {
                 return match.group(0);
             }
-            result = (pre > 0) ? match.group(pre) : "";
-            if (keep_original) {
-                result += pre_original;
-                for (var ρσ_Index0 = dice; ρσ_Index0 < post; ρσ_Index0++) {
-                    i = ρσ_Index0;
-                    result += match.group(i);
-                }
-                result += post_original;
+            dice_formula = "";
+            for (var ρσ_Index0 = dice; ρσ_Index0 < post; ρσ_Index0++) {
+                i = ρσ_Index0;
+                dice_formula += match.group(i);
             }
-            result += pre_dice;
-            for (var ρσ_Index1 = dice; ρσ_Index1 < post; ρσ_Index1++) {
-                i = ρσ_Index1;
-                result += match.group(i);
-            }
-            result += post_dice;
-            result += (post < 100) ? match.group(post) : "";
+            result = match.group(pre);
+            result += replaceCB(dice_formula, modifiers_only);
+            result += match.group(post);
             return result;
         };
         if (!replaceRollsCallback.__argnames__) Object.defineProperties(replaceRollsCallback, {
-            __argnames__ : {value: ["match", "modifiers_only", "pre", "dice", "post", "keep_original", "pre_original", "post_original", "pre_dice", "post_dice"]}
+            __argnames__ : {value: ["match", "modifiers_only", "pre", "dice", "post", "replaceCB"]}
         });
 
-        function replaceRolls() {
-            var modifiers_only = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var text = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
-            var keep_original = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.keep_original : arguments[2];
-            var pre_original = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.pre_original : arguments[3];
-            var post_original = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.post_original : arguments[4];
-            var pre_dice = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.pre_dice : arguments[5];
-            var post_dice = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? replaceRolls.__defaults__.post_dice : arguments[6];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "keep_original")){
-                keep_original = ρσ_kwargs_obj.keep_original;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "pre_original")){
-                pre_original = ρσ_kwargs_obj.pre_original;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "post_original")){
-                post_original = ρσ_kwargs_obj.post_original;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "pre_dice")){
-                pre_dice = ρσ_kwargs_obj.pre_dice;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "post_dice")){
-                post_dice = ρσ_kwargs_obj.post_dice;
-            }
+        function replaceRolls(modifiers_only, text, replaceCB) {
             var dice_regexp, modifiers_regexp, regexp, pre, dice, post, new_text;
             dice_regexp = "(^|[^\\w])([0-9]*d[0-9]+)((?:\\s*[-+]\\s*[0-9]+)?)($|[^\\w])";
             modifiers_regexp = "(\\s+)([-+]\\s*[0-9]+)($|[^\\w])";
@@ -5245,7 +5234,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             new_text = re.sub(regexp, (function() {
                 var ρσ_anonfunc = function (m) {
-                    return replaceRollsCallback(m, modifiers_only, pre, dice, post, keep_original, pre_original, post_original, pre_dice, post_dice);
+                    return replaceRollsCallback(m, modifiers_only, pre, dice, post, replaceCB);
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                     __argnames__ : {value: ["m"]}
@@ -5254,43 +5243,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             })(), text);
             return new_text;
         };
-        if (!replaceRolls.__defaults__) Object.defineProperties(replaceRolls, {
-            __defaults__ : {value: {keep_original:false, pre_original:"", post_original:"", pre_dice:"", post_dice:""}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["modifiers_only", "text", "keep_original", "pre_original", "post_original", "pre_dice", "post_dice"]}
-        });
-
-        function subRolls() {
-            var text = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var keep_original = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.keep_original : arguments[1];
-            var escape = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.escape : arguments[2];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "keep_original")){
-                keep_original = ρσ_kwargs_obj.keep_original;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "escape")){
-                escape = ρσ_kwargs_obj.escape;
-            }
-            var pre_original, post_original, pre_dice, post_dice;
-            if (keep_original && escape) {
-                pre_original = "[";
-                post_original = "]";
-                pre_dice = "(!&#13;&#91;&#91;";
-                post_dice = "&#93;&#93;)";
-            } else {
-                pre_original = "";
-                post_original = "";
-                pre_dice = "[[";
-                post_dice = "]]";
-            }
-            text = replaceRolls(false, text, keep_original, pre_original, post_original, pre_dice, post_dice);
-            return replaceRolls(true, text, keep_original, pre_original, post_original, pre_dice + "1d20 ", post_dice);
-        };
-        if (!subRolls.__defaults__) Object.defineProperties(subRolls, {
-            __defaults__ : {value: {keep_original:false, escape:false}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["text", "keep_original", "escape"]}
+        if (!replaceRolls.__argnames__) Object.defineProperties(replaceRolls, {
+            __argnames__ : {value: ["modifiers_only", "text", "replaceCB"]}
         });
 
         function getBrowser() {
@@ -5363,9 +5317,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.ROLL20_URL = ROLL20_URL;
         ρσ_modules.utils.DNDBEYOND_URL = DNDBEYOND_URL;
         ρσ_modules.utils.CHANGELOG_URL = CHANGELOG_URL;
+        ρσ_modules.utils.escapeRoll20Macro = escapeRoll20Macro;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
-        ρσ_modules.utils.subRolls = subRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
         ρσ_modules.utils.injectPageScript = injectPageScript;
         ρσ_modules.utils.sendCustomEvent = sendCustomEvent;
@@ -6481,6 +6435,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
         var injectPageScript = ρσ_modules.utils.injectPageScript;
         var sendCustomEvent = ρσ_modules.utils.sendCustomEvent;
+        var escapeRoll20Macro = ρσ_modules.utils.escapeRoll20Macro;
 
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
@@ -6566,48 +6521,73 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function subRolls() {
             var text = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var keep_original = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.keep_original : arguments[1];
-            var damage_only = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.damage_only : arguments[2];
+            var damage_only = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.damage_only : arguments[1];
+            var overrideCB = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? subRolls.__defaults__.overrideCB : arguments[2];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "keep_original")){
-                keep_original = ρσ_kwargs_obj.keep_original;
-            }
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage_only")){
                 damage_only = ρσ_kwargs_obj.damage_only;
             }
-            var pre_original, post_original, pre_dice, post_dice;
-            if (keep_original) {
-                pre_original = "[";
-                post_original = "]";
-                pre_dice = "(!&#13;&#91;&#91;";
-                post_dice = "&#93;&#93;)";
-            } else {
-                pre_original = "";
-                post_original = "";
-                pre_dice = "[[";
-                post_dice = "]]";
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "overrideCB")){
+                overrideCB = ρσ_kwargs_obj.overrideCB;
             }
-            text = replaceRolls(false, text, keep_original, pre_original, post_original, pre_dice, post_dice);
+            var replaceCB;
+            if (overrideCB) {
+                replaceCB = overrideCB;
+            } else {
+                replaceCB = (function() {
+                    var ρσ_anonfunc = function (dice_formula, modifier) {
+                        if (modifier) {
+                            dice_formula = "1d20" + dice_formula;
+                        }
+                        return "[[" + dice_formula + "]]";
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["dice_formula", "modifier"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+            }
+            text = replaceRolls(false, text, replaceCB);
             if (damage_only) {
                 return text;
             }
-            return replaceRolls(true, text, keep_original, pre_original, post_original, pre_dice + "1d20", post_dice);
+            return replaceRolls(true, text, replaceCB);
         };
         if (!subRolls.__defaults__) Object.defineProperties(subRolls, {
-            __defaults__ : {value: {keep_original:false, damage_only:false}},
+            __defaults__ : {value: {damage_only:false, overrideCB:null}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["text", "keep_original", "damage_only"]}
+            __argnames__ : {value: ["text", "damage_only", "overrideCB"]}
         });
 
-        function subDescriptionRolls(description) {
+        function subDescriptionRolls(name, description) {
+            var replaceCB;
             if (!settings["subst-roll20"]) {
                 return description;
             }
-            return subRolls(description, true);
+            replaceCB = (function() {
+                var ρσ_anonfunc = function (dice_formula, modifier) {
+                    var roll, roll_template;
+                    roll = (modifier) ? "1d20" + dice_formula : dice_formula;
+                    roll_template = template("simple", (function(){
+                        var ρσ_d = {};
+                        ρσ_d["rname"] = name;
+                        ρσ_d["mod"] = dice_formula;
+                        ρσ_d["r1"] = "[[" + roll + "]]";
+                        ρσ_d["normal"] = 1;
+                        return ρσ_d;
+                    }).call(this));
+                    return "[" + dice_formula + "](!\n" + escapeRoll20Macro(roll_template) + ")";
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["dice_formula", "modifier"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            return ρσ_interpolate_kwargs.call(this, subRolls, [description].concat([ρσ_desugar_kwargs({overrideCB: replaceCB})]));
         };
         if (!subDescriptionRolls.__argnames__) Object.defineProperties(subDescriptionRolls, {
-            __argnames__ : {value: ["description"]}
+            __argnames__ : {value: ["name", "description"]}
         });
 
         function subDamageRolls(text) {
@@ -6958,7 +6938,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         var ρσ_d = {};
                         ρσ_d["name"] = request.name;
                         ρσ_d["source"] = request["item-type"];
-                        ρσ_d["description"] = subDescriptionRolls(request.description);
+                        ρσ_d["description"] = subDescriptionRolls(request.name, request.description);
                         return ρσ_d;
                     }).call(this));
                 } else if ((request.type === "feature" || typeof request.type === "object" && ρσ_equals(request.type, "feature"))) {
@@ -6970,14 +6950,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                         var ρσ_d = {};
                         ρσ_d["name"] = request.name;
                         ρσ_d["source"] = source;
-                        ρσ_d["description"] = subDescriptionRolls(request.description);
+                        ρσ_d["description"] = subDescriptionRolls(request.name, request.description);
                         return ρσ_d;
                     }).call(this));
                 } else if (ρσ_in(request.type, ρσ_list_decorate([ "trait", "action" ]))) {
                     roll += template("traits", (function(){
                         var ρσ_d = {};
                         ρσ_d["name"] = request.name;
-                        ρσ_d["description"] = subDescriptionRolls(request.description);
+                        ρσ_d["description"] = subDescriptionRolls(request.name, request.description);
                         return ρσ_d;
                     }).call(this));
                 } else if ((request.type === "spell-card" || typeof request.type === "object" && ρσ_equals(request.type, "spell-card"))) {
@@ -7020,10 +7000,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                     description = request.description;
                     higher = description.indexOf("At Higher Levels.");
                     if (higher > 0) {
-                        properties["description"] = subDescriptionRolls(description.slice(0, higher - 1));
-                        properties["athigherlevels"] = subDescriptionRolls(description.slice(higher + "At Higher Levels.".length));
+                        properties["description"] = subDescriptionRolls(request.name, description.slice(0, higher - 1));
+                        properties["athigherlevels"] = subDescriptionRolls(request.name, description.slice(higher + "At Higher Levels.".length));
                     } else {
-                        properties["description"] = subDescriptionRolls(description);
+                        properties["description"] = subDescriptionRolls(request.name, description);
                     }
                     roll += template("spell", properties);
                 } else if ((request.type === "spell-attack" || typeof request.type === "object" && ρσ_equals(request.type, "spell-attack"))) {

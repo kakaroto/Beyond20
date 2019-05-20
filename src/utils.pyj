@@ -4,25 +4,30 @@ ROLL20_URL = "*://app.roll20.net/editor/"
 DNDBEYOND_URL = "*://*.dndbeyond.com/*characters/*"
 CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update"
 
-def replaceRollsCallback(match, modifiers_only, pre, dice, post, keep_original, pre_original, post_original, pre_dice, post_dice):
+
+def escapeRoll20Macro(text):
+    def escapeCB(m):
+        o = ord(m.group(0))
+        if o == 10:
+            o = 13
+        return "&#" + str(o) + ";"
+    to_escape = str.join("|\\", "\n[]{}()%@&?".split(""))
+    return re.sub(to_escape, escapeCB, text)
+
+def replaceRollsCallback(match, modifiers_only, pre, dice, post, replaceCB):
     if modifiers_only and match.string[match.start() - 1] in list(map(str, range(0, 10))):
         return match.group(0)
 
-    result = match.group(pre) if pre > 0 else ""
-    if keep_original:
-        result += pre_original
-        for i in range(dice, post):
-            result += match.group(i)
-        result += post_original
-    
-    result += pre_dice
+    dice_formula = ""
     for i in range(dice, post):
-        result += match.group(i)
-    result += post_dice
-    result += match.group(post) if post < 100 else ""
+        dice_formula += match.group(i)
+
+    result = match.group(pre)
+    result += replaceCB(dice_formula, modifiers_only)
+    result += match.group(post)
     return result
 
-def replaceRolls(modifiers_only, text, keep_original=False, pre_original="", post_original="", pre_dice="", post_dice=""):
+def replaceRolls(modifiers_only, text, replaceCB):
     dice_regexp = "(^|[^\w])([0-9]*d[0-9]+)((?:\s*[-+]\s*[0-9]+)?)($|[^\w])"
     modifiers_regexp = "(\s+)([-+]\s*[0-9]+)($|[^\w])"
     if modifiers_only:
@@ -36,27 +41,11 @@ def replaceRolls(modifiers_only, text, keep_original=False, pre_original="", pos
         dice = 2
         post = 4
     new_text = re.sub(regexp, def(m):
-        return replaceRollsCallback(m, modifiers_only, pre, dice, \
-                                        post, keep_original, pre_original, post_original, pre_dice, post_dice)
-    ,
-    text)
+        return replaceRollsCallback(m, modifiers_only, pre, dice, post, replaceCB)
+    , text)
 
     
     return new_text
-
-def subRolls(text, keep_original=False, escape=False):
-    if keep_original and escape:
-        pre_original="["
-        post_original="]"
-        pre_dice="(!&#13;&#91;&#91;"
-        post_dice="&#93;&#93;)"
-    else:
-        pre_original=""
-        post_original=""
-        pre_dice="[["
-        post_dice="]]"
-    text = replaceRolls(False, text, keep_original, pre_original, post_original, pre_dice, post_dice)
-    return replaceRolls(True, text, keep_original, pre_original, post_original, pre_dice + "1d20 ", post_dice)
 
 # Taken from https://stackoverflow.com/questions/45985198/the-best-practice-to-detect-whether-a-browser-extension-is-running-on-chrome-or
 def getBrowser():

@@ -403,13 +403,12 @@ def removeRollButtons():
 def injectDiceToRolls(selector, character, name=""):
     text = $(selector).html()
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
-    pre_original='<u class="ct-beyond20-custom-roll"><strong>'
-    post_original='</strong>'
-    pre_dice='<img class="ct-beyond20-custom-icon" x-beyond20-name="' + name + \
-        '" x-beyond20-roll="'
-    post_dice='"></img></u>'
-    text = replaceRolls(False, text, True, pre_original, post_original, pre_dice, post_dice)
-    text = replaceRolls(True, text, True, pre_original, post_original, pre_dice + "1d20", post_dice)
+    def replaceCB(dice_formula, modifier):
+        return '<u class="ct-beyond20-custom-roll"><strong>' + dice_formula + '</strong>' + \
+            '<img class="ct-beyond20-custom-icon" x-beyond20-name="' + name + \
+            '" x-beyond20-roll="' + ("1d20" if modifier else "") + dice_formula + '"></img></u>'
+    text = replaceRolls(False, text, replaceCB)
+    text = replaceRolls(True, text, replaceCB)
     $(selector).html(text)
     $(".ct-beyond20-custom-icon").css("margin-right", "3px")
     $(".ct-beyond20-custom-icon").css("margin-left", "3px")

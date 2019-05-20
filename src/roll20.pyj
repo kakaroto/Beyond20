@@ -1,4 +1,4 @@
-from utils import replaceRolls, injectPageScript, sendCustomEvent
+from utils import replaceRolls, injectPageScript, sendCustomEvent, escapeRoll20Macro
 from settings import getDefaultSettings, getStoredSettings
 import re
 
@@ -44,27 +44,32 @@ def genRoll(dice, modifiers=[]):
     roll += "]]"
     return roll
 
-def subRolls(text, keep_original=False, damage_only=False):
-    if keep_original:
-        pre_original="["
-        post_original="]"
-        pre_dice="(!&#13;&#91;&#91;"
-        post_dice="&#93;&#93;)"
+def subRolls(text, damage_only=False, overrideCB=None):
+    if overrideCB:
+        replaceCB = overrideCB
     else:
-        pre_original=""
-        post_original=""
-        pre_dice="[["
-        post_dice="]]"
-    text = replaceRolls(False, text, keep_original, pre_original, post_original, pre_dice, post_dice)
+        replaceCB = def(dice_formula, modifier):
+            if modifier:
+                dice_formula = "1d20" + dice_formula
+            return "[[" + dice_formula + "]]"
+    
+    text = replaceRolls(False, text, replaceCB)
     if damage_only:
         return text
-    return replaceRolls(True, text, keep_original, pre_original, post_original, pre_dice + "1d20", post_dice)
+    return replaceRolls(True, text, replaceCB)
 
-def subDescriptionRolls(description):
+def subDescriptionRolls(name, description):
     nonlocal settings
     if not settings["subst-roll20"]:
         return description
-    return subRolls(description, True)
+    replaceCB = def(dice_formula, modifier):
+        roll = ("1d20" + dice_formula) if modifier else dice_formula
+        roll_template = template("simple", {"rname" : name,
+                                            "mod": dice_formula,
+                                            "r1": "[[" + roll + "]]",
+                                            "normal": 1})
+        return "[" + dice_formula + "](!\n" + escapeRoll20Macro(roll_template) + ")"
+    return subRolls(description, overrideCB=replaceCB)
 
 def subDamageRolls(text):
     return subRolls(text, damage_only=True)
@@ -285,17 +290,17 @@ def handleMessage (request, sender, sendResponse):
         elif request.type == "item":
             roll += template("traits", {"name": request.name,
                                         "source": request["item-type"],
-                                        "description": subDescriptionRolls(request.description)})
+                                        "description": subDescriptionRolls(request.name, request.description)})
         elif request.type == "feature":
             source = request["source-type"]
             if request.source.length > 0:
                 source += ": " + request.source
             roll += template("traits", {"name": request.name,
                                         "source": source,
-                                        "description": subDescriptionRolls(request.description)})
+                                        "description": subDescriptionRolls(request.name, request.description)})
         elif request.type in ["trait", "action"]:
             roll += template("traits", {"name": request.name,
-                                        "description": subDescriptionRolls(request.description)})
+                                        "description": subDescriptionRolls(request.name, request.description)})
         elif request.type == "spell-card":
             properties = {"name": request.name,
                           "castingtime": request["casting-time"],
@@ -328,10 +333,10 @@ def handleMessage (request, sender, sendResponse):
             description = request.description            
             higher = description.indexOf("At Higher Levels.")
             if higher > 0:
-                properties["description"] = subDescriptionRolls(description[:higher-1])
-                properties["athigherlevels"] = subDescriptionRolls(description[higher+"At Higher Levels.".length:])
+                properties["description"] = subDescriptionRolls(request.name, description[:higher-1])
+                properties["athigherlevels"] = subDescriptionRolls(request.name, description[higher+"At Higher Levels.".length:])
             else:
-                properties["description"] = subDescriptionRolls(description)
+                properties["description"] = subDescriptionRolls(request.name, description)
 
             roll += template("spell", properties)
         elif request.type == "spell-attack":
