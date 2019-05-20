@@ -5262,6 +5262,18 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
         };
 
+        function isExtensionDisconnected() {
+            try {
+                chrome.extension.getURL("");
+                return false;
+            } catch (ρσ_Exception) {
+                ρσ_last_exception = ρσ_Exception;
+                {
+                    return true;
+                } 
+            }
+        };
+
         function injectPageScript(url) {
             var s;
             s = document.createElement("script");
@@ -5324,6 +5336,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
+        ρσ_modules.utils.isExtensionDisconnected = isExtensionDisconnected;
         ρσ_modules.utils.injectPageScript = injectPageScript;
         ρσ_modules.utils.sendCustomEvent = sendCustomEvent;
         ρσ_modules.utils.addCustomEventListener = addCustomEventListener;
@@ -7044,9 +7057,17 @@ var str = ρσ_str, repr = ρσ_repr;;
         Monster.__handles_kwarg_interpolation__ = Monster.prototype.__init__.__handles_kwarg_interpolation__;
         Monster.prototype.parseStatBlock = function parseStatBlock() {
             var self = this;
-            var base, stat_block, a, attributes, label, value, cb, attr, abilities, prefix, abbr, score, modifier, makeCB, ability, tidbits, data, saves, ρσ_unpack, mod, save, skills, name, skill, text, last, tidbit;
+            var stat_block = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? parseStatBlock.__defaults__.stat_block : arguments[0];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "stat_block")){
+                stat_block = ρσ_kwargs_obj.stat_block;
+            }
+            var base, a, attributes, label, value, cb, attr, abilities, prefix, abbr, score, modifier, makeCB, ability, tidbits, data, saves, ρσ_unpack, mod, save, skills, name, skill, text, last, tidbit;
             base = self._base;
-            stat_block = $(base);
+            if (stat_block === null) {
+                stat_block = $(base);
+            }
             self._name = stat_block.find(base + "__name").text().trim();
             a = stat_block.find(base + "__name-link");
             if (a.length > 0) {
@@ -7184,9 +7205,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 (ρσ_expr_temp = self._tidbits)[(typeof label === "number" && label < 0) ? ρσ_expr_temp.length + label : label] = value;
             }
-            self.addDiceIcons();
+            self.addDiceIcons(stat_block);
             console.log("Done parsing stat block:", self);
         };
+        if (!Monster.prototype.parseStatBlock.__defaults__) Object.defineProperties(Monster.prototype.parseStatBlock, {
+            __defaults__ : {value: {stat_block:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["stat_block"]}
+        });
         Monster.prototype.rollHitPoints = function rollHitPoints() {
             var self = this;
             sendRoll(self, "custom", self._hp_formula, (function(){
@@ -7255,10 +7281,15 @@ var str = ρσ_str, repr = ρσ_repr;;
         if (!Monster.prototype.rollSkillCheck.__argnames__) Object.defineProperties(Monster.prototype.rollSkillCheck, {
             __argnames__ : {value: ["skill"]}
         });
-        Monster.prototype.addDiceIcons = function addDiceIcons() {
+        Monster.prototype.addDiceIcons = function addDiceIcons(stat_block) {
             var self = this;
-            injectDiceToRolls(self._base + "__description-block-content p", self, self._name);
+            var descriptions;
+            descriptions = stat_block.find(self._base + "__description-block-content p");
+            injectDiceToRolls(descriptions, self, self._name);
         };
+        if (!Monster.prototype.addDiceIcons.__argnames__) Object.defineProperties(Monster.prototype.addDiceIcons, {
+            __argnames__ : {value: ["stat_block"]}
+        });
         Monster.prototype.getDict = function getDict() {
             var self = this;
             return (function(){
@@ -7737,6 +7768,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");
             $(".ct-beyond20-custom-icon").css("margin-left", "3px");
             $(".ct-beyond20-custom-icon").attr("src", icon16);
+            $(".ct-beyond20-custom-roll").off("click");
             $(".ct-beyond20-custom-roll").on("click", (function() {
                 var ρσ_anonfunc = function (event) {
                     var name, roll;

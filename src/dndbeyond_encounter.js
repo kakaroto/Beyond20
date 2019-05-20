@@ -3724,313 +3724,13 @@ define_str_func("zfill", (function() {
 define_str_func = undefined;
 var str = ρσ_str, repr = ρσ_repr;;
     var ρσ_modules = {};
-    ρσ_modules.elementmaker = {};
     ρσ_modules.re = {};
     ρσ_modules.utils = {};
+    ρσ_modules.elementmaker = {};
     ρσ_modules.settings = {};
-    ρσ_modules.math = {};
     ρσ_modules.encodings = {};
     ρσ_modules.uuid = {};
     ρσ_modules.dndbeyond = {};
-
-    (function(){
-        var __name__ = "elementmaker";
-        var html_elements, mathml_elements, svg_elements, html5_tags, E;
-        html_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("a");
-            s.jsset.add("abbr");
-            s.jsset.add("acronym");
-            s.jsset.add("address");
-            s.jsset.add("area");
-            s.jsset.add("article");
-            s.jsset.add("aside");
-            s.jsset.add("audio");
-            s.jsset.add("b");
-            s.jsset.add("big");
-            s.jsset.add("blockquote");
-            s.jsset.add("br");
-            s.jsset.add("button");
-            s.jsset.add("canvas");
-            s.jsset.add("caption");
-            s.jsset.add("center");
-            s.jsset.add("cite");
-            s.jsset.add("code");
-            s.jsset.add("col");
-            s.jsset.add("colgroup");
-            s.jsset.add("command");
-            s.jsset.add("datagrid");
-            s.jsset.add("datalist");
-            s.jsset.add("dd");
-            s.jsset.add("del");
-            s.jsset.add("details");
-            s.jsset.add("dfn");
-            s.jsset.add("dialog");
-            s.jsset.add("dir");
-            s.jsset.add("div");
-            s.jsset.add("dl");
-            s.jsset.add("dt");
-            s.jsset.add("em");
-            s.jsset.add("event-source");
-            s.jsset.add("fieldset");
-            s.jsset.add("figcaption");
-            s.jsset.add("figure");
-            s.jsset.add("footer");
-            s.jsset.add("font");
-            s.jsset.add("form");
-            s.jsset.add("header");
-            s.jsset.add("h1");
-            s.jsset.add("h2");
-            s.jsset.add("h3");
-            s.jsset.add("h4");
-            s.jsset.add("h5");
-            s.jsset.add("h6");
-            s.jsset.add("hr");
-            s.jsset.add("i");
-            s.jsset.add("iframe");
-            s.jsset.add("img");
-            s.jsset.add("input");
-            s.jsset.add("ins");
-            s.jsset.add("keygen");
-            s.jsset.add("kbd");
-            s.jsset.add("label");
-            s.jsset.add("legend");
-            s.jsset.add("li");
-            s.jsset.add("m");
-            s.jsset.add("map");
-            s.jsset.add("menu");
-            s.jsset.add("meter");
-            s.jsset.add("multicol");
-            s.jsset.add("nav");
-            s.jsset.add("nextid");
-            s.jsset.add("ol");
-            s.jsset.add("output");
-            s.jsset.add("optgroup");
-            s.jsset.add("option");
-            s.jsset.add("p");
-            s.jsset.add("pre");
-            s.jsset.add("progress");
-            s.jsset.add("q");
-            s.jsset.add("s");
-            s.jsset.add("samp");
-            s.jsset.add("script");
-            s.jsset.add("section");
-            s.jsset.add("select");
-            s.jsset.add("small");
-            s.jsset.add("sound");
-            s.jsset.add("source");
-            s.jsset.add("spacer");
-            s.jsset.add("span");
-            s.jsset.add("strike");
-            s.jsset.add("strong");
-            s.jsset.add("style");
-            s.jsset.add("sub");
-            s.jsset.add("sup");
-            s.jsset.add("table");
-            s.jsset.add("tbody");
-            s.jsset.add("td");
-            s.jsset.add("textarea");
-            s.jsset.add("time");
-            s.jsset.add("tfoot");
-            s.jsset.add("th");
-            s.jsset.add("thead");
-            s.jsset.add("tr");
-            s.jsset.add("tt");
-            s.jsset.add("u");
-            s.jsset.add("ul");
-            s.jsset.add("var");
-            s.jsset.add("video");
-            return s;
-        })();
-        mathml_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("maction");
-            s.jsset.add("math");
-            s.jsset.add("merror");
-            s.jsset.add("mfrac");
-            s.jsset.add("mi");
-            s.jsset.add("mmultiscripts");
-            s.jsset.add("mn");
-            s.jsset.add("mo");
-            s.jsset.add("mover");
-            s.jsset.add("mpadded");
-            s.jsset.add("mphantom");
-            s.jsset.add("mprescripts");
-            s.jsset.add("mroot");
-            s.jsset.add("mrow");
-            s.jsset.add("mspace");
-            s.jsset.add("msqrt");
-            s.jsset.add("mstyle");
-            s.jsset.add("msub");
-            s.jsset.add("msubsup");
-            s.jsset.add("msup");
-            s.jsset.add("mtable");
-            s.jsset.add("mtd");
-            s.jsset.add("mtext");
-            s.jsset.add("mtr");
-            s.jsset.add("munder");
-            s.jsset.add("munderover");
-            s.jsset.add("none");
-            return s;
-        })();
-        svg_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("a");
-            s.jsset.add("animate");
-            s.jsset.add("animateColor");
-            s.jsset.add("animateMotion");
-            s.jsset.add("animateTransform");
-            s.jsset.add("clipPath");
-            s.jsset.add("circle");
-            s.jsset.add("defs");
-            s.jsset.add("desc");
-            s.jsset.add("ellipse");
-            s.jsset.add("font-face");
-            s.jsset.add("font-face-name");
-            s.jsset.add("font-face-src");
-            s.jsset.add("g");
-            s.jsset.add("glyph");
-            s.jsset.add("hkern");
-            s.jsset.add("linearGradient");
-            s.jsset.add("line");
-            s.jsset.add("marker");
-            s.jsset.add("metadata");
-            s.jsset.add("missing-glyph");
-            s.jsset.add("mpath");
-            s.jsset.add("path");
-            s.jsset.add("polygon");
-            s.jsset.add("polyline");
-            s.jsset.add("radialGradient");
-            s.jsset.add("rect");
-            s.jsset.add("set");
-            s.jsset.add("stop");
-            s.jsset.add("svg");
-            s.jsset.add("switch");
-            s.jsset.add("text");
-            s.jsset.add("title");
-            s.jsset.add("tspan");
-            s.jsset.add("use");
-            return s;
-        })();
-        html5_tags = html_elements.union(mathml_elements).union(svg_elements);
-        function _makeelement() {
-            var tag = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var kwargs = arguments[arguments.length-1];
-            if (kwargs === null || typeof kwargs !== "object" || kwargs [ρσ_kwargs_symbol] !== true) kwargs = {};
-            var args = Array.prototype.slice.call(arguments, 1);
-            if (kwargs !== null && typeof kwargs === "object" && kwargs [ρσ_kwargs_symbol] === true) args.pop();
-            var ans, vattr, val, attr, arg;
-            ans = this.createElement(tag);
-            var ρσ_Iter0 = ρσ_Iterable(kwargs);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                attr = ρσ_Iter0[ρσ_Index0];
-                vattr = str.replace(str.rstrip(attr, "_"), "_", "-");
-                val = kwargs[(typeof attr === "number" && attr < 0) ? kwargs.length + attr : attr];
-                if (callable(val)) {
-                    if (str.startswith(attr, "on")) {
-                        attr = attr.slice(2);
-                    }
-                    ans.addEventListener(attr, val);
-                } else if (val === true) {
-                    ans.setAttribute(vattr, vattr);
-                } else if (typeof val === "string") {
-                    ans.setAttribute(vattr, val);
-                }
-            }
-            var ρσ_Iter1 = ρσ_Iterable(args);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                arg = ρσ_Iter1[ρσ_Index1];
-                if (typeof arg === "string") {
-                    arg = this.createTextNode(arg);
-                }
-                ans.appendChild(arg);
-            }
-            return ans;
-        };
-        if (!_makeelement.__handles_kwarg_interpolation__) Object.defineProperties(_makeelement, {
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["tag"]}
-        });
-
-        function maker_for_document(document) {
-            var E;
-            E = _makeelement.bind(document);
-            Object.defineProperties(E, (function() {
-                var ρσ_Iter = ρσ_Iterable(html5_tags), ρσ_Result = {}, tag;
-                for (var ρσ_Index = 0; ρσ_Index < ρσ_Iter.length; ρσ_Index++) {
-                    tag = ρσ_Iter[ρσ_Index];
-                    ρσ_Result[tag] = ((function(){
-                        var ρσ_d = {};
-                        ρσ_d["value"] = _makeelement.bind(document, tag);
-                        return ρσ_d;
-                    }).call(this));
-                }
-                return ρσ_Result;
-            })());
-            return E;
-        };
-        if (!maker_for_document.__argnames__) Object.defineProperties(maker_for_document, {
-            __argnames__ : {value: ["document"]}
-        });
-
-        if (typeof document === "undefined") {
-            E = maker_for_document((function(){
-                var ρσ_d = {};
-                ρσ_d["createTextNode"] = (function() {
-                    var ρσ_anonfunc = function (value) {
-                        return value;
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["value"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                ρσ_d["createElement"] = (function() {
-                    var ρσ_anonfunc = function (name) {
-                        return (function(){
-                            var ρσ_d = {};
-                            ρσ_d["name"] = name;
-                            ρσ_d["children"] = ρσ_list_decorate([]);
-                            ρσ_d["attributes"] = {};
-                            ρσ_d["setAttribute"] = (function() {
-                                var ρσ_anonfunc = function (name, val) {
-                                    (ρσ_expr_temp = this.attributes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = val;
-                                };
-                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                    __argnames__ : {value: ["name", "val"]}
-                                });
-                                return ρσ_anonfunc;
-                            })();
-                            ρσ_d["appendChild"] = (function() {
-                                var ρσ_anonfunc = function (child) {
-                                    this.children.push(child);
-                                };
-                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                    __argnames__ : {value: ["child"]}
-                                });
-                                return ρσ_anonfunc;
-                            })();
-                            return ρσ_d;
-                        }).call(this);
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["name"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                return ρσ_d;
-            }).call(this));
-        } else {
-            E = maker_for_document(document);
-        }
-        ρσ_modules.elementmaker.html_elements = html_elements;
-        ρσ_modules.elementmaker.mathml_elements = mathml_elements;
-        ρσ_modules.elementmaker.svg_elements = svg_elements;
-        ρσ_modules.elementmaker.html5_tags = html5_tags;
-        ρσ_modules.elementmaker.E = E;
-        ρσ_modules.elementmaker._makeelement = _makeelement;
-        ρσ_modules.elementmaker.maker_for_document = maker_for_document;
-    })();
 
     (function(){
         var __name__ = "re";
@@ -5644,6 +5344,305 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
+        var __name__ = "elementmaker";
+        var html_elements, mathml_elements, svg_elements, html5_tags, E;
+        html_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("a");
+            s.jsset.add("abbr");
+            s.jsset.add("acronym");
+            s.jsset.add("address");
+            s.jsset.add("area");
+            s.jsset.add("article");
+            s.jsset.add("aside");
+            s.jsset.add("audio");
+            s.jsset.add("b");
+            s.jsset.add("big");
+            s.jsset.add("blockquote");
+            s.jsset.add("br");
+            s.jsset.add("button");
+            s.jsset.add("canvas");
+            s.jsset.add("caption");
+            s.jsset.add("center");
+            s.jsset.add("cite");
+            s.jsset.add("code");
+            s.jsset.add("col");
+            s.jsset.add("colgroup");
+            s.jsset.add("command");
+            s.jsset.add("datagrid");
+            s.jsset.add("datalist");
+            s.jsset.add("dd");
+            s.jsset.add("del");
+            s.jsset.add("details");
+            s.jsset.add("dfn");
+            s.jsset.add("dialog");
+            s.jsset.add("dir");
+            s.jsset.add("div");
+            s.jsset.add("dl");
+            s.jsset.add("dt");
+            s.jsset.add("em");
+            s.jsset.add("event-source");
+            s.jsset.add("fieldset");
+            s.jsset.add("figcaption");
+            s.jsset.add("figure");
+            s.jsset.add("footer");
+            s.jsset.add("font");
+            s.jsset.add("form");
+            s.jsset.add("header");
+            s.jsset.add("h1");
+            s.jsset.add("h2");
+            s.jsset.add("h3");
+            s.jsset.add("h4");
+            s.jsset.add("h5");
+            s.jsset.add("h6");
+            s.jsset.add("hr");
+            s.jsset.add("i");
+            s.jsset.add("iframe");
+            s.jsset.add("img");
+            s.jsset.add("input");
+            s.jsset.add("ins");
+            s.jsset.add("keygen");
+            s.jsset.add("kbd");
+            s.jsset.add("label");
+            s.jsset.add("legend");
+            s.jsset.add("li");
+            s.jsset.add("m");
+            s.jsset.add("map");
+            s.jsset.add("menu");
+            s.jsset.add("meter");
+            s.jsset.add("multicol");
+            s.jsset.add("nav");
+            s.jsset.add("nextid");
+            s.jsset.add("ol");
+            s.jsset.add("output");
+            s.jsset.add("optgroup");
+            s.jsset.add("option");
+            s.jsset.add("p");
+            s.jsset.add("pre");
+            s.jsset.add("progress");
+            s.jsset.add("q");
+            s.jsset.add("s");
+            s.jsset.add("samp");
+            s.jsset.add("script");
+            s.jsset.add("section");
+            s.jsset.add("select");
+            s.jsset.add("small");
+            s.jsset.add("sound");
+            s.jsset.add("source");
+            s.jsset.add("spacer");
+            s.jsset.add("span");
+            s.jsset.add("strike");
+            s.jsset.add("strong");
+            s.jsset.add("style");
+            s.jsset.add("sub");
+            s.jsset.add("sup");
+            s.jsset.add("table");
+            s.jsset.add("tbody");
+            s.jsset.add("td");
+            s.jsset.add("textarea");
+            s.jsset.add("time");
+            s.jsset.add("tfoot");
+            s.jsset.add("th");
+            s.jsset.add("thead");
+            s.jsset.add("tr");
+            s.jsset.add("tt");
+            s.jsset.add("u");
+            s.jsset.add("ul");
+            s.jsset.add("var");
+            s.jsset.add("video");
+            return s;
+        })();
+        mathml_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("maction");
+            s.jsset.add("math");
+            s.jsset.add("merror");
+            s.jsset.add("mfrac");
+            s.jsset.add("mi");
+            s.jsset.add("mmultiscripts");
+            s.jsset.add("mn");
+            s.jsset.add("mo");
+            s.jsset.add("mover");
+            s.jsset.add("mpadded");
+            s.jsset.add("mphantom");
+            s.jsset.add("mprescripts");
+            s.jsset.add("mroot");
+            s.jsset.add("mrow");
+            s.jsset.add("mspace");
+            s.jsset.add("msqrt");
+            s.jsset.add("mstyle");
+            s.jsset.add("msub");
+            s.jsset.add("msubsup");
+            s.jsset.add("msup");
+            s.jsset.add("mtable");
+            s.jsset.add("mtd");
+            s.jsset.add("mtext");
+            s.jsset.add("mtr");
+            s.jsset.add("munder");
+            s.jsset.add("munderover");
+            s.jsset.add("none");
+            return s;
+        })();
+        svg_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("a");
+            s.jsset.add("animate");
+            s.jsset.add("animateColor");
+            s.jsset.add("animateMotion");
+            s.jsset.add("animateTransform");
+            s.jsset.add("clipPath");
+            s.jsset.add("circle");
+            s.jsset.add("defs");
+            s.jsset.add("desc");
+            s.jsset.add("ellipse");
+            s.jsset.add("font-face");
+            s.jsset.add("font-face-name");
+            s.jsset.add("font-face-src");
+            s.jsset.add("g");
+            s.jsset.add("glyph");
+            s.jsset.add("hkern");
+            s.jsset.add("linearGradient");
+            s.jsset.add("line");
+            s.jsset.add("marker");
+            s.jsset.add("metadata");
+            s.jsset.add("missing-glyph");
+            s.jsset.add("mpath");
+            s.jsset.add("path");
+            s.jsset.add("polygon");
+            s.jsset.add("polyline");
+            s.jsset.add("radialGradient");
+            s.jsset.add("rect");
+            s.jsset.add("set");
+            s.jsset.add("stop");
+            s.jsset.add("svg");
+            s.jsset.add("switch");
+            s.jsset.add("text");
+            s.jsset.add("title");
+            s.jsset.add("tspan");
+            s.jsset.add("use");
+            return s;
+        })();
+        html5_tags = html_elements.union(mathml_elements).union(svg_elements);
+        function _makeelement() {
+            var tag = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var kwargs = arguments[arguments.length-1];
+            if (kwargs === null || typeof kwargs !== "object" || kwargs [ρσ_kwargs_symbol] !== true) kwargs = {};
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (kwargs !== null && typeof kwargs === "object" && kwargs [ρσ_kwargs_symbol] === true) args.pop();
+            var ans, vattr, val, attr, arg;
+            ans = this.createElement(tag);
+            var ρσ_Iter0 = ρσ_Iterable(kwargs);
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                attr = ρσ_Iter0[ρσ_Index0];
+                vattr = str.replace(str.rstrip(attr, "_"), "_", "-");
+                val = kwargs[(typeof attr === "number" && attr < 0) ? kwargs.length + attr : attr];
+                if (callable(val)) {
+                    if (str.startswith(attr, "on")) {
+                        attr = attr.slice(2);
+                    }
+                    ans.addEventListener(attr, val);
+                } else if (val === true) {
+                    ans.setAttribute(vattr, vattr);
+                } else if (typeof val === "string") {
+                    ans.setAttribute(vattr, val);
+                }
+            }
+            var ρσ_Iter1 = ρσ_Iterable(args);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                arg = ρσ_Iter1[ρσ_Index1];
+                if (typeof arg === "string") {
+                    arg = this.createTextNode(arg);
+                }
+                ans.appendChild(arg);
+            }
+            return ans;
+        };
+        if (!_makeelement.__handles_kwarg_interpolation__) Object.defineProperties(_makeelement, {
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["tag"]}
+        });
+
+        function maker_for_document(document) {
+            var E;
+            E = _makeelement.bind(document);
+            Object.defineProperties(E, (function() {
+                var ρσ_Iter = ρσ_Iterable(html5_tags), ρσ_Result = {}, tag;
+                for (var ρσ_Index = 0; ρσ_Index < ρσ_Iter.length; ρσ_Index++) {
+                    tag = ρσ_Iter[ρσ_Index];
+                    ρσ_Result[tag] = ((function(){
+                        var ρσ_d = {};
+                        ρσ_d["value"] = _makeelement.bind(document, tag);
+                        return ρσ_d;
+                    }).call(this));
+                }
+                return ρσ_Result;
+            })());
+            return E;
+        };
+        if (!maker_for_document.__argnames__) Object.defineProperties(maker_for_document, {
+            __argnames__ : {value: ["document"]}
+        });
+
+        if (typeof document === "undefined") {
+            E = maker_for_document((function(){
+                var ρσ_d = {};
+                ρσ_d["createTextNode"] = (function() {
+                    var ρσ_anonfunc = function (value) {
+                        return value;
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["value"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                ρσ_d["createElement"] = (function() {
+                    var ρσ_anonfunc = function (name) {
+                        return (function(){
+                            var ρσ_d = {};
+                            ρσ_d["name"] = name;
+                            ρσ_d["children"] = ρσ_list_decorate([]);
+                            ρσ_d["attributes"] = {};
+                            ρσ_d["setAttribute"] = (function() {
+                                var ρσ_anonfunc = function (name, val) {
+                                    (ρσ_expr_temp = this.attributes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = val;
+                                };
+                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                    __argnames__ : {value: ["name", "val"]}
+                                });
+                                return ρσ_anonfunc;
+                            })();
+                            ρσ_d["appendChild"] = (function() {
+                                var ρσ_anonfunc = function (child) {
+                                    this.children.push(child);
+                                };
+                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                    __argnames__ : {value: ["child"]}
+                                });
+                                return ρσ_anonfunc;
+                            })();
+                            return ρσ_d;
+                        }).call(this);
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["name"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                return ρσ_d;
+            }).call(this));
+        } else {
+            E = maker_for_document(document);
+        }
+        ρσ_modules.elementmaker.html_elements = html_elements;
+        ρσ_modules.elementmaker.mathml_elements = mathml_elements;
+        ρσ_modules.elementmaker.svg_elements = svg_elements;
+        ρσ_modules.elementmaker.html5_tags = html5_tags;
+        ρσ_modules.elementmaker.E = E;
+        ρσ_modules.elementmaker._makeelement = _makeelement;
+        ρσ_modules.elementmaker.maker_for_document = maker_for_document;
+    })();
+
+    (function(){
         var __name__ = "settings";
         var options_list, character_settings, current_tab;
         var E = ρσ_modules.elementmaker.E;
@@ -6441,377 +6440,6 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.settings.setRoll20TabSetting = setRoll20TabSetting;
         ρσ_modules.settings.getRoll20TabSetting = getRoll20TabSetting;
         ρσ_modules.settings.setCurrentTab = setCurrentTab;
-    })();
-
-    (function(){
-        var __name__ = "math";
-        var pi, e;
-        pi = Math.PI;
-        e = Math.E;
-        function ceil(x) {
-            return Math.ceil(x);
-        };
-        if (!ceil.__argnames__) Object.defineProperties(ceil, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function copysign(x, y) {
-            x = Math.abs(x);
-            if (y < 0) {
-                return -x;
-            } else {
-                return x;
-            }
-        };
-        if (!copysign.__argnames__) Object.defineProperties(copysign, {
-            __argnames__ : {value: ["x", "y"]}
-        });
-
-        function fabs(x) {
-            return Math.abs(x);
-        };
-        if (!fabs.__argnames__) Object.defineProperties(fabs, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function factorial(x) {
-            var r;
-            if (Math.abs(int(x)) !== x) {
-                throw new ValueError("factorial() only accepts integral values");
-            }
-            factorial.cache = ρσ_list_decorate([]);
-            r = (function() {
-                var ρσ_anonfunc = function (n) {
-                    if (n === 0 || n === 1) {
-                        return 1;
-                    }
-                    if (!(ρσ_expr_temp = factorial.cache)[(typeof n === "number" && n < 0) ? ρσ_expr_temp.length + n : n]) {
-                        (ρσ_expr_temp = factorial.cache)[(typeof n === "number" && n < 0) ? ρσ_expr_temp.length + n : n] = r(n - 1) * n;
-                    }
-                    return (ρσ_expr_temp = factorial.cache)[(typeof n === "number" && n < 0) ? ρσ_expr_temp.length + n : n];
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["n"]}
-                });
-                return ρσ_anonfunc;
-            })();
-            return r(x);
-        };
-        if (!factorial.__argnames__) Object.defineProperties(factorial, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function floor(x) {
-            return Math.floor(x);
-        };
-        if (!floor.__argnames__) Object.defineProperties(floor, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function fmod(x, y) {
-            while (y <= x) {
-                x -= y;
-            }
-            return x;
-        };
-        if (!fmod.__argnames__) Object.defineProperties(fmod, {
-            __argnames__ : {value: ["x", "y"]}
-        });
-
-        function fsum(iterable) {
-            var partials, i, ρσ_unpack, x, y, hi, lo;
-            partials = ρσ_list_decorate([]);
-            var ρσ_Iter0 = ρσ_Iterable(iterable);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                x = ρσ_Iter0[ρσ_Index0];
-                i = 0;
-                var ρσ_Iter1 = ρσ_Iterable(partials);
-                for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                    y = ρσ_Iter1[ρσ_Index1];
-                    if (Math.abs(x) < Math.abs(y)) {
-                        ρσ_unpack = [y, x];
-                        x = ρσ_unpack[0];
-                        y = ρσ_unpack[1];
-                    }
-                    hi = x + y;
-                    lo = y - (hi - x);
-                    if (lo) {
-                        partials[(typeof i === "number" && i < 0) ? partials.length + i : i] = lo;
-                        i += 1;
-                    }
-                    x = hi;
-                }
-                partials.splice(i, partials.length - i, x);
-            }
-            return sum(partials);
-        };
-        if (!fsum.__argnames__) Object.defineProperties(fsum, {
-            __argnames__ : {value: ["iterable"]}
-        });
-
-        function isinf(x) {
-            return !isFinite(x);
-        };
-        if (!isinf.__argnames__) Object.defineProperties(isinf, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function isnan(x) {
-            return isNaN(x);
-        };
-        if (!isnan.__argnames__) Object.defineProperties(isnan, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function modf(x) {
-            var m;
-            m = fmod(x, 1);
-            return [m, x - m];
-        };
-        if (!modf.__argnames__) Object.defineProperties(modf, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function trunc(x) {
-            return x | 0;
-        };
-        if (!trunc.__argnames__) Object.defineProperties(trunc, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function exp(x) {
-            return Math.exp(x);
-        };
-        if (!exp.__argnames__) Object.defineProperties(exp, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function expm1(x) {
-            if (Math.abs(x) < 1e-5) {
-                return x + .5 * x * x;
-            } else {
-                return Math.exp(x) - 1;
-            }
-        };
-        if (!expm1.__argnames__) Object.defineProperties(expm1, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function log() {
-            var x = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var base = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? log.__defaults__.base : arguments[1];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "base")){
-                base = ρσ_kwargs_obj.base;
-            }
-            return Math.log(x) / Math.log(base);
-        };
-        if (!log.__defaults__) Object.defineProperties(log, {
-            __defaults__ : {value: {base:e}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["x", "base"]}
-        });
-
-        function log1p(x) {
-            var ret, n, i;
-            ret = 0;
-            n = 50;
-            if (x <= -1) {
-                return Number.NEGATIVE_INFINITY;
-            }
-            if (x < 0 || x > 1) {
-                return Math.log(1 + x);
-            }
-            for (var ρσ_Index2 = 1; ρσ_Index2 < n; ρσ_Index2++) {
-                i = ρσ_Index2;
-                if (i % 2 === 0) {
-                    ret -= Math.pow(x, i) / i;
-                } else {
-                    ret += Math.pow(x, i) / i;
-                }
-            }
-            return ret;
-        };
-        if (!log1p.__argnames__) Object.defineProperties(log1p, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function log10(x) {
-            return Math.log(x) / Math.LN10;
-        };
-        if (!log10.__argnames__) Object.defineProperties(log10, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function pow(x, y) {
-            if (x < 0 && int(y) !== y) {
-                throw new ValueError("math domain error");
-            }
-            if (isnan(y) && x === 1) {
-                return 1;
-            }
-            return Math.pow(x, y);
-        };
-        if (!pow.__argnames__) Object.defineProperties(pow, {
-            __argnames__ : {value: ["x", "y"]}
-        });
-
-        function sqrt(x) {
-            return Math.sqrt(x);
-        };
-        if (!sqrt.__argnames__) Object.defineProperties(sqrt, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function acos(x) {
-            return Math.acos(x);
-        };
-        if (!acos.__argnames__) Object.defineProperties(acos, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function asin(x) {
-            return Math.asin(x);
-        };
-        if (!asin.__argnames__) Object.defineProperties(asin, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function atan(x) {
-            return Math.atan(x);
-        };
-        if (!atan.__argnames__) Object.defineProperties(atan, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function atan2(y, x) {
-            return Math.atan2(y, x);
-        };
-        if (!atan2.__argnames__) Object.defineProperties(atan2, {
-            __argnames__ : {value: ["y", "x"]}
-        });
-
-        function cos(x) {
-            return Math.cos(x);
-        };
-        if (!cos.__argnames__) Object.defineProperties(cos, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function sin(x) {
-            return Math.sin(x);
-        };
-        if (!sin.__argnames__) Object.defineProperties(sin, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function hypot(x, y) {
-            return Math.sqrt(x * x + y * y);
-        };
-        if (!hypot.__argnames__) Object.defineProperties(hypot, {
-            __argnames__ : {value: ["x", "y"]}
-        });
-
-        function tan(x) {
-            return Math.tan(x);
-        };
-        if (!tan.__argnames__) Object.defineProperties(tan, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function degrees(x) {
-            return x * 180 / pi;
-        };
-        if (!degrees.__argnames__) Object.defineProperties(degrees, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function radians(x) {
-            return x * pi / 180;
-        };
-        if (!radians.__argnames__) Object.defineProperties(radians, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function acosh(x) {
-            return Math.log(x + Math.sqrt(x * x - 1));
-        };
-        if (!acosh.__argnames__) Object.defineProperties(acosh, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function asinh(x) {
-            return Math.log(x + Math.sqrt(x * x + 1));
-        };
-        if (!asinh.__argnames__) Object.defineProperties(asinh, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function atanh(x) {
-            return .5 * Math.log((1 + x) / (1 - x));
-        };
-        if (!atanh.__argnames__) Object.defineProperties(atanh, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function cosh(x) {
-            return (Math.exp(x) + Math.exp(-x)) / 2;
-        };
-        if (!cosh.__argnames__) Object.defineProperties(cosh, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function sinh(x) {
-            return (Math.exp(x) - Math.exp(-x)) / 2;
-        };
-        if (!sinh.__argnames__) Object.defineProperties(sinh, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function tanh(x) {
-            return (Math.exp(x) - Math.exp(-x)) / (Math.exp(x) + Math.exp(-x));
-        };
-        if (!tanh.__argnames__) Object.defineProperties(tanh, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        ρσ_modules.math.pi = pi;
-        ρσ_modules.math.e = e;
-        ρσ_modules.math.ceil = ceil;
-        ρσ_modules.math.copysign = copysign;
-        ρσ_modules.math.fabs = fabs;
-        ρσ_modules.math.factorial = factorial;
-        ρσ_modules.math.floor = floor;
-        ρσ_modules.math.fmod = fmod;
-        ρσ_modules.math.fsum = fsum;
-        ρσ_modules.math.isinf = isinf;
-        ρσ_modules.math.isnan = isnan;
-        ρσ_modules.math.modf = modf;
-        ρσ_modules.math.trunc = trunc;
-        ρσ_modules.math.exp = exp;
-        ρσ_modules.math.expm1 = expm1;
-        ρσ_modules.math.log = log;
-        ρσ_modules.math.log1p = log1p;
-        ρσ_modules.math.log10 = log10;
-        ρσ_modules.math.pow = pow;
-        ρσ_modules.math.sqrt = sqrt;
-        ρσ_modules.math.acos = acos;
-        ρσ_modules.math.asin = asin;
-        ρσ_modules.math.atan = atan;
-        ρσ_modules.math.atan2 = atan2;
-        ρσ_modules.math.cos = cos;
-        ρσ_modules.math.sin = sin;
-        ρσ_modules.math.hypot = hypot;
-        ρσ_modules.math.tan = tan;
-        ρσ_modules.math.degrees = degrees;
-        ρσ_modules.math.radians = radians;
-        ρσ_modules.math.acosh = acosh;
-        ρσ_modules.math.asinh = asinh;
-        ρσ_modules.math.atanh = atanh;
-        ρσ_modules.math.cosh = cosh;
-        ρσ_modules.math.sinh = sinh;
-        ρσ_modules.math.tanh = tanh;
     })();
 
     (function(){
@@ -8195,749 +7823,36 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var settings, character, lastItemName, lastSpellName, lastSpellLevel, observer;
-        var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
-        var getStoredSettings = ρσ_modules.settings.getStoredSettings;
+        var observer;
+        var Monster = ρσ_modules.dndbeyond.Monster;
+        var isRollButtonAdded = ρσ_modules.dndbeyond.isRollButtonAdded;
 
         var isExtensionDisconnected = ρσ_modules.utils.isExtensionDisconnected;
 
-        var E = ρσ_modules.elementmaker.E;
-
-        var math = ρσ_modules.math;
-
-        var Character = ρσ_modules.dndbeyond.Character;
-        var buildAttackRoll = ρσ_modules.dndbeyond.buildAttackRoll;
-        var sendRoll = ρσ_modules.dndbeyond.sendRoll;
-        var ability_abbreviations = ρσ_modules.dndbeyond.ability_abbreviations;
-        var findToHit = ρσ_modules.dndbeyond.findToHit;
-        var descriptionToString = ρσ_modules.dndbeyond.descriptionToString;
-        var propertyListToDict = ρσ_modules.dndbeyond.propertyListToDict;
-        var injectDiceToRolls = ρσ_modules.dndbeyond.injectDiceToRolls;
-        var addIconButton = ρσ_modules.dndbeyond.addIconButton;
-        var addHitDieButtons = ρσ_modules.dndbeyond.addHitDieButtons;
-        var addDisplayButton = ρσ_modules.dndbeyond.addDisplayButton;
-        var addRollButton = ρσ_modules.dndbeyond.addRollButton;
-        var isHitDieButtonAdded = ρσ_modules.dndbeyond.isHitDieButtonAdded;
-        var isRollButtonAdded = ρσ_modules.dndbeyond.isRollButtonAdded;
-        var isCustomRollIconsAdded = ρσ_modules.dndbeyond.isCustomRollIconsAdded;
-        var removeRollButtons = ρσ_modules.dndbeyond.removeRollButtons;
-
-        print("Beyond20: D&D Beyond module loaded.");
-        settings = getDefaultSettings();
-        character = new Character;
-        function sendRollWithCharacter(rollType, fallback, args) {
-            sendRoll(character, rollType, fallback, args);
-        };
-        if (!sendRollWithCharacter.__argnames__) Object.defineProperties(sendRollWithCharacter, {
-            __argnames__ : {value: ["rollType", "fallback", "args"]}
-        });
-
-        function rollSkillCheck(paneClass) {
-            var skill_name, ability, modifier, proficiency;
-            skill_name = $("." + paneClass + "__header-name").text();
-            ability = $("." + paneClass + "__header-ability").text();
-            modifier = $("." + paneClass + "__header-modifier").text();
-            proficiency = $("." + paneClass + "__header-icon .ct-tooltip").attr("data-original-title");
-            print("Skill " + skill_name + "(" + ability + ") : " + modifier);
-            sendRollWithCharacter("skill", "1d20" + modifier, (function(){
-                var ρσ_d = {};
-                ρσ_d["skill"] = skill_name;
-                ρσ_d["ability"] = ability;
-                ρσ_d["modifier"] = modifier;
-                ρσ_d["proficiency"] = proficiency;
-                return ρσ_d;
-            }).call(this));
-        };
-        if (!rollSkillCheck.__argnames__) Object.defineProperties(rollSkillCheck, {
-            __argnames__ : {value: ["paneClass"]}
-        });
-
-        function rollAbilityOrSavingThrow(paneClass, rollType) {
-            var ability_string, ability_name, modifier, ability, roll_properties;
-            ability_string = $("." + paneClass + " .ct-sidebar__heading").text();
-            ability_name = ability_string.split(" ")[0];
-            modifier = $("." + paneClass + "__modifier .ct-signed-number").text();
-            ability = ability_abbreviations[(typeof ability_name === "number" && ability_name < 0) ? ability_abbreviations.length + ability_name : ability_name];
-            roll_properties = (function(){
-                var ρσ_d = {};
-                ρσ_d["name"] = ability_name;
-                ρσ_d["ability"] = ability;
-                ρσ_d["modifier"] = modifier;
-                return ρσ_d;
-            }).call(this);
-            if (ρσ_in("Bard", character._classes) && character._classes["Bard"] >= 2 && character._settings["bard-joat"]) {
-                roll_properties["JoaT"] = int(math.floor(float(character._proficiency) / 2));
-            }
-            sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
-        };
-        if (!rollAbilityOrSavingThrow.__argnames__) Object.defineProperties(rollAbilityOrSavingThrow, {
-            __argnames__ : {value: ["paneClass", "rollType"]}
-        });
-
-        function rollAbilityCheck() {
-            rollAbilityOrSavingThrow("ct-ability-pane", "ability");
-        };
-
-        function rollSavingThrow() {
-            rollAbilityOrSavingThrow("ct-ability-saving-throws-pane", "saving-throw");
-        };
-
-        function rollInitiative() {
-            var initiative, advantage, roll;
-            initiative = $(".ct-initiative-box__value").text();
-            advantage = $(".ct-initiative-box__advantage").length > 0;
-            if ((initiative === "" || typeof initiative === "object" && ρσ_equals(initiative, ""))) {
-                initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text();
-                advantage = $(".ct-combat-mobile__advantage").length > 0;
-            }
-            roll = (advantage) ? "2d20kh1" : "1d20";
-            print("Initiative " + ((advantage) ? "with" : "without") + " advantage : " + initiative);
-            sendRollWithCharacter("initiative", "1d20" + initiative, (function(){
-                var ρσ_d = {};
-                ρσ_d["initiative"] = initiative;
-                ρσ_d["advantage"] = advantage;
-                return ρσ_d;
-            }).call(this));
-        };
-
-        function rollHitDie(multiclass, index) {
-            var hitdie, class_name, text, die;
-            print("Rolling hit die index " + index);
-            hitdie = $(".ct-reset-pane__hitdie").eq(index);
-            class_name = hitdie.find(".ct-reset-pane__hitdie-heading-class").text();
-            text = hitdie.find(".ct-reset-pane__hitdie-heading").text();
-            die = text.split("Hit Die: ")[1].split(" ")[0];
-            sendRollWithCharacter("hit-dice", die, (function(){
-                var ρσ_d = {};
-                ρσ_d["class"] = class_name;
-                ρσ_d["multiclass"] = multiclass;
-                ρσ_d["hit-dice"] = die;
-                return ρσ_d;
-            }).call(this));
-        };
-        if (!rollHitDie.__argnames__) Object.defineProperties(rollHitDie, {
-            __argnames__ : {value: ["multiclass", "index"]}
-        });
-
-        function rollItem() {
-            var force_display = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollItem.__defaults__.force_display : arguments[0];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
-                force_display = ρσ_kwargs_obj.force_display;
-            }
-            var prop_list, properties, item_name, item_type, description, to_hit, damage, damage2, damage2_type, value, versatile_damage, additional_damages, dmg, dmg_type, dmg_info, j, i, sneak_attack, roll_properties;
-            prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property");
-            properties = propertyListToDict(prop_list);
-            print("Properties are : " + str(properties));
-            item_name = $(".ct-item-pane .ct-item-name").text();
-            item_type = $(".ct-item-detail__intro").text();
-            description = descriptionToString(".ct-item-detail__description");
-            if (force_display === false && ρσ_in("Damage", properties)) {
-                to_hit = ρσ_exists.e(properties["To Hit"], findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit"));
-                damage = null;
-                damage2 = null;
-                damage2_type = null;
-                for (var ρσ_Index19 = 0; ρσ_Index19 < prop_list.length; ρσ_Index19++) {
-                    i = ρσ_Index19;
-                    if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
-                        value = prop_list.eq(i).find(".ct-property-list__property-content");
-                        damage = value.find(".ct-damage__value").text();
-                        versatile_damage = value.find(".ct-item-detail__versatile-damage").text();
-                        if ((versatile_damage !== "" && (typeof versatile_damage !== "object" || ρσ_not_equals(versatile_damage, "")))) {
-                            damage2 = versatile_damage.slice(1, -1);
-                            damage2_type = "Two-Handed";
-                        }
-                        additional_damages = value.find(".ct-item-detail__additional-damage");
-                        for (var ρσ_Index20 = 0; ρσ_Index20 < additional_damages.length; ρσ_Index20++) {
-                            j = ρσ_Index20;
-                            dmg = additional_damages.eq(j).text();
-                            dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
-                            dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
-                            if ((dmg !== "" && (typeof dmg !== "object" || ρσ_not_equals(dmg, "")))) {
-                                dmg = dmg.replace(dmg_info, "");
-                                if (damage2 === null) {
-                                    damage2 = dmg;
-                                    damage2_type = dmg_type;
-                                } else {
-                                    damage2 += " | " + dmg;
-                                    damage2_type += " | " + dmg_type;
-                                    if ((dmg_info !== "" && (typeof dmg_info !== "object" || ρσ_not_equals(dmg_info, "")))) {
-                                        damage2_type += "(" + dmg_info + ")";
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
-                if (ρσ_in("Rogue", character._classes) && character._settings["rogue-sneak-attack"] && ((properties["Attack Type"] === "Ranged" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Ranged")) || ρσ_exists.n(properties["Properties"]) && properties["Properties"].includes("Finesse"))) {
-                    sneak_attack = int(math.ceil(float(character._classes["Rogue"]) / 2)) + "d6";
-                    dmg_type = "Sneak Attack";
-                    console.log("Sneak attack:", sneak_attack);
-                    if (damage2 === null) {
-                        damage2 = sneak_attack;
-                        damage2_type = dmg_type;
-                    } else {
-                        damage2 += " | " + sneak_attack;
-                        damage2_type += " | " + dmg_type;
-                    }
-                }
-                roll_properties = buildAttackRoll("item", item_name, description, properties, damage, ρσ_exists.e(properties["Damage Type"], ""), to_hit, damage2, damage2_type);
-                roll_properties["item-type"] = item_type;
-                sendRollWithCharacter("attack", damage, roll_properties);
-            } else {
-                sendRollWithCharacter("item", 0, (function(){
-                    var ρσ_d = {};
-                    ρσ_d["name"] = item_name;
-                    ρσ_d["description"] = description;
-                    ρσ_d["item-type"] = item_type;
-                    return ρσ_d;
-                }).call(this));
-            }
-        };
-        if (!rollItem.__defaults__) Object.defineProperties(rollItem, {
-            __defaults__ : {value: {force_display:false}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["force_display"]}
-        });
-
-        function rollAction(paneClass) {
-            var properties, action_name, description, roll_properties;
-            properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"));
-            print("Properties are : " + str(properties));
-            action_name = $(".ct-sidebar__heading").text();
-            description = descriptionToString(".ct-action-detail__description");
-            if (ρσ_in("Damage", properties) && (ρσ_exists.n(properties["To Hit"]) || ρσ_exists.n(properties["Attack/Save"]))) {
-                roll_properties = buildAttackRoll("action", action_name, description, properties, properties["Damage"], ρσ_exists.e(properties["Damage Type"], ""), ρσ_exists.e(properties["To Hit"], null));
-                sendRollWithCharacter("attack", properties["Damage"], roll_properties);
-            } else {
-                sendRollWithCharacter("action", 0, (function(){
-                    var ρσ_d = {};
-                    ρσ_d["name"] = action_name;
-                    ρσ_d["description"] = description;
-                    return ρσ_d;
-                }).call(this));
-            }
-        };
-        if (!rollAction.__argnames__) Object.defineProperties(rollAction, {
-            __argnames__ : {value: ["paneClass"]}
-        });
-
-        function rollSpell() {
-            var force_display = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollSpell.__defaults__.force_display : arguments[0];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
-                force_display = ρσ_kwargs_obj.force_display;
-            }
-            var properties, spell_name, description, damages, healings, castas, level, concentration, ritual, duration, to_hit, num_damages, damage, damage2, dmg, dmgtype, damage_type, damage2_type, i, roll_properties, spell_properties, key;
-            properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"));
-            print("Properties are : " + str(properties));
-            spell_name = $(".ct-sidebar__heading .ct-spell-name").text();
-            description = descriptionToString(".ct-spell-pane .ct-spell-detail__description");
-            damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage");
-            healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp");
-            castas = $(".ct-spell-caster__casting-level-current").text();
-            level = descriptionToString(".ct-spell-pane .ct-spell-detail__level-school", " ");
-            concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration").length > 0;
-            ritual = $(".ct-spell-pane .ct-spell-name__icon--ritual").length > 0;
-            duration = ρσ_exists.e(properties["Duration"], "");
-            if (ρσ_in("Concentration", duration)) {
-                duration = duration.replace("Concentration, ", "");
-                concentration = true;
-            } else {
-                concentration = false;
-            }
-            to_hit = ρσ_exists.e(properties["To Hit"], findToHit(spell_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit"));
-            if (!to_hit) {
-                to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit");
-            }
-            if (force_display === false && (damages.length > 0 || healings.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null))))) {
-                num_damages = 0;
-                damage = null;
-                damage2 = null;
-                for (var ρσ_Index21 = 0; ρσ_Index21 < damages.length; ρσ_Index21++) {
-                    i = ρσ_Index21;
-                    dmg = damages.eq(i).find(".ct-spell-caster__modifier-amount").text();
-                    dmgtype = damages.eq(i).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
-                    if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
-                        dmgtype = "";
-                    }
-                    if ((num_damages === 0 || typeof num_damages === "object" && ρσ_equals(num_damages, 0))) {
-                        damage = dmg;
-                        damage_type = dmgtype;
-                    } else if ((num_damages === 1 || typeof num_damages === "object" && ρσ_equals(num_damages, 1))) {
-                        damage2 = dmg;
-                        damage2_type = dmgtype;
-                    } else {
-                        damage2 += " | " + dmg;
-                        damage2_type += " | " + dmgtype;
-                    }
-                    num_damages += 1;
-                }
-                for (var ρσ_Index22 = 0; ρσ_Index22 < healings.length; ρσ_Index22++) {
-                    i = ρσ_Index22;
-                    dmg = healings.eq(i).find(".ct-spell-caster__modifier-amount").text();
-                    if ((num_damages === 0 || typeof num_damages === "object" && ρσ_equals(num_damages, 0))) {
-                        damage = dmg;
-                        damage_type = "Healing";
-                    } else if ((num_damages === 1 || typeof num_damages === "object" && ρσ_equals(num_damages, 1))) {
-                        damage2 = dmg;
-                        damage2_type = "Healing";
-                    } else {
-                        damage2 += " | " + dmg;
-                        damage2_type += " | " + "Healing";
-                    }
-                    num_damages += 1;
-                }
-                roll_properties = buildAttackRoll("spell", spell_name, description, properties, damage, damage_type, to_hit, damage2, damage2_type);
-                spell_properties = (function(){
-                    var ρσ_d = {};
-                    ρσ_d["level-school"] = level;
-                    ρσ_d["concentration"] = concentration;
-                    ρσ_d["duration"] = duration;
-                    ρσ_d["casting-time"] = ρσ_exists.e(properties["Casting Time"], "");
-                    ρσ_d["components"] = ρσ_exists.e(properties["Components"], "");
-                    ρσ_d["ritual"] = ritual;
-                    return ρσ_d;
-                }).call(this);
-                var ρσ_Iter23 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
-                    key = ρσ_Iter23[ρσ_Index23];
-                    roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
-                }
-                if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
-                    roll_properties["cast-at"] = castas;
-                }
-                sendRollWithCharacter("spell-attack", damage, roll_properties);
-            } else {
-                roll_properties = (function(){
-                    var ρσ_d = {};
-                    ρσ_d["name"] = spell_name;
-                    ρσ_d["level-school"] = level;
-                    ρσ_d["range"] = ρσ_exists.e(properties["Range/Area"], "");
-                    ρσ_d["concentration"] = concentration;
-                    ρσ_d["duration"] = duration;
-                    ρσ_d["casting-time"] = ρσ_exists.e(properties["Casting Time"], "");
-                    ρσ_d["components"] = ρσ_exists.e(properties["Components"], "");
-                    ρσ_d["ritual"] = ritual;
-                    ρσ_d["description"] = description;
-                    return ρσ_d;
-                }).call(this);
-                if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
-                    roll_properties["cast-at"] = castas;
-                }
-                sendRollWithCharacter("spell-card", 0, roll_properties);
-            }
-        };
-        if (!rollSpell.__defaults__) Object.defineProperties(rollSpell, {
-            __defaults__ : {value: {force_display:false}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["force_display"]}
-        });
-
-        function displayItem() {
-            rollItem(true);
-        };
-
-        function displaySpell() {
-            rollSpell(true);
-        };
-
-        function displayFeature(paneClass) {
-            var source_types, name, source, source_type, description;
-            source_types = (function(){
-                var ρσ_d = {};
-                ρσ_d["ct-class-feature-pane"] = "Class";
-                ρσ_d["ct-racial-trait-pane"] = "Race";
-                ρσ_d["ct-feat-pane"] = "Feat";
-                return ρσ_d;
-            }).call(this);
-            name = $(".ct-sidebar__heading").text();
-            source = $(".ct-sidebar__header-parent").text();
-            source_type = source_types[(typeof paneClass === "number" && paneClass < 0) ? source_types.length + paneClass : paneClass];
-            description = descriptionToString(".ct-snippet__content");
-            sendRollWithCharacter("feature", 0, (function(){
-                var ρσ_d = {};
-                ρσ_d["name"] = name;
-                ρσ_d["source"] = source;
-                ρσ_d["source-type"] = source_type;
-                ρσ_d["description"] = description;
-                return ρσ_d;
-            }).call(this));
-        };
-        if (!displayFeature.__argnames__) Object.defineProperties(displayFeature, {
-            __argnames__ : {value: ["paneClass"]}
-        });
-
-        function displayTrait() {
-            var trait, description;
-            trait = $(".ct-sidebar__heading").text();
-            description = $(".ct-trait-pane__input").text();
-            sendRollWithCharacter("trait", 0, (function(){
-                var ρσ_d = {};
-                ρσ_d["name"] = trait;
-                ρσ_d["description"] = description;
-                return ρσ_d;
-            }).call(this));
-        };
-
-        function execute(paneClass) {
-            print("Beyond20: Executing panel : " + paneClass);
-            if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-skill-pane", "ct-custom-skill-pane" ]))) {
-                rollSkillCheck(paneClass);
-            } else if ((paneClass === "ct-ability-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-ability-pane"))) {
-                rollAbilityCheck();
-            } else if ((paneClass === "ct-ability-saving-throws-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-ability-saving-throws-pane"))) {
-                rollSavingThrow();
-            } else if ((paneClass === "ct-initiative-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-initiative-pane"))) {
-                rollInitiative();
-            } else if ((paneClass === "ct-item-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-item-pane"))) {
-                rollItem();
-            } else if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-action-pane", "ct-custom-action-pane" ]))) {
-                rollAction(paneClass);
-            } else if ((paneClass === "ct-spell-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-spell-pane"))) {
-                rollSpell();
-            } else {
-                displayPanel(paneClass);
-            }
-        };
-        if (!execute.__argnames__) Object.defineProperties(execute, {
-            __argnames__ : {value: ["paneClass"]}
-        });
-
-        function displayPanel(paneClass) {
-            print("Beyond20: Displaying panel : " + paneClass);
-            if ((paneClass === "ct-item-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-item-pane"))) {
-                displayItem();
-            } else if ((paneClass === "ct-spell-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-spell-pane"))) {
-                displaySpell();
-            } else if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane" ]))) {
-                displayFeature(paneClass);
-            } else if ((paneClass === "ct-trait-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-trait-pane"))) {
-                displayTrait();
-            } else {
-                alert("Not recognizing the currently open sidebar");
-            }
-        };
-        if (!displayPanel.__argnames__) Object.defineProperties(displayPanel, {
-            __argnames__ : {value: ["paneClass"]}
-        });
-
-        function checkAndInjectDiceToRolls() {
-            var selector = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var name = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? checkAndInjectDiceToRolls.__defaults__.name : arguments[1];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "name")){
-                name = ρσ_kwargs_obj.name;
-            }
-            if (!settings["subst-dndbeyond"]) {
-                return;
-            }
-            injectDiceToRolls(selector, character, name);
-        };
-        if (!checkAndInjectDiceToRolls.__defaults__) Object.defineProperties(checkAndInjectDiceToRolls, {
-            __defaults__ : {value: {name:""}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["selector", "name"]}
-        });
-
-        function addRollButtonEx() {
-            var paneClass = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var where = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
-            var small = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButtonEx.__defaults__.small : arguments[2];
-            var append = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButtonEx.__defaults__.append : arguments[3];
-            var image = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButtonEx.__defaults__.image : arguments[4];
-            var text = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButtonEx.__defaults__.text : arguments[5];
-            var bind = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButtonEx.__defaults__.bind : arguments[6];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "small")){
-                small = ρσ_kwargs_obj.small;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "append")){
-                append = ρσ_kwargs_obj.append;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "image")){
-                image = ρσ_kwargs_obj.image;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "text")){
-                text = ρσ_kwargs_obj.text;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "bind")){
-                bind = ρσ_kwargs_obj.bind;
-            }
-            var callback;
-            callback = function () {
-                execute(paneClass);
-            };
-            addRollButton(callback, where, small, append, image, text, bind);
-        };
-        if (!addRollButtonEx.__defaults__) Object.defineProperties(addRollButtonEx, {
-            __defaults__ : {value: {small:false, append:false, image:true, text:"Beyond 20", bind:true}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["paneClass", "where", "small", "append", "image", "text", "bind"]}
-        });
-
-        function addDisplayButtonEx() {
-            var paneClass = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var where = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
-            var text = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addDisplayButtonEx.__defaults__.text : arguments[2];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "text")){
-                text = ρσ_kwargs_obj.text;
-            }
-            var callback;
-            callback = function () {
-                displayPanel(paneClass);
-            };
-            addDisplayButton(callback, where, text);
-        };
-        if (!addDisplayButtonEx.__defaults__) Object.defineProperties(addDisplayButtonEx, {
-            __defaults__ : {value: {text:"Display in Roll20"}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["paneClass", "where", "text"]}
-        });
-
-        lastItemName = "";
-        lastSpellName = "";
-        lastSpellLevel = "";
-        function injectRollButton(paneClass) {
-            var name, item_name, properties, action_name, spell_name, spell_level, damages, healings, to_hit, hitdice, cb, creature_name;
-            if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-custom-skill-pane", "ct-skill-pane", "ct-ability-pane", "ct-ability-saving-throws-pane", "ct-initiative-pane" ]))) {
-                if (isRollButtonAdded()) {
-                    return;
-                }
-                addRollButtonEx(paneClass, ".ct-sidebar__heading");
-            } else if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane" ]))) {
-                if (isRollButtonAdded()) {
-                    return;
-                }
-                ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({text: "Display in Roll20", image: false})]));
-                name = $(".ct-sidebar__heading").text();
-                checkAndInjectDiceToRolls(".ct-snippet__content", name);
-            } else if ((paneClass === "ct-trait-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-trait-pane"))) {
-                if (isRollButtonAdded()) {
-                    return;
-                }
-                ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-trait-pane__content"].concat([ρσ_desugar_kwargs({text: "Display in Roll20", image: false})]));
-            } else if ((paneClass === "ct-item-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-item-pane"))) {
-                item_name = $(".ct-item-pane .ct-item-name").text();
-                if (isRollButtonAdded() && (item_name === lastItemName || typeof item_name === "object" && ρσ_equals(item_name, lastItemName))) {
-                    return;
-                }
-                lastItemName = item_name;
-                removeRollButtons();
-                checkAndInjectDiceToRolls(".ct-item-detail__description", item_name);
-                properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"));
-                if (ρσ_in("Damage", properties)) {
-                    ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({small: true})]));
-                    addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
-                } else {
-                    ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({image: false, bind: false})]));
-                    ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-item-detail__actions"].concat([ρσ_desugar_kwargs({small: true, append: true, image: false})]));
-                }
-            } else if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-action-pane", "ct-custom-action-pane" ]))) {
-                if (isRollButtonAdded()) {
-                    return;
-                }
-                addRollButtonEx(paneClass, ".ct-sidebar__heading");
-                action_name = $(".ct-sidebar__heading").text();
-                checkAndInjectDiceToRolls(".ct-action-detail__description", action_name);
-            } else if ((paneClass === "ct-spell-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-spell-pane"))) {
-                spell_name = $(".ct-sidebar__heading .ct-spell-name").text();
-                spell_level = $(".ct-spell-caster__casting-level-current").text();
-                if (isRollButtonAdded() && (spell_name === lastSpellName || typeof spell_name === "object" && ρσ_equals(spell_name, lastSpellName)) && (spell_level === lastSpellLevel || typeof spell_level === "object" && ρσ_equals(spell_level, lastSpellLevel))) {
-                    return;
-                }
-                lastSpellName = spell_name;
-                lastSpellLevel = spell_level;
-                removeRollButtons();
-                checkAndInjectDiceToRolls(".ct-spell-pane .ct-spell-detail__description", spell_name);
-                damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage");
-                healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp");
-                properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"));
-                to_hit = ρσ_exists.e(properties["To Hit"], findToHit(spell_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit"));
-                if (!to_hit) {
-                    to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit");
-                }
-                if (damages.length > 0 || healings.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null)))) {
-                    ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({text: "Cast on Roll20", small: true})]));
-                    addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
-                } else {
-                    ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({text: "Cast on Roll20", image: false})]));
-                }
-                $(".ct-spell-caster__casting-action > button").on("click", (function() {
-                    var ρσ_anonfunc = function (event) {
-                        execute(paneClass);
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["event"]}
-                    });
-                    return ρσ_anonfunc;
-                })());
-            } else if ((paneClass === "ct-reset-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-reset-pane"))) {
-                hitdice = $(".ct-reset-pane__hitdie");
-                if (hitdice.length > 0) {
-                    if (isHitDieButtonAdded()) {
-                        return;
-                    }
-                    removeRollButtons();
-                    addHitDieButtons(rollHitDie);
-                } else {
-                    removeRollButtons();
-                }
-            } else if ((paneClass === "ct-health-manage-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-health-manage-pane"))) {
-                if ($(".ct-health-manage-pane .ct-health-manager__deathsaves").length > 0) {
-                    if (isRollButtonAdded()) {
-                        return;
-                    }
-                    cb = function () {
-                        sendRollWithCharacter("death-save", "1d20", {});
-                    };
-                    addIconButton(cb, ".ct-health-manager__deathsaves-group--fails");
-                } else {
-                    removeRollButtons();
-                }
-            } else if ((paneClass === "ct-creature-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-creature-pane"))) {
-                if (isCustomRollIconsAdded()) {
-                    return;
-                }
-                creature_name = $(".ct-sidebar__heading").text();
-                checkAndInjectDiceToRolls(".ct-creature-block__description-blocks", creature_name);
-            } else {
-                removeRollButtons();
-            }
-        };
-        if (!injectRollButton.__argnames__) Object.defineProperties(injectRollButton, {
-            __argnames__ : {value: ["paneClass"]}
-        });
-
-        function injectRollToSpellAttack() {
-            var groups, label, icon16, items, modifier, name, img, item, group;
-            groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter24 = ρσ_Iterable(groups);
-            for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
-                group = ρσ_Iter24[ρσ_Index24];
-                label = $(group).find(".ct-spells-level-casting__info-label");
-                if (ρσ_equals(label.text(), "Spell Attack")) {
-                    if (label.hasClass("beyond20-rolls-added")) {
-                        return;
-                    }
-                    label.addClass("beyond20-rolls-added");
-                    icon16 = chrome.extension.getURL("images/icons/icon16.png");
-                    items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter25 = ρσ_Iterable(items);
-                    for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
-                        item = ρσ_Iter25[ρσ_Index25];
-                        modifier = item.textContent;
-                        name = "Spell Attack";
-                        if (items.length > 1) {
-                            name += "(" + item.getAttribute("data-original-title") + ")";
-                        }
-                        img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-custom-icon ct-beyond20-spell-attack", x_beyond20_name: name, x_beyond20_modifier: modifier, src: icon16})]);
-                        item.append(img);
-                        console.log(item);
-                    }
-                    $(".ct-beyond20-custom-icon").css("margin-left", "3px");
-                    $(".ct-beyond20-spell-attack").on("click", (function() {
-                        var ρσ_anonfunc = function (event) {
-                            var name, mod;
-                            name = $(event.currentTarget).attr("x-beyond20-name");
-                            mod = $(event.currentTarget).attr("x-beyond20-modifier");
-                            sendRollWithCharacter("custom", "1d20" + mod, (function(){
-                                var ρσ_d = {};
-                                ρσ_d["name"] = name;
-                                ρσ_d["modifier"] = mod;
-                                return ρσ_d;
-                            }).call(this));
-                        };
-                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                            __argnames__ : {value: ["event"]}
-                        });
-                        return ρσ_anonfunc;
-                    })());
-                }
-            }
-        };
-
+        print("Beyond20: D&D Beyond Encounter module loaded.");
         function documentModified(mutations, observer) {
-            var pane, paneClass, div;
+            var monster, character;
             if (isExtensionDisconnected()) {
+                console.log("This extension is DOWN!");
                 observer.disconnect();
                 return;
             }
-            character.updateInfo();
-            injectRollToSpellAttack();
-            pane = $(".ct-sidebar__pane-content > div");
-            if (pane.length > 0) {
-                for (var ρσ_Index26 = 0; ρσ_Index26 < pane.length; ρσ_Index26++) {
-                    div = ρσ_Index26;
-                    paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
-                    if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls"))) {
-                        continue;
-                    }
-                    print("Beyond20: New side panel is : " + paneClass);
-                    injectRollButton(paneClass);
+            var ρσ_Iter0 = ρσ_Iterable($(".encounter-monster .encounter-monster__body"));
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                monster = ρσ_Iter0[ρσ_Index0];
+                monster = $(monster);
+                if (monster.hasClass("beyond20-monster-parsed")) {
+                    continue;
                 }
+                character = new Monster("Monster");
+                character.parseStatBlock(monster);
+                monster.addClass("beyond20-monster-parsed");
             }
         };
         if (!documentModified.__argnames__) Object.defineProperties(documentModified, {
             __argnames__ : {value: ["mutations", "observer"]}
         });
 
-        function updateSettings() {
-            var new_settings = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? updateSettings.__defaults__.new_settings : arguments[0];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "new_settings")){
-                new_settings = ρσ_kwargs_obj.new_settings;
-            }
-            if (new_settings) {
-                settings = new_settings;
-            } else {
-                getStoredSettings((function() {
-                    var ρσ_anonfunc = function (saved_settings) {
-                        settings = saved_settings;
-                        documentModified();
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["saved_settings"]}
-                    });
-                    return ρσ_anonfunc;
-                })());
-            }
-        };
-        if (!updateSettings.__defaults__) Object.defineProperties(updateSettings, {
-            __defaults__ : {value: {new_settings:null}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["new_settings"]}
-        });
-
-        function handleMessage(request, sender, sendResponse) {
-            print("Got message : " + str(request));
-            if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
-                if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
-                    updateSettings(request.settings);
-                } else if ((request.type === "character" || typeof request.type === "object" && ρσ_equals(request.type, "character")) && (request.id === character._id || typeof request.id === "object" && ρσ_equals(request.id, character._id))) {
-                    character.updateSettings(request.settings);
-                } else {
-                    console.log("Ignoring character settings, not for ID: ", character._id);
-                }
-            } else if ((request.action === "get-character" || typeof request.action === "object" && ρσ_equals(request.action, "get-character"))) {
-                character.updateInfo();
-                sendResponse(character.getDict());
-            }
-        };
-        if (!handleMessage.__argnames__) Object.defineProperties(handleMessage, {
-            __argnames__ : {value: ["request", "sender", "sendResponse"]}
-        });
-
-        updateSettings();
-        chrome.runtime.onMessage.addListener(handleMessage);
         observer = new window.MutationObserver(documentModified);
         observer.observe(document, (function(){
             var ρσ_d = {};
@@ -8950,5 +7865,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["action"] = "activate-icon";
             return ρσ_d;
         }).call(this));
+        documentModified();
     })();
 })();

@@ -1,4 +1,5 @@
 from settings import getDefaultSettings, getStoredSettings
+from utils import isExtensionDisconnected
 from elementmaker import E
 import math
 from dndbeyond import Character, buildAttackRoll, sendRoll, \
@@ -457,10 +458,7 @@ def injectRollToSpellAttack():
 def documentModified(mutations, observer):
     nonlocal character
 
-    try:
-        chrome.extension.getURL("")
-    except:
-        console.log("This extension is DOWN!")
+    if isExtensionDisconnected():
         observer.disconnect()
         return
 

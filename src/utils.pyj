@@ -57,6 +57,12 @@ def getBrowser():
     else:
         return "Edge"
 
+def isExtensionDisconnected():
+    try:
+        chrome.extension.getURL("")
+        return False
+    except:
+        return True
 
 # Taken from https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script
 def injectPageScript(url):

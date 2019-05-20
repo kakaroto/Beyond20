@@ -1,0 +1,23 @@
+from dndbeyond import Monster, isRollButtonAdded
+from utils import isExtensionDisconnected
+
+print("Beyond20: D&D Beyond Encounter module loaded.")
+
+def documentModified(mutations, observer):
+    if isExtensionDisconnected():
+        console.log("This extension is DOWN!")
+        observer.disconnect()
+        return
+
+    for monster in $(".encounter-monster .encounter-monster__body"):
+        monster = $(monster)
+        if monster.hasClass("beyond20-monster-parsed"):
+            continue
+        character = Monster("Monster")
+        character.parseStatBlock(monster)
+        monster.addClass("beyond20-monster-parsed")
+
+observer = new window.MutationObserver(documentModified)
+observer.observe(document, {"subtree": True, "childList": True})
+chrome.runtime.sendMessage({"action": "activate-icon"});
+documentModified()

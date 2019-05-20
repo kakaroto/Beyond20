@@ -185,9 +185,10 @@ class Monster:
         self._skills = {}
         self._cr = None
 
-    def parseStatBlock(self):
+    def parseStatBlock(self, stat_block=None):
         base = self._base
-        stat_block = $(base)
+        if stat_block is None:
+            stat_block = $(base)
         self._name = stat_block.find(base + "__name").text().trim()
         a = stat_block.find(base + "__name-link")
         if a.length > 0:
@@ -271,7 +272,7 @@ class Monster:
             elif label == "Challenge":
                 self._cr = value.split(" ")[0]
             self._tidbits[label] = value
-        self.addDiceIcons()
+        self.addDiceIcons(stat_block)
         console.log("Done parsing stat block:", self)
 
     def rollHitPoints(self):
@@ -301,8 +302,9 @@ class Monster:
                                                     "ability": ability,
                                                     "modifier": modifier})
         
-    def addDiceIcons(self):
-        injectDiceToRolls(self._base + "__description-block-content p", self, self._name)
+    def addDiceIcons(self, stat_block):
+        descriptions = stat_block.find(self._base + "__description-block-content p")
+        injectDiceToRolls(descriptions, self, self._name)
 
     def getDict(self):
         return {"name": self._name,
@@ -538,6 +540,7 @@ def injectDiceToRolls(selector, character, name=""):
     $(".ct-beyond20-custom-icon").css("margin-right", "3px")
     $(".ct-beyond20-custom-icon").css("margin-left", "3px")
     $(".ct-beyond20-custom-icon").attr("src", icon16)
+    $(".ct-beyond20-custom-roll").off('click')
     $(".ct-beyond20-custom-roll").on('click', def(event):
         name = $(event.currentTarget).find("img").attr("x-beyond20-name")
         roll = $(event.currentTarget).find("img").attr("x-beyond20-roll")

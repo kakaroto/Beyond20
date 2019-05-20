@@ -5558,6 +5558,18 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
         };
 
+        function isExtensionDisconnected() {
+            try {
+                chrome.extension.getURL("");
+                return false;
+            } catch (ρσ_Exception) {
+                ρσ_last_exception = ρσ_Exception;
+                {
+                    return true;
+                } 
+            }
+        };
+
         function injectPageScript(url) {
             var s;
             s = document.createElement("script");
@@ -5620,6 +5632,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
+        ρσ_modules.utils.isExtensionDisconnected = isExtensionDisconnected;
         ρσ_modules.utils.injectPageScript = injectPageScript;
         ρσ_modules.utils.sendCustomEvent = sendCustomEvent;
         ρσ_modules.utils.addCustomEventListener = addCustomEventListener;
