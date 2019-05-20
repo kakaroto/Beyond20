@@ -6718,7 +6718,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, advantage_type, modifier, ability, prof, prof_val, half_prof, dice_roll, roll_properties, dice, dice_formula, rname, properties, source, components, description, higher, healing_spell, level, mod;
+            var roll, advantage_type, modifier, ability, prof, prof_val, dice_roll, roll_properties, dice, dice_formula, rname, properties, source, components, description, higher, healing_spell, level, mod;
             print("Got message : " + str(request));
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
@@ -6800,15 +6800,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                         }).call(this));
                     }
                 } else if ((request.type === "ability" || typeof request.type === "object" && ρσ_equals(request.type, "ability"))) {
-                    if (ρσ_in("Bard", request.character.classes) && request.character.classes["Bard"] >= 2 && request.character.settings["bard-joat"]) {
-                        half_prof = "+[[floor(" + request.character.proficiency + " / 2)]]";
+                    if (ρσ_exists.n(request["JoaT"])) {
                         dice_roll = genRoll("1d20", (function(){
                             var ρσ_d = {};
                             ρσ_d[request.ability] = request.modifier;
-                            ρσ_d["JoaT"] = half_prof;
+                            ρσ_d["JoaT"] = request["JoaT"];
                             return ρσ_d;
                         }).call(this));
-                        modifier = request.modifier + " +[[" + half_prof + "]]";
+                        modifier = request.modifier + request["JoaT"];
                     } else {
                         dice_roll = genRoll("1d20", (function(){
                             var ρσ_d = {};

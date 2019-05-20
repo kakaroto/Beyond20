@@ -3,7 +3,7 @@ from elementmaker import E
 import math
 from dndbeyond import Character, buildAttackRoll, sendRoll, \
     ability_abbreviations, findToHit, descriptionToString, propertyListToDict, \
-    injectDiceToRolls, addDeathSaveButton, addHitDieButtons, addDisplayButton, addRollButton, \
+    injectDiceToRolls, addIconButton, addHitDieButtons, addDisplayButton, addRollButton, \
     isHitDieButtonAdded, isRollButtonAdded, isCustomRollIconsAdded, removeRollButtons
 
 print("Beyond20: D&D Beyond module loaded.")
@@ -29,14 +29,20 @@ def rollSkillCheck(paneClass):
                                           "proficiency": proficiency})
 
 def rollAbilityOrSavingThrow(paneClass, rollType):
+    nonlocal character
     ability_string = $("." + paneClass + " .ct-sidebar__heading").text()
     ability_name = ability_string.split(" ")[0]
     modifier = $("." + paneClass + "__modifier .ct-signed-number").text()
     ability = ability_abbreviations[ability_name]
-    print(rollType + " " + ability_name + "(" + ability + ") : " + modifier)
-    sendRollWithCharacter(rollType, "1d20" + modifier, {"name" : ability_name,
-                                           "ability": ability,
-                                           "modifier": modifier} )
+
+    roll_properties = {"name" : ability_name,
+                       "ability": ability,
+                       "modifier": modifier} 
+    if "Bard" in character._classes and \
+            character._classes["Bard"] >= 2 and \
+            character._settings["bard-joat"]:
+        roll_properties["JoaT"] = int(math.floor(float(character._proficiency) / 2))
+    sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties)
 
 def rollAbilityCheck():
     rollAbilityOrSavingThrow("ct-ability-pane", "ability")
@@ -407,7 +413,7 @@ def injectRollButton(paneClass):
                 return
             cb = def():
                 sendRollWithCharacter("death-save", "1d20", {})
-            addDeathSaveButton(cb, ".ct-health-manager__deathsaves-group--fails")
+            addIconButton(cb, ".ct-health-manager__deathsaves-group--fails")
         else:
             removeRollButtons()
     elif paneClass == "ct-creature-pane":

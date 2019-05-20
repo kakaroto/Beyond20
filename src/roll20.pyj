@@ -210,12 +210,9 @@ def handleMessage (request, sender, sendResponse):
                                   "r2": genRoll("1d20", {request.ability: modifier}),
                                   advantage_type:1})
         elif request.type == "ability":
-            if "Bard" in request.character.classes and \
-                    request.character.classes["Bard"] >= 2 and \
-                    request.character.settings["bard-joat"]:
-                half_prof = "+[[floor(" + request.character.proficiency + " / 2)]]"
-                dice_roll = genRoll("1d20", {request.ability: request.modifier, "JoaT": half_prof})
-                modifier = request.modifier + " +[[" + half_prof + "]]"
+            if request["JoaT"]?:
+                dice_roll = genRoll("1d20", {request.ability: request.modifier, "JoaT": request["JoaT"]})
+                modifier = request.modifier + request["JoaT"]
             else:
                 dice_roll = genRoll("1d20", {request.ability: request.modifier})
                 modifier = request.modifier

@@ -3729,6 +3729,8 @@ var str = ρσ_str, repr = ρσ_repr;;
     ρσ_modules.utils = {};
     ρσ_modules.settings = {};
     ρσ_modules.math = {};
+    ρσ_modules.encodings = {};
+    ρσ_modules.uuid = {};
     ρσ_modules.dndbeyond = {};
 
     (function(){
@@ -6800,14 +6802,341 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
+        var __name__ = "encodings";
+        var utf8_decoder_table, _u8enc, utf8_encode;
+        function base64encode(bytes, altchars, pad_char) {
+            var l, remainder, main_length, encodings, ans, chunk;
+            l = bytes.length;
+            remainder = l % 3;
+            main_length = l - remainder;
+            encodings = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" + (altchars || "+/");
+            pad_char = (pad_char === undefined) ? "=" : pad_char;
+            ans = [];
+            for (var i = 0; i < main_length; i += 3) {
+                chunk = bytes[(typeof i === "number" && i < 0) ? bytes.length + i : i] << 16 | bytes[ρσ_bound_index(i + 1, bytes)] << 8 | bytes[ρσ_bound_index(i + 2, bytes)];
+                ans.push(encodings[ρσ_bound_index((chunk & 16515072) >> 18, encodings)], encodings[ρσ_bound_index((chunk & 258048) >> 12, encodings)], encodings[ρσ_bound_index((chunk & 4032) >> 6, encodings)], encodings[ρσ_bound_index(chunk & 63, encodings)]);
+            }
+            if (remainder === 1) {
+                chunk = bytes[(typeof main_length === "number" && main_length < 0) ? bytes.length + main_length : main_length];
+                ans.push(encodings[ρσ_bound_index((chunk & 252) >> 2, encodings)], encodings[ρσ_bound_index((chunk & 3) << 4, encodings)], pad_char, pad_char);
+            } else if (remainder === 2) {
+                chunk = bytes[(typeof main_length === "number" && main_length < 0) ? bytes.length + main_length : main_length] << 8 | bytes[ρσ_bound_index(main_length + 1, bytes)];
+                ans.push(encodings[ρσ_bound_index((chunk & 64512) >> 10, encodings)], encodings[ρσ_bound_index((chunk & 1008) >> 4, encodings)], encodings[ρσ_bound_index((chunk & 15) << 2, encodings)], pad_char);
+            }
+            return ans.join("");
+        };
+        if (!base64encode.__argnames__) Object.defineProperties(base64encode, {
+            __argnames__ : {value: ["bytes", "altchars", "pad_char"]}
+        });
+
+        function base64decode(string) {
+            var chars, ans, i;
+            if (typeof window !== "undefined") {
+                chars = window.atob(string);
+            } else {
+                chars = new Buffer(string, "base64").toString("binary");
+            }
+            ans = new Uint8Array(chars.length);
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ans.length; ρσ_Index0++) {
+                i = ρσ_Index0;
+                ans[(typeof i === "number" && i < 0) ? ans.length + i : i] = chars.charCodeAt(i);
+            }
+            return ans;
+        };
+        if (!base64decode.__argnames__) Object.defineProperties(base64decode, {
+            __argnames__ : {value: ["string"]}
+        });
+
+        function urlsafe_b64encode(bytes, pad_char) {
+            return base64encode(bytes, "-_", pad_char);
+        };
+        if (!urlsafe_b64encode.__argnames__) Object.defineProperties(urlsafe_b64encode, {
+            __argnames__ : {value: ["bytes", "pad_char"]}
+        });
+
+        function urlsafe_b64decode(string) {
+            string = String.prototype.replace.call(string, /[_-]/g, (function() {
+                var ρσ_anonfunc = function (m) {
+                    return (m === "-") ? "+" : "/";
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["m"]}
+                });
+                return ρσ_anonfunc;
+            })());
+            return base64decode(string);
+        };
+        if (!urlsafe_b64decode.__argnames__) Object.defineProperties(urlsafe_b64decode, {
+            __argnames__ : {value: ["string"]}
+        });
+
+        function hexlify(bytes) {
+            var ans, x;
+            ans = [];
+            for (var i = 0; i < bytes.length; i++) {
+                x = bytes[(typeof i === "number" && i < 0) ? bytes.length + i : i].toString(16);
+                if (x.length === 1) {
+                    x = "0" + x;
+                }
+                ans.push(x);
+            }
+            return ans.join("");
+        };
+        if (!hexlify.__argnames__) Object.defineProperties(hexlify, {
+            __argnames__ : {value: ["bytes"]}
+        });
+
+        function unhexlify(string) {
+            var num, ans, x;
+            num = Math.floor(string.length / 2);
+            if (num * 2 !== string.length) {
+                throw new ValueError("string length is not a multiple of two");
+            }
+            ans = new Uint8Array(num);
+            for (var i = 0; i < num; i++) {
+                x = parseInt(string.slice(i * 2, i * 2 + 2), 16);
+                if (isNaN(x)) {
+                    throw new ValueError("string is not hex-encoded");
+                }
+                ans[(typeof i === "number" && i < 0) ? ans.length + i : i] = x;
+            }
+            return ans;
+        };
+        if (!unhexlify.__argnames__) Object.defineProperties(unhexlify, {
+            __argnames__ : {value: ["string"]}
+        });
+
+        utf8_decoder_table = [
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, // 00..1f
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, // 20..3f
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, // 40..5f
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, // 60..7f
+  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9, // 80..9f
+  7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7, // a0..bf
+  8,8,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, // c0..df
+  0xa,0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x3,0x4,0x3,0x3, // e0..ef
+  0xb,0x6,0x6,0x6,0x5,0x8,0x8,0x8,0x8,0x8,0x8,0x8,0x8,0x8,0x8,0x8, // f0..ff
+  0x0,0x1,0x2,0x3,0x5,0x8,0x7,0x1,0x1,0x1,0x4,0x6,0x1,0x1,0x1,0x1, // s0..s0
+  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,0,1,1,1,1,1,1, // s1..s2
+  1,2,1,1,1,1,1,2,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1, // s3..s4
+  1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,3,1,1,1,1,1,1, // s5..s6
+  1,3,1,1,1,1,1,3,1,3,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1, // s7..s8
+];
+        function _from_code_point(x) {
+            if (x <= 65535) {
+                return String.fromCharCode(x);
+            }
+            x -= 65536;
+            return String.fromCharCode((x >> 10) + 55296, x % 1024 + 56320);
+        };
+        if (!_from_code_point.__argnames__) Object.defineProperties(_from_code_point, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function utf8_decode(bytes, errors, replacement) {
+            var state, ans, byte, typ, codep;
+            state = 0;
+            ans = [];
+            for (var i = 0, l = bytes.length; i < l; i++) {
+                byte = bytes[(typeof i === "number" && i < 0) ? bytes.length + i : i];
+                typ = utf8_decoder_table[(typeof byte === "number" && byte < 0) ? utf8_decoder_table.length + byte : byte];
+                codep = (state !== 0) ? byte & 63 | codep << 6 : 255 >> typ & byte;
+                state = utf8_decoder_table[ρσ_bound_index(256 + state * 16 + typ, utf8_decoder_table)];
+                if (state === 0) {
+                    ans.push(_from_code_point(codep));
+                } else if (state === 1) {
+                    if (!errors || errors === "strict") {
+                        throw new UnicodeDecodeError(str.format("The byte 0x{:02x} at position {} is not valid UTF-8", byte, i));
+                    } else if (errors === "replace") {
+                        ans.push(replacement || "?");
+                    }
+                }
+            }
+            return ans.join("");
+        };
+        if (!utf8_decode.__argnames__) Object.defineProperties(utf8_decode, {
+            __argnames__ : {value: ["bytes", "errors", "replacement"]}
+        });
+
+        function utf8_encode_js(string) {
+            var escstr, ans, ch, i;
+            escstr = encodeURIComponent(string);
+            ans = [];
+            for (var i = 0; i < escstr.length; i++) {
+                ch = escstr[(typeof i === "number" && i < 0) ? escstr.length + i : i];
+                if (ch === "%") {
+                    ans.push(parseInt(escstr.slice(i + 1, i + 3), 16));
+                    i += 2;
+                } else {
+                    ans.push(ch.charCodeAt(0));
+                }
+            }
+            return new Uint8Array(ans);
+        };
+        if (!utf8_encode_js.__argnames__) Object.defineProperties(utf8_encode_js, {
+            __argnames__ : {value: ["string"]}
+        });
+
+        if (typeof TextEncoder === "function") {
+            _u8enc = new TextEncoder("utf-8");
+            utf8_encode = _u8enc.encode.bind(_u8enc);
+            _u8enc = undefined;
+        } else {
+            utf8_encode = utf8_encode_js;
+        }
+        function utf8_encode_native(string) {
+            return _u8enc.encode(string);
+        };
+        if (!utf8_encode_native.__argnames__) Object.defineProperties(utf8_encode_native, {
+            __argnames__ : {value: ["string"]}
+        });
+
+        ρσ_modules.encodings.utf8_decoder_table = utf8_decoder_table;
+        ρσ_modules.encodings._u8enc = _u8enc;
+        ρσ_modules.encodings.utf8_encode = utf8_encode;
+        ρσ_modules.encodings.base64encode = base64encode;
+        ρσ_modules.encodings.base64decode = base64decode;
+        ρσ_modules.encodings.urlsafe_b64encode = urlsafe_b64encode;
+        ρσ_modules.encodings.urlsafe_b64decode = urlsafe_b64decode;
+        ρσ_modules.encodings.hexlify = hexlify;
+        ρσ_modules.encodings.unhexlify = unhexlify;
+        ρσ_modules.encodings._from_code_point = _from_code_point;
+        ρσ_modules.encodings.utf8_decode = utf8_decode;
+        ρσ_modules.encodings.utf8_encode_js = utf8_encode_js;
+        ρσ_modules.encodings.utf8_encode_native = utf8_encode_native;
+    })();
+
+    (function(){
+        var __name__ = "uuid";
+        var RFC_4122, random_bytes;
+        var hexlify = ρσ_modules.encodings.hexlify;
+        var urlsafe_b64decode = ρσ_modules.encodings.urlsafe_b64decode;
+        var urlsafe_b64encode = ρσ_modules.encodings.urlsafe_b64encode;
+
+        RFC_4122 = 1;
+        if (typeof crypto === "object" && crypto.getRandomValues) {
+            random_bytes = (function() {
+                var ρσ_anonfunc = function (num) {
+                    var ans;
+                    ans = new Uint8Array(num || 16);
+                    crypto.getRandomValues(ans);
+                    return ans;
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["num"]}
+                });
+                return ρσ_anonfunc;
+            })();
+        } else {
+            random_bytes = (function() {
+                var ρσ_anonfunc = function (num) {
+                    var ans, i;
+                    ans = new Uint8Array(num || 16);
+                    for (var ρσ_Index0 = 0; ρσ_Index0 < ans.length; ρσ_Index0++) {
+                        i = ρσ_Index0;
+                        ans[(typeof i === "number" && i < 0) ? ans.length + i : i] = Math.floor(Math.random() * 256);
+                    }
+                    return ans;
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["num"]}
+                });
+                return ρσ_anonfunc;
+            })();
+        }
+        function uuid4_bytes() {
+            var data;
+            data = random_bytes();
+            data[6] = 64 | data[6] & 15;
+            data[8] = (data[8] >> 4 & 3 | 8) << 4 | data[8] & 15;
+            return data;
+        };
+
+        function as_str() {
+            var h;
+            h = this.hex;
+            return h.slice(0, 8) + "-" + h.slice(8, 12) + "-" + h.slice(12, 16) + "-" + h.slice(16, 20) + "-" + h.slice(20);
+        };
+
+        function uuid4() {
+            var b;
+            b = uuid4_bytes();
+            return (function(){
+                var ρσ_d = Object.create(null);
+                ρσ_d["hex"] = hexlify(b);
+                ρσ_d["bytes"] = b;
+                ρσ_d["variant"] = RFC_4122;
+                ρσ_d["version"] = 4;
+                ρσ_d["__str__"] = as_str;
+                ρσ_d["toString"] = as_str;
+                return ρσ_d;
+            }).call(this);
+        };
+
+        function num_to_string(numbers, alphabet, pad_to_length) {
+            var ans, alphabet_len, x, number;
+            ans = [];
+            alphabet_len = alphabet.length;
+            numbers = Array.prototype.slice.call(numbers);
+            for (var i = 0; i < numbers.length - 1; i++) {
+                x = divmod(numbers[(typeof i === "number" && i < 0) ? numbers.length + i : i], alphabet_len);
+                numbers[(typeof i === "number" && i < 0) ? numbers.length + i : i] = x[0];
+                numbers[ρσ_bound_index(i + 1, numbers)] += x[1];
+            }
+            for (var i = 0; i < numbers.length; i++) {
+                number = numbers[(typeof i === "number" && i < 0) ? numbers.length + i : i];
+                while (number) {
+                    x = divmod(number, alphabet_len);
+                    number = x[0];
+                    ans.push(alphabet[ρσ_bound_index(x[1], alphabet)]);
+                }
+            }
+            if (pad_to_length && pad_to_length > ans.length) {
+                ans.push(alphabet[0].repeat(pad_to_length - ans.length));
+            }
+            return ans.join("");
+        };
+        if (!num_to_string.__argnames__) Object.defineProperties(num_to_string, {
+            __argnames__ : {value: ["numbers", "alphabet", "pad_to_length"]}
+        });
+
+        function short_uuid() {
+            return urlsafe_b64encode(random_bytes(), "");
+        };
+
+        function short_uuid4() {
+            return urlsafe_b64encode(uuid4_bytes(), "");
+        };
+
+        function decode_short_uuid(val) {
+            return urlsafe_b64decode(val + "==");
+        };
+        if (!decode_short_uuid.__argnames__) Object.defineProperties(decode_short_uuid, {
+            __argnames__ : {value: ["val"]}
+        });
+
+        ρσ_modules.uuid.RFC_4122 = RFC_4122;
+        ρσ_modules.uuid.random_bytes = random_bytes;
+        ρσ_modules.uuid.uuid4_bytes = uuid4_bytes;
+        ρσ_modules.uuid.as_str = as_str;
+        ρσ_modules.uuid.uuid4 = uuid4;
+        ρσ_modules.uuid.num_to_string = num_to_string;
+        ρσ_modules.uuid.short_uuid = short_uuid;
+        ρσ_modules.uuid.short_uuid4 = short_uuid4;
+        ρσ_modules.uuid.decode_short_uuid = decode_short_uuid;
+    })();
+
+    (function(){
         var __name__ = "dndbeyond";
-        var ability_abbreviations, button_class, button_class_small;
+        var ability_abbreviations, skill_abilities, button_class, button_class_small;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
 
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
         var character_settings = ρσ_modules.settings.character_settings;
 
         var E = ρσ_modules.elementmaker.E;
+
+        var uuid = ρσ_modules.uuid;
 
         ability_abbreviations = (function(){
             var ρσ_d = {};
@@ -6817,6 +7146,28 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["Intelligence"] = "INT";
             ρσ_d["Wisdom"] = "WIS";
             ρσ_d["Charisma"] = "CHA";
+            return ρσ_d;
+        }).call(this);
+        skill_abilities = (function(){
+            var ρσ_d = {};
+            ρσ_d["Acrobatics"] = "DEX";
+            ρσ_d["Animal Handling"] = "WIS";
+            ρσ_d["Arcana"] = "INT";
+            ρσ_d["Athletics"] = "STR";
+            ρσ_d["Deception"] = "CHA";
+            ρσ_d["History"] = "INT";
+            ρσ_d["Insight"] = "WIS";
+            ρσ_d["Intimidation"] = "CHA";
+            ρσ_d["Investigation"] = "INT";
+            ρσ_d["Medicine"] = "WIS";
+            ρσ_d["Nature"] = "INT";
+            ρσ_d["Perception"] = "WIS";
+            ρσ_d["Performance"] = "CHA";
+            ρσ_d["Persuasion"] = "CHA";
+            ρσ_d["Religion"] = "INT";
+            ρσ_d["Sleight of Hand"] = "DEX";
+            ρσ_d["Stealth"] = "DEX";
+            ρσ_d["Survival"] = "WIS";
             return ρσ_d;
         }).call(this);
         function Character() {
@@ -7042,8 +7393,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         }
         Monster.prototype.__init__ = function __init__(_type) {
             var self = this;
-            self._id = null;
             self._type = _type;
+            self._base = ((_type === "Monster" || typeof _type === "object" && ρσ_equals(_type, "Monster"))) ? ".mon-stat-block" : ".ct-creature-block";
+            self._id = null;
             self._name = null;
             self._meta = null;
             self._attributes = {};
@@ -7053,8 +7405,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             self._speed = null;
             self._abilities = ρσ_list_decorate([]);
             self._tidbits = {};
-            self._saves = ρσ_list_decorate([]).as_array();
-            self._skills = ρσ_list_decorate([]).as_array();
+            self._saves = {};
+            self._skills = {};
             self._cr = null;
         };
         if (!Monster.prototype.__init__.__argnames__) Object.defineProperties(Monster.prototype.__init__, {
@@ -7062,9 +7414,10 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
         Monster.__argnames__ = Monster.prototype.__init__.__argnames__;
         Monster.__handles_kwarg_interpolation__ = Monster.prototype.__init__.__handles_kwarg_interpolation__;
-        Monster.prototype.parseStatBlock = function parseStatBlock(base) {
+        Monster.prototype.parseStatBlock = function parseStatBlock() {
             var self = this;
-            var stat_block, a, attributes, label, value, attr, abilities, prefix, abbr, score, modifier, ability, tidbits, tidbit;
+            var base, stat_block, a, attributes, label, value, cb, attr, abilities, prefix, abbr, score, modifier, makeCB, ability, tidbits, data, saves, ρσ_unpack, mod, save, skills, name, skill, text, last, tidbit;
+            base = self._base;
             stat_block = $(base);
             self._name = stat_block.find(base + "__name").text().trim();
             a = stat_block.find(base + "__name-link");
@@ -7088,6 +7441,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else if ((label === "Hit Points" || typeof label === "object" && ρσ_equals(label, "Hit Points"))) {
                     self._hp = $(attr).find(base + "__attribute-data-value").text().trim();
                     self._hp_formula = $(attr).find(base + "__attribute-data-extra").text().trim().slice(1, -1);
+                    cb = function () {
+                        self.rollHitPoints();
+                    };
+                    addIconButton(cb, $(attr).find(base + "__attribute-data-extra"));
                 } else if ((label === "Speed" || typeof label === "object" && ρσ_equals(label, "Speed"))) {
                     self._speed = value;
                 }
@@ -7108,27 +7465,172 @@ var str = ρσ_str, repr = ρσ_repr;;
                 score = $(ability).find(prefix + "score").text();
                 modifier = $(ability).find(prefix + "modifier").text().slice(1, -1);
                 self._abilities.append(ρσ_list_decorate([ abbreviationToAbility(abbr), abbr, score, modifier ]).as_array());
+                makeCB = (function() {
+                    var ρσ_anonfunc = function (a) {
+                        return function () {
+                            self.rollAbilityCheck(a);
+                        };
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["a"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                ρσ_interpolate_kwargs.call(this, addIconButton, [makeCB(abbr), ability].concat([ρσ_desugar_kwargs({prepend: true})]));
             }
             tidbits = stat_block.find(base + "__tidbits " + base + "__tidbit");
             var ρσ_Iter5 = ρσ_Iterable(tidbits);
             for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
                 tidbit = ρσ_Iter5[ρσ_Index5];
                 label = $(tidbit).find(base + "__tidbit-label").text();
-                value = $(tidbit).find(base + "__tidbit-data").text().trim();
+                data = $(tidbit).find(base + "__tidbit-data");
+                value = data.text().trim();
                 if ((label === "Saving Throws" || typeof label === "object" && ρσ_equals(label, "Saving Throws"))) {
-                    self._saves = value.split(", ");
+                    saves = value.split(", ");
+                    data.html("");
+                    var ρσ_Iter6 = ρσ_Iterable(saves);
+                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                        save = ρσ_Iter6[ρσ_Index6];
+                        ρσ_unpack = save.split(" ");
+ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
+                        abbr = ρσ_unpack[0];
+                        mod = ρσ_unpack[1];
+                        (ρσ_expr_temp = self._saves)[(typeof abbr === "number" && abbr < 0) ? ρσ_expr_temp.length + abbr : abbr] = mod;
+                        makeCB = (function() {
+                            var ρσ_anonfunc = function (a) {
+                                return function () {
+                                    self.rollSavingThrow(a);
+                                };
+                            };
+                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                __argnames__ : {value: ["a"]}
+                            });
+                            return ρσ_anonfunc;
+                        })();
+                        data.append(abbr + " " + mod);
+                        ρσ_interpolate_kwargs.call(this, addIconButton, [makeCB(abbr), data].concat([ρσ_desugar_kwargs({append: true})]));
+                        if (len(saves) > len(self._saves)) {
+                            data.append(", ");
+                        }
+                    }
                 } else if ((label === "Skills" || typeof label === "object" && ρσ_equals(label, "Skills"))) {
-                    self._skills = value.split(", ");
+                    skills = value.split(", ");
+                    var ρσ_Iter7 = ρσ_Iterable(skills);
+                    for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                        skill = ρσ_Iter7[ρσ_Index7];
+                        ρσ_unpack = skill.split(" ");
+ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
+                        name = ρσ_unpack[0];
+                        mod = ρσ_unpack[1];
+                        (ρσ_expr_temp = self._skills)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = mod;
+                    }
+                    skills = data.find("> a");
+                    var ρσ_Iter8 = ρσ_Iterable(skills);
+                    for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                        a = ρσ_Iter8[ρσ_Index8];
+                        skill = a.textContent;
+                        text = a.nextSibling;
+                        last = true;
+                        if (text.textContent.endsWith(", ")) {
+                            text.textContent = text.textContent.slice(0, -2);
+                            last = false;
+                        }
+                        makeCB = (function() {
+                            var ρσ_anonfunc = function (a) {
+                                return function () {
+                                    self.rollSkillCheck(a);
+                                };
+                            };
+                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                __argnames__ : {value: ["a"]}
+                            });
+                            return ρσ_anonfunc;
+                        })();
+                        addIconButton(makeCB(skill), a.nextSibling);
+                        if (!last) {
+                            $(a.nextElementSibling).after(", ");
+                        }
+                    }
                 } else if ((label === "Challenge" || typeof label === "object" && ρσ_equals(label, "Challenge"))) {
                     self._cr = value.split(" ")[0];
                 }
                 (ρσ_expr_temp = self._tidbits)[(typeof label === "number" && label < 0) ? ρσ_expr_temp.length + label : label] = value;
             }
+            self.addDiceIcons();
             console.log("Done parsing stat block:", self);
         };
-        if (!Monster.prototype.parseStatBlock.__argnames__) Object.defineProperties(Monster.prototype.parseStatBlock, {
-            __argnames__ : {value: ["base"]}
+        Monster.prototype.rollHitPoints = function rollHitPoints() {
+            var self = this;
+            sendRoll(self, "custom", self._hp_formula, (function(){
+                var ρσ_d = {};
+                ρσ_d["name"] = "Hit Points";
+                ρσ_d["modifier"] = self._hp_formula;
+                return ρσ_d;
+            }).call(this));
+        };
+        Monster.prototype.rollAbilityCheck = function rollAbilityCheck(abbr) {
+            var self = this;
+            var ρσ_unpack, name, score, modifier, ability;
+            var ρσ_Iter9 = ρσ_Iterable(self._abilities);
+            for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                ability = ρσ_Iter9[ρσ_Index9];
+                if ((ability[1] === abbr || typeof ability[1] === "object" && ρσ_equals(ability[1], abbr))) {
+                    ρσ_unpack = ρσ_flatten(ability);
+ρσ_unpack = ρσ_unpack_asarray(4, ρσ_unpack);
+                    name = ρσ_unpack[0];
+                    abbr = ρσ_unpack[1];
+                    score = ρσ_unpack[2];
+                    modifier = ρσ_unpack[3];
+                    sendRoll(self, "ability", "1d20" + modifier, (function(){
+                        var ρσ_d = {};
+                        ρσ_d["name"] = name;
+                        ρσ_d["ability"] = abbr;
+                        ρσ_d["modifier"] = modifier;
+                        return ρσ_d;
+                    }).call(this));
+                    break;
+                }
+            }
+        };
+        if (!Monster.prototype.rollAbilityCheck.__argnames__) Object.defineProperties(Monster.prototype.rollAbilityCheck, {
+            __argnames__ : {value: ["abbr"]}
         });
+        Monster.prototype.rollSavingThrow = function rollSavingThrow(abbr) {
+            var self = this;
+            var mod, name;
+            mod = (ρσ_expr_temp = self._saves)[(typeof abbr === "number" && abbr < 0) ? ρσ_expr_temp.length + abbr : abbr];
+            name = abbreviationToAbility(abbr);
+            sendRoll(self, "saving-throw", "1d20" + mod, (function(){
+                var ρσ_d = {};
+                ρσ_d["name"] = name;
+                ρσ_d["ability"] = abbr;
+                ρσ_d["modifier"] = mod;
+                return ρσ_d;
+            }).call(this));
+        };
+        if (!Monster.prototype.rollSavingThrow.__argnames__) Object.defineProperties(Monster.prototype.rollSavingThrow, {
+            __argnames__ : {value: ["abbr"]}
+        });
+        Monster.prototype.rollSkillCheck = function rollSkillCheck(skill) {
+            var self = this;
+            var modifier, ability;
+            modifier = (ρσ_expr_temp = self._skills)[(typeof skill === "number" && skill < 0) ? ρσ_expr_temp.length + skill : skill];
+            ability = skillToAbility(skill);
+            sendRoll(self, "skill", "1d20" + modifier, (function(){
+                var ρσ_d = {};
+                ρσ_d["skill"] = skill;
+                ρσ_d["ability"] = ability;
+                ρσ_d["modifier"] = modifier;
+                return ρσ_d;
+            }).call(this));
+        };
+        if (!Monster.prototype.rollSkillCheck.__argnames__) Object.defineProperties(Monster.prototype.rollSkillCheck, {
+            __argnames__ : {value: ["skill"]}
+        });
+        Monster.prototype.addDiceIcons = function addDiceIcons() {
+            var self = this;
+            injectDiceToRolls(self._base + "__description-block-content p", self, self._name);
+        };
         Monster.prototype.getDict = function getDict() {
             var self = this;
             return (function(){
@@ -7155,11 +7657,21 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
         Object.defineProperty(Monster.prototype, "__bases__", {value: []});
 
+        function skillToAbility(skill) {
+            if (ρσ_exists.n(skill_abilities[(typeof skill === "number" && skill < 0) ? skill_abilities.length + skill : skill])) {
+                return skill_abilities[(typeof skill === "number" && skill < 0) ? skill_abilities.length + skill : skill];
+            }
+            return "";
+        };
+        if (!skillToAbility.__argnames__) Object.defineProperties(skillToAbility, {
+            __argnames__ : {value: ["skill"]}
+        });
+
         function abbreviationToAbility(abbr) {
             var ability;
-            var ρσ_Iter6 = ρσ_Iterable(ability_abbreviations);
-            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                ability = ρσ_Iter6[ρσ_Index6];
+            var ρσ_Iter10 = ρσ_Iterable(ability_abbreviations);
+            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                ability = ρσ_Iter10[ρσ_Index10];
                 if ((ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === abbr || typeof ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === "object" && ρσ_equals(ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability], abbr))) {
                     return ability;
                 }
@@ -7173,8 +7685,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         function propertyListToDict(propList) {
             var properties, label, value, i;
             properties = {};
-            for (var ρσ_Index7 = 0; ρσ_Index7 < propList.length; ρσ_Index7++) {
-                i = ρσ_Index7;
+            for (var ρσ_Index11 = 0; ρσ_Index11 < propList.length; ρσ_Index11++) {
+                i = ρσ_Index11;
                 label = propList.eq(i).find(".ct-property-list__property-label").text().slice(0, -1);
                 value = propList.eq(i).find(".ct-property-list__property-content").text();
                 properties[(typeof label === "number" && label < 0) ? properties.length + label : label] = value;
@@ -7199,8 +7711,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return $(selector).text();
             }
             description = "";
-            for (var ρσ_Index8 = 0; ρσ_Index8 < description_p.length; ρσ_Index8++) {
-                i = ρσ_Index8;
+            for (var ρσ_Index12 = 0; ρσ_Index12 < description_p.length; ρσ_Index12++) {
+                i = ρσ_Index12;
                 if (len(description) > 0) {
                     description += separator;
                 }
@@ -7217,8 +7729,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
             var items, to_hit, i;
             items = $(items_selector);
-            for (var ρσ_Index9 = 0; ρσ_Index9 < items.length; ρσ_Index9++) {
-                i = ρσ_Index9;
+            for (var ρσ_Index13 = 0; ρσ_Index13 < items.length; ρσ_Index13++) {
+                i = ρσ_Index13;
                 if (ρσ_equals(items.eq(i).find(name_selector).text(), name_to_match)) {
                     to_hit = items.eq(i).find(tohit_selector);
                     if (to_hit.length > 0) {
@@ -7329,9 +7841,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["roll"] = fallback;
                 return ρσ_d;
             }).call(this);
-            var ρσ_Iter10 = ρσ_Iterable(args);
-            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
-                key = ρσ_Iter10[ρσ_Index10];
+            var ρσ_Iter14 = ρσ_Iterable(args);
+            for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
+                key = ρσ_Iter14[ρσ_Index14];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
             console.log("Sending message: " + str(req));
@@ -7457,8 +7969,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             $(".ct-reset-pane__hitdie-heading").append(button);
             hitdice = $(".ct-reset-pane__hitdie");
             multiclass = hitdice.length > 1;
-            for (var ρσ_Index11 = 0; ρσ_Index11 < hitdice.length; ρσ_Index11++) {
-                i = ρσ_Index11;
+            for (var ρσ_Index15 = 0; ρσ_Index15 < hitdice.length; ρσ_Index15++) {
+                i = ρσ_Index15;
                 cb = (function() {
                     var ρσ_anonfunc = function (rollCallback, index) {
                         return (function() {
@@ -7483,12 +7995,31 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["rollCallback"]}
         });
 
-        function addDeathSaveButton(callback, where) {
-            var icon16, button;
+        function addIconButton() {
+            var callback = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var where = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var append = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addIconButton.__defaults__.append : arguments[2];
+            var prepend = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addIconButton.__defaults__.prepend : arguments[3];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "append")){
+                append = ρσ_kwargs_obj.append;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "prepend")){
+                prepend = ρσ_kwargs_obj.prepend;
+            }
+            var icon16, id, button;
             icon16 = chrome.extension.getURL("images/icons/icon16.png");
-            button = ρσ_interpolate_kwargs.call(E, E.span, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon16})])].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll"})]));
-            $(where).after(button);
-            $(".ct-beyond20-roll").on("click", (function() {
+            id = uuid.uuid4();
+            button = ρσ_interpolate_kwargs.call(E, E.span, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon16})])].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll", id: str(id), style: "margin-right:3px; margin-left: 3px;"})]));
+            if (append) {
+                $(where).append(button);
+            } else if (prepend) {
+                $(where).prepend(button);
+            } else {
+                $(where).after(button);
+            }
+            $("#" + str(id)).on("click", (function() {
                 var ρσ_anonfunc = function (event) {
                     callback();
                 };
@@ -7498,8 +8029,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_anonfunc;
             })());
         };
-        if (!addDeathSaveButton.__argnames__) Object.defineProperties(addDeathSaveButton, {
-            __argnames__ : {value: ["callback", "where"]}
+        if (!addIconButton.__defaults__) Object.defineProperties(addIconButton, {
+            __defaults__ : {value: {append:false, prepend:false}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["callback", "where", "append", "prepend"]}
         });
 
         function removeRollButtons() {
@@ -7509,8 +8042,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             $(".ct-beyond20-roll-display").remove();
             $(".ct-beyond20-custom-icon").remove();
             custom_rolls = $("u.ct-beyond20-custom-roll");
-            for (var ρσ_Index12 = 0; ρσ_Index12 < custom_rolls.length; ρσ_Index12++) {
-                i = ρσ_Index12;
+            for (var ρσ_Index16 = 0; ρσ_Index16 < custom_rolls.length; ρσ_Index16++) {
+                i = ρσ_Index16;
                 custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
             }
         };
@@ -7529,16 +8062,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             var children, child, text, document_fragment;
             if (node.hasChildNodes()) {
                 children = list(node.childNodes);
-                var ρσ_Iter13 = ρσ_Iterable(children);
-                for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
-                    child = ρσ_Iter13[ρσ_Index13];
+                var ρσ_Iter17 = ρσ_Iterable(children);
+                for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
+                    child = ρσ_Iter17[ρσ_Index17];
                     recursiveDiceReplace(child, cb);
                 }
             } else if ((node.nodeName === "#text" || typeof node.nodeName === "object" && ρσ_equals(node.nodeName, "#text"))) {
                 text = replaceRolls(false, node.textContent, cb);
                 text = replaceRolls(true, text, cb);
                 if ((text !== node.textContent && (typeof text !== "object" || ρσ_not_equals(text, node.textContent)))) {
-                    console.log("We change ", node.textContent, "into :", text);
                     document_fragment = htmlToFragment(text);
                     node.parentElement.replaceChild(document_fragment, node);
                 }
@@ -7569,9 +8101,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_anonfunc;
             })();
             items = $(selector);
-            var ρσ_Iter14 = ρσ_Iterable(items);
-            for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
-                item = ρσ_Iter14[ρσ_Index14];
+            var ρσ_Iter18 = ρσ_Iterable(items);
+            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
+                item = ρσ_Iter18[ρσ_Index18];
                 recursiveDiceReplace(item, replaceCB);
             }
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");
@@ -7601,10 +8133,12 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         ρσ_modules.dndbeyond.ability_abbreviations = ability_abbreviations;
+        ρσ_modules.dndbeyond.skill_abilities = skill_abilities;
         ρσ_modules.dndbeyond.button_class = button_class;
         ρσ_modules.dndbeyond.button_class_small = button_class_small;
         ρσ_modules.dndbeyond.Character = Character;
         ρσ_modules.dndbeyond.Monster = Monster;
+        ρσ_modules.dndbeyond.skillToAbility = skillToAbility;
         ρσ_modules.dndbeyond.abbreviationToAbility = abbreviationToAbility;
         ρσ_modules.dndbeyond.propertyListToDict = propertyListToDict;
         ρσ_modules.dndbeyond.descriptionToString = descriptionToString;
@@ -7617,7 +8151,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.dndbeyond.addRollButton = addRollButton;
         ρσ_modules.dndbeyond.addDisplayButton = addDisplayButton;
         ρσ_modules.dndbeyond.addHitDieButtons = addHitDieButtons;
-        ρσ_modules.dndbeyond.addDeathSaveButton = addDeathSaveButton;
+        ρσ_modules.dndbeyond.addIconButton = addIconButton;
         ρσ_modules.dndbeyond.removeRollButtons = removeRollButtons;
         ρσ_modules.dndbeyond.htmlToFragment = htmlToFragment;
         ρσ_modules.dndbeyond.recursiveDiceReplace = recursiveDiceReplace;
@@ -7645,7 +8179,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var descriptionToString = ρσ_modules.dndbeyond.descriptionToString;
         var propertyListToDict = ρσ_modules.dndbeyond.propertyListToDict;
         var injectDiceToRolls = ρσ_modules.dndbeyond.injectDiceToRolls;
-        var addDeathSaveButton = ρσ_modules.dndbeyond.addDeathSaveButton;
+        var addIconButton = ρσ_modules.dndbeyond.addIconButton;
         var addHitDieButtons = ρσ_modules.dndbeyond.addHitDieButtons;
         var addDisplayButton = ρσ_modules.dndbeyond.addDisplayButton;
         var addRollButton = ρσ_modules.dndbeyond.addRollButton;
@@ -7685,19 +8219,22 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollAbilityOrSavingThrow(paneClass, rollType) {
-            var ability_string, ability_name, modifier, ability;
+            var ability_string, ability_name, modifier, ability, roll_properties;
             ability_string = $("." + paneClass + " .ct-sidebar__heading").text();
             ability_name = ability_string.split(" ")[0];
             modifier = $("." + paneClass + "__modifier .ct-signed-number").text();
             ability = ability_abbreviations[(typeof ability_name === "number" && ability_name < 0) ? ability_abbreviations.length + ability_name : ability_name];
-            print(rollType + " " + ability_name + "(" + ability + ") : " + modifier);
-            sendRollWithCharacter(rollType, "1d20" + modifier, (function(){
+            roll_properties = (function(){
                 var ρσ_d = {};
                 ρσ_d["name"] = ability_name;
                 ρσ_d["ability"] = ability;
                 ρσ_d["modifier"] = modifier;
                 return ρσ_d;
-            }).call(this));
+            }).call(this);
+            if (ρσ_in("Bard", character._classes) && character._classes["Bard"] >= 2 && character._settings["bard-joat"]) {
+                roll_properties["JoaT"] = int(math.floor(float(character._proficiency) / 2));
+            }
+            sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
         };
         if (!rollAbilityOrSavingThrow.__argnames__) Object.defineProperties(rollAbilityOrSavingThrow, {
             __argnames__ : {value: ["paneClass", "rollType"]}
@@ -7767,8 +8304,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damage = null;
                 damage2 = null;
                 damage2_type = null;
-                for (var ρσ_Index15 = 0; ρσ_Index15 < prop_list.length; ρσ_Index15++) {
-                    i = ρσ_Index15;
+                for (var ρσ_Index19 = 0; ρσ_Index19 < prop_list.length; ρσ_Index19++) {
+                    i = ρσ_Index19;
                     if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
                         value = prop_list.eq(i).find(".ct-property-list__property-content");
                         damage = value.find(".ct-damage__value").text();
@@ -7778,8 +8315,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                             damage2_type = "Two-Handed";
                         }
                         additional_damages = value.find(".ct-item-detail__additional-damage");
-                        for (var ρσ_Index16 = 0; ρσ_Index16 < additional_damages.length; ρσ_Index16++) {
-                            j = ρσ_Index16;
+                        for (var ρσ_Index20 = 0; ρσ_Index20 < additional_damages.length; ρσ_Index20++) {
+                            j = ρσ_Index20;
                             dmg = additional_damages.eq(j).text();
                             dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                             dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
@@ -7886,8 +8423,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 num_damages = 0;
                 damage = null;
                 damage2 = null;
-                for (var ρσ_Index17 = 0; ρσ_Index17 < damages.length; ρσ_Index17++) {
-                    i = ρσ_Index17;
+                for (var ρσ_Index21 = 0; ρσ_Index21 < damages.length; ρσ_Index21++) {
+                    i = ρσ_Index21;
                     dmg = damages.eq(i).find(".ct-spell-caster__modifier-amount").text();
                     dmgtype = damages.eq(i).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                     if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
@@ -7905,8 +8442,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }
                     num_damages += 1;
                 }
-                for (var ρσ_Index18 = 0; ρσ_Index18 < healings.length; ρσ_Index18++) {
-                    i = ρσ_Index18;
+                for (var ρσ_Index22 = 0; ρσ_Index22 < healings.length; ρσ_Index22++) {
+                    i = ρσ_Index22;
                     dmg = healings.eq(i).find(".ct-spell-caster__modifier-amount").text();
                     if ((num_damages === 0 || typeof num_damages === "object" && ρσ_equals(num_damages, 0))) {
                         damage = dmg;
@@ -7931,9 +8468,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["ritual"] = ritual;
                     return ρσ_d;
                 }).call(this);
-                var ρσ_Iter19 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
-                    key = ρσ_Iter19[ρσ_Index19];
+                var ρσ_Iter23 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
+                    key = ρσ_Iter23[ρσ_Index23];
                     roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
                 }
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
@@ -8227,7 +8764,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     cb = function () {
                         sendRollWithCharacter("death-save", "1d20", {});
                     };
-                    addDeathSaveButton(cb, ".ct-health-manager__deathsaves-group--fails");
+                    addIconButton(cb, ".ct-health-manager__deathsaves-group--fails");
                 } else {
                     removeRollButtons();
                 }
@@ -8248,9 +8785,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter20 = ρσ_Iterable(groups);
-            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
-                group = ρσ_Iter20[ρσ_Index20];
+            var ρσ_Iter24 = ρσ_Iterable(groups);
+            for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
+                group = ρσ_Iter24[ρσ_Index24];
                 label = $(group).find(".ct-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -8259,9 +8796,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter21 = ρσ_Iterable(items);
-                    for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
-                        item = ρσ_Iter21[ρσ_Index21];
+                    var ρσ_Iter25 = ρσ_Iterable(items);
+                    for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
+                        item = ρσ_Iter25[ρσ_Index25];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -8309,8 +8846,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             injectRollToSpellAttack();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index22 = 0; ρσ_Index22 < pane.length; ρσ_Index22++) {
-                    div = ρσ_Index22;
+                for (var ρσ_Index26 = 0; ρσ_Index26 < pane.length; ρσ_Index26++) {
+                    div = ρσ_Index26;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls"))) {
                         continue;

@@ -1,6 +1,7 @@
 from utils import replaceRolls
 from settings import getStoredSettings, character_settings
 from elementmaker import E
+import uuid
 
 ability_abbreviations = {"Strength": "STR",
                          "Dexterity": "DEX",
@@ -8,6 +9,25 @@ ability_abbreviations = {"Strength": "STR",
                          "Intelligence": "INT",
                          "Wisdom": "WIS",
                          "Charisma": "CHA"}
+
+skill_abilities = {"Acrobatics": "DEX",
+                   "Animal Handling": "WIS",
+                   "Arcana": "INT",
+                   "Athletics": "STR",
+                   "Deception": "CHA",
+                   "History": "INT",
+                   "Insight": "WIS",
+                   "Intimidation": "CHA",
+                   "Investigation": "INT",
+                   "Medicine": "WIS",
+                   "Nature": "INT",
+                   "Perception": "WIS",
+                   "Performance": "CHA",
+                   "Persuasion": "CHA",
+                   "Religion": "INT",
+                   "Sleight of Hand": "DEX",
+                   "Stealth": "DEX",
+                   "Survival": "WIS"}
 
 
 class Character:
@@ -149,8 +169,9 @@ class Character:
 
 class Monster:
     def __init__(self, _type):
-        self._id = None
         self._type = _type
+        self._base = ".mon-stat-block" if _type == "Monster" else ".ct-creature-block"
+        self._id = None
         self._name = None
         self._meta = None
         self._attributes = {}
@@ -160,11 +181,12 @@ class Monster:
         self._speed = None
         self._abilities = []
         self._tidbits = {}
-        self._saves = [].as_array()
-        self._skills = [].as_array()
+        self._saves = {}
+        self._skills = {}
         self._cr = None
 
-    def parseStatBlock(self, base):
+    def parseStatBlock(self):
+        base = self._base
         stat_block = $(base)
         self._name = stat_block.find(base + "__name").text().trim()
         a = stat_block.find(base + "__name-link")
@@ -184,9 +206,13 @@ class Monster:
             elif label == "Hit Points":
                 self._hp = $(attr).find(base + "__attribute-data-value").text().trim()
                 self._hp_formula = $(attr).find(base + "__attribute-data-extra").text().trim()[1:-1]
+                cb = def():
+                    self.rollHitPoints()
+                addIconButton(cb, $(attr).find(base + "__attribute-data-extra"))
             elif label == "Speed":
                 self._speed = value
             self._attributes[label] = value
+
         abilities = stat_block.find(base + "__abilities")
         if abilities.length > 0:
             prefix = base + "__ability-"
@@ -199,19 +225,84 @@ class Monster:
             score = $(ability).find(prefix + "score").text()
             modifier = $(ability).find(prefix + "modifier").text()[1:-1]
             self._abilities.append([abbreviationToAbility(abbr), abbr, score, modifier].as_array())
+            makeCB = def(a):
+                return def():
+                    self.rollAbilityCheck(a)
+            addIconButton(makeCB(abbr), ability, prepend=True)
         
         tidbits = stat_block.find(base + "__tidbits " + base + "__tidbit")
         for tidbit in tidbits:
             label = $(tidbit).find(base + "__tidbit-label").text()
-            value = $(tidbit).find(base + "__tidbit-data").text().trim()
+            data = $(tidbit).find(base + "__tidbit-data")
+            value = data.text().trim()
             if label == "Saving Throws":
-                self._saves = value.split(", ")
+                saves = value.split(", ")
+                data.html("")
+                for save in saves:
+                    (abbr, mod) = save.split(" ")
+                    self._saves[abbr] = mod
+                    makeCB = def(a):
+                        return def():
+                            self.rollSavingThrow(a)
+                    data.append(abbr + " " + mod)
+                    addIconButton(makeCB(abbr), data, append=True)
+                    if len(saves) > len(self._saves):
+                        data.append(", ")
             elif label == "Skills":
-                self._skills = value.split(", ")
+                skills = value.split(", ")
+                for skill in skills:
+                    (name, mod) = skill.split(" ")
+                    self._skills[name] = mod
+                skills = data.find("> a")
+                for a in skills:
+                    skill = a.textContent
+                    text = a.nextSibling
+                    last = True
+                    if text.textContent.endsWith(", "):
+                        text.textContent = text.textContent[:-2]
+                        last = False
+                    makeCB = def(a):
+                        return def():
+                            self.rollSkillCheck(a)
+                    addIconButton(makeCB(skill), a.nextSibling)
+                    if not last:
+                        $(a.nextElementSibling).after(", ")
+                        
             elif label == "Challenge":
                 self._cr = value.split(" ")[0]
             self._tidbits[label] = value
+        self.addDiceIcons()
         console.log("Done parsing stat block:", self)
+
+    def rollHitPoints(self):
+        sendRoll(self, "custom", self._hp_formula, {"name": "Hit Points",
+                                                    "modifier": self._hp_formula})
+
+    def rollAbilityCheck(self, abbr):
+        for ability in self._abilities:
+            if ability[1] == abbr:
+                (name, abbr, score, modifier) = ability
+                sendRoll(self, "ability", "1d20" + modifier, {"name" : name,
+                                                              "ability": abbr,
+                                                              "modifier": modifier} )
+                break
+
+    def rollSavingThrow(self, abbr):
+        mod = self._saves[abbr]
+        name = abbreviationToAbility(abbr)
+        sendRoll(self, "saving-throw", "1d20" + mod, {"name" : name,
+                                                      "ability": abbr,
+                                                      "modifier": mod} )
+
+    def rollSkillCheck(self, skill):
+        modifier = self._skills[skill]
+        ability = skillToAbility(skill)
+        sendRoll(self, "skill", "1d20" + modifier, {"skill": skill,
+                                                    "ability": ability,
+                                                    "modifier": modifier})
+        
+    def addDiceIcons(self):
+        injectDiceToRolls(self._base + "__description-block-content p", self, self._name)
 
     def getDict(self):
         return {"name": self._name,
@@ -226,6 +317,11 @@ class Monster:
                 "skills": self._skills,
                 "cr": self._cr}
 
+
+def skillToAbility(skill):
+    if skill_abilities[skill]?:
+        return skill_abilities[skill]
+    return ""
 
 def abbreviationToAbility(abbr):
     for ability in ability_abbreviations:
@@ -381,13 +477,20 @@ def addHitDieButtons(rollCallback):
 
         $(".ct-beyond20-roll-hitdie").eq(i).on('click', cb(rollCallback, i))
 
-def addDeathSaveButton(callback, where):
+def addIconButton(callback, where, append=False, prepend=False):
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
-    button = E.span(class_="ct-beyond20-roll",
+    id = uuid.uuid4()
+    button = E.span(class_="ct-beyond20-roll", id=str(id),
+                    style="margin-right:3px; margin-left: 3px;",
                     E.img(class_="ct-beyond20-icon", src=icon16))
 
-    $(where).after(button)
-    $(".ct-beyond20-roll").on('click', def(event):
+    if append:
+        $(where).append(button)
+    elif prepend:
+        $(where).prepend(button)
+    else:
+        $(where).after(button)
+    $("#" + str(id)).on('click', def(event):
         callback()
     )
 
@@ -418,7 +521,6 @@ def recursiveDiceReplace(node, cb):
         text = replaceRolls(True, text, cb)
         # Only replace if we changed it, otherwise we might break existing html code bindings
         if text != node.textContent:
-            console.log("We change ", node.textContent, "into :", text)
             document_fragment = htmlToFragment(text)
             node.parentElement.replaceChild(document_fragment, node)
 
