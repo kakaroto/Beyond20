@@ -388,7 +388,7 @@ def handleMessage (request, sender, sendResponse):
                         components = ""
             roll += template("atkdmg", properties)
             if healing_spell and \
-                    "Cleric" in request.character.classes and \
+                    "Disciple of Life" in request.character["class-features"] and \
                     request.character.settings["cleric-disciple-life"]:
                 if request["cast-at"]?:
                     level = request["cast-at"][0]

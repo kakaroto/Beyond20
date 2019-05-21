@@ -59,11 +59,17 @@ def populateCharacter(response):
         if "Rogue" in response.classes:
             e = createHTMLOption("rogue-sneak-attack", False, character_settings)
             options.append(e)
-        if "Cleric" in response.classes:
+        if "Disciple of Life" in response["class-features"]:
             e = createHTMLOption("cleric-disciple-life", False, character_settings)
             options.append(e)
         if "Bard" in response.classes:
             e = createHTMLOption("bard-joat", False, character_settings)
+            options.append(e)
+        if "Sharpshooter" in response["feats"]:
+            e = createHTMLOption("sharpshooter", False, character_settings)
+            options.append(e)
+        if "Great Weapon Master" in response["feats"]:
+            e = createHTMLOption("great-weapon-master", False, character_settings)
             options.append(e)
         loadSettings(response.settings, character_settings)
     $('.beyond20-option-input').off('change', save_settings)

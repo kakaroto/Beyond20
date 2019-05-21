@@ -1,5 +1,5 @@
 from utils import replaceRolls
-from settings import getStoredSettings, character_settings
+from settings import getStoredSettings, mergeSettings, character_settings
 from elementmaker import E
 import uuid
 import re
@@ -45,6 +45,9 @@ class Character:
         self._hp = 0
         self._max_hp = 0
         self._settings = None
+        self._class_features = []
+        self._racial_traits = []
+        self._feats = []
 
     def updateInfo(self):
         self._id = $("#character-sheet-target").attr("data-character-id")
@@ -110,6 +113,7 @@ class Character:
                 self._level = xp.text().replace("LVL ", "")
         if self._settings?:
             self.updateHP()
+        self.updateFeatures()
 
     def updateHP(self):
         hp = max_hp = None
@@ -143,6 +147,48 @@ class Character:
                 console.log("Sending message: " + str(req))
                 chrome.runtime.sendMessage(req);
             
+    def featureDetailsToList(self, selector):
+        features = $(selector).find(".ct-feature-snippet__heading")
+        feature_list = []
+        for feat in features:
+            feature_list.append(feat.childNodes[0].textContent.trim())
+        return feature_list
+            
+    def updateFeatures(self):
+        update = False
+        class_detail = $(".ct-features .ct-classes-detail")
+        if class_detail.length > 0:
+            self._class_features = self.featureDetailsToList(class_detail)
+            update = True
+        elif self._settings? and self._settings["class-features"]?:
+            self._class_features = list(self._settings["class-features"])
+            
+        race_detail = $(".ct-features .ct-race-detail")
+        if race_detail.length > 0:
+            self._racial_traits = self.featureDetailsToList(race_detail)
+            update = True
+        elif self._settings? and self._settings["racial-traits"]?:
+            self._racial_traits = list(self._settings["racial-traits"])
+
+        feats_detail = $(".ct-features .ct-feats-detail")
+        if feats_detail.length > 0:
+            self._feats = self.featureDetailsToList(feats_detail)
+            update = True
+        elif self._settings? and self._settings["feats"]?:
+            self._feats = list(self._settings["feats"])
+
+        if update:
+            self.mergeCharacterSettings({"class-features": self._class_features,
+                                         "racial-traits": self._racial_traits,
+                                         "feats": self._feats})
+            
+    def mergeCharacterSettings(self, data):
+        cb = def(settings):
+            chrome.runtime.sendMessage({"action": "settings",
+                                        "type": "character",
+                                        "id": self._id,
+                                        "settings": settings})
+        mergeSettings(data, cb, "character-" + self._id, character_settings)
 
     def updateSettings(self, new_settings=None):
         if new_settings:
@@ -151,6 +197,7 @@ class Character:
             getStoredSettings(def(saved_settings):
                 self._settings = saved_settings
                 self.updateHP()
+                self.updateFeatures()
             , "character-" + self._id, character_settings)
 
     def getDict(self):
@@ -166,7 +213,11 @@ class Character:
                 "speed": self._speed,
                 "hp": self._hp,
                 "max-hp": self._max_hp,
-                "settings": self._settings}
+                "settings": self._settings,
+                "class-features": self._class_features.as_array(),
+                "racial-traits": self._racial_traits.as_array(),
+                "feats": self._feats.as_array()}
+
 
 class Monster:
     def __init__(self, _type):

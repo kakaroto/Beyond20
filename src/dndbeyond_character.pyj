@@ -128,6 +128,19 @@ def rollItem(force_display=False):
             else:
                 damage2 += " | " + sneak_attack
                 damage2_type += " | " + dmg_type
+        if character._settings["sharpshooter"] and \
+                properties["Attack Type"] == "Ranged" and \
+                properties["Proficient"] == "Yes":
+            to_hit += " - 5"
+            damage += " +10"
+            character.mergeCharacterSettings({"sharpshooter": False})
+        if character._settings["great-weapon-master"] and \
+                properties["Attack Type"] == "Melee" and \
+                properties["Properties"].includes("Heavy") and \
+                properties["Proficient"] == "Yes":
+            to_hit += " - 5"
+            damage += " +10"
+            character.mergeCharacterSettings({"great-weapon-master": False})
         roll_properties = buildAttackRoll("item",
                                           item_name,
                                           description,

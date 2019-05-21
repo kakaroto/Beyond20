@@ -5811,6 +5811,22 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["sharpshooter"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Sharpshooter: Apply to next Roll";
+                ρσ_d["description"] = "Apply Sharpshooter -5 penalty to roll and +10 to damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["great-weapon-master"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Great Weapon Master: Apply to next Roll";
+                ρσ_d["description"] = "Apply Great Weapon Master -5 penalty to roll and +10 to damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["update-hp"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Update Roll20 Token HP";
@@ -6206,6 +6222,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             var ρσ_Iter6 = ρσ_Iterable(settings);
             for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
                 option = ρσ_Iter6[ρσ_Index6];
+                if (!_list[(typeof option === "number" && option < 0) ? _list.length + option : option]) {
+                    continue;
+                }
                 o_type = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].type;
                 if ((o_type === "bool" || typeof o_type === "object" && ρσ_equals(o_type, "bool"))) {
                     $("#" + option).prop("checked", settings[(typeof option === "number" && option < 0) ? settings.length + option : option]);
@@ -7145,6 +7164,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
 
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
+        var mergeSettings = ρσ_modules.settings.mergeSettings;
         var character_settings = ρσ_modules.settings.character_settings;
 
         var E = ρσ_modules.elementmaker.E;
@@ -7203,6 +7223,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             self._hp = 0;
             self._max_hp = 0;
             self._settings = null;
+            self._class_features = ρσ_list_decorate([]);
+            self._racial_traits = ρσ_list_decorate([]);
+            self._feats = ρσ_list_decorate([]);
         };
         Character.__argnames__ = Character.prototype.__init__.__argnames__;
         Character.__handles_kwarg_interpolation__ = Character.prototype.__init__.__handles_kwarg_interpolation__;
@@ -7302,6 +7325,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_exists.n(self._settings)) {
                 self.updateHP();
             }
+            self.updateFeatures();
         };
         Character.prototype.updateHP = function updateHP() {
             var self = this;
@@ -7346,6 +7370,80 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
             }
         };
+        Character.prototype.featureDetailsToList = function featureDetailsToList(selector) {
+            var self = this;
+            var features, feature_list, feat;
+            features = $(selector).find(".ct-feature-snippet__heading");
+            feature_list = ρσ_list_decorate([]);
+            var ρσ_Iter3 = ρσ_Iterable(features);
+            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                feat = ρσ_Iter3[ρσ_Index3];
+                feature_list.append(feat.childNodes[0].textContent.trim());
+            }
+            return feature_list;
+        };
+        if (!Character.prototype.featureDetailsToList.__argnames__) Object.defineProperties(Character.prototype.featureDetailsToList, {
+            __argnames__ : {value: ["selector"]}
+        });
+        Character.prototype.updateFeatures = function updateFeatures() {
+            var self = this;
+            var update, class_detail, race_detail, feats_detail;
+            update = false;
+            class_detail = $(".ct-features .ct-classes-detail");
+            if (class_detail.length > 0) {
+                self._class_features = self.featureDetailsToList(class_detail);
+                update = true;
+            } else if (ρσ_exists.n(self._settings) && ρσ_exists.n(self._settings["class-features"])) {
+                self._class_features = list(self._settings["class-features"]);
+            }
+            race_detail = $(".ct-features .ct-race-detail");
+            if (race_detail.length > 0) {
+                self._racial_traits = self.featureDetailsToList(race_detail);
+                update = true;
+            } else if (ρσ_exists.n(self._settings) && ρσ_exists.n(self._settings["racial-traits"])) {
+                self._racial_traits = list(self._settings["racial-traits"]);
+            }
+            feats_detail = $(".ct-features .ct-feats-detail");
+            if (feats_detail.length > 0) {
+                self._feats = self.featureDetailsToList(feats_detail);
+                update = true;
+            } else if (ρσ_exists.n(self._settings) && ρσ_exists.n(self._settings["feats"])) {
+                self._feats = list(self._settings["feats"]);
+            }
+            if (update) {
+                self.mergeCharacterSettings((function(){
+                    var ρσ_d = {};
+                    ρσ_d["class-features"] = self._class_features;
+                    ρσ_d["racial-traits"] = self._racial_traits;
+                    ρσ_d["feats"] = self._feats;
+                    return ρσ_d;
+                }).call(this));
+            }
+        };
+        Character.prototype.mergeCharacterSettings = function mergeCharacterSettings(data) {
+            var self = this;
+            var cb;
+            cb = (function() {
+                var ρσ_anonfunc = function (settings) {
+                    chrome.runtime.sendMessage((function(){
+                        var ρσ_d = {};
+                        ρσ_d["action"] = "settings";
+                        ρσ_d["type"] = "character";
+                        ρσ_d["id"] = self._id;
+                        ρσ_d["settings"] = settings;
+                        return ρσ_d;
+                    }).call(this));
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["settings"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            mergeSettings(data, cb, "character-" + self._id, character_settings);
+        };
+        if (!Character.prototype.mergeCharacterSettings.__argnames__) Object.defineProperties(Character.prototype.mergeCharacterSettings, {
+            __argnames__ : {value: ["data"]}
+        });
         Character.prototype.updateSettings = function updateSettings() {
             var self = this;
             var new_settings = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? updateSettings.__defaults__.new_settings : arguments[0];
@@ -7361,6 +7459,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_anonfunc = function (saved_settings) {
                         self._settings = saved_settings;
                         self.updateHP();
+                        self.updateFeatures();
                     };
                     if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                         __argnames__ : {value: ["saved_settings"]}
@@ -7391,6 +7490,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["hp"] = self._hp;
                 ρσ_d["max-hp"] = self._max_hp;
                 ρσ_d["settings"] = self._settings;
+                ρσ_d["class-features"] = self._class_features.as_array();
+                ρσ_d["racial-traits"] = self._racial_traits.as_array();
+                ρσ_d["feats"] = self._feats.as_array();
                 return ρσ_d;
             }).call(this);
         };
@@ -7451,9 +7553,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             self._meta = stat_block.find(base + "__meta").text().trim();
             attributes = stat_block.find(base + "__attributes " + base + "__attribute");
-            var ρσ_Iter3 = ρσ_Iterable(attributes);
-            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                attr = ρσ_Iter3[ρσ_Index3];
+            var ρσ_Iter4 = ρσ_Iterable(attributes);
+            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                attr = ρσ_Iter4[ρσ_Index4];
                 label = $(attr).find(base + "__attribute-label").text().trim();
                 value = $(attr).find(base + "__attribute-value").text().trim();
                 if ((value === "" || typeof value === "object" && ρσ_equals(value, ""))) {
@@ -7481,9 +7583,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 abilities = stat_block.find(".ability-block > div");
                 prefix = ".ability-block__";
             }
-            var ρσ_Iter4 = ρσ_Iterable(abilities);
-            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                ability = ρσ_Iter4[ρσ_Index4];
+            var ρσ_Iter5 = ρσ_Iterable(abilities);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                ability = ρσ_Iter5[ρσ_Index5];
                 abbr = $(ability).find(prefix + "heading").text();
                 score = $(ability).find(prefix + "score").text();
                 modifier = $(ability).find(prefix + "modifier").text().slice(1, -1);
@@ -7502,9 +7604,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_interpolate_kwargs.call(this, addIconButton, [makeCB(abbr), ability].concat([ρσ_desugar_kwargs({prepend: true})]));
             }
             tidbits = stat_block.find(base + "__tidbits " + base + "__tidbit");
-            var ρσ_Iter5 = ρσ_Iterable(tidbits);
-            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                tidbit = ρσ_Iter5[ρσ_Index5];
+            var ρσ_Iter6 = ρσ_Iterable(tidbits);
+            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                tidbit = ρσ_Iter6[ρσ_Index6];
                 label = $(tidbit).find(base + "__tidbit-label").text();
                 data = $(tidbit).find(base + "__tidbit-data");
                 value = data.text().trim();
@@ -7522,9 +7624,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                         });
                         return ρσ_anonfunc;
                     })();
-                    var ρσ_Iter6 = ρσ_Iterable(saves);
-                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                        save = ρσ_Iter6[ρσ_Index6];
+                    var ρσ_Iter7 = ρσ_Iterable(saves);
+                    for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                        save = ρσ_Iter7[ρσ_Index7];
                         ρσ_unpack = save.split(" ");
 ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
                         abbr = ρσ_unpack[0];
@@ -7538,9 +7640,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }
                 } else if ((label === "Skills" || typeof label === "object" && ρσ_equals(label, "Skills"))) {
                     skills = value.split(", ");
-                    var ρσ_Iter7 = ρσ_Iterable(skills);
-                    for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                        skill = ρσ_Iter7[ρσ_Index7];
+                    var ρσ_Iter8 = ρσ_Iterable(skills);
+                    for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                        skill = ρσ_Iter8[ρσ_Index8];
                         ρσ_unpack = skill.split(" ");
 ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
                         name = ρσ_unpack[0];
@@ -7560,9 +7662,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     })();
                     if ((self._type === "Monster" || typeof self._type === "object" && ρσ_equals(self._type, "Monster"))) {
                         skills = data.find("> a");
-                        var ρσ_Iter8 = ρσ_Iterable(skills);
-                        for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                            a = ρσ_Iter8[ρσ_Index8];
+                        var ρσ_Iter9 = ρσ_Iterable(skills);
+                        for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                            a = ρσ_Iter9[ρσ_Index9];
                             skill = a.textContent;
                             text = a.nextSibling;
                             last = true;
@@ -7578,9 +7680,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     } else {
                         data.html("");
                         first = true;
-                        var ρσ_Iter9 = ρσ_Iterable(self._skills);
-                        for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
-                            skill = ρσ_Iter9[ρσ_Index9];
+                        var ρσ_Iter10 = ρσ_Iterable(self._skills);
+                        for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                            skill = ρσ_Iter10[ρσ_Index10];
                             if (!first) {
                                 data.append(", ");
                             }
@@ -7614,9 +7716,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         Monster.prototype.rollAbilityCheck = function rollAbilityCheck(abbr) {
             var self = this;
             var ρσ_unpack, name, score, modifier, ability;
-            var ρσ_Iter10 = ρσ_Iterable(self._abilities);
-            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
-                ability = ρσ_Iter10[ρσ_Index10];
+            var ρσ_Iter11 = ρσ_Iterable(self._abilities);
+            for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                ability = ρσ_Iter11[ρσ_Index11];
                 if ((ability[1] === abbr || typeof ability[1] === "object" && ρσ_equals(ability[1], abbr))) {
                     ρσ_unpack = ρσ_flatten(ability);
 ρσ_unpack = ρσ_unpack_asarray(4, ρσ_unpack);
@@ -7696,13 +7798,11 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             damage_regexp = " (?:([0-9]+))?(?: *\\(?([0-9]*d[0-9]+(?:\\s*[-+]\\s*[0-9]+)?)\\)?)? ([\\w ]+?) damage";
             damage_matches = re.finditer(damage_regexp, hit);
-            console.log("Hit : ", hit, damage_matches);
             damages = ρσ_list_decorate([]);
             damage_types = ρσ_list_decorate([]);
-            var ρσ_Iter11 = ρσ_Iterable(damage_matches);
-            for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
-                dmg = ρσ_Iter11[ρσ_Index11];
-                console.log("dmg:", dmg);
+            var ρσ_Iter12 = ρσ_Iterable(damage_matches);
+            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                dmg = ρσ_Iter12[ρσ_Index12];
                 if (ρσ_exists.n(dmg.group(2))) {
                     damages.append(dmg.group(2));
                 } else {
@@ -7780,14 +7880,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 });
                 return ρσ_anonfunc;
             })();
-            var ρσ_Iter12 = ρσ_Iterable(blocks);
-            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
-                block = ρσ_Iter12[ρσ_Index12];
+            var ρσ_Iter13 = ρσ_Iterable(blocks);
+            for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
+                block = ρσ_Iter13[ρσ_Index13];
                 section_name = $(block).find(self._base + "__description-block-heading").text();
                 actions = $(block).find(self._base + "__description-block-content p");
-                var ρσ_Iter13 = ρσ_Iterable(actions);
-                for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
-                    action = ρσ_Iter13[ρσ_Index13];
+                var ρσ_Iter14 = ρσ_Iterable(actions);
+                for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
+                    action = ρσ_Iter14[ρσ_Index14];
                     console.log("Found action: ", action);
                     firstChild = action.firstElementChild;
                     if (firstChild && (firstChild.tagName === "EM" || typeof firstChild.tagName === "object" && ρσ_equals(firstChild.tagName, "EM"))) {
@@ -7863,9 +7963,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function abbreviationToAbility(abbr) {
             var ability;
-            var ρσ_Iter14 = ρσ_Iterable(ability_abbreviations);
-            for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
-                ability = ρσ_Iter14[ρσ_Index14];
+            var ρσ_Iter15 = ρσ_Iterable(ability_abbreviations);
+            for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
+                ability = ρσ_Iter15[ρσ_Index15];
                 if ((ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === abbr || typeof ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === "object" && ρσ_equals(ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability], abbr))) {
                     return ability;
                 }
@@ -7879,8 +7979,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         function propertyListToDict(propList) {
             var properties, label, value, i;
             properties = {};
-            for (var ρσ_Index15 = 0; ρσ_Index15 < propList.length; ρσ_Index15++) {
-                i = ρσ_Index15;
+            for (var ρσ_Index16 = 0; ρσ_Index16 < propList.length; ρσ_Index16++) {
+                i = ρσ_Index16;
                 label = propList.eq(i).find(".ct-property-list__property-label").text().slice(0, -1);
                 value = propList.eq(i).find(".ct-property-list__property-content").text();
                 properties[(typeof label === "number" && label < 0) ? properties.length + label : label] = value;
@@ -7905,8 +8005,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return $(selector).text();
             }
             description = "";
-            for (var ρσ_Index16 = 0; ρσ_Index16 < description_p.length; ρσ_Index16++) {
-                i = ρσ_Index16;
+            for (var ρσ_Index17 = 0; ρσ_Index17 < description_p.length; ρσ_Index17++) {
+                i = ρσ_Index17;
                 if (len(description) > 0) {
                     description += separator;
                 }
@@ -7923,8 +8023,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
             var items, to_hit, i;
             items = $(items_selector);
-            for (var ρσ_Index17 = 0; ρσ_Index17 < items.length; ρσ_Index17++) {
-                i = ρσ_Index17;
+            for (var ρσ_Index18 = 0; ρσ_Index18 < items.length; ρσ_Index18++) {
+                i = ρσ_Index18;
                 if (ρσ_equals(items.eq(i).find(name_selector).text(), name_to_match)) {
                     to_hit = items.eq(i).find(tohit_selector);
                     if (to_hit.length > 0) {
@@ -8035,9 +8135,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["roll"] = fallback;
                 return ρσ_d;
             }).call(this);
-            var ρσ_Iter18 = ρσ_Iterable(args);
-            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
-                key = ρσ_Iter18[ρσ_Index18];
+            var ρσ_Iter19 = ρσ_Iterable(args);
+            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
+                key = ρσ_Iter19[ρσ_Index19];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
             console.log("Sending message: " + str(req));
@@ -8165,8 +8265,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             $(".ct-reset-pane__hitdie-heading").append(button);
             hitdice = $(".ct-reset-pane__hitdie");
             multiclass = hitdice.length > 1;
-            for (var ρσ_Index19 = 0; ρσ_Index19 < hitdice.length; ρσ_Index19++) {
-                i = ρσ_Index19;
+            for (var ρσ_Index20 = 0; ρσ_Index20 < hitdice.length; ρσ_Index20++) {
+                i = ρσ_Index20;
                 cb = (function() {
                     var ρσ_anonfunc = function (rollCallback, index) {
                         return (function() {
@@ -8238,8 +8338,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             $(".ct-beyond20-roll-display").remove();
             $(".ct-beyond20-custom-icon").remove();
             custom_rolls = $("u.ct-beyond20-custom-roll");
-            for (var ρσ_Index20 = 0; ρσ_Index20 < custom_rolls.length; ρσ_Index20++) {
-                i = ρσ_Index20;
+            for (var ρσ_Index21 = 0; ρσ_Index21 < custom_rolls.length; ρσ_Index21++) {
+                i = ρσ_Index21;
                 custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
             }
         };
@@ -8258,9 +8358,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             var children, child, text, document_fragment;
             if (node.hasChildNodes()) {
                 children = list(node.childNodes);
-                var ρσ_Iter21 = ρσ_Iterable(children);
-                for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
-                    child = ρσ_Iter21[ρσ_Index21];
+                var ρσ_Iter22 = ρσ_Iterable(children);
+                for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
+                    child = ρσ_Iter22[ρσ_Index22];
                     recursiveDiceReplace(child, cb);
                 }
             } else if ((node.nodeName === "#text" || typeof node.nodeName === "object" && ρσ_equals(node.nodeName, "#text"))) {
@@ -8297,9 +8397,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_anonfunc;
             })();
             items = $(selector);
-            var ρσ_Iter22 = ρσ_Iterable(items);
-            for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
-                item = ρσ_Iter22[ρσ_Index22];
+            var ρσ_Iter23 = ρσ_Iterable(items);
+            for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
+                item = ρσ_Iter23[ρσ_Index23];
                 recursiveDiceReplace(item, replaceCB);
             }
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");
@@ -8504,8 +8604,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damage = null;
                 damage2 = null;
                 damage2_type = null;
-                for (var ρσ_Index23 = 0; ρσ_Index23 < prop_list.length; ρσ_Index23++) {
-                    i = ρσ_Index23;
+                for (var ρσ_Index24 = 0; ρσ_Index24 < prop_list.length; ρσ_Index24++) {
+                    i = ρσ_Index24;
                     if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
                         value = prop_list.eq(i).find(".ct-property-list__property-content");
                         damage = value.find(".ct-damage__value").text();
@@ -8515,8 +8615,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                             damage2_type = "Two-Handed";
                         }
                         additional_damages = value.find(".ct-item-detail__additional-damage");
-                        for (var ρσ_Index24 = 0; ρσ_Index24 < additional_damages.length; ρσ_Index24++) {
-                            j = ρσ_Index24;
+                        for (var ρσ_Index25 = 0; ρσ_Index25 < additional_damages.length; ρσ_Index25++) {
+                            j = ρσ_Index25;
                             dmg = additional_damages.eq(j).text();
                             dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                             dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
@@ -8548,6 +8648,24 @@ var str = ρσ_str, repr = ρσ_repr;;
                         damage2 += " | " + sneak_attack;
                         damage2_type += " | " + dmg_type;
                     }
+                }
+                if (character._settings["sharpshooter"] && (properties["Attack Type"] === "Ranged" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Ranged")) && (properties["Proficient"] === "Yes" || typeof properties["Proficient"] === "object" && ρσ_equals(properties["Proficient"], "Yes"))) {
+                    to_hit += " - 5";
+                    damage += " +10";
+                    character.mergeCharacterSettings((function(){
+                        var ρσ_d = {};
+                        ρσ_d["sharpshooter"] = false;
+                        return ρσ_d;
+                    }).call(this));
+                }
+                if (character._settings["great-weapon-master"] && (properties["Attack Type"] === "Melee" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Melee")) && properties["Properties"].includes("Heavy") && (properties["Proficient"] === "Yes" || typeof properties["Proficient"] === "object" && ρσ_equals(properties["Proficient"], "Yes"))) {
+                    to_hit += " - 5";
+                    damage += " +10";
+                    character.mergeCharacterSettings((function(){
+                        var ρσ_d = {};
+                        ρσ_d["great-weapon-master"] = false;
+                        return ρσ_d;
+                    }).call(this));
                 }
                 roll_properties = buildAttackRoll("item", item_name, description, properties, damage, ρσ_exists.e(properties["Damage Type"], ""), to_hit, damage2, damage2_type);
                 roll_properties["item-type"] = item_type;
@@ -8623,8 +8741,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 num_damages = 0;
                 damage = null;
                 damage2 = null;
-                for (var ρσ_Index25 = 0; ρσ_Index25 < damages.length; ρσ_Index25++) {
-                    i = ρσ_Index25;
+                for (var ρσ_Index26 = 0; ρσ_Index26 < damages.length; ρσ_Index26++) {
+                    i = ρσ_Index26;
                     dmg = damages.eq(i).find(".ct-spell-caster__modifier-amount").text();
                     dmgtype = damages.eq(i).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                     if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
@@ -8642,8 +8760,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }
                     num_damages += 1;
                 }
-                for (var ρσ_Index26 = 0; ρσ_Index26 < healings.length; ρσ_Index26++) {
-                    i = ρσ_Index26;
+                for (var ρσ_Index27 = 0; ρσ_Index27 < healings.length; ρσ_Index27++) {
+                    i = ρσ_Index27;
                     dmg = healings.eq(i).find(".ct-spell-caster__modifier-amount").text();
                     if ((num_damages === 0 || typeof num_damages === "object" && ρσ_equals(num_damages, 0))) {
                         damage = dmg;
@@ -8668,9 +8786,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["ritual"] = ritual;
                     return ρσ_d;
                 }).call(this);
-                var ρσ_Iter27 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index27 = 0; ρσ_Index27 < ρσ_Iter27.length; ρσ_Index27++) {
-                    key = ρσ_Iter27[ρσ_Index27];
+                var ρσ_Iter28 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
+                    key = ρσ_Iter28[ρσ_Index28];
                     roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
                 }
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
@@ -8985,9 +9103,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter28 = ρσ_Iterable(groups);
-            for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
-                group = ρσ_Iter28[ρσ_Index28];
+            var ρσ_Iter29 = ρσ_Iterable(groups);
+            for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
+                group = ρσ_Iter29[ρσ_Index29];
                 label = $(group).find(".ct-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -8996,9 +9114,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter29 = ρσ_Iterable(items);
-                    for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
-                        item = ρσ_Iter29[ρσ_Index29];
+                    var ρσ_Iter30 = ρσ_Iterable(items);
+                    for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
+                        item = ρσ_Iter30[ρσ_Index30];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -9040,8 +9158,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             injectRollToSpellAttack();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index30 = 0; ρσ_Index30 < pane.length; ρσ_Index30++) {
-                    div = ρσ_Index30;
+                for (var ρσ_Index31 = 0; ρσ_Index31 < pane.length; ρσ_Index31++) {
+                    div = ρσ_Index31;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls"))) {
                         continue;

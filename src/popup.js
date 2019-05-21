@@ -5807,6 +5807,22 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["sharpshooter"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Sharpshooter: Apply to next Roll";
+                ρσ_d["description"] = "Apply Sharpshooter -5 penalty to roll and +10 to damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["great-weapon-master"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Great Weapon Master: Apply to next Roll";
+                ρσ_d["description"] = "Apply Great Weapon Master -5 penalty to roll and +10 to damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["update-hp"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Update Roll20 Token HP";
@@ -6202,6 +6218,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             var ρσ_Iter6 = ρσ_Iterable(settings);
             for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
                 option = ρσ_Iter6[ρσ_Index6];
+                if (!_list[(typeof option === "number" && option < 0) ? _list.length + option : option]) {
+                    continue;
+                }
                 o_type = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].type;
                 if ((o_type === "bool" || typeof o_type === "object" && ρσ_equals(o_type, "bool"))) {
                     $("#" + option).prop("checked", settings[(typeof option === "number" && option < 0) ? settings.length + option : option]);
@@ -6559,12 +6578,20 @@ var str = ρσ_str, repr = ρσ_repr;;
                     e = createHTMLOption("rogue-sneak-attack", false, character_settings);
                     options.append(e);
                 }
-                if (ρσ_in("Cleric", response.classes)) {
+                if (ρσ_in("Disciple of Life", response["class-features"])) {
                     e = createHTMLOption("cleric-disciple-life", false, character_settings);
                     options.append(e);
                 }
                 if (ρσ_in("Bard", response.classes)) {
                     e = createHTMLOption("bard-joat", false, character_settings);
+                    options.append(e);
+                }
+                if (ρσ_in("Sharpshooter", response["feats"])) {
+                    e = createHTMLOption("sharpshooter", false, character_settings);
+                    options.append(e);
+                }
+                if (ρσ_in("Great Weapon Master", response["feats"])) {
+                    e = createHTMLOption("great-weapon-master", false, character_settings);
                     options.append(e);
                 }
                 loadSettings(response.settings, character_settings);
