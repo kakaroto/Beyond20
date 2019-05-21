@@ -146,35 +146,56 @@ class Character:
                 req = {"action": "hp-update", "character": self.getDict()}
                 console.log("Sending message: " + str(req))
                 chrome.runtime.sendMessage(req);
-            
+                
+    # TODO: Do the same thing for ".ct-feature-snippet-option > .ct-feature-snippet__heading" and
+    # build a dict of {feature: option} so we could have things like {"Favored Enemy": "Undead"}, etc..
+    # Or maybe just remove the ".ct-feature-snippet > " and have the "Undead" be part of the list of features
+    # and just check that the previous one in the list is "Favored Enemy" for example.?
     def featureDetailsToList(self, selector):
-        features = $(selector).find(".ct-feature-snippet__heading")
+        features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading")
         feature_list = []
         for feat in features:
             feature_list.append(feat.childNodes[0].textContent.trim())
         return feature_list
-            
+
+    def getSetting(self, key, default_value=""):
+        if self._settings? and self._settings[key]?:
+            return self._settings[key]
+        return default_value
+
     def updateFeatures(self):
         update = False
         class_detail = $(".ct-features .ct-classes-detail")
         if class_detail.length > 0:
             self._class_features = self.featureDetailsToList(class_detail)
-            update = True
-        elif self._settings? and self._settings["class-features"]?:
+            list_str = str.join("", self._class_features)
+            setting_str = str.join("", self.getSetting("class-features", []))
+            if list_str != setting_str:
+                console.log("New class feature")
+                update = True
+        elif self.getSetting("class-features", None):
             self._class_features = list(self._settings["class-features"])
             
         race_detail = $(".ct-features .ct-race-detail")
         if race_detail.length > 0:
             self._racial_traits = self.featureDetailsToList(race_detail)
-            update = True
-        elif self._settings? and self._settings["racial-traits"]?:
+            list_str = str.join("", self._racial_traits)
+            setting_str = str.join("", self.getSetting("racial-traits", []))
+            if list_str != setting_str:
+                console.log("New race feature")
+                update = True
+        elif self.getSetting("racial-traits", None):
             self._racial_traits = list(self._settings["racial-traits"])
 
         feats_detail = $(".ct-features .ct-feats-detail")
         if feats_detail.length > 0:
             self._feats = self.featureDetailsToList(feats_detail)
-            update = True
-        elif self._settings? and self._settings["feats"]?:
+            feats_str = str.join("", self._feats)
+            feats_set_str = str.join("", self.getSetting("feats", []))
+            if feats_str != feats_set_str:
+                console.log("New Feats")
+                update = True
+        elif self.getSetting("feats", None):
             self._feats = list(self._settings["feats"])
 
         if update:
@@ -201,6 +222,10 @@ class Character:
             , "character-" + self._id, character_settings)
 
     def getDict(self):
+        settings = self._settings
+        del settings["class-features"]
+        del settings["racial-traits"]
+        del settings["feats"]
         return {"name": self._name,
                 "id": self._id,
                 "type": "Character",
@@ -213,7 +238,7 @@ class Character:
                 "speed": self._speed,
                 "hp": self._hp,
                 "max-hp": self._max_hp,
-                "settings": self._settings,
+                "settings": settings,
                 "class-features": self._class_features.as_array(),
                 "racial-traits": self._racial_traits.as_array(),
                 "feats": self._feats.as_array()}

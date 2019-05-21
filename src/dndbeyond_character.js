@@ -7373,7 +7373,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         Character.prototype.featureDetailsToList = function featureDetailsToList(selector) {
             var self = this;
             var features, feature_list, feat;
-            features = $(selector).find(".ct-feature-snippet__heading");
+            features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading");
             feature_list = ρσ_list_decorate([]);
             var ρσ_Iter3 = ρσ_Iterable(features);
             for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
@@ -7385,29 +7385,63 @@ var str = ρσ_str, repr = ρσ_repr;;
         if (!Character.prototype.featureDetailsToList.__argnames__) Object.defineProperties(Character.prototype.featureDetailsToList, {
             __argnames__ : {value: ["selector"]}
         });
+        Character.prototype.getSetting = function getSetting() {
+            var self = this;
+            var key = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var default_value = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? getSetting.__defaults__.default_value : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "default_value")){
+                default_value = ρσ_kwargs_obj.default_value;
+            }
+            if (ρσ_exists.n(self._settings) && ρσ_exists.n((ρσ_expr_temp = self._settings)[(typeof key === "number" && key < 0) ? ρσ_expr_temp.length + key : key])) {
+                return (ρσ_expr_temp = self._settings)[(typeof key === "number" && key < 0) ? ρσ_expr_temp.length + key : key];
+            }
+            return default_value;
+        };
+        if (!Character.prototype.getSetting.__defaults__) Object.defineProperties(Character.prototype.getSetting, {
+            __defaults__ : {value: {default_value:""}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["key", "default_value"]}
+        });
         Character.prototype.updateFeatures = function updateFeatures() {
             var self = this;
-            var update, class_detail, race_detail, feats_detail;
+            var update, class_detail, list_str, setting_str, race_detail, feats_detail, feats_str, feats_set_str;
             update = false;
             class_detail = $(".ct-features .ct-classes-detail");
             if (class_detail.length > 0) {
                 self._class_features = self.featureDetailsToList(class_detail);
-                update = true;
-            } else if (ρσ_exists.n(self._settings) && ρσ_exists.n(self._settings["class-features"])) {
+                list_str = str.join("", self._class_features);
+                setting_str = str.join("", self.getSetting("class-features", ρσ_list_decorate([])));
+                if ((list_str !== setting_str && (typeof list_str !== "object" || ρσ_not_equals(list_str, setting_str)))) {
+                    console.log("New class feature");
+                    update = true;
+                }
+            } else if (self.getSetting("class-features", null)) {
                 self._class_features = list(self._settings["class-features"]);
             }
             race_detail = $(".ct-features .ct-race-detail");
             if (race_detail.length > 0) {
                 self._racial_traits = self.featureDetailsToList(race_detail);
-                update = true;
-            } else if (ρσ_exists.n(self._settings) && ρσ_exists.n(self._settings["racial-traits"])) {
+                list_str = str.join("", self._racial_traits);
+                setting_str = str.join("", self.getSetting("racial-traits", ρσ_list_decorate([])));
+                if ((list_str !== setting_str && (typeof list_str !== "object" || ρσ_not_equals(list_str, setting_str)))) {
+                    console.log("New race feature");
+                    update = true;
+                }
+            } else if (self.getSetting("racial-traits", null)) {
                 self._racial_traits = list(self._settings["racial-traits"]);
             }
             feats_detail = $(".ct-features .ct-feats-detail");
             if (feats_detail.length > 0) {
                 self._feats = self.featureDetailsToList(feats_detail);
-                update = true;
-            } else if (ρσ_exists.n(self._settings) && ρσ_exists.n(self._settings["feats"])) {
+                feats_str = str.join("", self._feats);
+                feats_set_str = str.join("", self.getSetting("feats", ρσ_list_decorate([])));
+                if ((feats_str !== feats_set_str && (typeof feats_str !== "object" || ρσ_not_equals(feats_str, feats_set_str)))) {
+                    console.log("New Feats");
+                    update = true;
+                }
+            } else if (self.getSetting("feats", null)) {
                 self._feats = list(self._settings["feats"]);
             }
             if (update) {
@@ -7475,6 +7509,11 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
         Character.prototype.getDict = function getDict() {
             var self = this;
+            var settings;
+            settings = self._settings;
+            ρσ_delitem(settings, "class-features");
+            ρσ_delitem(settings, "racial-traits");
+            ρσ_delitem(settings, "feats");
             return (function(){
                 var ρσ_d = {};
                 ρσ_d["name"] = self._name;
@@ -7489,7 +7528,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["speed"] = self._speed;
                 ρσ_d["hp"] = self._hp;
                 ρσ_d["max-hp"] = self._max_hp;
-                ρσ_d["settings"] = self._settings;
+                ρσ_d["settings"] = settings;
                 ρσ_d["class-features"] = self._class_features.as_array();
                 ρσ_d["racial-traits"] = self._racial_traits.as_array();
                 ρσ_d["feats"] = self._feats.as_array();
