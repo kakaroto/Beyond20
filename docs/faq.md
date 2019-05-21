@@ -26,4 +26,10 @@ If you cannot do that (you're not the DM) or you don't wish to do it (you prefer
 
 **Q**: HP from D&D Beyond doesn't synchronize to Roll20. Am I doing something wrong ?
 
-**A**: Make sure you have at least version 0.0.9. Make sure the HP syncing is enable for that character (click the Beyond20 icon in the toolbar when in the character sheet) and make sure the names match between the character in Roll20 and D&D Beyond.
+**A**: Make sure you have at least version 0.0.9. Make sure the HP syncing is enabled for that character (click the Beyond20 icon in the toolbar when in the character sheet) and make sure the names match between the character in Roll20 and D&D Beyond (non case sensitive).
+
+---
+
+**Q**: I have the <Class feature/Feat> (Sharpshooter Feat for example) but I don't see the option to use it from the popup options even though I know it's supported.
+
+**A**: Beyond20 doesn't have access to all of your features, but it will save the list when it finds it, so if you've changed your class features (leveled up) or Feats (taken a new one), then you need to click on the "Features & Traits" tab to have the list displayed on the page for Beyond20 to pick it up and save it. After doing that, the option to use the feat should become available to you (assuming it is a supported feature that does have an option).
