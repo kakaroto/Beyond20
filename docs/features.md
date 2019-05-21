@@ -1,6 +1,6 @@
 # Feature list
 
-## Rolls
+## Character Rolls
 * Ability checks
 * Saving throws
 * Skill checks
@@ -27,8 +27,20 @@
   * Dice formulas are detected in items, spells, actions or custom actions, class features, racial traits or Feats
   * The dice formula is clickable in the D&D beyond side panel, as well as in the Roll20 chat text
   * The clickable dice can be disabled to not show in the D&D Beyond page or in the Roll20 text, separately
-* Character creatures and Monster pages also have clickable dice formulas
+* Creatures stat blocks
 
+## Monster and Creature Rolls
+* Hit points
+* Ability checks
+* Saving throws
+* Skills
+* Dice formulas in features/action descriptions
+* Ranged and Melee weapon attacks
+* Monsters from the My Enoucnters page directly supported
+
+## Spell Compendium Pages
+* Dice formulas from description
+* Display button to display the spell card
 
 ## Information sharing
 * Spell cards can be displayed in Roll20
@@ -46,11 +58,16 @@
 
 ## Configurable options
 * Whisper rolls
+* Whisper rolls for monster pages
 * Roll twice for advantage/disadvantage
 * Add initiative to the tracker (requires token to be selected)
 * Replace dice formulas in Roll20 text
 * Add dice formulas roller icon to D&D Beyond text
 * Prefix to add to critical hit damage
+* Components to display during a spell attack
+  * All components (V, S, M)
+  * Only material components if needed
+  * No components
 * Roll20 Character Sheet Template to use
 * Roll20 tab specific options
   * Select a tab to send all rolls to
@@ -59,8 +76,10 @@
 * D&D Beyond character specific options
   * Automatically update HP in the Roll20 sheets and tokens
   * Send sneak attack damage (Rogues only)
-  * Send Disciple of Life healing bonus (Cleric only)
+  * Send Disciple of Life healing bonus (Life domain Cleric only)
   * Add Jack of all Trades bonus to raw ability checks (Bard only >= 2nd level)
+  * Apply Sharpshooter Feat for the next roll (Only if Feat is available)
+  * Apply Great Weapon Master Feat for the next roll (Only if Feat is available)
 
 ## Roll20 Character Sheet Templates
 * D&D 5e By Roll20
@@ -77,14 +96,4 @@
 
 These are items that are not yet supported but which I plan on adding support for at some point in the future.
 
-* Rolling from monster stat pages
-* Add support for skills/items that have advantage/disadvantage notes (like disadvantage on stealth for heavy armor users)
-* Add support for more unique features (similar to Sneak Attack/Disciple of Life)
-* Add a way to show errors (such as "can't find an open roll20 tab")
-* Add support for more character sheet templates in roll20.
-* Add a dice roller so it can also be used to roll directly without roll20, if wanted.
-* Add support for special cases, like Toll the Dead, Elemental Bane, etc..
-* Check entire list of spells and feature to find special cases to support
-
-
-
+{% include_relative TODO.md %}
