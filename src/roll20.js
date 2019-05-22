@@ -6546,7 +6546,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             return roll;
         };
         if (!genRoll.__defaults__) Object.defineProperties(genRoll, {
-            __defaults__ : {value: {modifiers:ρσ_list_decorate([])}},
+            __defaults__ : {value: {modifiers:{}}},
             __handles_kwarg_interpolation__ : {value: true},
             __argnames__ : {value: ["dice", "modifiers"]}
         });
@@ -6750,7 +6750,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, advantage_type, modifier, ability, prof, prof_val, dice_roll, roll_properties, dice, dice_formula, rname, properties, source, components, description, higher, healing_spell, level, mod;
+            var roll, advantage_type, modifier, ability, prof, prof_val, joat, dice_roll, roll_properties, dice, dice_formula, rname, properties, source, components, description, higher, healing_spell, level, mod;
             print("Got message : " + str(request));
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
@@ -6833,13 +6833,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }
                 } else if ((request.type === "ability" || typeof request.type === "object" && ρσ_equals(request.type, "ability"))) {
                     if (ρσ_exists.n(request["JoaT"])) {
+                        joat = "+" + request["JoaT"];
                         dice_roll = genRoll("1d20", (function(){
                             var ρσ_d = {};
                             ρσ_d[request.ability] = request.modifier;
-                            ρσ_d["JoaT"] = request["JoaT"];
+                            ρσ_d["JoaT"] = joat;
                             return ρσ_d;
                         }).call(this));
-                        modifier = request.modifier + request["JoaT"];
+                        modifier = request.modifier + " " + joat;
                     } else {
                         dice_roll = genRoll("1d20", (function(){
                             var ρσ_d = {};

@@ -8244,7 +8244,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["text-align"] = "center";
                 return ρσ_d;
             }).call(this));
-            $("#" + str(id)).on("click", (function() {
+            $("#" + str(id) + " button").on("click", (function() {
                 var ρσ_anonfunc = function (event) {
                     callback();
                 };

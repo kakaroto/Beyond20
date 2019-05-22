@@ -623,7 +623,7 @@ def addRollButton(callback, where, small=False, append=False, prepend=False, ima
     $("#" + str(id)).css({"float": "right",
                                 "display": "block",
                                 "text-align": "center"})
-    $("#" + str(id)).on('click', def(event):
+    $("#" + str(id) + " button").on('click', def(event):
         callback()
     )
     return id

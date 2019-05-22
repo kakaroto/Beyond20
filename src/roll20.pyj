@@ -30,7 +30,7 @@ def postChatMessage(message, character=None):
     txt.value = old_text
     speakingas.value = old_as
 
-def genRoll(dice, modifiers=[]):
+def genRoll(dice, modifiers={}):
     roll = "[[" + dice
     for m in modifiers:
         mod = modifiers[m]
@@ -211,8 +211,9 @@ def handleMessage (request, sender, sendResponse):
                                   advantage_type:1})
         elif request.type == "ability":
             if request["JoaT"]?:
-                dice_roll = genRoll("1d20", {request.ability: request.modifier, "JoaT": request["JoaT"]})
-                modifier = request.modifier + request["JoaT"]
+                joat = "+" + request["JoaT"]
+                dice_roll = genRoll("1d20", {request.ability: request.modifier, "JoaT": joat})
+                modifier = request.modifier + " " + joat
             else:
                 dice_roll = genRoll("1d20", {request.ability: request.modifier})
                 modifier = request.modifier
