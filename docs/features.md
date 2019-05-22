@@ -1,6 +1,8 @@
 # Feature list
 
-## Character Rolls
+See the [Screenshots](screenshots) page for a video tour of all the features listed here.
+
+## Character Sheet
 * Ability checks
 * Saving throws
 * Skill checks
@@ -29,7 +31,7 @@
   * The clickable dice can be disabled to not show in the D&D Beyond page or in the Roll20 text, separately
 * Creatures stat blocks
 
-## Monster and Creature Rolls
+## Monsters and Character creatures
 * Hit points
 * Ability checks
 * Saving throws
@@ -83,7 +85,7 @@
 
 ## Roll20 Character Sheet Templates
 * D&D 5e By Roll20
-  * This is the official character sheet template and the one recommended
+  * This is the official character sheet template I use and develop for and the one I recommend
 * Fallback option for all other templates
 
 

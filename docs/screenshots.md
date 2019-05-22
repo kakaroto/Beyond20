@@ -1,16 +1,28 @@
-I've made a [video](https://www.youtube.com/watch?v=mY0MNNrHHdM) tour of all the features of Beyond20 when it was first released. While majorly outdated, it's still a useful thing to watch.
+I've made a [video tour](https://www.youtube.com/watch?v=QRyB7qPEyKw) of all the features of Beyond20 v0.1.
 
-<iframe width="480" height="360" src="https://www.youtube.com/embed/mY0MNNrHHdM" frameborder="0"> </iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/QRyB7qPEyKw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen> </iframe>
 
-Here are some screenshots to show you how amazing Beyond20 is:
+If you don't have an entire 15 minutes of your life to sacrifice to my boring video, I've also done a much quicker demo of the most important features [here](https://www.youtube.com/watch?v=vHtR9hsbzP4)
+<iframe width="560" height="315" src="https://www.youtube.com/embed/vHtR9hsbzP4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-Screenshots were last updated in v0.0.1. You can see the [changelog](Changelog) to see if any new features were added since.
+If you don't even have 2 minutes to spend watching that, then here are some screenshots to show you just how amazing Beyond20 is (**click to zoom**):
 
-![s1](https://lh3.googleusercontent.com/HH_vr8XrWxnNXfs1Nlo6Lybv5_zpmsA3k_nSBq_6bvQttkBCZY3dd4WYhLNmsLJ0L0md3zW2TSo=w640-h400-e365)
+[![s1](images/screenshots/feature-equipment-attack.png)](images/screenshots/feature-equipment-attack.png)
+![up](images/up-arrow.png){:height="16px"} This shows the "Beyond20" roll button and "Display in Roll20" button that get added to the side panels, as well as the Roll20 chat showing a class Feature display, an equipment item, a roll from clicking on the dice in the potion's description, and finally an attack of a multi-damage weapon.
 
-![s2](https://lh3.googleusercontent.com/9mNwVHnIJwOdYEqTRuTBKNfx5gT3M9XcChUhdGCGATyGMlor0wnSwjtCqRvGMMKRpQtJYhbCuuc=w640-h400-e365)
+[![s2](images/screenshots/spell-cast.png)](images/screenshots/spell-cast.png)
+![up](images/up-arrow.png){:height="16px"} This shows how a spell card is displayed in Roll20 as well as an attack spell beingcast :
 
-![s3](https://lh3.googleusercontent.com/3f7I6izvPY42YpWWEGq_7sxPlDdpD09P-4VRBrImpWZR6X73n1l6P56-tXMtPOE7SVhr5xX62w=w640-h400-e365)
+[![s3](images/screenshots/hit-dice.png)](images/screenshots/hit-dice.png)
+![up](images/up-arrow.png){:height="16px"} This shows the "Roll Hit Die" buttons in the Short rest panel, with support for multiclassing. You can also see previous rolls for ability, saving throws and skill checks.
 
-![s4](https://lh3.googleusercontent.com/1RGPhVFfYRtaAge-wQIzGvgwucUAitGoxXBHnkm8X7dL6O3nEOIU_DEs4pNd9NT2zQodDek0=w640-h400-e365)
+[![s4](images/screenshots/skill-popup-menu.png)](images/screenshots/skill-popup-menu.png)
+![up](images/up-arrow.png){:height="16px"} This shows the button on the skill check panel but most importantly the popup menu with the quickly accessible options.
+
+[![s5](images/screenshots/monster-page.png)](images/screenshots/monster-page.png)
+![up](images/up-arrow.png){:height="16px"} This shows the monster page with all the dice added to the monster stat block. An insight check was rolled as well as the two attacks of the monster
+
+[![s6](images/screenshots/spell-page.png)](images/screenshots/spell-page.png)
+![up](images/up-arrow.png){:height="16px"} This shows the monsterspell page where dice formulas are replaced in the spell description automatically. A "Display spell card on roll20" button is also available, which displays the spell card when selected. The spell card is shown as it appears in Roll20 on the left.
+
 
