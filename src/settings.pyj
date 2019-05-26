@@ -13,8 +13,7 @@ options_list = {
                  "type": "bool",
                  "default": False},
 
-    "whisper-monsters": {"short": "Whisper monster rolls",
-                         "title": "Whisper monster rolls to the DM",
+    "whisper-monsters": {"title": "Whisper monster rolls to the DM",
                          "description": "If enabled, all the rolls from monster stat blocks will be whispered to the DM",
                          "type": "bool",
                          "default": True},
@@ -25,11 +24,21 @@ options_list = {
                        "type": "bool",
                        "default": True},
 
-    "initiative-tracker": {"short": "Add Initiative to tracker",
-                           "title": "Add initiative roll to the Turn Tracker",
+    "initiative-tracker": {"title": "Add initiative roll to the Turn Tracker",
                            "description": "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in Roll20, and will also change the way the output of 'Advantage on initiative' rolls appear",
                            "type": "bool",
                            "default": True},
+
+    "update-hp": {"title": "Update Roll20 Token HP",
+                  "description": "When changing HP here, update it in Roll20 tokens and sheets",
+                  "type": "bool",
+                  "default": True},
+
+    "template": {"title": "Roll20 Character Sheet Setting",
+                 "description": "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.",
+                 "type": "combobox",
+                 "default": "roll20",
+                 "choices": {"roll20": "D&D 5E By Roll20", "default": "Other templates"}},
 
     "subst-roll20": {"title": "Replace Dices formulas in Roll20",
                      "description": "In Roll20, if a spell card or an item or a feat has a dice formula in its description,\nenabling this will make the formula clickable to generate the roll in chat.",
@@ -57,19 +66,6 @@ options_list = {
                          "type": "string",
                          "default": "Components: "},
 
-    "template": {"title": "Roll20 Character Sheet Setting",
-                 "description": "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.",
-                 "type": "combobox",
-                 "default": "roll20",
-                 "choices": {"roll20": "D&D 5E By Roll20", "default": "Other templates"}},
-
-    "donate": {"short": "Buy me rations for 1 day",
-               "title": "Donate to show your appreciation!",
-               "description": "I know you already appreciate this extension, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active or just to say thank you, you can!",
-               "type": "link", 
-               "default": "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=VGUJ8F5CR8XSE&item_name=Beyond20+Software+Development&no_shipping=1&no_note=0&tax=0&currency_code=USD&lc=US&bn=PP_DonationsBF&Z3JncnB0=&return=https://beyond20.here-for-more.info/thankyou",
-               "icon": "images/donate.png"},
-
     "roll20-tab": {"title": "Select the Roll20 tab or campaign to send rolls to", 
                    "description": "Select the tab to send rolls to or the specific campaign name.\nYou can select the campaign or tab from the extension's popup menu in the Roll20 tab itself.\nAfter a specific tab is selected and that tab is closed, it will revert to sending rolls to the same campaign.",
                    "type": "special",
@@ -79,9 +75,18 @@ options_list = {
                        "description": "When a new version is released and the extension has been updated,\nopen the changelog in a new window",
                        "type": "bool",
                        "default": True},
+
     "last-version": {"description": "Last version that was installed. Used to check if an update just happened",
-                     "type": "hidden",
-                     "default": ""}
+                     "type": "string",
+                     "hidden": "True",
+                     "default": ""},
+
+    "donate": {"short": "Buy me rations for 1 day",
+               "title": "Donate to show your appreciation!",
+               "description": "I know you already appreciate this extension, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active or just to say thank you, you can!",
+               "type": "link", 
+               "default": "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=VGUJ8F5CR8XSE&item_name=Beyond20+Software+Development&no_shipping=1&no_note=0&tax=0&currency_code=USD&lc=US&bn=PP_DonationsBF&Z3JncnB0=&return=https://beyond20.here-for-more.info/thankyou",
+               "icon": "images/donate.png"}
     }
 
 character_settings = {
@@ -105,10 +110,6 @@ character_settings = {
                             "description": "Apply Great Weapon Master -5 penalty to roll and +10 to damage",
                             "type": "bool",
                             "default": False},
-    "update-hp": {"title": "Update Roll20 Token HP",
-                  "description": "When changing HP here, update it in Roll20 tokens and sheets",
-                  "type": "bool",
-                  "default": True}
 }
 
 
@@ -159,7 +160,7 @@ def resetSettings(cb=None, _list=options_list):
     setSettings(getDefaultSettings(_list), cb)
 
 def createHTMLOptionEx(name, option, short=False):
-    if (option.type == "hidden") or \
+    if (option.hidden == True) or \
             (short and not option.short?) or \
             (not option.title?):
         return None

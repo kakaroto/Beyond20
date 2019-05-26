@@ -142,10 +142,9 @@ class Character:
             self._max_hp = max_hp
             print("HP updated to : " + hp + "/" + max_hp)
 
-            if self._settings and self._settings["update-hp"]:
-                req = {"action": "hp-update", "character": self.getDict()}
-                console.log("Sending message: " + str(req))
-                chrome.runtime.sendMessage(req);
+            req = {"action": "hp-update", "character": self.getDict()}
+            console.log("Sending message: " + str(req))
+            chrome.runtime.sendMessage(req);
                 
     # TODO: Do the same thing for ".ct-feature-snippet-option > .ct-feature-snippet__heading" and
     # build a dict of {feature: option} so we could have things like {"Favored Enemy": "Undead"}, etc..

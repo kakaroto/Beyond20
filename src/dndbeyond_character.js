@@ -5474,11 +5474,13 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "utils";
-        var ROLL20_URL, DNDBEYOND_URL, CHANGELOG_URL;
+        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, CHANGELOG_URL;
         var re = ρσ_modules.re;
 
         ROLL20_URL = "*://app.roll20.net/editor/";
-        DNDBEYOND_URL = "*://*.dndbeyond.com/*characters/*";
+        DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
+        DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
+        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/monsters/*";
         CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
         function escapeRoll20Macro(text) {
             var to_escape;
@@ -5630,7 +5632,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         ρσ_modules.utils.ROLL20_URL = ROLL20_URL;
-        ρσ_modules.utils.DNDBEYOND_URL = DNDBEYOND_URL;
+        ρσ_modules.utils.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
+        ρσ_modules.utils.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
+        ρσ_modules.utils.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
         ρσ_modules.utils.CHANGELOG_URL = CHANGELOG_URL;
         ρσ_modules.utils.escapeRoll20Macro = escapeRoll20Macro;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
@@ -5664,7 +5668,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             ρσ_d["whisper-monsters"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["short"] = "Whisper monster rolls";
                 ρσ_d["title"] = "Whisper monster rolls to the DM";
                 ρσ_d["description"] = "If enabled, all the rolls from monster stat blocks will be whispered to the DM";
                 ρσ_d["type"] = "bool";
@@ -5682,11 +5685,32 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             ρσ_d["initiative-tracker"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["short"] = "Add Initiative to tracker";
                 ρσ_d["title"] = "Add initiative roll to the Turn Tracker";
                 ρσ_d["description"] = "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in Roll20, and will also change the way the output of 'Advantage on initiative' rolls appear";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["update-hp"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Update Roll20 Token HP";
+                ρσ_d["description"] = "When changing HP here, update it in Roll20 tokens and sheets";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["template"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Roll20 Character Sheet Setting";
+                ρσ_d["description"] = "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = "roll20";
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["roll20"] = "D&D 5E By Roll20";
+                    ρσ_d["default"] = "Other templates";
+                    return ρσ_d;
+                }).call(this);
                 return ρσ_d;
             }).call(this);
             ρσ_d["subst-roll20"] = (function(){
@@ -5736,30 +5760,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = "Components: ";
                 return ρσ_d;
             }).call(this);
-            ρσ_d["template"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Roll20 Character Sheet Setting";
-                ρσ_d["description"] = "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.";
-                ρσ_d["type"] = "combobox";
-                ρσ_d["default"] = "roll20";
-                ρσ_d["choices"] = (function(){
-                    var ρσ_d = {};
-                    ρσ_d["roll20"] = "D&D 5E By Roll20";
-                    ρσ_d["default"] = "Other templates";
-                    return ρσ_d;
-                }).call(this);
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["donate"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["short"] = "Buy me rations for 1 day";
-                ρσ_d["title"] = "Donate to show your appreciation!";
-                ρσ_d["description"] = "I know you already appreciate this extension, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active or just to say thank you, you can!";
-                ρσ_d["type"] = "link";
-                ρσ_d["default"] = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=VGUJ8F5CR8XSE&item_name=Beyond20+Software+Development&no_shipping=1&no_note=0&tax=0&currency_code=USD&lc=US&bn=PP_DonationsBF&Z3JncnB0=&return=https://beyond20.here-for-more.info/thankyou";
-                ρσ_d["icon"] = "images/donate.png";
-                return ρσ_d;
-            }).call(this);
             ρσ_d["roll20-tab"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Select the Roll20 tab or campaign to send rolls to";
@@ -5779,8 +5779,19 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["last-version"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["description"] = "Last version that was installed. Used to check if an update just happened";
-                ρσ_d["type"] = "hidden";
+                ρσ_d["type"] = "string";
+                ρσ_d["hidden"] = "True";
                 ρσ_d["default"] = "";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["donate"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["short"] = "Buy me rations for 1 day";
+                ρσ_d["title"] = "Donate to show your appreciation!";
+                ρσ_d["description"] = "I know you already appreciate this extension, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active or just to say thank you, you can!";
+                ρσ_d["type"] = "link";
+                ρσ_d["default"] = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=VGUJ8F5CR8XSE&item_name=Beyond20+Software+Development&no_shipping=1&no_note=0&tax=0&currency_code=USD&lc=US&bn=PP_DonationsBF&Z3JncnB0=&return=https://beyond20.here-for-more.info/thankyou";
+                ρσ_d["icon"] = "images/donate.png";
                 return ρσ_d;
             }).call(this);
             return ρσ_d;
@@ -5825,14 +5836,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["description"] = "Apply Great Weapon Master -5 penalty to roll and +10 to damage";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["update-hp"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Update Roll20 Token HP";
-                ρσ_d["description"] = "When changing HP here, update it in Roll20 tokens and sheets";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
             return ρσ_d;
@@ -6035,7 +6038,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 short = ρσ_kwargs_obj.short;
             }
             var description, title, description_p, e, make_li, dropdown_options, p;
-            if ((option.type === "hidden" || typeof option.type === "object" && ρσ_equals(option.type, "hidden")) || short && !ρσ_exists.n(option.short) || !ρσ_exists.n(option.title)) {
+            if ((option.hidden === true || typeof option.hidden === "object" && ρσ_equals(option.hidden, true)) || short && !ρσ_exists.n(option.short) || !ρσ_exists.n(option.title)) {
                 return null;
             }
             description = (short) ? "" : option.description;
@@ -7358,16 +7361,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 self._hp = hp;
                 self._max_hp = max_hp;
                 print("HP updated to : " + hp + "/" + max_hp);
-                if (self._settings && self._settings["update-hp"]) {
-                    req = (function(){
-                        var ρσ_d = {};
-                        ρσ_d["action"] = "hp-update";
-                        ρσ_d["character"] = self.getDict();
-                        return ρσ_d;
-                    }).call(this);
-                    console.log("Sending message: " + str(req));
-                    chrome.runtime.sendMessage(req);
-                }
+                req = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["action"] = "hp-update";
+                    ρσ_d["character"] = self.getDict();
+                    return ρσ_d;
+                }).call(this);
+                console.log("Sending message: " + str(req));
+                chrome.runtime.sendMessage(req);
             }
         };
         Character.prototype.featureDetailsToList = function featureDetailsToList(selector) {

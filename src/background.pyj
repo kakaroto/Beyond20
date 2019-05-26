@@ -1,4 +1,4 @@
-from utils import ROLL20_URL, DNDBEYOND_URL, CHANGELOG_URL, roll20TabTitle, getBrowser
+from utils import ROLL20_URL, DNDBEYOND_CHARACTER_URL, CHANGELOG_URL, roll20TabTitle, getBrowser
 from settings import getDefaultSettings, getStoredSettings, mergeSettings
 
 settings = getDefaultSettings()
@@ -42,7 +42,7 @@ def sendMessageToRoll20(request, limit=None):
     else:
         sendMessageTo(ROLL20_URL, request)
 def sendMessageToBeyond(request):
-    sendMessageTo(DNDBEYOND_URL, request)
+    sendMessageTo(DNDBEYOND_CHARACTER_URL, request)
 
 def onMessage(request, sender, sendResponse):
     nonlocal settings
