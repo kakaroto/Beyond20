@@ -5756,7 +5756,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["title"] = "Donate to show your appreciation!";
                 ρσ_d["description"] = "I know you already appreciate this extension, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active or just to say thank you, you can!";
                 ρσ_d["type"] = "link";
-                ρσ_d["default"] = "https://www.paypal.me/KaKaRoTo";
+                ρσ_d["default"] = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=VGUJ8F5CR8XSE&item_name=Beyond20+Software+Development&no_shipping=1&no_note=0&tax=0&currency_code=USD&lc=US&bn=PP_DonationsBF&Z3JncnB0=&return=https://beyond20.here-for-more.info/thankyou";
                 ρσ_d["icon"] = "images/donate.png";
                 return ρσ_d;
             }).call(this);

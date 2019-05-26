@@ -1,0 +1,1 @@
+https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=VGUJ8F5CR8XSE&item_name=Beyond20+Software+Development&no_shipping=1&no_note=0&tax=0&currency_code=USD&lc=US&bn=PP_DonationsBF&Z3JncnB0=&return=https://beyond20.here-for-more.info/thankyou

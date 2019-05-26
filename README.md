@@ -64,5 +64,6 @@ The icon image is based on a public domain image from openclipart. I downloaded 
 
 The donation icon is a public domain contribution by Fission Strategy, US, downloaded from [thenounproject](https://thenounproject.com/term/donation/15047/)
 
-The options page was copied in part from the `D&D Beyond Toolbox` extension available [here](https://github.com/mouse0270/Beyonds-Toolbox/). The html and css files are licensed under the MIT license which is provided in the LICENSE.MIT file
+The 'up' arrow (docs/images/up-arrow.png) used in the screenshots page is a public domain image shared by OCAL on [clker.com](http://www.clker.com/clipart-16838.html)
 
+The options page was copied in part from the `D&D Beyond Toolbox` extension available [here](https://github.com/mouse0270/Beyonds-Toolbox/). The html and css files are licensed under the MIT license which is provided in the LICENSE.MIT file
