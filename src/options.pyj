@@ -21,9 +21,13 @@ def save_settings():
             , 3000)
     saveSettings(cb)
 
+def gotSettings(stored_settings):
+    $("ul").removeClass("disabled")
+
 def setupHTML():
     createOptionList()
-    initializeSettings()
+    $("ul").addClass("disabled")
+    initializeSettings(gotSettings)
     $('#save').bind('click', save_settings)
     $('.beyond20-option-input').change(save_settings)
     $(".beyond20-options").on("markaChanged", save_settings)

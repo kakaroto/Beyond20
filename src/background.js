@@ -5728,7 +5728,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["crit-prefix"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Critical Hit Prefix";
-                ρσ_d["description"] = "Prefix to add to the Critical Hit dice result.\nI've found it less confusing for players to point out that the '+ X' is the crit damage";
+                ρσ_d["description"] = "Prefix to add to the Critical Hit dice result.\nIt might be less confusing to explicitely show the crit damage";
                 ρσ_d["type"] = "string";
                 ρσ_d["default"] = "Crit: ";
                 return ρσ_d;
@@ -5751,7 +5751,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["component-prefix"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Component Prefix";
-                ρσ_d["description"] = "Prefix to add to the display of the components of a spell during an attack.\nYou may want to change it to 'Materials used :' for example, if only displaying material components";
+                ρσ_d["description"] = "Prefix to the components display of a spell attack.\nIf displaying material components only, you may want to set it to 'Materials used :' for example";
                 ρσ_d["type"] = "string";
                 ρσ_d["default"] = "Components: ";
                 return ρσ_d;
@@ -5794,6 +5794,22 @@ var str = ρσ_str, repr = ρσ_repr;;
         }).call(this);
         character_settings = (function(){
             var ρσ_d = {};
+            ρσ_d["custom-roll-dice"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Custom Roll dice formula bonus";
+                ρσ_d["description"] = "Add custom formula to d20 rolls (Bless, Guidance, Bane, Magic Weapon, etc..)";
+                ρσ_d["type"] = "string";
+                ρσ_d["default"] = "";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["custom-damage-dice"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Custom Damage dice formula bonus";
+                ρσ_d["description"] = "Add custom dice to damage rolls (Magic Weapon, Elemental Weapon, etc..)";
+                ρσ_d["type"] = "string";
+                ρσ_d["default"] = "";
+                return ρσ_d;
+            }).call(this);
             ρσ_d["rogue-sneak-attack"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Rogue: Sneak Attack";
@@ -5836,8 +5852,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             return ρσ_d;
         }).call(this);
+        function getStorage() {
+            return chrome.storage.sync;
+        };
+
         function storageGet(name, default_value, cb) {
-            chrome.storage.sync.get((function(){
+            getStorage().get((function(){
                 var ρσ_d = {};
                 ρσ_d[name] = default_value;
                 return ρσ_d;
@@ -5864,7 +5884,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
                 cb = ρσ_kwargs_obj.cb;
             }
-            chrome.storage.sync.set((function(){
+            getStorage().set((function(){
                 var ρσ_d = {};
                 ρσ_d[name] = value;
                 return ρσ_d;
@@ -6033,17 +6053,16 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "short")){
                 short = ρσ_kwargs_obj.short;
             }
-            var description, title, description_p, e, make_li, dropdown_options, p;
+            var description_p, title, e, make_li, dropdown_options, p;
             if ((option.hidden === true || typeof option.hidden === "object" && ρσ_equals(option.hidden, true)) || short && !ρσ_exists.n(option.short) || !ρσ_exists.n(option.title)) {
                 return null;
             }
-            description = (short) ? "" : option.description;
+            description_p = (short) ? ρσ_list_decorate([]) : list(map(E.p, option.description.split("\n")));
             title = (short) ? option.short : option.title;
-            description_p = list(map(E.p, description.split("\n")));
             if ((option.type === "bool" || typeof option.type === "object" && ρσ_equals(option.type, "bool"))) {
                 e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [E.h4(title)].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.input, [ρσ_desugar_kwargs({id: name, class_: "beyond20-option-input", name: name, type_: "checkbox"})]), ρσ_interpolate_kwargs.call(E, E.label, [ρσ_desugar_kwargs({for_: name, class_: "label-default"})])].concat([ρσ_desugar_kwargs({class_: "material-switch pull-right"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-bool"})]));
             } else if ((option.type === "string" || typeof option.type === "object" && ρσ_equals(option.type, "string"))) {
-                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [E.h4(title)].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.input, [ρσ_desugar_kwargs({id: name, class_: "beyond20-option-input", name: name, type_: "text"})])]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name, style: "padding-right: 15px;"})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-string"})]));
+                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [E.h4(title)].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.input, [ρσ_desugar_kwargs({id: name, class_: "beyond20-option-input", name: name, type_: "text"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-string"})]));
             } else if ((option.type === "combobox" || typeof option.type === "object" && ρσ_equals(option.type, "combobox"))) {
                 make_li = (function() {
                     var ρσ_anonfunc = function (o) {
@@ -6245,10 +6264,14 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function restoreSavedSettings() {
-            var key = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? restoreSavedSettings.__defaults__.key : arguments[0];
-            var _list = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? restoreSavedSettings.__defaults__._list : arguments[1];
+            var cb = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? restoreSavedSettings.__defaults__.cb : arguments[0];
+            var key = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? restoreSavedSettings.__defaults__.key : arguments[1];
+            var _list = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? restoreSavedSettings.__defaults__._list : arguments[2];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
+                cb = ρσ_kwargs_obj.cb;
+            }
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
                 key = ρσ_kwargs_obj.key;
             }
@@ -6260,6 +6283,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             load = (function() {
                 var ρσ_anonfunc = function (stored_settings) {
                     loadSettings(stored_settings, _list);
+                    if (cb) {
+                        cb(stored_settings);
+                    }
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                     __argnames__ : {value: ["stored_settings"]}
@@ -6269,9 +6295,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             getStoredSettings(load, key, _list);
         };
         if (!restoreSavedSettings.__defaults__) Object.defineProperties(restoreSavedSettings, {
-            __defaults__ : {value: {key:"settings", _list:options_list}},
+            __defaults__ : {value: {cb:null, key:"settings", _list:options_list}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["key", "_list"]}
+            __argnames__ : {value: ["cb", "key", "_list"]}
         });
 
         function saveSettings() {
@@ -6295,9 +6321,20 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function initializeSettings() {
+            var cb = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? initializeSettings.__defaults__.cb : arguments[0];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
+                cb = ρσ_kwargs_obj.cb;
+            }
             initializeMarka();
-            restoreSavedSettings();
+            restoreSavedSettings(cb);
         };
+        if (!initializeSettings.__defaults__) Object.defineProperties(initializeSettings, {
+            __defaults__ : {value: {cb:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["cb"]}
+        });
 
         function createRoll20TabCombobox(name, short, dropdown_options) {
             var option, description, title, description_p, p;
@@ -6438,6 +6475,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.settings.options_list = options_list;
         ρσ_modules.settings.character_settings = character_settings;
         ρσ_modules.settings.current_tab = current_tab;
+        ρσ_modules.settings.getStorage = getStorage;
         ρσ_modules.settings.storageGet = storageGet;
         ρσ_modules.settings.storageSet = storageSet;
         ρσ_modules.settings.getDefaultSettings = getDefaultSettings;

@@ -175,6 +175,7 @@ def handleMessage (request, sender, sendResponse):
             advantage_type = "always"
         else:
             advantage_type = "normal"
+        custom_roll_dice = request.character.settings["custom-roll-dice"]
         if request.type == "skill":
             modifier = request.modifier
             # Custom skill
@@ -199,24 +200,24 @@ def handleMessage (request, sender, sendResponse):
                                  {"charname": request.character.name,
                                   "rname" : request.skill,
                                   "mod": "[[" + modifier + prof_val + "]]",
-                                  "r1": genRoll("1d20", {"--": modifier, prof: prof_val}),
-                                  "r2": genRoll("1d20", {"--": modifier, prof: prof_val}),
+                                  "r1": genRoll("1d20", {"--": modifier, prof: prof_val, "CUSTOM": custom_roll_dice}),
+                                  "r2": genRoll("1d20", {"--": modifier, prof: prof_val, "CUSTOM": custom_roll_dice}),
                                   advantage_type:1})
             else:
                 roll += template("simple",
                                  {"charname": request.character.name,
                                   "rname" : request.skill,
                                   "mod": modifier,
-                                  "r1": genRoll("1d20", {request.ability: modifier}),
-                                  "r2": genRoll("1d20", {request.ability: modifier}),
+                                  "r1": genRoll("1d20", {request.ability: modifier, "CUSTOM": custom_roll_dice}),
+                                  "r2": genRoll("1d20", {request.ability: modifier, "CUSTOM": custom_roll_dice}),
                                   advantage_type:1})
         elif request.type == "ability":
             if request["JoaT"]?:
                 joat = "+" + request["JoaT"]
-                dice_roll = genRoll("1d20", {request.ability: request.modifier, "JoaT": joat})
+                dice_roll = genRoll("1d20", {request.ability: request.modifier, "JoaT": joat, "CUSTOM": custom_roll_dice})
                 modifier = request.modifier + " " + joat
             else:
-                dice_roll = genRoll("1d20", {request.ability: request.modifier})
+                dice_roll = genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice})
                 modifier = request.modifier
             roll += template("simple",
                              {"charname": request.character.name,
@@ -230,8 +231,8 @@ def handleMessage (request, sender, sendResponse):
                              {"charname": request.character.name,
                               "rname" : request.name + " Save",
                               "mod": request.modifier,
-                              "r1": genRoll("1d20", {request.ability: request.modifier}),
-                              "r2": genRoll("1d20", {request.ability: request.modifier}),
+                              "r1": genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice}),
+                              "r2": genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice}),
                               advantage_type:1})
         elif request.type == "initiative":
             roll_properties = {"charname": request.character.name,
@@ -239,10 +240,10 @@ def handleMessage (request, sender, sendResponse):
                                "mod": request.initiative}
             if settings["initiative-tracker"]:
                 dice = "2d20kh1" if request.advantage else "1d20"
-                roll_properties["r1"] = genRoll(dice, {"INIT": request.initiative, "": "&{tracker}"})
+                roll_properties["r1"] = genRoll(dice, {"INIT": request.initiative, "CUSTOM": custom_roll_dice, "": "&{tracker}"})
                 roll_properties["normal"] = 1
             else:
-                dice_formula = genRoll("1d20", {"INIT": request.initiative})
+                dice_formula = genRoll("1d20", {"INIT": request.initiative, "CUSTOM": custom_roll_dice})
                 roll_properties["r1"] = dice_formula
                 if request.advantage:
                     roll_properties["r2"] = dice_formula
@@ -265,8 +266,8 @@ def handleMessage (request, sender, sendResponse):
                           "rname" : request.name}
             if request["to-hit"]?:
                 properties["mod"] = request["to-hit"]
-                properties["r1"] = genRoll("1d20", {"": request["to-hit"]})
-                properties["r2"] = genRoll("1d20", {"": request["to-hit"]})
+                properties["r1"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
+                properties["r2"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
                 properties[advantage_type] = 1
                 properties["attack"] = 1
             if request["damage"]?:
@@ -345,8 +346,8 @@ def handleMessage (request, sender, sendResponse):
             healing_spell = False
             if request["to-hit"]?:
                 properties["mod"] = request["to-hit"]
-                properties["r1"] = genRoll("1d20", {"": request["to-hit"]})
-                properties["r2"] = genRoll("1d20", {"": request["to-hit"]})
+                properties["r1"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
+                properties["r2"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
                 properties[advantage_type] = 1
                 properties["attack"] = 1
             if request["damage"]?:

@@ -1,9 +1,16 @@
 from elementmaker import E
 from settings import options_list, character_settings, createHTMLOption, createHTMLOptionEx, \
-    initializeSettings, saveSettings, setCurrentTab, restoreSavedSettings, loadSettings
+    initializeSettings, saveSettings, setCurrentTab, restoreSavedSettings, loadSettings, extractSettingsData
 from utils import ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL
 
+background = chrome.extension.getBackgroundPage()
 character = None
+settings = None
+def gotSettings(stored_settings):
+    nonlocal settings
+    settings = stored_settings
+    $("ul").removeClass("disabled")
+
 def createOptionList():
     options = []
     for option in options_list:
@@ -33,6 +40,38 @@ def save_settings():
                          chrome.runtime.sendMessage({"action": "settings", "type": "character", "id": character.id, "settings": settings})
                      , "character-" + character.id, character_settings)
 
+def defer_save_settings():
+    nonlocal character, settings
+    chrome.runtime.sendMessage({"action": "Test"})
+    if settings == None:
+        return
+    general_settings = extractSettingsData()
+    send_update = False
+    for option in general_settings:
+        if settings[option] != general_settings[option]:
+            send_update = True
+            break
+    background.console.log("send-update: ", send_update)
+    if send_update:
+        chrome.runtime.sendMessage({"action": "merge-settings",
+                                    "type": "general",
+                                    "key": "settings",
+                                    "settings": general_settings})
+    if character is not None:
+        char_settings = extractSettingsData(character_settings)
+        send_update = False
+        for option in char_settings:
+            if character.settings[option] != char_settings[option]:
+                send_update = True
+                break
+        background.console.log("send-character-update: ", send_update)
+        if send_update:
+            chrome.runtime.sendMessage({"action": "merge-settings",
+                                        "type": "character",
+                                        "key": "settings",
+                                        "settings": character_settings})
+    background.console.log("done")
+
 def setupHTML():
     createOptionList()
     $('.beyond20-option-input').change(save_settings)
@@ -43,6 +82,7 @@ def setupHTML():
             chrome.tabs.create({"url": this.href})
         return False
     )
+    $("ul").addClass("disabled")
 
 def populateCharacter(response):
     nonlocal character
@@ -55,34 +95,29 @@ def populateCharacter(response):
                             E.p(response.name, style="margin: 0px;"))
                        )
 
-        new_options = False
+        e = createHTMLOption("custom-roll-dice", False, character_settings)
+        options.append(e)
+        e = createHTMLOption("custom-damage-dice", False, character_settings)
+        options.append(e)
         if "Rogue" in response.classes:
             e = createHTMLOption("rogue-sneak-attack", False, character_settings)
-            new_options = True
             options.append(e)
         if "Disciple of Life" in response["class-features"]:
             e = createHTMLOption("cleric-disciple-life", False, character_settings)
-            new_options = True
             options.append(e)
         if "Bard" in response.classes:
             e = createHTMLOption("bard-joat", False, character_settings)
-            new_options = True
             options.append(e)
         if "Sharpshooter" in response["feats"]:
             e = createHTMLOption("sharpshooter", False, character_settings)
-            new_options = True
             options.append(e)
         if "Great Weapon Master" in response["feats"]:
             e = createHTMLOption("great-weapon-master", False, character_settings)
-            new_options = True
             options.append(e)
-        # Hide character options if there are none
-        if new_options == False:
-            $("#character-option").css("display", "none")
         loadSettings(response.settings, character_settings)
     $('.beyond20-option-input').off('change', save_settings)
     $('.beyond20-option-input').change(save_settings)
-    initializeSettings()
+    initializeSettings(gotSettings)
 
 def addMonsterOptions():
     option = options_list["whisper-monsters"]
@@ -91,7 +126,7 @@ def addMonsterOptions():
     $(e).insertAfter($("#whispers").parents("li"))
     $('.beyond20-option-input').off('change', save_settings)
     $('.beyond20-option-input').change(save_settings)
-    initializeSettings()
+    initializeSettings(gotSettings)
 
 def tabMatches(tab, url):
     return tab.url.match(url.replace(/\*/g, "[^]*")) != None
@@ -105,14 +140,15 @@ def actOnCurrentTab(tabs):
                                            E.h4(" == Roll20 Tab Specific Options ==")
                                            ))
         options.append(e)
-        initializeSettings()
+        initializeSettings(gotSettings)
     elif tabMatches(tabs[0], DNDBEYOND_CHARACTER_URL):
         chrome.tabs.sendMessage(tabs[0].id, {"action": "get-character"}, populateCharacter)
     elif tabMatches(tabs[0], DNDBEYOND_MONSTER_URL) or tabMatches(tabs[0], DNDBEYOND_ENCOUNTER_URL):
         addMonsterOptions()
     else:
-        initializeSettings()
+        initializeSettings(gotSettings)
 
 
 setupHTML()
 chrome.tabs.query({"active": True, "currentWindow": True}, actOnCurrentTab)
+window.addEventListener('unload', defer_save_settings)

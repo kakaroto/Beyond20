@@ -51,7 +51,7 @@ options_list = {
                         "default": True},
 
     "crit-prefix": {"title": "Critical Hit Prefix",
-                    "description": "Prefix to add to the Critical Hit dice result.\nI've found it less confusing for players to point out that the '+ X' is the crit damage",
+                    "description": "Prefix to add to the Critical Hit dice result.\nIt might be less confusing to explicitely show the crit damage",
                     "type": "string",
                     "default": "Crit: "},
 
@@ -62,7 +62,7 @@ options_list = {
                            "choices": {"all": "All components", "material": "Only material components", "none": "Do not display anything"}},
     
     "component-prefix": {"title": "Component Prefix",
-                         "description": "Prefix to add to the display of the components of a spell during an attack.\nYou may want to change it to 'Materials used :' for example, if only displaying material components",
+                         "description": "Prefix to the components display of a spell attack.\nIf displaying material components only, you may want to set it to 'Materials used :' for example",
                          "type": "string",
                          "default": "Components: "},
 
@@ -90,6 +90,14 @@ options_list = {
     }
 
 character_settings = {
+    "custom-roll-dice": {"title": "Custom Roll dice formula bonus",
+                           "description": "Add custom formula to d20 rolls (Bless, Guidance, Bane, Magic Weapon, etc..)",
+                           "type": "string",
+                           "default": ""},
+    "custom-damage-dice": {"title": "Custom Damage dice formula bonus",
+                           "description": "Add custom dice to damage rolls (Magic Weapon, Elemental Weapon, etc..)",
+                           "type": "string",
+                           "default": ""},
     "rogue-sneak-attack": {"title": "Rogue: Sneak Attack",
                            "description": "Send Sneak Attack damage with each attack roll",
                            "type": "bool",
@@ -112,14 +120,16 @@ character_settings = {
                             "default": False},
 }
 
+def getStorage():
+    return chrome.storage.sync
 
 def storageGet(name, default_value, cb):
-    chrome.storage.sync.get({name: default_value}, def (items):
+    getStorage().get({name: default_value}, def (items):
         cb(items[name])
     )
 
 def storageSet(name, value, cb=None):
-    chrome.storage.sync.set({name: value}, def ():
+    getStorage().set({name: value}, def ():
         if chrome.runtime.lastError:
             console.log('Chrome Runtime Error', chrome.runtime.lastError.message);
         elif cb:
@@ -164,9 +174,8 @@ def createHTMLOptionEx(name, option, short=False):
             (short and not option.short?) or \
             (not option.title?):
         return None
-    description = "" if short else option.description
+    description_p = [] if short else list(map(E.p, option.description.split("\n")))
     title = option.short if short else option.title
-    description_p = list(map(E.p, description.split("\n")))
     if option.type == "bool":
         e = E.li(class_="list-group-item beyond20-option beyond20-option-bool",
                  E.label(class_="list-content", for_=name,
@@ -180,10 +189,12 @@ def createHTMLOptionEx(name, option, short=False):
                  )
     elif option.type == "string":
         e = E.li(class_="list-group-item beyond20-option beyond20-option-string",
-                 E.label(class_="list-content", for_=name, style="padding-right: 15px;",
+                 E.label(class_="list-content", for_=name,
                          E.h4(title),
                          *description_p,
-                         E.input(id=name, class_="beyond20-option-input", name=name, type_="text")
+                         E.div(class_="button-group",
+                               E.input(id=name, class_="beyond20-option-input", name=name, type_="text")
+                               )
                          )
                  )
     elif option.type == "combobox":
@@ -303,18 +314,20 @@ def loadSettings(settings, _list=options_list):
         elif o_type == "special":
             _list[option].set(option, settings)
 
-def restoreSavedSettings(key="settings", _list=options_list):
+def restoreSavedSettings(cb=None, key="settings", _list=options_list):
     settings = getDefaultSettings(_list)
     load = def(stored_settings):
         loadSettings(stored_settings, _list)
+        if cb:
+            cb(stored_settings)
     getStoredSettings(load, key, _list)
 
 def saveSettings(cb, key="settings", _list=options_list):
     mergeSettings(extractSettingsData(_list), cb, key, _list)
 
-def initializeSettings():
+def initializeSettings(cb=None):
     initializeMarka()
-    restoreSavedSettings()
+    restoreSavedSettings(cb)
 
 def createRoll20TabCombobox(name, short, dropdown_options):
     option = options_list[name]

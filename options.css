@@ -25,14 +25,14 @@
 		padding-right: 130px;
 		position: relative;
 	}
-	.list-group > .list-group-item > .list-content > h4 {
+	.list-group > .list-group-item > .list-content h4 {
 		margin: 0px;
 		margin-bottom: 5px;
 	}
-	.list-group > .list-group-item > .list-content > p {
+	.list-group > .list-group-item > .list-content p {
 		margin: 0px;
 	}
-	.list-group > .list-group-item > .list-content > input[type="text"] {
+	.list-group > .list-group-item > .list-content input[type="text"] {
 		background-color: rgb(255, 255, 255);
 	    border: solid 1px rgb(216, 221, 227);
 	    border-radius: 0;
@@ -98,6 +98,10 @@
 	}
 
 
+.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+}
 
 /* INPUT
    ================================== */

@@ -89,14 +89,22 @@ def rollItem(force_display=False):
         damage = None
         damage2 = None
         damage2_type = None
+        custom_damage = character._settings["custom-damage-dice"]
+        if len(custom_damage) > 0:
+            damage2 = custom_damage
+            damage2_type = "Custom Damage"
         for i in range(prop_list.length):
             if prop_list.eq(i).find(".ct-property-list__property-label").text() == "Damage:":
                 value = prop_list.eq(i).find(".ct-property-list__property-content")
                 damage = value.find(".ct-damage__value").text()
                 versatile_damage = value.find(".ct-item-detail__versatile-damage").text()
                 if versatile_damage != "":
-                    damage2 = versatile_damage[1:-1]
-                    damage2_type = "Two-Handed"
+                    if damage2 is None:
+                        damage2 = versatile_damage[1:-1]
+                        damage2_type = "Two-Handed"
+                    else:
+                        damage2 += "|" + versatile_damage[1:-1]
+                        damage2_type += "| Two-Handed"
                 additional_damages = value.find(".ct-item-detail__additional-damage")
                 for j in range(additional_damages.length):
                     dmg = additional_damages.eq(j).text()
@@ -158,24 +166,34 @@ def rollItem(force_display=False):
                              "item-type": item_type})        
 
 def rollAction(paneClass):
+    nonlocal character
     properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"))
     print("Properties are : " + str(properties))
     action_name = $(".ct-sidebar__heading").text()
     description = descriptionToString(".ct-action-detail__description")
     if "Damage" in properties and (properties["To Hit"]? or properties["Attack/Save"]?):
+        damage2 = None
+        damage2_type = None
+        custom_damage = character._settings["custom-damage-dice"]
+        if len(custom_damage) > 0:
+            damage2 = custom_damage
+            damage2_type = "Custom Damage"
         roll_properties = buildAttackRoll("action",
                                           action_name,
                                           description,
                                           properties,
                                           properties["Damage"],
                                           properties["Damage Type"] ? "",
-                                          properties["To Hit"] ? None)
+                                          properties["To Hit"] ? None,
+                                          damage2,
+                                          damage2_type)
         sendRollWithCharacter("attack", properties["Damage"], roll_properties)
     else:
         sendRollWithCharacter("action", 0, {"name": action_name,
                                "description" : description})
         
 def rollSpell(force_display=False):
+    nonlocal character
     properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
     print("Properties are : " + str(properties))
     spell_name = $(".ct-sidebar__heading .ct-spell-name").text()
@@ -201,6 +219,11 @@ def rollSpell(force_display=False):
         num_damages = 0
         damage = None
         damage2 = None
+        custom_damage = character._settings["custom-damage-dice"]
+        if len(custom_damage) > 0:
+            damage2 = custom_damage
+            damage2_type = "Custom Damage"
+            num_damages += 1
         for i in range(damages.length):
             dmg = damages.eq(i).find(".ct-spell-caster__modifier-amount").text()
             dmgtype = damages.eq(i).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title")
