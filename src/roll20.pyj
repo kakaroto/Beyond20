@@ -176,6 +176,7 @@ def handleMessage (request, sender, sendResponse):
         else:
             advantage_type = "normal"
         custom_roll_dice = request.character.settings["custom-roll-dice"]
+        custom_roll_dice = re.sub("([0-9]*d[0-9]+)", "\\1cs>100cf<0", custom_roll_dice)
         if request.type == "skill":
             modifier = request.modifier
             # Custom skill
@@ -265,9 +266,15 @@ def handleMessage (request, sender, sendResponse):
             properties = {"charname": request.character.name,
                           "rname" : request.name}
             if request["to-hit"]?:
+                d20_roll = "1d20"
+                if request["attack-source"] == "item":
+                    if "Improved Critical" in request.character["class-features"]:
+                        d20_roll = "1d20cs>19"
+                    if "Superior Critical" in request.character["class-features"]:
+                        d20_roll = "1d20cs>18"
                 properties["mod"] = request["to-hit"]
-                properties["r1"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
-                properties["r2"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
+                properties["r1"] = genRoll(d20_roll, {"": request["to-hit"], "CUSTOM": custom_roll_dice})
+                properties["r2"] = genRoll(d20_roll, {"": request["to-hit"], "CUSTOM": custom_roll_dice})
                 properties[advantage_type] = 1
                 properties["attack"] = 1
             if request["damage"]?:

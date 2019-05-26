@@ -6791,7 +6791,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, advantage_type, custom_roll_dice, modifier, ability, prof, prof_val, joat, dice_roll, roll_properties, dice, dice_formula, rname, properties, source, components, description, higher, healing_spell, level, mod;
+            var roll, advantage_type, custom_roll_dice, modifier, ability, prof, prof_val, joat, dice_roll, roll_properties, dice, dice_formula, rname, properties, d20_roll, source, components, description, higher, healing_spell, level, mod;
             print("Got message : " + str(request));
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
@@ -6813,6 +6813,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     advantage_type = "normal";
                 }
                 custom_roll_dice = request.character.settings["custom-roll-dice"];
+                custom_roll_dice = re.sub("([0-9]*d[0-9]+)", "\\1cs>100cf<0", custom_roll_dice);
                 if ((request.type === "skill" || typeof request.type === "object" && ρσ_equals(request.type, "skill"))) {
                     modifier = request.modifier;
                     if ((modifier === "--" || typeof modifier === "object" && ρσ_equals(modifier, "--")) && request.character.abilities.length > 0) {
@@ -6985,14 +6986,23 @@ var str = ρσ_str, repr = ρσ_repr;;
                         return ρσ_d;
                     }).call(this);
                     if (ρσ_exists.n(request["to-hit"])) {
+                        d20_roll = "1d20";
+                        if ((request["attack-source"] === "item" || typeof request["attack-source"] === "object" && ρσ_equals(request["attack-source"], "item"))) {
+                            if (ρσ_in("Improved Critical", request.character["class-features"])) {
+                                d20_roll = "1d20cs>19";
+                            }
+                            if (ρσ_in("Superior Critical", request.character["class-features"])) {
+                                d20_roll = "1d20cs>18";
+                            }
+                        }
                         properties["mod"] = request["to-hit"];
-                        properties["r1"] = genRoll("1d20", (function(){
+                        properties["r1"] = genRoll(d20_roll, (function(){
                             var ρσ_d = {};
                             ρσ_d[""] = request["to-hit"];
                             ρσ_d["CUSTOM"] = custom_roll_dice;
                             return ρσ_d;
                         }).call(this));
-                        properties["r2"] = genRoll("1d20", (function(){
+                        properties["r2"] = genRoll(d20_roll, (function(){
                             var ρσ_d = {};
                             ρσ_d[""] = request["to-hit"];
                             ρσ_d["CUSTOM"] = custom_roll_dice;
