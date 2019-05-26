@@ -687,26 +687,20 @@ def removeRollButtons():
     for i in range(custom_rolls.length):
         custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text())
 
-# From https://stackoverflow.com/questions/494143/creating-a-new-dom-element-from-an-html-string-using-built-in-dom-methods-or-pro/35385518#35385518
-
-def htmlToFragment(html):
-    template = document.createElement('template')
-    template.innerHTML = html
-    return template.content
-
-def recursiveDiceReplace(node, cb):
+def recursiveDiceReplace(modifiers_only, node, cb):
     if node.hasChildNodes():
         # We need to copy the list since its size could change as we modify it
         children = list(node.childNodes)
         for child in children:
-            recursiveDiceReplace(child, cb)
+            # don't replace anything inside of a roll button itself
+            if $(child).hasClass("ct-beyond20-roll"):
+                continue
+            recursiveDiceReplace(modifiers_only, child, cb)
     elif node.nodeName == "#text":
-        text = replaceRolls(False, node.textContent, cb)
-        text = replaceRolls(True, text, cb)
+        text = replaceRolls(modifiers_only, node.textContent, cb)
         # Only replace if we changed it, otherwise we might break existing html code bindings
         if text != node.textContent:
-            document_fragment = htmlToFragment(text)
-            node.parentElement.replaceChild(document_fragment, node)
+            $(node).replaceWith($.parseHTML(text))
 
 def injectDiceToRolls(selector, character, name=""):
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
@@ -717,7 +711,10 @@ def injectDiceToRolls(selector, character, name=""):
 
     items = $(selector)
     for item in items:
-        recursiveDiceReplace(item, replaceCB)
+        # This has to be done this way otherwise a "+1" in the weapon name for example
+        # would cause that text to be replaced in the html that gets returned.
+        recursiveDiceReplace(False, item, replaceCB)
+        recursiveDiceReplace(True, item, replaceCB)
 
     $(".ct-beyond20-custom-icon").css("margin-right", "3px")
     $(".ct-beyond20-custom-icon").css("margin-left", "3px")

@@ -47,7 +47,7 @@
 	    "src/jquery-3.4.1.min.js", "src/dndbeyond_spell.js"
 	]
     },{
-	"matches": [ "*://*.dndbeyond.com/encounters/*" ],
+	"matches": [  "*://*.dndbeyond.com/my-encounters", "*://*.dndbeyond.com/encounters/*" ],
 	"js": [
 	    "src/jquery-3.4.1.min.js", "src/dndbeyond_encounter.js"
 	]

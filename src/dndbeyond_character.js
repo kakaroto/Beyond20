@@ -8384,36 +8384,27 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
         };
 
-        function htmlToFragment(html) {
-            var template;
-            template = document.createElement("template");
-            template.innerHTML = html;
-            return template.content;
-        };
-        if (!htmlToFragment.__argnames__) Object.defineProperties(htmlToFragment, {
-            __argnames__ : {value: ["html"]}
-        });
-
-        function recursiveDiceReplace(node, cb) {
-            var children, child, text, document_fragment;
+        function recursiveDiceReplace(modifiers_only, node, cb) {
+            var children, child, text;
             if (node.hasChildNodes()) {
                 children = list(node.childNodes);
                 var ρσ_Iter22 = ρσ_Iterable(children);
                 for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
                     child = ρσ_Iter22[ρσ_Index22];
-                    recursiveDiceReplace(child, cb);
+                    if ($(child).hasClass("ct-beyond20-roll")) {
+                        continue;
+                    }
+                    recursiveDiceReplace(modifiers_only, child, cb);
                 }
             } else if ((node.nodeName === "#text" || typeof node.nodeName === "object" && ρσ_equals(node.nodeName, "#text"))) {
-                text = replaceRolls(false, node.textContent, cb);
-                text = replaceRolls(true, text, cb);
+                text = replaceRolls(modifiers_only, node.textContent, cb);
                 if ((text !== node.textContent && (typeof text !== "object" || ρσ_not_equals(text, node.textContent)))) {
-                    document_fragment = htmlToFragment(text);
-                    node.parentElement.replaceChild(document_fragment, node);
+                    $(node).replaceWith($.parseHTML(text));
                 }
             }
         };
         if (!recursiveDiceReplace.__argnames__) Object.defineProperties(recursiveDiceReplace, {
-            __argnames__ : {value: ["node", "cb"]}
+            __argnames__ : {value: ["modifiers_only", "node", "cb"]}
         });
 
         function injectDiceToRolls() {
@@ -8440,7 +8431,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             var ρσ_Iter23 = ρσ_Iterable(items);
             for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
                 item = ρσ_Iter23[ρσ_Index23];
-                recursiveDiceReplace(item, replaceCB);
+                recursiveDiceReplace(false, item, replaceCB);
+                recursiveDiceReplace(true, item, replaceCB);
             }
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");
             $(".ct-beyond20-custom-icon").css("margin-left", "3px");
@@ -8490,7 +8482,6 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.dndbeyond.addHitDieButtons = addHitDieButtons;
         ρσ_modules.dndbeyond.addIconButton = addIconButton;
         ρσ_modules.dndbeyond.removeRollButtons = removeRollButtons;
-        ρσ_modules.dndbeyond.htmlToFragment = htmlToFragment;
         ρσ_modules.dndbeyond.recursiveDiceReplace = recursiveDiceReplace;
         ρσ_modules.dndbeyond.injectDiceToRolls = injectDiceToRolls;
     })();
