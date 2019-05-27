@@ -7033,7 +7033,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["character"] = self.getDict();
                     return ρσ_d;
                 }).call(this);
-                console.log("Sending message: " + str(req));
+                console.log("Sending message: ", req);
                 chrome.runtime.sendMessage(req);
             }
         };
@@ -7121,6 +7121,38 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }).call(this));
             }
         };
+        Character.prototype.hasClassFeature = function hasClassFeature(name) {
+            var self = this;
+            return ρσ_in(name, self._class_features);
+        };
+        if (!Character.prototype.hasClassFeature.__argnames__) Object.defineProperties(Character.prototype.hasClassFeature, {
+            __argnames__ : {value: ["name"]}
+        });
+        Character.prototype.hasRacialTrait = function hasRacialTrait(name) {
+            var self = this;
+            return ρσ_in(name, self._racial_traits);
+        };
+        if (!Character.prototype.hasRacialTrait.__argnames__) Object.defineProperties(Character.prototype.hasRacialTrait, {
+            __argnames__ : {value: ["name"]}
+        });
+        Character.prototype.hasFeat = function hasFeat(name) {
+            var self = this;
+            return ρσ_in(name, self._feats);
+        };
+        if (!Character.prototype.hasFeat.__argnames__) Object.defineProperties(Character.prototype.hasFeat, {
+            __argnames__ : {value: ["name"]}
+        });
+        Character.prototype.getClassLevel = function getClassLevel(name) {
+            var self = this;
+            if (ρσ_in(name, self._classes)) {
+                return (ρσ_expr_temp = self._classes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name];
+            } else {
+                return 0;
+            }
+        };
+        if (!Character.prototype.getClassLevel.__argnames__) Object.defineProperties(Character.prototype.getClassLevel, {
+            __argnames__ : {value: ["name"]}
+        });
         Character.prototype.mergeCharacterSettings = function mergeCharacterSettings(data) {
             var self = this;
             var cb;
@@ -7846,7 +7878,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 key = ρσ_Iter19[ρσ_Index19];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
-            console.log("Sending message: " + str(req));
+            console.log("Sending message: ", req);
             chrome.runtime.sendMessage(req);
         };
         if (!sendRoll.__argnames__) Object.defineProperties(sendRoll, {

@@ -74,15 +74,18 @@ def subDescriptionRolls(name, description):
 def subDamageRolls(text):
     return subRolls(text, damage_only=True)
 
-def damageToCrit(damage):
+def damageToCrit(damage, brutal=""):
     nonlocal settings
     
     crits = []
     damages = damage.split(" | ")
     for damage in damages:
-        match = re.search("[0-9]*d[0-9]+", damage)
+        match = re.search("([0-9]*)d([0-9]+)", damage)
         if match?:
-            crits.append(subDamageRolls(match.group(0)))
+            if brutal != "":
+                crits.append("[[[[" + brutal + match.group(1) + "]]d" + match.group(2) + "]]")
+            else:
+                crits.append("[[" + match.group(0) + "]]")
         else:
             crits.append("")
     return settings["crit-prefix"] + crits.join(" | ")
@@ -158,7 +161,7 @@ def updateSettings(new_settings=None):
 
 def handleMessage (request, sender, sendResponse):
     nonlocal settings
-    print("Got message : " + str(request))
+    print("Got message : ", request)
     if request.action == "settings":
         if request.type == "general":
             updateSettings(request.settings)
@@ -267,11 +270,21 @@ def handleMessage (request, sender, sendResponse):
                           "rname" : request.name}
             if request["to-hit"]?:
                 d20_roll = "1d20"
+                brutal = ""
                 if request["attack-source"] == "item":
                     if "Improved Critical" in request.character["class-features"]:
                         d20_roll = "1d20cs>19"
                     if "Superior Critical" in request.character["class-features"]:
                         d20_roll = "1d20cs>18"
+                    if "Brutal Critical" in request.character["class-features"] and \
+                            request["attack-type"] == "Melee":
+                        barbarian_level = request.character.classes["Barbarian"]
+                        if barbarian_level >= 17:
+                            brutal = "4 * "
+                        elif barbarian_level >= 13:
+                            brutal = "3 * "
+                        else:
+                            brutal = "2 * "
                 properties["mod"] = request["to-hit"]
                 properties["r1"] = genRoll(d20_roll, {"": request["to-hit"], "CUSTOM": custom_roll_dice})
                 properties["r2"] = genRoll(d20_roll, {"": request["to-hit"], "CUSTOM": custom_roll_dice})
@@ -282,12 +295,12 @@ def handleMessage (request, sender, sendResponse):
                 properties["dmg1flag"] = 1
                 properties["dmg1"] = subDamageRolls(request.damage)
                 properties["dmg1type"] = request["damage-type"]
-                properties["crit1"] = damageToCrit(request.damage)
+                properties["crit1"] = damageToCrit(request.damage, brutal)
             if request["second-damage"]?:
                 properties["dmg2flag"] = 1
                 properties["dmg2"] = subDamageRolls(request["second-damage"])
                 properties["dmg2type"] = request["second-damage-type"]
-                properties["crit2"] = damageToCrit(request["second-damage"])
+                properties["crit2"] = damageToCrit(request["second-damage"], brutal)
             if request.range?:
                 properties["range"] = request.range
             if request["save-dc"]?:

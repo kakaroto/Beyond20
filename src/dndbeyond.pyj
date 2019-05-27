@@ -143,7 +143,7 @@ class Character:
             print("HP updated to : " + hp + "/" + max_hp)
 
             req = {"action": "hp-update", "character": self.getDict()}
-            console.log("Sending message: " + str(req))
+            console.log("Sending message: ", req)
             chrome.runtime.sendMessage(req);
                 
     # TODO: Do the same thing for ".ct-feature-snippet-option > .ct-feature-snippet__heading" and
@@ -202,6 +202,18 @@ class Character:
                                          "racial-traits": self._racial_traits,
                                          "feats": self._feats})
             
+    def hasClassFeature(self, name):
+        return name in self._class_features
+    def hasRacialTrait(self, name):
+        return name in self._racial_traits
+    def hasFeat(self, name):
+        return name in self._feats
+    def getClassLevel(self, name):
+        if name in self._classes:
+            return self._classes[name]
+        else:
+            return 0
+
     def mergeCharacterSettings(self, data):
         cb = def(settings):
             chrome.runtime.sendMessage({"action": "settings",
@@ -587,7 +599,7 @@ def sendRoll(character, rollType, fallback, args):
     req = {"action": "roll", "character": character.getDict(), "type": rollType, "roll": fallback}
     for key in args:
         req[key] = args[key]
-    console.log("Sending message: " + str(req))
+    console.log("Sending message: ", req)
     chrome.runtime.sendMessage(req);
 
 def isRollButtonAdded():
