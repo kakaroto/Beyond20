@@ -375,6 +375,20 @@ def handleMessage (request, sender, sendResponse):
                 properties[advantage_type] = 1
                 properties["attack"] = 1
             if request.damages?:
+                if request.name == "Chromatic Orb":
+                    damages = list(request.damages)
+                    damage_types = list(request["damage-types"])
+                    chromatic_type = "?{Choose damage type"
+                    for dmgtype in ["Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder"]:
+                        idx = damage_types.index(dmgtype)
+                        chromatic_damage = damages.pypop(idx)
+                        damage_types.pypop(idx)
+                        chromatic_type += "|" + dmgtype
+                    chromatic_type += "}"
+                    damages.insert(0, chromatic_damage)
+                    damage_types.insert(0, chromatic_type)
+                    request.damages = damages
+                    request["damage-types"] = damage_types
                 crits = damagesToCrits(request.damages)
                 properties["damage"] = 1
                 properties["dmg1flag"] = 1

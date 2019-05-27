@@ -6803,7 +6803,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var roll, advantage_type, custom_roll_dice, modifier, ability, prof, prof_val, joat, dice_roll, roll_properties, dice, dice_formula, rname, properties, d20_roll, brutal, barbarian_level, crits, damages, source, components, description, higher, healing_spell, level, mod;
+            var roll, advantage_type, custom_roll_dice, modifier, ability, prof, prof_val, joat, dice_roll, roll_properties, dice, dice_formula, rname, properties, d20_roll, brutal, barbarian_level, crits, damages, source, components, description, higher, healing_spell, damage_types, chromatic_type, idx, chromatic_damage, dmgtype, level, mod;
             print("Got message : ", request);
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
@@ -7161,6 +7161,24 @@ var str = ρσ_str, repr = ρσ_repr;;
                         properties["attack"] = 1;
                     }
                     if (ρσ_exists.n(request.damages)) {
+                        if ((request.name === "Chromatic Orb" || typeof request.name === "object" && ρσ_equals(request.name, "Chromatic Orb"))) {
+                            damages = list(request.damages);
+                            damage_types = list(request["damage-types"]);
+                            chromatic_type = "?{Choose damage type";
+                            var ρσ_Iter6 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder" ]));
+                            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                                dmgtype = ρσ_Iter6[ρσ_Index6];
+                                idx = damage_types.index(dmgtype);
+                                chromatic_damage = damages.pypop(idx);
+                                damage_types.pypop(idx);
+                                chromatic_type += "|" + dmgtype;
+                            }
+                            chromatic_type += "}";
+                            damages.insert(0, chromatic_damage);
+                            damage_types.insert(0, chromatic_type);
+                            request.damages = damages;
+                            request["damage-types"] = damage_types;
+                        }
                         crits = damagesToCrits(request.damages);
                         properties["damage"] = 1;
                         properties["dmg1flag"] = 1;
