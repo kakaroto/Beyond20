@@ -220,10 +220,6 @@ def rollSpell(force_display=False):
         damage = None
         damage2 = None
         custom_damage = character._settings["custom-damage-dice"]
-        if len(custom_damage) > 0:
-            damage2 = custom_damage
-            damage2_type = "Custom Damage"
-            num_damages += 1
         for i in range(damages.length):
             dmg = damages.eq(i).find(".ct-spell-caster__modifier-amount").text()
             dmgtype = damages.eq(i).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title")
@@ -253,6 +249,13 @@ def rollSpell(force_display=False):
             num_damages += 1
             
                 
+        if len(custom_damage) > 0 and num_damages > 0:
+            if num_damages == 1:
+                damage2 = custom_damage
+                damage2_type = "Custom Damage"
+            else:
+                damage2 += " | " + custom_damage
+                damage2_type += " | Custom Damage"
         roll_properties = buildAttackRoll("spell",
                                           spell_name,
                                           description,

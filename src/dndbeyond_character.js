@@ -8801,7 +8801,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
                 force_display = ρσ_kwargs_obj.force_display;
             }
-            var properties, spell_name, description, damages, healings, castas, level, concentration, ritual, duration, to_hit, num_damages, damage, damage2, custom_damage, damage2_type, dmg, dmgtype, damage_type, i, roll_properties, spell_properties, key;
+            var properties, spell_name, description, damages, healings, castas, level, concentration, ritual, duration, to_hit, num_damages, damage, damage2, custom_damage, dmg, dmgtype, damage_type, damage2_type, i, roll_properties, spell_properties, key;
             properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"));
             print("Properties are : " + str(properties));
             spell_name = $(".ct-sidebar__heading .ct-spell-name").text();
@@ -8828,11 +8828,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damage = null;
                 damage2 = null;
                 custom_damage = character._settings["custom-damage-dice"];
-                if (len(custom_damage) > 0) {
-                    damage2 = custom_damage;
-                    damage2_type = "Custom Damage";
-                    num_damages += 1;
-                }
                 for (var ρσ_Index2 = 0; ρσ_Index2 < damages.length; ρσ_Index2++) {
                     i = ρσ_Index2;
                     dmg = damages.eq(i).find(".ct-spell-caster__modifier-amount").text();
@@ -8866,6 +8861,15 @@ var str = ρσ_str, repr = ρσ_repr;;
                         damage2_type += " | " + "Healing";
                     }
                     num_damages += 1;
+                }
+                if (len(custom_damage) > 0 && num_damages > 0) {
+                    if ((num_damages === 1 || typeof num_damages === "object" && ρσ_equals(num_damages, 1))) {
+                        damage2 = custom_damage;
+                        damage2_type = "Custom Damage";
+                    } else {
+                        damage2 += " | " + custom_damage;
+                        damage2_type += " | Custom Damage";
+                    }
                 }
                 roll_properties = buildAttackRoll("spell", spell_name, description, properties, damage, damage_type, to_hit, damage2, damage2_type);
                 spell_properties = (function(){
