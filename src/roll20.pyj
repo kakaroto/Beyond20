@@ -74,11 +74,10 @@ def subDescriptionRolls(name, description):
 def subDamageRolls(text):
     return subRolls(text, damage_only=True)
 
-def damageToCrit(damage, brutal=""):
+def damagesToCrits(damages, brutal=""):
     nonlocal settings
     
     crits = []
-    damages = damage.split(" | ")
     for damage in damages:
         match = re.search("([0-9]*)d([0-9]+)", damage)
         if match?:
@@ -88,7 +87,7 @@ def damageToCrit(damage, brutal=""):
                 crits.append("[[" + match.group(0) + "]]")
         else:
             crits.append("")
-    return settings["crit-prefix"] + crits.join(" | ")
+    return crits
 
 
 def template(name, properties):
@@ -120,14 +119,14 @@ def template(name, properties):
         if properties["dmg2"]?:
             renameProp("dmg1", "First Damage")
             renameProp("dmg1type", "First Damage Type")
-            renameProp("crit1", "First Damage IF Critical")
+            renameProp("crit1", "First Crit Damage IF Critical")
             renameProp("dmg2", "Second Damage")
             renameProp("dmg2type", "Second Damage Type")
-            renameProp("crit2", "Second Damage IF Critical")
+            renameProp("crit2", "Second Crit Damage IF Critical")
         if properties["dmg1"]?:
             renameProp("dmg1", "Damage")
             renameProp("dmg1type", "Damage Type")
-            renameProp("crit1", "Damage IF Critical")
+            renameProp("crit1", "Crit Damage IF Critical")
         renameProp("saveattr", "Save Ability")
         renameProp("savedc", "Save DC")
         renameProp("athigherlevels", "At Higher Levels")
@@ -178,8 +177,11 @@ def handleMessage (request, sender, sendResponse):
             advantage_type = "always"
         else:
             advantage_type = "normal"
-        custom_roll_dice = request.character.settings["custom-roll-dice"]
-        custom_roll_dice = re.sub("([0-9]*d[0-9]+)", "\\1cs>100cf<0", custom_roll_dice)
+        if request.character.type == "Character":
+            custom_roll_dice = request.character.settings["custom-roll-dice"] ? ""
+            custom_roll_dice = re.sub("([0-9]*d[0-9]+)", "\\1cs>100cf<0", custom_roll_dice)
+        else:
+            custom_roll_dice = ""
         if request.type == "skill":
             modifier = request.modifier
             # Custom skill
@@ -290,17 +292,19 @@ def handleMessage (request, sender, sendResponse):
                 properties["r2"] = genRoll(d20_roll, {"": request["to-hit"], "CUSTOM": custom_roll_dice})
                 properties[advantage_type] = 1
                 properties["attack"] = 1
-            if request["damage"]?:
+            if request["damages"]?:
+                crits = damagesToCrits(request.damages, brutal)
                 properties["damage"] =1
                 properties["dmg1flag"] = 1
-                properties["dmg1"] = subDamageRolls(request.damage)
-                properties["dmg1type"] = request["damage-type"]
-                properties["crit1"] = damageToCrit(request.damage, brutal)
-            if request["second-damage"]?:
-                properties["dmg2flag"] = 1
-                properties["dmg2"] = subDamageRolls(request["second-damage"])
-                properties["dmg2type"] = request["second-damage-type"]
-                properties["crit2"] = damageToCrit(request["second-damage"], brutal)
+                properties["dmg1"] = subDamageRolls(request.damages[0])
+                properties["dmg1type"] = request["damage-types"][0]
+                properties["crit1"] = settings["crit-prefix"] + crits[0]
+                if len(request.damages) > 1:
+                    properties["dmg2flag"] = 1
+                    damages = str.join(" | ", list(request.damages[1:]))
+                    properties["dmg2"] = subDamageRolls(damages)
+                    properties["dmg2type"] = str.join(" | ", request["damage-types"][1:])
+                    properties["crit2"] = settings["crit-prefix"] + str.join(" | ", crits[1:])
             if request.range?:
                 properties["range"] = request.range
             if request["save-dc"]?:
@@ -370,23 +374,21 @@ def handleMessage (request, sender, sendResponse):
                 properties["r2"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
                 properties[advantage_type] = 1
                 properties["attack"] = 1
-            if request["damage"]?:
+            if request.damages?:
+                crits = damagesToCrits(request.damages)
                 properties["damage"] = 1
                 properties["dmg1flag"] = 1
-                properties["dmg1"] = subDamageRolls(request.damage)
-                properties["dmg1type"] = request["damage-type"]
-                if request["damage-type"] == "Healing":
+                properties["dmg1"] = subDamageRolls(request.damages[0])
+                properties["dmg1type"] = request["damage-types"][0]
+                properties["crit1"] = settings["crit-prefix"] + crits[0]
+                if "Healing" in request["damage-types"]:
                     healing_spell = True
-                else:
-                    properties["crit1"] = damageToCrit(request.damage)
-            if request["second-damage"]?:
-                properties["dmg2flag"] = 1
-                properties["dmg2"] = subDamageRolls(request["second-damage"])
-                properties["dmg2type"] = request["second-damage-type"]
-                if request["second-damage-type"] == "Healing":
-                    healing_spell = True
-                else:
-                    properties["crit2"] = damageToCrit(request["second-damage"])
+                if len(request.damages) > 1:
+                    properties["dmg2flag"] = 1
+                    damages = str.join(" | ", list(request.damages[1:]))
+                    properties["dmg2"] = subDamageRolls(damages)
+                    properties["dmg2type"] = str.join(" | ", request["damage-types"][1:])
+                    properties["crit2"] = settings["crit-prefix"] + str.join(" | ", crits[1:])
             if request.range?:
                 properties["range"] = request.range
             if request["save-dc"]?:

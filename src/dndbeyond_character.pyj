@@ -85,25 +85,17 @@ def rollItem(force_display=False):
         to_hit = properties["To Hit"] ? \
             findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit")
 
-        damage = None
-        damage2 = None
-        damage2_type = None
-        custom_damage = character.getSetting("custom-damage-dice", "")
-        if len(custom_damage) > 0:
-            damage2 = custom_damage
-            damage2_type = "Custom Damage"
+        damages = []
+        damage_types = []
         for i in range(prop_list.length):
             if prop_list.eq(i).find(".ct-property-list__property-label").text() == "Damage:":
                 value = prop_list.eq(i).find(".ct-property-list__property-content")
-                damage = value.find(".ct-damage__value").text()
+                damages.append(value.find(".ct-damage__value").text())
+                damage_types.append(properties["Damage Type"] ? "")
                 versatile_damage = value.find(".ct-item-detail__versatile-damage").text()
                 if versatile_damage != "":
-                    if damage2 is None:
-                        damage2 = versatile_damage[1:-1]
-                        damage2_type = "Two-Handed"
-                    else:
-                        damage2 += "|" + versatile_damage[1:-1]
-                        damage2_type += "| Two-Handed"
+                    damages.append(versatile_damage[1:-1])
+                    damage_types.append("Two-Handed")
                 additional_damages = value.find(".ct-item-detail__additional-damage")
                 for j in range(additional_damages.length):
                     dmg = additional_damages.eq(j).text()
@@ -111,17 +103,16 @@ def rollItem(force_display=False):
                     dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text()
                     if dmg != "":
                         dmg = dmg.replace(dmg_info, "")
-                        if damage2 is None:
-                            damage2 = dmg
-                            damage2_type = dmg_type
-                        else:
-                            damage2 += " | " + dmg
-                            damage2_type += " | " + dmg_type
-                            if dmg_info != "":
-                                damage2_type += "(" + dmg_info + ")"
-                            
+                        if dmg_info != "":
+                            dmg_type += "(" + dmg_info + ")"
+                        damages.append(dmg)
+                        damage_types.append(dmg_type)
                 break
 
+        custom_damage = character.getSetting("custom-damage-dice", "")
+        if len(custom_damage) > 0:
+            damages.append(custom_damage)
+            damage_types.append("Custom Damage")
         if "Rogue" in character._classes and \
                 character.getSetting("rogue-sneak-attack", False) and \
                 (properties["Attack Type"] == "Ranged" or \
@@ -129,36 +120,30 @@ def rollItem(force_display=False):
             sneak_attack = int(math.ceil(float(character._classes["Rogue"]) / 2)) + "d6"
             dmg_type = "Sneak Attack"
             console.log("Sneak attack:", sneak_attack)
-            if damage2 is None:
-                damage2 = sneak_attack
-                damage2_type = dmg_type
-            else:
-                damage2 += " | " + sneak_attack
-                damage2_type += " | " + dmg_type
+            damages.append(sneak_attack)
+            damage_types.append(dmg_type)
         if character.getSetting("sharpshooter", False) and \
                 properties["Attack Type"] == "Ranged" and \
                 properties["Proficient"] == "Yes":
             to_hit += " - 5"
-            damage += " +10"
+            damages[0] += " +10"
             character.mergeCharacterSettings({"sharpshooter": False})
         if character.getSetting("great-weapon-master", False) and \
                 properties["Attack Type"] == "Melee" and \
                 properties["Properties"].includes("Heavy") and \
                 properties["Proficient"] == "Yes":
             to_hit += " - 5"
-            damage += " +10"
+            damages[0] += " +10"
             character.mergeCharacterSettings({"great-weapon-master": False})
         roll_properties = buildAttackRoll("item",
                                           item_name,
                                           description,
                                           properties,
-                                          damage,
-                                          properties["Damage Type"] ? "",
-                                          to_hit,
-                                          damage2,
-                                          damage2_type)
+                                          damages,
+                                          damage_types,
+                                          to_hit)
         roll_properties["item-type"] = item_type
-        sendRollWithCharacter("attack", damage, roll_properties)
+        sendRollWithCharacter("attack", damages[0], roll_properties)
     else:
         sendRollWithCharacter("item", 0, {"name": item_name,
                              "description" : description,
@@ -171,22 +156,20 @@ def rollAction(paneClass):
     action_name = $(".ct-sidebar__heading").text()
     description = descriptionToString(".ct-action-detail__description")
     if "Damage" in properties and (properties["To Hit"]? or properties["Attack/Save"]?):
-        damage2 = None
-        damage2_type = None
+        damages = [properties["Damage"]]
+        damage_types = [properties["Damage Type"] ? ""]
         custom_damage = character.getSetting("custom-damage-dice", "")
         if len(custom_damage) > 0:
-            damage2 = custom_damage
-            damage2_type = "Custom Damage"
+            damages = [custom_damage]
+            damage_types = ["Custom Damage"]
         roll_properties = buildAttackRoll("action",
                                           action_name,
                                           description,
                                           properties,
-                                          properties["Damage"],
-                                          properties["Damage Type"] ? "",
-                                          properties["To Hit"] ? None,
-                                          damage2,
-                                          damage2_type)
-        sendRollWithCharacter("attack", properties["Damage"], roll_properties)
+                                          damages,
+                                          damage_types,
+                                          properties["To Hit"] ? None)
+        sendRollWithCharacter("attack", damages[0], roll_properties)
     else:
         sendRollWithCharacter("action", 0, {"name": action_name,
                                "description" : description})
@@ -197,8 +180,8 @@ def rollSpell(force_display=False):
     print("Properties are : " + str(properties))
     spell_name = $(".ct-sidebar__heading .ct-spell-name").text()
     description = descriptionToString(".ct-spell-pane .ct-spell-detail__description")
-    damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage")
-    healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp")
+    damage_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage")
+    healing_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp")
     castas = $(".ct-spell-caster__casting-level-current").text()
     level = descriptionToString(".ct-spell-pane .ct-spell-detail__level-school", " ")
     concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration").length > 0
@@ -214,56 +197,33 @@ def rollSpell(force_display=False):
     if not to_hit:
         to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit")
 
-    if force_display is False and (damages.length > 0 or healings.length > 0 or to_hit != None):
-        num_damages = 0
-        damage = None
-        damage2 = None
-        custom_damage = character._settings["custom-damage-dice"]
-        for i in range(damages.length):
-            dmg = damages.eq(i).find(".ct-spell-caster__modifier-amount").text()
-            dmgtype = damages.eq(i).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title")
+    if force_display is False and (damage_modifiers.length > 0 or healing_modifiers.length > 0 or to_hit != None):
+        damages = []
+        damage_types = []
+        for modifier in damage_modifiers:
+            dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text()
+            dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title")
             if not dmgtype?:
                 dmgtype = ""
-            if num_damages == 0:
-                damage = dmg
-                damage_type = dmgtype
-            elif num_damages == 1:
-                damage2 = dmg
-                damage2_type = dmgtype
-            else:
-                damage2 += " | " + dmg
-                damage2_type += " | " + dmgtype
-            num_damages += 1
-        for i in range(healings.length):
-            dmg = healings.eq(i).find(".ct-spell-caster__modifier-amount").text()
-            if num_damages == 0:
-                damage = dmg
-                damage_type = "Healing"
-            elif num_damages == 1:
-                damage2 = dmg
-                damage2_type = "Healing"
-            else:
-                damage2 += " | " + dmg
-                damage2_type += " | " + "Healing"
-            num_damages += 1
-            
-                
-        if len(custom_damage) > 0 and num_damages > 0:
-            if num_damages == 1:
-                damage2 = custom_damage
-                damage2_type = "Custom Damage"
-            else:
-                damage2 += " | " + custom_damage
-                damage2_type += " | Custom Damage"
+            damages.append(dmg)
+            damage_types.append(dmgtype)
+        for modifier in healing_modifiers:
+            dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text()
+            damages.append(dmg)
+            damage_types.append("Healing")
+
+        custom_damage = character._settings["custom-damage-dice"]
+        if len(custom_damage) > 0 and len(damages) > 0:
+            damages.append(custom_damage)
+            damage_types.append("Custom Damage")
+
         roll_properties = buildAttackRoll("spell",
                                           spell_name,
                                           description,
                                           properties,
-                                          damage,
-                                          damage_type,
-                                          to_hit,
-                                          damage2,
-                                          damage2_type)
+                                          damages,
+                                          damage_types,
+                                          to_hit)
         spell_properties = {"level-school": level,
                             "concentration": concentration,
                             "duration": duration,
@@ -274,7 +234,7 @@ def rollSpell(force_display=False):
             roll_properties[key] = spell_properties[key]
         if castas != "" and not level.startsWith(castas):
             roll_properties["cast-at"] = castas
-        sendRollWithCharacter("spell-attack", damage, roll_properties)
+        sendRollWithCharacter("spell-attack", damages[0] ? "", roll_properties)
     else:
         roll_properties = {"name": spell_name,
                            "level-school": level,

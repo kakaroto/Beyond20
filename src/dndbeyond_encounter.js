@@ -7585,13 +7585,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damage_types = hitInfo[1];
                 save = hitInfo[2];
                 if (len(damages) > 0) {
-                    roll_properties["damage"] = damages[0];
-                    roll_properties["damage-type"] = damage_types[0];
-                }
-                if (len(damages) > 1) {
-                    console.log(damages.slice(1));
-                    roll_properties["second-damage"] = str.join(" | ", list(damages.slice(1)));
-                    roll_properties["second-damage-type"] = str.join(" | ", list(damage_types.slice(1)));
+                    roll_properties["damages"] = damages.as_array();
+                    roll_properties["damage-types"] = damage_types.as_array();
                 }
                 if (save) {
                     roll_properties["save-ability"] = save[0];
@@ -7784,27 +7779,19 @@ var str = ρσ_str, repr = ρσ_repr;;
             var name = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
             var description = ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[2];
             var properties = ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[3];
-            var damage = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage : arguments[4];
-            var damage_type = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage_type : arguments[5];
+            var damages = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damages : arguments[4];
+            var damage_types = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage_types : arguments[5];
             var to_hit = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.to_hit : arguments[6];
-            var damage2 = (arguments[7] === undefined || ( 7 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage2 : arguments[7];
-            var damage_type2 = (arguments[8] === undefined || ( 8 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage_type2 : arguments[8];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage")){
-                damage = ρσ_kwargs_obj.damage;
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damages")){
+                damages = ρσ_kwargs_obj.damages;
             }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage_type")){
-                damage_type = ρσ_kwargs_obj.damage_type;
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage_types")){
+                damage_types = ρσ_kwargs_obj.damage_types;
             }
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "to_hit")){
                 to_hit = ρσ_kwargs_obj.to_hit;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage2")){
-                damage2 = ρσ_kwargs_obj.damage2;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage_type2")){
-                damage_type2 = ρσ_kwargs_obj.damage_type2;
             }
             var roll_properties, range_area, ρσ_unpack, save_ability, save_dc;
             roll_properties = (function(){
@@ -7847,20 +7834,16 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_exists.n(properties["Properties"])) {
                 roll_properties["properties"] = properties["Properties"].split(", ");
             }
-            if (damage !== null) {
-                roll_properties["damage"] = damage;
-                roll_properties["damage-type"] = damage_type;
-            }
-            if (damage2 !== null) {
-                roll_properties["second-damage"] = damage2;
-                roll_properties["second-damage-type"] = damage_type2;
+            if (len(damages) > 0) {
+                roll_properties["damages"] = damages.as_array();
+                roll_properties["damage-types"] = damage_types.as_array();
             }
             return roll_properties;
         };
         if (!buildAttackRoll.__defaults__) Object.defineProperties(buildAttackRoll, {
-            __defaults__ : {value: {damage:null, damage_type:null, to_hit:null, damage2:null, damage_type2:null}},
+            __defaults__ : {value: {damages:ρσ_list_decorate([]), damage_types:ρσ_list_decorate([]), to_hit:null}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["attack_source", "name", "description", "properties", "damage", "damage_type", "to_hit", "damage2", "damage_type2"]}
+            __argnames__ : {value: ["attack_source", "name", "description", "properties", "damages", "damage_types", "to_hit"]}
         });
 
         function sendRoll(character, rollType, fallback, args) {

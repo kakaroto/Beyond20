@@ -7957,13 +7957,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damage_types = hitInfo[1];
                 save = hitInfo[2];
                 if (len(damages) > 0) {
-                    roll_properties["damage"] = damages[0];
-                    roll_properties["damage-type"] = damage_types[0];
-                }
-                if (len(damages) > 1) {
-                    console.log(damages.slice(1));
-                    roll_properties["second-damage"] = str.join(" | ", list(damages.slice(1)));
-                    roll_properties["second-damage-type"] = str.join(" | ", list(damage_types.slice(1)));
+                    roll_properties["damages"] = damages.as_array();
+                    roll_properties["damage-types"] = damage_types.as_array();
                 }
                 if (save) {
                     roll_properties["save-ability"] = save[0];
@@ -8156,27 +8151,19 @@ var str = ρσ_str, repr = ρσ_repr;;
             var name = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
             var description = ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[2];
             var properties = ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[3];
-            var damage = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage : arguments[4];
-            var damage_type = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage_type : arguments[5];
+            var damages = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damages : arguments[4];
+            var damage_types = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage_types : arguments[5];
             var to_hit = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.to_hit : arguments[6];
-            var damage2 = (arguments[7] === undefined || ( 7 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage2 : arguments[7];
-            var damage_type2 = (arguments[8] === undefined || ( 8 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage_type2 : arguments[8];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage")){
-                damage = ρσ_kwargs_obj.damage;
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damages")){
+                damages = ρσ_kwargs_obj.damages;
             }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage_type")){
-                damage_type = ρσ_kwargs_obj.damage_type;
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage_types")){
+                damage_types = ρσ_kwargs_obj.damage_types;
             }
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "to_hit")){
                 to_hit = ρσ_kwargs_obj.to_hit;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage2")){
-                damage2 = ρσ_kwargs_obj.damage2;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damage_type2")){
-                damage_type2 = ρσ_kwargs_obj.damage_type2;
             }
             var roll_properties, range_area, ρσ_unpack, save_ability, save_dc;
             roll_properties = (function(){
@@ -8219,20 +8206,16 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_exists.n(properties["Properties"])) {
                 roll_properties["properties"] = properties["Properties"].split(", ");
             }
-            if (damage !== null) {
-                roll_properties["damage"] = damage;
-                roll_properties["damage-type"] = damage_type;
-            }
-            if (damage2 !== null) {
-                roll_properties["second-damage"] = damage2;
-                roll_properties["second-damage-type"] = damage_type2;
+            if (len(damages) > 0) {
+                roll_properties["damages"] = damages.as_array();
+                roll_properties["damage-types"] = damage_types.as_array();
             }
             return roll_properties;
         };
         if (!buildAttackRoll.__defaults__) Object.defineProperties(buildAttackRoll, {
-            __defaults__ : {value: {damage:null, damage_type:null, to_hit:null, damage2:null, damage_type2:null}},
+            __defaults__ : {value: {damages:ρσ_list_decorate([]), damage_types:ρσ_list_decorate([]), to_hit:null}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["attack_source", "name", "description", "properties", "damage", "damage_type", "to_hit", "damage2", "damage_type2"]}
+            __argnames__ : {value: ["attack_source", "name", "description", "properties", "damages", "damage_types", "to_hit"]}
         });
 
         function sendRoll(character, rollType, fallback, args) {
@@ -8693,7 +8676,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
                 force_display = ρσ_kwargs_obj.force_display;
             }
-            var prop_list, properties, item_name, item_type, description, to_hit, damage, damage2, damage2_type, custom_damage, value, versatile_damage, additional_damages, dmg, dmg_type, dmg_info, j, i, sneak_attack, roll_properties;
+            var prop_list, properties, item_name, item_type, description, to_hit, damages, damage_types, value, versatile_damage, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damage, sneak_attack, roll_properties;
             prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property");
             properties = propertyListToDict(prop_list);
             print("Properties are : " + str(properties));
@@ -8702,67 +8685,52 @@ var str = ρσ_str, repr = ρσ_repr;;
             description = descriptionToString(".ct-item-detail__description");
             if (force_display === false && ρσ_in("Damage", properties)) {
                 to_hit = ρσ_exists.e(properties["To Hit"], findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit"));
-                damage = null;
-                damage2 = null;
-                damage2_type = null;
-                custom_damage = character.getSetting("custom-damage-dice", "");
-                if (len(custom_damage) > 0) {
-                    damage2 = custom_damage;
-                    damage2_type = "Custom Damage";
-                }
-                for (var ρσ_Index24 = 0; ρσ_Index24 < prop_list.length; ρσ_Index24++) {
-                    i = ρσ_Index24;
+                damages = ρσ_list_decorate([]);
+                damage_types = ρσ_list_decorate([]);
+                for (var ρσ_Index0 = 0; ρσ_Index0 < prop_list.length; ρσ_Index0++) {
+                    i = ρσ_Index0;
                     if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
                         value = prop_list.eq(i).find(".ct-property-list__property-content");
-                        damage = value.find(".ct-damage__value").text();
+                        damages.append(value.find(".ct-damage__value").text());
+                        damage_types.append(ρσ_exists.e(properties["Damage Type"], ""));
                         versatile_damage = value.find(".ct-item-detail__versatile-damage").text();
                         if ((versatile_damage !== "" && (typeof versatile_damage !== "object" || ρσ_not_equals(versatile_damage, "")))) {
-                            if (damage2 === null) {
-                                damage2 = versatile_damage.slice(1, -1);
-                                damage2_type = "Two-Handed";
-                            } else {
-                                damage2 += "|" + versatile_damage.slice(1, -1);
-                                damage2_type += "| Two-Handed";
-                            }
+                            damages.append(versatile_damage.slice(1, -1));
+                            damage_types.append("Two-Handed");
                         }
                         additional_damages = value.find(".ct-item-detail__additional-damage");
-                        for (var ρσ_Index25 = 0; ρσ_Index25 < additional_damages.length; ρσ_Index25++) {
-                            j = ρσ_Index25;
+                        for (var ρσ_Index1 = 0; ρσ_Index1 < additional_damages.length; ρσ_Index1++) {
+                            j = ρσ_Index1;
                             dmg = additional_damages.eq(j).text();
                             dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                             dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
                             if ((dmg !== "" && (typeof dmg !== "object" || ρσ_not_equals(dmg, "")))) {
                                 dmg = dmg.replace(dmg_info, "");
-                                if (damage2 === null) {
-                                    damage2 = dmg;
-                                    damage2_type = dmg_type;
-                                } else {
-                                    damage2 += " | " + dmg;
-                                    damage2_type += " | " + dmg_type;
-                                    if ((dmg_info !== "" && (typeof dmg_info !== "object" || ρσ_not_equals(dmg_info, "")))) {
-                                        damage2_type += "(" + dmg_info + ")";
-                                    }
+                                if ((dmg_info !== "" && (typeof dmg_info !== "object" || ρσ_not_equals(dmg_info, "")))) {
+                                    dmg_type += "(" + dmg_info + ")";
                                 }
+                                damages.append(dmg);
+                                damage_types.append(dmg_type);
                             }
                         }
                         break;
                     }
                 }
+                custom_damage = character.getSetting("custom-damage-dice", "");
+                if (len(custom_damage) > 0) {
+                    damages.append(custom_damage);
+                    damage_types.append("Custom Damage");
+                }
                 if (ρσ_in("Rogue", character._classes) && character.getSetting("rogue-sneak-attack", false) && ((properties["Attack Type"] === "Ranged" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Ranged")) || ρσ_exists.n(properties["Properties"]) && properties["Properties"].includes("Finesse"))) {
                     sneak_attack = int(math.ceil(float(character._classes["Rogue"]) / 2)) + "d6";
                     dmg_type = "Sneak Attack";
                     console.log("Sneak attack:", sneak_attack);
-                    if (damage2 === null) {
-                        damage2 = sneak_attack;
-                        damage2_type = dmg_type;
-                    } else {
-                        damage2 += " | " + sneak_attack;
-                        damage2_type += " | " + dmg_type;
-                    }
+                    damages.append(sneak_attack);
+                    damage_types.append(dmg_type);
                 }
                 if (character.getSetting("sharpshooter", false) && (properties["Attack Type"] === "Ranged" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Ranged")) && (properties["Proficient"] === "Yes" || typeof properties["Proficient"] === "object" && ρσ_equals(properties["Proficient"], "Yes"))) {
                     to_hit += " - 5";
-                    damage += " +10";
+                    damages[0] += " +10";
                     character.mergeCharacterSettings((function(){
                         var ρσ_d = {};
                         ρσ_d["sharpshooter"] = false;
@@ -8771,16 +8739,16 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 if (character.getSetting("great-weapon-master", false) && (properties["Attack Type"] === "Melee" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Melee")) && properties["Properties"].includes("Heavy") && (properties["Proficient"] === "Yes" || typeof properties["Proficient"] === "object" && ρσ_equals(properties["Proficient"], "Yes"))) {
                     to_hit += " - 5";
-                    damage += " +10";
+                    damages[0] += " +10";
                     character.mergeCharacterSettings((function(){
                         var ρσ_d = {};
                         ρσ_d["great-weapon-master"] = false;
                         return ρσ_d;
                     }).call(this));
                 }
-                roll_properties = buildAttackRoll("item", item_name, description, properties, damage, ρσ_exists.e(properties["Damage Type"], ""), to_hit, damage2, damage2_type);
+                roll_properties = buildAttackRoll("item", item_name, description, properties, damages, damage_types, to_hit);
                 roll_properties["item-type"] = item_type;
-                sendRollWithCharacter("attack", damage, roll_properties);
+                sendRollWithCharacter("attack", damages[0], roll_properties);
             } else {
                 sendRollWithCharacter("item", 0, (function(){
                     var ρσ_d = {};
@@ -8798,21 +8766,21 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollAction(paneClass) {
-            var properties, action_name, description, damage2, damage2_type, custom_damage, roll_properties;
+            var properties, action_name, description, damages, damage_types, custom_damage, roll_properties;
             properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"));
             print("Properties are : " + str(properties));
             action_name = $(".ct-sidebar__heading").text();
             description = descriptionToString(".ct-action-detail__description");
             if (ρσ_in("Damage", properties) && (ρσ_exists.n(properties["To Hit"]) || ρσ_exists.n(properties["Attack/Save"]))) {
-                damage2 = null;
-                damage2_type = null;
+                damages = ρσ_list_decorate([ properties["Damage"] ]);
+                damage_types = ρσ_list_decorate([ ρσ_exists.e(properties["Damage Type"], "") ]);
                 custom_damage = character.getSetting("custom-damage-dice", "");
                 if (len(custom_damage) > 0) {
-                    damage2 = custom_damage;
-                    damage2_type = "Custom Damage";
+                    damages = ρσ_list_decorate([ custom_damage ]);
+                    damage_types = ρσ_list_decorate([ "Custom Damage" ]);
                 }
-                roll_properties = buildAttackRoll("action", action_name, description, properties, properties["Damage"], ρσ_exists.e(properties["Damage Type"], ""), ρσ_exists.e(properties["To Hit"], null), damage2, damage2_type);
-                sendRollWithCharacter("attack", properties["Damage"], roll_properties);
+                roll_properties = buildAttackRoll("action", action_name, description, properties, damages, damage_types, ρσ_exists.e(properties["To Hit"], null));
+                sendRollWithCharacter("attack", damages[0], roll_properties);
             } else {
                 sendRollWithCharacter("action", 0, (function(){
                     var ρσ_d = {};
@@ -8833,13 +8801,13 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
                 force_display = ρσ_kwargs_obj.force_display;
             }
-            var properties, spell_name, description, damages, healings, castas, level, concentration, ritual, duration, to_hit, num_damages, damage, damage2, custom_damage, dmg, dmgtype, damage_type, damage2_type, i, roll_properties, spell_properties, key;
+            var properties, spell_name, description, damage_modifiers, healing_modifiers, castas, level, concentration, ritual, duration, to_hit, damages, damage_types, dmg, dmgtype, modifier, custom_damage, roll_properties, spell_properties, key;
             properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"));
             print("Properties are : " + str(properties));
             spell_name = $(".ct-sidebar__heading .ct-spell-name").text();
             description = descriptionToString(".ct-spell-pane .ct-spell-detail__description");
-            damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage");
-            healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp");
+            damage_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage");
+            healing_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp");
             castas = $(".ct-spell-caster__casting-level-current").text();
             level = descriptionToString(".ct-spell-pane .ct-spell-detail__level-school", " ");
             concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration").length > 0;
@@ -8855,55 +8823,33 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (!to_hit) {
                 to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit");
             }
-            if (force_display === false && (damages.length > 0 || healings.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null))))) {
-                num_damages = 0;
-                damage = null;
-                damage2 = null;
-                custom_damage = character._settings["custom-damage-dice"];
-                for (var ρσ_Index26 = 0; ρσ_Index26 < damages.length; ρσ_Index26++) {
-                    i = ρσ_Index26;
-                    dmg = damages.eq(i).find(".ct-spell-caster__modifier-amount").text();
-                    dmgtype = damages.eq(i).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
+            if (force_display === false && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null))))) {
+                damages = ρσ_list_decorate([]);
+                damage_types = ρσ_list_decorate([]);
+                var ρσ_Iter2 = ρσ_Iterable(damage_modifiers);
+                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                    modifier = ρσ_Iter2[ρσ_Index2];
+                    dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
+                    dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                     if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
                         dmgtype = "";
                     }
-                    if ((num_damages === 0 || typeof num_damages === "object" && ρσ_equals(num_damages, 0))) {
-                        damage = dmg;
-                        damage_type = dmgtype;
-                    } else if ((num_damages === 1 || typeof num_damages === "object" && ρσ_equals(num_damages, 1))) {
-                        damage2 = dmg;
-                        damage2_type = dmgtype;
-                    } else {
-                        damage2 += " | " + dmg;
-                        damage2_type += " | " + dmgtype;
-                    }
-                    num_damages += 1;
+                    damages.append(dmg);
+                    damage_types.append(dmgtype);
                 }
-                for (var ρσ_Index27 = 0; ρσ_Index27 < healings.length; ρσ_Index27++) {
-                    i = ρσ_Index27;
-                    dmg = healings.eq(i).find(".ct-spell-caster__modifier-amount").text();
-                    if ((num_damages === 0 || typeof num_damages === "object" && ρσ_equals(num_damages, 0))) {
-                        damage = dmg;
-                        damage_type = "Healing";
-                    } else if ((num_damages === 1 || typeof num_damages === "object" && ρσ_equals(num_damages, 1))) {
-                        damage2 = dmg;
-                        damage2_type = "Healing";
-                    } else {
-                        damage2 += " | " + dmg;
-                        damage2_type += " | " + "Healing";
-                    }
-                    num_damages += 1;
+                var ρσ_Iter3 = ρσ_Iterable(healing_modifiers);
+                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                    modifier = ρσ_Iter3[ρσ_Index3];
+                    dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
+                    damages.append(dmg);
+                    damage_types.append("Healing");
                 }
-                if (len(custom_damage) > 0 && num_damages > 0) {
-                    if ((num_damages === 1 || typeof num_damages === "object" && ρσ_equals(num_damages, 1))) {
-                        damage2 = custom_damage;
-                        damage2_type = "Custom Damage";
-                    } else {
-                        damage2 += " | " + custom_damage;
-                        damage2_type += " | Custom Damage";
-                    }
+                custom_damage = character._settings["custom-damage-dice"];
+                if (len(custom_damage) > 0 && len(damages) > 0) {
+                    damages.append(custom_damage);
+                    damage_types.append("Custom Damage");
                 }
-                roll_properties = buildAttackRoll("spell", spell_name, description, properties, damage, damage_type, to_hit, damage2, damage2_type);
+                roll_properties = buildAttackRoll("spell", spell_name, description, properties, damages, damage_types, to_hit);
                 spell_properties = (function(){
                     var ρσ_d = {};
                     ρσ_d["level-school"] = level;
@@ -8914,15 +8860,15 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["ritual"] = ritual;
                     return ρσ_d;
                 }).call(this);
-                var ρσ_Iter28 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
-                    key = ρσ_Iter28[ρσ_Index28];
+                var ρσ_Iter4 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                    key = ρσ_Iter4[ρσ_Index4];
                     roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
                 }
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
                     roll_properties["cast-at"] = castas;
                 }
-                sendRollWithCharacter("spell-attack", damage, roll_properties);
+                sendRollWithCharacter("spell-attack", ρσ_exists.e(damages[0], ""), roll_properties);
             } else {
                 roll_properties = (function(){
                     var ρσ_d = {};
@@ -9231,9 +9177,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter29 = ρσ_Iterable(groups);
-            for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
-                group = ρσ_Iter29[ρσ_Index29];
+            var ρσ_Iter5 = ρσ_Iterable(groups);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                group = ρσ_Iter5[ρσ_Index5];
                 label = $(group).find(".ct-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -9242,9 +9188,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter30 = ρσ_Iterable(items);
-                    for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
-                        item = ρσ_Iter30[ρσ_Index30];
+                    var ρσ_Iter6 = ρσ_Iterable(items);
+                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                        item = ρσ_Iter6[ρσ_Index6];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -9286,8 +9232,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             injectRollToSpellAttack();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index31 = 0; ρσ_Index31 < pane.length; ρσ_Index31++) {
-                    div = ρσ_Index31;
+                for (var ρσ_Index7 = 0; ρσ_Index7 < pane.length; ρσ_Index7++) {
+                    div = ρσ_Index7;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls"))) {
                         continue;
