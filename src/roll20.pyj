@@ -293,6 +293,8 @@ def rollAttack(request, custom_roll_dice=""):
 
     properties = {"charname": request.character.name,
                   "rname" : request.name}
+    template_type = "atkdmg"
+    dmg_props = {}
     if request["to-hit"]?:
         d20_roll = "1d20"
         if request["attack-source"] == "item":
@@ -323,16 +325,30 @@ def rollAttack(request, custom_roll_dice=""):
         else:
             brutal = ""
         dmg_props = damagesToRollProperties(damages, damage_types, brutal)
-        for key in dmg_props:
-            properties[key] = dmg_props[key]
     if request.range?:
         properties["range"] = request.range
     if request["save-dc"]?:
-        properties["save"] = 1
-        properties["saveattr"] = request["save-ability"]
-        properties["savedc"] = request["save-dc"]
+        dmg_props["save"] = 1
+        dmg_props["saveattr"] = request["save-ability"]
+        dmg_props["savedc"] = request["save-dc"]
 
-    return template("atkdmg", properties)
+    if request.damages? and request["to-hit"]? and not settings["auto-roll-damage"]:
+        template_type = "atk"
+        dmg_props["charname"] = request.character.name
+        dmg_props["rname"] = request.name
+        dmg_props["crit"] = 1
+        dmg_template_crit = template("dmg", dmg_props)
+        del dmg_props["crit"]
+        del dmg_props["crit1"]
+        del dmg_props["crit2"]
+        dmg_template = template("dmg", dmg_props)
+        properties["rname"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")"
+        properties["rnamec"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")"
+    else:
+        for key in dmg_props:
+            properties[key] = dmg_props[key]
+
+    return template(template_type, properties)
 
 def rollSpellCard(request):
     properties = {"name": request.name,
@@ -376,7 +392,8 @@ def rollSpellCard(request):
 def rollSpellAttack(request, custom_roll_dice):
     properties = {"charname": request.character.name,
                   "rname" : request.name}
-    healing_spell = False
+    template_type = "atkdmg"
+    dmg_props = {}
     if request["to-hit"]?:
         properties["mod"] = request["to-hit"]
         properties["r1"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
@@ -396,19 +413,15 @@ def rollSpellAttack(request, custom_roll_dice):
             chromatic_type += "}"
             damages.insert(0, chromatic_damage)
             damage_types.insert(0, chromatic_type)
-        if "Healing" in damage_types:
-            healing_spell = True
         dmg_props = damagesToRollProperties(damages, damage_types)
-        for key in dmg_props:
-            properties[key] = dmg_props[key]
     if request.range?:
         properties["range"] = request.range
     if request["save-dc"]?:
-        properties["save"] = 1
-        properties["saveattr"] = request["save-ability"]
-        properties["savedc"] = request["save-dc"]
+        dmg_props["save"] = 1
+        dmg_props["saveattr"] = request["save-ability"]
+        dmg_props["savedc"] = request["save-dc"]
     if request["cast-at"]?:
-        properties["hldmg"] = genRoll(request["cast-at"][0]) + request["cast-at"][1:] + " Level"
+        dmg_props["hldmg"] = genRoll(request["cast-at"][0]) + request["cast-at"][1:] + " Level"
     components = request.components
     if settings["components-display"] == "all":
         if components != "":
@@ -423,20 +436,24 @@ def rollSpellAttack(request, custom_roll_dice):
             if components[0] == "M":
                 properties["desc"] = settings["component-prefix"] + components[2:-1]
                 components = ""
-    roll = template("atkdmg", properties)
-    if healing_spell and \
-            request.character.type == "Character" and \
-            "Disciple of Life" in request.character["class-features"] and \
-            request.character.settings["cleric-disciple-life"]:
-        if request["cast-at"]?:
-            level = request["cast-at"][0]
-        else:
-            level = request["level-school"][0]
-        roll += template("simple",
-                         {"rname" : "Disciple of Life",
-                          "mod": "2 + " + level,
-                          "r1": "[[2 + " + level + "]]",
-                          "normal": 1})
+
+    if request.damages? and request["to-hit"]? and not settings["auto-roll-damage"]:
+        template_type = "atk"
+        dmg_props["charname"] = request.character.name
+        dmg_props["rname"] = request.name
+        dmg_props["crit"] = 1
+        dmg_template_crit = template("dmg", dmg_props)
+        del dmg_props["crit"]
+        del dmg_props["crit1"]
+        del dmg_props["crit2"]
+        dmg_template = template("dmg", dmg_props)
+        properties["rname"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")"
+        properties["rnamec"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")"
+    else:
+        for key in dmg_props:
+            properties[key] = dmg_props[key]
+
+    roll = template(template_type, properties)
     return roll
 
 def updateSettings(new_settings=None):

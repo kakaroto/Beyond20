@@ -5683,6 +5683,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["auto-roll-damage"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Auto roll Damage and Crit";
+                ρσ_d["description"] = "Always roll damage and critical hit dice when doing an attack";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["initiative-tracker"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Add initiative roll to the Turn Tracker";
@@ -8687,8 +8695,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 to_hit = ρσ_exists.e(properties["To Hit"], findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit"));
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                for (var ρσ_Index24 = 0; ρσ_Index24 < prop_list.length; ρσ_Index24++) {
-                    i = ρσ_Index24;
+                for (var ρσ_Index0 = 0; ρσ_Index0 < prop_list.length; ρσ_Index0++) {
+                    i = ρσ_Index0;
                     if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
                         value = prop_list.eq(i).find(".ct-property-list__property-content");
                         damages.append(value.find(".ct-damage__value").text());
@@ -8699,8 +8707,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                             damage_types.append("Two-Handed");
                         }
                         additional_damages = value.find(".ct-item-detail__additional-damage");
-                        for (var ρσ_Index25 = 0; ρσ_Index25 < additional_damages.length; ρσ_Index25++) {
-                            j = ρσ_Index25;
+                        for (var ρσ_Index1 = 0; ρσ_Index1 < additional_damages.length; ρσ_Index1++) {
+                            j = ρσ_Index1;
                             dmg = additional_damages.eq(j).text();
                             dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                             dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
@@ -8730,7 +8738,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 if (character.getSetting("sharpshooter", false) && (properties["Attack Type"] === "Ranged" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Ranged")) && (properties["Proficient"] === "Yes" || typeof properties["Proficient"] === "object" && ρσ_equals(properties["Proficient"], "Yes"))) {
                     to_hit += " - 5";
-                    damages[0] += " +10";
+                    damages[0] += " + 10";
                     character.mergeCharacterSettings((function(){
                         var ρσ_d = {};
                         ρσ_d["sharpshooter"] = false;
@@ -8739,7 +8747,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 if (character.getSetting("great-weapon-master", false) && (properties["Attack Type"] === "Melee" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Melee")) && properties["Properties"].includes("Heavy") && (properties["Proficient"] === "Yes" || typeof properties["Proficient"] === "object" && ρσ_equals(properties["Proficient"], "Yes"))) {
                     to_hit += " - 5";
-                    damages[0] += " +10";
+                    damages[0] += " + 10";
                     character.mergeCharacterSettings((function(){
                         var ρσ_d = {};
                         ρσ_d["great-weapon-master"] = false;
@@ -8801,7 +8809,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
                 force_display = ρσ_kwargs_obj.force_display;
             }
-            var properties, spell_name, description, damage_modifiers, healing_modifiers, castas, level, concentration, ritual, duration, to_hit, damages, damage_types, dmg, dmgtype, modifier, custom_damage, roll_properties, spell_properties, key;
+            var properties, spell_name, description, damage_modifiers, healing_modifiers, castas, level, concentration, ritual, duration, to_hit, damages, damage_types, dmg, dmgtype, modifier, spell_level, custom_damage, roll_properties, spell_properties, key;
             properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"));
             print("Properties are : " + str(properties));
             spell_name = $(".ct-sidebar__heading .ct-spell-name").text();
@@ -8826,9 +8834,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (force_display === false && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null))))) {
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                var ρσ_Iter26 = ρσ_Iterable(damage_modifiers);
-                for (var ρσ_Index26 = 0; ρσ_Index26 < ρσ_Iter26.length; ρσ_Index26++) {
-                    modifier = ρσ_Iter26[ρσ_Index26];
+                var ρσ_Iter2 = ρσ_Iterable(damage_modifiers);
+                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                    modifier = ρσ_Iter2[ρσ_Index2];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                     if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
@@ -8837,12 +8845,26 @@ var str = ρσ_str, repr = ρσ_repr;;
                     damages.append(dmg);
                     damage_types.append(dmgtype);
                 }
-                var ρσ_Iter27 = ρσ_Iterable(healing_modifiers);
-                for (var ρσ_Index27 = 0; ρσ_Index27 < ρσ_Iter27.length; ρσ_Index27++) {
-                    modifier = ρσ_Iter27[ρσ_Index27];
+                var ρσ_Iter3 = ρσ_Iterable(healing_modifiers);
+                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                    modifier = ρσ_Iter3[ρσ_Index3];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
+                    if (dmg.startsWith("Regain ")) {
+                        dmg = dmg.slice(7);
+                    }
+                    if (dmg.endsWith(" Hit Points")) {
+                        dmg = dmg.slice(0, -11);
+                    }
                     damages.append(dmg);
                     damage_types.append("Healing");
+                }
+                if (healing_modifiers.length > 0 && character.hasClassFeature("Disciple of Life") && character.getSetting("cleric-disciple-life", false)) {
+                    spell_level = level[0];
+                    if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, "")))) {
+                        spell_level = castas[0];
+                    }
+                    damages.append(str(2 + int(spell_level)));
+                    damage_types.append("Disciple of Life");
                 }
                 custom_damage = character._settings["custom-damage-dice"];
                 if (len(custom_damage) > 0 && len(damages) > 0) {
@@ -8860,9 +8882,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["ritual"] = ritual;
                     return ρσ_d;
                 }).call(this);
-                var ρσ_Iter28 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
-                    key = ρσ_Iter28[ρσ_Index28];
+                var ρσ_Iter4 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                    key = ρσ_Iter4[ρσ_Index4];
                     roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
                 }
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
@@ -9177,9 +9199,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter29 = ρσ_Iterable(groups);
-            for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
-                group = ρσ_Iter29[ρσ_Index29];
+            var ρσ_Iter5 = ρσ_Iterable(groups);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                group = ρσ_Iter5[ρσ_Index5];
                 label = $(group).find(".ct-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -9188,9 +9210,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter30 = ρσ_Iterable(items);
-                    for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
-                        item = ρσ_Iter30[ρσ_Index30];
+                    var ρσ_Iter6 = ρσ_Iterable(items);
+                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                        item = ρσ_Iter6[ρσ_Index6];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -9232,8 +9254,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             injectRollToSpellAttack();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index31 = 0; ρσ_Index31 < pane.length; ρσ_Index31++) {
-                    div = ρσ_Index31;
+                for (var ρσ_Index7 = 0; ρσ_Index7 < pane.length; ρσ_Index7++) {
+                    div = ρσ_Index7;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls"))) {
                         continue;

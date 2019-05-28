@@ -24,6 +24,11 @@ options_list = {
                        "type": "bool",
                        "default": True},
 
+    "auto-roll-damage": {"title": "Auto roll Damage and Crit",
+                       "description": "Always roll damage and critical hit dice when doing an attack",
+                       "type": "bool",
+                       "default": True},
+
     "initiative-tracker": {"title": "Add initiative roll to the Turn Tracker",
                            "description": "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in Roll20, and will also change the way the output of 'Advantage on initiative' rolls appear",
                            "type": "bool",

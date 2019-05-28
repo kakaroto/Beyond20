@@ -5679,6 +5679,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["auto-roll-damage"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Auto roll Damage and Crit";
+                ρσ_d["description"] = "Always roll damage and critical hit dice when doing an attack";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["initiative-tracker"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Add initiative roll to the Turn Tracker";
@@ -7110,13 +7118,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var properties, d20_roll, damages, damage_types, barbarian_level, brutal, dmg_props, key;
+            var properties, template_type, dmg_props, d20_roll, damages, damage_types, barbarian_level, brutal, dmg_template_crit, dmg_template, key;
             properties = (function(){
                 var ρσ_d = {};
                 ρσ_d["charname"] = request.character.name;
                 ρσ_d["rname"] = request.name;
                 return ρσ_d;
             }).call(this);
+            template_type = "atkdmg";
+            dmg_props = {};
             if (ρσ_exists.n(request["to-hit"])) {
                 d20_roll = "1d20";
                 if ((request["attack-source"] === "item" || typeof request["attack-source"] === "object" && ρσ_equals(request["attack-source"], "item"))) {
@@ -7159,21 +7169,35 @@ var str = ρσ_str, repr = ρσ_repr;;
                     brutal = "";
                 }
                 dmg_props = damagesToRollProperties(damages, damage_types, brutal);
+            }
+            if (ρσ_exists.n(request.range)) {
+                properties["range"] = request.range;
+            }
+            if (ρσ_exists.n(request["save-dc"])) {
+                dmg_props["save"] = 1;
+                dmg_props["saveattr"] = request["save-ability"];
+                dmg_props["savedc"] = request["save-dc"];
+            }
+            if (ρσ_exists.n(request.damages) && ρσ_exists.n(request["to-hit"]) && !settings["auto-roll-damage"]) {
+                template_type = "atk";
+                dmg_props["charname"] = request.character.name;
+                dmg_props["rname"] = request.name;
+                dmg_props["crit"] = 1;
+                dmg_template_crit = template("dmg", dmg_props);
+                ρσ_delitem(dmg_props, "crit");
+                ρσ_delitem(dmg_props, "crit1");
+                ρσ_delitem(dmg_props, "crit2");
+                dmg_template = template("dmg", dmg_props);
+                properties["rname"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")";
+                properties["rnamec"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")";
+            } else {
                 var ρσ_Iter6 = ρσ_Iterable(dmg_props);
                 for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
                     key = ρσ_Iter6[ρσ_Index6];
                     properties[(typeof key === "number" && key < 0) ? properties.length + key : key] = dmg_props[(typeof key === "number" && key < 0) ? dmg_props.length + key : key];
                 }
             }
-            if (ρσ_exists.n(request.range)) {
-                properties["range"] = request.range;
-            }
-            if (ρσ_exists.n(request["save-dc"])) {
-                properties["save"] = 1;
-                properties["saveattr"] = request["save-ability"];
-                properties["savedc"] = request["save-dc"];
-            }
-            return template("atkdmg", properties);
+            return template(template_type, properties);
         };
         if (!rollAttack.__defaults__) Object.defineProperties(rollAttack, {
             __defaults__ : {value: {custom_roll_dice:""}},
@@ -7234,14 +7258,15 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollSpellAttack(request, custom_roll_dice) {
-            var properties, healing_spell, damages, damage_types, chromatic_type, idx, chromatic_damage, dmgtype, dmg_props, key, components, roll, level;
+            var properties, template_type, dmg_props, damages, damage_types, chromatic_type, idx, chromatic_damage, dmgtype, components, dmg_template_crit, dmg_template, key, roll;
             properties = (function(){
                 var ρσ_d = {};
                 ρσ_d["charname"] = request.character.name;
                 ρσ_d["rname"] = request.name;
                 return ρσ_d;
             }).call(this);
-            healing_spell = false;
+            template_type = "atkdmg";
+            dmg_props = {};
             if (ρσ_exists.n(request["to-hit"])) {
                 properties["mod"] = request["to-hit"];
                 properties["r1"] = genRoll("1d20", (function(){
@@ -7276,26 +7301,18 @@ var str = ρσ_str, repr = ρσ_repr;;
                     damages.insert(0, chromatic_damage);
                     damage_types.insert(0, chromatic_type);
                 }
-                if (ρσ_in("Healing", damage_types)) {
-                    healing_spell = true;
-                }
                 dmg_props = damagesToRollProperties(damages, damage_types);
-                var ρσ_Iter8 = ρσ_Iterable(dmg_props);
-                for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                    key = ρσ_Iter8[ρσ_Index8];
-                    properties[(typeof key === "number" && key < 0) ? properties.length + key : key] = dmg_props[(typeof key === "number" && key < 0) ? dmg_props.length + key : key];
-                }
             }
             if (ρσ_exists.n(request.range)) {
                 properties["range"] = request.range;
             }
             if (ρσ_exists.n(request["save-dc"])) {
-                properties["save"] = 1;
-                properties["saveattr"] = request["save-ability"];
-                properties["savedc"] = request["save-dc"];
+                dmg_props["save"] = 1;
+                dmg_props["saveattr"] = request["save-ability"];
+                dmg_props["savedc"] = request["save-dc"];
             }
             if (ρσ_exists.n(request["cast-at"])) {
-                properties["hldmg"] = genRoll(request["cast-at"][0]) + request["cast-at"].slice(1) + " Level";
+                dmg_props["hldmg"] = genRoll(request["cast-at"][0]) + request["cast-at"].slice(1) + " Level";
             }
             components = request.components;
             if ((settings["components-display"] === "all" || typeof settings["components-display"] === "object" && ρσ_equals(settings["components-display"], "all"))) {
@@ -7317,22 +7334,26 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }
                 }
             }
-            roll = template("atkdmg", properties);
-            if (healing_spell && (request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Disciple of Life", request.character["class-features"]) && request.character.settings["cleric-disciple-life"]) {
-                if (ρσ_exists.n(request["cast-at"])) {
-                    level = request["cast-at"][0];
-                } else {
-                    level = request["level-school"][0];
+            if (ρσ_exists.n(request.damages) && ρσ_exists.n(request["to-hit"]) && !settings["auto-roll-damage"]) {
+                template_type = "atk";
+                dmg_props["charname"] = request.character.name;
+                dmg_props["rname"] = request.name;
+                dmg_props["crit"] = 1;
+                dmg_template_crit = template("dmg", dmg_props);
+                ρσ_delitem(dmg_props, "crit");
+                ρσ_delitem(dmg_props, "crit1");
+                ρσ_delitem(dmg_props, "crit2");
+                dmg_template = template("dmg", dmg_props);
+                properties["rname"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")";
+                properties["rnamec"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")";
+            } else {
+                var ρσ_Iter8 = ρσ_Iterable(dmg_props);
+                for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                    key = ρσ_Iter8[ρσ_Index8];
+                    properties[(typeof key === "number" && key < 0) ? properties.length + key : key] = dmg_props[(typeof key === "number" && key < 0) ? dmg_props.length + key : key];
                 }
-                roll += template("simple", (function(){
-                    var ρσ_d = {};
-                    ρσ_d["rname"] = "Disciple of Life";
-                    ρσ_d["mod"] = "2 + " + level;
-                    ρσ_d["r1"] = "[[2 + " + level + "]]";
-                    ρσ_d["normal"] = 1;
-                    return ρσ_d;
-                }).call(this));
             }
+            roll = template(template_type, properties);
             return roll;
         };
         if (!rollSpellAttack.__argnames__) Object.defineProperties(rollSpellAttack, {

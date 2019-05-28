@@ -5679,6 +5679,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["auto-roll-damage"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Auto roll Damage and Crit";
+                ρσ_d["description"] = "Always roll damage and critical hit dice when doing an attack";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["initiative-tracker"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Add initiative roll to the Turn Tracker";
