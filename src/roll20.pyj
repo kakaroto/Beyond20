@@ -89,6 +89,22 @@ def damagesToCrits(damages, brutal=""):
             crits.append("")
     return crits
 
+def damagesToRollProperties(damages, damage_types, brutal=""):
+    nonlocal settings
+
+    properties = {"damage": 1,
+                  "dmg1flag": 1}
+    crits = damagesToCrits(damages, brutal)
+    properties["dmg1"] = subDamageRolls(damages[0])
+    properties["dmg1type"] = damage_types[0]
+    properties["crit1"] = settings["crit-prefix"] + crits[0]
+    if len(damages) > 1:
+        properties["dmg2flag"] = 1
+        properties["dmg2"] = subDamageRolls(str.join(" | ", list(damages[1:])))
+        properties["dmg2type"] = str.join(" | ", damage_types[1:])
+        properties["crit2"] = settings["crit-prefix"] + str.join(" | ", crits[1:])
+
+    return properties
 
 def template(name, properties):
     nonlocal settings
@@ -143,10 +159,285 @@ def template(name, properties):
         del properties["advantage"]
             
 
-    result = "&{template:" + name + "}"
+    if settings["whispers"]:
+        result = "/w gm "
+    else:
+        result = ""
+    result += "&{template:" + name + "}"
     for key in properties:
         result += " {{" + key + "=" + properties[key] + "}}"
     return result
+
+def advantageType():
+    nonlocal settings
+
+    if settings["roll-advantage"]:
+        return "always"
+    else:
+        return "normal"
+
+def rollSkill(request, custom_roll_dice=""):
+    modifier = request.modifier
+    # Custom skill
+    if modifier == "--" and request.character.abilities.length > 0:
+        modifier = "?{Choose Ability"
+        # [name, abbr, value, mod]
+        for ability in request.character.abilities:
+            modifier += "|" + ability[0] + ", " + ability[3]
+        modifier += "}"
+        prof = ""
+        prof_val = ""
+        if request.proficiency == "Proficiency":
+            prof = "PROF"
+            prof_val += request.character.proficiency
+        elif request.proficiency == "Half Proficiency":
+            prof = "HALF-PROFICIENCY"
+            prof_val += "+[[floor(" + request.character.proficiency + " / 2)]]"
+        elif request.proficiency == "Expertise":
+            prof = "EXPERTISE"
+            prof_val += "+[[" + request.character.proficiency + " * 2]]"
+        return template("simple",
+                         {"charname": request.character.name,
+                          "rname" : request.skill,
+                          "mod": "[[" + modifier + prof_val + "]]",
+                          "r1": genRoll("1d20", {"--": modifier, prof: prof_val, "CUSTOM": custom_roll_dice}),
+                          "r2": genRoll("1d20", {"--": modifier, prof: prof_val, "CUSTOM": custom_roll_dice}),
+                          advantageType():1})
+    else:
+        return template("simple",
+                         {"charname": request.character.name,
+                          "rname" : request.skill,
+                          "mod": modifier,
+                          "r1": genRoll("1d20", {request.ability: modifier, "CUSTOM": custom_roll_dice}),
+                          "r2": genRoll("1d20", {request.ability: modifier, "CUSTOM": custom_roll_dice}),
+                          advantageType():1})
+
+def rollAbility(request, custom_roll_dice=""):
+    if request["JoaT"]?:
+        joat = "+" + request["JoaT"]
+        dice_roll = genRoll("1d20", {request.ability: request.modifier, "JoaT": joat, "CUSTOM": custom_roll_dice})
+        modifier = request.modifier + " " + joat
+    else:
+        dice_roll = genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice})
+        modifier = request.modifier
+    return template("simple",
+                    {"charname": request.character.name,
+                     "rname" : request.name,
+                     "mod": modifier,
+                     "r1": dice_roll,
+                     "r2": dice_roll,
+                     advantageType():1})
+
+def rollSavingThrow(request, custom_roll_dice=""):
+    return template("simple",
+                    {"charname": request.character.name,
+                     "rname" : request.name + " Save",
+                     "mod": request.modifier,
+                     "r1": genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice}),
+                     "r2": genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice}),
+                     advantageType():1})
+
+def rollInitiative(request, custom_roll_dice=""):
+    nonlocal settings
+
+    roll_properties = {"charname": request.character.name,
+                       "rname" : "Initiative",
+                       "mod": request.initiative}
+    if settings["initiative-tracker"]:
+        dice = "2d20kh1" if request.advantage else "1d20"
+        roll_properties["r1"] = genRoll(dice, {"INIT": request.initiative, "CUSTOM": custom_roll_dice, "": "&{tracker}"})
+        roll_properties["normal"] = 1
+    else:
+        dice_formula = genRoll("1d20", {"INIT": request.initiative, "CUSTOM": custom_roll_dice})
+        roll_properties["r1"] = dice_formula
+        if request.advantage:
+            roll_properties["r2"] = dice_formula
+        roll_properties["advantage" if request.advantage else "normal"] = 1
+    return template("simple", roll_properties)
+
+def rollHitDice(request):
+    if request.multiclass:
+        rname = "Hit Dice (" + request.class + ")"
+    else:
+        rname = "Hit Dice"
+
+    return template("simple",
+                    {"charname": request.character.name,
+                     "rname" : rname,
+                     "mod": request["hit-dice"],
+                     "r1": subRolls(request["hit-dice"]),
+                     "normal": 1})
+
+def rollDeathSave(request, custom_roll_dice=""):
+    return template("simple",
+                    {"charname": request.character.name,
+                     "rname" : "Death Saving Throw",
+                     "r1": genRoll("1d20cs>10cf<9", {"CUSTOM": custom_roll_dice}),
+                     "normal": 1})
+
+def rollTrait(request):
+    if request["source-type"]?:
+        source = request["source-type"]
+        if request.source.length > 0:
+            source += ": " + request.source
+    elif request["item-type"]?:
+        source = request["item-type"]
+    else:
+        source = request.type
+    return template("traits", {"name": request.name,
+                               "source": source,
+                               "description": subDescriptionRolls(request.name, request.description)})
+
+def rollAttack(request, custom_roll_dice=""):
+    nonlocal settings
+
+    properties = {"charname": request.character.name,
+                  "rname" : request.name}
+    if request["to-hit"]?:
+        d20_roll = "1d20"
+        if request["attack-source"] == "item":
+            if request.character.type == "Character" and \
+                    "Improved Critical" in request.character["class-features"]:
+                d20_roll = "1d20cs>19"
+            if request.character.type == "Character" and \
+                    "Superior Critical" in request.character["class-features"]:
+                d20_roll = "1d20cs>18"
+        properties["mod"] = request["to-hit"]
+        properties["r1"] = genRoll(d20_roll, {"": request["to-hit"], "CUSTOM": custom_roll_dice})
+        properties["r2"] = genRoll(d20_roll, {"": request["to-hit"], "CUSTOM": custom_roll_dice})
+        properties[advantageType()] = 1
+        properties["attack"] = 1
+    if request.damages?:
+        damages = list(request.damages)
+        damage_types = list(request["damage-types"])
+        if request.character.type == "Character" and \
+                "Brutal Critical" in request.character["class-features"] and \
+                request["attack-type"] == "Melee":
+            barbarian_level = request.character.classes["Barbarian"]
+            if barbarian_level >= 17:
+                brutal = "4 * "
+            elif barbarian_level >= 13:
+                brutal = "3 * "
+            else:
+                brutal = "2 * "
+        else:
+            brutal = ""
+        dmg_props = damagesToRollProperties(damages, damage_types, brutal)
+        for key in dmg_props:
+            properties[key] = dmg_props[key]
+    if request.range?:
+        properties["range"] = request.range
+    if request["save-dc"]?:
+        properties["save"] = 1
+        properties["saveattr"] = request["save-ability"]
+        properties["savedc"] = request["save-dc"]
+
+    return template("atkdmg", properties)
+
+def rollSpellCard(request):
+    properties = {"name": request.name,
+                  "castingtime": request["casting-time"],
+                  "range": request.range,
+                  "duration": request.duration}
+
+    if request["cast-at"]?:
+        properties["level"] = request["level-school"] + "(Cast at " + request["cast-at"] + " Level)"
+    else:
+        properties["level"] = request["level-school"]
+                                                    
+    components = request.components
+    while components != "":
+        if components[0] == "V":
+            properties["v"] = 1
+            components = components[1:]
+        elif components[0] == "S":
+            properties["s"] = 1
+            components = components[1:]
+        elif components[0] == "M":
+            properties["m"] = 1
+            properties["material"] = components[2:-1]
+            components = ""
+        if components.startsWith(", "):
+            components = components[2:]
+    if request.ritual:
+        properties["ritual"] = 1
+    if request.concentration:
+        properties["concentration"] = 1
+    description = request.description            
+    higher = description.indexOf("At Higher Levels.")
+    if higher > 0:
+        properties["description"] = subDescriptionRolls(request.name, description[:higher-1])
+        properties["athigherlevels"] = subDescriptionRolls(request.name, description[higher+"At Higher Levels.".length:])
+    else:
+        properties["description"] = subDescriptionRolls(request.name, description)
+
+    return template("spell", properties)
+
+def rollSpellAttack(request, custom_roll_dice):
+    properties = {"charname": request.character.name,
+                  "rname" : request.name}
+    healing_spell = False
+    if request["to-hit"]?:
+        properties["mod"] = request["to-hit"]
+        properties["r1"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
+        properties["r2"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
+        properties[advantageType()] = 1
+        properties["attack"] = 1
+    if request.damages?:
+        damages = list(request.damages)
+        damage_types = list(request["damage-types"])
+        if request.name == "Chromatic Orb":
+            chromatic_type = "?{Choose damage type"
+            for dmgtype in ["Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder"]:
+                idx = damage_types.index(dmgtype)
+                chromatic_damage = damages.pypop(idx)
+                damage_types.pypop(idx)
+                chromatic_type += "|" + dmgtype
+            chromatic_type += "}"
+            damages.insert(0, chromatic_damage)
+            damage_types.insert(0, chromatic_type)
+        if "Healing" in damage_types:
+            healing_spell = True
+        dmg_props = damagesToRollProperties(damages, damage_types)
+        for key in dmg_props:
+            properties[key] = dmg_props[key]
+    if request.range?:
+        properties["range"] = request.range
+    if request["save-dc"]?:
+        properties["save"] = 1
+        properties["saveattr"] = request["save-ability"]
+        properties["savedc"] = request["save-dc"]
+    if request["cast-at"]?:
+        properties["hldmg"] = genRoll(request["cast-at"][0]) + request["cast-at"][1:] + " Level"
+    components = request.components
+    if settings["components-display"] == "all":
+        if components != "":
+            properties["desc"] = settings["component-prefix"] + components
+            components = ""
+    elif settings["components-display"] == "material":
+        while components != "":
+            if components[0] in ["V", "S"]:
+                components = components[1:]
+                if components.startsWith(", "):
+                    components = components[2:]
+            if components[0] == "M":
+                properties["desc"] = settings["component-prefix"] + components[2:-1]
+                components = ""
+    roll = template("atkdmg", properties)
+    if healing_spell and \
+            request.character.type == "Character" and \
+            "Disciple of Life" in request.character["class-features"] and \
+            request.character.settings["cleric-disciple-life"]:
+        if request["cast-at"]?:
+            level = request["cast-at"][0]
+        else:
+            level = request["level-school"][0]
+        roll += template("simple",
+                         {"rname" : "Disciple of Life",
+                          "mod": "2 + " + level,
+                          "r1": "[[2 + " + level + "]]",
+                          "normal": 1})
+    return roll
 
 def updateSettings(new_settings=None):
     nonlocal settings
@@ -168,299 +459,43 @@ def handleMessage (request, sender, sendResponse):
         if settings["update-hp"]:
             sendCustomEvent("UpdateHP", (request.character.name, request.character.hp, request.character["max-hp"]))
     elif request.action == "roll":
-        if settings["whispers"] or \
-                (request.character.type == "Monster" and settings["whisper-monsters"]):
+        if request.character.type == "Monster" and settings["whisper-monsters"]:
             roll = "/w gm "
         else:
             roll = ""
-        if settings["roll-advantage"]:
-            advantage_type = "always"
-        else:
-            advantage_type = "normal"
         if request.character.type == "Character":
             custom_roll_dice = request.character.settings["custom-roll-dice"] ? ""
             custom_roll_dice = re.sub("([0-9]*d[0-9]+)", "\\1cs>100cf<0", custom_roll_dice)
         else:
             custom_roll_dice = ""
         if request.type == "skill":
-            modifier = request.modifier
-            # Custom skill
-            if modifier == "--" and request.character.abilities.length > 0:
-                modifier = "?{Choose Ability"
-                # [name, abbr, value, mod]
-                for ability in request.character.abilities:
-                    modifier += "|" + ability[0] + ", " + ability[3]
-                modifier += "}"
-                prof = ""
-                prof_val = ""
-                if request.proficiency == "Proficiency":
-                    prof = "PROF"
-                    prof_val += request.character.proficiency
-                elif request.proficiency == "Half Proficiency":
-                    prof = "HALF-PROFICIENCY"
-                    prof_val += "+[[floor(" + request.character.proficiency + " / 2)]]"
-                elif request.proficiency == "Expertise":
-                    prof = "EXPERTISE"
-                    prof_val += "+[[" + request.character.proficiency + " * 2]]"
-                roll += template("simple",
-                                 {"charname": request.character.name,
-                                  "rname" : request.skill,
-                                  "mod": "[[" + modifier + prof_val + "]]",
-                                  "r1": genRoll("1d20", {"--": modifier, prof: prof_val, "CUSTOM": custom_roll_dice}),
-                                  "r2": genRoll("1d20", {"--": modifier, prof: prof_val, "CUSTOM": custom_roll_dice}),
-                                  advantage_type:1})
-            else:
-                roll += template("simple",
-                                 {"charname": request.character.name,
-                                  "rname" : request.skill,
-                                  "mod": modifier,
-                                  "r1": genRoll("1d20", {request.ability: modifier, "CUSTOM": custom_roll_dice}),
-                                  "r2": genRoll("1d20", {request.ability: modifier, "CUSTOM": custom_roll_dice}),
-                                  advantage_type:1})
+            roll += rollSkill(request, custom_roll_dice)
         elif request.type == "ability":
-            if request["JoaT"]?:
-                joat = "+" + request["JoaT"]
-                dice_roll = genRoll("1d20", {request.ability: request.modifier, "JoaT": joat, "CUSTOM": custom_roll_dice})
-                modifier = request.modifier + " " + joat
-            else:
-                dice_roll = genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice})
-                modifier = request.modifier
-            roll += template("simple",
-                             {"charname": request.character.name,
-                              "rname" : request.name,
-                              "mod": modifier,
-                              "r1": dice_roll,
-                              "r2": dice_roll,
-                              advantage_type:1})
+            roll += rollAbility(request, custom_roll_dice)
         elif request.type == "saving-throw":
-            roll += template("simple",
-                             {"charname": request.character.name,
-                              "rname" : request.name + " Save",
-                              "mod": request.modifier,
-                              "r1": genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice}),
-                              "r2": genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice}),
-                              advantage_type:1})
+            roll += rollSavingThrow(request, custom_roll_dice)
         elif request.type == "initiative":
-            roll_properties = {"charname": request.character.name,
-                               "rname" : "Initiative",
-                               "mod": request.initiative}
-            if settings["initiative-tracker"]:
-                dice = "2d20kh1" if request.advantage else "1d20"
-                roll_properties["r1"] = genRoll(dice, {"INIT": request.initiative, "CUSTOM": custom_roll_dice, "": "&{tracker}"})
-                roll_properties["normal"] = 1
-            else:
-                dice_formula = genRoll("1d20", {"INIT": request.initiative, "CUSTOM": custom_roll_dice})
-                roll_properties["r1"] = dice_formula
-                if request.advantage:
-                    roll_properties["r2"] = dice_formula
-                roll_properties["advantage" if request.advantage else "normal"] = 1
-            roll += template("simple", roll_properties)
+            roll += rollInitiative(request, custom_roll_dice)
         elif request.type == "hit-dice":
-            if request.multiclass:
-                rname = "Hit Dice (" + request.class + ")"
-            else:
-                rname = "Hit Dice"
-
+            roll += rollHitDice(request)
+        elif request.type in ["item", "feature", "trait", "action"]:
+            roll += rollTrait(request)
+        elif request.type == "death-save":
+            roll += rollDeathSave(request, custom_roll_dice)
+        elif request.type == "attack":
+            roll += rollAttack(request, custom_roll_dice)
+        elif request.type == "spell-card":
+            roll += rollSpellCard(request)
+        elif request.type == "spell-attack":
+            roll += rollSpellAttack(request, custom_roll_dice)
+        else:
+            # 'custom' or anything unexpected
+            mod = request.modifier if request.modifier? else request.roll
+            rname = request.name if request.name? else request.type
             roll += template("simple",
                              {"charname": request.character.name,
                               "rname" : rname,
-                              "mod": request["hit-dice"],
-                              "r1": subRolls(request["hit-dice"]),
-                              "normal": 1})
-        elif request.type == "attack":
-            properties = {"charname": request.character.name,
-                          "rname" : request.name}
-            if request["to-hit"]?:
-                d20_roll = "1d20"
-                brutal = ""
-                if request["attack-source"] == "item":
-                    if "Improved Critical" in request.character["class-features"]:
-                        d20_roll = "1d20cs>19"
-                    if "Superior Critical" in request.character["class-features"]:
-                        d20_roll = "1d20cs>18"
-                    if "Brutal Critical" in request.character["class-features"] and \
-                            request["attack-type"] == "Melee":
-                        barbarian_level = request.character.classes["Barbarian"]
-                        if barbarian_level >= 17:
-                            brutal = "4 * "
-                        elif barbarian_level >= 13:
-                            brutal = "3 * "
-                        else:
-                            brutal = "2 * "
-                properties["mod"] = request["to-hit"]
-                properties["r1"] = genRoll(d20_roll, {"": request["to-hit"], "CUSTOM": custom_roll_dice})
-                properties["r2"] = genRoll(d20_roll, {"": request["to-hit"], "CUSTOM": custom_roll_dice})
-                properties[advantage_type] = 1
-                properties["attack"] = 1
-            if request["damages"]?:
-                crits = damagesToCrits(request.damages, brutal)
-                properties["damage"] =1
-                properties["dmg1flag"] = 1
-                properties["dmg1"] = subDamageRolls(request.damages[0])
-                properties["dmg1type"] = request["damage-types"][0]
-                properties["crit1"] = settings["crit-prefix"] + crits[0]
-                if len(request.damages) > 1:
-                    properties["dmg2flag"] = 1
-                    damages = str.join(" | ", list(request.damages[1:]))
-                    properties["dmg2"] = subDamageRolls(damages)
-                    properties["dmg2type"] = str.join(" | ", request["damage-types"][1:])
-                    properties["crit2"] = settings["crit-prefix"] + str.join(" | ", crits[1:])
-            if request.range?:
-                properties["range"] = request.range
-            if request["save-dc"]?:
-                properties["save"] = 1
-                properties["saveattr"] = request["save-ability"]
-                properties["savedc"] = request["save-dc"]
-            roll += template("atkdmg", properties)
-        elif request.type == "item":
-            roll += template("traits", {"name": request.name,
-                                        "source": request["item-type"],
-                                        "description": subDescriptionRolls(request.name, request.description)})
-        elif request.type == "feature":
-            source = request["source-type"]
-            if request.source.length > 0:
-                source += ": " + request.source
-            roll += template("traits", {"name": request.name,
-                                        "source": source,
-                                        "description": subDescriptionRolls(request.name, request.description)})
-        elif request.type in ["trait", "action"]:
-            roll += template("traits", {"name": request.name,
-                                        "description": subDescriptionRolls(request.name, request.description)})
-        elif request.type == "spell-card":
-            properties = {"name": request.name,
-                          "castingtime": request["casting-time"],
-                          "range": request.range,
-                          "duration": request.duration}
-
-            if request["cast-at"]?:
-                properties["level"] = request["level-school"] + "(Cast at " + request["cast-at"] + " Level)"
-            else:
-                properties["level"] = request["level-school"]
-                                                    
-            components = request.components
-            while components != "":
-                if components[0] == "V":
-                    properties["v"] = 1
-                    components = components[1:]
-                elif components[0] == "S":
-                    properties["s"] = 1
-                    components = components[1:]
-                elif components[0] == "M":
-                    properties["m"] = 1
-                    properties["material"] = components[2:-1]
-                    components = ""
-                if components.startsWith(", "):
-                    components = components[2:]
-            if request.ritual:
-                properties["ritual"] = 1
-            if request.concentration:
-                properties["concentration"] = 1
-            description = request.description            
-            higher = description.indexOf("At Higher Levels.")
-            if higher > 0:
-                properties["description"] = subDescriptionRolls(request.name, description[:higher-1])
-                properties["athigherlevels"] = subDescriptionRolls(request.name, description[higher+"At Higher Levels.".length:])
-            else:
-                properties["description"] = subDescriptionRolls(request.name, description)
-
-            roll += template("spell", properties)
-        elif request.type == "spell-attack":
-            properties = {"charname": request.character.name,
-                          "rname" : request.name}
-            healing_spell = False
-            if request["to-hit"]?:
-                properties["mod"] = request["to-hit"]
-                properties["r1"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
-                properties["r2"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
-                properties[advantage_type] = 1
-                properties["attack"] = 1
-            if request.damages?:
-                if request.name == "Chromatic Orb":
-                    damages = list(request.damages)
-                    damage_types = list(request["damage-types"])
-                    chromatic_type = "?{Choose damage type"
-                    for dmgtype in ["Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder"]:
-                        idx = damage_types.index(dmgtype)
-                        chromatic_damage = damages.pypop(idx)
-                        damage_types.pypop(idx)
-                        chromatic_type += "|" + dmgtype
-                    chromatic_type += "}"
-                    damages.insert(0, chromatic_damage)
-                    damage_types.insert(0, chromatic_type)
-                    request.damages = damages
-                    request["damage-types"] = damage_types
-                crits = damagesToCrits(request.damages)
-                properties["damage"] = 1
-                properties["dmg1flag"] = 1
-                properties["dmg1"] = subDamageRolls(request.damages[0])
-                properties["dmg1type"] = request["damage-types"][0]
-                properties["crit1"] = settings["crit-prefix"] + crits[0]
-                if "Healing" in request["damage-types"]:
-                    healing_spell = True
-                if len(request.damages) > 1:
-                    properties["dmg2flag"] = 1
-                    damages = str.join(" | ", list(request.damages[1:]))
-                    properties["dmg2"] = subDamageRolls(damages)
-                    properties["dmg2type"] = str.join(" | ", request["damage-types"][1:])
-                    properties["crit2"] = settings["crit-prefix"] + str.join(" | ", crits[1:])
-            if request.range?:
-                properties["range"] = request.range
-            if request["save-dc"]?:
-                properties["save"] = 1
-                properties["saveattr"] = request["save-ability"]
-                properties["savedc"] = request["save-dc"]
-            if request["cast-at"]?:
-                properties["hldmg"] = genRoll(request["cast-at"][0]) + request["cast-at"][1:] + " Level"
-            components = request.components
-            if settings["components-display"] == "all":
-                if components != "":
-                    properties["desc"] = settings["component-prefix"] + components
-                    components = ""
-            elif settings["components-display"] == "material":
-                while components != "":
-                    if components[0] in ["V", "S"]:
-                        components = components[1:]
-                        if components.startsWith(", "):
-                            components = components[2:]
-                    if components[0] == "M":
-                        properties["desc"] = settings["component-prefix"] + components[2:-1]
-                        components = ""
-            roll += template("atkdmg", properties)
-            if healing_spell and \
-                    "Disciple of Life" in request.character["class-features"] and \
-                    request.character.settings["cleric-disciple-life"]:
-                if request["cast-at"]?:
-                    level = request["cast-at"][0]
-                else:
-                    level = request["level-school"][0]
-                if settings["whispers"]:
-                    roll += "\n/w gm "
-                else:
-                    roll += "\n"
-                roll += template("simple",
-                                 {"rname" : "Disciple of Life",
-                                  "mod": "2 + " + level,
-                                  "r1": "[[2 + " + level + "]]",
-                                  "normal": 1})
-        elif request.type == "death-save":
-            roll += template("simple",
-                             {"charname": request.character.name,
-                              "rname" : "Death Saving Throw",
-                              "r1": genRoll("1d20cs>10cf<9", {"CUSTOM": custom_roll_dice}),
-                              "normal": 1})
-        elif request.type == "custom":
-            mod = request.modifier if request.modifier? else request.roll
-            roll += template("simple",
-                             {"charname": request.character.name,
-                              "rname" : request.name,
                               "mod": mod,
-                              "r1": subRolls(request.roll),
-                              "normal": 1})
-        else:
-            roll += template("simple",
-                             {"charname": request.character.name,
-                              "rname" : request.type,
-                              "mod": request.roll,
                               "r1": subRolls(request.roll),
                               "normal": 1})
         postChatMessage(roll, request.character.name)
