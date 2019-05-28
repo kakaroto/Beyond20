@@ -51,7 +51,7 @@ def subRolls(text, damage_only=False, overrideCB=None):
         replaceCB = def(dice_formula, modifier):
             if modifier:
                 dice_formula = "1d20" + dice_formula
-            return "[[" + dice_formula + "]]"
+            return genRoll(dice_formula)
     
     text = replaceRolls(False, text, replaceCB)
     if damage_only:
@@ -66,7 +66,7 @@ def subDescriptionRolls(name, description):
         roll = ("1d20" + dice_formula) if modifier else dice_formula
         roll_template = template("simple", {"rname" : name,
                                             "mod": dice_formula,
-                                            "r1": "[[" + roll + "]]",
+                                            "r1": genRoll(roll),
                                             "normal": 1})
         return "[" + dice_formula + "](!\n" + escapeRoll20Macro(roll_template) + ")"
     return subRolls(description, overrideCB=replaceCB)
@@ -446,7 +446,7 @@ def handleMessage (request, sender, sendResponse):
             roll += template("simple",
                              {"charname": request.character.name,
                               "rname" : "Death Saving Throw",
-                              "r1": "[[1d20cs>9cf<10]]",
+                              "r1": genRoll("1d20cs>10cf<9", {"CUSTOM": custom_roll_dice}),
                               "normal": 1})
         elif request.type == "custom":
             mod = request.modifier if request.modifier? else request.roll

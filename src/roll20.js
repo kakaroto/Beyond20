@@ -6613,7 +6613,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         if (modifier) {
                             dice_formula = "1d20" + dice_formula;
                         }
-                        return "[[" + dice_formula + "]]";
+                        return genRoll(dice_formula);
                     };
                     if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                         __argnames__ : {value: ["dice_formula", "modifier"]}
@@ -6646,7 +6646,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         var ρσ_d = {};
                         ρσ_d["rname"] = name;
                         ρσ_d["mod"] = dice_formula;
-                        ρσ_d["r1"] = "[[" + roll + "]]";
+                        ρσ_d["r1"] = genRoll(roll);
                         ρσ_d["normal"] = 1;
                         return ρσ_d;
                     }).call(this));
@@ -7253,7 +7253,11 @@ var str = ρσ_str, repr = ρσ_repr;;
                         var ρσ_d = {};
                         ρσ_d["charname"] = request.character.name;
                         ρσ_d["rname"] = "Death Saving Throw";
-                        ρσ_d["r1"] = "[[1d20cs>9cf<10]]";
+                        ρσ_d["r1"] = genRoll("1d20cs>10cf<9", (function(){
+                            var ρσ_d = {};
+                            ρσ_d["CUSTOM"] = custom_roll_dice;
+                            return ρσ_d;
+                        }).call(this));
                         ρσ_d["normal"] = 1;
                         return ρσ_d;
                     }).call(this));
