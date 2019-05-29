@@ -206,7 +206,7 @@ def createHTMLOptionEx(name, option, short=False):
                  E.label(class_="list-content", for_=name,
                          E.h4(title),
                          *description_p,
-                         E.div(class_="button-group",
+                         E.div(class_="right-entry",
                                E.input(id=name, class_="beyond20-option-input", name=name, type_="text")
                                )
                          )

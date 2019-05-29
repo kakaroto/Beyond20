@@ -60,7 +60,7 @@
 	.material-switch > label {
 	    cursor: pointer;
 	    height: 0px;
-	    position: relative; 
+	    position: absolute; 
 	    width: 40px;  
 	}
 	.material-switch > label::before {
@@ -124,6 +124,14 @@
 }
 .input.open {
   opacity: 0;
+}
+
+.right-entry {
+    position: absolute;
+    width: 120px;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 15px;
 }
 /* DROPDOWN
    ================================== */
