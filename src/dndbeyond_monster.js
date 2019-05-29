@@ -5861,6 +5861,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["brutal-critical"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Brutal Critical/Savage Attacks: Roll extra die";
+                ρσ_d["description"] = "Roll extra damage die on crit for Brutal Critical and Save Attacks features";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {

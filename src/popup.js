@@ -5858,6 +5858,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["brutal-critical"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Brutal Critical/Savage Attacks: Roll extra die";
+                ρσ_d["description"] = "Roll extra damage die on crit for Brutal Critical and Save Attacks features";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -6715,6 +6723,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 if (ρσ_in("Great Weapon Master", response["feats"])) {
                     e = createHTMLOption("great-weapon-master", false, character_settings);
+                    options.append(e);
+                }
+                if (ρσ_in("Brutal Critical", response["class-features"]) || ρσ_in("Savage Attacks", response["racial-traits"])) {
+                    e = createHTMLOption("brutal-critical", false, character_settings);
                     options.append(e);
                 }
                 loadSettings(response.settings, character_settings);

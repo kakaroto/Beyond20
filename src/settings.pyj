@@ -123,6 +123,10 @@ character_settings = {
                             "description": "Apply Great Weapon Master -5 penalty to roll and +10 to damage",
                             "type": "bool",
                             "default": False},
+    "brutal-critical": {"title": "Brutal Critical/Savage Attacks: Roll extra die",
+                            "description": "Roll extra damage die on crit for Brutal Critical and Save Attacks features",
+                            "type": "bool",
+                            "default": True},
 }
 
 def getStorage():

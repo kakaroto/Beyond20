@@ -114,6 +114,11 @@ def populateCharacter(response):
         if "Great Weapon Master" in response["feats"]:
             e = createHTMLOption("great-weapon-master", False, character_settings)
             options.append(e)
+        if "Brutal Critical" in response["class-features"] or \
+                "Savage Attacks" in response["racial-traits"]:
+            e = createHTMLOption("brutal-critical", False, character_settings)
+            options.append(e)
+
         loadSettings(response.settings, character_settings)
     $('.beyond20-option-input').off('change', save_settings)
     $('.beyond20-option-input').change(save_settings)

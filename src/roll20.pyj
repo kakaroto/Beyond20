@@ -1,6 +1,7 @@
 from utils import replaceRolls, injectPageScript, sendCustomEvent, escapeRoll20Macro
 from settings import getDefaultSettings, getStoredSettings
 import re
+import math
 
 print("Beyond20: Roll20 module loaded.")
 
@@ -74,35 +75,49 @@ def subDescriptionRolls(name, description):
 def subDamageRolls(text):
     return subRolls(text, damage_only=True)
 
-def damagesToCrits(damages, brutal=""):
+def damagesToCrits(damages):
     nonlocal settings
     
     crits = []
     for damage in damages:
-        match = re.search("([0-9]*)d([0-9]+)", damage)
+        match = re.search("[0-9]*d[0-9]+", damage)
         if match?:
-            if brutal != "":
-                crits.append("[[[[" + brutal + match.group(1) + "]]d" + match.group(2) + "]]")
-            else:
-                crits.append("[[" + match.group(0) + "]]")
+                crits.append(match.group(0))
         else:
             crits.append("")
     return crits
 
-def damagesToRollProperties(damages, damage_types, brutal=""):
+def damagesToRollProperties(damages, damage_types, brutal=0):
     nonlocal settings
 
     properties = {"damage": 1,
                   "dmg1flag": 1}
-    crits = damagesToCrits(damages, brutal)
+    crits = damagesToCrits(damages)
+    if brutal > 0:
+        dice = []
+        for dmg in crits:
+            match = re.search("[0-9]*d([0-9]+)", dmg)
+            if match?:
+                die = str(brutal) + "d" + match.group(1)
+                if die not in dice:
+                    dice.append(die)
+        if dice.length == 1:
+            brutal_dmg = "[[" + dice[0] + "]]"
+        elif dice.length > 1:
+            brutal_dmg = "?{Choose which extra dice to roll for your Brutal/Savage critical attack"
+            for die in dice:
+                brutal_dmg += "|" + die + ",[[" + die + "]]"
+            brutal_dmg += "}"
     properties["dmg1"] = subDamageRolls(damages[0])
     properties["dmg1type"] = damage_types[0]
-    properties["crit1"] = settings["crit-prefix"] + crits[0]
+    properties["crit1"] = settings["crit-prefix"] + subDamageRolls(crits[0])
+    if brutal_dmg?:
+        properties["crit1"] += " + " + brutal_dmg + "(Brutal)"
     if len(damages) > 1:
         properties["dmg2flag"] = 1
         properties["dmg2"] = subDamageRolls(str.join(" | ", list(damages[1:])))
         properties["dmg2type"] = str.join(" | ", damage_types[1:])
-        properties["crit2"] = settings["crit-prefix"] + str.join(" | ", crits[1:])
+        properties["crit2"] = settings["crit-prefix"] + subDamageRolls(str.join(" | ", crits[1:]))
 
     return properties
 
@@ -312,18 +327,16 @@ def rollAttack(request, custom_roll_dice=""):
     if request.damages?:
         damages = list(request.damages)
         damage_types = list(request["damage-types"])
+        brutal = 0
         if request.character.type == "Character" and \
-                "Brutal Critical" in request.character["class-features"] and \
-                request["attack-type"] == "Melee":
-            barbarian_level = request.character.classes["Barbarian"]
-            if barbarian_level >= 17:
-                brutal = "4 * "
-            elif barbarian_level >= 13:
-                brutal = "3 * "
-            else:
-                brutal = "2 * "
-        else:
-            brutal = ""
+                request["attack-type"] == "Melee" and \
+                request.character.settings["brutal-critical"]:
+            if "Brutal Critical" in request.character["class-features"]:
+                barbarian_level = request.character.classes["Barbarian"]
+                brutal += 1 + math.floor((barbarian_level - 9) / 4)
+            if "Savage Attacks" in request.character["racial-traits"]:
+                brutal += 1
+
         dmg_props = damagesToRollProperties(damages, damage_types, brutal)
     if request.range?:
         properties["range"] = request.range
