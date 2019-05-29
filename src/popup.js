@@ -6620,63 +6620,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
         };
 
-        function defer_save_settings() {
-            var general_settings, send_update, option, char_settings;
-            chrome.runtime.sendMessage((function(){
-                var ρσ_d = {};
-                ρσ_d["action"] = "Test";
-                return ρσ_d;
-            }).call(this));
-            if ((settings === null || typeof settings === "object" && ρσ_equals(settings, null))) {
-                return;
-            }
-            general_settings = extractSettingsData();
-            send_update = false;
-            var ρσ_Iter1 = ρσ_Iterable(general_settings);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                option = ρσ_Iter1[ρσ_Index1];
-                if ((settings[(typeof option === "number" && option < 0) ? settings.length + option : option] !== general_settings[(typeof option === "number" && option < 0) ? general_settings.length + option : option] && (typeof settings[(typeof option === "number" && option < 0) ? settings.length + option : option] !== "object" || ρσ_not_equals(settings[(typeof option === "number" && option < 0) ? settings.length + option : option], general_settings[(typeof option === "number" && option < 0) ? general_settings.length + option : option])))) {
-                    send_update = true;
-                    break;
-                }
-            }
-            background.console.log("send-update: ", send_update);
-            if (send_update) {
-                chrome.runtime.sendMessage((function(){
-                    var ρσ_d = {};
-                    ρσ_d["action"] = "merge-settings";
-                    ρσ_d["type"] = "general";
-                    ρσ_d["key"] = "settings";
-                    ρσ_d["settings"] = general_settings;
-                    return ρσ_d;
-                }).call(this));
-            }
-            if (character !== null) {
-                char_settings = extractSettingsData(character_settings);
-                send_update = false;
-                var ρσ_Iter2 = ρσ_Iterable(char_settings);
-                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                    option = ρσ_Iter2[ρσ_Index2];
-                    if (((ρσ_expr_temp = character.settings)[(typeof option === "number" && option < 0) ? ρσ_expr_temp.length + option : option] !== char_settings[(typeof option === "number" && option < 0) ? char_settings.length + option : option] && (typeof (ρσ_expr_temp = character.settings)[(typeof option === "number" && option < 0) ? ρσ_expr_temp.length + option : option] !== "object" || ρσ_not_equals((ρσ_expr_temp = character.settings)[(typeof option === "number" && option < 0) ? ρσ_expr_temp.length + option : option], char_settings[(typeof option === "number" && option < 0) ? char_settings.length + option : option])))) {
-                        send_update = true;
-                        break;
-                    }
-                }
-                background.console.log("send-character-update: ", send_update);
-                if (send_update) {
-                    chrome.runtime.sendMessage((function(){
-                        var ρσ_d = {};
-                        ρσ_d["action"] = "merge-settings";
-                        ρσ_d["type"] = "character";
-                        ρσ_d["key"] = "settings";
-                        ρσ_d["settings"] = character_settings;
-                        return ρσ_d;
-                    }).call(this));
-                }
-            }
-            background.console.log("done");
-        };
-
         function setupHTML() {
             createOptionList();
             $(".beyond20-option-input").change(save_settings);
@@ -6801,6 +6744,5 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["currentWindow"] = true;
             return ρσ_d;
         }).call(this), actOnCurrentTab);
-        window.addEventListener("unload", defer_save_settings);
     })();
 })();

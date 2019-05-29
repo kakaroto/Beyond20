@@ -40,38 +40,6 @@ def save_settings():
                          chrome.runtime.sendMessage({"action": "settings", "type": "character", "id": character.id, "settings": settings})
                      , "character-" + character.id, character_settings)
 
-def defer_save_settings():
-    nonlocal character, settings
-    chrome.runtime.sendMessage({"action": "Test"})
-    if settings == None:
-        return
-    general_settings = extractSettingsData()
-    send_update = False
-    for option in general_settings:
-        if settings[option] != general_settings[option]:
-            send_update = True
-            break
-    background.console.log("send-update: ", send_update)
-    if send_update:
-        chrome.runtime.sendMessage({"action": "merge-settings",
-                                    "type": "general",
-                                    "key": "settings",
-                                    "settings": general_settings})
-    if character is not None:
-        char_settings = extractSettingsData(character_settings)
-        send_update = False
-        for option in char_settings:
-            if character.settings[option] != char_settings[option]:
-                send_update = True
-                break
-        background.console.log("send-character-update: ", send_update)
-        if send_update:
-            chrome.runtime.sendMessage({"action": "merge-settings",
-                                        "type": "character",
-                                        "key": "settings",
-                                        "settings": character_settings})
-    background.console.log("done")
-
 def setupHTML():
     createOptionList()
     $('.beyond20-option-input').change(save_settings)
@@ -159,4 +127,3 @@ def actOnCurrentTab(tabs):
 
 setupHTML()
 chrome.tabs.query({"active": True, "currentWindow": True}, actOnCurrentTab)
-window.addEventListener('unload', defer_save_settings)
