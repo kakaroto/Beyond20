@@ -227,16 +227,18 @@ class Character:
             self._settings = new_settings
         else:
             getStoredSettings(def(saved_settings):
-                self._settings = saved_settings
+                self.updateSettings(saved_settings)
                 self.updateHP()
                 self.updateFeatures()
             , "character-" + self._id, character_settings)
 
     def getDict(self):
-        settings = self._settings
-        del settings["class-features"]
-        del settings["racial-traits"]
-        del settings["feats"]
+        settings = {}
+        # Make a copy of the settings but without the features since they are
+        # already in the dict
+        for key in self._settings:
+            if key not in ["class-features", "racial-traits", "feats"]:
+                settings[key] = self._settings[key]
         return {"name": self._name,
                 "id": self._id,
                 "type": "Character",
