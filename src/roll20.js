@@ -5867,6 +5867,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["barbarian-rage"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Rage: You are raging, ARRGGHHHHHH";
+                ρσ_d["description"] = "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -7164,9 +7172,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                     });
                     return ρσ_anonfunc;
                 })();
-                if (!settings["roll-advantage"]) {
-                    ρσ_delitem(properties, "r2");
-                }
                 renameProp("rname", "name");
                 if (ρσ_exists.n(properties["r2"])) {
                     renameProp("r1", "Regular Roll");
@@ -7235,8 +7240,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var modifier, ability, prof, prof_val;
+            var modifier, advantage_type, ability, prof, prof_val;
             modifier = request.modifier;
+            advantage_type = advantageType();
+            if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && (request.ability === "STR" || typeof request.ability === "object" && ρσ_equals(request.ability, "STR")) && ρσ_in("Rage", request.character["class-features"]) && request.character.settings["barbarian-rage"]) {
+                advantage_type = "advantage";
+            }
             if ((modifier === "--" || typeof modifier === "object" && ρσ_equals(modifier, "--")) && request.character.abilities.length > 0) {
                 modifier = "?{Choose Ability";
                 var ρσ_Iter7 = ρσ_Iterable(request.character.abilities);
@@ -7276,7 +7285,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         ρσ_d["CUSTOM"] = custom_roll_dice;
                         return ρσ_d;
                     }).call(this));
-                    ρσ_d[advantageType()] = 1;
+                    ρσ_d[advantage_type] = 1;
                     return ρσ_d;
                 }).call(this));
             } else {
@@ -7297,7 +7306,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         ρσ_d["CUSTOM"] = custom_roll_dice;
                         return ρσ_d;
                     }).call(this));
-                    ρσ_d[advantageType()] = 1;
+                    ρσ_d[advantage_type] = 1;
                     return ρσ_d;
                 }).call(this));
             }
@@ -7316,7 +7325,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var joat, dice_roll, modifier;
+            var joat, dice_roll, modifier, advantage_type;
             if (ρσ_exists.n(request["JoaT"])) {
                 joat = "+" + request["JoaT"];
                 dice_roll = genRoll("1d20", (function(){
@@ -7336,6 +7345,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }).call(this));
                 modifier = request.modifier;
             }
+            advantage_type = advantageType();
+            if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && (request.ability === "STR" || typeof request.ability === "object" && ρσ_equals(request.ability, "STR")) && ρσ_in("Rage", request.character["class-features"]) && request.character.settings["barbarian-rage"]) {
+                advantage_type = "advantage";
+            }
             return template("simple", (function(){
                 var ρσ_d = {};
                 ρσ_d["charname"] = request.character.name;
@@ -7343,7 +7356,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["mod"] = modifier;
                 ρσ_d["r1"] = dice_roll;
                 ρσ_d["r2"] = dice_roll;
-                ρσ_d[advantageType()] = 1;
+                ρσ_d[advantage_type] = 1;
                 return ρσ_d;
             }).call(this));
         };
@@ -7360,6 +7373,11 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
+            }
+            var advantage_type;
+            advantage_type = advantageType();
+            if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && (request.ability === "STR" || typeof request.ability === "object" && ρσ_equals(request.ability, "STR")) && ρσ_in("Rage", request.character["class-features"]) && request.character.settings["barbarian-rage"]) {
+                advantage_type = "advantage";
             }
             return template("simple", (function(){
                 var ρσ_d = {};
@@ -7378,7 +7396,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["CUSTOM"] = custom_roll_dice;
                     return ρσ_d;
                 }).call(this));
-                ρσ_d[advantageType()] = 1;
+                ρσ_d[advantage_type] = 1;
                 return ρσ_d;
             }).call(this));
         };
@@ -7515,7 +7533,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var properties, template_type, dmg_props, d20_roll, damages, damage_types, brutal, barbarian_level, dmg_template_crit, dmg_template, key;
+            var properties, template_type, dmg_props, d20_roll, damages, damage_types, brutal, barbarian_level, rage_damage, dmg_template_crit, dmg_template, key;
             properties = (function(){
                 var ρσ_d = {};
                 ρσ_d["charname"] = request.character.name;
@@ -7554,13 +7572,20 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damages = list(request.damages);
                 damage_types = list(request["damage-types"]);
                 brutal = 0;
-                if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && (request["attack-type"] === "Melee" || typeof request["attack-type"] === "object" && ρσ_equals(request["attack-type"], "Melee")) && request.character.settings["brutal-critical"]) {
-                    if (ρσ_in("Brutal Critical", request.character["class-features"])) {
-                        barbarian_level = request.character.classes["Barbarian"];
-                        brutal += 1 + math.floor((barbarian_level - 9) / 4);
+                if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && (request["attack-type"] === "Melee" || typeof request["attack-type"] === "object" && ρσ_equals(request["attack-type"], "Melee"))) {
+                    if (request.character.settings["brutal-critical"]) {
+                        if (ρσ_in("Brutal Critical", request.character["class-features"])) {
+                            barbarian_level = request.character.classes["Barbarian"];
+                            brutal += 1 + math.floor((barbarian_level - 9) / 4);
+                        }
+                        if (ρσ_in("Savage Attacks", request.character["racial-traits"])) {
+                            brutal += 1;
+                        }
                     }
-                    if (ρσ_in("Savage Attacks", request.character["racial-traits"])) {
-                        brutal += 1;
+                    if (ρσ_in("Rage", request.character["class-features"]) && request.character.settings["barbarian-rage"]) {
+                        barbarian_level = request.character.classes["Barbarian"];
+                        rage_damage = (barbarian_level < 9) ? 2 : (barbarian_level < 16) ? 3 : 4;
+                        damages[0] += " + " + rage_damage + "(Rage)";
                     }
                 }
                 dmg_props = damagesToRollProperties(damages, damage_types, brutal);

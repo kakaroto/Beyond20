@@ -118,6 +118,9 @@ def populateCharacter(response):
                 "Savage Attacks" in response["racial-traits"]:
             e = createHTMLOption("brutal-critical", False, character_settings)
             options.append(e)
+        if "Rage" in response["class-features"]:
+            e = createHTMLOption("barbarian-rage", False, character_settings)
+            options.append(e)
 
         loadSettings(response.settings, character_settings)
     $('.beyond20-option-input').off('change', save_settings)

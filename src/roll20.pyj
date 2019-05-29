@@ -137,9 +137,7 @@ def template(name, properties):
             for key in properties:
                 new_properties[new_key if key == old_key else key] = properties[key]
             properties = new_properties
-            
-        if not settings["roll-advantage"]:
-            del properties["r2"]
+
         renameProp("rname", "name")
         if properties["r2"]?:
             renameProp("r1", "Regular Roll")
@@ -193,6 +191,12 @@ def advantageType():
 
 def rollSkill(request, custom_roll_dice=""):
     modifier = request.modifier
+    advantage_type = advantageType()
+    if request.character.type == "Character" and \
+            request.ability == "STR" and \
+            "Rage" in request.character["class-features"] and \
+            request.character.settings["barbarian-rage"]:
+        advantage_type = "advantage"
     # Custom skill
     if modifier == "--" and request.character.abilities.length > 0:
         modifier = "?{Choose Ability"
@@ -217,7 +221,7 @@ def rollSkill(request, custom_roll_dice=""):
                           "mod": "[[" + modifier + prof_val + "]]",
                           "r1": genRoll("1d20", {"--": modifier, prof: prof_val, "CUSTOM": custom_roll_dice}),
                           "r2": genRoll("1d20", {"--": modifier, prof: prof_val, "CUSTOM": custom_roll_dice}),
-                          advantageType():1})
+                          advantage_type:1})
     else:
         return template("simple",
                          {"charname": request.character.name,
@@ -225,7 +229,7 @@ def rollSkill(request, custom_roll_dice=""):
                           "mod": modifier,
                           "r1": genRoll("1d20", {request.ability: modifier, "CUSTOM": custom_roll_dice}),
                           "r2": genRoll("1d20", {request.ability: modifier, "CUSTOM": custom_roll_dice}),
-                          advantageType():1})
+                          advantage_type:1})
 
 def rollAbility(request, custom_roll_dice=""):
     if request["JoaT"]?:
@@ -235,22 +239,34 @@ def rollAbility(request, custom_roll_dice=""):
     else:
         dice_roll = genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice})
         modifier = request.modifier
+    advantage_type = advantageType()
+    if request.character.type == "Character" and \
+            request.ability == "STR" and \
+            "Rage" in request.character["class-features"] and \
+            request.character.settings["barbarian-rage"]:
+        advantage_type = "advantage"
     return template("simple",
                     {"charname": request.character.name,
                      "rname" : request.name,
                      "mod": modifier,
                      "r1": dice_roll,
                      "r2": dice_roll,
-                     advantageType():1})
+                     advantage_type:1})
 
 def rollSavingThrow(request, custom_roll_dice=""):
+    advantage_type = advantageType()
+    if request.character.type == "Character" and \
+            request.ability == "STR" and \
+            "Rage" in request.character["class-features"] and \
+            request.character.settings["barbarian-rage"]:
+        advantage_type = "advantage"
     return template("simple",
                     {"charname": request.character.name,
                      "rname" : request.name + " Save",
                      "mod": request.modifier,
                      "r1": genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice}),
                      "r2": genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice}),
-                     advantageType():1})
+                     advantage_type:1})
 
 def rollInitiative(request, custom_roll_dice=""):
     nonlocal settings
@@ -329,14 +345,18 @@ def rollAttack(request, custom_roll_dice=""):
         damage_types = list(request["damage-types"])
         brutal = 0
         if request.character.type == "Character" and \
-                request["attack-type"] == "Melee" and \
-                request.character.settings["brutal-critical"]:
-            if "Brutal Critical" in request.character["class-features"]:
+                request["attack-type"] == "Melee":
+            if request.character.settings["brutal-critical"]:
+                if "Brutal Critical" in request.character["class-features"]:
+                    barbarian_level = request.character.classes["Barbarian"]
+                    brutal += 1 + math.floor((barbarian_level - 9) / 4)
+                if "Savage Attacks" in request.character["racial-traits"]:
+                    brutal += 1
+            if "Rage" in request.character["class-features"] and \
+                    request.character.settings["barbarian-rage"]:
                 barbarian_level = request.character.classes["Barbarian"]
-                brutal += 1 + math.floor((barbarian_level - 9) / 4)
-            if "Savage Attacks" in request.character["racial-traits"]:
-                brutal += 1
-
+                rage_damage = 2 if barbarian_level < 9 else (3 if barbarian_level < 16 else 4)
+                damages[0] += " + " + rage_damage + "(Rage)"
         dmg_props = damagesToRollProperties(damages, damage_types, brutal)
     if request.range?:
         properties["range"] = request.range

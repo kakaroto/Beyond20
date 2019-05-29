@@ -5866,6 +5866,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["barbarian-rage"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Rage: You are raging, ARRGGHHHHHH";
+                ρσ_d["description"] = "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -6727,6 +6735,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 if (ρσ_in("Brutal Critical", response["class-features"]) || ρσ_in("Savage Attacks", response["racial-traits"])) {
                     e = createHTMLOption("brutal-critical", false, character_settings);
+                    options.append(e);
+                }
+                if (ρσ_in("Rage", response["class-features"])) {
+                    e = createHTMLOption("barbarian-rage", false, character_settings);
                     options.append(e);
                 }
                 loadSettings(response.settings, character_settings);

@@ -127,6 +127,11 @@ character_settings = {
                             "description": "Roll extra damage die on crit for Brutal Critical and Save Attacks features",
                             "type": "bool",
                             "default": True},
+
+    "barbarian-rage": {"title": "Rage: You are raging, ARRGGHHHHHH",
+                            "description": "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws",
+                            "type": "bool",
+                            "default": False},
 }
 
 def getStorage():
