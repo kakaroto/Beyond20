@@ -14,7 +14,7 @@ Some issues are known to me and are being worked on, others might be caused by a
 
 Head over to the [support](support) page to see the list of known issues.
 
-If you find an issue that isn't in the list or in the issue tracker, I'd appreciate you letting me know about it!
+If you find an issue that isn't in the list or in the [issue tracker](https://github.com/kakaroto/Beyond20/issues), I'd appreciate you letting me know about it!
 
 # Changelog
 
