@@ -7369,7 +7369,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             self._name = stat_block.find(base + "__name").text().trim();
             a = stat_block.find(base + "__name-link");
             if (a.length > 0) {
-                self._id = a.attr("href").replace("/monsters/", "");
+                self._id = a.attr("href").replace("/monsters/", "").replace("/vehicles/", "");
             } else {
                 self._id = self._name;
             }
