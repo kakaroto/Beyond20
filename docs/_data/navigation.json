@@ -3,5 +3,6 @@
     "Install": "/install",
     "Features": "/features",
     "Screenshots": "/screenshots",
-    "FAQ & Support": "/support"
+    "FAQ": "/faq",
+    "Support": "/support"
 }

@@ -10,6 +10,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Initiative rolls
   * Rolls with Advantage if the character has the feat
   * Adds the initiative to the tracker
+* Support for custom roll and damage dice bonuses
 * Mellee weapon attacks
 * Ranged weapon attacks
   * Support for Two-handed damage
@@ -30,6 +31,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
   * The dice formula is clickable in the D&D beyond side panel, as well as in the Roll20 chat text
   * The clickable dice can be disabled to not show in the D&D Beyond page or in the Roll20 text, separately
 * Creatures stat blocks
+* Vehicles stat blocks
 
 ## Monsters and Character creatures
 * Hit points
@@ -39,6 +41,9 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Dice formulas in features/action descriptions
 * Ranged and Melee weapon attacks
 * Monsters from the My Enoucnters page directly supported
+
+## Vehicles
+* Ability checks
 
 ## Spell Compendium Pages
 * Dice formulas from description
@@ -57,31 +62,54 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Feats
 * Character traits
 
+## Special Class Features/Racial Traits/Feats supported
+* Rogue: Sneak Attack
+* Life domain Cleric: Disciple of Life
+* Champion Fighter: Improved Critical and Superior Critical
+* Bard: Jack of All Trades
+* Barbarian: Rage
+* Barbarian: Brutal Critical
+* Half-Orc: Save Attacks
+* Feat: Sharpshooter
+* Feat: Great Weapon Master
+
+# Special Spells supported
+* Chromatic Orb: Macro to ask which damage type to use
 
 ## Configurable options
 * Whisper rolls
 * Whisper rolls for monster pages
 * Roll twice for advantage/disadvantage
+* Auto roll damage and crit
 * Add initiative to the tracker (requires token to be selected)
+* Automatically update HP in the Roll20 sheets and tokens
+* Roll20 Character Sheet Template to use
+  * D&D 5E By Roll20
+  * Other Templates
 * Replace dice formulas in Roll20 text
-* Add dice formulas roller icon to D&D Beyond text
+* Add dice formulas roller icon to D&D Beyond spell page and character sheet
+* Add dice formulas roller icon to D&D Beyond stat blocks
+* Add roll buttons to monster, creature and vehicle stat blocks
 * Prefix to add to critical hit damage
 * Components to display during a spell attack
   * All components (V, S, M)
   * Only material components if needed
   * No components
-* Roll20 Character Sheet Template to use
+* Prefix to display with spell components during an attack
 * Roll20 tab specific options
   * Select a tab to send all rolls to
   * Select the campaign to send the rolls to
   * Send rolls to all Roll20 tabs
 * D&D Beyond character specific options
-  * Automatically update HP in the Roll20 sheets and tokens
-  * Send sneak attack damage (Rogues only)
-  * Send Disciple of Life healing bonus (Life domain Cleric only)
-  * Add Jack of all Trades bonus to raw ability checks (Bard only >= 2nd level)
+  * Custom roll dice formula bonus
+  * Custom damage dice formula bonus
+  * Send sneak attack damage (Only Rogues)
+  * Send Disciple of Life healing bonus (Only Life domain Cleric)
+  * Add Jack of all Trades bonus to raw ability checks (Only Bards >= 2nd level)
   * Apply Sharpshooter Feat for the next roll (Only if Feat is available)
   * Apply Great Weapon Master Feat for the next roll (Only if Feat is available)
+  * Add Brutal Critical and Save Attacks damage to critical hits (Only Barbarians with the feature, or Half-Orcs)
+  * Add Rage damage and advantage on STR checks (Only Barbarians)
 
 ## Roll20 Character Sheet Templates
 * D&D 5e By Roll20

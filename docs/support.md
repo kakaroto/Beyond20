@@ -20,8 +20,8 @@ Some issues are already known and being worked on. This list might not always be
 
 ## Changelog
 
-Here is the full [changelog](Changelog) for the extension.
+Click here to see the full [changelog](Changelog) for the extension.
 
 ## FAQ
 
-{% include_relative faq.md %}
+The [FAQ](faq) page is also a good resource in case you have an issue that may have already been answered.
