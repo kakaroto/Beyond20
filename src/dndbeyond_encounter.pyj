@@ -1,9 +1,14 @@
+from settings import getDefaultSettings, getStoredSettings
 from dndbeyond import Monster, isRollButtonAdded
 from utils import isExtensionDisconnected
 
 print("Beyond20: D&D Beyond Encounter module loaded.")
 
+settings = getDefaultSettings()
+
 def documentModified(mutations, observer):
+    nonlocal settings
+
     if isExtensionDisconnected():
         console.log("This extension is DOWN!")
         observer.disconnect()
@@ -14,10 +19,27 @@ def documentModified(mutations, observer):
         if monster.hasClass("beyond20-monster-parsed"):
             continue
         character = Monster("Monster")
-        character.parseStatBlock(monster)
+        character.parseStatBlock(monster, add_dice=settings['handle-stat-blocks'], inject_descriptions=settings['subst-dndbeyond-stat-blocks'])
         monster.addClass("beyond20-monster-parsed")
 
+def updateSettings(new_settings=None):
+    nonlocal settings
+    if new_settings:
+        settings = new_settings
+    else:
+        getStoredSettings(def(saved_settings):
+            nonlocal settings
+            settings = saved_settings
+            documentModified()
+        )
+
+def handleMessage (request, sender, sendResponse):
+    if request.action == "settings":
+        if request.type == "general":
+            updateSettings(request.settings)
+
+updateSettings()
+chrome.runtime.onMessage.addListener(handleMessage)
 observer = new window.MutationObserver(documentModified)
 observer.observe(document, {"subtree": True, "childList": True})
 chrome.runtime.sendMessage({"action": "activate-icon"});
-documentModified()

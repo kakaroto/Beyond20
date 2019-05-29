@@ -173,7 +173,7 @@ class Character:
                 console.log("New class feature")
                 update = True
         elif self.getSetting("class-features", None):
-            self._class_features = list(self._settings["class-features"])
+            self._class_features = list(self.getSetting("class-features", None))
             
         race_detail = $(".ct-features .ct-race-detail")
         if race_detail.length > 0:
@@ -184,7 +184,7 @@ class Character:
                 console.log("New race feature")
                 update = True
         elif self.getSetting("racial-traits", None):
-            self._racial_traits = list(self._settings["racial-traits"])
+            self._racial_traits = list(self.getSetting("racial-traits", None))
 
         feats_detail = $(".ct-features .ct-feats-detail")
         if feats_detail.length > 0:
@@ -195,7 +195,7 @@ class Character:
                 console.log("New Feats")
                 update = True
         elif self.getSetting("feats", None):
-            self._feats = list(self._settings["feats"])
+            self._feats = list(self.getSetting("feats", None))
 
         if update:
             self.mergeCharacterSettings({"class-features": self._class_features,
@@ -260,7 +260,12 @@ class Character:
 class Monster:
     def __init__(self, _type):
         self._type = _type
-        self._base = ".mon-stat-block" if _type == "Monster" else ".ct-creature-block"
+        if _type == "Monster":
+            self._base = ".mon-stat-block"
+        elif _type == "Creature":
+            self._base = ".ct-creature-block"
+        else:
+            self._base = ".mon-stat-block"
         self._id = None
         self._name = None
         self._meta = None
@@ -275,7 +280,7 @@ class Monster:
         self._skills = {}
         self._cr = None
 
-    def parseStatBlock(self, stat_block=None):
+    def parseStatBlock(self, stat_block=None, add_dice=True, inject_descriptions=True):
         base = self._base
         if stat_block is None:
             stat_block = $(base)
@@ -299,7 +304,8 @@ class Monster:
                 self._hp_formula = $(attr).find(base + "__attribute-data-extra").text().trim()[1:-1]
                 cb = def():
                     self.rollHitPoints()
-                addIconButton(cb, $(attr).find(base + "__attribute-data-extra"))
+                if add_dice:
+                    addIconButton(cb, $(attr).find(base + "__attribute-data-extra"))
             elif label == "Speed":
                 self._speed = value
             self._attributes[label] = value
@@ -311,15 +317,16 @@ class Monster:
         else:
             abilities = stat_block.find(".ability-block > div")
             prefix = ".ability-block__"
+        makeCB = def(a):
+            return def():
+                self.rollAbilityCheck(a)
         for ability in abilities:
             abbr = $(ability).find(prefix + "heading").text()
             score = $(ability).find(prefix + "score").text()
             modifier = $(ability).find(prefix + "modifier").text()[1:-1]
             self._abilities.append([abbreviationToAbility(abbr), abbr, score, modifier].as_array())
-            makeCB = def(a):
-                return def():
-                    self.rollAbilityCheck(a)
-            addIconButton(makeCB(abbr), ability, prepend=True)
+            if add_dice:
+                addIconButton(makeCB(abbr), ability, prepend=True)
         
         tidbits = stat_block.find(base + "__tidbits " + base + "__tidbit")
         for tidbit in tidbits:
@@ -328,22 +335,26 @@ class Monster:
             value = data.text().trim()
             if label == "Saving Throws":
                 saves = value.split(", ")
-                data.html("")
+                if add_dice:
+                    data.html("")
                 makeCB = def(a):
                     return def():
                         self.rollSavingThrow(a)
                 for save in saves:
                     (abbr, mod) = save.split(" ")
                     self._saves[abbr] = mod
-                    data.append(abbr + " " + mod)
-                    addIconButton(makeCB(abbr), data, append=True)
-                    if len(saves) > len(self._saves):
-                        data.append(", ")
+                    if add_dice:
+                        data.append(abbr + " " + mod)
+                        addIconButton(makeCB(abbr), data, append=True)
+                        if len(saves) > len(self._saves):
+                            data.append(", ")
             elif label == "Skills":
                 skills = value.split(", ")
                 for skill in skills:
                     (name, mod) = skill.split(" ")
                     self._skills[name] = mod
+                if not add_dice:
+                    continue
                 makeCB = def(a):
                     return def():
                         self.rollSkillCheck(a)
@@ -367,12 +378,13 @@ class Monster:
                             data.append(", ")
                         first = False
                         data.append(skill + " " + self._skills[skill])
-                        addIconButton(makeCB(skill), data, append=True)
+                        if add_dice:
+                            addIconButton(makeCB(skill), data, append=True)
                         
             elif label == "Challenge":
                 self._cr = value.split(" ")[0]
             self._tidbits[label] = value
-        self.lookForActions(stat_block)
+        self.lookForActions(stat_block, add_dice, inject_descriptions)
         console.log("Done parsing stat block:", self)
 
     def rollHitPoints(self):
@@ -462,7 +474,7 @@ class Monster:
  
         return roll_properties
 
-    def lookForActions(self, stat_block):
+    def lookForActions(self, stat_block, add_dice, inject_descriptions):
         blocks = stat_block.find(self._base + "__description-block")
         makeCB = def(props):
             return def():
@@ -476,9 +488,10 @@ class Monster:
                 if firstChild and firstChild.tagName == "EM":
                     action_name = firstChild.textContent[:-1]
                 else:
-                    injectDiceToRolls(action, self, self._name)
+                    if inject_descriptions:
+                        injectDiceToRolls(action, self, self._name)
                     continue
-                if section_name == "Actions":
+                if add_dice and section_name == "Actions":
                     description = ""
                     nextSibling = firstChild.nextSibling
                     while nextSibling is not None:
@@ -489,11 +502,11 @@ class Monster:
 
                     roll_properties = self.buildAttackRoll(action_name, description)
                     if roll_properties:
-                        console.log("Roll: ", roll_properties)
                         id = addRollButton(makeCB(roll_properties), action,
                                            small=True, prepend=True, image=True, text=action_name)
                         $("#" + id).css({"float": "", "text-align": ""})
-                injectDiceToRolls(action, self, action_name)
+                if inject_descriptions:
+                    injectDiceToRolls(action, self, action_name)
 
     def getDict(self):
         return {"name": self._name,

@@ -5171,13 +5171,14 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "utils";
-        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, CHANGELOG_URL;
+        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, CHANGELOG_URL;
         var re = ρσ_modules.re;
 
         ROLL20_URL = "*://app.roll20.net/editor/";
         DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
         DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
-        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/monsters/*";
+        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
+        DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
         CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
         function escapeRoll20Macro(text) {
             var to_escape;
@@ -5332,6 +5333,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
         ρσ_modules.utils.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
         ρσ_modules.utils.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
+        ρσ_modules.utils.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
         ρσ_modules.utils.CHANGELOG_URL = CHANGELOG_URL;
         ρσ_modules.utils.escapeRoll20Macro = escapeRoll20Macro;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
@@ -5727,8 +5729,24 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             ρσ_d["subst-dndbeyond"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["title"] = "Replace Dices formulas in D&D Beyond";
-                ρσ_d["description"] = "In the D&D Beyond side panel, if a spell, item, feat or action has a dice formula in its description,\nenabling this will add a dice icon next to the formula to allow you to roll it.";
+                ρσ_d["title"] = "Replace Dices formulas in D&D Beyond (Spells & Character Sheet)";
+                ρσ_d["description"] = "In the D&D Beyond Spell page or Character sheet side panel, if a spell, item, feat or action has a dice formula in its description,\nenabling this will add a dice icon next to the formula to allow you to roll it.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["subst-dndbeyond-stat-blocks"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Replace Dices formulas in D&D Beyond (Stat blocks)";
+                ρσ_d["description"] = "In D&D Beyond, if a dice formula is found in the stat block of a creature, monster, vehicle,\nenabling this will add a dice icon next to the formula to allow you to roll it.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["handle-stat-blocks"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Add roll buttons to stat blocks";
+                ρσ_d["description"] = "In D&D Beyond, adds roll buttons for abilities/saving throws/skills/actions to the stat block of a creature, monster or vehicle.";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
@@ -6531,6 +6549,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         var settings, manifest, cb, script;
         var ROLL20_URL = ρσ_modules.utils.ROLL20_URL;
         var DNDBEYOND_CHARACTER_URL = ρσ_modules.utils.DNDBEYOND_CHARACTER_URL;
+        var DNDBEYOND_MONSTER_URL = ρσ_modules.utils.DNDBEYOND_MONSTER_URL;
+        var DNDBEYOND_ENCOUNTER_URL = ρσ_modules.utils.DNDBEYOND_ENCOUNTER_URL;
+        var DNDBEYOND_SPELL_URL = ρσ_modules.utils.DNDBEYOND_SPELL_URL;
         var CHANGELOG_URL = ρσ_modules.utils.CHANGELOG_URL;
         var roll20TabTitle = ρσ_modules.utils.roll20TabTitle;
         var getBrowser = ρσ_modules.utils.getBrowser;
@@ -6589,9 +6610,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this), (function() {
                 var ρσ_anonfunc = function (tabs) {
                     var tab;
-                    var ρσ_Iter8 = ρσ_Iterable(tabs);
-                    for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                        tab = ρσ_Iter8[ρσ_Index8];
+                    var ρσ_Iter0 = ρσ_Iterable(tabs);
+                    for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                        tab = ρσ_Iter0[ρσ_Index0];
                         chrome.tabs.sendMessage(tab.id, request);
                     }
                 };
@@ -6622,9 +6643,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_anonfunc = function (tabs) {
                         var found, tab;
                         found = false;
-                        var ρσ_Iter9 = ρσ_Iterable(tabs);
-                        for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
-                            tab = ρσ_Iter9[ρσ_Index9];
+                        var ρσ_Iter1 = ρσ_Iterable(tabs);
+                        for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                            tab = ρσ_Iter1[ρσ_Index1];
                             if (((limit.id === 0 || typeof limit.id === "object" && ρσ_equals(limit.id, 0)) || (tab.id === limit.id || typeof tab.id === "object" && ρσ_equals(tab.id, limit.id))) && ρσ_equals(roll20TabTitle(tab), limit.title)) {
                                 chrome.tabs.sendMessage(tab.id, request);
                                 found = true;
@@ -6638,9 +6659,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                                 ρσ_d["roll20-tab"] = limit;
                                 return ρσ_d;
                             }).call(this));
-                            var ρσ_Iter10 = ρσ_Iterable(tabs);
-                            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
-                                tab = ρσ_Iter10[ρσ_Index10];
+                            var ρσ_Iter2 = ρσ_Iterable(tabs);
+                            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                                tab = ρσ_Iter2[ρσ_Index2];
                                 if (ρσ_equals(roll20TabTitle(tab), limit.title)) {
                                     chrome.tabs.sendMessage(tab.id, request);
                                     break;
@@ -6665,6 +6686,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function sendMessageToBeyond(request) {
             sendMessageTo(DNDBEYOND_CHARACTER_URL, request);
+            sendMessageTo(DNDBEYOND_MONSTER_URL, request);
+            sendMessageTo(DNDBEYOND_ENCOUNTER_URL, request);
+            sendMessageTo(DNDBEYOND_SPELL_URL, request);
         };
         if (!sendMessageToBeyond.__argnames__) Object.defineProperties(sendMessageToBeyond, {
             __argnames__ : {value: ["request"]}
@@ -6692,12 +6716,12 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function executeScripts(tabs, js_files) {
             var file, tab;
-            var ρσ_Iter11 = ρσ_Iterable(tabs);
-            for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
-                tab = ρσ_Iter11[ρσ_Index11];
-                var ρσ_Iter12 = ρσ_Iterable(js_files);
-                for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
-                    file = ρσ_Iter12[ρσ_Index12];
+            var ρσ_Iter3 = ρσ_Iterable(tabs);
+            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                tab = ρσ_Iter3[ρσ_Index3];
+                var ρσ_Iter4 = ρσ_Iterable(js_files);
+                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                    file = ρσ_Iter4[ρσ_Index4];
                     chrome.tabs.executeScript(tab.id, (function(){
                         var ρσ_d = {};
                         ρσ_d["file"] = file;
@@ -6714,9 +6738,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         chrome.runtime.onMessage.addListener(onMessage);
         if (ρσ_equals(getBrowser(), "Chrome")) {
             manifest = chrome.runtime.getManifest();
-            var ρσ_Iter13 = ρσ_Iterable(manifest.content_scripts);
-            for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
-                script = ρσ_Iter13[ρσ_Index13];
+            var ρσ_Iter5 = ρσ_Iterable(manifest.content_scripts);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                script = ρσ_Iter5[ρσ_Index5];
                 cb = (function() {
                     var ρσ_anonfunc = function (files) {
                         return (function() {

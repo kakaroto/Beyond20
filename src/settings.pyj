@@ -50,10 +50,20 @@ options_list = {
                      "type": "bool",
                      "default": True},
 
-    "subst-dndbeyond": {"title": "Replace Dices formulas in D&D Beyond",
-                        "description": "In the D&D Beyond side panel, if a spell, item, feat or action has a dice formula in its description,\nenabling this will add a dice icon next to the formula to allow you to roll it.",
+    "subst-dndbeyond": {"title": "Replace Dices formulas in D&D Beyond (Spells & Character Sheet)",
+                        "description": "In the D&D Beyond Spell page or Character sheet side panel, if a spell, item, feat or action has a dice formula in its description,\nenabling this will add a dice icon next to the formula to allow you to roll it.",
                         "type": "bool",
                         "default": True},
+
+    "subst-dndbeyond-stat-blocks": {"title": "Replace Dices formulas in D&D Beyond (Stat blocks)",
+                                    "description": "In D&D Beyond, if a dice formula is found in the stat block of a creature, monster, vehicle,\nenabling this will add a dice icon next to the formula to allow you to roll it.",
+                                    "type": "bool",
+                                    "default": True},
+
+    "handle-stat-blocks": {"title": "Add roll buttons to stat blocks",
+                           "description": "In D&D Beyond, adds roll buttons for abilities/saving throws/skills/actions to the stat block of a creature, monster or vehicle.",
+                           "type": "bool",
+                           "default": True},
 
     "crit-prefix": {"title": "Critical Hit Prefix",
                     "description": "Prefix to add to the Critical Hit dice result.\nIt might be less confusing to explicitely show the crit damage",

@@ -1,3 +1,4 @@
+from settings import getStoredSettings
 from dndbeyond import injectDiceToRolls, isCustomRollIconsAdded, isRollButtonAdded, sendRoll
 from elementmaker import E
 
@@ -68,7 +69,7 @@ def addDisplayButton():
         displaySpell()
     )
 
-def documentLoaded():
+def documentLoaded(settings):
     nonlocal character
 
     if isRollButtonAdded():
@@ -76,8 +77,12 @@ def documentLoaded():
     else:
         addDisplayButton()
         spell_name = $(".page-title").text().trim()
-        injectDiceToRolls(".spell-details .more-info-content", character, spell_name)
+        if settings['subst-dndbeyond']:
+            injectDiceToRolls(".spell-details .more-info-content", character, spell_name)
 
 chrome.runtime.sendMessage({"action": "activate-icon"});
-documentLoaded()
+getStoredSettings(def(settings):
+                      documentLoaded(settings)
+                  )
+
 

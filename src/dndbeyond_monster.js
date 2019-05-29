@@ -3724,13 +3724,312 @@ define_str_func("zfill", (function() {
 define_str_func = undefined;
 var str = ρσ_str, repr = ρσ_repr;;
     var ρσ_modules = {};
+    ρσ_modules.elementmaker = {};
     ρσ_modules.re = {};
     ρσ_modules.utils = {};
-    ρσ_modules.elementmaker = {};
     ρσ_modules.settings = {};
     ρσ_modules.encodings = {};
     ρσ_modules.uuid = {};
     ρσ_modules.dndbeyond = {};
+
+    (function(){
+        var __name__ = "elementmaker";
+        var html_elements, mathml_elements, svg_elements, html5_tags, E;
+        html_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("a");
+            s.jsset.add("abbr");
+            s.jsset.add("acronym");
+            s.jsset.add("address");
+            s.jsset.add("area");
+            s.jsset.add("article");
+            s.jsset.add("aside");
+            s.jsset.add("audio");
+            s.jsset.add("b");
+            s.jsset.add("big");
+            s.jsset.add("blockquote");
+            s.jsset.add("br");
+            s.jsset.add("button");
+            s.jsset.add("canvas");
+            s.jsset.add("caption");
+            s.jsset.add("center");
+            s.jsset.add("cite");
+            s.jsset.add("code");
+            s.jsset.add("col");
+            s.jsset.add("colgroup");
+            s.jsset.add("command");
+            s.jsset.add("datagrid");
+            s.jsset.add("datalist");
+            s.jsset.add("dd");
+            s.jsset.add("del");
+            s.jsset.add("details");
+            s.jsset.add("dfn");
+            s.jsset.add("dialog");
+            s.jsset.add("dir");
+            s.jsset.add("div");
+            s.jsset.add("dl");
+            s.jsset.add("dt");
+            s.jsset.add("em");
+            s.jsset.add("event-source");
+            s.jsset.add("fieldset");
+            s.jsset.add("figcaption");
+            s.jsset.add("figure");
+            s.jsset.add("footer");
+            s.jsset.add("font");
+            s.jsset.add("form");
+            s.jsset.add("header");
+            s.jsset.add("h1");
+            s.jsset.add("h2");
+            s.jsset.add("h3");
+            s.jsset.add("h4");
+            s.jsset.add("h5");
+            s.jsset.add("h6");
+            s.jsset.add("hr");
+            s.jsset.add("i");
+            s.jsset.add("iframe");
+            s.jsset.add("img");
+            s.jsset.add("input");
+            s.jsset.add("ins");
+            s.jsset.add("keygen");
+            s.jsset.add("kbd");
+            s.jsset.add("label");
+            s.jsset.add("legend");
+            s.jsset.add("li");
+            s.jsset.add("m");
+            s.jsset.add("map");
+            s.jsset.add("menu");
+            s.jsset.add("meter");
+            s.jsset.add("multicol");
+            s.jsset.add("nav");
+            s.jsset.add("nextid");
+            s.jsset.add("ol");
+            s.jsset.add("output");
+            s.jsset.add("optgroup");
+            s.jsset.add("option");
+            s.jsset.add("p");
+            s.jsset.add("pre");
+            s.jsset.add("progress");
+            s.jsset.add("q");
+            s.jsset.add("s");
+            s.jsset.add("samp");
+            s.jsset.add("script");
+            s.jsset.add("section");
+            s.jsset.add("select");
+            s.jsset.add("small");
+            s.jsset.add("sound");
+            s.jsset.add("source");
+            s.jsset.add("spacer");
+            s.jsset.add("span");
+            s.jsset.add("strike");
+            s.jsset.add("strong");
+            s.jsset.add("style");
+            s.jsset.add("sub");
+            s.jsset.add("sup");
+            s.jsset.add("table");
+            s.jsset.add("tbody");
+            s.jsset.add("td");
+            s.jsset.add("textarea");
+            s.jsset.add("time");
+            s.jsset.add("tfoot");
+            s.jsset.add("th");
+            s.jsset.add("thead");
+            s.jsset.add("tr");
+            s.jsset.add("tt");
+            s.jsset.add("u");
+            s.jsset.add("ul");
+            s.jsset.add("var");
+            s.jsset.add("video");
+            return s;
+        })();
+        mathml_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("maction");
+            s.jsset.add("math");
+            s.jsset.add("merror");
+            s.jsset.add("mfrac");
+            s.jsset.add("mi");
+            s.jsset.add("mmultiscripts");
+            s.jsset.add("mn");
+            s.jsset.add("mo");
+            s.jsset.add("mover");
+            s.jsset.add("mpadded");
+            s.jsset.add("mphantom");
+            s.jsset.add("mprescripts");
+            s.jsset.add("mroot");
+            s.jsset.add("mrow");
+            s.jsset.add("mspace");
+            s.jsset.add("msqrt");
+            s.jsset.add("mstyle");
+            s.jsset.add("msub");
+            s.jsset.add("msubsup");
+            s.jsset.add("msup");
+            s.jsset.add("mtable");
+            s.jsset.add("mtd");
+            s.jsset.add("mtext");
+            s.jsset.add("mtr");
+            s.jsset.add("munder");
+            s.jsset.add("munderover");
+            s.jsset.add("none");
+            return s;
+        })();
+        svg_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("a");
+            s.jsset.add("animate");
+            s.jsset.add("animateColor");
+            s.jsset.add("animateMotion");
+            s.jsset.add("animateTransform");
+            s.jsset.add("clipPath");
+            s.jsset.add("circle");
+            s.jsset.add("defs");
+            s.jsset.add("desc");
+            s.jsset.add("ellipse");
+            s.jsset.add("font-face");
+            s.jsset.add("font-face-name");
+            s.jsset.add("font-face-src");
+            s.jsset.add("g");
+            s.jsset.add("glyph");
+            s.jsset.add("hkern");
+            s.jsset.add("linearGradient");
+            s.jsset.add("line");
+            s.jsset.add("marker");
+            s.jsset.add("metadata");
+            s.jsset.add("missing-glyph");
+            s.jsset.add("mpath");
+            s.jsset.add("path");
+            s.jsset.add("polygon");
+            s.jsset.add("polyline");
+            s.jsset.add("radialGradient");
+            s.jsset.add("rect");
+            s.jsset.add("set");
+            s.jsset.add("stop");
+            s.jsset.add("svg");
+            s.jsset.add("switch");
+            s.jsset.add("text");
+            s.jsset.add("title");
+            s.jsset.add("tspan");
+            s.jsset.add("use");
+            return s;
+        })();
+        html5_tags = html_elements.union(mathml_elements).union(svg_elements);
+        function _makeelement() {
+            var tag = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var kwargs = arguments[arguments.length-1];
+            if (kwargs === null || typeof kwargs !== "object" || kwargs [ρσ_kwargs_symbol] !== true) kwargs = {};
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (kwargs !== null && typeof kwargs === "object" && kwargs [ρσ_kwargs_symbol] === true) args.pop();
+            var ans, vattr, val, attr, arg;
+            ans = this.createElement(tag);
+            var ρσ_Iter0 = ρσ_Iterable(kwargs);
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                attr = ρσ_Iter0[ρσ_Index0];
+                vattr = str.replace(str.rstrip(attr, "_"), "_", "-");
+                val = kwargs[(typeof attr === "number" && attr < 0) ? kwargs.length + attr : attr];
+                if (callable(val)) {
+                    if (str.startswith(attr, "on")) {
+                        attr = attr.slice(2);
+                    }
+                    ans.addEventListener(attr, val);
+                } else if (val === true) {
+                    ans.setAttribute(vattr, vattr);
+                } else if (typeof val === "string") {
+                    ans.setAttribute(vattr, val);
+                }
+            }
+            var ρσ_Iter1 = ρσ_Iterable(args);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                arg = ρσ_Iter1[ρσ_Index1];
+                if (typeof arg === "string") {
+                    arg = this.createTextNode(arg);
+                }
+                ans.appendChild(arg);
+            }
+            return ans;
+        };
+        if (!_makeelement.__handles_kwarg_interpolation__) Object.defineProperties(_makeelement, {
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["tag"]}
+        });
+
+        function maker_for_document(document) {
+            var E;
+            E = _makeelement.bind(document);
+            Object.defineProperties(E, (function() {
+                var ρσ_Iter = ρσ_Iterable(html5_tags), ρσ_Result = {}, tag;
+                for (var ρσ_Index = 0; ρσ_Index < ρσ_Iter.length; ρσ_Index++) {
+                    tag = ρσ_Iter[ρσ_Index];
+                    ρσ_Result[tag] = ((function(){
+                        var ρσ_d = {};
+                        ρσ_d["value"] = _makeelement.bind(document, tag);
+                        return ρσ_d;
+                    }).call(this));
+                }
+                return ρσ_Result;
+            })());
+            return E;
+        };
+        if (!maker_for_document.__argnames__) Object.defineProperties(maker_for_document, {
+            __argnames__ : {value: ["document"]}
+        });
+
+        if (typeof document === "undefined") {
+            E = maker_for_document((function(){
+                var ρσ_d = {};
+                ρσ_d["createTextNode"] = (function() {
+                    var ρσ_anonfunc = function (value) {
+                        return value;
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["value"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                ρσ_d["createElement"] = (function() {
+                    var ρσ_anonfunc = function (name) {
+                        return (function(){
+                            var ρσ_d = {};
+                            ρσ_d["name"] = name;
+                            ρσ_d["children"] = ρσ_list_decorate([]);
+                            ρσ_d["attributes"] = {};
+                            ρσ_d["setAttribute"] = (function() {
+                                var ρσ_anonfunc = function (name, val) {
+                                    (ρσ_expr_temp = this.attributes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = val;
+                                };
+                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                    __argnames__ : {value: ["name", "val"]}
+                                });
+                                return ρσ_anonfunc;
+                            })();
+                            ρσ_d["appendChild"] = (function() {
+                                var ρσ_anonfunc = function (child) {
+                                    this.children.push(child);
+                                };
+                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                    __argnames__ : {value: ["child"]}
+                                });
+                                return ρσ_anonfunc;
+                            })();
+                            return ρσ_d;
+                        }).call(this);
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["name"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                return ρσ_d;
+            }).call(this));
+        } else {
+            E = maker_for_document(document);
+        }
+        ρσ_modules.elementmaker.html_elements = html_elements;
+        ρσ_modules.elementmaker.mathml_elements = mathml_elements;
+        ρσ_modules.elementmaker.svg_elements = svg_elements;
+        ρσ_modules.elementmaker.html5_tags = html5_tags;
+        ρσ_modules.elementmaker.E = E;
+        ρσ_modules.elementmaker._makeelement = _makeelement;
+        ρσ_modules.elementmaker.maker_for_document = maker_for_document;
+    })();
 
     (function(){
         var __name__ = "re";
@@ -5174,13 +5473,14 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "utils";
-        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, CHANGELOG_URL;
+        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, CHANGELOG_URL;
         var re = ρσ_modules.re;
 
         ROLL20_URL = "*://app.roll20.net/editor/";
         DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
         DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
-        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/monsters/*";
+        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
+        DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
         CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
         function escapeRoll20Macro(text) {
             var to_escape;
@@ -5335,6 +5635,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
         ρσ_modules.utils.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
         ρσ_modules.utils.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
+        ρσ_modules.utils.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
         ρσ_modules.utils.CHANGELOG_URL = CHANGELOG_URL;
         ρσ_modules.utils.escapeRoll20Macro = escapeRoll20Macro;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
@@ -5345,305 +5646,6 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.sendCustomEvent = sendCustomEvent;
         ρσ_modules.utils.addCustomEventListener = addCustomEventListener;
         ρσ_modules.utils.roll20TabTitle = roll20TabTitle;
-    })();
-
-    (function(){
-        var __name__ = "elementmaker";
-        var html_elements, mathml_elements, svg_elements, html5_tags, E;
-        html_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("a");
-            s.jsset.add("abbr");
-            s.jsset.add("acronym");
-            s.jsset.add("address");
-            s.jsset.add("area");
-            s.jsset.add("article");
-            s.jsset.add("aside");
-            s.jsset.add("audio");
-            s.jsset.add("b");
-            s.jsset.add("big");
-            s.jsset.add("blockquote");
-            s.jsset.add("br");
-            s.jsset.add("button");
-            s.jsset.add("canvas");
-            s.jsset.add("caption");
-            s.jsset.add("center");
-            s.jsset.add("cite");
-            s.jsset.add("code");
-            s.jsset.add("col");
-            s.jsset.add("colgroup");
-            s.jsset.add("command");
-            s.jsset.add("datagrid");
-            s.jsset.add("datalist");
-            s.jsset.add("dd");
-            s.jsset.add("del");
-            s.jsset.add("details");
-            s.jsset.add("dfn");
-            s.jsset.add("dialog");
-            s.jsset.add("dir");
-            s.jsset.add("div");
-            s.jsset.add("dl");
-            s.jsset.add("dt");
-            s.jsset.add("em");
-            s.jsset.add("event-source");
-            s.jsset.add("fieldset");
-            s.jsset.add("figcaption");
-            s.jsset.add("figure");
-            s.jsset.add("footer");
-            s.jsset.add("font");
-            s.jsset.add("form");
-            s.jsset.add("header");
-            s.jsset.add("h1");
-            s.jsset.add("h2");
-            s.jsset.add("h3");
-            s.jsset.add("h4");
-            s.jsset.add("h5");
-            s.jsset.add("h6");
-            s.jsset.add("hr");
-            s.jsset.add("i");
-            s.jsset.add("iframe");
-            s.jsset.add("img");
-            s.jsset.add("input");
-            s.jsset.add("ins");
-            s.jsset.add("keygen");
-            s.jsset.add("kbd");
-            s.jsset.add("label");
-            s.jsset.add("legend");
-            s.jsset.add("li");
-            s.jsset.add("m");
-            s.jsset.add("map");
-            s.jsset.add("menu");
-            s.jsset.add("meter");
-            s.jsset.add("multicol");
-            s.jsset.add("nav");
-            s.jsset.add("nextid");
-            s.jsset.add("ol");
-            s.jsset.add("output");
-            s.jsset.add("optgroup");
-            s.jsset.add("option");
-            s.jsset.add("p");
-            s.jsset.add("pre");
-            s.jsset.add("progress");
-            s.jsset.add("q");
-            s.jsset.add("s");
-            s.jsset.add("samp");
-            s.jsset.add("script");
-            s.jsset.add("section");
-            s.jsset.add("select");
-            s.jsset.add("small");
-            s.jsset.add("sound");
-            s.jsset.add("source");
-            s.jsset.add("spacer");
-            s.jsset.add("span");
-            s.jsset.add("strike");
-            s.jsset.add("strong");
-            s.jsset.add("style");
-            s.jsset.add("sub");
-            s.jsset.add("sup");
-            s.jsset.add("table");
-            s.jsset.add("tbody");
-            s.jsset.add("td");
-            s.jsset.add("textarea");
-            s.jsset.add("time");
-            s.jsset.add("tfoot");
-            s.jsset.add("th");
-            s.jsset.add("thead");
-            s.jsset.add("tr");
-            s.jsset.add("tt");
-            s.jsset.add("u");
-            s.jsset.add("ul");
-            s.jsset.add("var");
-            s.jsset.add("video");
-            return s;
-        })();
-        mathml_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("maction");
-            s.jsset.add("math");
-            s.jsset.add("merror");
-            s.jsset.add("mfrac");
-            s.jsset.add("mi");
-            s.jsset.add("mmultiscripts");
-            s.jsset.add("mn");
-            s.jsset.add("mo");
-            s.jsset.add("mover");
-            s.jsset.add("mpadded");
-            s.jsset.add("mphantom");
-            s.jsset.add("mprescripts");
-            s.jsset.add("mroot");
-            s.jsset.add("mrow");
-            s.jsset.add("mspace");
-            s.jsset.add("msqrt");
-            s.jsset.add("mstyle");
-            s.jsset.add("msub");
-            s.jsset.add("msubsup");
-            s.jsset.add("msup");
-            s.jsset.add("mtable");
-            s.jsset.add("mtd");
-            s.jsset.add("mtext");
-            s.jsset.add("mtr");
-            s.jsset.add("munder");
-            s.jsset.add("munderover");
-            s.jsset.add("none");
-            return s;
-        })();
-        svg_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("a");
-            s.jsset.add("animate");
-            s.jsset.add("animateColor");
-            s.jsset.add("animateMotion");
-            s.jsset.add("animateTransform");
-            s.jsset.add("clipPath");
-            s.jsset.add("circle");
-            s.jsset.add("defs");
-            s.jsset.add("desc");
-            s.jsset.add("ellipse");
-            s.jsset.add("font-face");
-            s.jsset.add("font-face-name");
-            s.jsset.add("font-face-src");
-            s.jsset.add("g");
-            s.jsset.add("glyph");
-            s.jsset.add("hkern");
-            s.jsset.add("linearGradient");
-            s.jsset.add("line");
-            s.jsset.add("marker");
-            s.jsset.add("metadata");
-            s.jsset.add("missing-glyph");
-            s.jsset.add("mpath");
-            s.jsset.add("path");
-            s.jsset.add("polygon");
-            s.jsset.add("polyline");
-            s.jsset.add("radialGradient");
-            s.jsset.add("rect");
-            s.jsset.add("set");
-            s.jsset.add("stop");
-            s.jsset.add("svg");
-            s.jsset.add("switch");
-            s.jsset.add("text");
-            s.jsset.add("title");
-            s.jsset.add("tspan");
-            s.jsset.add("use");
-            return s;
-        })();
-        html5_tags = html_elements.union(mathml_elements).union(svg_elements);
-        function _makeelement() {
-            var tag = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var kwargs = arguments[arguments.length-1];
-            if (kwargs === null || typeof kwargs !== "object" || kwargs [ρσ_kwargs_symbol] !== true) kwargs = {};
-            var args = Array.prototype.slice.call(arguments, 1);
-            if (kwargs !== null && typeof kwargs === "object" && kwargs [ρσ_kwargs_symbol] === true) args.pop();
-            var ans, vattr, val, attr, arg;
-            ans = this.createElement(tag);
-            var ρσ_Iter0 = ρσ_Iterable(kwargs);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                attr = ρσ_Iter0[ρσ_Index0];
-                vattr = str.replace(str.rstrip(attr, "_"), "_", "-");
-                val = kwargs[(typeof attr === "number" && attr < 0) ? kwargs.length + attr : attr];
-                if (callable(val)) {
-                    if (str.startswith(attr, "on")) {
-                        attr = attr.slice(2);
-                    }
-                    ans.addEventListener(attr, val);
-                } else if (val === true) {
-                    ans.setAttribute(vattr, vattr);
-                } else if (typeof val === "string") {
-                    ans.setAttribute(vattr, val);
-                }
-            }
-            var ρσ_Iter1 = ρσ_Iterable(args);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                arg = ρσ_Iter1[ρσ_Index1];
-                if (typeof arg === "string") {
-                    arg = this.createTextNode(arg);
-                }
-                ans.appendChild(arg);
-            }
-            return ans;
-        };
-        if (!_makeelement.__handles_kwarg_interpolation__) Object.defineProperties(_makeelement, {
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["tag"]}
-        });
-
-        function maker_for_document(document) {
-            var E;
-            E = _makeelement.bind(document);
-            Object.defineProperties(E, (function() {
-                var ρσ_Iter = ρσ_Iterable(html5_tags), ρσ_Result = {}, tag;
-                for (var ρσ_Index = 0; ρσ_Index < ρσ_Iter.length; ρσ_Index++) {
-                    tag = ρσ_Iter[ρσ_Index];
-                    ρσ_Result[tag] = ((function(){
-                        var ρσ_d = {};
-                        ρσ_d["value"] = _makeelement.bind(document, tag);
-                        return ρσ_d;
-                    }).call(this));
-                }
-                return ρσ_Result;
-            })());
-            return E;
-        };
-        if (!maker_for_document.__argnames__) Object.defineProperties(maker_for_document, {
-            __argnames__ : {value: ["document"]}
-        });
-
-        if (typeof document === "undefined") {
-            E = maker_for_document((function(){
-                var ρσ_d = {};
-                ρσ_d["createTextNode"] = (function() {
-                    var ρσ_anonfunc = function (value) {
-                        return value;
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["value"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                ρσ_d["createElement"] = (function() {
-                    var ρσ_anonfunc = function (name) {
-                        return (function(){
-                            var ρσ_d = {};
-                            ρσ_d["name"] = name;
-                            ρσ_d["children"] = ρσ_list_decorate([]);
-                            ρσ_d["attributes"] = {};
-                            ρσ_d["setAttribute"] = (function() {
-                                var ρσ_anonfunc = function (name, val) {
-                                    (ρσ_expr_temp = this.attributes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = val;
-                                };
-                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                    __argnames__ : {value: ["name", "val"]}
-                                });
-                                return ρσ_anonfunc;
-                            })();
-                            ρσ_d["appendChild"] = (function() {
-                                var ρσ_anonfunc = function (child) {
-                                    this.children.push(child);
-                                };
-                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                    __argnames__ : {value: ["child"]}
-                                });
-                                return ρσ_anonfunc;
-                            })();
-                            return ρσ_d;
-                        }).call(this);
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["name"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                return ρσ_d;
-            }).call(this));
-        } else {
-            E = maker_for_document(document);
-        }
-        ρσ_modules.elementmaker.html_elements = html_elements;
-        ρσ_modules.elementmaker.mathml_elements = mathml_elements;
-        ρσ_modules.elementmaker.svg_elements = svg_elements;
-        ρσ_modules.elementmaker.html5_tags = html5_tags;
-        ρσ_modules.elementmaker.E = E;
-        ρσ_modules.elementmaker._makeelement = _makeelement;
-        ρσ_modules.elementmaker.maker_for_document = maker_for_document;
     })();
 
     (function(){
@@ -5730,8 +5732,24 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             ρσ_d["subst-dndbeyond"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["title"] = "Replace Dices formulas in D&D Beyond";
-                ρσ_d["description"] = "In the D&D Beyond side panel, if a spell, item, feat or action has a dice formula in its description,\nenabling this will add a dice icon next to the formula to allow you to roll it.";
+                ρσ_d["title"] = "Replace Dices formulas in D&D Beyond (Spells & Character Sheet)";
+                ρσ_d["description"] = "In the D&D Beyond Spell page or Character sheet side panel, if a spell, item, feat or action has a dice formula in its description,\nenabling this will add a dice icon next to the formula to allow you to roll it.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["subst-dndbeyond-stat-blocks"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Replace Dices formulas in D&D Beyond (Stat blocks)";
+                ρσ_d["description"] = "In D&D Beyond, if a dice formula is found in the stat block of a creature, monster, vehicle,\nenabling this will add a dice icon next to the formula to allow you to roll it.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["handle-stat-blocks"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Add roll buttons to stat blocks";
+                ρσ_d["description"] = "In D&D Beyond, adds roll buttons for abilities/saving throws/skills/actions to the stat block of a creature, monster or vehicle.";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
@@ -7109,7 +7127,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     update = true;
                 }
             } else if (self.getSetting("class-features", null)) {
-                self._class_features = list(self._settings["class-features"]);
+                self._class_features = list(self.getSetting("class-features", null));
             }
             race_detail = $(".ct-features .ct-race-detail");
             if (race_detail.length > 0) {
@@ -7121,7 +7139,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     update = true;
                 }
             } else if (self.getSetting("racial-traits", null)) {
-                self._racial_traits = list(self._settings["racial-traits"]);
+                self._racial_traits = list(self.getSetting("racial-traits", null));
             }
             feats_detail = $(".ct-features .ct-feats-detail");
             if (feats_detail.length > 0) {
@@ -7133,7 +7151,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     update = true;
                 }
             } else if (self.getSetting("feats", null)) {
-                self._feats = list(self._settings["feats"]);
+                self._feats = list(self.getSetting("feats", null));
             }
             if (update) {
                 self.mergeCharacterSettings((function(){
@@ -7277,7 +7295,13 @@ var str = ρσ_str, repr = ρσ_repr;;
         Monster.prototype.__init__ = function __init__(_type) {
             var self = this;
             self._type = _type;
-            self._base = ((_type === "Monster" || typeof _type === "object" && ρσ_equals(_type, "Monster"))) ? ".mon-stat-block" : ".ct-creature-block";
+            if ((_type === "Monster" || typeof _type === "object" && ρσ_equals(_type, "Monster"))) {
+                self._base = ".mon-stat-block";
+            } else if ((_type === "Creature" || typeof _type === "object" && ρσ_equals(_type, "Creature"))) {
+                self._base = ".ct-creature-block";
+            } else {
+                self._base = ".mon-stat-block";
+            }
             self._id = null;
             self._name = null;
             self._meta = null;
@@ -7300,12 +7324,20 @@ var str = ρσ_str, repr = ρσ_repr;;
         Monster.prototype.parseStatBlock = function parseStatBlock() {
             var self = this;
             var stat_block = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? parseStatBlock.__defaults__.stat_block : arguments[0];
+            var add_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? parseStatBlock.__defaults__.add_dice : arguments[1];
+            var inject_descriptions = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? parseStatBlock.__defaults__.inject_descriptions : arguments[2];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "stat_block")){
                 stat_block = ρσ_kwargs_obj.stat_block;
             }
-            var base, a, attributes, label, value, cb, attr, abilities, prefix, abbr, score, modifier, makeCB, ability, tidbits, data, saves, ρσ_unpack, mod, save, skills, name, skill, text, last, first, tidbit;
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "add_dice")){
+                add_dice = ρσ_kwargs_obj.add_dice;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "inject_descriptions")){
+                inject_descriptions = ρσ_kwargs_obj.inject_descriptions;
+            }
+            var base, a, attributes, label, value, cb, attr, abilities, prefix, makeCB, abbr, score, modifier, ability, tidbits, data, saves, ρσ_unpack, mod, save, skills, name, skill, text, last, first, tidbit;
             base = self._base;
             if (stat_block === null) {
                 stat_block = $(base);
@@ -7335,7 +7367,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     cb = function () {
                         self.rollHitPoints();
                     };
-                    addIconButton(cb, $(attr).find(base + "__attribute-data-extra"));
+                    if (add_dice) {
+                        addIconButton(cb, $(attr).find(base + "__attribute-data-extra"));
+                    }
                 } else if ((label === "Speed" || typeof label === "object" && ρσ_equals(label, "Speed"))) {
                     self._speed = value;
                 }
@@ -7349,6 +7383,17 @@ var str = ρσ_str, repr = ρσ_repr;;
                 abilities = stat_block.find(".ability-block > div");
                 prefix = ".ability-block__";
             }
+            makeCB = (function() {
+                var ρσ_anonfunc = function (a) {
+                    return function () {
+                        self.rollAbilityCheck(a);
+                    };
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["a"]}
+                });
+                return ρσ_anonfunc;
+            })();
             var ρσ_Iter6 = ρσ_Iterable(abilities);
             for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
                 ability = ρσ_Iter6[ρσ_Index6];
@@ -7356,18 +7401,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 score = $(ability).find(prefix + "score").text();
                 modifier = $(ability).find(prefix + "modifier").text().slice(1, -1);
                 self._abilities.append(ρσ_list_decorate([ abbreviationToAbility(abbr), abbr, score, modifier ]).as_array());
-                makeCB = (function() {
-                    var ρσ_anonfunc = function (a) {
-                        return function () {
-                            self.rollAbilityCheck(a);
-                        };
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["a"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                ρσ_interpolate_kwargs.call(this, addIconButton, [makeCB(abbr), ability].concat([ρσ_desugar_kwargs({prepend: true})]));
+                if (add_dice) {
+                    ρσ_interpolate_kwargs.call(this, addIconButton, [makeCB(abbr), ability].concat([ρσ_desugar_kwargs({prepend: true})]));
+                }
             }
             tidbits = stat_block.find(base + "__tidbits " + base + "__tidbit");
             var ρσ_Iter7 = ρσ_Iterable(tidbits);
@@ -7378,7 +7414,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 value = data.text().trim();
                 if ((label === "Saving Throws" || typeof label === "object" && ρσ_equals(label, "Saving Throws"))) {
                     saves = value.split(", ");
-                    data.html("");
+                    if (add_dice) {
+                        data.html("");
+                    }
                     makeCB = (function() {
                         var ρσ_anonfunc = function (a) {
                             return function () {
@@ -7398,10 +7436,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                         abbr = ρσ_unpack[0];
                         mod = ρσ_unpack[1];
                         (ρσ_expr_temp = self._saves)[(typeof abbr === "number" && abbr < 0) ? ρσ_expr_temp.length + abbr : abbr] = mod;
-                        data.append(abbr + " " + mod);
-                        ρσ_interpolate_kwargs.call(this, addIconButton, [makeCB(abbr), data].concat([ρσ_desugar_kwargs({append: true})]));
-                        if (len(saves) > len(self._saves)) {
-                            data.append(", ");
+                        if (add_dice) {
+                            data.append(abbr + " " + mod);
+                            ρσ_interpolate_kwargs.call(this, addIconButton, [makeCB(abbr), data].concat([ρσ_desugar_kwargs({append: true})]));
+                            if (len(saves) > len(self._saves)) {
+                                data.append(", ");
+                            }
                         }
                     }
                 } else if ((label === "Skills" || typeof label === "object" && ρσ_equals(label, "Skills"))) {
@@ -7414,6 +7454,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                         name = ρσ_unpack[0];
                         mod = ρσ_unpack[1];
                         (ρσ_expr_temp = self._skills)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = mod;
+                    }
+                    if (!add_dice) {
+                        continue;
                     }
                     makeCB = (function() {
                         var ρσ_anonfunc = function (a) {
@@ -7454,7 +7497,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                             }
                             first = false;
                             data.append(skill + " " + (ρσ_expr_temp = self._skills)[(typeof skill === "number" && skill < 0) ? ρσ_expr_temp.length + skill : skill]);
-                            ρσ_interpolate_kwargs.call(this, addIconButton, [makeCB(skill), data].concat([ρσ_desugar_kwargs({append: true})]));
+                            if (add_dice) {
+                                ρσ_interpolate_kwargs.call(this, addIconButton, [makeCB(skill), data].concat([ρσ_desugar_kwargs({append: true})]));
+                            }
                         }
                     }
                 } else if ((label === "Challenge" || typeof label === "object" && ρσ_equals(label, "Challenge"))) {
@@ -7462,13 +7507,13 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 (ρσ_expr_temp = self._tidbits)[(typeof label === "number" && label < 0) ? ρσ_expr_temp.length + label : label] = value;
             }
-            self.lookForActions(stat_block);
+            self.lookForActions(stat_block, add_dice, inject_descriptions);
             console.log("Done parsing stat block:", self);
         };
         if (!Monster.prototype.parseStatBlock.__defaults__) Object.defineProperties(Monster.prototype.parseStatBlock, {
-            __defaults__ : {value: {stat_block:null}},
+            __defaults__ : {value: {stat_block:null, add_dice:true, inject_descriptions:true}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["stat_block"]}
+            __argnames__ : {value: ["stat_block", "add_dice", "inject_descriptions"]}
         });
         Monster.prototype.rollHitPoints = function rollHitPoints() {
             var self = this;
@@ -7626,7 +7671,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         if (!Monster.prototype.buildAttackRoll.__argnames__) Object.defineProperties(Monster.prototype.buildAttackRoll, {
             __argnames__ : {value: ["name", "description"]}
         });
-        Monster.prototype.lookForActions = function lookForActions(stat_block) {
+        Monster.prototype.lookForActions = function lookForActions(stat_block, add_dice, inject_descriptions) {
             var self = this;
             var blocks, makeCB, section_name, actions, firstChild, action_name, description, nextSibling, roll_properties, id, action, block;
             blocks = stat_block.find(self._base + "__description-block");
@@ -7654,10 +7699,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if (firstChild && (firstChild.tagName === "EM" || typeof firstChild.tagName === "object" && ρσ_equals(firstChild.tagName, "EM"))) {
                         action_name = firstChild.textContent.slice(0, -1);
                     } else {
-                        injectDiceToRolls(action, self, self._name);
+                        if (inject_descriptions) {
+                            injectDiceToRolls(action, self, self._name);
+                        }
                         continue;
                     }
-                    if ((section_name === "Actions" || typeof section_name === "object" && ρσ_equals(section_name, "Actions"))) {
+                    if (add_dice && (section_name === "Actions" || typeof section_name === "object" && ρσ_equals(section_name, "Actions"))) {
                         description = "";
                         nextSibling = firstChild.nextSibling;
                         while (nextSibling !== null) {
@@ -7669,7 +7716,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                         }
                         roll_properties = self.buildAttackRoll(action_name, description);
                         if (roll_properties) {
-                            console.log("Roll: ", roll_properties);
                             id = ρσ_interpolate_kwargs.call(this, addRollButton, [makeCB(roll_properties), action].concat([ρσ_desugar_kwargs({small: true, prepend: true, image: true, text: action_name})]));
                             $("#" + id).css((function(){
                                 var ρσ_d = {};
@@ -7679,12 +7725,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                             }).call(this));
                         }
                     }
-                    injectDiceToRolls(action, self, action_name);
+                    if (inject_descriptions) {
+                        injectDiceToRolls(action, self, action_name);
+                    }
                 }
             }
         };
         if (!Monster.prototype.lookForActions.__argnames__) Object.defineProperties(Monster.prototype.lookForActions, {
-            __argnames__ : {value: ["stat_block"]}
+            __argnames__ : {value: ["stat_block", "add_dice", "inject_descriptions"]}
         });
         Monster.prototype.getDict = function getDict() {
             var self = this;
@@ -8201,12 +8249,14 @@ var str = ρσ_str, repr = ρσ_repr;;
 
 
         var character;
+        var getStoredSettings = ρσ_modules.settings.getStoredSettings;
+
         var Monster = ρσ_modules.dndbeyond.Monster;
         var isRollButtonAdded = ρσ_modules.dndbeyond.isRollButtonAdded;
 
         print("Beyond20: D&D Beyond Monster module loaded.");
         character = new Monster("Monster");
-        function documentLoaded() {
+        function documentLoaded(settings) {
             if (isRollButtonAdded()) {
                 chrome.runtime.sendMessage((function(){
                     var ρσ_d = {};
@@ -8214,15 +8264,26 @@ var str = ρσ_str, repr = ρσ_repr;;
                     return ρσ_d;
                 }).call(this));
             } else {
-                character.parseStatBlock();
+                ρσ_interpolate_kwargs.call(character, character.parseStatBlock, [ρσ_desugar_kwargs({add_dice: settings["handle-stat-blocks"], inject_descriptions: settings["subst-dndbeyond-stat-blocks"]})]);
             }
         };
+        if (!documentLoaded.__argnames__) Object.defineProperties(documentLoaded, {
+            __argnames__ : {value: ["settings"]}
+        });
 
         chrome.runtime.sendMessage((function(){
             var ρσ_d = {};
             ρσ_d["action"] = "activate-icon";
             return ρσ_d;
         }).call(this));
-        documentLoaded();
+        getStoredSettings((function() {
+            var ρσ_anonfunc = function (settings) {
+                documentLoaded(settings);
+            };
+            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                __argnames__ : {value: ["settings"]}
+            });
+            return ρσ_anonfunc;
+        })());
     })();
 })();

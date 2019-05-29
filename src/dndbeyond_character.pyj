@@ -227,7 +227,7 @@ def rollSpell(force_display=False):
             damages.append(str(2 + int(spell_level)))
             damage_types.append("Disciple of Life")
 
-        custom_damage = character._settings["custom-damage-dice"]
+        custom_damage = character.getSetting("custom-damage-dice", "")
         if len(custom_damage) > 0 and len(damages) > 0:
             damages.append(custom_damage)
             damage_types.append("Custom Damage")
@@ -343,6 +343,7 @@ lastItemName = ""
 lastSpellName = ""
 lastSpellLevel = ""
 def injectRollButton(paneClass):
+    nonlocal settings
     if paneClass in ["ct-custom-skill-pane",
                      "ct-skill-pane",
                      "ct-ability-pane",
@@ -431,10 +432,10 @@ def injectRollButton(paneClass):
         else:
             removeRollButtons()
     elif paneClass == "ct-creature-pane":
-        if isRollButtonAdded():
+        if isRollButtonAdded() or isCustomRollIconsAdded():
             return
         character = Monster("Creature")
-        character.parseStatBlock()
+        character.parseStatBlock(add_dice=settings['handle-stat-blocks'], inject_descriptions=settings['subst-dndbeyond-stat-blocks'])
     else:
         removeRollButtons()
 
