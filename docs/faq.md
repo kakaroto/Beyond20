@@ -2,7 +2,7 @@
 
 First of all, make sure you have the latest version of Beyond20 since some issues might have been recently fixed.
 
-You can also check out the [changelog](changelog) for recent fixes or additions to the extension.
+You can also check out the [changelog](Changelog) for recent fixes or additions to the extension.
 
 * [Can Beyond20 do '\<insert specific feature\>'?](#can-beyond20-do-insert-specific-feature)
 * [All I see in Roll20 is an empty message](#all-i-see-in-roll20-is-an-empty-message)
