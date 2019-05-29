@@ -258,14 +258,18 @@ class Character:
 
 
 class Monster:
-    def __init__(self, _type):
+    def __init__(self, _type, base=None):
         self._type = _type
         if _type == "Monster":
             self._base = ".mon-stat-block"
         elif _type == "Creature":
             self._base = ".ct-creature-block"
+        elif _type == "Vehicle":
+            self._base = ".vehicle-stat-block"
         else:
             self._base = ".mon-stat-block"
+        if base:
+            self._base = base
         self._id = None
         self._name = None
         self._meta = None

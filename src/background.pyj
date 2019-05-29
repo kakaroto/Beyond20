@@ -47,6 +47,7 @@ def sendMessageToBeyond(request):
     sendMessageTo(DNDBEYOND_MONSTER_URL, request)
     sendMessageTo(DNDBEYOND_ENCOUNTER_URL, request)
     sendMessageTo(DNDBEYOND_SPELL_URL, request)
+    sendMessageTo(DNDBEYOND_VEHICLE_URL, request)
 
 def onMessage(request, sender, sendResponse):
     nonlocal settings

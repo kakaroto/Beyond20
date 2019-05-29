@@ -5473,7 +5473,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "utils";
-        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, CHANGELOG_URL;
+        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL;
         var re = ρσ_modules.re;
 
         ROLL20_URL = "*://app.roll20.net/editor/";
@@ -5481,6 +5481,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
         DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
         DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
+        DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
         CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
         function escapeRoll20Macro(text) {
             var to_escape;
@@ -5636,6 +5637,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
         ρσ_modules.utils.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
         ρσ_modules.utils.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
+        ρσ_modules.utils.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
         ρσ_modules.utils.CHANGELOG_URL = CHANGELOG_URL;
         ρσ_modules.utils.escapeRoll20Macro = escapeRoll20Macro;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
@@ -7292,15 +7294,27 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
             Monster.prototype.__init__.apply(this, arguments);
         }
-        Monster.prototype.__init__ = function __init__(_type) {
+        Monster.prototype.__init__ = function __init__() {
             var self = this;
+            var _type = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var base = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? __init__.__defaults__.base : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "base")){
+                base = ρσ_kwargs_obj.base;
+            }
             self._type = _type;
             if ((_type === "Monster" || typeof _type === "object" && ρσ_equals(_type, "Monster"))) {
                 self._base = ".mon-stat-block";
             } else if ((_type === "Creature" || typeof _type === "object" && ρσ_equals(_type, "Creature"))) {
                 self._base = ".ct-creature-block";
+            } else if ((_type === "Vehicle" || typeof _type === "object" && ρσ_equals(_type, "Vehicle"))) {
+                self._base = ".vehicle-stat-block";
             } else {
                 self._base = ".mon-stat-block";
+            }
+            if (base) {
+                self._base = base;
             }
             self._id = null;
             self._name = null;
@@ -7316,8 +7330,10 @@ var str = ρσ_str, repr = ρσ_repr;;
             self._skills = {};
             self._cr = null;
         };
-        if (!Monster.prototype.__init__.__argnames__) Object.defineProperties(Monster.prototype.__init__, {
-            __argnames__ : {value: ["_type"]}
+        if (!Monster.prototype.__init__.__defaults__) Object.defineProperties(Monster.prototype.__init__, {
+            __defaults__ : {value: {base:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["_type", "base"]}
         });
         Monster.__argnames__ = Monster.prototype.__init__.__argnames__;
         Monster.__handles_kwarg_interpolation__ = Monster.prototype.__init__.__handles_kwarg_interpolation__;

@@ -8264,92 +8264,42 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var settings, observer;
-        var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
+        var character;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
 
         var Monster = ρσ_modules.dndbeyond.Monster;
         var isRollButtonAdded = ρσ_modules.dndbeyond.isRollButtonAdded;
 
-        var isExtensionDisconnected = ρσ_modules.utils.isExtensionDisconnected;
-
-        print("Beyond20: D&D Beyond Encounter module loaded.");
-        settings = getDefaultSettings();
-        function documentModified(mutations, observer) {
-            var monster, character;
-            if (isExtensionDisconnected()) {
-                console.log("This extension is DOWN!");
-                observer.disconnect();
-                return;
-            }
-            var ρσ_Iter0 = ρσ_Iterable($(".encounter-monster .encounter-monster__body"));
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                monster = ρσ_Iter0[ρσ_Index0];
-                monster = $(monster);
-                if (monster.hasClass("beyond20-monster-parsed")) {
-                    continue;
-                }
-                character = new Monster("Monster");
-                ρσ_interpolate_kwargs.call(character, character.parseStatBlock, [monster].concat([ρσ_desugar_kwargs({add_dice: settings["handle-stat-blocks"], inject_descriptions: settings["subst-dndbeyond-stat-blocks"]})]));
-                monster.addClass("beyond20-monster-parsed");
-            }
-        };
-        if (!documentModified.__argnames__) Object.defineProperties(documentModified, {
-            __argnames__ : {value: ["mutations", "observer"]}
-        });
-
-        function updateSettings() {
-            var new_settings = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? updateSettings.__defaults__.new_settings : arguments[0];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "new_settings")){
-                new_settings = ρσ_kwargs_obj.new_settings;
-            }
-            if (new_settings) {
-                settings = new_settings;
+        print("Beyond20: D&D Beyond Vehicle module loaded.");
+        character = new Monster("Vehicle");
+        function documentLoaded(settings) {
+            if (isRollButtonAdded()) {
+                chrome.runtime.sendMessage((function(){
+                    var ρσ_d = {};
+                    ρσ_d["action"] = "reload-me";
+                    return ρσ_d;
+                }).call(this));
             } else {
-                getStoredSettings((function() {
-                    var ρσ_anonfunc = function (saved_settings) {
-                        settings = saved_settings;
-                        documentModified();
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["saved_settings"]}
-                    });
-                    return ρσ_anonfunc;
-                })());
+                ρσ_interpolate_kwargs.call(character, character.parseStatBlock, [ρσ_desugar_kwargs({add_dice: settings["handle-stat-blocks"], inject_descriptions: settings["subst-dndbeyond-stat-blocks"]})]);
             }
         };
-        if (!updateSettings.__defaults__) Object.defineProperties(updateSettings, {
-            __defaults__ : {value: {new_settings:null}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["new_settings"]}
+        if (!documentLoaded.__argnames__) Object.defineProperties(documentLoaded, {
+            __argnames__ : {value: ["settings"]}
         });
 
-        function handleMessage(request, sender, sendResponse) {
-            if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
-                if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
-                    updateSettings(request.settings);
-                }
-            }
-        };
-        if (!handleMessage.__argnames__) Object.defineProperties(handleMessage, {
-            __argnames__ : {value: ["request", "sender", "sendResponse"]}
-        });
-
-        updateSettings();
-        chrome.runtime.onMessage.addListener(handleMessage);
-        observer = new window.MutationObserver(documentModified);
-        observer.observe(document, (function(){
-            var ρσ_d = {};
-            ρσ_d["subtree"] = true;
-            ρσ_d["childList"] = true;
-            return ρσ_d;
-        }).call(this));
         chrome.runtime.sendMessage((function(){
             var ρσ_d = {};
             ρσ_d["action"] = "activate-icon";
             return ρσ_d;
         }).call(this));
+        getStoredSettings((function() {
+            var ρσ_anonfunc = function (settings) {
+                documentLoaded(settings);
+            };
+            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                __argnames__ : {value: ["settings"]}
+            });
+            return ρσ_anonfunc;
+        })());
     })();
 })();
