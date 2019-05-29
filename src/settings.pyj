@@ -171,6 +171,10 @@ def getStoredSettings(cb, key="settings", _list=options_list):
     settings = getDefaultSettings(_list)
     storageGet(key, settings, def(stored_settings):
         print("Beyond20: Stored settings (" + key + "):", stored_settings)
+        # On Firefox, if setting is not in storage, it won't return the default value
+        for key in settings:
+            if key not in stored_settings:
+                stored_settings[key] = settings[key]
         cb(stored_settings)
     )
 

@@ -5989,7 +5989,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             settings = getDefaultSettings(_list);
             storageGet(key, settings, (function() {
                 var ρσ_anonfunc = function (stored_settings) {
+                    var key;
                     print("Beyond20: Stored settings (" + key + "):", stored_settings);
+                    var ρσ_Iter1 = ρσ_Iterable(settings);
+                    for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                        key = ρσ_Iter1[ρσ_Index1];
+                        if (!ρσ_in(key, stored_settings)) {
+                            stored_settings[(typeof key === "number" && key < 0) ? stored_settings.length + key : key] = settings[(typeof key === "number" && key < 0) ? settings.length + key : key];
+                        }
+                    }
                     cb(stored_settings);
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
@@ -6054,9 +6062,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             console.log("Saving new settings (" + key + "): ", settings);
             function setNewSettings(stored_settings) {
                 var k;
-                var ρσ_Iter1 = ρσ_Iterable(settings);
-                for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                    k = ρσ_Iter1[ρσ_Index1];
+                var ρσ_Iter2 = ρσ_Iterable(settings);
+                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                    k = ρσ_Iter2[ρσ_Index2];
                     stored_settings[(typeof k === "number" && k < 0) ? stored_settings.length + k : k] = settings[(typeof k === "number" && k < 0) ? settings.length + k : k];
                 }
                 setSettings(stored_settings, cb, key);
@@ -6122,9 +6130,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     return ρσ_anonfunc;
                 })();
                 dropdown_options = list(map(make_li, Object.values(option.choices)));
-                var ρσ_Iter2 = ρσ_Iterable(description_p);
-                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                    p = ρσ_Iter2[ρσ_Index2];
+                var ρσ_Iter3 = ρσ_Iterable(description_p);
+                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                    p = ρσ_Iter3[ρσ_Index3];
                     p.classList.add("select");
                 }
                 e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, [(ρσ_expr_temp = option.choices)[ρσ_bound_index(option.default, ρσ_expr_temp)]].concat([ρσ_desugar_kwargs({id: name, class_: "input select beyond20-option-input", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-combobox"})]));
@@ -6226,9 +6234,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         function initializeMarka() {
             var groups, group;
             groups = $(".beyond20-option-combobox");
-            var ρσ_Iter3 = ρσ_Iterable(groups);
-            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                group = ρσ_Iter3[ρσ_Index3];
+            var ρσ_Iter4 = ρσ_Iterable(groups);
+            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                group = ρσ_Iter4[ρσ_Index4];
                 initializeMarkaGroup(group);
             }
         };
@@ -6242,9 +6250,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var settings, e, o_type, val, choices, key, option;
             settings = {};
-            var ρσ_Iter4 = ρσ_Iterable(_list);
-            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                option = ρσ_Iter4[ρσ_Index4];
+            var ρσ_Iter5 = ρσ_Iterable(_list);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                option = ρσ_Iter5[ρσ_Index5];
                 e = $("#" + option);
                 if (e.length > 0) {
                     o_type = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].type;
@@ -6253,9 +6261,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     } else if ((o_type === "combobox" || typeof o_type === "object" && ρσ_equals(o_type, "combobox"))) {
                         val = e.text();
                         choices = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].choices;
-                        var ρσ_Iter5 = ρσ_Iterable(choices);
-                        for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                            key = ρσ_Iter5[ρσ_Index5];
+                        var ρσ_Iter6 = ρσ_Iterable(choices);
+                        for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                            key = ρσ_Iter6[ρσ_Index6];
                             if ((choices[(typeof key === "number" && key < 0) ? choices.length + key : key] === val || typeof choices[(typeof key === "number" && key < 0) ? choices.length + key : key] === "object" && ρσ_equals(choices[(typeof key === "number" && key < 0) ? choices.length + key : key], val))) {
                                 settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = key;
                                 break;
@@ -6285,9 +6293,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 _list = ρσ_kwargs_obj._list;
             }
             var o_type, val, choices, option;
-            var ρσ_Iter6 = ρσ_Iterable(settings);
-            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                option = ρσ_Iter6[ρσ_Index6];
+            var ρσ_Iter7 = ρσ_Iterable(settings);
+            for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                option = ρσ_Iter7[ρσ_Index7];
                 if (!_list[(typeof option === "number" && option < 0) ? _list.length + option : option]) {
                     continue;
                 }
@@ -6390,9 +6398,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             description = (short) ? "Restrict where rolls are sent.\nUseful if you have multiple Roll20 windows open" : option.description;
             title = (short) ? "Send Beyond 20 rolls to" : option.title;
             description_p = list(map(E.p, description.split("\n")));
-            var ρσ_Iter7 = ρσ_Iterable(description_p);
-            for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                p = ρσ_Iter7[ρσ_Index7];
+            var ρσ_Iter8 = ρσ_Iterable(description_p);
+            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                p = ρσ_Iter8[ρσ_Index8];
                 p.classList.add("select");
             }
             return ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, ["All Roll20 Tabs"].concat([ρσ_desugar_kwargs({id: name, class_: "input select beyond20-option-input", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({id: "beyond20-option-roll20-tab", class_: "list-group-item beyond20-option beyond20-option-combobox" + ((short) ? " roll20-tab-short" : "")})]));
@@ -8779,8 +8787,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 to_hit = ρσ_exists.e(properties["To Hit"], findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit"));
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                for (var ρσ_Index25 = 0; ρσ_Index25 < prop_list.length; ρσ_Index25++) {
-                    i = ρσ_Index25;
+                for (var ρσ_Index0 = 0; ρσ_Index0 < prop_list.length; ρσ_Index0++) {
+                    i = ρσ_Index0;
                     if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
                         value = prop_list.eq(i).find(".ct-property-list__property-content");
                         damages.append(value.find(".ct-damage__value").text());
@@ -8791,8 +8799,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                             damage_types.append("Two-Handed");
                         }
                         additional_damages = value.find(".ct-item-detail__additional-damage");
-                        for (var ρσ_Index26 = 0; ρσ_Index26 < additional_damages.length; ρσ_Index26++) {
-                            j = ρσ_Index26;
+                        for (var ρσ_Index1 = 0; ρσ_Index1 < additional_damages.length; ρσ_Index1++) {
+                            j = ρσ_Index1;
                             dmg = additional_damages.eq(j).text();
                             dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                             dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
@@ -8920,9 +8928,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (force_display === false && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null))))) {
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                var ρσ_Iter27 = ρσ_Iterable(damage_modifiers);
-                for (var ρσ_Index27 = 0; ρσ_Index27 < ρσ_Iter27.length; ρσ_Index27++) {
-                    modifier = ρσ_Iter27[ρσ_Index27];
+                var ρσ_Iter2 = ρσ_Iterable(damage_modifiers);
+                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                    modifier = ρσ_Iter2[ρσ_Index2];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                     if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
@@ -8931,9 +8939,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     damages.append(dmg);
                     damage_types.append(dmgtype);
                 }
-                var ρσ_Iter28 = ρσ_Iterable(healing_modifiers);
-                for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
-                    modifier = ρσ_Iter28[ρσ_Index28];
+                var ρσ_Iter3 = ρσ_Iterable(healing_modifiers);
+                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                    modifier = ρσ_Iter3[ρσ_Index3];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     if (dmg.startsWith("Regain ")) {
                         dmg = dmg.slice(7);
@@ -8968,9 +8976,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["ritual"] = ritual;
                     return ρσ_d;
                 }).call(this);
-                var ρσ_Iter29 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
-                    key = ρσ_Iter29[ρσ_Index29];
+                var ρσ_Iter4 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                    key = ρσ_Iter4[ρσ_Index4];
                     roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
                 }
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
@@ -9291,9 +9299,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter30 = ρσ_Iterable(groups);
-            for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
-                group = ρσ_Iter30[ρσ_Index30];
+            var ρσ_Iter5 = ρσ_Iterable(groups);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                group = ρσ_Iter5[ρσ_Index5];
                 label = $(group).find(".ct-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -9302,9 +9310,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter31 = ρσ_Iterable(items);
-                    for (var ρσ_Index31 = 0; ρσ_Index31 < ρσ_Iter31.length; ρσ_Index31++) {
-                        item = ρσ_Iter31[ρσ_Index31];
+                    var ρσ_Iter6 = ρσ_Iterable(items);
+                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                        item = ρσ_Iter6[ρσ_Index6];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -9346,8 +9354,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             injectRollToSpellAttack();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index32 = 0; ρσ_Index32 < pane.length; ρσ_Index32++) {
-                    div = ρσ_Index32;
+                for (var ρσ_Index7 = 0; ρσ_Index7 < pane.length; ρσ_Index7++) {
+                    div = ρσ_Index7;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls"))) {
                         continue;
