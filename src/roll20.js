@@ -7031,7 +7031,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["text", "damage_only", "overrideCB"]}
         });
 
-        function subDescriptionRolls(name, description) {
+        function subDescriptionRolls(request, description) {
             var replaceCB;
             if (!settings["subst-roll20"]) {
                 return description;
@@ -7042,7 +7042,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                     roll = (modifier) ? "1d20" + dice_formula : dice_formula;
                     roll_template = template("simple", (function(){
                         var ρσ_d = {};
-                        ρσ_d["rname"] = name;
+                        ρσ_d["charname"] = request.character.name;
+                        ρσ_d["rname"] = request.name;
                         ρσ_d["mod"] = dice_formula;
                         ρσ_d["r1"] = genRoll(roll);
                         ρσ_d["normal"] = 1;
@@ -7058,7 +7059,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             return ρσ_interpolate_kwargs.call(this, subRolls, [description].concat([ρσ_desugar_kwargs({overrideCB: replaceCB})]));
         };
         if (!subDescriptionRolls.__argnames__) Object.defineProperties(subDescriptionRolls, {
-            __argnames__ : {value: ["name", "description"]}
+            __argnames__ : {value: ["request", "description"]}
         });
 
         function subDamageRolls(text) {
@@ -7172,6 +7173,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     });
                     return ρσ_anonfunc;
                 })();
+                renameProp("charname", "Character name");
                 renameProp("rname", "name");
                 if (ρσ_exists.n(properties["r2"])) {
                     renameProp("r1", "Regular Roll");
@@ -7515,9 +7517,10 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             return template("traits", (function(){
                 var ρσ_d = {};
+                ρσ_d["charname"] = request.character.name;
                 ρσ_d["name"] = request.name;
                 ρσ_d["source"] = source;
-                ρσ_d["description"] = subDescriptionRolls(request.name, request.description);
+                ρσ_d["description"] = subDescriptionRolls(request, request.description);
                 return ρσ_d;
             }).call(this));
         };
@@ -7533,7 +7536,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var properties, template_type, dmg_props, d20_roll, damages, damage_types, brutal, barbarian_level, rage_damage, dmg_template_crit, dmg_template, key;
+            var properties, template_type, dmg_props, d20_roll, damages, damage_types, brutal, barbarian_level, rage_damage, whisper, dmg_template_crit, dmg_template, key;
             properties = (function(){
                 var ρσ_d = {};
                 ρσ_d["charname"] = request.character.name;
@@ -7585,7 +7588,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if (ρσ_in("Rage", request.character["class-features"]) && request.character.settings["barbarian-rage"]) {
                         barbarian_level = request.character.classes["Barbarian"];
                         rage_damage = (barbarian_level < 9) ? 2 : (barbarian_level < 16) ? 3 : 4;
-                        damages[0] += " + " + rage_damage + "(Rage)";
+                        damages[0] += " + " + rage_damage;
+                        damage_types[0] += " | Rage";
                     }
                 }
                 dmg_props = damagesToRollProperties(damages, damage_types, brutal);
@@ -7600,6 +7604,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             if (ρσ_exists.n(request.damages) && ρσ_exists.n(request["to-hit"]) && !settings["auto-roll-damage"]) {
                 template_type = "atk";
+                whisper = ((request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"]) ? "/w gm " : "";
                 dmg_props["charname"] = request.character.name;
                 dmg_props["rname"] = request.name;
                 dmg_props["crit"] = 1;
@@ -7608,8 +7613,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_delitem(dmg_props, "crit1");
                 ρσ_delitem(dmg_props, "crit2");
                 dmg_template = template("dmg", dmg_props);
-                properties["rname"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")";
-                properties["rnamec"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")";
+                properties["rname"] = "[" + request.name + "](!\n" + escapeRoll20Macro(whisper + dmg_template) + ")";
+                properties["rnamec"] = "[" + request.name + "](!\n" + escapeRoll20Macro(whisper + dmg_template_crit) + ")";
             } else {
                 var ρσ_Iter8 = ρσ_Iterable(dmg_props);
                 for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
@@ -7629,6 +7634,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var properties, components, description, higher;
             properties = (function(){
                 var ρσ_d = {};
+                ρσ_d["charname"] = request.character.name;
                 ρσ_d["name"] = request.name;
                 ρσ_d["castingtime"] = request["casting-time"];
                 ρσ_d["range"] = request.range;
@@ -7666,10 +7672,10 @@ var str = ρσ_str, repr = ρσ_repr;;
             description = request.description;
             higher = description.indexOf("At Higher Levels.");
             if (higher > 0) {
-                properties["description"] = subDescriptionRolls(request.name, description.slice(0, higher - 1));
-                properties["athigherlevels"] = subDescriptionRolls(request.name, description.slice(higher + "At Higher Levels.".length));
+                properties["description"] = subDescriptionRolls(request, description.slice(0, higher - 1));
+                properties["athigherlevels"] = subDescriptionRolls(request, description.slice(higher + "At Higher Levels.".length));
             } else {
-                properties["description"] = subDescriptionRolls(request.name, description);
+                properties["description"] = subDescriptionRolls(request, description);
             }
             return template("spell", properties);
         };
@@ -7678,7 +7684,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollSpellAttack(request, custom_roll_dice) {
-            var properties, template_type, dmg_props, damages, damage_types, chromatic_type, idx, chromatic_damage, dmgtype, components, dmg_template_crit, dmg_template, key, roll;
+            var properties, template_type, dmg_props, damages, damage_types, chromatic_type, idx, chromatic_damage, dmgtype, components, whisper, dmg_template_crit, dmg_template, key, roll;
             properties = (function(){
                 var ρσ_d = {};
                 ρσ_d["charname"] = request.character.name;
@@ -7755,6 +7761,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
             }
             if (ρσ_exists.n(request.damages) && ρσ_exists.n(request["to-hit"]) && !settings["auto-roll-damage"]) {
+                whisper = ((request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"]) ? "/w gm " : "";
                 template_type = "atk";
                 dmg_props["charname"] = request.character.name;
                 dmg_props["rname"] = request.name;
@@ -7764,8 +7771,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_delitem(dmg_props, "crit1");
                 ρσ_delitem(dmg_props, "crit2");
                 dmg_template = template("dmg", dmg_props);
-                properties["rname"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")";
-                properties["rnamec"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")";
+                properties["rname"] = "[" + request.name + "](!\n" + escapeRoll20Macro(whisper + dmg_template) + ")";
+                properties["rnamec"] = "[" + request.name + "](!\n" + escapeRoll20Macro(whisper + dmg_template_crit) + ")";
             } else {
                 var ρσ_Iter10 = ρσ_Iterable(dmg_props);
                 for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
@@ -7819,11 +7826,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     sendCustomEvent("UpdateHP", [request.character.name, request.character.hp, request.character["max-hp"]]);
                 }
             } else if ((request.action === "roll" || typeof request.action === "object" && ρσ_equals(request.action, "roll"))) {
-                if ((request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"]) {
-                    roll = "/w gm ";
-                } else {
-                    roll = "";
-                }
+                roll = ((request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"]) ? "/w gm " : "";
                 if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character"))) {
                     custom_roll_dice = ρσ_exists.e(request.character.settings["custom-roll-dice"], "");
                     custom_roll_dice = re.sub("([0-9]*d[0-9]+)", "\\1cs>100cf<0", custom_roll_dice);

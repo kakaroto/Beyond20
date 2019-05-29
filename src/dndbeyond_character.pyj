@@ -127,6 +127,7 @@ def rollItem(force_display=False):
                 properties["Proficient"] == "Yes":
             to_hit += " - 5"
             damages[0] += " + 10"
+            damage_types[0] += " | Sharpshooter"
             character.mergeCharacterSettings({"sharpshooter": False})
         if character.getSetting("great-weapon-master", False) and \
                 properties["Attack Type"] == "Melee" and \
@@ -134,6 +135,7 @@ def rollItem(force_display=False):
                 properties["Proficient"] == "Yes":
             to_hit += " - 5"
             damages[0] += " + 10"
+            damage_types[0] += " | Weapon Master"
             character.mergeCharacterSettings({"great-weapon-master": False})
         roll_properties = buildAttackRoll("item",
                                           item_name,

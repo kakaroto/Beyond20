@@ -59,13 +59,14 @@ def subRolls(text, damage_only=False, overrideCB=None):
         return text
     return replaceRolls(True, text, replaceCB)
 
-def subDescriptionRolls(name, description):
+def subDescriptionRolls(request, description):
     nonlocal settings
     if not settings["subst-roll20"]:
         return description
     replaceCB = def(dice_formula, modifier):
         roll = ("1d20" + dice_formula) if modifier else dice_formula
-        roll_template = template("simple", {"rname" : name,
+        roll_template = template("simple", {"charname": request.character.name,
+                                            "rname" : request.name,
                                             "mod": dice_formula,
                                             "r1": genRoll(roll),
                                             "normal": 1})
@@ -138,6 +139,7 @@ def template(name, properties):
                 new_properties[new_key if key == old_key else key] = properties[key]
             properties = new_properties
 
+        renameProp("charname", "Character name")
         renameProp("rname", "name")
         if properties["r2"]?:
             renameProp("r1", "Regular Roll")
@@ -300,11 +302,10 @@ def rollHitDice(request):
                      "normal": 1})
 
 def rollDeathSave(request, custom_roll_dice=""):
-    return template("simple",
-                    {"charname": request.character.name,
-                     "rname" : "Death Saving Throw",
-                     "r1": genRoll("1d20cs>10cf<9", {"CUSTOM": custom_roll_dice}),
-                     "normal": 1})
+    return template("simple", {"charname": request.character.name,
+                               "rname" : "Death Saving Throw",
+                               "r1": genRoll("1d20cs>10cf<9", {"CUSTOM": custom_roll_dice}),
+                               "normal": 1})
 
 def rollTrait(request):
     if request["source-type"]?:
@@ -315,9 +316,10 @@ def rollTrait(request):
         source = request["item-type"]
     else:
         source = request.type
-    return template("traits", {"name": request.name,
+    return template("traits", {"charname": request.character.name,
+                               "name": request.name,
                                "source": source,
-                               "description": subDescriptionRolls(request.name, request.description)})
+                               "description": subDescriptionRolls(request, request.description)})
 
 def rollAttack(request, custom_roll_dice=""):
     nonlocal settings
@@ -356,7 +358,8 @@ def rollAttack(request, custom_roll_dice=""):
                     request.character.settings["barbarian-rage"]:
                 barbarian_level = request.character.classes["Barbarian"]
                 rage_damage = 2 if barbarian_level < 9 else (3 if barbarian_level < 16 else 4)
-                damages[0] += " + " + rage_damage + "(Rage)"
+                damages[0] += " + " + rage_damage
+                damage_types[0] += " | Rage"
         dmg_props = damagesToRollProperties(damages, damage_types, brutal)
     if request.range?:
         properties["range"] = request.range
@@ -367,6 +370,7 @@ def rollAttack(request, custom_roll_dice=""):
 
     if request.damages? and request["to-hit"]? and not settings["auto-roll-damage"]:
         template_type = "atk"
+        whisper = "/w gm " if (request.character.type == "Monster" and settings["whisper-monsters"]) else ""
         dmg_props["charname"] = request.character.name
         dmg_props["rname"] = request.name
         dmg_props["crit"] = 1
@@ -375,8 +379,8 @@ def rollAttack(request, custom_roll_dice=""):
         del dmg_props["crit1"]
         del dmg_props["crit2"]
         dmg_template = template("dmg", dmg_props)
-        properties["rname"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")"
-        properties["rnamec"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")"
+        properties["rname"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(whisper + dmg_template) + ")"
+        properties["rnamec"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(whisper + dmg_template_crit) + ")"
     else:
         for key in dmg_props:
             properties[key] = dmg_props[key]
@@ -384,7 +388,8 @@ def rollAttack(request, custom_roll_dice=""):
     return template(template_type, properties)
 
 def rollSpellCard(request):
-    properties = {"name": request.name,
+    properties = {"charname": request.character.name,
+                  "name": request.name,
                   "castingtime": request["casting-time"],
                   "range": request.range,
                   "duration": request.duration}
@@ -415,10 +420,10 @@ def rollSpellCard(request):
     description = request.description            
     higher = description.indexOf("At Higher Levels.")
     if higher > 0:
-        properties["description"] = subDescriptionRolls(request.name, description[:higher-1])
-        properties["athigherlevels"] = subDescriptionRolls(request.name, description[higher+"At Higher Levels.".length:])
+        properties["description"] = subDescriptionRolls(request, description[:higher-1])
+        properties["athigherlevels"] = subDescriptionRolls(request, description[higher+"At Higher Levels.".length:])
     else:
-        properties["description"] = subDescriptionRolls(request.name, description)
+        properties["description"] = subDescriptionRolls(request, description)
 
     return template("spell", properties)
 
@@ -471,6 +476,7 @@ def rollSpellAttack(request, custom_roll_dice):
                 components = ""
 
     if request.damages? and request["to-hit"]? and not settings["auto-roll-damage"]:
+        whisper = "/w gm " if (request.character.type == "Monster" and settings["whisper-monsters"]) else ""
         template_type = "atk"
         dmg_props["charname"] = request.character.name
         dmg_props["rname"] = request.name
@@ -480,8 +486,8 @@ def rollSpellAttack(request, custom_roll_dice):
         del dmg_props["crit1"]
         del dmg_props["crit2"]
         dmg_template = template("dmg", dmg_props)
-        properties["rname"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")"
-        properties["rnamec"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")"
+        properties["rname"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(whisper + dmg_template) + ")"
+        properties["rnamec"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(whisper + dmg_template_crit) + ")"
     else:
         for key in dmg_props:
             properties[key] = dmg_props[key]
@@ -509,10 +515,7 @@ def handleMessage (request, sender, sendResponse):
         if settings["update-hp"]:
             sendCustomEvent("UpdateHP", (request.character.name, request.character.hp, request.character["max-hp"]))
     elif request.action == "roll":
-        if request.character.type == "Monster" and settings["whisper-monsters"]:
-            roll = "/w gm "
-        else:
-            roll = ""
+        roll = "/w gm " if (request.character.type == "Monster" and settings["whisper-monsters"]) else ""
         if request.character.type == "Character":
             custom_roll_dice = request.character.settings["custom-roll-dice"] ? ""
             custom_roll_dice = re.sub("([0-9]*d[0-9]+)", "\\1cs>100cf<0", custom_roll_dice)
