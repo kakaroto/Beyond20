@@ -8104,11 +8104,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                         description = "";
                         nextSibling = firstChild.nextSibling;
                         while (nextSibling !== null) {
-                            description += nextSibling.textContent.trim() + " ";
+                            description += nextSibling.textContent;
                             nextSibling = nextSibling.nextSibling;
-                        }
-                        if ((description[description.length-1] === " " || typeof description[description.length-1] === "object" && ρσ_equals(description[description.length-1], " "))) {
-                            description = description.slice(0, -1);
                         }
                         roll_properties = self.buildAttackRoll(action_name, description);
                         if (roll_properties) {

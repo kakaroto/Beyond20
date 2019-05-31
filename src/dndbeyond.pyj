@@ -499,10 +499,8 @@ class Monster:
                     description = ""
                     nextSibling = firstChild.nextSibling
                     while nextSibling is not None:
-                        description += nextSibling.textContent.trim() + " "
+                        description += nextSibling.textContent
                         nextSibling = nextSibling.nextSibling
-                    if description[-1] == " ":
-                        description = description[:-1]
 
                     roll_properties = self.buildAttackRoll(action_name, description)
                     if roll_properties:
