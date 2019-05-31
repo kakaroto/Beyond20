@@ -419,7 +419,7 @@ class Monster:
                                                     "modifier": modifier})
 
     def parseAttackInfo(self, description):
-        m = re.search("(Melee|Ranged) Weapon Attack:.*?(\+[0-9]+) to hit.*?, (?:reach|range) (.*?),.*?.", description)
+        m = re.search("(Melee|Ranged) (?:Weapon|Spell) Attack:.*?(\+[0-9]+) to hit.*?, (?:reach|range) (.*?)(?:,.*?)?\.", description)
         if m:
             return (m.group(1), m.group(2), m.group(3))
         else:

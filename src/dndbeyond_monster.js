@@ -7610,7 +7610,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         Monster.prototype.parseAttackInfo = function parseAttackInfo(description) {
             var self = this;
             var m;
-            m = re.search("(Melee|Ranged) Weapon Attack:.*?(\\+[0-9]+) to hit.*?, (?:reach|range) (.*?),.*?.", description);
+            m = re.search("(Melee|Ranged) (?:Weapon|Spell) Attack:.*?(\\+[0-9]+) to hit.*?, (?:reach|range) (.*?)(?:,.*?)?\\.", description);
             if (m) {
                 return [m.group(1), m.group(2), m.group(3)];
             } else {
