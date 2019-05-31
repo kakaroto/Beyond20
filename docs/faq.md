@@ -12,7 +12,7 @@ You can also check out the [changelog](Changelog) for recent fixes or additions 
 * [Why is Beyond20 rolling too many damage dice?](#why-is-beyond20-rolling-too-many-damage-dice)
 * [How can I add Bless/Guidance bonus or use Elemental Weapon ?](#how-can-i-add-blessguidance-bonus-or-use-elemental-weapon-)
 * [How can I use this non-standard spell or feature ?](#how-can-i-use-this-non-standard-spell-or-feature-)
-
+* [Why isn't the attack button appearing for my homebrew monster?](#why-isnt-the-attack-button-appearing-for-my-homebrew-monster)
 ---
 
 ### Can Beyond20 do '\<insert specific feature\>'?
@@ -91,3 +91,14 @@ If for example, you have access to the [Shadow Blade](https://www.dndbeyond.com/
 Another example, if you want to cast [Scorching Ray](https://www.dndbeyond.com/spells/scorching-ray) at 4th level, you will see in the sidepanel it says "(3 rays)" and "Additional Rays: 2". Simply click the "Cast on Roll20" button 5 times for you to roll for the 5 ray attacks.
 
 As a last example, if you want to cast [Chaos Bolt](https://www.dndbeyond.com/spells/chaos-bolt), then good luck! Seriously though, you could decide in advance with your DM that you only always take the first damage marked as "Acid" and you can then hover the mouse on the result to see the value of the 2d8 to decide what the actual damage type is (don't forget to add the 1d6 marked as 'Additional'). If the two dice returned the same value, click the "Cast on Roll20" again to attack with it again.
+
+
+### Why isn't the attack button appearing for my homebrew monster?
+
+The way that Beyond20 parses the monster stat block requires actions to be described in a specific format. The name of the action needs to be in italic, needs to have a period at the end and the space between the name and the rest of the description needs to not be in italic. 
+
+If it doesn't work, right click on the name in the monster stat block and select "Inspect". The HTML code should look something like this : `<p><em><strong>Action Name.</strong></em>Description</p>.`
+
+Inside of the description, you need to have either "Melee Weapon Attack:", "Ranged Weapon Attack:", "Melee Spell Attack:" or "Ranged Spell Attack:" followed by "+X to hit, reach R" or "+X to hit, range R" (where `X` is a number, and `R` is the reach or range information), you can then follow it by the target (", one creature" for example) and end with a period.
+
+The damage information needs to follow the format: "X (D) T damage" or "X T damage" or "D T damage" where `X` is a number, `D` is a dice formula, and `T` is the damage type.
