@@ -8269,11 +8269,13 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var character;
+        var character, button_style;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
 
         var Monster = ρσ_modules.dndbeyond.Monster;
         var isRollButtonAdded = ρσ_modules.dndbeyond.isRollButtonAdded;
+
+        var E = ρσ_modules.elementmaker.E;
 
         print("Beyond20: D&D Beyond Monster module loaded.");
         character = new Monster("Monster");
@@ -8292,6 +8294,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["settings"]}
         });
 
+        button_style = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
+        (document.head || document.documentElement).appendChild(E.style(button_style));
         chrome.runtime.sendMessage((function(){
             var ρσ_d = {};
             ρσ_d["action"] = "activate-icon";
