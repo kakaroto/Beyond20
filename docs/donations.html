@@ -1,0 +1,60 @@
+<!-- Taken from https://www.w3schools.com/howto/howto_js_quotes_slideshow.asp -->
+<div class="donations">
+  {% for donation in site.data.donations %}
+   {% if donation.display != false %}
+    <div class="note">
+       <q>{{ donation.message }}</q>
+       <p class="author">- {{ donation.name }}</p>
+       <p class="date">{{ donation.date }}</p>
+    </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<link rel="stylesheet" type="text/css" href="libs/slick/slick.css"/>
+<link rel="stylesheet" type="text/css" href="libs/slick/slick-theme.css"/>
+<script type="text/javascript" src="libs/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="libs/slick/slick.min.js"></script>
+<script>
+$(document).ready(function(){
+  $(".donations").slick({
+    autoplay: true,
+    slidesToShow: 2,
+    slidesToScroll: 1,
+    arrows: true,
+    dots: true,
+  });
+});
+</script>
+<style>
+/* Slideshow container */
+.donations {
+  position: relative;
+  background: #ddd;
+}
+
+/* Slides */
+.note {
+  padding: 8px;
+  text-align: center;
+}
+
+.slick-dots {
+  background: #ccc;
+}
+.slick-prev:before, .slick-next:before {
+  color: #555;
+}
+
+/* Add an italic font style to all quotes */
+q {font-style: italic;}
+
+/* Add a blue color to the author */
+.author {
+  color: cornflowerblue;
+  margin: 4px;
+}
+.date {
+  margin: 2px;
+}
+</style>
