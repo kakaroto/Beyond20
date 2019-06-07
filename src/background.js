@@ -5814,7 +5814,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["title"] = "Donate to show your appreciation!";
                 ρσ_d["description"] = "I know you already appreciate this extension, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active or just to say thank you, you can!";
                 ρσ_d["type"] = "link";
-                ρσ_d["default"] = "https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=VGUJ8F5CR8XSE&item_name=Beyond20+Software+Development&no_shipping=1&no_note=0&tax=0&currency_code=USD&lc=US&bn=PP_DonationsBF&Z3JncnB0=&return=https://beyond20.here-for-more.info/thankyou";
+                ρσ_d["default"] = "https://paypal.me/KaKaRoTo";
                 ρσ_d["icon"] = "images/donate.png";
                 return ρσ_d;
             }).call(this);
@@ -6620,9 +6620,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this), (function() {
                 var ρσ_anonfunc = function (tabs) {
                     var tab;
-                    var ρσ_Iter0 = ρσ_Iterable(tabs);
-                    for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                        tab = ρσ_Iter0[ρσ_Index0];
+                    var ρσ_Iter9 = ρσ_Iterable(tabs);
+                    for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                        tab = ρσ_Iter9[ρσ_Index9];
                         chrome.tabs.sendMessage(tab.id, request);
                     }
                 };
@@ -6653,9 +6653,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_anonfunc = function (tabs) {
                         var found, tab;
                         found = false;
-                        var ρσ_Iter1 = ρσ_Iterable(tabs);
-                        for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                            tab = ρσ_Iter1[ρσ_Index1];
+                        var ρσ_Iter10 = ρσ_Iterable(tabs);
+                        for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                            tab = ρσ_Iter10[ρσ_Index10];
                             if (((limit.id === 0 || typeof limit.id === "object" && ρσ_equals(limit.id, 0)) || (tab.id === limit.id || typeof tab.id === "object" && ρσ_equals(tab.id, limit.id))) && ρσ_equals(roll20TabTitle(tab), limit.title)) {
                                 chrome.tabs.sendMessage(tab.id, request);
                                 found = true;
@@ -6669,9 +6669,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                                 ρσ_d["roll20-tab"] = limit;
                                 return ρσ_d;
                             }).call(this));
-                            var ρσ_Iter2 = ρσ_Iterable(tabs);
-                            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                                tab = ρσ_Iter2[ρσ_Index2];
+                            var ρσ_Iter11 = ρσ_Iterable(tabs);
+                            for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                                tab = ρσ_Iter11[ρσ_Index11];
                                 if (ρσ_equals(roll20TabTitle(tab), limit.title)) {
                                     chrome.tabs.sendMessage(tab.id, request);
                                     break;
@@ -6727,12 +6727,12 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function executeScripts(tabs, js_files) {
             var file, tab;
-            var ρσ_Iter3 = ρσ_Iterable(tabs);
-            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                tab = ρσ_Iter3[ρσ_Index3];
-                var ρσ_Iter4 = ρσ_Iterable(js_files);
-                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                    file = ρσ_Iter4[ρσ_Index4];
+            var ρσ_Iter12 = ρσ_Iterable(tabs);
+            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                tab = ρσ_Iter12[ρσ_Index12];
+                var ρσ_Iter13 = ρσ_Iterable(js_files);
+                for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
+                    file = ρσ_Iter13[ρσ_Index13];
                     chrome.tabs.executeScript(tab.id, (function(){
                         var ρσ_d = {};
                         ρσ_d["file"] = file;
@@ -6749,9 +6749,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         chrome.runtime.onMessage.addListener(onMessage);
         if (ρσ_equals(getBrowser(), "Chrome")) {
             manifest = chrome.runtime.getManifest();
-            var ρσ_Iter5 = ρσ_Iterable(manifest.content_scripts);
-            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                script = ρσ_Iter5[ρσ_Index5];
+            var ρσ_Iter14 = ρσ_Iterable(manifest.content_scripts);
+            for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
+                script = ρσ_Iter14[ρσ_Index14];
                 cb = (function() {
                     var ρσ_anonfunc = function (files) {
                         return (function() {

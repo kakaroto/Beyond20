@@ -1,7 +1,8 @@
 ## Support me?
 
-Oh, you want to help support the development of this extension, how nice! You can do so by either contributing in some way (telling your friends about it, reporting bug reports, suggesting awesome features or contributing to the code) or by sending some copper pieces to my [Coin pouch]({% include_relative donate_link.txt %}) (*I prefer silver*).
+Oh, you want to help support the development of this extension, how nice! You can do so by either contributing in some way (telling your friends about it, reporting bug reports, suggesting awesome features or contributing to the code) or by sending some copper pieces to my [Coin pouch](https://paypal.me/KaKaRoTo).
 
+If you don't have Paypal or want to donate with a credit card or want to set up a recurring payment, you can use [this link]({% include_relative donate_link.txt %}) instead.
 
 
 ## Support and issues

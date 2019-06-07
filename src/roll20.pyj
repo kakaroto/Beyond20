@@ -77,8 +77,6 @@ def subDamageRolls(text):
     return subRolls(text, damage_only=True)
 
 def damagesToCrits(damages):
-    nonlocal settings
-    
     crits = []
     for damage in damages:
         match = re.search("[0-9]*d[0-9]+", damage)
