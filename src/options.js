@@ -5501,53 +5501,38 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["text"]}
         });
 
-        function replaceRollsCallback(match, modifiers_only, pre, dice, post, replaceCB) {
-            var dice_formula, i, result;
-            if (modifiers_only && ρσ_in((ρσ_expr_temp = match.string)[ρσ_bound_index(match.start() - 1, ρσ_expr_temp)], list(map(str, range(0, 10))))) {
-                return match.group(0);
+        function replaceRollsCallback(match, replaceCB) {
+            var dice, modifiers, result;
+            dice = match.group(2);
+            modifiers = match.group(3);
+            if (!(typeof dice !== "undefined" && dice !== null)) {
+                dice = "";
+                modifiers = match.group(4);
             }
-            dice_formula = "";
-            for (var ρσ_Index0 = dice; ρσ_Index0 < post; ρσ_Index0++) {
-                i = ρσ_Index0;
-                dice_formula += match.group(i);
-            }
-            result = match.group(pre);
-            result += replaceCB(dice_formula, modifiers_only);
-            result += match.group(post);
+            result = match.group(1);
+            result += replaceCB(dice, modifiers);
+            result += match.group(5);
             return result;
         };
         if (!replaceRollsCallback.__argnames__) Object.defineProperties(replaceRollsCallback, {
-            __argnames__ : {value: ["match", "modifiers_only", "pre", "dice", "post", "replaceCB"]}
+            __argnames__ : {value: ["match", "replaceCB"]}
         });
 
-        function replaceRolls(modifiers_only, text, replaceCB) {
-            var dice_regexp, modifiers_regexp, regexp, pre, dice, post, new_text;
-            dice_regexp = "(^|[^\\w])([0-9]*d[0-9]+)((?:\\s*[-+]\\s*[0-9]+)?)($|[^\\w])";
-            modifiers_regexp = "(^|[^\\w])([-+]\\s*[0-9]+)($|[^\\w])";
-            if (modifiers_only) {
-                regexp = modifiers_regexp;
-                pre = 1;
-                dice = 2;
-                post = 3;
-            } else {
-                regexp = dice_regexp;
-                pre = 1;
-                dice = 2;
-                post = 4;
-            }
-            new_text = re.sub(regexp, (function() {
+        function replaceRolls(text, replaceCB) {
+            var dice_regexp;
+            dice_regexp = "(^|[^\\w])(?:(?:(?:(\\d*d\\d+)((?:\\s*[-+]\\s*\\d+)*))|((?:[-+]\\s*\\d+)+)))($|[^\\w])";
+            return re.sub(dice_regexp, (function() {
                 var ρσ_anonfunc = function (m) {
-                    return replaceRollsCallback(m, modifiers_only, pre, dice, post, replaceCB);
+                    return replaceRollsCallback(m, replaceCB);
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                     __argnames__ : {value: ["m"]}
                 });
                 return ρσ_anonfunc;
             })(), text);
-            return new_text;
         };
         if (!replaceRolls.__argnames__) Object.defineProperties(replaceRolls, {
-            __argnames__ : {value: ["modifiers_only", "text", "replaceCB"]}
+            __argnames__ : {value: ["text", "replaceCB"]}
         });
 
         function getBrowser() {

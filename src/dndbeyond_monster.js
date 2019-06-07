@@ -5504,53 +5504,38 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["text"]}
         });
 
-        function replaceRollsCallback(match, modifiers_only, pre, dice, post, replaceCB) {
-            var dice_formula, i, result;
-            if (modifiers_only && ρσ_in((ρσ_expr_temp = match.string)[ρσ_bound_index(match.start() - 1, ρσ_expr_temp)], list(map(str, range(0, 10))))) {
-                return match.group(0);
+        function replaceRollsCallback(match, replaceCB) {
+            var dice, modifiers, result;
+            dice = match.group(2);
+            modifiers = match.group(3);
+            if (!(typeof dice !== "undefined" && dice !== null)) {
+                dice = "";
+                modifiers = match.group(4);
             }
-            dice_formula = "";
-            for (var ρσ_Index0 = dice; ρσ_Index0 < post; ρσ_Index0++) {
-                i = ρσ_Index0;
-                dice_formula += match.group(i);
-            }
-            result = match.group(pre);
-            result += replaceCB(dice_formula, modifiers_only);
-            result += match.group(post);
+            result = match.group(1);
+            result += replaceCB(dice, modifiers);
+            result += match.group(5);
             return result;
         };
         if (!replaceRollsCallback.__argnames__) Object.defineProperties(replaceRollsCallback, {
-            __argnames__ : {value: ["match", "modifiers_only", "pre", "dice", "post", "replaceCB"]}
+            __argnames__ : {value: ["match", "replaceCB"]}
         });
 
-        function replaceRolls(modifiers_only, text, replaceCB) {
-            var dice_regexp, modifiers_regexp, regexp, pre, dice, post, new_text;
-            dice_regexp = "(^|[^\\w])([0-9]*d[0-9]+)((?:\\s*[-+]\\s*[0-9]+)?)($|[^\\w])";
-            modifiers_regexp = "(^|[^\\w])([-+]\\s*[0-9]+)($|[^\\w])";
-            if (modifiers_only) {
-                regexp = modifiers_regexp;
-                pre = 1;
-                dice = 2;
-                post = 3;
-            } else {
-                regexp = dice_regexp;
-                pre = 1;
-                dice = 2;
-                post = 4;
-            }
-            new_text = re.sub(regexp, (function() {
+        function replaceRolls(text, replaceCB) {
+            var dice_regexp;
+            dice_regexp = "(^|[^\\w])(?:(?:(?:(\\d*d\\d+)((?:\\s*[-+]\\s*\\d+)*))|((?:[-+]\\s*\\d+)+)))($|[^\\w])";
+            return re.sub(dice_regexp, (function() {
                 var ρσ_anonfunc = function (m) {
-                    return replaceRollsCallback(m, modifiers_only, pre, dice, post, replaceCB);
+                    return replaceRollsCallback(m, replaceCB);
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                     __argnames__ : {value: ["m"]}
                 });
                 return ρσ_anonfunc;
             })(), text);
-            return new_text;
         };
         if (!replaceRolls.__argnames__) Object.defineProperties(replaceRolls, {
-            __argnames__ : {value: ["modifiers_only", "text", "replaceCB"]}
+            __argnames__ : {value: ["text", "replaceCB"]}
         });
 
         function getBrowser() {
@@ -6950,9 +6935,13 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
         Character.__argnames__ = Character.prototype.__init__.__argnames__;
         Character.__handles_kwarg_interpolation__ = Character.prototype.__init__.__handles_kwarg_interpolation__;
+        Character.prototype.type = function type() {
+            var self = this;
+            return "Character";
+        };
         Character.prototype.updateInfo = function updateInfo() {
             var self = this;
-            var abilities, name, abbr, modifier, value, ability, classes, ρσ_unpack, level, class_, xp;
+            var classes, ρσ_unpack, name, level, class_, xp, ac, speed, abilities, abbr, modifier, value, ability;
             self._id = $("#character-sheet-target").attr("data-character-id");
             if (self._settings === null) {
                 self.updateSettings();
@@ -6961,55 +6950,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                 self._name = $(".ct-character-tidbits__name").text();
                 if ((self._name === "" || typeof self._name === "object" && ρσ_equals(self._name, ""))) {
                     self._name = null;
-                }
-            }
-            if (self._ac === null) {
-                self._ac = $(".ct-armor-class-box__value").text();
-                if ((self._ac === "" || typeof self._ac === "object" && ρσ_equals(self._ac, ""))) {
-                    self._ac = $(".ct-combat-mobile__extra--ac .ct-combat-mobile__extra-value").text();
-                    if ((self._ac === "" || typeof self._ac === "object" && ρσ_equals(self._ac, ""))) {
-                        self._ac = null;
-                    }
-                }
-            }
-            if (self._proficiency === null) {
-                self._proficiency = $(".ct-proficiency-bonus-box__value").text();
-                if ((self._proficiency === "" || typeof self._proficiency === "object" && ρσ_equals(self._proficiency, ""))) {
-                    self._proficiency = $(".ct-combat-mobile__extra--proficiency .ct-combat-mobile__extra-value").text();
-                    if ((self._proficiency === "" || typeof self._proficiency === "object" && ρσ_equals(self._proficiency, ""))) {
-                        self._proficiency = null;
-                    }
-                }
-            }
-            if (self._speed === null) {
-                self._speed = $(".ct-speed-box__box-value .ct-distance-number__number").text();
-                if ((self._speed === "" || typeof self._speed === "object" && ρσ_equals(self._speed, ""))) {
-                    self._speed = $(".ct-combat-mobile__extra--speed .ct-combat-mobile__extra-value .ct-distance-number__number").text();
-                    if ((self._speed === "" || typeof self._speed === "object" && ρσ_equals(self._speed, ""))) {
-                        self._speed = null;
-                    }
-                }
-            }
-            if (ρσ_equals(len(self._abilities), 0)) {
-                abilities = $(".ct-quick-info__ability");
-                if ((abilities.length === 0 || typeof abilities.length === "object" && ρσ_equals(abilities.length, 0))) {
-                    abilities = $(".ct-main-mobile__ability");
-                }
-                if ((abilities.length === 0 || typeof abilities.length === "object" && ρσ_equals(abilities.length, 0))) {
-                    abilities = $(".ct-main-tablet__ability");
-                }
-                var ρσ_Iter0 = ρσ_Iterable(abilities);
-                for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                    ability = ρσ_Iter0[ρσ_Index0];
-                    name = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__label").text();
-                    abbr = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text();
-                    modifier = $(ability).find(".ct-ability-summary__primary .ct-signed-number").text();
-                    value = $(ability).find(".ct-ability-summary__secondary").text();
-                    if ((modifier === "" || typeof modifier === "object" && ρσ_equals(modifier, ""))) {
-                        modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number").text();
-                        value = $(ability).find(".ct-ability-summary__primary").text();
-                    }
-                    self._abilities.append(ρσ_list_decorate([ name, abbr, value, modifier ]).as_array());
                 }
             }
             if (self._race === null) {
@@ -7023,9 +6963,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if (classes.length > 0) {
                     classes = classes.text().split(" / ");
                     self._classes = {};
-                    var ρσ_Iter1 = ρσ_Iterable(classes);
-                    for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                        class_ = ρσ_Iter1[ρσ_Index1];
+                    var ρσ_Iter0 = ρσ_Iterable(classes);
+                    for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                        class_ = ρσ_Iter0[ρσ_Index0];
                         ρσ_unpack = class_.split(" ");
 ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
                         name = ρσ_unpack[0];
@@ -7042,6 +6982,52 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else if (xp.length > 0) {
                     self._level = xp.text().replace("LVL ", "");
                 }
+            }
+            if (self._proficiency === null) {
+                self._proficiency = $(".ct-proficiency-bonus-box__value").text();
+                if ((self._proficiency === "" || typeof self._proficiency === "object" && ρσ_equals(self._proficiency, ""))) {
+                    self._proficiency = $(".ct-combat-mobile__extra--proficiency .ct-combat-mobile__extra-value").text();
+                    if ((self._proficiency === "" || typeof self._proficiency === "object" && ρσ_equals(self._proficiency, ""))) {
+                        self._proficiency = null;
+                    }
+                }
+            }
+            ac = $(".ct-armor-class-box__value").text();
+            if ((ac === "" || typeof ac === "object" && ρσ_equals(ac, ""))) {
+                ac = $(".ct-combat-mobile__extra--ac .ct-combat-mobile__extra-value").text();
+            }
+            if ((ac !== "" && (typeof ac !== "object" || ρσ_not_equals(ac, "")))) {
+                self._ac = ac;
+            }
+            speed = $(".ct-speed-box__box-value .ct-distance-number__number").text();
+            if ((speed === "" || typeof speed === "object" && ρσ_equals(speed, ""))) {
+                speed = $(".ct-combat-mobile__extra--speed .ct-combat-mobile__extra-value .ct-distance-number__number").text();
+            }
+            if ((speed !== "" && (typeof speed !== "object" || ρσ_not_equals(speed, "")))) {
+                self._speed = speed;
+            }
+            abilities = $(".ct-quick-info__ability");
+            if ((abilities.length === 0 || typeof abilities.length === "object" && ρσ_equals(abilities.length, 0))) {
+                abilities = $(".ct-main-mobile__ability");
+            }
+            if ((abilities.length === 0 || typeof abilities.length === "object" && ρσ_equals(abilities.length, 0))) {
+                abilities = $(".ct-main-tablet__ability");
+            }
+            if (abilities.length > 0) {
+                self._abilities = ρσ_list_decorate([]);
+            }
+            var ρσ_Iter1 = ρσ_Iterable(abilities);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                ability = ρσ_Iter1[ρσ_Index1];
+                name = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__label").text();
+                abbr = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text();
+                modifier = $(ability).find(".ct-ability-summary__primary .ct-signed-number").text();
+                value = $(ability).find(".ct-ability-summary__secondary").text();
+                if ((modifier === "" || typeof modifier === "object" && ρσ_equals(modifier, ""))) {
+                    modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number").text();
+                    value = $(ability).find(".ct-ability-summary__primary").text();
+                }
+                self._abilities.append(ρσ_list_decorate([ name, abbr, value, modifier ]).as_array());
             }
             if (ρσ_exists.n(self._settings)) {
                 self.updateHP();
@@ -7273,7 +7259,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 var ρσ_d = {};
                 ρσ_d["name"] = self._name;
                 ρσ_d["id"] = self._id;
-                ρσ_d["type"] = "Character";
+                ρσ_d["type"] = self.type();
                 ρσ_d["abilities"] = self._abilities.as_array();
                 ρσ_d["classes"] = self._classes;
                 ρσ_d["level"] = self._level;
@@ -7345,6 +7331,10 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
         Monster.__argnames__ = Monster.prototype.__init__.__argnames__;
         Monster.__handles_kwarg_interpolation__ = Monster.prototype.__init__.__handles_kwarg_interpolation__;
+        Monster.prototype.type = function type() {
+            var self = this;
+            return self._type;
+        };
         Monster.prototype.parseStatBlock = function parseStatBlock() {
             var self = this;
             var stat_block = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? parseStatBlock.__defaults__.stat_block : arguments[0];
@@ -8162,7 +8152,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
         };
 
-        function recursiveDiceReplace(modifiers_only, node, cb) {
+        function recursiveDiceReplace(node, cb) {
             var children, child, text;
             if (node.hasChildNodes()) {
                 children = list(node.childNodes);
@@ -8172,17 +8162,17 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if ($(child).hasClass("ct-beyond20-roll")) {
                         continue;
                     }
-                    recursiveDiceReplace(modifiers_only, child, cb);
+                    recursiveDiceReplace(child, cb);
                 }
             } else if ((node.nodeName === "#text" || typeof node.nodeName === "object" && ρσ_equals(node.nodeName, "#text"))) {
-                text = replaceRolls(modifiers_only, node.textContent, cb);
+                text = replaceRolls(node.textContent, cb);
                 if ((text !== node.textContent && (typeof text !== "object" || ρσ_not_equals(text, node.textContent)))) {
                     $(node).replaceWith($.parseHTML(text));
                 }
             }
         };
         if (!recursiveDiceReplace.__argnames__) Object.defineProperties(recursiveDiceReplace, {
-            __argnames__ : {value: ["modifiers_only", "node", "cb"]}
+            __argnames__ : {value: ["node", "cb"]}
         });
 
         function injectDiceToRolls() {
@@ -8197,11 +8187,13 @@ var str = ρσ_str, repr = ρσ_repr;;
             var icon16, replaceCB, items, item;
             icon16 = chrome.extension.getURL("images/icons/icon16.png");
             replaceCB = (function() {
-                var ρσ_anonfunc = function (dice_formula, modifier) {
-                    return "<u class=\"ct-beyond20-custom-roll\"><strong>" + dice_formula + "</strong>" + "<img class=\"ct-beyond20-custom-icon\" x-beyond20-name=\"" + name + "\" x-beyond20-roll=\"" + ((modifier) ? "1d20" : "") + dice_formula + "\"></img></u>";
+                var ρσ_anonfunc = function (dice, modifier) {
+                    var dice_formula;
+                    dice_formula = (((dice === "" || typeof dice === "object" && ρσ_equals(dice, ""))) ? "1d20" : dice) + modifier;
+                    return "<u class=\"ct-beyond20-custom-roll\"><strong>" + dice + modifier + "</strong>" + "<img class=\"ct-beyond20-custom-icon\" x-beyond20-name=\"" + name + "\" x-beyond20-roll=\"" + dice_formula + "\"></img></u>";
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["dice_formula", "modifier"]}
+                    __argnames__ : {value: ["dice", "modifier"]}
                 });
                 return ρσ_anonfunc;
             })();
@@ -8209,8 +8201,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var ρσ_Iter24 = ρσ_Iterable(items);
             for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
                 item = ρσ_Iter24[ρσ_Index24];
-                recursiveDiceReplace(false, item, replaceCB);
-                recursiveDiceReplace(true, item, replaceCB);
+                recursiveDiceReplace(item, replaceCB);
             }
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");
             $(".ct-beyond20-custom-icon").css("margin-left", "3px");

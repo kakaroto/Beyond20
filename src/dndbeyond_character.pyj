@@ -174,7 +174,7 @@ def rollAction(paneClass):
         sendRollWithCharacter("attack", damages[0], roll_properties)
     else:
         sendRollWithCharacter("action", 0, {"name": action_name,
-                               "description" : description})
+                                            "description" : description})
         
 def rollSpell(force_display=False):
     nonlocal character
@@ -321,6 +321,40 @@ def displayPanel(paneClass):
     else:
         alert("Not recognizing the currently open sidebar")
 
+def findModifiers(character, custom_roll):
+    sibling = custom_roll.nextSibling
+    if sibling and sibling.nodeName == "#text":
+        strong = $(custom_roll).find("strong")
+        img = $(custom_roll).find("img")
+        roll_formula = img.attr("x-beyond20-roll")
+        text = sibling.textContent
+        text_len = 0
+        while text_len != len(text):
+            # If text length changes, we can check again for another modifier
+            text_len = len(text)
+            for ability in character._abilities:
+                mod_string = " + your " + ability[0] + " modifier"
+                if text.startsWith(mod_string):
+                    strong.append(mod_string)
+                    roll_formula += ability[3]
+                    text = text.substring(len(mod_string))
+            for class_name in character._classes:
+                mod_string = " + your " + class_name.toLowerCase() + " level"
+                if text.startsWith(mod_string):
+                    strong.append(mod_string)
+                    roll_formula += " + " + character._classes[class_name]
+                    text = text.substring(len(mod_string))
+            
+            mod_string = " + your proficiency bonus"
+            if text.startsWith(mod_string):
+                strong.append(mod_string)
+                roll_formula += character.proficiency
+                text = text.substring(len(mod_string))
+
+        sibling.textContent = text
+        img.attr("x-beyond20-roll", roll_formula)
+            
+
 def checkAndInjectDiceToRolls(selector, name=""):
     nonlocal settings
     nonlocal character
@@ -328,6 +362,9 @@ def checkAndInjectDiceToRolls(selector, name=""):
         return
 
     injectDiceToRolls(selector, character, name)
+
+    for custom_roll in $(".ct-beyond20-custom-roll"):
+        findModifiers(character, custom_roll)
 
 def addRollButtonEx(paneClass, where, small=False, append=False, prepend=False, image=True, text="Beyond 20"):
     callback = def():

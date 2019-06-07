@@ -49,28 +49,26 @@ def subRolls(text, damage_only=False, overrideCB=None):
     if overrideCB:
         replaceCB = overrideCB
     else:
-        replaceCB = def(dice_formula, modifier):
-            if modifier:
-                dice_formula = "1d20" + dice_formula
+        replaceCB = def(dice, modifier):
+            if damage_only and dice == "":
+                return dice + modifier
+            dice_formula = ("1d20" if dice == "" else dice) + modifier
             return genRoll(dice_formula)
     
-    text = replaceRolls(False, text, replaceCB)
-    if damage_only:
-        return text
-    return replaceRolls(True, text, replaceCB)
+    return replaceRolls(text, replaceCB)
 
 def subDescriptionRolls(request, description):
     nonlocal settings
     if not settings["subst-roll20"]:
         return description
-    replaceCB = def(dice_formula, modifier):
-        roll = ("1d20" + dice_formula) if modifier else dice_formula
+    replaceCB = def(dice, modifier):
+        roll = ("1d20" if dice == "" else dice) + modifier
         roll_template = template("simple", {"charname": request.character.name,
                                             "rname" : request.name,
-                                            "mod": dice_formula,
+                                            "mod": dice + modifier,
                                             "r1": genRoll(roll),
                                             "normal": 1})
-        return "[" + dice_formula + "](!\n" + escapeRoll20Macro(roll_template) + ")"
+        return "[" + dice + modifier + "](!\n" + escapeRoll20Macro(roll_template) + ")"
     return subRolls(description, overrideCB=replaceCB)
 
 def subDamageRolls(text):

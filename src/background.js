@@ -5202,53 +5202,38 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["text"]}
         });
 
-        function replaceRollsCallback(match, modifiers_only, pre, dice, post, replaceCB) {
-            var dice_formula, i, result;
-            if (modifiers_only && ρσ_in((ρσ_expr_temp = match.string)[ρσ_bound_index(match.start() - 1, ρσ_expr_temp)], list(map(str, range(0, 10))))) {
-                return match.group(0);
+        function replaceRollsCallback(match, replaceCB) {
+            var dice, modifiers, result;
+            dice = match.group(2);
+            modifiers = match.group(3);
+            if (!(typeof dice !== "undefined" && dice !== null)) {
+                dice = "";
+                modifiers = match.group(4);
             }
-            dice_formula = "";
-            for (var ρσ_Index0 = dice; ρσ_Index0 < post; ρσ_Index0++) {
-                i = ρσ_Index0;
-                dice_formula += match.group(i);
-            }
-            result = match.group(pre);
-            result += replaceCB(dice_formula, modifiers_only);
-            result += match.group(post);
+            result = match.group(1);
+            result += replaceCB(dice, modifiers);
+            result += match.group(5);
             return result;
         };
         if (!replaceRollsCallback.__argnames__) Object.defineProperties(replaceRollsCallback, {
-            __argnames__ : {value: ["match", "modifiers_only", "pre", "dice", "post", "replaceCB"]}
+            __argnames__ : {value: ["match", "replaceCB"]}
         });
 
-        function replaceRolls(modifiers_only, text, replaceCB) {
-            var dice_regexp, modifiers_regexp, regexp, pre, dice, post, new_text;
-            dice_regexp = "(^|[^\\w])([0-9]*d[0-9]+)((?:\\s*[-+]\\s*[0-9]+)?)($|[^\\w])";
-            modifiers_regexp = "(^|[^\\w])([-+]\\s*[0-9]+)($|[^\\w])";
-            if (modifiers_only) {
-                regexp = modifiers_regexp;
-                pre = 1;
-                dice = 2;
-                post = 3;
-            } else {
-                regexp = dice_regexp;
-                pre = 1;
-                dice = 2;
-                post = 4;
-            }
-            new_text = re.sub(regexp, (function() {
+        function replaceRolls(text, replaceCB) {
+            var dice_regexp;
+            dice_regexp = "(^|[^\\w])(?:(?:(?:(\\d*d\\d+)((?:\\s*[-+]\\s*\\d+)*))|((?:[-+]\\s*\\d+)+)))($|[^\\w])";
+            return re.sub(dice_regexp, (function() {
                 var ρσ_anonfunc = function (m) {
-                    return replaceRollsCallback(m, modifiers_only, pre, dice, post, replaceCB);
+                    return replaceRollsCallback(m, replaceCB);
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                     __argnames__ : {value: ["m"]}
                 });
                 return ρσ_anonfunc;
             })(), text);
-            return new_text;
         };
         if (!replaceRolls.__argnames__) Object.defineProperties(replaceRolls, {
-            __argnames__ : {value: ["modifiers_only", "text", "replaceCB"]}
+            __argnames__ : {value: ["text", "replaceCB"]}
         });
 
         function getBrowser() {
@@ -6620,9 +6605,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this), (function() {
                 var ρσ_anonfunc = function (tabs) {
                     var tab;
-                    var ρσ_Iter9 = ρσ_Iterable(tabs);
-                    for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
-                        tab = ρσ_Iter9[ρσ_Index9];
+                    var ρσ_Iter0 = ρσ_Iterable(tabs);
+                    for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                        tab = ρσ_Iter0[ρσ_Index0];
                         chrome.tabs.sendMessage(tab.id, request);
                     }
                 };
@@ -6653,9 +6638,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_anonfunc = function (tabs) {
                         var found, tab;
                         found = false;
-                        var ρσ_Iter10 = ρσ_Iterable(tabs);
-                        for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
-                            tab = ρσ_Iter10[ρσ_Index10];
+                        var ρσ_Iter1 = ρσ_Iterable(tabs);
+                        for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                            tab = ρσ_Iter1[ρσ_Index1];
                             if (((limit.id === 0 || typeof limit.id === "object" && ρσ_equals(limit.id, 0)) || (tab.id === limit.id || typeof tab.id === "object" && ρσ_equals(tab.id, limit.id))) && ρσ_equals(roll20TabTitle(tab), limit.title)) {
                                 chrome.tabs.sendMessage(tab.id, request);
                                 found = true;
@@ -6669,9 +6654,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                                 ρσ_d["roll20-tab"] = limit;
                                 return ρσ_d;
                             }).call(this));
-                            var ρσ_Iter11 = ρσ_Iterable(tabs);
-                            for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
-                                tab = ρσ_Iter11[ρσ_Index11];
+                            var ρσ_Iter2 = ρσ_Iterable(tabs);
+                            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                                tab = ρσ_Iter2[ρσ_Index2];
                                 if (ρσ_equals(roll20TabTitle(tab), limit.title)) {
                                     chrome.tabs.sendMessage(tab.id, request);
                                     break;
@@ -6727,12 +6712,12 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function executeScripts(tabs, js_files) {
             var file, tab;
-            var ρσ_Iter12 = ρσ_Iterable(tabs);
-            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
-                tab = ρσ_Iter12[ρσ_Index12];
-                var ρσ_Iter13 = ρσ_Iterable(js_files);
-                for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
-                    file = ρσ_Iter13[ρσ_Index13];
+            var ρσ_Iter3 = ρσ_Iterable(tabs);
+            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                tab = ρσ_Iter3[ρσ_Index3];
+                var ρσ_Iter4 = ρσ_Iterable(js_files);
+                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                    file = ρσ_Iter4[ρσ_Index4];
                     chrome.tabs.executeScript(tab.id, (function(){
                         var ρσ_d = {};
                         ρσ_d["file"] = file;
@@ -6749,9 +6734,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         chrome.runtime.onMessage.addListener(onMessage);
         if (ρσ_equals(getBrowser(), "Chrome")) {
             manifest = chrome.runtime.getManifest();
-            var ρσ_Iter14 = ρσ_Iterable(manifest.content_scripts);
-            for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
-                script = ρσ_Iter14[ρσ_Index14];
+            var ρσ_Iter5 = ρσ_Iterable(manifest.content_scripts);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                script = ρσ_Iter5[ρσ_Index5];
                 cb = (function() {
                     var ρσ_anonfunc = function (files) {
                         return (function() {

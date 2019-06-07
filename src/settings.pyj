@@ -1,10 +1,14 @@
 from elementmaker import E 
 from utils import getBrowser, roll20TabTitle
 
-# key: [short title, title, description, type, default, extra_options]
-# Types: bool, string, combobox, link
-# combobox extra_options: {setting: label}
-# special extra_options: [setup, set, get]
+# keys: [short, title, description, type, default]
+# Types: bool, string, combobox, link, special
+# combobox extra options:
+#                        choices: {value: string}
+# special extra options:
+#                        createHTMLElement: function
+#                        set: function
+#                        get: function
 
 options_list = {
     "whispers": {"short": "Whisper all rolls",

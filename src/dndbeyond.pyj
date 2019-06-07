@@ -49,49 +49,20 @@ class Character:
         self._racial_traits = []
         self._feats = []
 
+    def type(self):
+        return "Character"
+
     def updateInfo(self):
         self._id = $("#character-sheet-target").attr("data-character-id")
         if self._settings is None:
             self.updateSettings()
 
+        # Static values that need an edit to change
         if self._name is None:
             self._name = $(".ct-character-tidbits__name").text()
             # This can happen when you reload the page
             if self._name == "":
                 self._name = None
-        if self._ac is None:
-            self._ac = $(".ct-armor-class-box__value").text()
-            if self._ac == "":
-                self._ac = $(".ct-combat-mobile__extra--ac .ct-combat-mobile__extra-value").text()
-                if self._ac == "":
-                    self._ac = None
-        if self._proficiency is None:
-            self._proficiency = $(".ct-proficiency-bonus-box__value").text()
-            if self._proficiency == "":
-                self._proficiency = $(".ct-combat-mobile__extra--proficiency .ct-combat-mobile__extra-value").text()
-                if self._proficiency == "":
-                    self._proficiency = None
-        if self._speed is None:
-            self._speed = $(".ct-speed-box__box-value .ct-distance-number__number").text()
-            if self._speed == "":
-                self._speed = $(".ct-combat-mobile__extra--speed .ct-combat-mobile__extra-value .ct-distance-number__number").text()
-                if self._speed == "":
-                    self._speed = None
-        if len(self._abilities) == 0:
-            abilities = $(".ct-quick-info__ability")
-            if abilities.length == 0:
-                abilities = $(".ct-main-mobile__ability")
-            if abilities.length == 0:
-                abilities = $(".ct-main-tablet__ability")
-            for ability in abilities:
-                name = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__label").text()
-                abbr = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text()
-                modifier = $(ability).find(".ct-ability-summary__primary .ct-signed-number").text()
-                value = $(ability).find(".ct-ability-summary__secondary").text()
-                if modifier == "":
-                    modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number").text()
-                    value = $(ability).find(".ct-ability-summary__primary").text()
-                self._abilities.append([name, abbr, value, modifier].as_array())
         if self._race is None:
             self._race = $(".ct-character-tidbits__race").text()
             if self._race == "":
@@ -111,6 +82,40 @@ class Character:
                 self._level = level.text().replace("Level ", "")
             elif xp.length > 0:
                 self._level = xp.text().replace("LVL ", "")
+        if self._proficiency is None:
+            self._proficiency = $(".ct-proficiency-bonus-box__value").text()
+            if self._proficiency == "":
+                self._proficiency = $(".ct-combat-mobile__extra--proficiency .ct-combat-mobile__extra-value").text()
+                if self._proficiency == "":
+                    self._proficiency = None
+        # Values that could change/get overriden dynamically
+        ac = $(".ct-armor-class-box__value").text()
+        if ac == "":
+            ac = $(".ct-combat-mobile__extra--ac .ct-combat-mobile__extra-value").text()
+        if ac != "":
+            self._ac = ac
+        speed = $(".ct-speed-box__box-value .ct-distance-number__number").text()
+        if speed == "":
+            speed = $(".ct-combat-mobile__extra--speed .ct-combat-mobile__extra-value .ct-distance-number__number").text()
+        if speed != "":
+            self._speed = speed
+        abilities = $(".ct-quick-info__ability")
+        if abilities.length == 0:
+            abilities = $(".ct-main-mobile__ability")
+        if abilities.length == 0:
+            abilities = $(".ct-main-tablet__ability")
+
+        if abilities.length > 0:
+            self._abilities = []
+        for ability in abilities:
+            name = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__label").text()
+            abbr = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text()
+            modifier = $(ability).find(".ct-ability-summary__primary .ct-signed-number").text()
+            value = $(ability).find(".ct-ability-summary__secondary").text()
+            if modifier == "":
+                modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number").text()
+                value = $(ability).find(".ct-ability-summary__primary").text()
+            self._abilities.append([name, abbr, value, modifier].as_array())
         if self._settings?:
             self.updateHP()
         self.updateFeatures()
@@ -241,7 +246,7 @@ class Character:
                 settings[key] = self._settings[key]
         return {"name": self._name,
                 "id": self._id,
-                "type": "Character",
+                "type": self.type(),
                 "abilities": self._abilities.as_array(),
                 "classes": self._classes,
                 "level": self._level,
@@ -283,6 +288,9 @@ class Monster:
         self._saves = {}
         self._skills = {}
         self._cr = None
+
+    def type(self):
+        return self._type
 
     def parseStatBlock(self, stat_block=None, add_dice=True, inject_descriptions=True):
         base = self._base
@@ -709,7 +717,8 @@ def removeRollButtons():
     for i in range(custom_rolls.length):
         custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text())
 
-def recursiveDiceReplace(modifiers_only, node, cb):
+
+def recursiveDiceReplace(node, cb):
     if node.hasChildNodes():
         # We need to copy the list since its size could change as we modify it
         children = list(node.childNodes)
@@ -717,26 +726,24 @@ def recursiveDiceReplace(modifiers_only, node, cb):
             # don't replace anything inside of a roll button itself
             if $(child).hasClass("ct-beyond20-roll"):
                 continue
-            recursiveDiceReplace(modifiers_only, child, cb)
+            recursiveDiceReplace(child, cb)
     elif node.nodeName == "#text":
-        text = replaceRolls(modifiers_only, node.textContent, cb)
+        text = replaceRolls(node.textContent, cb)
         # Only replace if we changed it, otherwise we might break existing html code bindings
         if text != node.textContent:
             $(node).replaceWith($.parseHTML(text))
 
 def injectDiceToRolls(selector, character, name=""):
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
-    replaceCB = def(dice_formula, modifier):
-        return '<u class="ct-beyond20-custom-roll"><strong>' + dice_formula + '</strong>' + \
+    replaceCB = def(dice, modifier):
+        dice_formula = ("1d20" if dice == "" else dice) + modifier
+        return '<u class="ct-beyond20-custom-roll"><strong>' + dice + modifier + '</strong>' + \
             '<img class="ct-beyond20-custom-icon" x-beyond20-name="' + name + \
-            '" x-beyond20-roll="' + ("1d20" if modifier else "") + dice_formula + '"></img></u>'
+            '" x-beyond20-roll="' + dice_formula + '"></img></u>'
 
     items = $(selector)
     for item in items:
-        # This has to be done this way otherwise a "+1" in the weapon name for example
-        # would cause that text to be replaced in the html that gets returned.
-        recursiveDiceReplace(False, item, replaceCB)
-        recursiveDiceReplace(True, item, replaceCB)
+        recursiveDiceReplace(item, replaceCB)
 
     $(".ct-beyond20-custom-icon").css("margin-right", "3px")
     $(".ct-beyond20-custom-icon").css("margin-left", "3px")
