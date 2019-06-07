@@ -1,22 +1,27 @@
 from utils import addCustomEventListener
 
+def compareTo(c):
+    return 
 def updateHP(name, current, total=None):
     console.log("Updating HP for " + name + " : " + current + "/" + total)
-    characters = window.Campaign.characters
     name = name.toLowerCase()
 
-    for char in characters.models:
-        if char.attributes["name"].toLowerCase() == name:
-            console.log("Found character : ", char)
-            for attr in char.attribs.models:
-                if attr.attributes["name"] == "hp":
-                    console.log("Found attribute : ", attr)
-                    attr.set("current", current)
-                    if total?:
-                        attr.set("max", total)
-                    break
-            char.updateTokensByName("hp")
-            break
+    findCharacter = def(c):
+        return c.attributes.name.toLowerCase() == name
+
+    character = window.Campaign.characters.find(findCharacter)
+    if character?:
+        console.log("Found character : ", character)
+        findHP = def(a):
+           return a.attributes.name == "hp"
+        hp = character.attribs.find(findHP)
+        if hp?:
+            console.log("Found attribute : ", hp)
+            hp.set("current", str(current))
+            if total?:
+                hp.set("max", total)
+            hp.save()
+            character.updateTokensByName("hp", hp.id)
 
 def disconnectAllEvents():
     nonlocal registered_events

@@ -5354,6 +5354,13 @@ var str = ρσ_str, repr = ρσ_repr;;
         var registered_events;
         var addCustomEventListener = ρσ_modules.utils.addCustomEventListener;
 
+        function compareTo(c) {
+            return;
+        };
+        if (!compareTo.__argnames__) Object.defineProperties(compareTo, {
+            __argnames__ : {value: ["c"]}
+        });
+
         function updateHP() {
             var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var current = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
@@ -5363,29 +5370,39 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "total")){
                 total = ρσ_kwargs_obj.total;
             }
-            var characters, attr, char;
+            var findCharacter, character, findHP, hp;
             console.log("Updating HP for " + name + " : " + current + "/" + total);
-            characters = window.Campaign.characters;
             name = name.toLowerCase();
-            var ρσ_Iter0 = ρσ_Iterable(characters.models);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                char = ρσ_Iter0[ρσ_Index0];
-                if (ρσ_equals(char.attributes["name"].toLowerCase(), name)) {
-                    console.log("Found character : ", char);
-                    var ρσ_Iter1 = ρσ_Iterable(char.attribs.models);
-                    for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                        attr = ρσ_Iter1[ρσ_Index1];
-                        if ((attr.attributes["name"] === "hp" || typeof attr.attributes["name"] === "object" && ρσ_equals(attr.attributes["name"], "hp"))) {
-                            console.log("Found attribute : ", attr);
-                            attr.set("current", current);
-                            if ((typeof total !== "undefined" && total !== null)) {
-                                attr.set("max", total);
-                            }
-                            break;
-                        }
+            findCharacter = (function() {
+                var ρσ_anonfunc = function (c) {
+                    return ρσ_equals(c.attributes.name.toLowerCase(), name);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["c"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            character = window.Campaign.characters.find(findCharacter);
+            if ((typeof character !== "undefined" && character !== null)) {
+                console.log("Found character : ", character);
+                findHP = (function() {
+                    var ρσ_anonfunc = function (a) {
+                        return (a.attributes.name === "hp" || typeof a.attributes.name === "object" && ρσ_equals(a.attributes.name, "hp"));
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["a"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                hp = character.attribs.find(findHP);
+                if ((typeof hp !== "undefined" && hp !== null)) {
+                    console.log("Found attribute : ", hp);
+                    hp.set("current", str(current));
+                    if ((typeof total !== "undefined" && total !== null)) {
+                        hp.set("max", total);
                     }
-                    char.updateTokensByName("hp");
-                    break;
+                    hp.save();
+                    character.updateTokensByName("hp", hp.id);
                 }
             }
         };
@@ -5397,9 +5414,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter2 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                event = ρσ_Iter2[ρσ_Index2];
+            var ρσ_Iter0 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                event = ρσ_Iter0[ρσ_Index0];
                 document.removeEventListener.apply(document, event);
             }
         };
