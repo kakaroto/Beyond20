@@ -5339,13 +5339,6 @@ var str = ρσ_str, repr = ρσ_repr;;
         var registered_events;
         var addCustomEventListener = ρσ_modules.utils.addCustomEventListener;
 
-        function compareTo(c) {
-            return;
-        };
-        if (!compareTo.__argnames__) Object.defineProperties(compareTo, {
-            __argnames__ : {value: ["c"]}
-        });
-
         function updateHP() {
             var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var current = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];

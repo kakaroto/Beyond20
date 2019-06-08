@@ -1,7 +1,5 @@
 from utils import addCustomEventListener
 
-def compareTo(c):
-    return 
 def updateHP(name, current, total=None):
     console.log("Updating HP for " + name + " : " + current + "/" + total)
     name = name.toLowerCase()

@@ -13,6 +13,7 @@ You can also check out the [changelog](Changelog) for recent fixes or additions 
 * [How can I add Bless/Guidance bonus or use Elemental Weapon ?](#how-can-i-add-blessguidance-bonus-or-use-elemental-weapon-)
 * [How can I use this non-standard spell or feature ?](#how-can-i-use-this-non-standard-spell-or-feature-)
 * [Why isn't the attack button appearing for my homebrew monster?](#why-isnt-the-attack-button-appearing-for-my-homebrew-monster)
+
 ---
 
 ### Can Beyond20 do '\<insert specific feature\>'?
