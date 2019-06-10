@@ -158,12 +158,16 @@ def rollAction(paneClass):
     action_name = $(".ct-sidebar__heading").text()
     description = descriptionToString(".ct-action-detail__description")
     if "Damage" in properties and (properties["To Hit"]? or properties["Attack/Save"]?):
-        damages = [properties["Damage"]]
-        damage_types = [properties["Damage Type"] ? ""]
+        if "Damage" in properties:
+            damages = [properties["Damage"]]
+            damage_types = [properties["Damage Type"] ? ""]
+        else:
+            damages = []
+            damage_types = []
         custom_damage = character.getSetting("custom-damage-dice", "")
         if len(custom_damage) > 0:
-            damages = [custom_damage]
-            damage_types = ["Custom Damage"]
+            damages.append(custom_damage)
+            damage_types.append("Custom Damage")
         roll_properties = buildAttackRoll("action",
                                           action_name,
                                           description,

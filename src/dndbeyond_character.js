@@ -8862,12 +8862,17 @@ var str = ρσ_str, repr = ρσ_repr;;
             action_name = $(".ct-sidebar__heading").text();
             description = descriptionToString(".ct-action-detail__description");
             if (ρσ_in("Damage", properties) && (ρσ_exists.n(properties["To Hit"]) || ρσ_exists.n(properties["Attack/Save"]))) {
-                damages = ρσ_list_decorate([ properties["Damage"] ]);
-                damage_types = ρσ_list_decorate([ ρσ_exists.e(properties["Damage Type"], "") ]);
+                if (ρσ_in("Damage", properties)) {
+                    damages = ρσ_list_decorate([ properties["Damage"] ]);
+                    damage_types = ρσ_list_decorate([ ρσ_exists.e(properties["Damage Type"], "") ]);
+                } else {
+                    damages = ρσ_list_decorate([]);
+                    damage_types = ρσ_list_decorate([]);
+                }
                 custom_damage = character.getSetting("custom-damage-dice", "");
                 if (len(custom_damage) > 0) {
-                    damages = ρσ_list_decorate([ custom_damage ]);
-                    damage_types = ρσ_list_decorate([ "Custom Damage" ]);
+                    damages.append(custom_damage);
+                    damage_types.append("Custom Damage");
                 }
                 roll_properties = buildAttackRoll("action", action_name, description, properties, damages, damage_types, ρσ_exists.e(properties["To Hit"], null));
                 sendRollWithCharacter("attack", damages[0], roll_properties);
