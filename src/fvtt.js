@@ -6541,23 +6541,13 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var settings, fvtt_tabs, manifest, cb, script;
-        var ROLL20_URL = ρσ_modules.utils.ROLL20_URL;
-        var DNDBEYOND_CHARACTER_URL = ρσ_modules.utils.DNDBEYOND_CHARACTER_URL;
-        var DNDBEYOND_MONSTER_URL = ρσ_modules.utils.DNDBEYOND_MONSTER_URL;
-        var DNDBEYOND_ENCOUNTER_URL = ρσ_modules.utils.DNDBEYOND_ENCOUNTER_URL;
-        var DNDBEYOND_SPELL_URL = ρσ_modules.utils.DNDBEYOND_SPELL_URL;
-        var DNDBEYOND_VEHICLE_URL = ρσ_modules.utils.DNDBEYOND_VEHICLE_URL;
-        var CHANGELOG_URL = ρσ_modules.utils.CHANGELOG_URL;
-        var roll20TabTitle = ρσ_modules.utils.roll20TabTitle;
-        var getBrowser = ρσ_modules.utils.getBrowser;
+        var settings;
+        var sendCustomEvent = ρσ_modules.utils.sendCustomEvent;
+        var injectPageScript = ρσ_modules.utils.injectPageScript;
 
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
-        var mergeSettings = ρσ_modules.settings.mergeSettings;
 
-        settings = getDefaultSettings();
-        fvtt_tabs = ρσ_list_decorate([]);
         function updateSettings() {
             var new_settings = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? updateSettings.__defaults__.new_settings : arguments[0];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
@@ -6570,21 +6560,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             } else {
                 getStoredSettings((function() {
                     var ρσ_anonfunc = function (saved_settings) {
-                        var version;
-                        settings = saved_settings;
-                        version = chrome.runtime.getManifest().version;
-                        if (settings["show-changelog"] && (settings["last-version"] !== version && (typeof settings["last-version"] !== "object" || ρσ_not_equals(settings["last-version"], version)))) {
-                            mergeSettings((function(){
-                                var ρσ_d = {};
-                                ρσ_d["last-version"] = version;
-                                return ρσ_d;
-                            }).call(this));
-                            chrome.tabs.create((function(){
-                                var ρσ_d = {};
-                                ρσ_d["url"] = CHANGELOG_URL;
-                                return ρσ_d;
-                            }).call(this));
-                        }
+                        updateSettings(saved_settings);
                     };
                     if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                         __argnames__ : {value: ["saved_settings"]}
@@ -6599,186 +6575,41 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["new_settings"]}
         });
 
-        function sendMessageTo(url, request) {
-            chrome.tabs.query((function(){
-                var ρσ_d = {};
-                ρσ_d["url"] = url;
-                return ρσ_d;
-            }).call(this), (function() {
-                var ρσ_anonfunc = function (tabs) {
-                    var tab;
-                    var ρσ_Iter0 = ρσ_Iterable(tabs);
-                    for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                        tab = ρσ_Iter0[ρσ_Index0];
-                        chrome.tabs.sendMessage(tab.id, request);
-                    }
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["tabs"]}
-                });
-                return ρσ_anonfunc;
-            })());
-        };
-        if (!sendMessageTo.__argnames__) Object.defineProperties(sendMessageTo, {
-            __argnames__ : {value: ["url", "request"]}
-        });
-
-        function sendMessageToRoll20() {
-            var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var limit = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? sendMessageToRoll20.__defaults__.limit : arguments[1];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "limit")){
-                limit = ρσ_kwargs_obj.limit;
-            }
-            if (limit) {
-                chrome.tabs.query((function(){
-                    var ρσ_d = {};
-                    ρσ_d["url"] = ROLL20_URL;
-                    return ρσ_d;
-                }).call(this), (function() {
-                    var ρσ_anonfunc = function (tabs) {
-                        var found, tab;
-                        found = false;
-                        var ρσ_Iter1 = ρσ_Iterable(tabs);
-                        for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                            tab = ρσ_Iter1[ρσ_Index1];
-                            if (((limit.id === 0 || typeof limit.id === "object" && ρσ_equals(limit.id, 0)) || (tab.id === limit.id || typeof tab.id === "object" && ρσ_equals(tab.id, limit.id))) && ρσ_equals(roll20TabTitle(tab), limit.title)) {
-                                chrome.tabs.sendMessage(tab.id, request);
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found && (limit.id !== 0 && (typeof limit.id !== "object" || ρσ_not_equals(limit.id, 0)))) {
-                            limit.id = 0;
-                            mergeSettings((function(){
-                                var ρσ_d = {};
-                                ρσ_d["roll20-tab"] = limit;
-                                return ρσ_d;
-                            }).call(this));
-                            var ρσ_Iter2 = ρσ_Iterable(tabs);
-                            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                                tab = ρσ_Iter2[ρσ_Index2];
-                                if (ρσ_equals(roll20TabTitle(tab), limit.title)) {
-                                    chrome.tabs.sendMessage(tab.id, request);
-                                    break;
-                                }
-                            }
-                        }
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["tabs"]}
-                    });
-                    return ρσ_anonfunc;
-                })());
-            } else {
-                sendMessageTo(ROLL20_URL, request);
-            }
-        };
-        if (!sendMessageToRoll20.__defaults__) Object.defineProperties(sendMessageToRoll20, {
-            __defaults__ : {value: {limit:null}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["request", "limit"]}
-        });
-
-        function sendMessageToFVTT(request) {
-            var tab;
-            console.log("Sending message to tabs : ", fvtt_tabs);
-            var ρσ_Iter3 = ρσ_Iterable(fvtt_tabs);
-            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                tab = ρσ_Iter3[ρσ_Index3];
-                chrome.tabs.sendMessage(tab, request);
-            }
-        };
-        if (!sendMessageToFVTT.__argnames__) Object.defineProperties(sendMessageToFVTT, {
-            __argnames__ : {value: ["request"]}
-        });
-
-        function sendMessageToBeyond(request) {
-            sendMessageTo(DNDBEYOND_CHARACTER_URL, request);
-            sendMessageTo(DNDBEYOND_MONSTER_URL, request);
-            sendMessageTo(DNDBEYOND_ENCOUNTER_URL, request);
-            sendMessageTo(DNDBEYOND_SPELL_URL, request);
-            sendMessageTo(DNDBEYOND_VEHICLE_URL, request);
-        };
-        if (!sendMessageToBeyond.__argnames__) Object.defineProperties(sendMessageToBeyond, {
-            __argnames__ : {value: ["request"]}
-        });
-
-        function onMessage(request, sender, sendResponse) {
-            console.log("Received message: ", request);
-            if (ρσ_in(request.action, ρσ_list_decorate([ "roll", "hp-update" ]))) {
-                sendMessageToRoll20(request, settings["roll20-tab"]);
-                sendMessageToFVTT(request);
-            } else if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
+        function handleMessage(request, sender, sendResponse) {
+            print("Got message : ", request);
+            if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
                     updateSettings(request.settings);
                 }
-                sendMessageToRoll20(request);
-                sendMessageToBeyond(request);
-                sendMessageToFVTT(request);
-            } else if ((request.action === "activate-icon" || typeof request.action === "object" && ρσ_equals(request.action, "activate-icon"))) {
-                chrome.pageAction.show(sender.tab.id);
-            } else if ((request.action === "register-fvtt-tab" || typeof request.action === "object" && ρσ_equals(request.action, "register-fvtt-tab"))) {
-                fvtt_tabs.append(sender.tab.id);
-            } else if ((request.action === "reload-me" || typeof request.action === "object" && ρσ_equals(request.action, "reload-me"))) {
-                chrome.tabs.reload(sender.tab.id);
+            } else if ((request.action === "hp-update" || typeof request.action === "object" && ρσ_equals(request.action, "hp-update"))) {
+                if (settings["update-hp"]) {
+                    sendCustomEvent("UpdateHP", [request.character.name, request.character.hp, request.character["max-hp"]]);
+                }
+            } else if ((request.action === "roll" || typeof request.action === "object" && ρσ_equals(request.action, "roll"))) {
+                sendCustomEvent("Roll", [request, settings]);
             }
         };
-        if (!onMessage.__argnames__) Object.defineProperties(onMessage, {
+        if (!handleMessage.__argnames__) Object.defineProperties(handleMessage, {
             __argnames__ : {value: ["request", "sender", "sendResponse"]}
         });
 
-        function executeScripts(tabs, js_files) {
-            var file, tab;
-            var ρσ_Iter4 = ρσ_Iterable(tabs);
-            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                tab = ρσ_Iter4[ρσ_Index4];
-                var ρσ_Iter5 = ρσ_Iterable(js_files);
-                for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                    file = ρσ_Iter5[ρσ_Index5];
-                    chrome.tabs.executeScript(tab.id, (function(){
-                        var ρσ_d = {};
-                        ρσ_d["file"] = file;
-                        return ρσ_d;
-                    }).call(this));
-                }
-            }
-        };
-        if (!executeScripts.__argnames__) Object.defineProperties(executeScripts, {
-            __argnames__ : {value: ["tabs", "js_files"]}
-        });
-
-        updateSettings();
-        chrome.runtime.onMessage.addListener(onMessage);
-        if (ρσ_equals(getBrowser(), "Chrome")) {
-            manifest = chrome.runtime.getManifest();
-            var ρσ_Iter6 = ρσ_Iterable(manifest.content_scripts);
-            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                script = ρσ_Iter6[ρσ_Index6];
-                cb = (function() {
-                    var ρσ_anonfunc = function (files) {
-                        return (function() {
-                            var ρσ_anonfunc = function (tabs) {
-                                executeScripts(tabs, files);
-                            };
-                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                __argnames__ : {value: ["tabs"]}
-                            });
-                            return ρσ_anonfunc;
-                        })();
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["files"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                chrome.tabs.query((function(){
-                    var ρσ_d = {};
-                    ρσ_d["url"] = script.matches;
-                    return ρσ_d;
-                }).call(this), cb(script.js));
-            }
+        if (ρσ_in("Foundry Virtual Tabletop", document.title)) {
+            print("Beyond20: Foundry VTT module loaded.");
+            sendCustomEvent("disconnect");
+            injectPageScript(chrome.runtime.getURL("src/fvtt_script.js"));
+            settings = getDefaultSettings();
+            updateSettings();
+            chrome.runtime.onMessage.addListener(handleMessage);
+            chrome.runtime.sendMessage((function(){
+                var ρσ_d = {};
+                ρσ_d["action"] = "activate-icon";
+                return ρσ_d;
+            }).call(this));
+            chrome.runtime.sendMessage((function(){
+                var ρσ_d = {};
+                ρσ_d["action"] = "register-fvtt-tab";
+                return ρσ_d;
+            }).call(this));
         }
     })();
 })();

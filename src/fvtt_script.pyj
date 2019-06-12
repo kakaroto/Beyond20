@@ -1,0 +1,95 @@
+from utils import replaceRolls, escapeRoll20Macro, addCustomEventListener
+
+settings = None
+
+def getSpeakerByName(name):
+    name = name.toLowerCase()
+    speakas = game.actors.entities.find(def(actor):
+                                            return actor.data.name.toLowerCase() == name
+                                        )
+    return speakas
+
+def postChatMessage(message, character=None, whisper=False):
+    speakas = getSpeakerByName(character)
+    data = {"content": message, 
+            "user": game.user._id}
+    if speakas:
+        data["speaker"] = ChatMessage.getSpeaker({"actor": speakas})
+    if whisper:
+        data["whisper"] = ChatMessage.getWhisperIDs("GM")
+    ChatMessage.create(data)
+
+def rollSkill(request, custom_roll_dice=""):
+    modifier = request.modifier
+
+    ev = new Event("Beyond20")
+    ev.shiftKey = ev.altKey = ev.ctrlKey = ev.metaKey = False
+    if request.character.type == "Character" and \
+            request.ability == "STR" and \
+            "Rage" in request.character["class-features"] and \
+            request.character.settings["barbarian-rage"]:
+        # Roll with advantage
+        ev.altKey = True
+
+    Dice5e.d20Roll({"event": ev, "parts": "@modifier",
+                    "data": {"modifier": request.modifier, "bonus": custom_roll_dice},
+                    "title": request.skill, "speaker": getSpeakerByName(request.character.name)})
+
+def handleRoll(request, new_settings):
+    nonlocal settings
+
+    settings = new_settings
+    whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+
+    custom_roll_dice = ""
+    if request.character.type == "Character":
+        custom_roll_dice = request.character.settings["custom-roll-dice"] ? ""
+    if request.type == "skill":
+        rollSkill(request, custom_roll_dice)
+    else:
+        mod = request.modifier if request.modifier? else request.roll
+        rname = request.name if request.name? else request.type
+
+        chatOptions = {"speaker": getSpeakerByName(request.character.name),
+                       "flavor": rname}
+        if whisper:
+            chatOptions["whisper"] = ChatMessage.getWhisperIDs("GM")
+        roll = new Roll(request.roll).roll()
+        roll.toMessage(chatOptions)
+
+def updateHP(name, current, total=None):
+    console.log("Updating HP for " + name + " : " + current + "/" + total)
+    name = name.toLowerCase()
+
+    tokens = canvas.tokens.controlledTokens.filter(def(t):
+                                                       return t.data.name.toLowerCase() == name
+                                                   )
+    for token in tokens:
+        if token.actor and token.data.actorLink:
+            total = total if total else token.actor.data.attributes.hp.max
+            token.actor.update({"data.attributes.hp.value" : current,
+                                "data.attributes.hp.max" : total})
+        else:
+            if token.data.bar1.attribute == "attributes.hp":
+                prefix = "bar1"
+                total = total if total else token.data.bar1.max
+            elif token.data.bar2.attribute == "attributes.hp":
+                prefix = "bar2"
+                total = total if total else token.data.bar2.max
+            else:
+                prefix = None
+            if prefix:
+                token.update(canvas.id, {prefix + ".value": current,
+                                         prefix + ".max": total})
+
+def disconnectAllEvents():
+    nonlocal registered_events
+    
+    for event in registered_events:
+        document.removeEventListener(*event)
+
+console.log("Beyond20: FVTT Page Script loaded")
+registered_events = []
+registered_events.append(addCustomEventListener("Roll", handleRoll))
+registered_events.append(addCustomEventListener("UpdateHP", updateHP))
+registered_events.append(addCustomEventListener("disconnect", disconnectAllEvents))

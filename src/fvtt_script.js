@@ -3726,8 +3726,6 @@ var str = ρσ_str, repr = ρσ_repr;;
     var ρσ_modules = {};
     ρσ_modules.re = {};
     ρσ_modules.utils = {};
-    ρσ_modules.elementmaker = {};
-    ρσ_modules.settings = {};
 
     (function(){
         var __name__ = "re";
@@ -5334,1451 +5332,210 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
-        var __name__ = "elementmaker";
-        var html_elements, mathml_elements, svg_elements, html5_tags, E;
-        html_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("a");
-            s.jsset.add("abbr");
-            s.jsset.add("acronym");
-            s.jsset.add("address");
-            s.jsset.add("area");
-            s.jsset.add("article");
-            s.jsset.add("aside");
-            s.jsset.add("audio");
-            s.jsset.add("b");
-            s.jsset.add("big");
-            s.jsset.add("blockquote");
-            s.jsset.add("br");
-            s.jsset.add("button");
-            s.jsset.add("canvas");
-            s.jsset.add("caption");
-            s.jsset.add("center");
-            s.jsset.add("cite");
-            s.jsset.add("code");
-            s.jsset.add("col");
-            s.jsset.add("colgroup");
-            s.jsset.add("command");
-            s.jsset.add("datagrid");
-            s.jsset.add("datalist");
-            s.jsset.add("dd");
-            s.jsset.add("del");
-            s.jsset.add("details");
-            s.jsset.add("dfn");
-            s.jsset.add("dialog");
-            s.jsset.add("dir");
-            s.jsset.add("div");
-            s.jsset.add("dl");
-            s.jsset.add("dt");
-            s.jsset.add("em");
-            s.jsset.add("event-source");
-            s.jsset.add("fieldset");
-            s.jsset.add("figcaption");
-            s.jsset.add("figure");
-            s.jsset.add("footer");
-            s.jsset.add("font");
-            s.jsset.add("form");
-            s.jsset.add("header");
-            s.jsset.add("h1");
-            s.jsset.add("h2");
-            s.jsset.add("h3");
-            s.jsset.add("h4");
-            s.jsset.add("h5");
-            s.jsset.add("h6");
-            s.jsset.add("hr");
-            s.jsset.add("i");
-            s.jsset.add("iframe");
-            s.jsset.add("img");
-            s.jsset.add("input");
-            s.jsset.add("ins");
-            s.jsset.add("keygen");
-            s.jsset.add("kbd");
-            s.jsset.add("label");
-            s.jsset.add("legend");
-            s.jsset.add("li");
-            s.jsset.add("m");
-            s.jsset.add("map");
-            s.jsset.add("menu");
-            s.jsset.add("meter");
-            s.jsset.add("multicol");
-            s.jsset.add("nav");
-            s.jsset.add("nextid");
-            s.jsset.add("ol");
-            s.jsset.add("output");
-            s.jsset.add("optgroup");
-            s.jsset.add("option");
-            s.jsset.add("p");
-            s.jsset.add("pre");
-            s.jsset.add("progress");
-            s.jsset.add("q");
-            s.jsset.add("s");
-            s.jsset.add("samp");
-            s.jsset.add("script");
-            s.jsset.add("section");
-            s.jsset.add("select");
-            s.jsset.add("small");
-            s.jsset.add("sound");
-            s.jsset.add("source");
-            s.jsset.add("spacer");
-            s.jsset.add("span");
-            s.jsset.add("strike");
-            s.jsset.add("strong");
-            s.jsset.add("style");
-            s.jsset.add("sub");
-            s.jsset.add("sup");
-            s.jsset.add("table");
-            s.jsset.add("tbody");
-            s.jsset.add("td");
-            s.jsset.add("textarea");
-            s.jsset.add("time");
-            s.jsset.add("tfoot");
-            s.jsset.add("th");
-            s.jsset.add("thead");
-            s.jsset.add("tr");
-            s.jsset.add("tt");
-            s.jsset.add("u");
-            s.jsset.add("ul");
-            s.jsset.add("var");
-            s.jsset.add("video");
-            return s;
-        })();
-        mathml_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("maction");
-            s.jsset.add("math");
-            s.jsset.add("merror");
-            s.jsset.add("mfrac");
-            s.jsset.add("mi");
-            s.jsset.add("mmultiscripts");
-            s.jsset.add("mn");
-            s.jsset.add("mo");
-            s.jsset.add("mover");
-            s.jsset.add("mpadded");
-            s.jsset.add("mphantom");
-            s.jsset.add("mprescripts");
-            s.jsset.add("mroot");
-            s.jsset.add("mrow");
-            s.jsset.add("mspace");
-            s.jsset.add("msqrt");
-            s.jsset.add("mstyle");
-            s.jsset.add("msub");
-            s.jsset.add("msubsup");
-            s.jsset.add("msup");
-            s.jsset.add("mtable");
-            s.jsset.add("mtd");
-            s.jsset.add("mtext");
-            s.jsset.add("mtr");
-            s.jsset.add("munder");
-            s.jsset.add("munderover");
-            s.jsset.add("none");
-            return s;
-        })();
-        svg_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("a");
-            s.jsset.add("animate");
-            s.jsset.add("animateColor");
-            s.jsset.add("animateMotion");
-            s.jsset.add("animateTransform");
-            s.jsset.add("clipPath");
-            s.jsset.add("circle");
-            s.jsset.add("defs");
-            s.jsset.add("desc");
-            s.jsset.add("ellipse");
-            s.jsset.add("font-face");
-            s.jsset.add("font-face-name");
-            s.jsset.add("font-face-src");
-            s.jsset.add("g");
-            s.jsset.add("glyph");
-            s.jsset.add("hkern");
-            s.jsset.add("linearGradient");
-            s.jsset.add("line");
-            s.jsset.add("marker");
-            s.jsset.add("metadata");
-            s.jsset.add("missing-glyph");
-            s.jsset.add("mpath");
-            s.jsset.add("path");
-            s.jsset.add("polygon");
-            s.jsset.add("polyline");
-            s.jsset.add("radialGradient");
-            s.jsset.add("rect");
-            s.jsset.add("set");
-            s.jsset.add("stop");
-            s.jsset.add("svg");
-            s.jsset.add("switch");
-            s.jsset.add("text");
-            s.jsset.add("title");
-            s.jsset.add("tspan");
-            s.jsset.add("use");
-            return s;
-        })();
-        html5_tags = html_elements.union(mathml_elements).union(svg_elements);
-        function _makeelement() {
-            var tag = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var kwargs = arguments[arguments.length-1];
-            if (kwargs === null || typeof kwargs !== "object" || kwargs [ρσ_kwargs_symbol] !== true) kwargs = {};
-            var args = Array.prototype.slice.call(arguments, 1);
-            if (kwargs !== null && typeof kwargs === "object" && kwargs [ρσ_kwargs_symbol] === true) args.pop();
-            var ans, vattr, val, attr, arg;
-            ans = this.createElement(tag);
-            var ρσ_Iter0 = ρσ_Iterable(kwargs);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                attr = ρσ_Iter0[ρσ_Index0];
-                vattr = str.replace(str.rstrip(attr, "_"), "_", "-");
-                val = kwargs[(typeof attr === "number" && attr < 0) ? kwargs.length + attr : attr];
-                if (callable(val)) {
-                    if (str.startswith(attr, "on")) {
-                        attr = attr.slice(2);
-                    }
-                    ans.addEventListener(attr, val);
-                } else if (val === true) {
-                    ans.setAttribute(vattr, vattr);
-                } else if (typeof val === "string") {
-                    ans.setAttribute(vattr, val);
-                }
-            }
-            var ρσ_Iter1 = ρσ_Iterable(args);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                arg = ρσ_Iter1[ρσ_Index1];
-                if (typeof arg === "string") {
-                    arg = this.createTextNode(arg);
-                }
-                ans.appendChild(arg);
-            }
-            return ans;
-        };
-        if (!_makeelement.__handles_kwarg_interpolation__) Object.defineProperties(_makeelement, {
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["tag"]}
-        });
-
-        function maker_for_document(document) {
-            var E;
-            E = _makeelement.bind(document);
-            Object.defineProperties(E, (function() {
-                var ρσ_Iter = ρσ_Iterable(html5_tags), ρσ_Result = {}, tag;
-                for (var ρσ_Index = 0; ρσ_Index < ρσ_Iter.length; ρσ_Index++) {
-                    tag = ρσ_Iter[ρσ_Index];
-                    ρσ_Result[tag] = ((function(){
-                        var ρσ_d = {};
-                        ρσ_d["value"] = _makeelement.bind(document, tag);
-                        return ρσ_d;
-                    }).call(this));
-                }
-                return ρσ_Result;
-            })());
-            return E;
-        };
-        if (!maker_for_document.__argnames__) Object.defineProperties(maker_for_document, {
-            __argnames__ : {value: ["document"]}
-        });
-
-        if (typeof document === "undefined") {
-            E = maker_for_document((function(){
-                var ρσ_d = {};
-                ρσ_d["createTextNode"] = (function() {
-                    var ρσ_anonfunc = function (value) {
-                        return value;
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["value"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                ρσ_d["createElement"] = (function() {
-                    var ρσ_anonfunc = function (name) {
-                        return (function(){
-                            var ρσ_d = {};
-                            ρσ_d["name"] = name;
-                            ρσ_d["children"] = ρσ_list_decorate([]);
-                            ρσ_d["attributes"] = {};
-                            ρσ_d["setAttribute"] = (function() {
-                                var ρσ_anonfunc = function (name, val) {
-                                    (ρσ_expr_temp = this.attributes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = val;
-                                };
-                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                    __argnames__ : {value: ["name", "val"]}
-                                });
-                                return ρσ_anonfunc;
-                            })();
-                            ρσ_d["appendChild"] = (function() {
-                                var ρσ_anonfunc = function (child) {
-                                    this.children.push(child);
-                                };
-                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                    __argnames__ : {value: ["child"]}
-                                });
-                                return ρσ_anonfunc;
-                            })();
-                            return ρσ_d;
-                        }).call(this);
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["name"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                return ρσ_d;
-            }).call(this));
-        } else {
-            E = maker_for_document(document);
-        }
-        ρσ_modules.elementmaker.html_elements = html_elements;
-        ρσ_modules.elementmaker.mathml_elements = mathml_elements;
-        ρσ_modules.elementmaker.svg_elements = svg_elements;
-        ρσ_modules.elementmaker.html5_tags = html5_tags;
-        ρσ_modules.elementmaker.E = E;
-        ρσ_modules.elementmaker._makeelement = _makeelement;
-        ρσ_modules.elementmaker.maker_for_document = maker_for_document;
-    })();
-
-    (function(){
-        var __name__ = "settings";
-        var options_list, character_settings, current_tab;
-        var E = ρσ_modules.elementmaker.E;
-
-        var getBrowser = ρσ_modules.utils.getBrowser;
-        var roll20TabTitle = ρσ_modules.utils.roll20TabTitle;
-
-        options_list = (function(){
-            var ρσ_d = {};
-            ρσ_d["whispers"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["short"] = "Whisper all rolls";
-                ρσ_d["title"] = "Whisper all rolls to the DM";
-                ρσ_d["description"] = "If enabled, all the rolls will be whispered to the DM";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = false;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["whisper-monsters"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Whisper monster rolls to the DM";
-                ρσ_d["description"] = "If enabled, all the rolls from monster stat blocks will be whispered to the DM";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["roll-advantage"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["short"] = "Roll with Advantage";
-                ρσ_d["title"] = "Always roll Advantange/Disadvantage";
-                ρσ_d["description"] = "Always roll a second dice for Advantage/Disadvantage";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["auto-roll-damage"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Auto roll Damage and Crit";
-                ρσ_d["description"] = "Always roll damage and critical hit dice when doing an attack";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["initiative-tracker"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Add initiative roll to the Turn Tracker";
-                ρσ_d["description"] = "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in Roll20, and will also change the way the output of 'Advantage on initiative' rolls appear";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["update-hp"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Update Roll20 Token HP";
-                ρσ_d["description"] = "When changing HP here, update it in Roll20 tokens and sheets";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["template"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Roll20 Character Sheet Setting";
-                ρσ_d["description"] = "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.";
-                ρσ_d["type"] = "combobox";
-                ρσ_d["default"] = "roll20";
-                ρσ_d["choices"] = (function(){
-                    var ρσ_d = {};
-                    ρσ_d["roll20"] = "D&D 5E By Roll20";
-                    ρσ_d["default"] = "Other templates";
-                    return ρσ_d;
-                }).call(this);
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["subst-roll20"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Replace Dices formulas in Roll20";
-                ρσ_d["description"] = "In Roll20, if a spell card or an item or a feat has a dice formula in its description,\nenabling this will make the formula clickable to generate the roll in chat.";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["subst-dndbeyond"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Replace Dices formulas in D&D Beyond (Spells & Character Sheet)";
-                ρσ_d["description"] = "In the D&D Beyond Spell page or Character sheet side panel, if a spell, item, feat or action has a dice formula in its description,\nenabling this will add a dice icon next to the formula to allow you to roll it.";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["subst-dndbeyond-stat-blocks"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Replace Dices formulas in D&D Beyond (Stat blocks)";
-                ρσ_d["description"] = "In D&D Beyond, if a dice formula is found in the stat block of a creature, monster, vehicle,\nenabling this will add a dice icon next to the formula to allow you to roll it.";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["handle-stat-blocks"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Add roll buttons to stat blocks";
-                ρσ_d["description"] = "In D&D Beyond, adds roll buttons for abilities/saving throws/skills/actions to the stat block of a creature, monster or vehicle.";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["crit-prefix"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Critical Hit Prefix";
-                ρσ_d["description"] = "Prefix to add to the Critical Hit dice result.\nIt might be less confusing to explicitely show the crit damage";
-                ρσ_d["type"] = "string";
-                ρσ_d["default"] = "Crit: ";
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["components-display"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Components to display in spell attacks";
-                ρσ_d["description"] = "When doing a spell attack, what components to show alongside the spell roll.";
-                ρσ_d["type"] = "combobox";
-                ρσ_d["default"] = "all";
-                ρσ_d["choices"] = (function(){
-                    var ρσ_d = {};
-                    ρσ_d["all"] = "All components";
-                    ρσ_d["material"] = "Only material components";
-                    ρσ_d["none"] = "Do not display anything";
-                    return ρσ_d;
-                }).call(this);
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["component-prefix"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Component Prefix";
-                ρσ_d["description"] = "Prefix to the components display of a spell attack.\nIf displaying material components only, you may want to set it to 'Materials used :' for example";
-                ρσ_d["type"] = "string";
-                ρσ_d["default"] = "Components: ";
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["roll20-tab"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Select the Roll20 tab or campaign to send rolls to";
-                ρσ_d["description"] = "Select the tab to send rolls to or the specific campaign name.\nYou can select the campaign or tab from the extension's popup menu in the Roll20 tab itself.\nAfter a specific tab is selected and that tab is closed, it will revert to sending rolls to the same campaign.";
-                ρσ_d["type"] = "special";
-                ρσ_d["default"] = null;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["show-changelog"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Show Changelog when installing a new version";
-                ρσ_d["description"] = "When a new version is released and the extension has been updated,\nopen the changelog in a new window";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["last-version"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["description"] = "Last version that was installed. Used to check if an update just happened";
-                ρσ_d["type"] = "string";
-                ρσ_d["hidden"] = "True";
-                ρσ_d["default"] = "";
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["donate"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["short"] = "Buy me rations for 1 day";
-                ρσ_d["title"] = "Donate to show your appreciation!";
-                ρσ_d["description"] = "I know you already appreciate this extension, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active or just to say thank you, you can!";
-                ρσ_d["type"] = "link";
-                ρσ_d["default"] = "https://paypal.me/KaKaRoTo";
-                ρσ_d["icon"] = "images/donate.png";
-                return ρσ_d;
-            }).call(this);
-            return ρσ_d;
-        }).call(this);
-        character_settings = (function(){
-            var ρσ_d = {};
-            ρσ_d["custom-roll-dice"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Custom Roll dice formula bonus";
-                ρσ_d["description"] = "Add custom formula to d20 rolls (Bless, Guidance, Bane, Magic Weapon, etc..)";
-                ρσ_d["type"] = "string";
-                ρσ_d["default"] = "";
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["custom-damage-dice"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Custom Damage dice formula bonus";
-                ρσ_d["description"] = "Add custom dice to damage rolls (Magic Weapon, Elemental Weapon, etc..)";
-                ρσ_d["type"] = "string";
-                ρσ_d["default"] = "";
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["rogue-sneak-attack"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Rogue: Sneak Attack";
-                ρσ_d["description"] = "Send Sneak Attack damage with each attack roll";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["cleric-disciple-life"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Cleric: Disciple of Life";
-                ρσ_d["description"] = "Send Disciple of Life healing bonus";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = false;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["bard-joat"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Bard: Jack of All Trades";
-                ρσ_d["description"] = "Add JoaT bonus to raw ability checks";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["sharpshooter"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Sharpshooter: Apply to next Roll";
-                ρσ_d["description"] = "Apply Sharpshooter -5 penalty to roll and +10 to damage";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = false;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["great-weapon-master"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Great Weapon Master: Apply to next Roll";
-                ρσ_d["description"] = "Apply Great Weapon Master -5 penalty to roll and +10 to damage";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = false;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["brutal-critical"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Brutal Critical/Savage Attacks: Roll extra die";
-                ρσ_d["description"] = "Roll extra damage die on crit for Brutal Critical and Save Attacks features";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
-                return ρσ_d;
-            }).call(this);
-            ρσ_d["barbarian-rage"] = (function(){
-                var ρσ_d = {};
-                ρσ_d["title"] = "Rage: You are raging, ARRGGHHHHHH";
-                ρσ_d["description"] = "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = false;
-                return ρσ_d;
-            }).call(this);
-            return ρσ_d;
-        }).call(this);
-        function getStorage() {
-            return chrome.storage.sync;
-        };
-
-        function storageGet(name, default_value, cb) {
-            getStorage().get((function(){
-                var ρσ_d = {};
-                ρσ_d[name] = default_value;
-                return ρσ_d;
-            }).call(this), (function() {
-                var ρσ_anonfunc = function (items) {
-                    cb(items[(typeof name === "number" && name < 0) ? items.length + name : name]);
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["items"]}
-                });
-                return ρσ_anonfunc;
-            })());
-        };
-        if (!storageGet.__argnames__) Object.defineProperties(storageGet, {
-            __argnames__ : {value: ["name", "default_value", "cb"]}
-        });
-
-        function storageSet() {
-            var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var value = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
-            var cb = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? storageSet.__defaults__.cb : arguments[2];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
-                cb = ρσ_kwargs_obj.cb;
-            }
-            getStorage().set((function(){
-                var ρσ_d = {};
-                ρσ_d[name] = value;
-                return ρσ_d;
-            }).call(this), function () {
-                if (chrome.runtime.lastError) {
-                    console.log("Chrome Runtime Error", chrome.runtime.lastError.message);
-                } else if (cb) {
-                    cb(value);
-                }
-            });
-        };
-        if (!storageSet.__defaults__) Object.defineProperties(storageSet, {
-            __defaults__ : {value: {cb:null}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["name", "value", "cb"]}
-        });
-
-        function getDefaultSettings() {
-            var _list = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? getDefaultSettings.__defaults__._list : arguments[0];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
-                _list = ρσ_kwargs_obj._list;
-            }
-            var settings, option;
-            settings = {};
-            var ρσ_Iter0 = ρσ_Iterable(_list);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                option = ρσ_Iter0[ρσ_Index0];
-                settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].default;
-            }
-            console.log("Default settings :", settings);
-            return settings;
-        };
-        if (!getDefaultSettings.__defaults__) Object.defineProperties(getDefaultSettings, {
-            __defaults__ : {value: {_list:options_list}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["_list"]}
-        });
-
-        function getStoredSettings() {
-            var cb = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var key = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? getStoredSettings.__defaults__.key : arguments[1];
-            var _list = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? getStoredSettings.__defaults__._list : arguments[2];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
-                key = ρσ_kwargs_obj.key;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
-                _list = ρσ_kwargs_obj._list;
-            }
-            var settings;
-            settings = getDefaultSettings(_list);
-            storageGet(key, settings, (function() {
-                var ρσ_anonfunc = function (stored_settings) {
-                    var key;
-                    print("Beyond20: Stored settings (" + key + "):", stored_settings);
-                    var ρσ_Iter1 = ρσ_Iterable(settings);
-                    for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                        key = ρσ_Iter1[ρσ_Index1];
-                        if (!ρσ_in(key, stored_settings)) {
-                            stored_settings[(typeof key === "number" && key < 0) ? stored_settings.length + key : key] = settings[(typeof key === "number" && key < 0) ? settings.length + key : key];
-                        }
-                    }
-                    cb(stored_settings);
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["stored_settings"]}
-                });
-                return ρσ_anonfunc;
-            })());
-        };
-        if (!getStoredSettings.__defaults__) Object.defineProperties(getStoredSettings, {
-            __defaults__ : {value: {key:"settings", _list:options_list}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["cb", "key", "_list"]}
-        });
-
-        function setSettings() {
-            var settings = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var cb = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? setSettings.__defaults__.cb : arguments[1];
-            var key = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? setSettings.__defaults__.key : arguments[2];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
-                cb = ρσ_kwargs_obj.cb;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
-                key = ρσ_kwargs_obj.key;
-            }
-            storageSet(key, settings, (function() {
-                var ρσ_anonfunc = function (settings) {
-                    console.log("Beyond20: Saved settings (" + key + "): ", settings);
-                    if (cb) {
-                        cb(settings);
-                    }
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["settings"]}
-                });
-                return ρσ_anonfunc;
-            })());
-        };
-        if (!setSettings.__defaults__) Object.defineProperties(setSettings, {
-            __defaults__ : {value: {cb:null, key:"settings"}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["settings", "cb", "key"]}
-        });
-
-        function mergeSettings() {
-            var settings = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var cb = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? mergeSettings.__defaults__.cb : arguments[1];
-            var key = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? mergeSettings.__defaults__.key : arguments[2];
-            var _list = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? mergeSettings.__defaults__._list : arguments[3];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
-                cb = ρσ_kwargs_obj.cb;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
-                key = ρσ_kwargs_obj.key;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
-                _list = ρσ_kwargs_obj._list;
-            }
-            console.log("Saving new settings (" + key + "): ", settings);
-            function setNewSettings(stored_settings) {
-                var k;
-                var ρσ_Iter2 = ρσ_Iterable(settings);
-                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                    k = ρσ_Iter2[ρσ_Index2];
-                    stored_settings[(typeof k === "number" && k < 0) ? stored_settings.length + k : k] = settings[(typeof k === "number" && k < 0) ? settings.length + k : k];
-                }
-                setSettings(stored_settings, cb, key);
-            };
-            if (!setNewSettings.__argnames__) Object.defineProperties(setNewSettings, {
-                __argnames__ : {value: ["stored_settings"]}
-            });
-
-            getStoredSettings(setNewSettings, key, _list);
-        };
-        if (!mergeSettings.__defaults__) Object.defineProperties(mergeSettings, {
-            __defaults__ : {value: {cb:null, key:"settings", _list:options_list}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["settings", "cb", "key", "_list"]}
-        });
-
-        function resetSettings() {
-            var cb = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? resetSettings.__defaults__.cb : arguments[0];
-            var _list = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? resetSettings.__defaults__._list : arguments[1];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
-                cb = ρσ_kwargs_obj.cb;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
-                _list = ρσ_kwargs_obj._list;
-            }
-            setSettings(getDefaultSettings(_list), cb);
-        };
-        if (!resetSettings.__defaults__) Object.defineProperties(resetSettings, {
-            __defaults__ : {value: {cb:null, _list:options_list}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["cb", "_list"]}
-        });
-
-        function createHTMLOptionEx() {
-            var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var option = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
-            var short = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? createHTMLOptionEx.__defaults__.short : arguments[2];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "short")){
-                short = ρσ_kwargs_obj.short;
-            }
-            var description_p, title, e, make_li, dropdown_options, p;
-            if ((option.hidden === true || typeof option.hidden === "object" && ρσ_equals(option.hidden, true)) || short && !ρσ_exists.n(option.short) || !ρσ_exists.n(option.title)) {
-                return null;
-            }
-            description_p = (short) ? ρσ_list_decorate([]) : list(map(E.p, option.description.split("\n")));
-            title = (short) ? option.short : option.title;
-            if ((option.type === "bool" || typeof option.type === "object" && ρσ_equals(option.type, "bool"))) {
-                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [E.h4(title)].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.input, [ρσ_desugar_kwargs({id: name, class_: "beyond20-option-input", name: name, type_: "checkbox"})]), ρσ_interpolate_kwargs.call(E, E.label, [ρσ_desugar_kwargs({for_: name, class_: "label-default"})])].concat([ρσ_desugar_kwargs({class_: "material-switch pull-right"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-bool"})]));
-            } else if ((option.type === "string" || typeof option.type === "object" && ρσ_equals(option.type, "string"))) {
-                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [E.h4(title)].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.input, [ρσ_desugar_kwargs({id: name, class_: "beyond20-option-input", name: name, type_: "text"})])].concat([ρσ_desugar_kwargs({class_: "right-entry"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-string"})]));
-            } else if ((option.type === "combobox" || typeof option.type === "object" && ρσ_equals(option.type, "combobox"))) {
-                make_li = (function() {
-                    var ρσ_anonfunc = function (o) {
-                        return E.li(ρσ_interpolate_kwargs.call(E, E.a, [o].concat([ρσ_desugar_kwargs({href: "#"})])));
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["o"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                dropdown_options = list(map(make_li, Object.values(option.choices)));
-                var ρσ_Iter3 = ρσ_Iterable(description_p);
-                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                    p = ρσ_Iter3[ρσ_Index3];
-                    p.classList.add("select");
-                }
-                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, [(ρσ_expr_temp = option.choices)[ρσ_bound_index(option.default, ρσ_expr_temp)]].concat([ρσ_desugar_kwargs({id: name, class_: "input select beyond20-option-input", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-combobox"})]));
-            } else if ((option.type === "link" || typeof option.type === "object" && ρσ_equals(option.type, "link"))) {
-                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4(title)].concat([ρσ_desugar_kwargs({href: option.default})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "link-image", src: chrome.extension.getURL(option.icon)})])].concat([ρσ_desugar_kwargs({class_: "image-link"})]))].concat([ρσ_desugar_kwargs({href: option.default})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", id: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-link"})]));
-            } else if ((option.type === "special" || typeof option.type === "object" && ρσ_equals(option.type, "special"))) {
-                e = option.createHTMLElement(name, short);
-            }
-            return e;
-        };
-        if (!createHTMLOptionEx.__defaults__) Object.defineProperties(createHTMLOptionEx, {
-            __defaults__ : {value: {short:false}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["name", "option", "short"]}
-        });
-
-        function createHTMLOption() {
-            var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var short = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? createHTMLOption.__defaults__.short : arguments[1];
-            var _list = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? createHTMLOption.__defaults__._list : arguments[2];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "short")){
-                short = ρσ_kwargs_obj.short;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
-                _list = ρσ_kwargs_obj._list;
-            }
-            return createHTMLOptionEx(name, _list[(typeof name === "number" && name < 0) ? _list.length + name : name], short);
-        };
-        if (!createHTMLOption.__defaults__) Object.defineProperties(createHTMLOption, {
-            __defaults__ : {value: {short:false, _list:options_list}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["name", "short", "_list"]}
-        });
-
-        function initializeMarkaGroup(group) {
-            var triggerOpen, triggerClose, dropdown_menu, marka, input, m, makeOpenCB, makeCloseCB;
-            triggerOpen = $(group).find(".select");
-            triggerClose = $(group).find(".dropdown-menu li");
-            dropdown_menu = $(group).find(".dropdown-menu");
-            marka = $(group).find(".icon");
-            input = $(group).find(".input");
-            m = new Marka("#" + marka.attr("id"));
-            m.set("triangle").size(10);
-            m.rotate("down");
-            $(group).find(".button-group").append(marka);
-            makeOpenCB = (function() {
-                var ρσ_anonfunc = function (dropdown_menu, icon, m) {
-                    return (function() {
-                        var ρσ_anonfunc = function (event) {
-                            event.preventDefault();
-                            dropdown_menu.toggleClass("open");
-                            if (icon.hasClass("marka-icon-times")) {
-                                m.set("triangle").size(10);
-                            } else {
-                                m.set("times").size(15);
-                            }
-                        };
-                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                            __argnames__ : {value: ["event"]}
-                        });
-                        return ρσ_anonfunc;
-                    })();
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["dropdown_menu", "icon", "m"]}
-                });
-                return ρσ_anonfunc;
-            })();
-            makeCloseCB = (function() {
-                var ρσ_anonfunc = function (dropdown_menu, input, m) {
-                    return (function() {
-                        var ρσ_anonfunc = function (event) {
-                            event.preventDefault();
-                            input.text(this.innerText);
-                            input.trigger("markaChanged");
-                            dropdown_menu.removeClass("open");
-                            m.set("triangle").size(10);
-                        };
-                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                            __argnames__ : {value: ["event"]}
-                        });
-                        return ρσ_anonfunc;
-                    })();
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["dropdown_menu", "input", "m"]}
-                });
-                return ρσ_anonfunc;
-            })();
-            triggerOpen.bind("click", makeOpenCB(dropdown_menu, marka, m));
-            triggerClose.bind("click", makeCloseCB(dropdown_menu, input, m));
-        };
-        if (!initializeMarkaGroup.__argnames__) Object.defineProperties(initializeMarkaGroup, {
-            __argnames__ : {value: ["group"]}
-        });
-
-        function initializeMarka() {
-            var groups, group;
-            groups = $(".beyond20-option-combobox");
-            var ρσ_Iter4 = ρσ_Iterable(groups);
-            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                group = ρσ_Iter4[ρσ_Index4];
-                initializeMarkaGroup(group);
-            }
-        };
-
-        function extractSettingsData() {
-            var _list = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? extractSettingsData.__defaults__._list : arguments[0];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
-                _list = ρσ_kwargs_obj._list;
-            }
-            var settings, e, o_type, val, choices, key, option;
-            settings = {};
-            var ρσ_Iter5 = ρσ_Iterable(_list);
-            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                option = ρσ_Iter5[ρσ_Index5];
-                e = $("#" + option);
-                if (e.length > 0) {
-                    o_type = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].type;
-                    if ((o_type === "bool" || typeof o_type === "object" && ρσ_equals(o_type, "bool"))) {
-                        settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = e.prop("checked");
-                    } else if ((o_type === "combobox" || typeof o_type === "object" && ρσ_equals(o_type, "combobox"))) {
-                        val = e.text();
-                        choices = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].choices;
-                        var ρσ_Iter6 = ρσ_Iterable(choices);
-                        for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                            key = ρσ_Iter6[ρσ_Index6];
-                            if ((choices[(typeof key === "number" && key < 0) ? choices.length + key : key] === val || typeof choices[(typeof key === "number" && key < 0) ? choices.length + key : key] === "object" && ρσ_equals(choices[(typeof key === "number" && key < 0) ? choices.length + key : key], val))) {
-                                settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = key;
-                                break;
-                            }
-                        }
-                    } else if ((o_type === "string" || typeof o_type === "object" && ρσ_equals(o_type, "string"))) {
-                        settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = e.val();
-                    } else if ((o_type === "special" || typeof o_type === "object" && ρσ_equals(o_type, "special"))) {
-                        settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].get(option);
-                    }
-                }
-            }
-            return settings;
-        };
-        if (!extractSettingsData.__defaults__) Object.defineProperties(extractSettingsData, {
-            __defaults__ : {value: {_list:options_list}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["_list"]}
-        });
-
-        function loadSettings() {
-            var settings = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var _list = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? loadSettings.__defaults__._list : arguments[1];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
-                _list = ρσ_kwargs_obj._list;
-            }
-            var o_type, val, choices, option;
-            var ρσ_Iter7 = ρσ_Iterable(settings);
-            for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                option = ρσ_Iter7[ρσ_Index7];
-                if (!_list[(typeof option === "number" && option < 0) ? _list.length + option : option]) {
-                    continue;
-                }
-                o_type = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].type;
-                if ((o_type === "bool" || typeof o_type === "object" && ρσ_equals(o_type, "bool"))) {
-                    $("#" + option).prop("checked", settings[(typeof option === "number" && option < 0) ? settings.length + option : option]);
-                } else if ((o_type === "combobox" || typeof o_type === "object" && ρσ_equals(o_type, "combobox"))) {
-                    val = settings[(typeof option === "number" && option < 0) ? settings.length + option : option];
-                    choices = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].choices;
-                    $("#" + option).text(choices[(typeof val === "number" && val < 0) ? choices.length + val : val]);
-                } else if ((o_type === "string" || typeof o_type === "object" && ρσ_equals(o_type, "string"))) {
-                    $("#" + option).val(settings[(typeof option === "number" && option < 0) ? settings.length + option : option]);
-                } else if ((o_type === "special" || typeof o_type === "object" && ρσ_equals(o_type, "special"))) {
-                    _list[(typeof option === "number" && option < 0) ? _list.length + option : option].set(option, settings);
-                }
-            }
-        };
-        if (!loadSettings.__defaults__) Object.defineProperties(loadSettings, {
-            __defaults__ : {value: {_list:options_list}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["settings", "_list"]}
-        });
-
-        function restoreSavedSettings() {
-            var cb = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? restoreSavedSettings.__defaults__.cb : arguments[0];
-            var key = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? restoreSavedSettings.__defaults__.key : arguments[1];
-            var _list = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? restoreSavedSettings.__defaults__._list : arguments[2];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
-                cb = ρσ_kwargs_obj.cb;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
-                key = ρσ_kwargs_obj.key;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
-                _list = ρσ_kwargs_obj._list;
-            }
-            var settings, load;
-            settings = getDefaultSettings(_list);
-            load = (function() {
-                var ρσ_anonfunc = function (stored_settings) {
-                    loadSettings(stored_settings, _list);
-                    if (cb) {
-                        cb(stored_settings);
-                    }
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["stored_settings"]}
-                });
-                return ρσ_anonfunc;
-            })();
-            getStoredSettings(load, key, _list);
-        };
-        if (!restoreSavedSettings.__defaults__) Object.defineProperties(restoreSavedSettings, {
-            __defaults__ : {value: {cb:null, key:"settings", _list:options_list}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["cb", "key", "_list"]}
-        });
-
-        function saveSettings() {
-            var cb = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var key = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? saveSettings.__defaults__.key : arguments[1];
-            var _list = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? saveSettings.__defaults__._list : arguments[2];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
-                key = ρσ_kwargs_obj.key;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
-                _list = ρσ_kwargs_obj._list;
-            }
-            mergeSettings(extractSettingsData(_list), cb, key, _list);
-        };
-        if (!saveSettings.__defaults__) Object.defineProperties(saveSettings, {
-            __defaults__ : {value: {key:"settings", _list:options_list}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["cb", "key", "_list"]}
-        });
-
-        function initializeSettings() {
-            var cb = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? initializeSettings.__defaults__.cb : arguments[0];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
-                cb = ρσ_kwargs_obj.cb;
-            }
-            initializeMarka();
-            restoreSavedSettings(cb);
-        };
-        if (!initializeSettings.__defaults__) Object.defineProperties(initializeSettings, {
-            __defaults__ : {value: {cb:null}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["cb"]}
-        });
-
-        function createRoll20TabCombobox(name, short, dropdown_options) {
-            var option, description, title, description_p, p;
-            option = options_list[(typeof name === "number" && name < 0) ? options_list.length + name : name];
-            description = (short) ? "Restrict where rolls are sent.\nUseful if you have multiple Roll20 windows open" : option.description;
-            title = (short) ? "Send Beyond 20 rolls to" : option.title;
-            description_p = list(map(E.p, description.split("\n")));
-            var ρσ_Iter8 = ρσ_Iterable(description_p);
-            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                p = ρσ_Iter8[ρσ_Index8];
-                p.classList.add("select");
-            }
-            return ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, ["All Roll20 Tabs"].concat([ρσ_desugar_kwargs({id: name, class_: "input select beyond20-option-input", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({id: "beyond20-option-roll20-tab", class_: "list-group-item beyond20-option beyond20-option-combobox" + ((short) ? " roll20-tab-short" : "")})]));
-        };
-        if (!createRoll20TabCombobox.__argnames__) Object.defineProperties(createRoll20TabCombobox, {
-            __argnames__ : {value: ["name", "short", "dropdown_options"]}
-        });
-
-        function createRoll20TabSetting(name, short) {
-            var dropdown_options;
-            if (short) {
-                dropdown_options = ρσ_list_decorate([ E.li(ρσ_interpolate_kwargs.call(E, E.a, ["All Roll20 Tabs"].concat([ρσ_desugar_kwargs({href: "#"})]))), E.li(ρσ_interpolate_kwargs.call(E, E.a, ["This Campaign"].concat([ρσ_desugar_kwargs({href: "#"})]))), E.li(ρσ_interpolate_kwargs.call(E, E.a, ["This Specific Tab"].concat([ρσ_desugar_kwargs({href: "#"})]))) ]);
-            } else {
-                dropdown_options = ρσ_list_decorate([ E.li(ρσ_interpolate_kwargs.call(E, E.a, ["All Roll20 Tabs"].concat([ρσ_desugar_kwargs({href: "#"})]))) ]);
-            }
-            return createRoll20TabCombobox(name, short, dropdown_options);
-        };
-        if (!createRoll20TabSetting.__argnames__) Object.defineProperties(createRoll20TabSetting, {
-            __argnames__ : {value: ["name", "short"]}
-        });
-
-        function setRoll20TabSetting(name, settings) {
-            var val, combobox, ρσ_unpack, id, title, current_title, current_id, dropdown_options;
-            val = settings[(typeof name === "number" && name < 0) ? settings.length + name : name];
-            combobox = $("#beyond20-option-roll20-tab");
-            if ((combobox.length === 0 || typeof combobox.length === "object" && ρσ_equals(combobox.length, 0))) {
-                return;
-            }
-            if (combobox.hasClass("roll20-tab-short")) {
-                console.log("Set roll20 tab, is SHORT ", val);
-                if (val === null) {
-                    $("#" + name).text("All Roll20 Tabs");
-                } else {
-                    ρσ_unpack = [val.id, val.title];
-                    id = ρσ_unpack[0];
-                    title = ρσ_unpack[1];
-                    current_title = roll20TabTitle(current_tab);
-                    current_id = current_tab.id;
-                    console.log("roll20-tab settings are : ", id, title, current_id, current_title);
-                    if ((id === 0 || typeof id === "object" && ρσ_equals(id, 0)) && (title === current_title || typeof title === "object" && ρσ_equals(title, current_title))) {
-                        $("#" + name).text("This Campaign");
-                    } else if ((id === current_id || typeof id === "object" && ρσ_equals(id, current_id)) && (title === current_title || typeof title === "object" && ρσ_equals(title, current_title))) {
-                        $("#" + name).text("This Specific Tab");
-                    } else {
-                        dropdown_options = ρσ_list_decorate([ E.li(ρσ_interpolate_kwargs.call(E, E.a, ["All Roll20 Tabs"].concat([ρσ_desugar_kwargs({href: "#"})]))), E.li(ρσ_interpolate_kwargs.call(E, E.a, ["This Campaign"].concat([ρσ_desugar_kwargs({href: "#"})]))), E.li(ρσ_interpolate_kwargs.call(E, E.a, ["This Specific Tab"].concat([ρσ_desugar_kwargs({href: "#"})]))), E.li(ρσ_interpolate_kwargs.call(E, E.a, ["Another tab or campaign (No change)"].concat([ρσ_desugar_kwargs({href: "#"})]))) ]);
-                        combobox.replaceWith(createRoll20TabCombobox("roll20-tab", true, dropdown_options));
-                        initializeMarkaGroup($("#beyond20-option-roll20-tab"));
-                        console.log("Added new options", dropdown_options);
-                        $("#" + name).text("Another tab or campaign (No change)");
-                        $("#" + name).attr("x-beyond20-id", id);
-                        $("#" + name).attr("x-beyond20-title", title);
-                    }
-                }
-            } else {
-                console.log("Set roll20 tab, is LONG ", val);
-                if (val === null) {
-                    $("#" + name).text("All Roll20 Tabs");
-                } else {
-                    ρσ_unpack = [val.id, val.title];
-                    id = ρσ_unpack[0];
-                    title = ρσ_unpack[1];
-                    console.log("roll20-tab settings are : ", id, title);
-                    dropdown_options = ρσ_list_decorate([ E.li(ρσ_interpolate_kwargs.call(E, E.a, ["All Roll20 Tabs"].concat([ρσ_desugar_kwargs({href: "#"})]))), E.li(ρσ_interpolate_kwargs.call(E, E.a, ["Campaign: " + title].concat([ρσ_desugar_kwargs({href: "#"})]))) ]);
-                    if ((id !== 0 && (typeof id !== "object" || ρσ_not_equals(id, 0)))) {
-                        dropdown_options.append(E.li(ρσ_interpolate_kwargs.call(E, E.a, ["Tab #" + id + " (" + title + ")"].concat([ρσ_desugar_kwargs({href: "#"})]))));
-                    }
-                    combobox.replaceWith(createRoll20TabCombobox("roll20-tab", false, dropdown_options));
-                    initializeMarkaGroup($("#beyond20-option-roll20-tab"));
-                    console.log("Added new options", dropdown_options);
-                    $("#" + name).text($(dropdown_options[dropdown_options.length-1]).text());
-                    $("#" + name).attr("x-beyond20-id", id);
-                    $("#" + name).attr("x-beyond20-title", title);
-                }
-            }
-        };
-        if (!setRoll20TabSetting.__argnames__) Object.defineProperties(setRoll20TabSetting, {
-            __argnames__ : {value: ["name", "settings"]}
-        });
-
-        function getRoll20TabSetting(name) {
-            var opt, value, saved_id, saved_title, ret;
-            opt = $("#" + name);
-            value = opt.text();
-            saved_id = opt.attr("x-beyond20-id");
-            saved_title = opt.attr("x-beyond20-title");
-            if ((value === "All Roll20 Tabs" || typeof value === "object" && ρσ_equals(value, "All Roll20 Tabs"))) {
-                ret = null;
-            } else if (ρσ_in(value, ρσ_list_decorate([ "This Campaign", "This Specific Tab" ]))) {
-                ret = (function(){
-                    var ρσ_d = {};
-                    ρσ_d["id"] = ((value === "This Campaign" || typeof value === "object" && ρσ_equals(value, "This Campaign"))) ? 0 : current_tab.id;
-                    ρσ_d["title"] = roll20TabTitle(current_tab);
-                    return ρσ_d;
-                }).call(this);
-            } else if (value.startsWith("Campaign: ")) {
-                ret = (function(){
-                    var ρσ_d = {};
-                    ρσ_d["id"] = 0;
-                    ρσ_d["title"] = saved_title;
-                    return ρσ_d;
-                }).call(this);
-            } else if ((value === "Another tab or campaign (No change)" || typeof value === "object" && ρσ_equals(value, "Another tab or campaign (No change)")) || value.startsWith("Tab #")) {
-                ret = (function(){
-                    var ρσ_d = {};
-                    ρσ_d["id"] = saved_id;
-                    ρσ_d["title"] = saved_title;
-                    return ρσ_d;
-                }).call(this);
-            }
-            console.log("Get roll20 tab: ", ret);
-            return ret;
-        };
-        if (!getRoll20TabSetting.__argnames__) Object.defineProperties(getRoll20TabSetting, {
-            __argnames__ : {value: ["name"]}
-        });
-
-        function setCurrentTab(tab) {
-            current_tab = tab;
-        };
-        if (!setCurrentTab.__argnames__) Object.defineProperties(setCurrentTab, {
-            __argnames__ : {value: ["tab"]}
-        });
-
-        current_tab = null;
-        options_list["roll20-tab"]["createHTMLElement"] = createRoll20TabSetting;
-        options_list["roll20-tab"]["set"] = setRoll20TabSetting;
-        options_list["roll20-tab"]["get"] = getRoll20TabSetting;
-        ρσ_modules.settings.options_list = options_list;
-        ρσ_modules.settings.character_settings = character_settings;
-        ρσ_modules.settings.current_tab = current_tab;
-        ρσ_modules.settings.getStorage = getStorage;
-        ρσ_modules.settings.storageGet = storageGet;
-        ρσ_modules.settings.storageSet = storageSet;
-        ρσ_modules.settings.getDefaultSettings = getDefaultSettings;
-        ρσ_modules.settings.getStoredSettings = getStoredSettings;
-        ρσ_modules.settings.setSettings = setSettings;
-        ρσ_modules.settings.mergeSettings = mergeSettings;
-        ρσ_modules.settings.resetSettings = resetSettings;
-        ρσ_modules.settings.createHTMLOptionEx = createHTMLOptionEx;
-        ρσ_modules.settings.createHTMLOption = createHTMLOption;
-        ρσ_modules.settings.initializeMarkaGroup = initializeMarkaGroup;
-        ρσ_modules.settings.initializeMarka = initializeMarka;
-        ρσ_modules.settings.extractSettingsData = extractSettingsData;
-        ρσ_modules.settings.loadSettings = loadSettings;
-        ρσ_modules.settings.restoreSavedSettings = restoreSavedSettings;
-        ρσ_modules.settings.saveSettings = saveSettings;
-        ρσ_modules.settings.initializeSettings = initializeSettings;
-        ρσ_modules.settings.createRoll20TabCombobox = createRoll20TabCombobox;
-        ρσ_modules.settings.createRoll20TabSetting = createRoll20TabSetting;
-        ρσ_modules.settings.setRoll20TabSetting = setRoll20TabSetting;
-        ρσ_modules.settings.getRoll20TabSetting = getRoll20TabSetting;
-        ρσ_modules.settings.setCurrentTab = setCurrentTab;
-    })();
-
-    (function(){
 
         var __name__ = "__main__";
 
 
-        var settings, fvtt_tabs, manifest, cb, script;
-        var ROLL20_URL = ρσ_modules.utils.ROLL20_URL;
-        var DNDBEYOND_CHARACTER_URL = ρσ_modules.utils.DNDBEYOND_CHARACTER_URL;
-        var DNDBEYOND_MONSTER_URL = ρσ_modules.utils.DNDBEYOND_MONSTER_URL;
-        var DNDBEYOND_ENCOUNTER_URL = ρσ_modules.utils.DNDBEYOND_ENCOUNTER_URL;
-        var DNDBEYOND_SPELL_URL = ρσ_modules.utils.DNDBEYOND_SPELL_URL;
-        var DNDBEYOND_VEHICLE_URL = ρσ_modules.utils.DNDBEYOND_VEHICLE_URL;
-        var CHANGELOG_URL = ρσ_modules.utils.CHANGELOG_URL;
-        var roll20TabTitle = ρσ_modules.utils.roll20TabTitle;
-        var getBrowser = ρσ_modules.utils.getBrowser;
+        var settings, registered_events;
+        var replaceRolls = ρσ_modules.utils.replaceRolls;
+        var escapeRoll20Macro = ρσ_modules.utils.escapeRoll20Macro;
+        var addCustomEventListener = ρσ_modules.utils.addCustomEventListener;
 
-        var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
-        var getStoredSettings = ρσ_modules.settings.getStoredSettings;
-        var mergeSettings = ρσ_modules.settings.mergeSettings;
-
-        settings = getDefaultSettings();
-        fvtt_tabs = ρσ_list_decorate([]);
-        function updateSettings() {
-            var new_settings = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? updateSettings.__defaults__.new_settings : arguments[0];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "new_settings")){
-                new_settings = ρσ_kwargs_obj.new_settings;
-            }
-            if (new_settings) {
-                settings = new_settings;
-            } else {
-                getStoredSettings((function() {
-                    var ρσ_anonfunc = function (saved_settings) {
-                        var version;
-                        settings = saved_settings;
-                        version = chrome.runtime.getManifest().version;
-                        if (settings["show-changelog"] && (settings["last-version"] !== version && (typeof settings["last-version"] !== "object" || ρσ_not_equals(settings["last-version"], version)))) {
-                            mergeSettings((function(){
-                                var ρσ_d = {};
-                                ρσ_d["last-version"] = version;
-                                return ρσ_d;
-                            }).call(this));
-                            chrome.tabs.create((function(){
-                                var ρσ_d = {};
-                                ρσ_d["url"] = CHANGELOG_URL;
-                                return ρσ_d;
-                            }).call(this));
-                        }
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["saved_settings"]}
-                    });
-                    return ρσ_anonfunc;
-                })());
-            }
-        };
-        if (!updateSettings.__defaults__) Object.defineProperties(updateSettings, {
-            __defaults__ : {value: {new_settings:null}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["new_settings"]}
-        });
-
-        function sendMessageTo(url, request) {
-            chrome.tabs.query((function(){
-                var ρσ_d = {};
-                ρσ_d["url"] = url;
-                return ρσ_d;
-            }).call(this), (function() {
-                var ρσ_anonfunc = function (tabs) {
-                    var tab;
-                    var ρσ_Iter0 = ρσ_Iterable(tabs);
-                    for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                        tab = ρσ_Iter0[ρσ_Index0];
-                        chrome.tabs.sendMessage(tab.id, request);
-                    }
+        settings = null;
+        function getSpeakerByName(name) {
+            var speakas;
+            name = name.toLowerCase();
+            speakas = game.actors.entities.find((function() {
+                var ρσ_anonfunc = function (actor) {
+                    return ρσ_equals(actor.data.name.toLowerCase(), name);
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["tabs"]}
+                    __argnames__ : {value: ["actor"]}
                 });
                 return ρσ_anonfunc;
             })());
+            return speakas;
         };
-        if (!sendMessageTo.__argnames__) Object.defineProperties(sendMessageTo, {
-            __argnames__ : {value: ["url", "request"]}
+        if (!getSpeakerByName.__argnames__) Object.defineProperties(getSpeakerByName, {
+            __argnames__ : {value: ["name"]}
         });
 
-        function sendMessageToRoll20() {
-            var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var limit = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? sendMessageToRoll20.__defaults__.limit : arguments[1];
+        function postChatMessage() {
+            var message = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var character = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postChatMessage.__defaults__.character : arguments[1];
+            var whisper = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postChatMessage.__defaults__.whisper : arguments[2];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "limit")){
-                limit = ρσ_kwargs_obj.limit;
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "character")){
+                character = ρσ_kwargs_obj.character;
             }
-            if (limit) {
-                chrome.tabs.query((function(){
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "whisper")){
+                whisper = ρσ_kwargs_obj.whisper;
+            }
+            var speakas, data;
+            speakas = getSpeakerByName(character);
+            data = (function(){
+                var ρσ_d = {};
+                ρσ_d["content"] = message;
+                ρσ_d["user"] = game.user._id;
+                return ρσ_d;
+            }).call(this);
+            if (speakas) {
+                data["speaker"] = ChatMessage.getSpeaker((function(){
                     var ρσ_d = {};
-                    ρσ_d["url"] = ROLL20_URL;
+                    ρσ_d["actor"] = speakas;
                     return ρσ_d;
-                }).call(this), (function() {
-                    var ρσ_anonfunc = function (tabs) {
-                        var found, tab;
-                        found = false;
-                        var ρσ_Iter1 = ρσ_Iterable(tabs);
-                        for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                            tab = ρσ_Iter1[ρσ_Index1];
-                            if (((limit.id === 0 || typeof limit.id === "object" && ρσ_equals(limit.id, 0)) || (tab.id === limit.id || typeof tab.id === "object" && ρσ_equals(tab.id, limit.id))) && ρσ_equals(roll20TabTitle(tab), limit.title)) {
-                                chrome.tabs.sendMessage(tab.id, request);
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found && (limit.id !== 0 && (typeof limit.id !== "object" || ρσ_not_equals(limit.id, 0)))) {
-                            limit.id = 0;
-                            mergeSettings((function(){
-                                var ρσ_d = {};
-                                ρσ_d["roll20-tab"] = limit;
-                                return ρσ_d;
-                            }).call(this));
-                            var ρσ_Iter2 = ρσ_Iterable(tabs);
-                            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                                tab = ρσ_Iter2[ρσ_Index2];
-                                if (ρσ_equals(roll20TabTitle(tab), limit.title)) {
-                                    chrome.tabs.sendMessage(tab.id, request);
-                                    break;
-                                }
-                            }
-                        }
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["tabs"]}
-                    });
-                    return ρσ_anonfunc;
-                })());
-            } else {
-                sendMessageTo(ROLL20_URL, request);
+                }).call(this));
             }
+            if (whisper) {
+                data["whisper"] = ChatMessage.getWhisperIDs("GM");
+            }
+            ChatMessage.create(data);
         };
-        if (!sendMessageToRoll20.__defaults__) Object.defineProperties(sendMessageToRoll20, {
-            __defaults__ : {value: {limit:null}},
+        if (!postChatMessage.__defaults__) Object.defineProperties(postChatMessage, {
+            __defaults__ : {value: {character:null, whisper:false}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["request", "limit"]}
+            __argnames__ : {value: ["message", "character", "whisper"]}
         });
 
-        function sendMessageToFVTT(request) {
-            var tab;
-            console.log("Sending message to tabs : ", fvtt_tabs);
-            var ρσ_Iter3 = ρσ_Iterable(fvtt_tabs);
-            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                tab = ρσ_Iter3[ρσ_Index3];
-                chrome.tabs.sendMessage(tab, request);
+        function rollSkill() {
+            var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var custom_roll_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollSkill.__defaults__.custom_roll_dice : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
+                custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
+            var modifier, ev;
+            modifier = request.modifier;
+            ev = new Event("Beyond20");
+            ev.shiftKey = ev.altKey = ev.ctrlKey = ev.metaKey = false;
+            if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && (request.ability === "STR" || typeof request.ability === "object" && ρσ_equals(request.ability, "STR")) && ρσ_in("Rage", request.character["class-features"]) && request.character.settings["barbarian-rage"]) {
+                ev.altKey = true;
+            }
+            Dice5e.d20Roll((function(){
+                var ρσ_d = {};
+                ρσ_d["event"] = ev;
+                ρσ_d["parts"] = "@modifier";
+                ρσ_d["data"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["modifier"] = request.modifier;
+                    ρσ_d["bonus"] = custom_roll_dice;
+                    return ρσ_d;
+                }).call(this);
+                ρσ_d["title"] = request.skill;
+                ρσ_d["speaker"] = getSpeakerByName(request.character.name);
+                return ρσ_d;
+            }).call(this));
         };
-        if (!sendMessageToFVTT.__argnames__) Object.defineProperties(sendMessageToFVTT, {
-            __argnames__ : {value: ["request"]}
+        if (!rollSkill.__defaults__) Object.defineProperties(rollSkill, {
+            __defaults__ : {value: {custom_roll_dice:""}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["request", "custom_roll_dice"]}
         });
 
-        function sendMessageToBeyond(request) {
-            sendMessageTo(DNDBEYOND_CHARACTER_URL, request);
-            sendMessageTo(DNDBEYOND_MONSTER_URL, request);
-            sendMessageTo(DNDBEYOND_ENCOUNTER_URL, request);
-            sendMessageTo(DNDBEYOND_SPELL_URL, request);
-            sendMessageTo(DNDBEYOND_VEHICLE_URL, request);
-        };
-        if (!sendMessageToBeyond.__argnames__) Object.defineProperties(sendMessageToBeyond, {
-            __argnames__ : {value: ["request"]}
-        });
-
-        function onMessage(request, sender, sendResponse) {
-            console.log("Received message: ", request);
-            if (ρσ_in(request.action, ρσ_list_decorate([ "roll", "hp-update" ]))) {
-                sendMessageToRoll20(request, settings["roll20-tab"]);
-                sendMessageToFVTT(request);
-            } else if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
-                if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
-                    updateSettings(request.settings);
+        function handleRoll(request, new_settings) {
+            var whisper, custom_roll_dice, mod, rname, chatOptions, roll;
+            settings = new_settings;
+            whisper = (request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"] || settings["whispers"];
+            custom_roll_dice = "";
+            if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character"))) {
+                custom_roll_dice = ρσ_exists.e(request.character.settings["custom-roll-dice"], "");
+            }
+            if ((request.type === "skill" || typeof request.type === "object" && ρσ_equals(request.type, "skill"))) {
+                rollSkill(request, custom_roll_dice);
+            } else {
+                mod = (ρσ_exists.n(request.modifier)) ? request.modifier : request.roll;
+                rname = (ρσ_exists.n(request.name)) ? request.name : request.type;
+                chatOptions = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["speaker"] = getSpeakerByName(request.character.name);
+                    ρσ_d["flavor"] = rname;
+                    return ρσ_d;
+                }).call(this);
+                if (whisper) {
+                    chatOptions["whisper"] = ChatMessage.getWhisperIDs("GM");
                 }
-                sendMessageToRoll20(request);
-                sendMessageToBeyond(request);
-                sendMessageToFVTT(request);
-            } else if ((request.action === "activate-icon" || typeof request.action === "object" && ρσ_equals(request.action, "activate-icon"))) {
-                chrome.pageAction.show(sender.tab.id);
-            } else if ((request.action === "register-fvtt-tab" || typeof request.action === "object" && ρσ_equals(request.action, "register-fvtt-tab"))) {
-                fvtt_tabs.append(sender.tab.id);
-            } else if ((request.action === "reload-me" || typeof request.action === "object" && ρσ_equals(request.action, "reload-me"))) {
-                chrome.tabs.reload(sender.tab.id);
+                roll = new Roll(request.roll).roll();
+                roll.toMessage(chatOptions);
             }
         };
-        if (!onMessage.__argnames__) Object.defineProperties(onMessage, {
-            __argnames__ : {value: ["request", "sender", "sendResponse"]}
+        if (!handleRoll.__argnames__) Object.defineProperties(handleRoll, {
+            __argnames__ : {value: ["request", "new_settings"]}
         });
 
-        function executeScripts(tabs, js_files) {
-            var file, tab;
-            var ρσ_Iter4 = ρσ_Iterable(tabs);
-            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                tab = ρσ_Iter4[ρσ_Index4];
-                var ρσ_Iter5 = ρσ_Iterable(js_files);
-                for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                    file = ρσ_Iter5[ρσ_Index5];
-                    chrome.tabs.executeScript(tab.id, (function(){
+        function updateHP() {
+            var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var current = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var total = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? updateHP.__defaults__.total : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "total")){
+                total = ρσ_kwargs_obj.total;
+            }
+            var tokens, prefix, token;
+            console.log("Updating HP for " + name + " : " + current + "/" + total);
+            name = name.toLowerCase();
+            tokens = canvas.tokens.controlledTokens.filter((function() {
+                var ρσ_anonfunc = function (t) {
+                    return ρσ_equals(t.data.name.toLowerCase(), name);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["t"]}
+                });
+                return ρσ_anonfunc;
+            })());
+            var ρσ_Iter0 = ρσ_Iterable(tokens);
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                token = ρσ_Iter0[ρσ_Index0];
+                if (token.actor && token.data.actorLink) {
+                    total = (total) ? total : token.actor.data.attributes.hp.max;
+                    token.actor.update((function(){
                         var ρσ_d = {};
-                        ρσ_d["file"] = file;
+                        ρσ_d["data.attributes.hp.value"] = current;
+                        ρσ_d["data.attributes.hp.max"] = total;
                         return ρσ_d;
                     }).call(this));
+                } else {
+                    if ((token.data.bar1.attribute === "attributes.hp" || typeof token.data.bar1.attribute === "object" && ρσ_equals(token.data.bar1.attribute, "attributes.hp"))) {
+                        prefix = "bar1";
+                        total = (total) ? total : token.data.bar1.max;
+                    } else if ((token.data.bar2.attribute === "attributes.hp" || typeof token.data.bar2.attribute === "object" && ρσ_equals(token.data.bar2.attribute, "attributes.hp"))) {
+                        prefix = "bar2";
+                        total = (total) ? total : token.data.bar2.max;
+                    } else {
+                        prefix = null;
+                    }
+                    if (prefix) {
+                        token.update(canvas.id, (function(){
+                            var ρσ_d = {};
+                            ρσ_d[prefix + ".value"] = current;
+                            ρσ_d[prefix + ".max"] = total;
+                            return ρσ_d;
+                        }).call(this));
+                    }
                 }
             }
         };
-        if (!executeScripts.__argnames__) Object.defineProperties(executeScripts, {
-            __argnames__ : {value: ["tabs", "js_files"]}
+        if (!updateHP.__defaults__) Object.defineProperties(updateHP, {
+            __defaults__ : {value: {total:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["name", "current", "total"]}
         });
 
-        updateSettings();
-        chrome.runtime.onMessage.addListener(onMessage);
-        if (ρσ_equals(getBrowser(), "Chrome")) {
-            manifest = chrome.runtime.getManifest();
-            var ρσ_Iter6 = ρσ_Iterable(manifest.content_scripts);
-            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                script = ρσ_Iter6[ρσ_Index6];
-                cb = (function() {
-                    var ρσ_anonfunc = function (files) {
-                        return (function() {
-                            var ρσ_anonfunc = function (tabs) {
-                                executeScripts(tabs, files);
-                            };
-                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                __argnames__ : {value: ["tabs"]}
-                            });
-                            return ρσ_anonfunc;
-                        })();
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["files"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                chrome.tabs.query((function(){
-                    var ρσ_d = {};
-                    ρσ_d["url"] = script.matches;
-                    return ρσ_d;
-                }).call(this), cb(script.js));
+        function disconnectAllEvents() {
+            var event;
+            var ρσ_Iter1 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                event = ρσ_Iter1[ρσ_Index1];
+                document.removeEventListener.apply(document, event);
             }
-        }
+        };
+
+        console.log("Beyond20: FVTT Page Script loaded");
+        registered_events = ρσ_list_decorate([]);
+        registered_events.append(addCustomEventListener("Roll", handleRoll));
+        registered_events.append(addCustomEventListener("UpdateHP", updateHP));
+        registered_events.append(addCustomEventListener("disconnect", disconnectAllEvents));
     })();
 })();
