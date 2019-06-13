@@ -5480,27 +5480,6 @@ var str = ρσ_str, repr = ρσ_repr;;
         DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
         DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
         CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
-        function escapeRoll20Macro(text) {
-            var to_escape;
-            function escapeCB(m) {
-                var o;
-                o = ord(m.group(0));
-                if ((o === 10 || typeof o === "object" && ρσ_equals(o, 10))) {
-                    o = 13;
-                }
-                return "&#" + str(o) + ";";
-            };
-            if (!escapeCB.__argnames__) Object.defineProperties(escapeCB, {
-                __argnames__ : {value: ["m"]}
-            });
-
-            to_escape = str.join("|\\", "\n[]{}()%@&?".split(""));
-            return re.sub(to_escape, escapeCB, text);
-        };
-        if (!escapeRoll20Macro.__argnames__) Object.defineProperties(escapeRoll20Macro, {
-            __argnames__ : {value: ["text"]}
-        });
-
         function replaceRollsCallback(match, replaceCB) {
             var dice, modifiers, result;
             dice = match.group(2);
@@ -5572,6 +5551,16 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["url"]}
         });
 
+        function injectCSS(css) {
+            var s;
+            s = document.createElement("style");
+            s.textContent = css;
+            (document.head || document.documentElement).appendChild(s);
+        };
+        if (!injectCSS.__argnames__) Object.defineProperties(injectCSS, {
+            __argnames__ : {value: ["css"]}
+        });
+
         function sendCustomEvent(name, data) {
             var event;
             if (ρσ_equals(getBrowser(), "Firefox")) {
@@ -5621,12 +5610,12 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
         ρσ_modules.utils.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
         ρσ_modules.utils.CHANGELOG_URL = CHANGELOG_URL;
-        ρσ_modules.utils.escapeRoll20Macro = escapeRoll20Macro;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
         ρσ_modules.utils.isExtensionDisconnected = isExtensionDisconnected;
         ρσ_modules.utils.injectPageScript = injectPageScript;
+        ρσ_modules.utils.injectCSS = injectCSS;
         ρσ_modules.utils.sendCustomEvent = sendCustomEvent;
         ρσ_modules.utils.addCustomEventListener = addCustomEventListener;
         ρσ_modules.utils.roll20TabTitle = roll20TabTitle;
@@ -5639,6 +5628,42 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         var getBrowser = ρσ_modules.utils.getBrowser;
         var roll20TabTitle = ρσ_modules.utils.roll20TabTitle;
+
+        function Whisper() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            Whisper.prototype.__init__.apply(this, arguments);
+        }
+        Whisper.prototype.__init__ = function __init__ () {
+                    };
+        Whisper.prototype.__repr__ = function __repr__ () {
+                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        Whisper.prototype.__str__ = function __str__ () {
+            return this.__repr__();
+        };
+        Object.defineProperty(Whisper.prototype, "__bases__", {value: []});
+        Whisper.prototype.NO = 0;
+        Whisper.prototype.YES = 1;
+        Whisper.prototype.QUERY = 2;
+
+        function RollType() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            RollType.prototype.__init__.apply(this, arguments);
+        }
+        RollType.prototype.__init__ = function __init__ () {
+                    };
+        RollType.prototype.__repr__ = function __repr__ () {
+                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        RollType.prototype.__str__ = function __str__ () {
+            return this.__repr__();
+        };
+        Object.defineProperty(RollType.prototype, "__bases__", {value: []});
+        RollType.prototype.NORMAL = 0;
+        RollType.prototype.DOUBLE = 1;
+        RollType.prototype.QUERY = 2;
+        RollType.prototype.ADVANTAGE = 3;
+        RollType.prototype.DISADVANTAGE = 4;
 
         options_list = (function(){
             var ρσ_d = {};
@@ -6512,6 +6537,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.settings.options_list = options_list;
         ρσ_modules.settings.character_settings = character_settings;
         ρσ_modules.settings.current_tab = current_tab;
+        ρσ_modules.settings.Whisper = Whisper;
+        ρσ_modules.settings.RollType = RollType;
         ρσ_modules.settings.getStorage = getStorage;
         ρσ_modules.settings.storageGet = storageGet;
         ρσ_modules.settings.storageSet = storageSet;

@@ -5179,27 +5179,6 @@ var str = ρσ_str, repr = ρσ_repr;;
         DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
         DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
         CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
-        function escapeRoll20Macro(text) {
-            var to_escape;
-            function escapeCB(m) {
-                var o;
-                o = ord(m.group(0));
-                if ((o === 10 || typeof o === "object" && ρσ_equals(o, 10))) {
-                    o = 13;
-                }
-                return "&#" + str(o) + ";";
-            };
-            if (!escapeCB.__argnames__) Object.defineProperties(escapeCB, {
-                __argnames__ : {value: ["m"]}
-            });
-
-            to_escape = str.join("|\\", "\n[]{}()%@&?".split(""));
-            return re.sub(to_escape, escapeCB, text);
-        };
-        if (!escapeRoll20Macro.__argnames__) Object.defineProperties(escapeRoll20Macro, {
-            __argnames__ : {value: ["text"]}
-        });
-
         function replaceRollsCallback(match, replaceCB) {
             var dice, modifiers, result;
             dice = match.group(2);
@@ -5271,6 +5250,16 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["url"]}
         });
 
+        function injectCSS(css) {
+            var s;
+            s = document.createElement("style");
+            s.textContent = css;
+            (document.head || document.documentElement).appendChild(s);
+        };
+        if (!injectCSS.__argnames__) Object.defineProperties(injectCSS, {
+            __argnames__ : {value: ["css"]}
+        });
+
         function sendCustomEvent(name, data) {
             var event;
             if (ρσ_equals(getBrowser(), "Firefox")) {
@@ -5320,12 +5309,12 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
         ρσ_modules.utils.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
         ρσ_modules.utils.CHANGELOG_URL = CHANGELOG_URL;
-        ρσ_modules.utils.escapeRoll20Macro = escapeRoll20Macro;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
         ρσ_modules.utils.isExtensionDisconnected = isExtensionDisconnected;
         ρσ_modules.utils.injectPageScript = injectPageScript;
+        ρσ_modules.utils.injectCSS = injectCSS;
         ρσ_modules.utils.sendCustomEvent = sendCustomEvent;
         ρσ_modules.utils.addCustomEventListener = addCustomEventListener;
         ρσ_modules.utils.roll20TabTitle = roll20TabTitle;
@@ -5338,23 +5327,29 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         var settings, registered_events;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
-        var escapeRoll20Macro = ρσ_modules.utils.escapeRoll20Macro;
         var addCustomEventListener = ρσ_modules.utils.addCustomEventListener;
+        var injectCSS = ρσ_modules.utils.injectCSS;
 
         settings = null;
+        injectCSS("\n.tooltip .tooltiptext {\n  visibility: hidden;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 10px;\n  margin: 10px;\n\n  /* Position the tooltip */\n  position: relative;\n  z-index: 1;\n}\n\n.tooltip:hover .tooltiptext {\n  visibility: visible;\n}\n");
         function getSpeakerByName(name) {
-            var speakas;
-            name = name.toLowerCase();
-            speakas = game.actors.entities.find((function() {
+            var low_name, actor;
+            low_name = name.toLowerCase();
+            actor = game.actors.entities.find((function() {
                 var ρσ_anonfunc = function (actor) {
-                    return ρσ_equals(actor.data.name.toLowerCase(), name);
+                    return ρσ_equals(actor.data.name.toLowerCase(), low_name);
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                     __argnames__ : {value: ["actor"]}
                 });
                 return ρσ_anonfunc;
             })());
-            return speakas;
+            return ChatMessage.getSpeaker((function(){
+                var ρσ_d = {};
+                ρσ_d["actor"] = actor;
+                ρσ_d["alias"] = name;
+                return ρσ_d;
+            }).call(this));
         };
         if (!getSpeakerByName.__argnames__) Object.defineProperties(getSpeakerByName, {
             __argnames__ : {value: ["name"]}
@@ -5372,21 +5367,14 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "whisper")){
                 whisper = ρσ_kwargs_obj.whisper;
             }
-            var speakas, data;
-            speakas = getSpeakerByName(character);
+            var data;
             data = (function(){
                 var ρσ_d = {};
                 ρσ_d["content"] = message;
                 ρσ_d["user"] = game.user._id;
+                ρσ_d["speaker"] = getSpeakerByName(character);
                 return ρσ_d;
             }).call(this);
-            if (speakas) {
-                data["speaker"] = ChatMessage.getSpeaker((function(){
-                    var ρσ_d = {};
-                    ρσ_d["actor"] = speakas;
-                    return ρσ_d;
-                }).call(this));
-            }
             if (whisper) {
                 data["whisper"] = ChatMessage.getWhisperIDs("GM");
             }
@@ -5398,6 +5386,122 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["message", "character", "whisper"]}
         });
 
+        function postDescription() {
+            var title = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var character = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var source = ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[2];
+            var attributes = ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[3];
+            var description = ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[4];
+            var rolls = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postDescription.__defaults__.rolls : arguments[5];
+            var whisper = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postDescription.__defaults__.whisper : arguments[6];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "rolls")){
+                rolls = ρσ_kwargs_obj.rolls;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "whisper")){
+                whisper = ρσ_kwargs_obj.whisper;
+            }
+            var style, html, roll_style, attr, r, roll_html, roll;
+            style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;";
+            html = "<details><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>";
+            roll_style = "";
+            if (source || attributes.length > 0) {
+                html += "<table style='" + style + "'>";
+                if (source) {
+                    html += "<tr><td colspan'2'><i>" + source + "</i></td></tr>";
+                }
+                var ρσ_Iter0 = ρσ_Iterable(attributes);
+                for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                    attr = ρσ_Iter0[ρσ_Index0];
+                    html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[(typeof attr === "number" && attr < 0) ? attributes.length + attr : attr] + "</td></tr>";
+                }
+                html += "</table>";
+            }
+            html += "<div style='" + style + "'>" + description.replace("\n", "</br>") + "</div></details>";
+            var ρσ_Iter1 = ρσ_Iterable(rolls);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                roll = ρσ_Iter1[ρσ_Index1];
+                r = rolls[(typeof roll === "number" && roll < 0) ? rolls.length + roll : roll];
+                roll_html = "<span class='tooltip'>" + r.total + "<span class='tooltiptext'>" + r.formula + " = " + r.result + "</span></span>";
+                html += "<b>" + roll + ": </b>" + roll_html + "</br>";
+            }
+            postChatMessage(html, character, whisper);
+        };
+        if (!postDescription.__defaults__) Object.defineProperties(postDescription, {
+            __defaults__ : {value: {rolls:{}, whisper:false}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["title", "character", "source", "attributes", "description", "rolls", "whisper"]}
+        });
+
+        function rolldice() {
+            var title = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var character = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var dice = ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[2];
+            var data = ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[3];
+            var whisper = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rolldice.__defaults__.whisper : arguments[4];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "whisper")){
+                whisper = ρσ_kwargs_obj.whisper;
+            }
+            var rollMode, new_data, parts, new_key, key, roll;
+            if (whisper) {
+                rollMode = "gmroll";
+            } else {
+                rollMode = "roll";
+            }
+            new_data = {};
+            parts = ρσ_list_decorate([ dice ]);
+            var ρσ_Iter2 = ρσ_Iterable(data);
+            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                key = ρσ_Iter2[ρσ_Index2];
+                if ((data[(typeof key === "number" && key < 0) ? data.length + key : key] !== "" && (typeof data[(typeof key === "number" && key < 0) ? data.length + key : key] !== "object" || ρσ_not_equals(data[(typeof key === "number" && key < 0) ? data.length + key : key], "")))) {
+                    new_key = key.replace("_", "").toLowerCase();
+                    new_data[(typeof new_key === "number" && new_key < 0) ? new_data.length + new_key : new_key] = data[(typeof key === "number" && key < 0) ? data.length + key : key];
+                    parts.append(new_key);
+                }
+            }
+            roll = new Roll(parts.join(" + @"), new_data);
+            roll.toMessage((function(){
+                var ρσ_d = {};
+                ρσ_d["speaker"] = getSpeakerByName(character);
+                ρσ_d["flavor"] = title;
+                ρσ_d["rollMode"] = rollMode;
+                return ρσ_d;
+            }).call(this));
+            return roll;
+        };
+        if (!rolldice.__defaults__) Object.defineProperties(rolldice, {
+            __defaults__ : {value: {whisper:false}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["title", "character", "dice", "data", "whisper"]}
+        });
+
+        function rolld20() {
+            var title = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var character = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var data = ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[2];
+            var whisper = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rolld20.__defaults__.whisper : arguments[3];
+            var advantage = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rolld20.__defaults__.advantage : arguments[4];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "whisper")){
+                whisper = ρσ_kwargs_obj.whisper;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "advantage")){
+                advantage = ρσ_kwargs_obj.advantage;
+            }
+            var dice;
+            dice = (advantage) ? "2d20kh" : "1d20";
+            return rolldice(title, character, dice, data, whisper);
+        };
+        if (!rolld20.__defaults__) Object.defineProperties(rolld20, {
+            __defaults__ : {value: {whisper:false, advantage:false}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["title", "character", "data", "whisper", "advantage"]}
+        });
+
         function rollSkill() {
             var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var custom_roll_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollSkill.__defaults__.custom_roll_dice : arguments[1];
@@ -5406,29 +5510,206 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var modifier, ev;
-            modifier = request.modifier;
-            ev = new Event("Beyond20");
-            ev.shiftKey = ev.altKey = ev.ctrlKey = ev.metaKey = false;
-            if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && (request.ability === "STR" || typeof request.ability === "object" && ρσ_equals(request.ability, "STR")) && ρσ_in("Rage", request.character["class-features"]) && request.character.settings["barbarian-rage"]) {
-                ev.altKey = true;
-            }
-            Dice5e.d20Roll((function(){
+            var data, whisper, advantage;
+            data = (function(){
                 var ρσ_d = {};
-                ρσ_d["event"] = ev;
-                ρσ_d["parts"] = "@modifier";
-                ρσ_d["data"] = (function(){
-                    var ρσ_d = {};
-                    ρσ_d["modifier"] = request.modifier;
-                    ρσ_d["bonus"] = custom_roll_dice;
-                    return ρσ_d;
-                }).call(this);
-                ρσ_d["title"] = request.skill;
-                ρσ_d["speaker"] = getSpeakerByName(request.character.name);
+                ρσ_d[request.ability] = request.modifier;
+                ρσ_d["custom_dice"] = custom_roll_dice;
                 return ρσ_d;
-            }).call(this));
+            }).call(this);
+            whisper = (request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"] || settings["whispers"];
+            advantage = (request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && (request.ability === "STR" || typeof request.ability === "object" && ρσ_equals(request.ability, "STR")) && ρσ_in("Rage", request.character["class-features"]) && request.character.settings["barbarian-rage"];
+            rolld20(request.skill, request.character.name, data, whisper, advantage);
         };
         if (!rollSkill.__defaults__) Object.defineProperties(rollSkill, {
+            __defaults__ : {value: {custom_roll_dice:""}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["request", "custom_roll_dice"]}
+        });
+
+        function rollAbility() {
+            var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var custom_roll_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollAbility.__defaults__.custom_roll_dice : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
+                custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
+            }
+            var whisper, advantage, data;
+            whisper = (request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"] || settings["whispers"];
+            advantage = (request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && (request.ability === "STR" || typeof request.ability === "object" && ρσ_equals(request.ability, "STR")) && ρσ_in("Rage", request.character["class-features"]) && request.character.settings["barbarian-rage"];
+            data = (function(){
+                var ρσ_d = {};
+                ρσ_d[request.ability] = request.modifier;
+                ρσ_d["custom_dice"] = custom_roll_dice;
+                return ρσ_d;
+            }).call(this);
+            if (ρσ_exists.n(request["JoaT"])) {
+                data["jack_of_all_trades"] = request["JoaT"];
+            }
+            rolld20(request.name, request.character.name, data, whisper, advantage);
+        };
+        if (!rollAbility.__defaults__) Object.defineProperties(rollAbility, {
+            __defaults__ : {value: {custom_roll_dice:""}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["request", "custom_roll_dice"]}
+        });
+
+        function rollSavingThrow() {
+            var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var custom_roll_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollSavingThrow.__defaults__.custom_roll_dice : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
+                custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
+            }
+            var whisper, advantage, data;
+            whisper = (request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"] || settings["whispers"];
+            advantage = (request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && (request.ability === "STR" || typeof request.ability === "object" && ρσ_equals(request.ability, "STR")) && ρσ_in("Rage", request.character["class-features"]) && request.character.settings["barbarian-rage"];
+            data = (function(){
+                var ρσ_d = {};
+                ρσ_d[request.ability] = request.modifier;
+                ρσ_d["custom_dice"] = custom_roll_dice;
+                return ρσ_d;
+            }).call(this);
+            if (ρσ_exists.n(request["JoaT"])) {
+                data["jack_of_all_trades"] = request["JoaT"];
+            }
+            rolld20(request.name + " Save", request.character.name, data, whisper, advantage);
+        };
+        if (!rollSavingThrow.__defaults__) Object.defineProperties(rollSavingThrow, {
+            __defaults__ : {value: {custom_roll_dice:""}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["request", "custom_roll_dice"]}
+        });
+
+        function rollInitiative() {
+            var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var custom_roll_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollInitiative.__defaults__.custom_roll_dice : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
+                custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
+            }
+            var whisper, data;
+            whisper = (request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"] || settings["whispers"];
+            data = (function(){
+                var ρσ_d = {};
+                ρσ_d["initiative"] = request.initiative;
+                ρσ_d["custom_dice"] = custom_roll_dice;
+                return ρσ_d;
+            }).call(this);
+            rolld20("Initiative", request.character.name, data, whisper, request.advantage);
+        };
+        if (!rollInitiative.__defaults__) Object.defineProperties(rollInitiative, {
+            __defaults__ : {value: {custom_roll_dice:""}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["request", "custom_roll_dice"]}
+        });
+
+        function rollHitDice(request) {
+            var rname, whisper;
+            if (request.multiclass) {
+                rname = "Hit Dice (" + request.class + ")";
+            } else {
+                rname = "Hit Dice";
+            }
+            whisper = (request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"] || settings["whispers"];
+            rolldice(rname, request.character.name, request["hit-dice"], {}, whisper);
+        };
+        if (!rollHitDice.__argnames__) Object.defineProperties(rollHitDice, {
+            __argnames__ : {value: ["request"]}
+        });
+
+        function rollDeathSave() {
+            var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var custom_roll_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollDeathSave.__defaults__.custom_roll_dice : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
+                custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
+            }
+            var whisper;
+            whisper = (request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"] || settings["whispers"];
+            rolld20("Death Saving Throw", request.character.name, {}, whisper);
+        };
+        if (!rollDeathSave.__defaults__) Object.defineProperties(rollDeathSave, {
+            __defaults__ : {value: {custom_roll_dice:""}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["request", "custom_roll_dice"]}
+        });
+
+        function rollTrait(request) {
+            var whisper, source;
+            whisper = (request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"] || settings["whispers"];
+            if (ρσ_exists.n(request["source-type"])) {
+                source = request["source-type"];
+                if (request.source.length > 0) {
+                    source += ": " + request.source;
+                }
+            } else if (ρσ_exists.n(request["item-type"])) {
+                source = request["item-type"];
+            } else {
+                source = request.type;
+            }
+            postDescription(request.name, request.character.name, source, {}, request.description, {}, whisper);
+        };
+        if (!rollTrait.__argnames__) Object.defineProperties(rollTrait, {
+            __argnames__ : {value: ["request"]}
+        });
+
+        function rollSpellCard(request) {
+            var whisper, data, source, description;
+            whisper = (request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"] || settings["whispers"];
+            data = (function(){
+                var ρσ_d = {};
+                ρσ_d["Casting Time"] = request["casting-time"];
+                ρσ_d["Range"] = request.range;
+                ρσ_d["Duration"] = request.duration;
+                ρσ_d["Components"] = request.components;
+                return ρσ_d;
+            }).call(this);
+            if (ρσ_exists.n(request["cast-at"])) {
+                source = request["level-school"] + "(Cast at " + request["cast-at"] + " Level)";
+            } else {
+                source = request["level-school"];
+            }
+            if (request.ritual) {
+                data["Ritual"] = "Can be cast as a ritual";
+            }
+            if (request.concentration) {
+                properties["Concentration"] = "Requires Concentration";
+            }
+            description = request.description.replace("At Higher Levels.", "<b>At Higher levels.</b>");
+            postDescription(request.name, request.character.name, source, data, description, {}, whisper);
+        };
+        if (!rollSpellCard.__argnames__) Object.defineProperties(rollSpellCard, {
+            __argnames__ : {value: ["request"]}
+        });
+
+        function rollAttack() {
+            var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var custom_roll_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollAttack.__defaults__.custom_roll_dice : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
+                custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
+            }
+            var whisper, rolls, i;
+            whisper = (request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"] || settings["whispers"];
+            rolls = {};
+            if (ρσ_exists.n(request["to-hit"])) {
+                rolls["To Hit"] = new Roll("1d20 + " + request["to-hit"]).roll();
+            }
+            if (ρσ_exists.n(request.damages)) {
+                for (var ρσ_Index3 = 0; ρσ_Index3 < request.damages.length; ρσ_Index3++) {
+                    i = ρσ_Index3;
+                    rolls[ρσ_bound_index((ρσ_expr_temp = request["damage-types"])[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i], rolls)] = new Roll((ρσ_expr_temp = request.damages)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i]).roll();
+                }
+            }
+            postDescription(request.name, request.character.name, null, {}, ρσ_exists.e(request.description, ""), rolls, whisper);
+        };
+        if (!rollAttack.__defaults__) Object.defineProperties(rollAttack, {
             __defaults__ : {value: {custom_roll_dice:""}},
             __handles_kwarg_interpolation__ : {value: true},
             __argnames__ : {value: ["request", "custom_roll_dice"]}
@@ -5444,6 +5725,24 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             if ((request.type === "skill" || typeof request.type === "object" && ρσ_equals(request.type, "skill"))) {
                 rollSkill(request, custom_roll_dice);
+            } else if ((request.type === "ability" || typeof request.type === "object" && ρσ_equals(request.type, "ability"))) {
+                rollAbility(request, custom_roll_dice);
+            } else if ((request.type === "saving-throw" || typeof request.type === "object" && ρσ_equals(request.type, "saving-throw"))) {
+                rollSavingThrow(request, custom_roll_dice);
+            } else if ((request.type === "initiative" || typeof request.type === "object" && ρσ_equals(request.type, "initiative"))) {
+                rollInitiative(request, custom_roll_dice);
+            } else if ((request.type === "hit-dice" || typeof request.type === "object" && ρσ_equals(request.type, "hit-dice"))) {
+                rollHitDice(request);
+            } else if (ρσ_in(request.type, ρσ_list_decorate([ "item", "feature", "trait", "action" ]))) {
+                rollTrait(request);
+            } else if ((request.type === "death-save" || typeof request.type === "object" && ρσ_equals(request.type, "death-save"))) {
+                rollDeathSave(request, custom_roll_dice);
+            } else if ((request.type === "attack" || typeof request.type === "object" && ρσ_equals(request.type, "attack"))) {
+                rollAttack(request, custom_roll_dice);
+            } else if ((request.type === "spell-card" || typeof request.type === "object" && ρσ_equals(request.type, "spell-card"))) {
+                rollSpellCard(request);
+            } else if ((request.type === "spell-attack" || typeof request.type === "object" && ρσ_equals(request.type, "spell-attack"))) {
+                rollSpellAttack(request, custom_roll_dice);
             } else {
                 mod = (ρσ_exists.n(request.modifier)) ? request.modifier : request.roll;
                 rname = (ρσ_exists.n(request.name)) ? request.name : request.type;
@@ -5485,9 +5784,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 });
                 return ρσ_anonfunc;
             })());
-            var ρσ_Iter0 = ρσ_Iterable(tokens);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                token = ρσ_Iter0[ρσ_Index0];
+            var ρσ_Iter4 = ρσ_Iterable(tokens);
+            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                token = ρσ_Iter4[ρσ_Index4];
                 if (token.actor && token.data.actorLink) {
                     total = (total) ? total : token.actor.data.attributes.hp.max;
                     token.actor.update((function(){
@@ -5525,9 +5824,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter1 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                event = ρσ_Iter1[ρσ_Index1];
+            var ρσ_Iter5 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                event = ρσ_Iter5[ρσ_Index5];
                 document.removeEventListener.apply(document, event);
             }
         };

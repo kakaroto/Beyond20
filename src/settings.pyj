@@ -1,6 +1,18 @@
 from elementmaker import E 
 from utils import getBrowser, roll20TabTitle
 
+class Whisper:
+    NO = 0
+    YES = 1
+    QUERY = 2
+
+class RollType:
+    NORMAL = 0
+    DOUBLE = 1
+    QUERY = 2
+    ADVANTAGE = 3
+    DISADVANTAGE = 4
+
 # keys: [short, title, description, type, default]
 # Types: bool, string, combobox, link, special
 # combobox extra options:

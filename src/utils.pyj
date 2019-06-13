@@ -8,16 +8,6 @@ DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*"
 DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*"
 CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update"
 
-
-def escapeRoll20Macro(text):
-    def escapeCB(m):
-        o = ord(m.group(0))
-        if o == 10:
-            o = 13
-        return "&#" + str(o) + ";"
-    to_escape = str.join("|\\", "\n[]{}()%@&?".split(""))
-    return re.sub(to_escape, escapeCB, text)
-
 def replaceRollsCallback(match, replaceCB):
     dice = match.group(2)
     modifiers = match.group(3)
@@ -59,6 +49,11 @@ def injectPageScript(url):
     s.src = url;
     s.onload = def():
         this.remove()
+    (document.head or document.documentElement).appendChild(s);
+
+def injectCSS(css):
+    s = document.createElement('style');
+    s.textContent = css;
     (document.head or document.documentElement).appendChild(s);
 
 def sendCustomEvent(name, data):

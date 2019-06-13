@@ -1,39 +1,192 @@
-from utils import replaceRolls, escapeRoll20Macro, addCustomEventListener
+from utils import replaceRolls, addCustomEventListener, injectCSS
 
 settings = None
 
+injectCSS("""
+.tooltip .tooltiptext {
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 10px;
+  margin: 10px;
+
+  /* Position the tooltip */
+  position: relative;
+  z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+""")
+
 def getSpeakerByName(name):
-    name = name.toLowerCase()
-    speakas = game.actors.entities.find(def(actor):
-                                            return actor.data.name.toLowerCase() == name
-                                        )
-    return speakas
+    low_name = name.toLowerCase()
+    actor = game.actors.entities.find(def(actor):
+                                          return actor.data.name.toLowerCase() == low_name
+                                      )
+    return ChatMessage.getSpeaker({"actor": actor, "alias": name})
 
 def postChatMessage(message, character=None, whisper=False):
-    speakas = getSpeakerByName(character)
     data = {"content": message, 
-            "user": game.user._id}
-    if speakas:
-        data["speaker"] = ChatMessage.getSpeaker({"actor": speakas})
+            "user": game.user._id,
+            "speaker": getSpeakerByName(character)}
     if whisper:
         data["whisper"] = ChatMessage.getWhisperIDs("GM")
     ChatMessage.create(data)
 
-def rollSkill(request, custom_roll_dice=""):
-    modifier = request.modifier
+def postDescription(title, character, source, attributes, description, rolls={}, whisper=False):
+    style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;"
 
-    ev = new Event("Beyond20")
-    ev.shiftKey = ev.altKey = ev.ctrlKey = ev.metaKey = False
-    if request.character.type == "Character" and \
-            request.ability == "STR" and \
-            "Rage" in request.character["class-features"] and \
-            request.character.settings["barbarian-rage"]:
-        # Roll with advantage
-        ev.altKey = True
+    html = "<details><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>"
+    roll_style = ""
+    if source or attributes.length > 0:
+        html += "<table style='" + style + "'>"
+        if source:
+            html += "<tr><td colspan'2'><i>" + source + "</i></td></tr>"
+        for attr in attributes:
+            html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[attr] + "</td></tr>"
+        html += "</table>"
+    html += "<div style='" + style + "'>" + description.replace("\n", "</br>") + "</div></details>"
+    for roll in rolls:
+        r = rolls[roll]
+        roll_html = "<span class='tooltip'>" + r.total + "<span class='tooltiptext'>" + r.formula + " = " +  r.result + "</span></span>"
+        html += "<b>" + roll + ": </b>" + roll_html + "</br>"
 
-    Dice5e.d20Roll({"event": ev, "parts": "@modifier",
-                    "data": {"modifier": request.modifier, "bonus": custom_roll_dice},
-                    "title": request.skill, "speaker": getSpeakerByName(request.character.name)})
+    postChatMessage(html, character, whisper)
+
+
+def rolldice(title, character, dice, data, whisper=False):
+    if whisper:
+        rollMode = "gmroll"
+    else:
+        rollMode = "roll"
+    new_data = {}
+    parts = [dice]
+    for key in data:
+        if data[key] != "":
+            new_key = key.replace("_", "").toLowerCase()
+            new_data[new_key] = data[key]
+            parts.append(new_key)
+    roll = new Roll(parts.join(" + @"), new_data)
+
+    roll.toMessage({"speaker": getSpeakerByName(character),
+                    "flavor": title,
+                    "rollMode": rollMode})
+    return roll
+
+def rolld20(title, character, data, whisper=False, advantage=False):
+    dice = "2d20kh" if advantage else "1d20"
+    return rolldice(title, character, dice, data, whisper)
+    
+def rollSkill(request, custom_roll_dice=""): 
+    nonlocal settings
+
+    data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
+    whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+    advantage = request.character.type == "Character" and \
+        request.ability == "STR" and \
+        "Rage" in request.character["class-features"] and \
+        request.character.settings["barbarian-rage"]
+    rolld20(request.skill, request.character.name, data, whisper, advantage)
+
+def rollAbility(request, custom_roll_dice=""): 
+    nonlocal settings
+
+    whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+    advantage = request.character.type == "Character" and \
+        request.ability == "STR" and \
+        "Rage" in request.character["class-features"] and \
+        request.character.settings["barbarian-rage"]
+    data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
+    if request["JoaT"]?:
+        data["jack_of_all_trades"] = request["JoaT"]
+    rolld20(request.name, request.character.name, data, whisper, advantage)
+
+def rollSavingThrow(request, custom_roll_dice=""): 
+    nonlocal settings
+
+    whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+    advantage = request.character.type == "Character" and \
+        request.ability == "STR" and \
+        "Rage" in request.character["class-features"] and \
+        request.character.settings["barbarian-rage"]
+    data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
+    if request["JoaT"]?:
+        data["jack_of_all_trades"] = request["JoaT"]
+    rolld20(request.name + " Save", request.character.name, data, whisper, advantage)
+  
+def rollInitiative(request, custom_roll_dice=""):
+    nonlocal settings
+
+    whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+    data = {"initiative": request.initiative, "custom_dice": custom_roll_dice}
+    rolld20("Initiative", request.character.name, data, whisper, request.advantage)
+
+def rollHitDice(request):
+    if request.multiclass:
+        rname = "Hit Dice (" + request.class + ")"
+    else:
+        rname = "Hit Dice"
+
+    whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+    rolldice(rname, request.character.name, request["hit-dice"], {}, whisper)
+
+def rollDeathSave(request, custom_roll_dice=""):
+    whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+    rolld20("Death Saving Throw", request.character.name, {}, whisper)
+
+def rollTrait(request):
+    whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+    if request["source-type"]?:
+        source = request["source-type"]
+        if request.source.length > 0:
+            source += ": " + request.source
+    elif request["item-type"]?:
+        source = request["item-type"]
+    else:
+        source = request.type
+
+    postDescription(request.name, request.character.name, source, {}, request.description, {}, whisper)
+
+
+def rollSpellCard(request):
+    nonlocal settings
+
+    whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+
+    data = {"Casting Time": request["casting-time"],
+            "Range": request.range,
+            "Duration": request.duration,
+            "Components": request.components}
+
+    if request["cast-at"]?:
+        source = request["level-school"] + "(Cast at " + request["cast-at"] + " Level)"
+    else:
+        source = request["level-school"]
+                                                    
+    
+    if request.ritual:
+        data["Ritual"] = "Can be cast as a ritual"
+    if request.concentration:
+        properties["Concentration"] = "Requires Concentration"
+    description = request.description.replace("At Higher Levels.", "<b>At Higher levels.</b>")
+    postDescription(request.name, request.character.name, source, data, description, {}, whisper)
+
+
+def rollAttack(request, custom_roll_dice=""):
+    nonlocal settings
+
+    whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+    rolls = {}
+    if request["to-hit"]?:
+        rolls["To Hit"] = new Roll("1d20 + " + request["to-hit"]).roll()
+    if request.damages?:
+        for i in range(request.damages.length):
+            rolls[request["damage-types"][i]] = new Roll(request.damages[i]).roll()
+    postDescription(request.name, request.character.name, None, {}, request.description? "", rolls, whisper)
 
 def handleRoll(request, new_settings):
     nonlocal settings
@@ -46,7 +199,26 @@ def handleRoll(request, new_settings):
         custom_roll_dice = request.character.settings["custom-roll-dice"] ? ""
     if request.type == "skill":
         rollSkill(request, custom_roll_dice)
+    elif request.type == "ability":
+        rollAbility(request, custom_roll_dice)
+    elif request.type == "saving-throw":
+        rollSavingThrow(request, custom_roll_dice)
+    elif request.type == "initiative":
+        rollInitiative(request, custom_roll_dice)
+    elif request.type == "hit-dice":
+        rollHitDice(request)
+    elif request.type in ["item", "feature", "trait", "action"]:
+        rollTrait(request)
+    elif request.type == "death-save":
+        rollDeathSave(request, custom_roll_dice)
+    elif request.type == "attack":
+        rollAttack(request, custom_roll_dice)
+    elif request.type == "spell-card":
+        rollSpellCard(request)
+    elif request.type == "spell-attack":
+        rollSpellAttack(request, custom_roll_dice)
     else:
+        # 'custom' or anything unexpected
         mod = request.modifier if request.modifier? else request.roll
         rname = request.name if request.name? else request.type
 

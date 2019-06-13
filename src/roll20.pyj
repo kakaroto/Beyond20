@@ -1,4 +1,4 @@
-from utils import replaceRolls, injectPageScript, sendCustomEvent, escapeRoll20Macro
+from utils import replaceRolls, injectPageScript, sendCustomEvent
 from settings import getDefaultSettings, getStoredSettings
 import re
 import math
@@ -11,6 +11,8 @@ btn = chat.getElementsByTagName("button")[0]
 speakingas = document.getElementById("speakingas")
 settings = getDefaultSettings()
 
+"?{Whisper?|Public Roll,|Whisper Roll,/w gm }"
+"{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125 &#123&#123r2=[[0d20|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2=[[@{d20}|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2=[[@{d20}}"
 def postChatMessage(message, character=None):
     nonlocal txt, btn, speakingas
 
@@ -30,6 +32,15 @@ def postChatMessage(message, character=None):
     btn.click()
     txt.value = old_text
     speakingas.value = old_as
+
+def escapeRoll20Macro(text):
+    def escapeCB(m):
+        o = ord(m.group(0))
+        if o == 10:
+            o = 13
+        return "&#" + str(o) + ";"
+    to_escape = str.join("|\\", "\n[]{}()%@&?".split(""))
+    return re.sub(to_escape, escapeCB, text)
 
 def genRoll(dice, modifiers={}):
     roll = "[[" + dice
