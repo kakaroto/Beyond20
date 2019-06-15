@@ -5716,7 +5716,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         settings = null;
         function getSpeakerByName(name) {
-            var low_name, actor;
+            var low_name, actor, speaker;
             low_name = name.toLowerCase();
             actor = game.actors.entities.find((function() {
                 var ρσ_anonfunc = function (actor) {
@@ -5727,12 +5727,13 @@ var str = ρσ_str, repr = ρσ_repr;;
                 });
                 return ρσ_anonfunc;
             })());
-            return ChatMessage.getSpeaker((function(){
+            speaker = ChatMessage.getSpeaker((function(){
                 var ρσ_d = {};
                 ρσ_d["actor"] = actor;
-                ρσ_d["alias"] = name;
                 return ρσ_d;
             }).call(this));
+            speaker["alias"] = name;
+            return speaker;
         };
         if (!getSpeakerByName.__argnames__) Object.defineProperties(getSpeakerByName, {
             __argnames__ : {value: ["name"]}

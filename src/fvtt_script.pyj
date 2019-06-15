@@ -7,7 +7,9 @@ settings = None
 def getSpeakerByName(name):
     low_name = name.toLowerCase()
     actor = game.actors.entities.find(def(actor): return actor.data.name.toLowerCase() == low_name;)
-    return ChatMessage.getSpeaker({"actor": actor, "alias": name})
+    speaker = ChatMessage.getSpeaker({"actor": actor})
+    speaker["alias"] = name
+    return speaker
 
 def postChatMessage(message, character=None, whisper=False):
     data = {"content": message, 
@@ -149,6 +151,7 @@ def rollAttack(request, custom_roll_dice=""):
     if request.damages?:
         # TODO: handle brutal
         # TODO: move rage/brutal multiplier to dndbeyond
+        # TODO: Multiple damages of the same type would overwrite the array, need a list.
         damages = list(request.damages)
         damage_types = list(request["damage-types"])
         brutal = 0
