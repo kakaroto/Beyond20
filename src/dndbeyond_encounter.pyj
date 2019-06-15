@@ -18,9 +18,11 @@ def documentModified(mutations, observer):
         return
 
     monster = $(".encounter-details-monster-summary-info-panel")
-    monster_name = monster.find("mon-stat-block__name").text()
+    monster_name = monster.find(".mon-stat-block__name").text()
+    console.log("Doc modifier, new mon : ", monster_name, " !=?", last_monster_name)
     if monster_name == last_monster_name:
         return
+    last_monster_name = monster_name
     removeRollButtons()
     character = Monster("Monster")
     character.parseStatBlock(monster, add_dice=settings['handle-stat-blocks'], inject_descriptions=settings['subst-dndbeyond-stat-blocks'])

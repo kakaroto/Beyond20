@@ -8319,10 +8319,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return;
             }
             monster = $(".encounter-details-monster-summary-info-panel");
-            monster_name = monster.find("mon-stat-block__name").text();
+            monster_name = monster.find(".mon-stat-block__name").text();
+            console.log("Doc modifier, new mon : ", monster_name, " !=?", last_monster_name);
             if ((monster_name === last_monster_name || typeof monster_name === "object" && ρσ_equals(monster_name, last_monster_name))) {
                 return;
             }
+            last_monster_name = monster_name;
             removeRollButtons();
             character = new Monster("Monster");
             ρσ_interpolate_kwargs.call(character, character.parseStatBlock, [monster].concat([ρσ_desugar_kwargs({add_dice: settings["handle-stat-blocks"], inject_descriptions: settings["subst-dndbeyond-stat-blocks"]})]));
