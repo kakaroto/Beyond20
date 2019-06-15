@@ -1,5 +1,5 @@
 from settings import getStoredSettings
-from dndbeyond import injectDiceToRolls, isCustomRollIconsAdded, isRollButtonAdded, sendRoll
+from dndbeyond import injectDiceToRolls, isRollButtonAdded, sendRoll
 from elementmaker import E
 
 print("Beyond20: D&D Beyond Spell module loaded.")
@@ -56,7 +56,7 @@ def displaySpell():
                                             "description" : description})
 
 def addDisplayButton():
-    icon32 = chrome.extension.getURL("images/icons/icon32.png");
+    icon32 = chrome.extension.getURL("images/icons/icon32.png")
     button = E.a(class_="ct-beyond20-roll button-alt", href="#",
                  E.span(class_="label",
                         E.img(class_="ct-beyond20-icon", src=icon32, style="margin-right: 10px;"),
@@ -73,14 +73,14 @@ def documentLoaded(settings):
     nonlocal character
 
     if isRollButtonAdded():
-        chrome.runtime.sendMessage({"action": "reload-me"});
+        chrome.runtime.sendMessage({"action": "reload-me"})
     else:
         addDisplayButton()
         spell_name = $(".page-title").text().trim()
         if settings['subst-dndbeyond']:
             injectDiceToRolls(".spell-details .more-info-content", character, spell_name)
 
-chrome.runtime.sendMessage({"action": "activate-icon"});
+chrome.runtime.sendMessage({"action": "activate-icon"})
 getStoredSettings(def(settings):
                       documentLoaded(settings)
                   )

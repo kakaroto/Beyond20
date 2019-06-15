@@ -1,6 +1,7 @@
 from settings import getStoredSettings
 from dndbeyond import Monster, isRollButtonAdded
-from elementmaker import E
+from utils import injectCSS
+from constants import BUTTON_STYLE_CSS
 
 print("Beyond20: D&D Beyond Monster module loaded.")
 
@@ -11,43 +12,12 @@ def documentLoaded(settings):
 
     # We reloaded the extension? reload the page too...
     if isRollButtonAdded():
-        chrome.runtime.sendMessage({"action": "reload-me"});
+        chrome.runtime.sendMessage({"action": "reload-me"})
     else:
         character.parseStatBlock(add_dice=settings['handle-stat-blocks'], inject_descriptions=settings['subst-dndbeyond-stat-blocks'])
 
-button_style = """
-.character-button, .character-button-small {
-    display: inline-block;
-    border-radius: 3px;
-    background-color: #96bf6b;
-    color: #fff;
-    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;
-    font-size: 10px;
-    border: 1px solid transparent;
-    text-transform: uppercase;
-    padding: 9px 15px;
-    transition: all 50ms;
-}
-.character-button-small {
-    font-size: 8px;
-    padding: 5px;
-    border-color: transparent;
-    min-height: 22px;
-}
-.ct-button.ct-theme-button {
-    cursor: default;
-}
-.ct-button.ct-theme-button--interactive {
-    cursor: pointer;
-}
-.ct-button.ct-theme-button--filled {
-    background-color: #c53131;
-    color: #fff;
-}
-"""
-
-(document.head or document.documentElement).appendChild(E.style(button_style))
-chrome.runtime.sendMessage({"action": "activate-icon"});
+injectCSS(BUTTON_STYLE_CSS)
+chrome.runtime.sendMessage({"action": "activate-icon"})
 getStoredSettings(def(settings):
                       documentLoaded(settings)
                   )

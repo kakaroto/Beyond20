@@ -5474,16 +5474,8 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "utils";
-        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL;
         var re = ρσ_modules.re;
 
-        ROLL20_URL = "*://app.roll20.net/editor/";
-        DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
-        DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
-        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
-        DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
-        DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
-        CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
         function replaceRollsCallback(match, replaceCB) {
             var dice, modifiers, result;
             dice = match.group(2);
@@ -5607,13 +5599,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["tab"]}
         });
 
-        ρσ_modules.utils.ROLL20_URL = ROLL20_URL;
-        ρσ_modules.utils.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
-        ρσ_modules.utils.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
-        ρσ_modules.utils.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
-        ρσ_modules.utils.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
-        ρσ_modules.utils.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
-        ρσ_modules.utils.CHANGELOG_URL = CHANGELOG_URL;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
@@ -8748,14 +8733,13 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
 
         function rollInitiative() {
-            var initiative, advantage, roll;
+            var initiative, advantage;
             initiative = $(".ct-initiative-box__value").text();
             advantage = $(".ct-initiative-box__advantage").length > 0;
             if ((initiative === "" || typeof initiative === "object" && ρσ_equals(initiative, ""))) {
                 initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text();
                 advantage = $(".ct-combat-mobile__advantage").length > 0;
             }
-            roll = (advantage) ? "2d20kh1" : "1d20";
             print("Initiative " + ((advantage) ? "with" : "without") + " advantage : " + initiative);
             sendRollWithCharacter("initiative", "1d20" + initiative, (function(){
                 var ρσ_d = {};

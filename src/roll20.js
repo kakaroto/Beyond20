@@ -5172,16 +5172,8 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "utils";
-        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL;
         var re = ρσ_modules.re;
 
-        ROLL20_URL = "*://app.roll20.net/editor/";
-        DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
-        DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
-        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
-        DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
-        DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
-        CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
         function replaceRollsCallback(match, replaceCB) {
             var dice, modifiers, result;
             dice = match.group(2);
@@ -5305,13 +5297,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["tab"]}
         });
 
-        ρσ_modules.utils.ROLL20_URL = ROLL20_URL;
-        ρσ_modules.utils.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
-        ρσ_modules.utils.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
-        ρσ_modules.utils.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
-        ρσ_modules.utils.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
-        ρσ_modules.utils.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
-        ρσ_modules.utils.CHANGELOG_URL = CHANGELOG_URL;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
@@ -7155,7 +7140,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "brutal")){
                 brutal = ρσ_kwargs_obj.brutal;
             }
-            var properties, crits, dice, match, die, dmg, brutal_dmg;
+            var properties, crits, dice, match, die, dmg, brutal_dmg, choice;
             properties = (function(){
                 var ρσ_d = {};
                 ρσ_d["damage"] = 1;
@@ -7182,8 +7167,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                     brutal_dmg = "?{Choose which extra dice to roll for your Brutal/Savage critical attack";
                     var ρσ_Iter4 = ρσ_Iterable(dice);
                     for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                        die = ρσ_Iter4[ρσ_Index4];
-                        brutal_dmg += "|" + die + ",[[" + die + "]]";
+                        choice = ρσ_Iter4[ρσ_Index4];
+                        brutal_dmg += "|" + choice + ",[[" + choice + "]]";
                     }
                     brutal_dmg += "}";
                 }
@@ -7515,11 +7500,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function rollHitDice(request) {
             var rname;
-            if (request.multiclass) {
-                rname = "Hit Dice (" + request.class + ")";
-            } else {
-                rname = "Hit Dice";
-            }
+            rname = "Hit Dice" + ((request.multiclass) ? "(" + request.class + ")" : "");
             return template("simple", (function(){
                 var ρσ_d = {};
                 ρσ_d["charname"] = request.character.name;

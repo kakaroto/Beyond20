@@ -1,32 +1,12 @@
-from utils import replaceRolls, addCustomEventListener, injectCSS
+from utils import addCustomEventListener, injectCSS
+import math
+from constants import TOOLTIP_CSS
 
 settings = None
 
-injectCSS("""
-.tooltip .tooltiptext {
-  visibility: hidden;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 10px;
-  margin: 10px;
-
-  /* Position the tooltip */
-  position: relative;
-  z-index: 1;
-}
-
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}
-""")
-
 def getSpeakerByName(name):
     low_name = name.toLowerCase()
-    actor = game.actors.entities.find(def(actor):
-                                          return actor.data.name.toLowerCase() == low_name
-                                      )
+    actor = game.actors.entities.find(def(actor): return actor.data.name.toLowerCase() == low_name;)
     return ChatMessage.getSpeaker({"actor": actor, "alias": name})
 
 def postChatMessage(message, character=None, whisper=False):
@@ -41,7 +21,6 @@ def postDescription(title, character, source, attributes, description, rolls={},
     style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;"
 
     html = "<details><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>"
-    roll_style = ""
     if source or attributes.length > 0:
         html += "<table style='" + style + "'>"
         if source:
@@ -50,9 +29,14 @@ def postDescription(title, character, source, attributes, description, rolls={},
             html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[attr] + "</td></tr>"
         html += "</table>"
     html += "<div style='" + style + "'>" + description.replace("\n", "</br>") + "</div></details>"
+    # TODO: handle 2d20kh1 where r.dice.rolls is more than 1 dice.
+    # Support critical
     for roll in rolls:
         r = rolls[roll]
-        roll_html = "<span class='tooltip'>" + r.total + "<span class='tooltiptext'>" + r.formula + " = " +  r.result + "</span></span>"
+        if jstype(r) == 'string':
+            roll_html = "<span>" + r + "</span>"
+        else:
+            roll_html = "<span class='tooltip'>" + r.total + "<span class='tooltiptext'>" + r.formula + " = " +  r.result + "</span></span>"
         html += "<b>" + roll + ": </b>" + roll_html + "</br>"
 
     postChatMessage(html, character, whisper)
@@ -85,17 +69,21 @@ def rollSkill(request, custom_roll_dice=""):
     nonlocal settings
 
     data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
+    # TODO: move whisper setting into dndbeyond
     whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+    # TODO: Move into dndbeyond_character
     advantage = request.character.type == "Character" and \
         request.ability == "STR" and \
         "Rage" in request.character["class-features"] and \
         request.character.settings["barbarian-rage"]
+    # TODO: if modifier == "--": Query ability.
     rolld20(request.skill, request.character.name, data, whisper, advantage)
 
 def rollAbility(request, custom_roll_dice=""): 
     nonlocal settings
 
     whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+    # TODO: Move into dndbeyond_character
     advantage = request.character.type == "Character" and \
         request.ability == "STR" and \
         "Rage" in request.character["class-features"] and \
@@ -109,13 +97,12 @@ def rollSavingThrow(request, custom_roll_dice=""):
     nonlocal settings
 
     whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+    # TODO
     advantage = request.character.type == "Character" and \
         request.ability == "STR" and \
         "Rage" in request.character["class-features"] and \
         request.character.settings["barbarian-rage"]
     data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
-    if request["JoaT"]?:
-        data["jack_of_all_trades"] = request["JoaT"]
     rolld20(request.name + " Save", request.character.name, data, whisper, advantage)
   
 def rollInitiative(request, custom_roll_dice=""):
@@ -126,17 +113,13 @@ def rollInitiative(request, custom_roll_dice=""):
     rolld20("Initiative", request.character.name, data, whisper, request.advantage)
 
 def rollHitDice(request):
-    if request.multiclass:
-        rname = "Hit Dice (" + request.class + ")"
-    else:
-        rname = "Hit Dice"
-
+    rname = "Hit Dice" + (("(" + request.class + ")") if  request.multiclass else "")
     whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
     rolldice(rname, request.character.name, request["hit-dice"], {}, whisper)
 
 def rollDeathSave(request, custom_roll_dice=""):
     whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
-    rolld20("Death Saving Throw", request.character.name, {}, whisper)
+    rolld20("Death Saving Throw", request.character.name, {"custom_dice": custom_roll_dice}, whisper)
 
 def rollTrait(request):
     whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
@@ -149,14 +132,54 @@ def rollTrait(request):
     else:
         source = request.type
 
+    # TODO: Sub description
     postDescription(request.name, request.character.name, source, {}, request.description, {}, whisper)
 
 
-def rollSpellCard(request):
+def rollAttack(request, custom_roll_dice=""):
     nonlocal settings
 
     whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+    rolls = {}
+    if request["to-hit"]?:
+        # TODO: if advantage
+        # TODO: super critical
+        custom = "" if custom_roll_dice == "" else (" + " + custom_roll_dice)
+        rolls["To Hit"] = new Roll("1d20 + " + request["to-hit"] + custom).roll()
+    if request.damages?:
+        # TODO: handle brutal
+        # TODO: move rage/brutal multiplier to dndbeyond
+        damages = list(request.damages)
+        damage_types = list(request["damage-types"])
+        brutal = 0
+        if request.character.type == "Character" and \
+                request["attack-type"] == "Melee":
+            if request.character.settings["brutal-critical"]:
+                if "Brutal Critical" in request.character["class-features"]:
+                    barbarian_level = request.character.classes["Barbarian"]
+                    brutal += 1 + math.floor((barbarian_level - 9) / 4)
+                if "Savage Attacks" in request.character["racial-traits"]:
+                    brutal += 1
+            if "Rage" in request.character["class-features"] and \
+                    request.character.settings["barbarian-rage"]:
+                barbarian_level = request.character.classes["Barbarian"]
+                rage_damage = 2 if barbarian_level < 9 else (3 if barbarian_level < 16 else 4)
+                damages.insert(1, rage_damage)
+                damage_types.insert("Rage")
+        for i in range(damages.length):
+            rolls[damage_types[i] + " Damage"] = new Roll(damages[i]).roll()
+    data = {}
+    if request.range?:
+        data["Range"] = request.range
 
+    if request["save-dc"]?:
+        rolls["Save"] = request["save-ability"] + " DC " + request["save-dc"]
+
+    # TODO: Support don't auto-roll dmg
+    postDescription(request.name, request.character.name, None, data, request.description? "", rolls, whisper)
+
+
+def buildSpellCard(request):
     data = {"Casting Time": request["casting-time"],
             "Range": request.range,
             "Duration": request.duration,
@@ -171,26 +194,63 @@ def rollSpellCard(request):
     if request.ritual:
         data["Ritual"] = "Can be cast as a ritual"
     if request.concentration:
-        properties["Concentration"] = "Requires Concentration"
-    description = request.description.replace("At Higher Levels.", "<b>At Higher levels.</b>")
-    postDescription(request.name, request.character.name, source, data, description, {}, whisper)
+        data["Concentration"] = "Requires Concentration"
+    description = request.description.replace("At Higher Levels.", "</br><b>At Higher levels.</b>")
 
+    return (source, data, description)
 
-def rollAttack(request, custom_roll_dice=""):
+def rollSpellCard(request):
+    whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+    spell_card = buildSpellCard(request)
+    postDescription(request.name, request.character.name, spell_card[0], spell_card[1], spell_card[2], {}, whisper)
+
+def rollSpellAttack(request, custom_roll_dice):
     nonlocal settings
 
     whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
+
+    spell_card = buildSpellCard(request)
+
     rolls = {}
     if request["to-hit"]?:
-        rolls["To Hit"] = new Roll("1d20 + " + request["to-hit"]).roll()
+        custom = "" if custom_roll_dice == "" else (" + " + custom_roll_dice)
+        rolls["To Hit"] = new Roll("1d20 + " + request["to-hit"] + custom).roll()
     if request.damages?:
+        # TODO: Handle Chromatic Orb
         for i in range(request.damages.length):
-            rolls[request["damage-types"][i]] = new Roll(request.damages[i]).roll()
-    postDescription(request.name, request.character.name, None, {}, request.description? "", rolls, whisper)
+            dmg_type = request["damage-types"][i]
+            rolls[dmg_type + (" Damage" if dmg_type != "Healing" else "")] = new Roll(request.damages[i]).roll()
+    attributes = {}
+    if request.range?:
+        attributes["Range"] = request.range
+
+    if request["save-dc"]?:
+        rolls["Save"] = request["save-ability"] + " DC " + request["save-dc"]
+
+    if request["cast-at"]?:
+        rolls["Cast at"] = request["cast-at"] + " Level"
+    components = request.components
+    prefix = settings["component-prefix"] if settings["component-prefix"] != "" else None
+    if settings["components-display"] == "all":
+        if components != "":
+            rolls[prefix or "Components"] =  components
+    elif settings["components-display"] == "material":
+        while components != "":
+            if components[0] in ["V", "S"]:
+                components = components[1:]
+                if components.startsWith(", "):
+                    components = components[2:]
+            if components[0] == "M":
+                rolls[prefix or "Materials"] = settings["component-prefix"] + components[2:-1]
+                components = ""
+
+    # TODO: Support don't auto-roll dmg
+    postDescription(request.name, request.character.name, spell_card[0], spell_card[1], spell_card[2], rolls, whisper)
 
 def handleRoll(request, new_settings):
     nonlocal settings
 
+    console.log("Received roll request ", request)
     settings = new_settings
     whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
 
@@ -223,7 +283,7 @@ def handleRoll(request, new_settings):
         rname = request.name if request.name? else request.type
 
         chatOptions = {"speaker": getSpeakerByName(request.character.name),
-                       "flavor": rname}
+                       "flavor": rname + "(" + mod + ")"}
         if whisper:
             chatOptions["whisper"] = ChatMessage.getWhisperIDs("GM")
         roll = new Roll(request.roll).roll()
@@ -233,9 +293,8 @@ def updateHP(name, current, total=None):
     console.log("Updating HP for " + name + " : " + current + "/" + total)
     name = name.toLowerCase()
 
-    tokens = canvas.tokens.controlledTokens.filter(def(t):
-                                                       return t.data.name.toLowerCase() == name
-                                                   )
+    tokens = canvas.tokens.objects.children.filter(def(t): return t.data.name.toLowerCase() == name;)
+
     for token in tokens:
         if token.actor and token.data.actorLink:
             total = total if total else token.actor.data.attributes.hp.max
@@ -261,6 +320,7 @@ def disconnectAllEvents():
         document.removeEventListener(*event)
 
 console.log("Beyond20: FVTT Page Script loaded")
+injectCSS(TOOLTIP_CSS)
 registered_events = []
 registered_events.append(addCustomEventListener("Roll", handleRoll))
 registered_events.append(addCustomEventListener("UpdateHP", updateHP))

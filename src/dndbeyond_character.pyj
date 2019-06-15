@@ -56,7 +56,6 @@ def rollInitiative():
     if initiative == "":
         initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text()
         advantage = $(".ct-combat-mobile__advantage").length > 0
-    roll = "2d20kh1" if advantage else "1d20"
     print("Initiative " + ("with" if advantage else "without") + " advantage : " + initiative)
     sendRollWithCharacter("initiative", "1d20" + initiative, {"initiative": initiative,
                                                  "advantage": advantage} )
@@ -497,7 +496,7 @@ def injectRollToSpellAttack():
             if label.hasClass("beyond20-rolls-added"):
                 return
             label.addClass("beyond20-rolls-added")
-            icon16 = chrome.extension.getURL("images/icons/icon16.png");
+            icon16 = chrome.extension.getURL("images/icons/icon16.png")
             items = $(group).find(".ct-spells-level-casting__info-item")
             for item in items:
                 modifier = item.textContent
@@ -564,5 +563,5 @@ updateSettings()
 chrome.runtime.onMessage.addListener(handleMessage)
 observer = new window.MutationObserver(documentModified)
 observer.observe(document, {"subtree": True, "childList": True})
-chrome.runtime.sendMessage({"action": "activate-icon"});
+chrome.runtime.sendMessage({"action": "activate-icon"})
 

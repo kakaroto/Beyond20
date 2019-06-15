@@ -113,8 +113,8 @@ def damagesToRollProperties(damages, damage_types, brutal=0):
             brutal_dmg = "[[" + dice[0] + "]]"
         elif dice.length > 1:
             brutal_dmg = "?{Choose which extra dice to roll for your Brutal/Savage critical attack"
-            for die in dice:
-                brutal_dmg += "|" + die + ",[[" + die + "]]"
+            for choice in dice:
+                brutal_dmg += "|" + choice + ",[[" + choice + "]]"
             brutal_dmg += "}"
     properties["dmg1"] = subDamageRolls(damages[0])
     properties["dmg1type"] = damage_types[0]
@@ -296,11 +296,7 @@ def rollInitiative(request, custom_roll_dice=""):
     return template("simple", roll_properties)
 
 def rollHitDice(request):
-    if request.multiclass:
-        rname = "Hit Dice (" + request.class + ")"
-    else:
-        rname = "Hit Dice"
-
+    rname = "Hit Dice" + (("(" + request.class + ")") if  request.multiclass else "")
     return template("simple",
                     {"charname": request.character.name,
                      "rname" : rname,
@@ -562,6 +558,6 @@ def handleMessage (request, sender, sendResponse):
 
 chrome.runtime.onMessage.addListener(handleMessage)
 updateSettings()
-chrome.runtime.sendMessage({"action": "activate-icon"});
+chrome.runtime.sendMessage({"action": "activate-icon"})
 sendCustomEvent("disconnect")
 injectPageScript(chrome.runtime.getURL('src/roll20_script.js'))

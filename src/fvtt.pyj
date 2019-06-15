@@ -31,5 +31,5 @@ if "Foundry Virtual Tabletop" in document.title:
     settings = getDefaultSettings()
     updateSettings()
     chrome.runtime.onMessage.addListener(handleMessage)
-    chrome.runtime.sendMessage({"action": "activate-icon"});
-    chrome.runtime.sendMessage({"action": "register-fvtt-tab"});
+    chrome.runtime.sendMessage({"action": "activate-icon"})
+    chrome.runtime.sendMessage({"action": "register-fvtt-tab"})

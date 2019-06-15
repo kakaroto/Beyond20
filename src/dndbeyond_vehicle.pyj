@@ -10,12 +10,12 @@ def documentLoaded(settings):
 
     # We reloaded the extension? reload the page too...
     if isRollButtonAdded():
-        chrome.runtime.sendMessage({"action": "reload-me"});
+        chrome.runtime.sendMessage({"action": "reload-me"})
     else:
         character.parseStatBlock(add_dice=settings['handle-stat-blocks'], inject_descriptions=settings['subst-dndbeyond-stat-blocks'])
 
 
-chrome.runtime.sendMessage({"action": "activate-icon"});
+chrome.runtime.sendMessage({"action": "activate-icon"})
 getStoredSettings(def(settings):
                       documentLoaded(settings)
                   )

@@ -12,9 +12,9 @@ def createOptionList():
 def save_settings():
     cb = def(settings):
         if chrome.runtime.lastError:
-            console.log('Chrome Runtime Error', chrome.runtime.lastError.message);
+            console.log('Chrome Runtime Error', chrome.runtime.lastError.message)
         else:
-            chrome.runtime.sendMessage({"action": "settings",  "type": "general", "settings": settings});
+            chrome.runtime.sendMessage({"action": "settings",  "type": "general", "settings": settings})
             $('.success').toggleClass('show')
             setTimeout(def():
                 $('.success').toggleClass('show')

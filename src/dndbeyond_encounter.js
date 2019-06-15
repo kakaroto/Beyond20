@@ -3731,6 +3731,7 @@ var str = ρσ_str, repr = ρσ_repr;;
     ρσ_modules.encodings = {};
     ρσ_modules.uuid = {};
     ρσ_modules.dndbeyond = {};
+    ρσ_modules.constants = {};
 
     (function(){
         var __name__ = "elementmaker";
@@ -5473,36 +5474,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "utils";
-        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL;
         var re = ρσ_modules.re;
-
-        ROLL20_URL = "*://app.roll20.net/editor/";
-        DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
-        DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
-        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
-        DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
-        DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
-        CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
-        function escapeRoll20Macro(text) {
-            var to_escape;
-            function escapeCB(m) {
-                var o;
-                o = ord(m.group(0));
-                if ((o === 10 || typeof o === "object" && ρσ_equals(o, 10))) {
-                    o = 13;
-                }
-                return "&#" + str(o) + ";";
-            };
-            if (!escapeCB.__argnames__) Object.defineProperties(escapeCB, {
-                __argnames__ : {value: ["m"]}
-            });
-
-            to_escape = str.join("|\\", "\n[]{}()%@&?".split(""));
-            return re.sub(to_escape, escapeCB, text);
-        };
-        if (!escapeRoll20Macro.__argnames__) Object.defineProperties(escapeRoll20Macro, {
-            __argnames__ : {value: ["text"]}
-        });
 
         function replaceRollsCallback(match, replaceCB) {
             var dice, modifiers, result;
@@ -5575,6 +5547,16 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["url"]}
         });
 
+        function injectCSS(css) {
+            var s;
+            s = document.createElement("style");
+            s.textContent = css;
+            (document.head || document.documentElement).appendChild(s);
+        };
+        if (!injectCSS.__argnames__) Object.defineProperties(injectCSS, {
+            __argnames__ : {value: ["css"]}
+        });
+
         function sendCustomEvent(name, data) {
             var event;
             if (ρσ_equals(getBrowser(), "Firefox")) {
@@ -5617,19 +5599,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["tab"]}
         });
 
-        ρσ_modules.utils.ROLL20_URL = ROLL20_URL;
-        ρσ_modules.utils.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
-        ρσ_modules.utils.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
-        ρσ_modules.utils.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
-        ρσ_modules.utils.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
-        ρσ_modules.utils.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
-        ρσ_modules.utils.CHANGELOG_URL = CHANGELOG_URL;
-        ρσ_modules.utils.escapeRoll20Macro = escapeRoll20Macro;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
         ρσ_modules.utils.isExtensionDisconnected = isExtensionDisconnected;
         ρσ_modules.utils.injectPageScript = injectPageScript;
+        ρσ_modules.utils.injectCSS = injectCSS;
         ρσ_modules.utils.sendCustomEvent = sendCustomEvent;
         ρσ_modules.utils.addCustomEventListener = addCustomEventListener;
         ρσ_modules.utils.roll20TabTitle = roll20TabTitle;
@@ -5642,6 +5617,42 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         var getBrowser = ρσ_modules.utils.getBrowser;
         var roll20TabTitle = ρσ_modules.utils.roll20TabTitle;
+
+        function Whisper() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            Whisper.prototype.__init__.apply(this, arguments);
+        }
+        Whisper.prototype.__init__ = function __init__ () {
+                    };
+        Whisper.prototype.__repr__ = function __repr__ () {
+                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        Whisper.prototype.__str__ = function __str__ () {
+            return this.__repr__();
+        };
+        Object.defineProperty(Whisper.prototype, "__bases__", {value: []});
+        Whisper.prototype.NO = 0;
+        Whisper.prototype.YES = 1;
+        Whisper.prototype.QUERY = 2;
+
+        function RollType() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            RollType.prototype.__init__.apply(this, arguments);
+        }
+        RollType.prototype.__init__ = function __init__ () {
+                    };
+        RollType.prototype.__repr__ = function __repr__ () {
+                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        RollType.prototype.__str__ = function __str__ () {
+            return this.__repr__();
+        };
+        Object.defineProperty(RollType.prototype, "__bases__", {value: []});
+        RollType.prototype.NORMAL = 0;
+        RollType.prototype.DOUBLE = 1;
+        RollType.prototype.QUERY = 2;
+        RollType.prototype.ADVANTAGE = 3;
+        RollType.prototype.DISADVANTAGE = 4;
 
         options_list = (function(){
             var ρσ_d = {};
@@ -6515,6 +6526,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.settings.options_list = options_list;
         ρσ_modules.settings.character_settings = character_settings;
         ρσ_modules.settings.current_tab = current_tab;
+        ρσ_modules.settings.Whisper = Whisper;
+        ρσ_modules.settings.RollType = RollType;
         ρσ_modules.settings.getStorage = getStorage;
         ρσ_modules.settings.storageGet = storageGet;
         ρσ_modules.settings.storageSet = storageSet;
@@ -8256,39 +8269,63 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
+        var __name__ = "constants";
+        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, TOOLTIP_CSS;
+        ROLL20_URL = "*://app.roll20.net/editor/";
+        DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
+        DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
+        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
+        DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
+        DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
+        CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
+        BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
+        TOOLTIP_CSS = "\n.tooltip .tooltiptext {\n  visibility: hidden;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 10px;\n  margin: 10px;\n\n  /* Position the tooltip */\n  position: relative;\n  z-index: 1;\n}\n\n.tooltip:hover .tooltiptext {\n  visibility: visible;\n}\n";
+        ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
+        ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
+        ρσ_modules.constants.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
+        ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
+        ρσ_modules.constants.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
+        ρσ_modules.constants.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
+        ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
+        ρσ_modules.constants.BUTTON_STYLE_CSS = BUTTON_STYLE_CSS;
+        ρσ_modules.constants.TOOLTIP_CSS = TOOLTIP_CSS;
+    })();
+
+    (function(){
 
         var __name__ = "__main__";
 
 
-        var settings, observer;
+        var settings, last_monster_name, observer;
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
 
         var Monster = ρσ_modules.dndbeyond.Monster;
-        var isRollButtonAdded = ρσ_modules.dndbeyond.isRollButtonAdded;
+        var removeRollButtons = ρσ_modules.dndbeyond.removeRollButtons;
+
+        var BUTTON_STYLE_CSS = ρσ_modules.constants.BUTTON_STYLE_CSS;
 
         var isExtensionDisconnected = ρσ_modules.utils.isExtensionDisconnected;
+        var injectCSS = ρσ_modules.utils.injectCSS;
 
         print("Beyond20: D&D Beyond Encounter module loaded.");
         settings = getDefaultSettings();
+        last_monster_name = "";
         function documentModified(mutations, observer) {
-            var monster, character;
+            var monster, monster_name, character;
             if (isExtensionDisconnected()) {
                 console.log("This extension is DOWN!");
                 observer.disconnect();
                 return;
             }
-            var ρσ_Iter0 = ρσ_Iterable($(".encounter-monster .encounter-monster__body"));
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                monster = ρσ_Iter0[ρσ_Index0];
-                monster = $(monster);
-                if (monster.hasClass("beyond20-monster-parsed")) {
-                    continue;
-                }
-                character = new Monster("Monster");
-                ρσ_interpolate_kwargs.call(character, character.parseStatBlock, [monster].concat([ρσ_desugar_kwargs({add_dice: settings["handle-stat-blocks"], inject_descriptions: settings["subst-dndbeyond-stat-blocks"]})]));
-                monster.addClass("beyond20-monster-parsed");
+            monster = $(".encounter-details-monster-summary-info-panel");
+            monster_name = monster.find("mon-stat-block__name").text();
+            if ((monster_name === last_monster_name || typeof monster_name === "object" && ρσ_equals(monster_name, last_monster_name))) {
+                return;
             }
+            removeRollButtons();
+            character = new Monster("Monster");
+            ρσ_interpolate_kwargs.call(character, character.parseStatBlock, [monster].concat([ρσ_desugar_kwargs({add_dice: settings["handle-stat-blocks"], inject_descriptions: settings["subst-dndbeyond-stat-blocks"]})]));
         };
         if (!documentModified.__argnames__) Object.defineProperties(documentModified, {
             __argnames__ : {value: ["mutations", "observer"]}
@@ -8334,6 +8371,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         updateSettings();
+        injectCSS(BUTTON_STYLE_CSS);
         chrome.runtime.onMessage.addListener(handleMessage);
         observer = new window.MutationObserver(documentModified);
         observer.observe(document, (function(){

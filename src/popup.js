@@ -3728,6 +3728,7 @@ var str = ρσ_str, repr = ρσ_repr;;
     ρσ_modules.re = {};
     ρσ_modules.utils = {};
     ρσ_modules.settings = {};
+    ρσ_modules.constants = {};
 
     (function(){
         var __name__ = "elementmaker";
@@ -5470,16 +5471,8 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "utils";
-        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL;
         var re = ρσ_modules.re;
 
-        ROLL20_URL = "*://app.roll20.net/editor/";
-        DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
-        DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
-        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
-        DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
-        DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
-        CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
         function replaceRollsCallback(match, replaceCB) {
             var dice, modifiers, result;
             dice = match.group(2);
@@ -5603,13 +5596,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["tab"]}
         });
 
-        ρσ_modules.utils.ROLL20_URL = ROLL20_URL;
-        ρσ_modules.utils.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
-        ρσ_modules.utils.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
-        ρσ_modules.utils.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
-        ρσ_modules.utils.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
-        ρσ_modules.utils.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
-        ρσ_modules.utils.CHANGELOG_URL = CHANGELOG_URL;
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
@@ -6564,6 +6550,29 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
+        var __name__ = "constants";
+        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, TOOLTIP_CSS;
+        ROLL20_URL = "*://app.roll20.net/editor/";
+        DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
+        DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
+        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
+        DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
+        DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
+        CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
+        BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
+        TOOLTIP_CSS = "\n.tooltip .tooltiptext {\n  visibility: hidden;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 10px;\n  margin: 10px;\n\n  /* Position the tooltip */\n  position: relative;\n  z-index: 1;\n}\n\n.tooltip:hover .tooltiptext {\n  visibility: visible;\n}\n";
+        ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
+        ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
+        ρσ_modules.constants.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
+        ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
+        ρσ_modules.constants.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
+        ρσ_modules.constants.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
+        ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
+        ρσ_modules.constants.BUTTON_STYLE_CSS = BUTTON_STYLE_CSS;
+        ρσ_modules.constants.TOOLTIP_CSS = TOOLTIP_CSS;
+    })();
+
+    (function(){
 
         var __name__ = "__main__";
 
@@ -6578,14 +6587,12 @@ var str = ρσ_str, repr = ρσ_repr;;
         var initializeSettings = ρσ_modules.settings.initializeSettings;
         var saveSettings = ρσ_modules.settings.saveSettings;
         var setCurrentTab = ρσ_modules.settings.setCurrentTab;
-        var restoreSavedSettings = ρσ_modules.settings.restoreSavedSettings;
         var loadSettings = ρσ_modules.settings.loadSettings;
-        var extractSettingsData = ρσ_modules.settings.extractSettingsData;
 
-        var ROLL20_URL = ρσ_modules.utils.ROLL20_URL;
-        var DNDBEYOND_CHARACTER_URL = ρσ_modules.utils.DNDBEYOND_CHARACTER_URL;
-        var DNDBEYOND_MONSTER_URL = ρσ_modules.utils.DNDBEYOND_MONSTER_URL;
-        var DNDBEYOND_ENCOUNTER_URL = ρσ_modules.utils.DNDBEYOND_ENCOUNTER_URL;
+        var ROLL20_URL = ρσ_modules.constants.ROLL20_URL;
+        var DNDBEYOND_CHARACTER_URL = ρσ_modules.constants.DNDBEYOND_CHARACTER_URL;
+        var DNDBEYOND_MONSTER_URL = ρσ_modules.constants.DNDBEYOND_MONSTER_URL;
+        var DNDBEYOND_ENCOUNTER_URL = ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL;
 
         background = chrome.extension.getBackgroundPage();
         character = null;
