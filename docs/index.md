@@ -16,8 +16,9 @@ Here's what people have to say about Beyond20 (You can also check out reviews on
 
 All user notes when making a donation are included as anonymous testimonials. If you don't want your note included here or you are ok with your name not being anonymized, let me know when making your donation (or [after](mailto:kakaroto@kakaroto.homelinux.net)).
 
-If you want to help me feed my familiar, you can donate with [Paypal](https://paypal.me/KaKaRoTo) or a [credit card]({% include_relative donate_link.txt %})
+If you want to help me feed my familiar, you can donate with [Paypal](https://paypal.me/KaKaRoTo) or a [credit card]({% include_relative donate_link.txt %}) or become a [Patreon supporter](https://patreon.com/kakaroto)
+
+[![Donate](images/donate.png){:width="200px"}]({% include_relative donate_link.txt %}) or &nbsp;&nbsp;
+[![Become a Patron](https://c5.patreon.com/external/logo/become_a_patron_button.png){:width="200px"}](https://www.patreon.com/bePatron?u=21010321&redirect_uri=https%3A%2F%2Fbeyond20.here-for-more.info%2Fthankyou)
 
 Thank you!
-
-[![Donate](images/donate.png){:width="200px"}]({% include_relative donate_link.txt %})

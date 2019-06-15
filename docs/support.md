@@ -1,9 +1,11 @@
 ## Support me?
 
-Oh, you want to help support the development of this extension, how nice! You can do so by either contributing in some way (telling your friends about it, reporting bug reports, suggesting awesome features or contributing to the code) or by sending some copper pieces to my [Coin pouch](https://paypal.me/KaKaRoTo).
+Oh, you want to help support the development of this extension (and more), how nice! You can do so by either contributing in some way (telling your friends about it, reporting bug reports, suggesting awesome features or contributing to the code) or by sending some copper pieces to my [Coin pouch](https://paypal.me/KaKaRoTo).
 
-If you don't have Paypal or want to donate with a credit card or want to set up a recurring payment, you can use [this link]({% include_relative donate_link.txt %}) instead.
+If you don't have Paypal or want to donate with a credit card or want to set up a recurring payment, you can [become a patron](https://patreon.com/kakaroto}) on Patreon instead.
 
+[![Donate](images/donate.png){:width="200px"}]({% include_relative donate_link.txt %}) or &nbsp;&nbsp;
+[![Become a Patron](https://c5.patreon.com/external/logo/become_a_patron_button.png){:width="200px"}](https://www.patreon.com/bePatron?u=21010321&redirect_uri=https%3A%2F%2Fbeyond20.here-for-more.info%2Fthankyou)
 
 ## Support and issues
 
