@@ -17,7 +17,7 @@ def postChatMessage(message, character=None, whisper=False):
             "speaker": getSpeakerByName(character)}
     if whisper:
         data["whisper"] = ChatMessage.getWhisperIDs("GM")
-    ChatMessage.create(data)
+    return ChatMessage.create(data)
 
 def whisperToRollMode(whisper):
     try:
@@ -27,7 +27,7 @@ def whisperToRollMode(whisper):
     except:
         return game.settings.get("core", "rollMode")
 
-def postDescription(request, title, source, attributes, description, rolls=[]):
+def postDescription(request, title, source, attributes, description, rolls=[], open=False):
     style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;"
 
     html = "<details><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>"
@@ -50,7 +50,13 @@ def postDescription(request, title, source, attributes, description, rolls=[]):
                 "<span>" + roll.formula + " = " +  roll.result + "</span></details>"
         html += "<b>" + roll_name + ": </b>" + roll_html + "</br>"
 
-    postChatMessage(html, request.character.name, request.whisper == WhisperType.YES)
+    promise = postChatMessage(html, request.character.name, request.whisper == WhisperType.YES)
+    if open:
+        # FVTT 0.3.1 strips out the 'open' attribute, so we need to do it this way. Won't open it on everyone' log though
+        promise.then(def(message):
+                         console.log("Got a message : ", message)
+                         setTimeout(def():$(".message[data-message-id=" + message.data._id + "] details").attr("open", "");, 0)
+                     )
 
 def rolldice(request, title, dice, data):
     rollMode = whisperToRollMode(request.whisper ? WhisperType.NO)
@@ -131,7 +137,7 @@ def rollTrait(request):
         source = request.type
 
     # TODO: Sub description
-    postDescription(request, request.name, source, {}, request.description)
+    postDescription(request, request.name, source, {}, request.description, open=True)
 
 
 def rollAttack(request, custom_roll_dice=""):
@@ -181,7 +187,7 @@ def buildSpellCard(request):
 
 def rollSpellCard(request):
     spell_card = buildSpellCard(request)
-    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2])
+    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], open=True)
 
 def rollSpellAttack(request, custom_roll_dice):
     nonlocal settings

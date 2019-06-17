@@ -6783,7 +6783,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (whisper) {
                 data["whisper"] = ChatMessage.getWhisperIDs("GM");
             }
-            ChatMessage.create(data);
+            return ChatMessage.create(data);
         };
         if (!postChatMessage.__defaults__) Object.defineProperties(postChatMessage, {
             __defaults__ : {value: {character:null, whisper:false}},
@@ -6817,12 +6817,16 @@ var str = ρσ_str, repr = ρσ_repr;;
             var attributes = ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[3];
             var description = ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[4];
             var rolls = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postDescription.__defaults__.rolls : arguments[5];
+            var open = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postDescription.__defaults__.open : arguments[6];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "rolls")){
                 rolls = ρσ_kwargs_obj.rolls;
             }
-            var style, html, attr, roll_name, roll_html, ρσ_unpack, roll;
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "open")){
+                open = ρσ_kwargs_obj.open;
+            }
+            var style, html, attr, roll_name, roll_html, ρσ_unpack, roll, promise;
             style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;";
             html = "<details><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>";
             if (source || attributes.length > 0) {
@@ -6851,12 +6855,24 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 html += "<b>" + roll_name + ": </b>" + roll_html + "</br>";
             }
-            postChatMessage(html, request.character.name, (request.whisper === WhisperType.prototype.YES || typeof request.whisper === "object" && ρσ_equals(request.whisper, WhisperType.prototype.YES)));
+            promise = postChatMessage(html, request.character.name, (request.whisper === WhisperType.prototype.YES || typeof request.whisper === "object" && ρσ_equals(request.whisper, WhisperType.prototype.YES)));
+            promise.then((function() {
+                var ρσ_anonfunc = function (message) {
+                    console.log("Got a message : ", message);
+                    setTimeout(function () {
+                        $(".message[data-message-id=" + message.data._id + "] details").attr("open", "");
+                    }, 0);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["message"]}
+                });
+                return ρσ_anonfunc;
+            })());
         };
         if (!postDescription.__defaults__) Object.defineProperties(postDescription, {
-            __defaults__ : {value: {rolls:ρσ_list_decorate([])}},
+            __defaults__ : {value: {rolls:ρσ_list_decorate([]), open:false}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["request", "title", "source", "attributes", "description", "rolls"]}
+            __argnames__ : {value: ["request", "title", "source", "attributes", "description", "rolls", "open"]}
         });
 
         function rolldice(request, title, dice, data) {
@@ -7059,7 +7075,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             } else {
                 source = request.type;
             }
-            postDescription(request, request.name, source, {}, request.description);
+            ρσ_interpolate_kwargs.call(this, postDescription, [request, request.name, source, {}, request.description].concat([ρσ_desugar_kwargs({open: true})]));
         };
         if (!rollTrait.__argnames__) Object.defineProperties(rollTrait, {
             __argnames__ : {value: ["request"]}
@@ -7095,6 +7111,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_exists.n(request["save-dc"])) {
                 rolls.append(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
             }
+            console.log("Rolls : ", rolls);
             postDescription(request, request.name, null, data, ρσ_exists.e(request.description, ""), rolls);
         };
         if (!rollAttack.__defaults__) Object.defineProperties(rollAttack, {
@@ -7134,7 +7151,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         function rollSpellCard(request) {
             var spell_card;
             spell_card = buildSpellCard(request);
-            postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2]);
+            ρσ_interpolate_kwargs.call(this, postDescription, [request, request.name, spell_card[0], spell_card[1], spell_card[2]].concat([ρσ_desugar_kwargs({open: true})]));
         };
         if (!rollSpellCard.__argnames__) Object.defineProperties(rollSpellCard, {
             __argnames__ : {value: ["request"]}

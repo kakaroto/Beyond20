@@ -160,7 +160,7 @@ def rollItem(force_display=False):
             if character.hasClassFeature("Rage") and character.getSetting("barbarian-rage", False):
                 barbarian_level = character.getClassLevel("Barbarian")
                 rage_damage = 2 if barbarian_level < 9 else (3 if barbarian_level < 16 else 4)
-                damages.insert(1, rage_damage)
+                damages.insert(1, str(rage_damage))
                 damage_types.insert(1, "Rage")
         roll_properties = buildAttackRoll("item",
                                           item_name,

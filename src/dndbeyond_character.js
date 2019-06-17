@@ -9166,7 +9166,7 @@ return this.__repr__();
                     if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) {
                         barbarian_level = character.getClassLevel("Barbarian");
                         rage_damage = (barbarian_level < 9) ? 2 : (barbarian_level < 16) ? 3 : 4;
-                        damages.insert(1, rage_damage);
+                        damages.insert(1, str(rage_damage));
                         damage_types.insert(1, "Rage");
                     }
                 }
