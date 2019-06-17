@@ -498,6 +498,15 @@ class Monster(CharacterBase):
             if len(damages) > 0:
                 roll_properties["damages"] = damages.as_array()
                 roll_properties["damage-types"] = damage_types.as_array()
+                crits = damagesToCrits(damages, damage_types)
+                crit_damages = []
+                crit_damage_types = []
+                for i, dmg in enumerate(crits):
+                    if dmg != "":
+                        crit_damages.append(dmg)
+                        crit_damage_types.append(damage_types[i])
+                roll_properties["critical-damages"] = crit_damages.as_array()
+                roll_properties["critical-damage-types"] = crit_damage_types.as_array()
             if save:
                 roll_properties["save-ability"] = save[0]
                 roll_properties["save-dc"] = save[1]
@@ -593,7 +602,17 @@ def findToHit(name_to_match, items_selector, name_selector, tohit_selector):
             break
     return None
 
-def buildAttackRoll(attack_source, name, description, properties, damages=[], damage_types=[], to_hit=None):
+def damagesToCrits(damages):
+    crits = []
+    for damage in damages:
+        match = re.search("[0-9]*d[0-9]+", damage)
+        if match?:
+                crits.append(match.group(0))
+        else:
+            crits.append("")
+    return crits
+
+def buildAttackRoll(attack_source, name, description, properties, damages=[], damage_types=[], to_hit=None, brutal=0):
     roll_properties = {"name": name,
                        "attack-source": attack_source,
                        "description": description}
@@ -628,6 +647,26 @@ def buildAttackRoll(attack_source, name, description, properties, damages=[], da
     if len(damages) > 0:
         roll_properties["damages"] = damages.as_array()
         roll_properties["damage-types"] = damage_types.as_array()
+        crits = damagesToCrits(damages, damage_types)
+        crit_damages = []
+        crit_damage_types = []
+        for i, dmg in enumerate(crits):
+            if dmg != "":
+                crit_damages.append(dmg)
+                crit_damage_types.append(damage_types[i])
+        if brutal > 0:
+            highest_dice = 0
+            for dmg in crit_damages:
+                match = re.search("[0-9]*d([0-9]+)", dmg)
+                if match?:
+                    sides = int(match.group(1))
+                    if sides > highest_dice:
+                        highest_dice = sides
+            if highest_dice != 0:
+                crit_damages.append(str(brutal) + "d" + str(highest_dice))
+                crit_damage_types.append("Brutal")
+        roll_properties["critical-damages"] = crit_damages.as_array()
+        roll_properties["critical-damage-types"] = crit_damage_types.as_array()
 
     return roll_properties
 

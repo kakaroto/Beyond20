@@ -1,6 +1,5 @@
 from utils import addCustomEventListener, injectCSS
 from settings import WhisperType, RollType
-import math
 from constants import TOOLTIP_CSS
 
 settings = None
@@ -28,7 +27,7 @@ def whisperToRollMode(whisper):
     except:
         return game.settings.get("core", "rollMode")
 
-def postDescription(request, title, source, attributes, description, rolls={}):
+def postDescription(request, title, source, attributes, description, rolls=[]):
     style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;"
 
     html = "<details><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>"
@@ -41,14 +40,15 @@ def postDescription(request, title, source, attributes, description, rolls={}):
         html += "</table>"
     html += "<div style='" + style + "'>" + description.replace("\n", "</br>") + "</div></details>"
     # TODO: handle 2d20kh1 where r.dice.rolls is more than 1 dice.
-    # Support critical
-    for roll in rolls:
-        r = rolls[roll]
-        if jstype(r) == 'string':
-            roll_html = "<span>" + r + "</span>"
+    # TODO: Support critical
+    for (roll_name, roll) in rolls:
+        roll_name = roll_name[0].toUpperCase() + roll_name[1:]
+        if jstype(roll) == 'string':
+            roll_html = "<span>" + roll + "</span>"
         else:
-            roll_html = "<span class='tooltip'>" + r.total + "<span class='tooltiptext'>" + r.formula + " = " +  r.result + "</span></span>"
-        html += "<b>" + roll + ": </b>" + roll_html + "</br>"
+            roll_html = "<details style='display: inline;'><summary>" + roll.total + "</summary>" \
+                "<span>" + roll.formula + " = " +  roll.result + "</span></details>"
+        html += "<b>" + roll_name + ": </b>" + roll_html + "</br>"
 
     postChatMessage(html, request.character.name, request.whisper == WhisperType.YES)
 
@@ -110,6 +110,8 @@ def rollInitiative(request, custom_roll_dice=""):
         token = canvas.tokens.controlledTokens[0]
         if game.combat?:
             game.combat.createCombatant({"tokenId": token.id, "hidden": token.data.hidden, "initiative": roll.total})
+        else:
+            ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet")
 
 def rollHitDice(request):
     rname = "Hit Dice" + (("(" + request.class + ")") if  request.multiclass else "")
@@ -129,47 +131,29 @@ def rollTrait(request):
         source = request.type
 
     # TODO: Sub description
-    postDescription(request, request.name, source, {}, request.description, {})
+    postDescription(request, request.name, source, {}, request.description)
 
 
 def rollAttack(request, custom_roll_dice=""):
     nonlocal settings
 
-    rolls = {}
+    rolls = []
     if request["to-hit"]?:
         # TODO: if advantage
         # TODO: super critical
         custom = "" if custom_roll_dice == "" else (" + " + custom_roll_dice)
-        rolls["To Hit"] = new Roll("1d20 + " + request["to-hit"] + custom).roll()
+        rolls.append(("To Hit", new Roll("1d20 + " + request["to-hit"] + custom).roll()))
     if request.damages?:
-        # TODO: handle brutal
-        # TODO: move rage/brutal multiplier to dndbeyond
-        # TODO: Multiple damages of the same type would overwrite the array, need a list.
         damages = list(request.damages)
         damage_types = list(request["damage-types"])
-        brutal = 0
-        if request.character.type == "Character" and \
-                request["attack-type"] == "Melee":
-            if request.character.settings["brutal-critical"]:
-                if "Brutal Critical" in request.character["class-features"]:
-                    barbarian_level = request.character.classes["Barbarian"]
-                    brutal += 1 + math.floor((barbarian_level - 9) / 4)
-                if "Savage Attacks" in request.character["racial-traits"]:
-                    brutal += 1
-            if "Rage" in request.character["class-features"] and \
-                    request.character.settings["barbarian-rage"]:
-                barbarian_level = request.character.classes["Barbarian"]
-                rage_damage = 2 if barbarian_level < 9 else (3 if barbarian_level < 16 else 4)
-                damages.insert(1, rage_damage)
-                damage_types.insert("Rage")
         for i in range(damages.length):
-            rolls[damage_types[i] + " Damage"] = new Roll(damages[i]).roll()
+            rolls.append((damage_types[i] + " Damage", new Roll(damages[i]).roll()))
     data = {}
     if request.range?:
         data["Range"] = request.range
 
     if request["save-dc"]?:
-        rolls["Save"] = request["save-ability"] + " DC " + request["save-dc"]
+        rolls.append(("Save", request["save-ability"] + " DC " + request["save-dc"]))
 
     # TODO: Support don't auto-roll dmg
     postDescription(request, request.name, None, data, request.description? "", rolls)
@@ -197,36 +181,36 @@ def buildSpellCard(request):
 
 def rollSpellCard(request):
     spell_card = buildSpellCard(request)
-    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], {})
+    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2])
 
 def rollSpellAttack(request, custom_roll_dice):
     nonlocal settings
 
     spell_card = buildSpellCard(request)
 
-    rolls = {}
+    rolls = []
     if request["to-hit"]?:
         custom = "" if custom_roll_dice == "" else (" + " + custom_roll_dice)
-        rolls["To Hit"] = new Roll("1d20 + " + request["to-hit"] + custom).roll()
+        rolls.append(("To Hit", new Roll("1d20 + " + request["to-hit"] + custom).roll()))
     if request.damages?:
         # TODO: Handle Chromatic Orb
         for i in range(request.damages.length):
             dmg_type = request["damage-types"][i]
-            rolls[dmg_type + (" Damage" if dmg_type != "Healing" else "")] = new Roll(request.damages[i]).roll()
+            rolls.append((dmg_type + (" Damage" if dmg_type != "Healing" else ""), new Roll(request.damages[i]).roll()))
     attributes = {}
     if request.range?:
         attributes["Range"] = request.range
 
     if request["save-dc"]?:
-        rolls["Save"] = request["save-ability"] + " DC " + request["save-dc"]
+        rolls.append(("Save", request["save-ability"] + " DC " + request["save-dc"]))
 
     if request["cast-at"]?:
-        rolls["Cast at"] = request["cast-at"] + " Level"
+        rolls.append(("Cast at", request["cast-at"] + " Level"))
     components = request.components
     prefix = settings["component-prefix"] if settings["component-prefix"] != "" else None
     if settings["components-display"] == "all":
         if components != "":
-            rolls[prefix or "Components"] =  components
+            rolls.append((prefix or "Components", components))
     elif settings["components-display"] == "material":
         while components != "":
             if components[0] in ["V", "S"]:
@@ -234,7 +218,7 @@ def rollSpellAttack(request, custom_roll_dice):
                 if components.startsWith(", "):
                     components = components[2:]
             if components[0] == "M":
-                rolls[prefix or "Materials"] = settings["component-prefix"] + components[2:-1]
+                rolls.append((prefix or "Materials", settings["component-prefix"] + components[2:-1]))
                 components = ""
 
     # TODO: Support don't auto-roll dmg

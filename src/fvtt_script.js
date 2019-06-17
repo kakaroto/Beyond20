@@ -3728,7 +3728,6 @@ var str = ρσ_str, repr = ρσ_repr;;
     ρσ_modules.utils = {};
     ρσ_modules.elementmaker = {};
     ρσ_modules.settings = {};
-    ρσ_modules.math = {};
     ρσ_modules.constants = {};
 
     (function(){
@@ -6696,377 +6695,6 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
-        var __name__ = "math";
-        var pi, e;
-        pi = Math.PI;
-        e = Math.E;
-        function ceil(x) {
-            return Math.ceil(x);
-        };
-        if (!ceil.__argnames__) Object.defineProperties(ceil, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function copysign(x, y) {
-            x = Math.abs(x);
-            if (y < 0) {
-                return -x;
-            } else {
-                return x;
-            }
-        };
-        if (!copysign.__argnames__) Object.defineProperties(copysign, {
-            __argnames__ : {value: ["x", "y"]}
-        });
-
-        function fabs(x) {
-            return Math.abs(x);
-        };
-        if (!fabs.__argnames__) Object.defineProperties(fabs, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function factorial(x) {
-            var r;
-            if (Math.abs(int(x)) !== x) {
-                throw new ValueError("factorial() only accepts integral values");
-            }
-            factorial.cache = ρσ_list_decorate([]);
-            r = (function() {
-                var ρσ_anonfunc = function (n) {
-                    if (n === 0 || n === 1) {
-                        return 1;
-                    }
-                    if (!(ρσ_expr_temp = factorial.cache)[(typeof n === "number" && n < 0) ? ρσ_expr_temp.length + n : n]) {
-                        (ρσ_expr_temp = factorial.cache)[(typeof n === "number" && n < 0) ? ρσ_expr_temp.length + n : n] = r(n - 1) * n;
-                    }
-                    return (ρσ_expr_temp = factorial.cache)[(typeof n === "number" && n < 0) ? ρσ_expr_temp.length + n : n];
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["n"]}
-                });
-                return ρσ_anonfunc;
-            })();
-            return r(x);
-        };
-        if (!factorial.__argnames__) Object.defineProperties(factorial, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function floor(x) {
-            return Math.floor(x);
-        };
-        if (!floor.__argnames__) Object.defineProperties(floor, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function fmod(x, y) {
-            while (y <= x) {
-                x -= y;
-            }
-            return x;
-        };
-        if (!fmod.__argnames__) Object.defineProperties(fmod, {
-            __argnames__ : {value: ["x", "y"]}
-        });
-
-        function fsum(iterable) {
-            var partials, i, ρσ_unpack, x, y, hi, lo;
-            partials = ρσ_list_decorate([]);
-            var ρσ_Iter0 = ρσ_Iterable(iterable);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                x = ρσ_Iter0[ρσ_Index0];
-                i = 0;
-                var ρσ_Iter1 = ρσ_Iterable(partials);
-                for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                    y = ρσ_Iter1[ρσ_Index1];
-                    if (Math.abs(x) < Math.abs(y)) {
-                        ρσ_unpack = [y, x];
-                        x = ρσ_unpack[0];
-                        y = ρσ_unpack[1];
-                    }
-                    hi = x + y;
-                    lo = y - (hi - x);
-                    if (lo) {
-                        partials[(typeof i === "number" && i < 0) ? partials.length + i : i] = lo;
-                        i += 1;
-                    }
-                    x = hi;
-                }
-                partials.splice(i, partials.length - i, x);
-            }
-            return sum(partials);
-        };
-        if (!fsum.__argnames__) Object.defineProperties(fsum, {
-            __argnames__ : {value: ["iterable"]}
-        });
-
-        function isinf(x) {
-            return !isFinite(x);
-        };
-        if (!isinf.__argnames__) Object.defineProperties(isinf, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function isnan(x) {
-            return isNaN(x);
-        };
-        if (!isnan.__argnames__) Object.defineProperties(isnan, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function modf(x) {
-            var m;
-            m = fmod(x, 1);
-            return [m, x - m];
-        };
-        if (!modf.__argnames__) Object.defineProperties(modf, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function trunc(x) {
-            return x | 0;
-        };
-        if (!trunc.__argnames__) Object.defineProperties(trunc, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function exp(x) {
-            return Math.exp(x);
-        };
-        if (!exp.__argnames__) Object.defineProperties(exp, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function expm1(x) {
-            if (Math.abs(x) < 1e-5) {
-                return x + .5 * x * x;
-            } else {
-                return Math.exp(x) - 1;
-            }
-        };
-        if (!expm1.__argnames__) Object.defineProperties(expm1, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function log() {
-            var x = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var base = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? log.__defaults__.base : arguments[1];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "base")){
-                base = ρσ_kwargs_obj.base;
-            }
-            return Math.log(x) / Math.log(base);
-        };
-        if (!log.__defaults__) Object.defineProperties(log, {
-            __defaults__ : {value: {base:e}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["x", "base"]}
-        });
-
-        function log1p(x) {
-            var ret, n, i;
-            ret = 0;
-            n = 50;
-            if (x <= -1) {
-                return Number.NEGATIVE_INFINITY;
-            }
-            if (x < 0 || x > 1) {
-                return Math.log(1 + x);
-            }
-            for (var ρσ_Index2 = 1; ρσ_Index2 < n; ρσ_Index2++) {
-                i = ρσ_Index2;
-                if (i % 2 === 0) {
-                    ret -= Math.pow(x, i) / i;
-                } else {
-                    ret += Math.pow(x, i) / i;
-                }
-            }
-            return ret;
-        };
-        if (!log1p.__argnames__) Object.defineProperties(log1p, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function log10(x) {
-            return Math.log(x) / Math.LN10;
-        };
-        if (!log10.__argnames__) Object.defineProperties(log10, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function pow(x, y) {
-            if (x < 0 && int(y) !== y) {
-                throw new ValueError("math domain error");
-            }
-            if (isnan(y) && x === 1) {
-                return 1;
-            }
-            return Math.pow(x, y);
-        };
-        if (!pow.__argnames__) Object.defineProperties(pow, {
-            __argnames__ : {value: ["x", "y"]}
-        });
-
-        function sqrt(x) {
-            return Math.sqrt(x);
-        };
-        if (!sqrt.__argnames__) Object.defineProperties(sqrt, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function acos(x) {
-            return Math.acos(x);
-        };
-        if (!acos.__argnames__) Object.defineProperties(acos, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function asin(x) {
-            return Math.asin(x);
-        };
-        if (!asin.__argnames__) Object.defineProperties(asin, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function atan(x) {
-            return Math.atan(x);
-        };
-        if (!atan.__argnames__) Object.defineProperties(atan, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function atan2(y, x) {
-            return Math.atan2(y, x);
-        };
-        if (!atan2.__argnames__) Object.defineProperties(atan2, {
-            __argnames__ : {value: ["y", "x"]}
-        });
-
-        function cos(x) {
-            return Math.cos(x);
-        };
-        if (!cos.__argnames__) Object.defineProperties(cos, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function sin(x) {
-            return Math.sin(x);
-        };
-        if (!sin.__argnames__) Object.defineProperties(sin, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function hypot(x, y) {
-            return Math.sqrt(x * x + y * y);
-        };
-        if (!hypot.__argnames__) Object.defineProperties(hypot, {
-            __argnames__ : {value: ["x", "y"]}
-        });
-
-        function tan(x) {
-            return Math.tan(x);
-        };
-        if (!tan.__argnames__) Object.defineProperties(tan, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function degrees(x) {
-            return x * 180 / pi;
-        };
-        if (!degrees.__argnames__) Object.defineProperties(degrees, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function radians(x) {
-            return x * pi / 180;
-        };
-        if (!radians.__argnames__) Object.defineProperties(radians, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function acosh(x) {
-            return Math.log(x + Math.sqrt(x * x - 1));
-        };
-        if (!acosh.__argnames__) Object.defineProperties(acosh, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function asinh(x) {
-            return Math.log(x + Math.sqrt(x * x + 1));
-        };
-        if (!asinh.__argnames__) Object.defineProperties(asinh, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function atanh(x) {
-            return .5 * Math.log((1 + x) / (1 - x));
-        };
-        if (!atanh.__argnames__) Object.defineProperties(atanh, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function cosh(x) {
-            return (Math.exp(x) + Math.exp(-x)) / 2;
-        };
-        if (!cosh.__argnames__) Object.defineProperties(cosh, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function sinh(x) {
-            return (Math.exp(x) - Math.exp(-x)) / 2;
-        };
-        if (!sinh.__argnames__) Object.defineProperties(sinh, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        function tanh(x) {
-            return (Math.exp(x) - Math.exp(-x)) / (Math.exp(x) + Math.exp(-x));
-        };
-        if (!tanh.__argnames__) Object.defineProperties(tanh, {
-            __argnames__ : {value: ["x"]}
-        });
-
-        ρσ_modules.math.pi = pi;
-        ρσ_modules.math.e = e;
-        ρσ_modules.math.ceil = ceil;
-        ρσ_modules.math.copysign = copysign;
-        ρσ_modules.math.fabs = fabs;
-        ρσ_modules.math.factorial = factorial;
-        ρσ_modules.math.floor = floor;
-        ρσ_modules.math.fmod = fmod;
-        ρσ_modules.math.fsum = fsum;
-        ρσ_modules.math.isinf = isinf;
-        ρσ_modules.math.isnan = isnan;
-        ρσ_modules.math.modf = modf;
-        ρσ_modules.math.trunc = trunc;
-        ρσ_modules.math.exp = exp;
-        ρσ_modules.math.expm1 = expm1;
-        ρσ_modules.math.log = log;
-        ρσ_modules.math.log1p = log1p;
-        ρσ_modules.math.log10 = log10;
-        ρσ_modules.math.pow = pow;
-        ρσ_modules.math.sqrt = sqrt;
-        ρσ_modules.math.acos = acos;
-        ρσ_modules.math.asin = asin;
-        ρσ_modules.math.atan = atan;
-        ρσ_modules.math.atan2 = atan2;
-        ρσ_modules.math.cos = cos;
-        ρσ_modules.math.sin = sin;
-        ρσ_modules.math.hypot = hypot;
-        ρσ_modules.math.tan = tan;
-        ρσ_modules.math.degrees = degrees;
-        ρσ_modules.math.radians = radians;
-        ρσ_modules.math.acosh = acosh;
-        ρσ_modules.math.asinh = asinh;
-        ρσ_modules.math.atanh = atanh;
-        ρσ_modules.math.cosh = cosh;
-        ρσ_modules.math.sinh = sinh;
-        ρσ_modules.math.tanh = tanh;
-    })();
-
-    (function(){
         var __name__ = "constants";
         var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, TOOLTIP_CSS, ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY;
         ROLL20_URL = "*://app.roll20.net/editor/";
@@ -7104,8 +6732,6 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         var WhisperType = ρσ_modules.settings.WhisperType;
         var RollType = ρσ_modules.settings.RollType;
-
-        var math = ρσ_modules.math;
 
         var TOOLTIP_CSS = ρσ_modules.constants.TOOLTIP_CSS;
 
@@ -7196,7 +6822,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "rolls")){
                 rolls = ρσ_kwargs_obj.rolls;
             }
-            var style, html, attr, r, roll_html, roll;
+            var style, html, attr, roll_name, roll_html, ρσ_unpack, roll;
             style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;";
             html = "<details><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>";
             if (source || attributes.length > 0) {
@@ -7214,19 +6840,21 @@ var str = ρσ_str, repr = ρσ_repr;;
             html += "<div style='" + style + "'>" + description.replace("\n", "</br>") + "</div></details>";
             var ρσ_Iter1 = ρσ_Iterable(rolls);
             for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                roll = ρσ_Iter1[ρσ_Index1];
-                r = rolls[(typeof roll === "number" && roll < 0) ? rolls.length + roll : roll];
-                if ((typeof r === "string" || typeof typeof r === "object" && ρσ_equals(typeof r, "string"))) {
-                    roll_html = "<span>" + r + "</span>";
+                ρσ_unpack = ρσ_Iter1[ρσ_Index1];
+                roll_name = ρσ_unpack[0];
+                roll = ρσ_unpack[1];
+                roll_name = roll_name[0].toUpperCase() + roll_name.slice(1);
+                if ((typeof roll === "string" || typeof typeof roll === "object" && ρσ_equals(typeof roll, "string"))) {
+                    roll_html = "<span>" + roll + "</span>";
                 } else {
-                    roll_html = "<span class='tooltip'>" + r.total + "<span class='tooltiptext'>" + r.formula + " = " + r.result + "</span></span>";
+                    roll_html = "<details style='display: inline;'><summary>" + roll.total + "</summary><span>" + roll.formula + " = " + roll.result + "</span></details>";
                 }
-                html += "<b>" + roll + ": </b>" + roll_html + "</br>";
+                html += "<b>" + roll_name + ": </b>" + roll_html + "</br>";
             }
             postChatMessage(html, request.character.name, (request.whisper === WhisperType.prototype.YES || typeof request.whisper === "object" && ρσ_equals(request.whisper, WhisperType.prototype.YES)));
         };
         if (!postDescription.__defaults__) Object.defineProperties(postDescription, {
-            __defaults__ : {value: {rolls:{}}},
+            __defaults__ : {value: {rolls:ρσ_list_decorate([])}},
             __handles_kwarg_interpolation__ : {value: true},
             __argnames__ : {value: ["request", "title", "source", "attributes", "description", "rolls"]}
         });
@@ -7379,6 +7007,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                         ρσ_d["initiative"] = roll.total;
                         return ρσ_d;
                     }).call(this));
+                } else {
+                    ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet");
                 }
             }
         };
@@ -7429,7 +7059,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             } else {
                 source = request.type;
             }
-            postDescription(request, request.name, source, {}, request.description, {});
+            postDescription(request, request.name, source, {}, request.description);
         };
         if (!rollTrait.__argnames__) Object.defineProperties(rollTrait, {
             __argnames__ : {value: ["request"]}
@@ -7443,36 +7073,19 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var rolls, custom, damages, damage_types, brutal, barbarian_level, rage_damage, i, data;
-            rolls = {};
+            var rolls, custom, damages, damage_types, i, data;
+            rolls = ρσ_list_decorate([]);
             if (ρσ_exists.n(request["to-hit"])) {
                 custom = ((custom_roll_dice === "" || typeof custom_roll_dice === "object" && ρσ_equals(custom_roll_dice, ""))) ? "" : " + " + custom_roll_dice;
-                rolls["To Hit"] = new Roll("1d20 + " + request["to-hit"] + custom).roll();
+                rolls.append(["To Hit", new Roll("1d20 + " + request["to-hit"] + custom).roll()]);
             }
             if (ρσ_exists.n(request.damages)) {
                 damages = list(request.damages);
                 damage_types = list(request["damage-types"]);
-                brutal = 0;
-                if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && (request["attack-type"] === "Melee" || typeof request["attack-type"] === "object" && ρσ_equals(request["attack-type"], "Melee"))) {
-                    if (request.character.settings["brutal-critical"]) {
-                        if (ρσ_in("Brutal Critical", request.character["class-features"])) {
-                            barbarian_level = request.character.classes["Barbarian"];
-                            brutal += 1 + math.floor((barbarian_level - 9) / 4);
-                        }
-                        if (ρσ_in("Savage Attacks", request.character["racial-traits"])) {
-                            brutal += 1;
-                        }
-                    }
-                    if (ρσ_in("Rage", request.character["class-features"]) && request.character.settings["barbarian-rage"]) {
-                        barbarian_level = request.character.classes["Barbarian"];
-                        rage_damage = (barbarian_level < 9) ? 2 : (barbarian_level < 16) ? 3 : 4;
-                        damages.insert(1, rage_damage);
-                        damage_types.insert("Rage");
-                    }
-                }
                 for (var ρσ_Index3 = 0; ρσ_Index3 < damages.length; ρσ_Index3++) {
                     i = ρσ_Index3;
-                    rolls[ρσ_bound_index(damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i] + " Damage", rolls)] = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
+                    rolls.append([damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i] + " Damage", 
+                    new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll()]);
                 }
             }
             data = {};
@@ -7480,7 +7093,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 data["Range"] = request.range;
             }
             if (ρσ_exists.n(request["save-dc"])) {
-                rolls["Save"] = request["save-ability"] + " DC " + request["save-dc"];
+                rolls.append(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
             }
             postDescription(request, request.name, null, data, ρσ_exists.e(request.description, ""), rolls);
         };
@@ -7521,7 +7134,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         function rollSpellCard(request) {
             var spell_card;
             spell_card = buildSpellCard(request);
-            postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], {});
+            postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2]);
         };
         if (!rollSpellCard.__argnames__) Object.defineProperties(rollSpellCard, {
             __argnames__ : {value: ["request"]}
@@ -7530,16 +7143,17 @@ var str = ρσ_str, repr = ρσ_repr;;
         function rollSpellAttack(request, custom_roll_dice) {
             var spell_card, rolls, custom, dmg_type, i, attributes, components, prefix;
             spell_card = buildSpellCard(request);
-            rolls = {};
+            rolls = ρσ_list_decorate([]);
             if (ρσ_exists.n(request["to-hit"])) {
                 custom = ((custom_roll_dice === "" || typeof custom_roll_dice === "object" && ρσ_equals(custom_roll_dice, ""))) ? "" : " + " + custom_roll_dice;
-                rolls["To Hit"] = new Roll("1d20 + " + request["to-hit"] + custom).roll();
+                rolls.append(["To Hit", new Roll("1d20 + " + request["to-hit"] + custom).roll()]);
             }
             if (ρσ_exists.n(request.damages)) {
                 for (var ρσ_Index4 = 0; ρσ_Index4 < request.damages.length; ρσ_Index4++) {
                     i = ρσ_Index4;
                     dmg_type = (ρσ_expr_temp = request["damage-types"])[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i];
-                    rolls[ρσ_bound_index(dmg_type + (((dmg_type !== "Healing" && (typeof dmg_type !== "object" || ρσ_not_equals(dmg_type, "Healing")))) ? " Damage" : ""), rolls)] = new Roll((ρσ_expr_temp = request.damages)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i]).roll();
+                    rolls.append([dmg_type + (((dmg_type !== "Healing" && (typeof dmg_type !== "object" || ρσ_not_equals(dmg_type, "Healing")))) ? " Damage" : ""), 
+                    new Roll((ρσ_expr_temp = request.damages)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i]).roll()]);
                 }
             }
             attributes = {};
@@ -7547,16 +7161,16 @@ var str = ρσ_str, repr = ρσ_repr;;
                 attributes["Range"] = request.range;
             }
             if (ρσ_exists.n(request["save-dc"])) {
-                rolls["Save"] = request["save-ability"] + " DC " + request["save-dc"];
+                rolls.append(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
             }
             if (ρσ_exists.n(request["cast-at"])) {
-                rolls["Cast at"] = request["cast-at"] + " Level";
+                rolls.append(["Cast at", request["cast-at"] + " Level"]);
             }
             components = request.components;
             prefix = ((settings["component-prefix"] !== "" && (typeof settings["component-prefix"] !== "object" || ρσ_not_equals(settings["component-prefix"], "")))) ? settings["component-prefix"] : null;
             if ((settings["components-display"] === "all" || typeof settings["components-display"] === "object" && ρσ_equals(settings["components-display"], "all"))) {
                 if ((components !== "" && (typeof components !== "object" || ρσ_not_equals(components, "")))) {
-                    rolls[ρσ_bound_index(prefix || "Components", rolls)] = components;
+                    rolls.append([prefix || "Components", components]);
                 }
             } else if ((settings["components-display"] === "material" || typeof settings["components-display"] === "object" && ρσ_equals(settings["components-display"], "material"))) {
                 while ((components !== "" && (typeof components !== "object" || ρσ_not_equals(components, "")))) {
@@ -7567,7 +7181,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         }
                     }
                     if ((components[0] === "M" || typeof components[0] === "object" && ρσ_equals(components[0], "M"))) {
-                        rolls[ρσ_bound_index(prefix || "Materials", rolls)] = settings["component-prefix"] + components.slice(2, -1);
+                        rolls.append([prefix || "Materials", settings["component-prefix"] + components.slice(2, -1)]);
                         components = "";
                     }
                 }

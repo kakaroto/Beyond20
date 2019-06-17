@@ -2,7 +2,6 @@ from utils import replaceRolls, injectPageScript, sendCustomEvent
 from settings import getDefaultSettings, getStoredSettings, WhisperType, RollType
 from constants import ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY
 import re
-import math
 
 print("Beyond20: Roll20 module loaded.")
 
@@ -85,42 +84,15 @@ def subDescriptionRolls(request, description):
 def subDamageRolls(text):
     return subRolls(text, damage_only=True)
 
-def damagesToCrits(damages):
-    crits = []
-    for damage in damages:
-        match = re.search("[0-9]*d[0-9]+", damage)
-        if match?:
-                crits.append(match.group(0))
-        else:
-            crits.append("")
-    return crits
-
-def damagesToRollProperties(damages, damage_types, brutal=0):
+def damagesToRollProperties(damages, damage_types, crits, crit_types):
     nonlocal settings
 
     properties = {"damage": 1,
                   "dmg1flag": 1}
-    crits = damagesToCrits(damages)
-    if brutal > 0:
-        dice = []
-        for dmg in crits:
-            match = re.search("[0-9]*d([0-9]+)", dmg)
-            if match?:
-                die = str(brutal) + "d" + match.group(1)
-                if die not in dice:
-                    dice.append(die)
-        if dice.length == 1:
-            brutal_dmg = "[[" + dice[0] + "]]"
-        elif dice.length > 1:
-            brutal_dmg = "?{Choose which extra dice to roll for your Brutal/Savage critical attack"
-            for choice in dice:
-                brutal_dmg += "|" + choice + ",[[" + choice + "]]"
-            brutal_dmg += "}"
+
     properties["dmg1"] = subDamageRolls(damages[0])
     properties["dmg1type"] = damage_types[0]
     properties["crit1"] = settings["crit-prefix"] + subDamageRolls(crits[0])
-    if brutal_dmg?:
-        properties["crit1"] += " + " + brutal_dmg + "(Brutal)"
     if len(damages) > 1:
         properties["dmg2flag"] = 1
         properties["dmg2"] = subDamageRolls(str.join(" | ", list(damages[1:])))
@@ -237,13 +209,8 @@ def rollSkill(request, custom_roll_dice=""):
                           "r1": genRoll("1d20", {request.ability: modifier, "CUSTOM": custom_roll_dice})})
 
 def rollAbility(request, custom_roll_dice=""):
-    if request["JoaT"]?:
-        joat = "+" + request["JoaT"]
-        dice_roll = genRoll("1d20", {request.ability: request.modifier, "JoaT": joat, "CUSTOM": custom_roll_dice})
-        modifier = request.modifier + " " + joat
-    else:
-        dice_roll = genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice})
-        modifier = request.modifier
+    dice_roll = genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice})
+    modifier = request.modifier
     return template(request, "simple",
                     {"charname": request.character.name,
                      "rname" : request.name,
@@ -324,22 +291,9 @@ def rollAttack(request, custom_roll_dice=""):
     if request.damages?:
         damages = list(request.damages)
         damage_types = list(request["damage-types"])
-        brutal = 0
-        if request.character.type == "Character" and \
-                request["attack-type"] == "Melee":
-            if request.character.settings["brutal-critical"]:
-                if "Brutal Critical" in request.character["class-features"]:
-                    barbarian_level = request.character.classes["Barbarian"]
-                    brutal += 1 + math.floor((barbarian_level - 9) / 4)
-                if "Savage Attacks" in request.character["racial-traits"]:
-                    brutal += 1
-            if "Rage" in request.character["class-features"] and \
-                    request.character.settings["barbarian-rage"]:
-                barbarian_level = request.character.classes["Barbarian"]
-                rage_damage = 2 if barbarian_level < 9 else (3 if barbarian_level < 16 else 4)
-                damages[0] += " + " + rage_damage
-                damage_types[0] += " | Rage"
-        dmg_props = damagesToRollProperties(damages, damage_types, brutal)
+        crit_damages = list(request["critical-damages"])
+        crit_damage_types = list(request["critical-damage-types"])
+        dmg_props = damagesToRollProperties(damages, damage_types, crit_damages, crit_damage_types)
     if request.range?:
         properties["range"] = request.range
     if request["save-dc"]?:
@@ -417,17 +371,25 @@ def rollSpellAttack(request, custom_roll_dice):
     if request.damages?:
         damages = list(request.damages)
         damage_types = list(request["damage-types"])
+        critical_damages = list(request["critical-damages"])
+        critical_damage_types = list(request["critical-damage-types"])
         if request.name == "Chromatic Orb":
             chromatic_type = "?{Choose damage type"
             for dmgtype in ["Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder"]:
                 idx = damage_types.index(dmgtype)
                 chromatic_damage = damages.pypop(idx)
                 damage_types.pypop(idx)
+                idx = critical_damage_types.index(dmgtype)
+                if idx >= 0:
+                    crit_damage = critical_damages.pypop(idx)
+                    critical_damage_types.pypop(idx)
                 chromatic_type += "|" + dmgtype
             chromatic_type += "}"
             damages.insert(0, chromatic_damage)
             damage_types.insert(0, chromatic_type)
-        dmg_props = damagesToRollProperties(damages, damage_types)
+            critical_damages.insert(0, crit_damage)
+            critical_damage_types.insert(0, chromatic_type)
+        dmg_props = damagesToRollProperties(damages, damage_types, critical_damages, critical_damage_types)
     if request.range?:
         properties["range"] = request.range
     if request["save-dc"]?:

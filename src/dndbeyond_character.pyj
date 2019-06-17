@@ -40,14 +40,17 @@ def rollAbilityOrSavingThrow(paneClass, rollType):
     modifier = $("." + paneClass + "__modifier .ct-signed-number").text()
     ability = ability_abbreviations[ability_name]
 
+    if rollType == "ability" and character.hasClassFeature("Jack of All Trades") and \
+            character.getSetting("bard-joat", False):
+        JoaT = int(math.floor(float(character._proficiency) / 2))
+        modifier += " + " + JoaT
+
     roll_properties = {"name" : ability_name,
                        "ability": ability,
-                       "modifier": modifier} 
+                       "modifier": modifier}
+
     if ability == "STR" and character.hasClassFeature("Rage") and character.getSetting("barbarian-rage", False):
         roll_properties["advantage"] = RollType.ADVANTAGE
-    if character.hasClassFeature("Jack of All Trades") and \
-            character.getSetting("bard-joat", False):
-        roll_properties["JoaT"] = int(math.floor(float(character._proficiency) / 2))
     sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties)
 
 def rollAbilityCheck():
@@ -144,13 +147,29 @@ def rollItem(force_display=False):
             damages[0] += " + 10"
             damage_types[0] += " | Weapon Master"
             character.mergeCharacterSettings({"great-weapon-master": False})
+
+
+        brutal = 0
+        if properties["Attack Type"] == "Melee":
+            if character.getSetting("brutal-critical"):
+                if character.hasClassFeature("Brutal Critical"):
+                    barbarian_level = character.getClassLevel("Barbarian")
+                    brutal += 1 + math.floor((barbarian_level - 9) / 4)
+                if character.hasRacialTrait("Savage Attacks"):
+                    brutal += 1
+            if character.hasClassFeature("Rage") and character.getSetting("barbarian-rage", False):
+                barbarian_level = character.getClassLevel("Barbarian")
+                rage_damage = 2 if barbarian_level < 9 else (3 if barbarian_level < 16 else 4)
+                damages.insert(1, rage_damage)
+                damage_types.insert(1, "Rage")
         roll_properties = buildAttackRoll("item",
                                           item_name,
                                           description,
                                           properties,
                                           damages,
                                           damage_types,
-                                          to_hit)
+                                          to_hit,
+                                          brutal)
         roll_properties["item-type"] = item_type
         sendRollWithCharacter("attack", damages[0], roll_properties)
     else:
