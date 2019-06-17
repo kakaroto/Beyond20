@@ -1,14 +1,13 @@
 from settings import getStoredSettings
-from dndbeyond import injectDiceToRolls, isRollButtonAdded, sendRoll
+from dndbeyond import injectDiceToRolls, isRollButtonAdded, sendRoll, CharacterBase
 from elementmaker import E
 
 print("Beyond20: D&D Beyond Spell module loaded.")
 
-class FakeCharacter:
-    def getDict(self):
-        return {"name": ""}
+class FakeCharacter(CharacterBase):
+    pass
 
-character = FakeCharacter()
+character = None
 
 def displaySpell():
     nonlocal character
@@ -72,6 +71,7 @@ def addDisplayButton():
 def documentLoaded(settings):
     nonlocal character
 
+    character = FakeCharacter("spell", global_settings=settings)
     if isRollButtonAdded():
         chrome.runtime.sendMessage({"action": "reload-me"})
     else:

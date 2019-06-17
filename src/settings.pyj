@@ -1,7 +1,7 @@
 from elementmaker import E 
 from utils import roll20Title, fvttTitle, isFVTT
 
-class Whisper:
+class WhisperType:
     NO = 0
     YES = 1
     QUERY = 2
@@ -23,22 +23,34 @@ class RollType:
 #                        get: function
 
 options_list = {
-    "whispers": {"short": "Whisper all rolls",
-                 "title": "Whisper all rolls to the DM",
-                 "description": "If enabled, all the rolls will be whispered to the DM",
-                 "type": "bool",
-                 "default": False},
+    "whisper-type": {"short": "Whisper rolls",
+                     "title": "Whisper rolls to the DM",
+                     "description": "Determines if the rolls will be whispered to the DM.\n" \
+                         "In the case of Foundry VTT, the 'ask every time' option will use the setting in the chat box.",
+                     "type": "combobox",
+                     "default": WhisperType.NO,
+                     "choices": {str(WhisperType.NO): "Never whisper",
+                                 str(WhisperType.YES): "Always whisper",
+                                 str(WhisperType.QUERY): "Ask every time"}},
 
-    "whisper-monsters": {"title": "Whisper monster rolls to the DM",
-                         "description": "If enabled, all the rolls from monster stat blocks will be whispered to the DM",
-                         "type": "bool",
-                         "default": True},
+    "whisper-type-monsters": {"title": "Whisper monster rolls to the DM",
+                              "description": "Overrides the global whisper setting from monster stat blocks",
+                              "type": "combobox",
+                              "default": WhisperType.YES,
+                              "choices": {str(WhisperType.NO): "Use general whisper setting",
+                                          str(WhisperType.YES): "Always whisper monster rolls",
+                                          str(WhisperType.QUERY): "Ask every time"}},
 
-    "roll-advantage": {"short": "Roll with Advantage",
-                       "title": "Always roll Advantange/Disadvantage",
-                       "description": "Always roll a second dice for Advantage/Disadvantage",
-                       "type": "bool",
-                       "default": True},
+    "roll-type": {"short": "Type of Roll",
+                  "title": "Type of Roll (Advantange/Disadvantage)",
+                  "description": "Determines if rolls should be with advantage, disadvantage, double rolls or user queries",
+                  "type": "combobox",
+                  "default": RollType.NORMAL,
+                  "choices": {str(RollType.NORMAL): "Normal Roll",
+                              str(RollType.DOUBLE): "Always roll twice",
+                              str(RollType.QUERY): "Ask every time",
+                              str(RollType.ADVANTAGE): "Roll with Advantage",
+                              str(RollType.DISADVANTAGE): "Roll with Disadvantage"}},
 
     "auto-roll-damage": {"title": "Auto roll Damage and Crit",
                        "description": "Always roll damage and critical hit dice when doing an attack",
@@ -46,7 +58,9 @@ options_list = {
                        "default": True},
 
     "initiative-tracker": {"title": "Add initiative roll to the Turn Tracker",
-                           "description": "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in the VTT\nIf using Roll20, it will also change the way the output of 'Advantage on initiative' rolls appear.",
+                           "description": "Adds the result of the initiative roll to the turn tracker.\n" \
+                               "This requires you to have a token selected in the VTT\n" \
+                               "If using Roll20, it will also change the way the output of 'Advantage on initiative' rolls appear.",
                            "type": "bool",
                            "default": True},
 
@@ -59,7 +73,8 @@ options_list = {
                  "default": "roll20-template"},
 
     "roll20-template": {"title": "Roll20 Character Sheet Setting",
-                 "description": "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.",
+                 "description": "Select the Character Sheet Template that you use in Roll20\n" \
+                            "If the templates do not match, you will not see anything printed in the Roll20 chat.",
                  "type": "combobox",
                  "default": "roll20",
                  "choices": {"roll20": "D&D 5E By Roll20", "default": "Other templates"}},
@@ -68,17 +83,20 @@ options_list = {
                      "default": "subst-vtt"},
 
     "subst-vtt": {"title": "Replace Dices formulas in the VTT",
-                     "description": "In Roll20 or Foundry VTT, if a spell card or an item or a feat has a dice formula in its description,\nenabling this will make the formula clickable to generate the roll in chat.",
+                     "description": "In Roll20 or Foundry VTT, if a spell card or an item or a feat has a dice formula in its description,\n" \
+                      "enabling this will make the formula clickable to generate the roll in chat.",
                      "type": "bool",
                      "default": True},
 
     "subst-dndbeyond": {"title": "Replace Dices formulas in D&D Beyond (Spells & Character Sheet)",
-                        "description": "In the D&D Beyond Spell page or Character sheet side panel, if a spell, item, feat or action has a dice formula in its description,\nenabling this will add a dice icon next to the formula to allow you to roll it.",
+                        "description": "In the D&D Beyond Spell page or Character sheet side panel, if a spell, item, feat or action has a dice formula in its description,\n" \
+                            "enabling this will add a dice icon next to the formula to allow you to roll it.",
                         "type": "bool",
                         "default": True},
 
     "subst-dndbeyond-stat-blocks": {"title": "Replace Dices formulas in D&D Beyond (Stat blocks)",
-                                    "description": "In D&D Beyond, if a dice formula is found in the stat block of a creature, monster, vehicle,\nenabling this will add a dice icon next to the formula to allow you to roll it.",
+                                    "description": "In D&D Beyond, if a dice formula is found in the stat block of a creature, monster, vehicle,\n" \
+                                        "enabling this will add a dice icon next to the formula to allow you to roll it.",
                                     "type": "bool",
                                     "default": True},
 
@@ -114,7 +132,8 @@ options_list = {
 
 
     "show-changelog": {"title": "Show Changelog when installing a new version",
-                       "description": "When a new version is released and the extension has been updated,\nopen the changelog in a new window",
+                       "description": "When a new version is released and the extension has been updated,\n" \
+                           "open the changelog in a new window",
                        "type": "bool",
                        "default": True},
 
@@ -125,7 +144,8 @@ options_list = {
 
     "donate": {"short": "Buy me rations for 1 day",
                "title": "Donate to show your appreciation!",
-               "description": "I know you already appreciate this extension, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active or just to say thank you, you can!",
+               "description": "I know you already appreciate this extension, otherwise you wouldn't be using it!\n" \
+                   "But if you wish to donate to help keep development active or just to say thank you, you can!",
                "type": "link", 
                "default": "https://paypal.me/KaKaRoTo",
                "icon": "images/donate.png"}
@@ -314,6 +334,7 @@ def initializeMarkaGroup(group):
     triggerOpen = $(group).find('.select')
     triggerClose = $(group).find('.dropdown-menu li')
     dropdown_menu = $(group).find(".dropdown-menu")
+    button_group = $(group).find(".button-group")
     marka = $(group).find('.icon')
     input = $(group).find('.input')
 
@@ -328,6 +349,7 @@ def initializeMarkaGroup(group):
             return def(event):
                 event.preventDefault()
                 dropdown_menu.toggleClass('open')
+                button_group.toggleClass('open')
 
                 if icon.hasClass("marka-icon-times"):
                     m.set('triangle').size(10)
@@ -340,6 +362,7 @@ def initializeMarkaGroup(group):
                 input.text(this.innerText)
                 input.trigger("markaChanged")
                 dropdown_menu.removeClass('open')
+                button_group.removeClass('open')
                 m.set('triangle').size(10)
 
     triggerOpen.bind("click", makeOpenCB(dropdown_menu, marka, m))
@@ -512,11 +535,11 @@ def getVTTTabSetting(name):
     saved_id = opt.attr("x-beyond20-id")
     saved_title = opt.attr("x-beyond20-title")
     saved_vtt = opt.attr("x-beyond20-vtt")
-    vtt = "fvtt" if isFVTT(current_tab.title) else "roll20" 
-    title = fvttTitle(current_tab.title) if vtt == "fvtt" else roll20Title(current_tab.title)
     if value == "All VTT Tabs":
         ret = None
     elif value in ["This Campaign", "This World", "This Specific Tab"]:
+        vtt = "fvtt" if isFVTT(current_tab.title) else "roll20" 
+        title = fvttTitle(current_tab.title) if vtt == "fvtt" else roll20Title(current_tab.title)
         ret = {"id": (0 if value in ["This Campaign", "This World"] else current_tab.id),
                "title": title,
                "vtt": vtt}
@@ -525,7 +548,7 @@ def getVTTTabSetting(name):
     elif value == "Only Foundry VTT Tabs":
         ret = {"id": 0, "title": None, "vtt": "fvtt"}
     elif value.startsWith("Campaign: ") or value.startsWith("World: "):
-        ret = {"id": 0, "title": saved_title, "vtt": vtt}
+        ret = {"id": 0, "title": saved_title, "vtt": saved_vtt}
     else:
         # "Another tab or campaign (No change)", "A Roll20 game", "A FVTT game", "Tab #"
         ret = {"id": saved_id, "title": saved_title, "vtt": saved_vtt}

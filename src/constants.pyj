@@ -56,3 +56,6 @@ TOOLTIP_CSS = """
   visibility: visible;
 }
 """
+
+ROLL20_WHISPER_QUERY="?{Whisper?|Public Roll,|Whisper Roll,/w gm }"
+ROLL20_ADVANTAGE_QUERY="{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125 &#123&#123r2=[[0d20|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2=[[1d20|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2=[[1d20}"

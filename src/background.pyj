@@ -1,5 +1,5 @@
 import constants as c
-from utils import roll20Title, isFVTT, fvttTitle, getBrowser
+from utils import roll20Title, isFVTT, fvttTitle, getBrowser, urlMatches
 from settings import getDefaultSettings, getStoredSettings, mergeSettings
 
 settings = getDefaultSettings()
@@ -52,6 +52,7 @@ def sendMessageToRoll20(request, limit=None):
 def sendMessageToFVTT(request, limit):
     nonlocal fvtt_tabs
 
+    console.log("Sending msg to FVTT ", fvtt_tabs)
     if limit:
         vtt = limit.vtt ? "roll20"
         if vtt == "fvtt":
@@ -67,8 +68,25 @@ def sendMessageToBeyond(request):
     sendMessageTo(c.DNDBEYOND_SPELL_URL, request)
     sendMessageTo(c.DNDBEYOND_VEHICLE_URL, request)
 
+def addFVTTTab(tab):
+    nonlocal fvtt_tabs
+    for t in fvtt_tabs:
+        if t.id == tab.id:
+            return
+    fvtt_tabs.append(tab)
+    console.log("Added ", tab.id, " to fvtt tabs.")
+
+def removeFVTTTab(id):
+    nonlocal fvtt_tabs
+
+    for t in fvtt_tabs:
+        if t.id == id:
+            fvtt_tabs.remove(t)
+            console.log("Removed ", id, " from fvtt tabs.")
+            return
+
 def onMessage(request, sender, sendResponse):
-    nonlocal settings, fvtt_tabs
+    nonlocal settings
 
     console.log("Received message: ", request)
     if request.action in ["roll", "hp-update"]:
@@ -85,7 +103,7 @@ def onMessage(request, sender, sendResponse):
         if isFVTT(sender.tab.title):
             chrome.tabs.executeScript(sender.tab.id, { "file": 'src/fvtt.js' })
     elif request.action == "register-fvtt-tab":
-        fvtt_tabs.append(sender.tab)
+        addFVTTTab(sender.tab)
     elif request.action == "reload-me":
         chrome.tabs.reload(sender.tab.id)
 
@@ -94,8 +112,19 @@ def executeScripts(tabs, js_files):
         for file in js_files:
             chrome.tabs.executeScript(tab.id, { "file": file })
 
+def onTabsUpdated(id, changes, tab):
+    nonlocal fvtt_tabs
+
+    if "url" in changes and not urlMatches(changes["url"], "*://*/game"):
+        removeFVTTTab(id)
+
+def onTabRemoved(id, info):
+    removeFVTTTab(id)
+
 updateSettings()
 chrome.runtime.onMessage.addListener(onMessage)
+chrome.tabs.onUpdated.addListener(onTabsUpdated)
+chrome.tabs.onRemoved.addListener(onTabRemoved)
 
 if getBrowser() == "Chrome":
     manifest = chrome.runtime.getManifest()

@@ -1,5 +1,6 @@
 from utils import replaceRolls, injectPageScript, sendCustomEvent
-from settings import getDefaultSettings, getStoredSettings
+from settings import getDefaultSettings, getStoredSettings, WhisperType, RollType
+from constants import ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY
 import re
 import math
 
@@ -11,8 +12,6 @@ btn = chat.getElementsByTagName("button")[0]
 speakingas = document.getElementById("speakingas")
 settings = getDefaultSettings()
 
-"?{Whisper?|Public Roll,|Whisper Roll,/w gm }"
-"{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125 &#123&#123r2=[[0d20|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2=[[@{d20}|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2=[[@{d20}}"
 def postChatMessage(message, character=None):
     nonlocal txt, btn, speakingas
 
@@ -70,15 +69,16 @@ def subRolls(text, damage_only=False, overrideCB=None):
 
 def subDescriptionRolls(request, description):
     nonlocal settings
-    if not settings["subst-roll20"]:
+    if not settings["subst-vtt"]:
         return description
     replaceCB = def(dice, modifier):
         roll = ("1d20" if dice == "" else dice) + modifier
-        roll_template = template("simple", {"charname": request.character.name,
-                                            "rname" : request.name,
-                                            "mod": dice + modifier,
-                                            "r1": genRoll(roll),
-                                            "normal": 1})
+        roll_template = template(request, "simple",
+                                 {"charname": request.character.name,
+                                  "rname" : request.name,
+                                  "mod": dice + modifier,
+                                  "r1": genRoll(roll),
+                                  "normal": 1})
         return "[" + dice + modifier + "](!\n" + escapeRoll20Macro(roll_template) + ")"
     return subRolls(description, overrideCB=replaceCB)
 
@@ -129,28 +129,49 @@ def damagesToRollProperties(damages, damage_types, brutal=0):
 
     return properties
 
-def template(name, properties):
+def advantageString(advantage, r1):
+    try:
+        return {RollType.NORMAL: "{{normal=1}}",
+                RollType.DOUBLE: "{{always=1}} {{r2=" + r1 + "}}",
+                RollType.QUERY: ROLL20_ADVANTAGE_QUERY + r1.replace("[[1d20", "") + "}}",
+                RollType.ADVANTAGE: "{{advantage=1}} {{r2=" + r1 + "}}",
+                RollType.DISADVANTAGE: "{{disadvantage=1}} {{r2=" + r1 + "}}",
+                }[advantage]
+    except:
+        return "{{normal=1}}"
+
+def whisperString(whisper):
+    try:
+        return {WhisperType.NO: "",
+                WhisperType.YES: "/w gm",
+                WhisperType.QUERY: ROLL20_WHISPER_QUERY
+                }[whisper]
+    except:
+        return ""
+
+def template(request, name, properties):
     nonlocal settings
+            
+    result = whisperString(request.whisper)
+    result += " &{template:" + name + "}"
+    for key in properties:
+        result += " {{" + key + "=" + properties[key] + "}}"
 
-    if properties["normal"]?:
-        del properties["r2"]
+    if request.advantage? and "normal" not in properties and name in ["simple", "atk", "atkdmg"]:
+        result += advantageString(request.advantage, properties["r1"])
 
-    if settings["template"] == "default":
-        name = "default"
+    if settings["roll20-template"] == "default":
+        result.replace("&{template:" + name + "}", "&{template:default}")
 
-        # Keeps the order of properties
         renameProp = def(old_key, new_key):
-            nonlocal properties
-            new_properties = {}
-            for key in properties:
-                new_properties[new_key if key == old_key else key] = properties[key]
-            properties = new_properties
+            result.replace("{{" + old_key + "=", "{{" + new_key + "=")
 
         renameProp("charname", "Character name")
         renameProp("rname", "name")
-        if properties["r2"]?:
+        if "{{r2=" in result:
             renameProp("r1", "Regular Roll")
             renameProp("r2", "Roll with [Dis]Advantage")
+            result.replace("&#123&#123r2=", "&#123&#123Roll with [Dis]Advantage)=")
         else:
             renameProp("r1", "Dice Roll")
         renameProp("mod", "Modifier")
@@ -179,33 +200,12 @@ def template(name, properties):
         del properties["always"]
         del properties["normal"]
         del properties["advantage"]
-            
+        del properties["disadvantage"]
 
-    if settings["whispers"]:
-        result = "/w gm "
-    else:
-        result = ""
-    result += "&{template:" + name + "}"
-    for key in properties:
-        result += " {{" + key + "=" + properties[key] + "}}"
     return result
-
-def advantageType():
-    nonlocal settings
-
-    if settings["roll-advantage"]:
-        return "always"
-    else:
-        return "normal"
 
 def rollSkill(request, custom_roll_dice=""):
     modifier = request.modifier
-    advantage_type = advantageType()
-    if request.character.type == "Character" and \
-            request.ability == "STR" and \
-            "Rage" in request.character["class-features"] and \
-            request.character.settings["barbarian-rage"]:
-        advantage_type = "advantage"
     # Custom skill
     if modifier == "--" and request.character.abilities.length > 0:
         modifier = "?{Choose Ability"
@@ -224,21 +224,17 @@ def rollSkill(request, custom_roll_dice=""):
         elif request.proficiency == "Expertise":
             prof = "EXPERTISE"
             prof_val += "+[[" + request.character.proficiency + " * 2]]"
-        return template("simple",
+        return template(request, "simple",
                          {"charname": request.character.name,
                           "rname" : request.skill,
                           "mod": "[[" + modifier + prof_val + "]]",
-                          "r1": genRoll("1d20", {"--": modifier, prof: prof_val, "CUSTOM": custom_roll_dice}),
-                          "r2": genRoll("1d20", {"--": modifier, prof: prof_val, "CUSTOM": custom_roll_dice}),
-                          advantage_type:1})
+                          "r1": genRoll("1d20", {"--": modifier, prof: prof_val, "CUSTOM": custom_roll_dice})})
     else:
-        return template("simple",
+        return template(request, "simple",
                          {"charname": request.character.name,
                           "rname" : request.skill,
                           "mod": modifier,
-                          "r1": genRoll("1d20", {request.ability: modifier, "CUSTOM": custom_roll_dice}),
-                          "r2": genRoll("1d20", {request.ability: modifier, "CUSTOM": custom_roll_dice}),
-                          advantage_type:1})
+                          "r1": genRoll("1d20", {request.ability: modifier, "CUSTOM": custom_roll_dice})})
 
 def rollAbility(request, custom_roll_dice=""):
     if request["JoaT"]?:
@@ -248,34 +244,18 @@ def rollAbility(request, custom_roll_dice=""):
     else:
         dice_roll = genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice})
         modifier = request.modifier
-    advantage_type = advantageType()
-    if request.character.type == "Character" and \
-            request.ability == "STR" and \
-            "Rage" in request.character["class-features"] and \
-            request.character.settings["barbarian-rage"]:
-        advantage_type = "advantage"
-    return template("simple",
+    return template(request, "simple",
                     {"charname": request.character.name,
                      "rname" : request.name,
                      "mod": modifier,
-                     "r1": dice_roll,
-                     "r2": dice_roll,
-                     advantage_type:1})
+                     "r1": dice_roll})
 
 def rollSavingThrow(request, custom_roll_dice=""):
-    advantage_type = advantageType()
-    if request.character.type == "Character" and \
-            request.ability == "STR" and \
-            "Rage" in request.character["class-features"] and \
-            request.character.settings["barbarian-rage"]:
-        advantage_type = "advantage"
-    return template("simple",
+    return template(request, "simple",
                     {"charname": request.character.name,
                      "rname" : request.name + " Save",
                      "mod": request.modifier,
-                     "r1": genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice}),
-                     "r2": genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice}),
-                     advantage_type:1})
+                     "r1": genRoll("1d20", {request.ability: request.modifier, "CUSTOM": custom_roll_dice})})
 
 def rollInitiative(request, custom_roll_dice=""):
     nonlocal settings
@@ -284,20 +264,16 @@ def rollInitiative(request, custom_roll_dice=""):
                        "rname" : "Initiative",
                        "mod": request.initiative}
     if settings["initiative-tracker"]:
-        dice = "2d20kh1" if request.advantage else "1d20"
+        dice = "2d20kh1" if request.advantage == RollType.ADVANTAGE else "1d20"
         roll_properties["r1"] = genRoll(dice, {"INIT": request.initiative, "CUSTOM": custom_roll_dice, "": "&{tracker}"})
         roll_properties["normal"] = 1
     else:
-        dice_formula = genRoll("1d20", {"INIT": request.initiative, "CUSTOM": custom_roll_dice})
-        roll_properties["r1"] = dice_formula
-        if request.advantage:
-            roll_properties["r2"] = dice_formula
-        roll_properties["advantage" if request.advantage else "normal"] = 1
-    return template("simple", roll_properties)
+        roll_properties["r1"] = genRoll("1d20", {"INIT": request.initiative, "CUSTOM": custom_roll_dice})
+    return template(request, "simple", roll_properties)
 
 def rollHitDice(request):
     rname = "Hit Dice" + (("(" + request.class + ")") if  request.multiclass else "")
-    return template("simple",
+    return template(request, "simple",
                     {"charname": request.character.name,
                      "rname" : rname,
                      "mod": request["hit-dice"],
@@ -305,10 +281,11 @@ def rollHitDice(request):
                      "normal": 1})
 
 def rollDeathSave(request, custom_roll_dice=""):
-    return template("simple", {"charname": request.character.name,
-                               "rname" : "Death Saving Throw",
-                               "r1": genRoll("1d20cs>10cf<9", {"CUSTOM": custom_roll_dice}),
-                               "normal": 1})
+    return template(request, "simple",
+                    {"charname": request.character.name,
+                     "rname" : "Death Saving Throw",
+                     "r1": genRoll("1d20cs>10cf<9", {"CUSTOM": custom_roll_dice}),
+                     "normal": 1})
 
 def rollTrait(request):
     if request["source-type"]?:
@@ -319,10 +296,11 @@ def rollTrait(request):
         source = request["item-type"]
     else:
         source = request.type
-    return template("traits", {"charname": request.character.name,
-                               "name": request.name,
-                               "source": source,
-                               "description": subDescriptionRolls(request, request.description)})
+    return template(request, "traits",
+                    {"charname": request.character.name,
+                     "name": request.name,
+                     "source": source,
+                     "description": subDescriptionRolls(request, request.description)})
 
 def rollAttack(request, custom_roll_dice=""):
     nonlocal settings
@@ -342,8 +320,6 @@ def rollAttack(request, custom_roll_dice=""):
                 d20_roll = "1d20cs>18"
         properties["mod"] = request["to-hit"]
         properties["r1"] = genRoll(d20_roll, {"": request["to-hit"], "CUSTOM": custom_roll_dice})
-        properties["r2"] = genRoll(d20_roll, {"": request["to-hit"], "CUSTOM": custom_roll_dice})
-        properties[advantageType()] = 1
         properties["attack"] = 1
     if request.damages?:
         damages = list(request.damages)
@@ -373,22 +349,21 @@ def rollAttack(request, custom_roll_dice=""):
 
     if request.damages? and request["to-hit"]? and not settings["auto-roll-damage"]:
         template_type = "atk"
-        whisper = "/w gm " if (request.character.type == "Monster" and settings["whisper-monsters"]) else ""
         dmg_props["charname"] = request.character.name
         dmg_props["rname"] = request.name
         dmg_props["crit"] = 1
-        dmg_template_crit = template("dmg", dmg_props)
+        dmg_template_crit = template(request, "dmg", dmg_props)
         del dmg_props["crit"]
         del dmg_props["crit1"]
         del dmg_props["crit2"]
-        dmg_template = template("dmg", dmg_props)
-        properties["rname"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(whisper + dmg_template) + ")"
-        properties["rnamec"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(whisper + dmg_template_crit) + ")"
+        dmg_template = template(request, "dmg", dmg_props)
+        properties["rname"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")"
+        properties["rnamec"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")"
     else:
         for key in dmg_props:
             properties[key] = dmg_props[key]
 
-    return template(template_type, properties)
+    return template(request, template_type, properties)
 
 def rollSpellCard(request):
     properties = {"charname": request.character.name,
@@ -428,7 +403,7 @@ def rollSpellCard(request):
     else:
         properties["description"] = subDescriptionRolls(request, description)
 
-    return template("spell", properties)
+    return template(request, "spell", properties)
 
 def rollSpellAttack(request, custom_roll_dice):
     properties = {"charname": request.character.name,
@@ -438,8 +413,6 @@ def rollSpellAttack(request, custom_roll_dice):
     if request["to-hit"]?:
         properties["mod"] = request["to-hit"]
         properties["r1"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
-        properties["r2"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
-        properties[advantageType()] = 1
         properties["attack"] = 1
     if request.damages?:
         damages = list(request.damages)
@@ -479,23 +452,22 @@ def rollSpellAttack(request, custom_roll_dice):
                 components = ""
 
     if request.damages? and request["to-hit"]? and not settings["auto-roll-damage"]:
-        whisper = "/w gm " if (request.character.type == "Monster" and settings["whisper-monsters"]) else ""
         template_type = "atk"
         dmg_props["charname"] = request.character.name
         dmg_props["rname"] = request.name
         dmg_props["crit"] = 1
-        dmg_template_crit = template("dmg", dmg_props)
+        dmg_template_crit = template(request, "dmg", dmg_props)
         del dmg_props["crit"]
         del dmg_props["crit1"]
         del dmg_props["crit2"]
-        dmg_template = template("dmg", dmg_props)
-        properties["rname"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(whisper + dmg_template) + ")"
-        properties["rnamec"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(whisper + dmg_template_crit) + ")"
+        dmg_template = template(request, "dmg", dmg_props)
+        properties["rname"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")"
+        properties["rnamec"] =  "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")"
     else:
         for key in dmg_props:
             properties[key] = dmg_props[key]
 
-    roll = template(template_type, properties)
+    roll = template(request, template_type, properties)
     return roll
 
 def updateSettings(new_settings=None):
@@ -518,37 +490,36 @@ def handleMessage (request, sender, sendResponse):
         if settings["update-hp"]:
             sendCustomEvent("UpdateHP", (request.character.name, request.character.hp, request.character["max-hp"]))
     elif request.action == "roll":
-        roll = "/w gm " if (request.character.type == "Monster" and settings["whisper-monsters"]) else ""
         if request.character.type == "Character":
             custom_roll_dice = request.character.settings["custom-roll-dice"] ? ""
             custom_roll_dice = re.sub("([0-9]*d[0-9]+)", "\\1cs>100cf<0", custom_roll_dice)
         else:
             custom_roll_dice = ""
         if request.type == "skill":
-            roll += rollSkill(request, custom_roll_dice)
+            roll = rollSkill(request, custom_roll_dice)
         elif request.type == "ability":
-            roll += rollAbility(request, custom_roll_dice)
+            roll = rollAbility(request, custom_roll_dice)
         elif request.type == "saving-throw":
-            roll += rollSavingThrow(request, custom_roll_dice)
+            roll = rollSavingThrow(request, custom_roll_dice)
         elif request.type == "initiative":
-            roll += rollInitiative(request, custom_roll_dice)
+            roll = rollInitiative(request, custom_roll_dice)
         elif request.type == "hit-dice":
-            roll += rollHitDice(request)
+            roll = rollHitDice(request)
         elif request.type in ["item", "feature", "trait", "action"]:
-            roll += rollTrait(request)
+            roll = rollTrait(request)
         elif request.type == "death-save":
-            roll += rollDeathSave(request, custom_roll_dice)
+            roll = rollDeathSave(request, custom_roll_dice)
         elif request.type == "attack":
-            roll += rollAttack(request, custom_roll_dice)
+            roll = rollAttack(request, custom_roll_dice)
         elif request.type == "spell-card":
-            roll += rollSpellCard(request)
+            roll = rollSpellCard(request)
         elif request.type == "spell-attack":
-            roll += rollSpellAttack(request, custom_roll_dice)
+            roll = rollSpellAttack(request, custom_roll_dice)
         else:
             # 'custom' or anything unexpected
             mod = request.modifier if request.modifier? else request.roll
             rname = request.name if request.name? else request.type
-            roll += template("simple",
+            roll = template(request, "simple",
                              {"charname": request.character.name,
                               "rname" : rname,
                               "mod": mod,

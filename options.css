@@ -143,6 +143,9 @@
     right: 15px;
     z-index: 1031;
 }
+.button-group.open {
+    z-index: 2000;
+}
 .button-group .marka {
   position: absolute;
     top: 50%;

@@ -5610,6 +5610,13 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["title"]}
         });
 
+        function urlMatches(url, matching) {
+            return ρσ_not_equals(url.match(matching.replace(/\*/g, "[^]*")), null);
+        };
+        if (!urlMatches.__argnames__) Object.defineProperties(urlMatches, {
+            __argnames__ : {value: ["url", "matching"]}
+        });
+
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
@@ -5621,6 +5628,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.roll20Title = roll20Title;
         ρσ_modules.utils.isFVTT = isFVTT;
         ρσ_modules.utils.fvttTitle = fvttTitle;
+        ρσ_modules.utils.urlMatches = urlMatches;
     })();
 
     (function(){
@@ -5632,22 +5640,22 @@ var str = ρσ_str, repr = ρσ_repr;;
         var fvttTitle = ρσ_modules.utils.fvttTitle;
         var isFVTT = ρσ_modules.utils.isFVTT;
 
-        function Whisper() {
+        function WhisperType() {
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
-            Whisper.prototype.__init__.apply(this, arguments);
+            WhisperType.prototype.__init__.apply(this, arguments);
         }
-        Whisper.prototype.__init__ = function __init__ () {
+        WhisperType.prototype.__init__ = function __init__ () {
                     };
-        Whisper.prototype.__repr__ = function __repr__ () {
+        WhisperType.prototype.__repr__ = function __repr__ () {
                         return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
         };
-        Whisper.prototype.__str__ = function __str__ () {
+        WhisperType.prototype.__str__ = function __str__ () {
             return this.__repr__();
         };
-        Object.defineProperty(Whisper.prototype, "__bases__", {value: []});
-        Whisper.prototype.NO = 0;
-        Whisper.prototype.YES = 1;
-        Whisper.prototype.QUERY = 2;
+        Object.defineProperty(WhisperType.prototype, "__bases__", {value: []});
+        WhisperType.prototype.NO = 0;
+        WhisperType.prototype.YES = 1;
+        WhisperType.prototype.QUERY = 2;
 
         function RollType() {
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
@@ -5670,30 +5678,53 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         options_list = (function(){
             var ρσ_d = {};
-            ρσ_d["whispers"] = (function(){
+            ρσ_d["whisper-type"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["short"] = "Whisper all rolls";
-                ρσ_d["title"] = "Whisper all rolls to the DM";
-                ρσ_d["description"] = "If enabled, all the rolls will be whispered to the DM";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = false;
+                ρσ_d["short"] = "Whisper rolls";
+                ρσ_d["title"] = "Whisper rolls to the DM";
+                ρσ_d["description"] = "Determines if the rolls will be whispered to the DM.\nIn the case of Foundry VTT, the 'ask every time' option will use the setting in the chat box.";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = WhisperType.prototype.NO;
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d[str(WhisperType.prototype.NO)] = "Never whisper";
+                    ρσ_d[str(WhisperType.prototype.YES)] = "Always whisper";
+                    ρσ_d[str(WhisperType.prototype.QUERY)] = "Ask every time";
+                    return ρσ_d;
+                }).call(this);
                 return ρσ_d;
             }).call(this);
-            ρσ_d["whisper-monsters"] = (function(){
+            ρσ_d["whisper-type-monsters"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Whisper monster rolls to the DM";
-                ρσ_d["description"] = "If enabled, all the rolls from monster stat blocks will be whispered to the DM";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
+                ρσ_d["description"] = "Overrides the global whisper setting from monster stat blocks";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = WhisperType.prototype.YES;
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d[str(WhisperType.prototype.NO)] = "Use general whisper setting";
+                    ρσ_d[str(WhisperType.prototype.YES)] = "Always whisper monster rolls";
+                    ρσ_d[str(WhisperType.prototype.QUERY)] = "Ask every time";
+                    return ρσ_d;
+                }).call(this);
                 return ρσ_d;
             }).call(this);
-            ρσ_d["roll-advantage"] = (function(){
+            ρσ_d["roll-type"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["short"] = "Roll with Advantage";
-                ρσ_d["title"] = "Always roll Advantange/Disadvantage";
-                ρσ_d["description"] = "Always roll a second dice for Advantage/Disadvantage";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
+                ρσ_d["short"] = "Type of Roll";
+                ρσ_d["title"] = "Type of Roll (Advantange/Disadvantage)";
+                ρσ_d["description"] = "Determines if rolls should be with advantage, disadvantage, double rolls or user queries";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = RollType.prototype.NORMAL;
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d[str(RollType.prototype.NORMAL)] = "Normal Roll";
+                    ρσ_d[str(RollType.prototype.DOUBLE)] = "Always roll twice";
+                    ρσ_d[str(RollType.prototype.QUERY)] = "Ask every time";
+                    ρσ_d[str(RollType.prototype.ADVANTAGE)] = "Roll with Advantage";
+                    ρσ_d[str(RollType.prototype.DISADVANTAGE)] = "Roll with Disadvantage";
+                    return ρσ_d;
+                }).call(this);
                 return ρσ_d;
             }).call(this);
             ρσ_d["auto-roll-damage"] = (function(){
@@ -6231,10 +6262,11 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function initializeMarkaGroup(group) {
-            var triggerOpen, triggerClose, dropdown_menu, marka, input, m, makeOpenCB, makeCloseCB;
+            var triggerOpen, triggerClose, dropdown_menu, button_group, marka, input, m, makeOpenCB, makeCloseCB;
             triggerOpen = $(group).find(".select");
             triggerClose = $(group).find(".dropdown-menu li");
             dropdown_menu = $(group).find(".dropdown-menu");
+            button_group = $(group).find(".button-group");
             marka = $(group).find(".icon");
             input = $(group).find(".input");
             m = new Marka("#" + marka.attr("id"));
@@ -6247,6 +6279,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         var ρσ_anonfunc = function (event) {
                             event.preventDefault();
                             dropdown_menu.toggleClass("open");
+                            button_group.toggleClass("open");
                             if (icon.hasClass("marka-icon-times")) {
                                 m.set("triangle").size(10);
                             } else {
@@ -6272,6 +6305,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                             input.text(this.innerText);
                             input.trigger("markaChanged");
                             dropdown_menu.removeClass("open");
+                            button_group.removeClass("open");
                             m.set("triangle").size(10);
                         };
                         if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
@@ -6549,7 +6583,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     combobox.replaceWith(createRoll20TabCombobox("vtt-tab", short, dropdown_options));
                     initializeMarkaGroup($("#beyond20-option-vtt-tab"));
                     console.log("Added new options", dropdown_options);
-                    $("#" + name).text(new_options[new_options.length-1]);
+                    $("#" + name).text(new_options[new_options.length-1].replace("(No change)", ""));
                     $("#" + name).attr("x-beyond20-id", id);
                     $("#" + name).attr("x-beyond20-title", title);
                     $("#" + name).attr("x-beyond20-vtt", vtt);
@@ -6561,17 +6595,17 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function getVTTTabSetting(name) {
-            var opt, value, saved_id, saved_title, saved_vtt, vtt, title, ret;
+            var opt, value, saved_id, saved_title, saved_vtt, ret, vtt, title;
             opt = $("#" + name);
             value = opt.text();
             saved_id = opt.attr("x-beyond20-id");
             saved_title = opt.attr("x-beyond20-title");
             saved_vtt = opt.attr("x-beyond20-vtt");
-            vtt = (isFVTT(current_tab.title)) ? "fvtt" : "roll20";
-            title = ((vtt === "fvtt" || typeof vtt === "object" && ρσ_equals(vtt, "fvtt"))) ? fvttTitle(current_tab.title) : roll20Title(current_tab.title);
             if ((value === "All VTT Tabs" || typeof value === "object" && ρσ_equals(value, "All VTT Tabs"))) {
                 ret = null;
             } else if (ρσ_in(value, ρσ_list_decorate([ "This Campaign", "This World", "This Specific Tab" ]))) {
+                vtt = (isFVTT(current_tab.title)) ? "fvtt" : "roll20";
+                title = ((vtt === "fvtt" || typeof vtt === "object" && ρσ_equals(vtt, "fvtt"))) ? fvttTitle(current_tab.title) : roll20Title(current_tab.title);
                 ret = (function(){
                     var ρσ_d = {};
                     ρσ_d["id"] = (ρσ_in(value, ρσ_list_decorate([ "This Campaign", "This World" ]))) ? 0 : current_tab.id;
@@ -6600,7 +6634,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_d = {};
                     ρσ_d["id"] = 0;
                     ρσ_d["title"] = saved_title;
-                    ρσ_d["vtt"] = vtt;
+                    ρσ_d["vtt"] = saved_vtt;
                     return ρσ_d;
                 }).call(this);
             } else {
@@ -6633,7 +6667,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.settings.options_list = options_list;
         ρσ_modules.settings.character_settings = character_settings;
         ρσ_modules.settings.current_tab = current_tab;
-        ρσ_modules.settings.Whisper = Whisper;
+        ρσ_modules.settings.WhisperType = WhisperType;
         ρσ_modules.settings.RollType = RollType;
         ρσ_modules.settings.getStorage = getStorage;
         ρσ_modules.settings.storageGet = storageGet;
@@ -6662,7 +6696,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "constants";
-        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, TOOLTIP_CSS;
+        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, TOOLTIP_CSS, ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY;
         ROLL20_URL = "*://app.roll20.net/editor/";
         DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
         DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
@@ -6672,6 +6706,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
         BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
         TOOLTIP_CSS = "\n.tooltip .tooltiptext {\n  visibility: hidden;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 10px;\n  margin: 10px;\n\n  /* Position the tooltip */\n  position: relative;\n  z-index: 1;\n}\n\n.tooltip:hover .tooltiptext {\n  visibility: visible;\n}\n";
+        ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
+        ROLL20_ADVANTAGE_QUERY = "{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125 &#123&#123r2=[[0d20|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2=[[1d20|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2=[[1d20}";
         ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
         ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
         ρσ_modules.constants.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
@@ -6681,6 +6717,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
         ρσ_modules.constants.BUTTON_STYLE_CSS = BUTTON_STYLE_CSS;
         ρσ_modules.constants.TOOLTIP_CSS = TOOLTIP_CSS;
+        ρσ_modules.constants.ROLL20_WHISPER_QUERY = ROLL20_WHISPER_QUERY;
+        ρσ_modules.constants.ROLL20_ADVANTAGE_QUERY = ROLL20_ADVANTAGE_QUERY;
     })();
 
     (function(){
@@ -6706,6 +6744,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var DNDBEYOND_ENCOUNTER_URL = ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL;
 
         var isFVTT = ρσ_modules.utils.isFVTT;
+        var urlMatches = ρσ_modules.utils.urlMatches;
 
         background = chrome.extension.getBackgroundPage();
         character = null;
@@ -6856,10 +6895,10 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function addMonsterOptions() {
             var option, e;
-            option = options_list["whisper-monsters"];
+            option = options_list["whisper-type-monsters"];
             option["short"] = "Whisper monster rolls";
-            e = createHTMLOptionEx("whisper-monsters", option, true);
-            $(e).insertAfter($("#whispers").parents("li"));
+            e = createHTMLOptionEx("whisper-type-monsters", option, true);
+            $(e).insertAfter($("#whisper-type").parents("li"));
             $(".beyond20-option-input").off("change", save_settings);
             $(".beyond20-option-input").change(save_settings);
             initializeSettings(gotSettings);
@@ -6875,20 +6914,20 @@ var str = ρσ_str, repr = ρσ_repr;;
         function actOnCurrentTab(tabs) {
             var vtt, e, options;
             setCurrentTab(tabs[0]);
-            if (tabMatches(tabs[0], ROLL20_URL) || isFVTT(tabs[0].title)) {
+            if (urlMatches(tabs[0].url, ROLL20_URL) || isFVTT(tabs[0].title)) {
                 vtt = (isFVTT(tabs[0].title)) ? "Foundry VTT" : "Roll20";
                 e = options_list["vtt-tab"].createHTMLElement("vtt-tab", true);
                 options = $(".beyond20-options");
                 options.append(ρσ_interpolate_kwargs.call(E, E.li, [E.h4(" == " + vtt + " Tab Specific Options ==")].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option", style: "text-align: center; margin: 10px;"})])));
                 options.append(e);
                 initializeSettings(gotSettings);
-            } else if (tabMatches(tabs[0], DNDBEYOND_CHARACTER_URL)) {
+            } else if (urlMatches(tabs[0].url, DNDBEYOND_CHARACTER_URL)) {
                 chrome.tabs.sendMessage(tabs[0].id, (function(){
                     var ρσ_d = {};
                     ρσ_d["action"] = "get-character";
                     return ρσ_d;
                 }).call(this), populateCharacter);
-            } else if (tabMatches(tabs[0], DNDBEYOND_MONSTER_URL) || tabMatches(tabs[0], DNDBEYOND_ENCOUNTER_URL)) {
+            } else if (urlMatches(tabs[0].url, DNDBEYOND_MONSTER_URL) || urlMatches(tabs[0].url, DNDBEYOND_ENCOUNTER_URL)) {
                 addMonsterOptions();
             } else {
                 initializeSettings(gotSettings);

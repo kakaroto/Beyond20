@@ -29,7 +29,7 @@ clean:
 
 %.pyj-cached: %.pyj
 	rapydscript lint --globals $(PYJ_GLOBALS) $(PYJ_FLAGS) $<
-	@rm $@
+	@rm -f $@
 
 
 

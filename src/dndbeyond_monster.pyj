@@ -1,24 +1,45 @@
-from settings import getStoredSettings
+from settings import getDefaultSettings, getStoredSettings
 from dndbeyond import Monster, isRollButtonAdded
 from utils import injectCSS
 from constants import BUTTON_STYLE_CSS
 
 print("Beyond20: D&D Beyond Monster module loaded.")
 
-character = Monster("Monster")
+settings = getDefaultSettings()
+character = None
 
 def documentLoaded(settings):
     nonlocal character
 
+    character = Monster("Monster", global_settings=settings)
     # We reloaded the extension? reload the page too...
     if isRollButtonAdded():
         chrome.runtime.sendMessage({"action": "reload-me"})
     else:
-        character.parseStatBlock(add_dice=settings['handle-stat-blocks'], inject_descriptions=settings['subst-dndbeyond-stat-blocks'])
+        character.parseStatBlock()
+
+def updateSettings(new_settings=None):
+    nonlocal settings
+    nonlocal character
+
+    if new_settings:
+        settings = new_settings
+        if character is not None:
+            character.setGlobalSettings(settings)
+    else:
+        getStoredSettings(def(saved_settings):
+            nonlocal settings
+            updateSettings(saved_settings)
+            documentLoaded(settings)
+        )
+
+def handleMessage (request, sender, sendResponse):
+    if request.action == "settings":
+        if request.type == "general":
+            updateSettings(request.settings)
 
 injectCSS(BUTTON_STYLE_CSS)
+chrome.runtime.onMessage.addListener(handleMessage)
 chrome.runtime.sendMessage({"action": "activate-icon"})
-getStoredSettings(def(settings):
-                      documentLoaded(settings)
-                  )
+updateSettings()
 

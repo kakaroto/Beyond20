@@ -7,10 +7,12 @@ print("Beyond20: D&D Beyond Encounter module loaded.")
 
 settings = getDefaultSettings()
 last_monster_name = ""
+character = None
 
 def documentModified(mutations, observer):
     nonlocal settings
     nonlocal last_monster_name
+    nonlocal character
 
     if isExtensionDisconnected():
         console.log("This extension is DOWN!")
@@ -24,17 +26,21 @@ def documentModified(mutations, observer):
         return
     last_monster_name = monster_name
     removeRollButtons()
-    character = Monster("Monster")
-    character.parseStatBlock(monster, add_dice=settings['handle-stat-blocks'], inject_descriptions=settings['subst-dndbeyond-stat-blocks'])
+    character = Monster("Monster", global_settings=settings)
+    character.parseStatBlock(monster)
 
 def updateSettings(new_settings=None):
     nonlocal settings
+    nonlocal character
+
     if new_settings:
         settings = new_settings
+        if character is not None:
+            character.setGlobalSettings(settings)
     else:
         getStoredSettings(def(saved_settings):
             nonlocal settings
-            settings = saved_settings
+            updateSettings(saved_settings)
             documentModified()
         )
 

@@ -1,4 +1,4 @@
-from settings import getDefaultSettings, getStoredSettings
+from settings import getDefaultSettings, getStoredSettings, RollType
 from utils import isExtensionDisconnected
 from elementmaker import E
 import math
@@ -9,28 +9,32 @@ from dndbeyond import Character, Monster, buildAttackRoll, sendRoll, \
 
 print("Beyond20: D&D Beyond module loaded.")
 
-settings = getDefaultSettings()
-
-character = Character()
-
 def sendRollWithCharacter(rollType, fallback, args):
     nonlocal character
+    nonlocal settings
+
     sendRoll(character, rollType, fallback, args)
 
 
 def rollSkillCheck(paneClass):
+    nonlocal character, settings
+
     skill_name = $("." + paneClass + "__header-name").text()
     ability = $("." + paneClass + "__header-ability").text()
     modifier = $("." + paneClass + "__header-modifier").text()
     proficiency = $("." + paneClass + "__header-icon .ct-tooltip").attr("data-original-title")
     print("Skill " + skill_name + "(" + ability + ") : " + modifier)
-    sendRollWithCharacter("skill", "1d20" + modifier, {"skill": skill_name,
-                                          "ability": ability,
-                                          "modifier": modifier,
-                                          "proficiency": proficiency})
+    roll_properties = {"skill": skill_name,
+                       "ability": ability,
+                       "modifier": modifier,
+                       "proficiency": proficiency}
+    if ability == "STR" and character.hasClassFeature("Rage") and character.getSetting("barbarian-rage", False):
+        roll_properties["advantage"] = RollType.ADVANTAGE
+    sendRollWithCharacter("skill", "1d20" + modifier, roll_properties)
 
 def rollAbilityOrSavingThrow(paneClass, rollType):
     nonlocal character
+
     ability_string = $("." + paneClass + " .ct-sidebar__heading").text()
     ability_name = ability_string.split(" ")[0]
     modifier = $("." + paneClass + "__modifier .ct-signed-number").text()
@@ -39,6 +43,8 @@ def rollAbilityOrSavingThrow(paneClass, rollType):
     roll_properties = {"name" : ability_name,
                        "ability": ability,
                        "modifier": modifier} 
+    if ability == "STR" and character.hasClassFeature("Rage") and character.getSetting("barbarian-rage", False):
+        roll_properties["advantage"] = RollType.ADVANTAGE
     if character.hasClassFeature("Jack of All Trades") and \
             character.getSetting("bard-joat", False):
         roll_properties["JoaT"] = int(math.floor(float(character._proficiency) / 2))
@@ -57,8 +63,10 @@ def rollInitiative():
         initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text()
         advantage = $(".ct-combat-mobile__advantage").length > 0
     print("Initiative " + ("with" if advantage else "without") + " advantage : " + initiative)
-    sendRollWithCharacter("initiative", "1d20" + initiative, {"initiative": initiative,
-                                                 "advantage": advantage} )
+    roll_properties = {"initiative": initiative}
+    if advantage:
+        roll_properties["advantage"] = RollType.ADVANTAGE
+    sendRollWithCharacter("initiative", "1d20" + initiative, roll_properties)
 
         
 def rollHitDie(multiclass, index):
@@ -535,12 +543,15 @@ def documentModified(mutations, observer):
 
 def updateSettings(new_settings=None):
     nonlocal settings
+    nonlocal character
+
     if new_settings:
         settings = new_settings
+        character.setGlobalSettings(settings)
     else:
         getStoredSettings(def(saved_settings):
             nonlocal settings
-            settings = saved_settings
+            updateSettings(saved_settings)
             documentModified()
         )
 
@@ -559,6 +570,8 @@ def handleMessage (request, sender, sendResponse):
         character.updateInfo()
         sendResponse(character.getDict())
 
+settings = getDefaultSettings()
+character = Character(settings)
 updateSettings()
 chrome.runtime.onMessage.addListener(handleMessage)
 observer = new window.MutationObserver(documentModified)

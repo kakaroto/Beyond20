@@ -1,5 +1,5 @@
 from utils import replaceRolls
-from settings import getStoredSettings, mergeSettings, character_settings
+from settings import getStoredSettings, mergeSettings, character_settings, WhisperType, RollType
 from elementmaker import E
 import uuid
 import re
@@ -31,8 +31,35 @@ skill_abilities = {"Acrobatics": "DEX",
                    "Survival": "WIS"}
 
 
-class Character:
-    def __init__(self):
+class CharacterBase:
+    def __init__(self, _type, global_settings):
+        self._name = None
+        self._type = _type
+        self._settings = None
+        self._global_settings = global_settings
+
+    def type(self):
+        return self._type
+
+    def getSetting(self, key, default_value="", settings=None):
+        if settings is None:
+            settings = self._settings
+        if settings? and settings[key]?:
+            return settings[key]
+        return default_value
+
+    def getGlobalSetting(self, key, default_value=""):
+        return self.getSetting(key, default_value, self._global_settings)
+
+    def setGlobalSettings(self, new_settings):
+        self._global_settings = new_settings
+
+    def getDict(self):
+        return {"name": self._name, "type": self._type}
+
+class Character(CharacterBase):
+    def __init__(self, global_settings):
+        CharacterBase.__init__(self, "Character", global_settings)
         self._abilities = []
         self._name = None
         self._id = None
@@ -44,13 +71,9 @@ class Character:
         self._proficiency = None
         self._hp = 0
         self._max_hp = 0
-        self._settings = None
         self._class_features = []
         self._racial_traits = []
         self._feats = []
-
-    def type(self):
-        return "Character"
 
     def updateInfo(self):
         self._id = $("#character-sheet-target").attr("data-character-id")
@@ -162,11 +185,6 @@ class Character:
             feature_list.append(feat.childNodes[0].textContent.trim())
         return feature_list
 
-    def getSetting(self, key, default_value=""):
-        if self._settings? and self._settings[key]?:
-            return self._settings[key]
-        return default_value
-
     def updateFeatures(self):
         update = False
         class_detail = $(".ct-features .ct-classes-detail")
@@ -262,14 +280,14 @@ class Character:
                 "feats": self._feats.as_array()}
 
 
-class Monster:
-    def __init__(self, _type, base=None):
-        self._type = _type
-        if _type == "Monster":
+class Monster(CharacterBase):
+    def __init__(self, _type, base=None, global_settings=None):
+        CharacterBase.__init__(self, _type, global_settings)
+        if self.type() == "Monster":
             self._base = ".mon-stat-block"
-        elif _type == "Creature":
+        elif self.type() == "Creature":
             self._base = ".ct-creature-block"
-        elif _type == "Vehicle":
+        elif self.type() == "Vehicle":
             self._base = ".vehicle-stat-block"
         else:
             self._base = ".mon-stat-block"
@@ -289,10 +307,9 @@ class Monster:
         self._skills = {}
         self._cr = None
 
-    def type(self):
-        return self._type
-
-    def parseStatBlock(self, stat_block=None, add_dice=True, inject_descriptions=True):
+    def parseStatBlock(self, stat_block=None):
+        add_dice=self.getGlobalSetting('handle-stat-blocks', True)
+        inject_descriptions=self.getGlobalSetting('subst-dndbeyond-stat-blocks', True)
         base = self._base
         if stat_block is None:
             stat_block = $(base)
@@ -370,7 +387,7 @@ class Monster:
                 makeCB = def(a):
                     return def():
                         self.rollSkillCheck(a)
-                if self._type == "Monster":
+                if self.type() == "Monster":
                     skills = data.find("> a")
                     for a in skills:
                         mon_skill = a.textContent
@@ -521,7 +538,7 @@ class Monster:
 
     def getDict(self):
         return {"name": self._name,
-                "type": self._type,
+                "type": self.type(),
                 "id": self._id,
                 "ac": self._ac,
                 "hp": self._hp,
@@ -615,7 +632,15 @@ def buildAttackRoll(attack_source, name, description, properties, damages=[], da
     return roll_properties
 
 def sendRoll(character, rollType, fallback, args):
-    req = {"action": "roll", "character": character.getDict(), "type": rollType, "roll": fallback}
+    whisper = int(character.getGlobalSetting("whisper-type", WhisperType.NO))
+    whisper_monster = int(character.getGlobalSetting("whisper-type-monsters", WhisperType.YES))
+    if character.type() == "Monster" and whisper_monster != WhisperType.NO:
+        whisper = whisper_monster
+    advantage = int(character.getGlobalSetting("roll-type", RollType.ADVANTAGE_NORMAL))
+
+    # Default advantage/whisper would get overriden if they are part of provided args
+    req = {"action": "roll", "character": character.getDict(), "type": rollType, "roll": fallback,
+           "advantage": advantage, "whisper": whisper}
     for key in args:
         req[key] = args[key]
     console.log("Sending message: ", req)

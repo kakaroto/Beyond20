@@ -3732,7 +3732,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "constants";
-        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, TOOLTIP_CSS;
+        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, TOOLTIP_CSS, ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY;
         ROLL20_URL = "*://app.roll20.net/editor/";
         DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
         DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
@@ -3742,6 +3742,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
         BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
         TOOLTIP_CSS = "\n.tooltip .tooltiptext {\n  visibility: hidden;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 10px;\n  margin: 10px;\n\n  /* Position the tooltip */\n  position: relative;\n  z-index: 1;\n}\n\n.tooltip:hover .tooltiptext {\n  visibility: visible;\n}\n";
+        ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
+        ROLL20_ADVANTAGE_QUERY = "{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125 &#123&#123r2=[[0d20|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2=[[1d20|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2=[[1d20}";
         ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
         ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
         ρσ_modules.constants.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
@@ -3751,6 +3753,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
         ρσ_modules.constants.BUTTON_STYLE_CSS = BUTTON_STYLE_CSS;
         ρσ_modules.constants.TOOLTIP_CSS = TOOLTIP_CSS;
+        ρσ_modules.constants.ROLL20_WHISPER_QUERY = ROLL20_WHISPER_QUERY;
+        ρσ_modules.constants.ROLL20_ADVANTAGE_QUERY = ROLL20_ADVANTAGE_QUERY;
     })();
 
     (function(){
@@ -5334,6 +5338,13 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["title"]}
         });
 
+        function urlMatches(url, matching) {
+            return ρσ_not_equals(url.match(matching.replace(/\*/g, "[^]*")), null);
+        };
+        if (!urlMatches.__argnames__) Object.defineProperties(urlMatches, {
+            __argnames__ : {value: ["url", "matching"]}
+        });
+
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
@@ -5345,6 +5356,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.roll20Title = roll20Title;
         ρσ_modules.utils.isFVTT = isFVTT;
         ρσ_modules.utils.fvttTitle = fvttTitle;
+        ρσ_modules.utils.urlMatches = urlMatches;
     })();
 
     (function(){
@@ -5655,22 +5667,22 @@ var str = ρσ_str, repr = ρσ_repr;;
         var fvttTitle = ρσ_modules.utils.fvttTitle;
         var isFVTT = ρσ_modules.utils.isFVTT;
 
-        function Whisper() {
+        function WhisperType() {
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
-            Whisper.prototype.__init__.apply(this, arguments);
+            WhisperType.prototype.__init__.apply(this, arguments);
         }
-        Whisper.prototype.__init__ = function __init__ () {
+        WhisperType.prototype.__init__ = function __init__ () {
                     };
-        Whisper.prototype.__repr__ = function __repr__ () {
+        WhisperType.prototype.__repr__ = function __repr__ () {
                         return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
         };
-        Whisper.prototype.__str__ = function __str__ () {
+        WhisperType.prototype.__str__ = function __str__ () {
             return this.__repr__();
         };
-        Object.defineProperty(Whisper.prototype, "__bases__", {value: []});
-        Whisper.prototype.NO = 0;
-        Whisper.prototype.YES = 1;
-        Whisper.prototype.QUERY = 2;
+        Object.defineProperty(WhisperType.prototype, "__bases__", {value: []});
+        WhisperType.prototype.NO = 0;
+        WhisperType.prototype.YES = 1;
+        WhisperType.prototype.QUERY = 2;
 
         function RollType() {
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
@@ -5693,30 +5705,53 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         options_list = (function(){
             var ρσ_d = {};
-            ρσ_d["whispers"] = (function(){
+            ρσ_d["whisper-type"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["short"] = "Whisper all rolls";
-                ρσ_d["title"] = "Whisper all rolls to the DM";
-                ρσ_d["description"] = "If enabled, all the rolls will be whispered to the DM";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = false;
+                ρσ_d["short"] = "Whisper rolls";
+                ρσ_d["title"] = "Whisper rolls to the DM";
+                ρσ_d["description"] = "Determines if the rolls will be whispered to the DM.\nIn the case of Foundry VTT, the 'ask every time' option will use the setting in the chat box.";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = WhisperType.prototype.NO;
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d[str(WhisperType.prototype.NO)] = "Never whisper";
+                    ρσ_d[str(WhisperType.prototype.YES)] = "Always whisper";
+                    ρσ_d[str(WhisperType.prototype.QUERY)] = "Ask every time";
+                    return ρσ_d;
+                }).call(this);
                 return ρσ_d;
             }).call(this);
-            ρσ_d["whisper-monsters"] = (function(){
+            ρσ_d["whisper-type-monsters"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Whisper monster rolls to the DM";
-                ρσ_d["description"] = "If enabled, all the rolls from monster stat blocks will be whispered to the DM";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
+                ρσ_d["description"] = "Overrides the global whisper setting from monster stat blocks";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = WhisperType.prototype.YES;
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d[str(WhisperType.prototype.NO)] = "Use general whisper setting";
+                    ρσ_d[str(WhisperType.prototype.YES)] = "Always whisper monster rolls";
+                    ρσ_d[str(WhisperType.prototype.QUERY)] = "Ask every time";
+                    return ρσ_d;
+                }).call(this);
                 return ρσ_d;
             }).call(this);
-            ρσ_d["roll-advantage"] = (function(){
+            ρσ_d["roll-type"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["short"] = "Roll with Advantage";
-                ρσ_d["title"] = "Always roll Advantange/Disadvantage";
-                ρσ_d["description"] = "Always roll a second dice for Advantage/Disadvantage";
-                ρσ_d["type"] = "bool";
-                ρσ_d["default"] = true;
+                ρσ_d["short"] = "Type of Roll";
+                ρσ_d["title"] = "Type of Roll (Advantange/Disadvantage)";
+                ρσ_d["description"] = "Determines if rolls should be with advantage, disadvantage, double rolls or user queries";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = RollType.prototype.NORMAL;
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d[str(RollType.prototype.NORMAL)] = "Normal Roll";
+                    ρσ_d[str(RollType.prototype.DOUBLE)] = "Always roll twice";
+                    ρσ_d[str(RollType.prototype.QUERY)] = "Ask every time";
+                    ρσ_d[str(RollType.prototype.ADVANTAGE)] = "Roll with Advantage";
+                    ρσ_d[str(RollType.prototype.DISADVANTAGE)] = "Roll with Disadvantage";
+                    return ρσ_d;
+                }).call(this);
                 return ρσ_d;
             }).call(this);
             ρσ_d["auto-roll-damage"] = (function(){
@@ -6254,10 +6289,11 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function initializeMarkaGroup(group) {
-            var triggerOpen, triggerClose, dropdown_menu, marka, input, m, makeOpenCB, makeCloseCB;
+            var triggerOpen, triggerClose, dropdown_menu, button_group, marka, input, m, makeOpenCB, makeCloseCB;
             triggerOpen = $(group).find(".select");
             triggerClose = $(group).find(".dropdown-menu li");
             dropdown_menu = $(group).find(".dropdown-menu");
+            button_group = $(group).find(".button-group");
             marka = $(group).find(".icon");
             input = $(group).find(".input");
             m = new Marka("#" + marka.attr("id"));
@@ -6270,6 +6306,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         var ρσ_anonfunc = function (event) {
                             event.preventDefault();
                             dropdown_menu.toggleClass("open");
+                            button_group.toggleClass("open");
                             if (icon.hasClass("marka-icon-times")) {
                                 m.set("triangle").size(10);
                             } else {
@@ -6295,6 +6332,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                             input.text(this.innerText);
                             input.trigger("markaChanged");
                             dropdown_menu.removeClass("open");
+                            button_group.removeClass("open");
                             m.set("triangle").size(10);
                         };
                         if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
@@ -6572,7 +6610,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     combobox.replaceWith(createRoll20TabCombobox("vtt-tab", short, dropdown_options));
                     initializeMarkaGroup($("#beyond20-option-vtt-tab"));
                     console.log("Added new options", dropdown_options);
-                    $("#" + name).text(new_options[new_options.length-1]);
+                    $("#" + name).text(new_options[new_options.length-1].replace("(No change)", ""));
                     $("#" + name).attr("x-beyond20-id", id);
                     $("#" + name).attr("x-beyond20-title", title);
                     $("#" + name).attr("x-beyond20-vtt", vtt);
@@ -6584,17 +6622,17 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function getVTTTabSetting(name) {
-            var opt, value, saved_id, saved_title, saved_vtt, vtt, title, ret;
+            var opt, value, saved_id, saved_title, saved_vtt, ret, vtt, title;
             opt = $("#" + name);
             value = opt.text();
             saved_id = opt.attr("x-beyond20-id");
             saved_title = opt.attr("x-beyond20-title");
             saved_vtt = opt.attr("x-beyond20-vtt");
-            vtt = (isFVTT(current_tab.title)) ? "fvtt" : "roll20";
-            title = ((vtt === "fvtt" || typeof vtt === "object" && ρσ_equals(vtt, "fvtt"))) ? fvttTitle(current_tab.title) : roll20Title(current_tab.title);
             if ((value === "All VTT Tabs" || typeof value === "object" && ρσ_equals(value, "All VTT Tabs"))) {
                 ret = null;
             } else if (ρσ_in(value, ρσ_list_decorate([ "This Campaign", "This World", "This Specific Tab" ]))) {
+                vtt = (isFVTT(current_tab.title)) ? "fvtt" : "roll20";
+                title = ((vtt === "fvtt" || typeof vtt === "object" && ρσ_equals(vtt, "fvtt"))) ? fvttTitle(current_tab.title) : roll20Title(current_tab.title);
                 ret = (function(){
                     var ρσ_d = {};
                     ρσ_d["id"] = (ρσ_in(value, ρσ_list_decorate([ "This Campaign", "This World" ]))) ? 0 : current_tab.id;
@@ -6623,7 +6661,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_d = {};
                     ρσ_d["id"] = 0;
                     ρσ_d["title"] = saved_title;
-                    ρσ_d["vtt"] = vtt;
+                    ρσ_d["vtt"] = saved_vtt;
                     return ρσ_d;
                 }).call(this);
             } else {
@@ -6656,7 +6694,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.settings.options_list = options_list;
         ρσ_modules.settings.character_settings = character_settings;
         ρσ_modules.settings.current_tab = current_tab;
-        ρσ_modules.settings.Whisper = Whisper;
+        ρσ_modules.settings.WhisperType = WhisperType;
         ρσ_modules.settings.RollType = RollType;
         ρσ_modules.settings.getStorage = getStorage;
         ρσ_modules.settings.storageGet = storageGet;
@@ -6695,6 +6733,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var isFVTT = ρσ_modules.utils.isFVTT;
         var fvttTitle = ρσ_modules.utils.fvttTitle;
         var getBrowser = ρσ_modules.utils.getBrowser;
+        var urlMatches = ρσ_modules.utils.urlMatches;
 
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
@@ -6751,9 +6790,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this), (function() {
                 var ρσ_anonfunc = function (tabs) {
                     var tab;
-                    var ρσ_Iter11 = ρσ_Iterable(tabs);
-                    for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
-                        tab = ρσ_Iter11[ρσ_Index11];
+                    var ρσ_Iter0 = ρσ_Iterable(tabs);
+                    for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                        tab = ρσ_Iter0[ρσ_Index0];
                         chrome.tabs.sendMessage(tab.id, request);
                     }
                 };
@@ -6770,9 +6809,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         function filterVTTTab(request, limit, tabs, titleCB) {
             var found, tab;
             found = false;
-            var ρσ_Iter12 = ρσ_Iterable(tabs);
-            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
-                tab = ρσ_Iter12[ρσ_Index12];
+            var ρσ_Iter1 = ρσ_Iterable(tabs);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                tab = ρσ_Iter1[ρσ_Index1];
                 if (((limit.id === 0 || typeof limit.id === "object" && ρσ_equals(limit.id, 0)) || (tab.id === limit.id || typeof tab.id === "object" && ρσ_equals(tab.id, limit.id))) && ((limit.title === null || typeof limit.title === "object" && ρσ_equals(limit.title, null)) || ρσ_equals(titleCB(tab.title), limit.title))) {
                     chrome.tabs.sendMessage(tab.id, request);
                     found = true;
@@ -6785,9 +6824,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["vtt-tab"] = limit;
                     return ρσ_d;
                 }).call(this));
-                var ρσ_Iter13 = ρσ_Iterable(tabs);
-                for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
-                    tab = ρσ_Iter13[ρσ_Index13];
+                var ρσ_Iter2 = ρσ_Iterable(tabs);
+                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                    tab = ρσ_Iter2[ρσ_Index2];
                     if (ρσ_equals(titleCB(tab.title), limit.title)) {
                         chrome.tabs.sendMessage(tab.id, request);
                         break;
@@ -6837,15 +6876,16 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function sendMessageToFVTT(request, limit) {
             var vtt, tab;
+            console.log("Sending msg to FVTT ", fvtt_tabs);
             if (limit) {
                 vtt = ρσ_exists.e(limit.vtt, "roll20");
                 if ((vtt === "fvtt" || typeof vtt === "object" && ρσ_equals(vtt, "fvtt"))) {
                     filterVTTTab(request, limit, fvtt_tabs, fvttTitle);
                 }
             } else {
-                var ρσ_Iter14 = ρσ_Iterable(fvtt_tabs);
-                for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
-                    tab = ρσ_Iter14[ρσ_Index14];
+                var ρσ_Iter3 = ρσ_Iterable(fvtt_tabs);
+                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                    tab = ρσ_Iter3[ρσ_Index3];
                     chrome.tabs.sendMessage(tab.id, request);
                 }
             }
@@ -6863,6 +6903,38 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
         if (!sendMessageToBeyond.__argnames__) Object.defineProperties(sendMessageToBeyond, {
             __argnames__ : {value: ["request"]}
+        });
+
+        function addFVTTTab(tab) {
+            var t;
+            var ρσ_Iter4 = ρσ_Iterable(fvtt_tabs);
+            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                t = ρσ_Iter4[ρσ_Index4];
+                if ((t.id === tab.id || typeof t.id === "object" && ρσ_equals(t.id, tab.id))) {
+                    return;
+                }
+            }
+            fvtt_tabs.append(tab);
+            console.log("Added ", tab.id, " to fvtt tabs.");
+        };
+        if (!addFVTTTab.__argnames__) Object.defineProperties(addFVTTTab, {
+            __argnames__ : {value: ["tab"]}
+        });
+
+        function removeFVTTTab(id) {
+            var t;
+            var ρσ_Iter5 = ρσ_Iterable(fvtt_tabs);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                t = ρσ_Iter5[ρσ_Index5];
+                if ((t.id === id || typeof t.id === "object" && ρσ_equals(t.id, id))) {
+                    fvtt_tabs.remove(t);
+                    console.log("Removed ", id, " from fvtt tabs.");
+                    return;
+                }
+            }
+        };
+        if (!removeFVTTTab.__argnames__) Object.defineProperties(removeFVTTTab, {
+            __argnames__ : {value: ["id"]}
         });
 
         function onMessage(request, sender, sendResponse) {
@@ -6887,7 +6959,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }).call(this));
                 }
             } else if ((request.action === "register-fvtt-tab" || typeof request.action === "object" && ρσ_equals(request.action, "register-fvtt-tab"))) {
-                fvtt_tabs.append(sender.tab);
+                addFVTTTab(sender.tab);
             } else if ((request.action === "reload-me" || typeof request.action === "object" && ρσ_equals(request.action, "reload-me"))) {
                 chrome.tabs.reload(sender.tab.id);
             }
@@ -6898,12 +6970,12 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function executeScripts(tabs, js_files) {
             var file, tab;
-            var ρσ_Iter15 = ρσ_Iterable(tabs);
-            for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
-                tab = ρσ_Iter15[ρσ_Index15];
-                var ρσ_Iter16 = ρσ_Iterable(js_files);
-                for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
-                    file = ρσ_Iter16[ρσ_Index16];
+            var ρσ_Iter6 = ρσ_Iterable(tabs);
+            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                tab = ρσ_Iter6[ρσ_Index6];
+                var ρσ_Iter7 = ρσ_Iterable(js_files);
+                for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                    file = ρσ_Iter7[ρσ_Index7];
                     chrome.tabs.executeScript(tab.id, (function(){
                         var ρσ_d = {};
                         ρσ_d["file"] = file;
@@ -6916,13 +6988,31 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["tabs", "js_files"]}
         });
 
+        function onTabsUpdated(id, changes, tab) {
+            if (ρσ_in("url", changes) && !urlMatches(changes["url"], "*://*/game")) {
+                removeFVTTTab(id);
+            }
+        };
+        if (!onTabsUpdated.__argnames__) Object.defineProperties(onTabsUpdated, {
+            __argnames__ : {value: ["id", "changes", "tab"]}
+        });
+
+        function onTabRemoved(id, info) {
+            removeFVTTTab(id);
+        };
+        if (!onTabRemoved.__argnames__) Object.defineProperties(onTabRemoved, {
+            __argnames__ : {value: ["id", "info"]}
+        });
+
         updateSettings();
         chrome.runtime.onMessage.addListener(onMessage);
+        chrome.tabs.onUpdated.addListener(onTabsUpdated);
+        chrome.tabs.onRemoved.addListener(onTabRemoved);
         if (ρσ_equals(getBrowser(), "Chrome")) {
             manifest = chrome.runtime.getManifest();
-            var ρσ_Iter17 = ρσ_Iterable(manifest.content_scripts);
-            for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
-                script = ρσ_Iter17[ρσ_Index17];
+            var ρσ_Iter8 = ρσ_Iterable(manifest.content_scripts);
+            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                script = ρσ_Iter8[ρσ_Index8];
                 cb = (function() {
                     var ρσ_anonfunc = function (files) {
                         return (function() {

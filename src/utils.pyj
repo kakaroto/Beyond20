@@ -69,3 +69,6 @@ def isFVTT(title):
 
 def fvttTitle(title):
     return title.replace(" • Foundry Virtual Tabletop", "")
+
+def urlMatches(url, matching):
+    return url.match(matching.replace(/\*/g, "[^]*")) != None

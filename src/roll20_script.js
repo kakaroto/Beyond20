@@ -5308,6 +5308,13 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["title"]}
         });
 
+        function urlMatches(url, matching) {
+            return ρσ_not_equals(url.match(matching.replace(/\*/g, "[^]*")), null);
+        };
+        if (!urlMatches.__argnames__) Object.defineProperties(urlMatches, {
+            __argnames__ : {value: ["url", "matching"]}
+        });
+
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
@@ -5319,6 +5326,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.roll20Title = roll20Title;
         ρσ_modules.utils.isFVTT = isFVTT;
         ρσ_modules.utils.fvttTitle = fvttTitle;
+        ρσ_modules.utils.urlMatches = urlMatches;
     })();
 
     (function(){
