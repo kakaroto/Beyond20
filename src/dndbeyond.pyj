@@ -73,7 +73,7 @@ class Character:
                 classes = classes.text().split(" / ")
                 self._classes = {}
                 for class_ in classes:
-                    (name, level) = class_.split(" ")
+                    name, level = class_.split(" ")
                     self._classes[name] = level
         if self._level is None:
             level = $(".ct-character-tidbits__xp-level")
@@ -149,7 +149,7 @@ class Character:
 
             req = {"action": "hp-update", "character": self.getDict()}
             console.log("Sending message: ", req)
-            chrome.runtime.sendMessage(req);
+            chrome.runtime.sendMessage(req)
                 
     # TODO: Do the same thing for ".ct-feature-snippet-option > .ct-feature-snippet__heading" and
     # build a dict of {feature: option} so we could have things like {"Favored Enemy": "Undead"}, etc..
@@ -297,9 +297,9 @@ class Monster:
         if stat_block is None:
             stat_block = $(base)
         self._name = stat_block.find(base + "__name").text().trim()
-        a = stat_block.find(base + "__name-link")
-        if a.length > 0:
-            self._id = a.attr("href").replace("/monsters/", "").replace("/vehicles/", "")
+        link = stat_block.find(base + "__name-link")
+        if link.length > 0:
+            self._id = link.attr("href").replace("/monsters/", "").replace("/vehicles/", "")
         else:
             self._id = self._name
         self._meta = stat_block.find(base + "__meta").text().trim()
@@ -353,7 +353,7 @@ class Monster:
                     return def():
                         self.rollSavingThrow(a)
                 for save in saves:
-                    (abbr, mod) = save.split(" ")
+                    abbr, mod = save.split(" ")
                     self._saves[abbr] = mod
                     if add_dice:
                         data.append(abbr + " " + mod)
@@ -363,7 +363,7 @@ class Monster:
             elif label == "Skills":
                 skills = value.split(", ")
                 for skill in skills:
-                    (name, mod) = skill.split(" ")
+                    name, mod = skill.split(" ")
                     self._skills[name] = mod
                 if not add_dice:
                     continue
@@ -373,13 +373,13 @@ class Monster:
                 if self._type == "Monster":
                     skills = data.find("> a")
                     for a in skills:
-                        skill = a.textContent
+                        mon_skill = a.textContent
                         text = a.nextSibling
                         last = True
                         if text.textContent.endsWith(", "):
                             text.textContent = text.textContent[:-2]
                             last = False
-                        addIconButton(makeCB(skill), a.nextSibling)
+                        addIconButton(makeCB(mon_skill), a.nextSibling)
                         if not last:
                             $(a.nextElementSibling).after(", ")
                 else:
@@ -406,10 +406,11 @@ class Monster:
     def rollAbilityCheck(self, abbr):
         for ability in self._abilities:
             if ability[1] == abbr:
-                (name, abbr, score, modifier) = ability
+                name, abbr, score, modifier = ability
                 sendRoll(self, "ability", "1d20" + modifier, {"name" : name,
                                                               "ability": abbr,
-                                                              "modifier": modifier} )
+                                                              "modifier": modifier,
+                                                              "ability-score": score} )
                 break
 
     def rollSavingThrow(self, abbr):
@@ -464,7 +465,7 @@ class Monster:
         attackInfo = self.parseAttackInfo(description)
         if not attackInfo:
             return None
-        (attack_type, to_hit, reach_range) = attackInfo
+        attack_type, to_hit, reach_range = attackInfo
         roll_properties["to-hit"] = to_hit
         roll_properties["attack-type"] = attack_type
         roll_properties["reach" if attack_type == "Melee" else "range"] = reach_range
@@ -600,7 +601,7 @@ def buildAttackRoll(attack_source, name, description, properties, damages=[], da
         roll_properties["attack-type"] = properties["Attack Type"]
 
     if properties["Attack/Save"]?:
-        (save_ability, save_dc) = properties["Attack/Save"].split(" ")
+        save_ability, save_dc = properties["Attack/Save"].split(" ")
         roll_properties["save-ability"] = abbreviationToAbility(save_ability)
         roll_properties["save-dc"] = save_dc
 
@@ -618,7 +619,7 @@ def sendRoll(character, rollType, fallback, args):
     for key in args:
         req[key] = args[key]
     console.log("Sending message: ", req)
-    chrome.runtime.sendMessage(req);
+    chrome.runtime.sendMessage(req)
 
 def isRollButtonAdded():
     return $(".ct-beyond20-roll").length > 0
@@ -632,8 +633,8 @@ def isHitDieButtonAdded():
 button_class = "ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button"
 button_class_small = button_class + " character-button-small"
 def addRollButton(callback, where, small=False, append=False, prepend=False, image=True, text="Beyond 20"):
-    icon32 = chrome.extension.getURL("images/dice24.png");
-    icon16 = chrome.extension.getURL("images/dice16.png");
+    icon32 = chrome.extension.getURL("images/dice24.png")
+    icon16 = chrome.extension.getURL("images/dice16.png")
     id = uuid.uuid4()
     button = E.div(class_="ct-beyond20-roll", id=str(id),
                     E.button(class_=(button_class_small if small else button_class),
@@ -657,7 +658,7 @@ def addRollButton(callback, where, small=False, append=False, prepend=False, ima
     )
     return id
 
-def addDisplayButton(callback, where, text="Display in Roll20"):
+def addDisplayButton(callback, where, text="Display in VTT"):
     button = E.div(class_="ct-beyond20-roll-display",
                    E.button(class_=button_class_small.replace("filled", "outline"),
                             E.span(class_="ct-button__content", text)
@@ -672,7 +673,7 @@ def addDisplayButton(callback, where, text="Display in Roll20"):
     )
 
 def addHitDieButtons(rollCallback):
-    icon16 = chrome.extension.getURL("images/icons/icon16.png");
+    icon16 = chrome.extension.getURL("images/icons/icon16.png")
     button = E.div(class_="ct-beyond20-roll-hitdie", style="float: right;",
                     E.img(class_="ct-beyond20-icon", src=icon16, style="margin-right: 6px;"),
                     E.button(class_= button_class_small,
@@ -692,7 +693,7 @@ def addHitDieButtons(rollCallback):
         $(".ct-beyond20-roll-hitdie").eq(i).on('click', cb(rollCallback, i))
 
 def addIconButton(callback, where, append=False, prepend=False):
-    icon16 = chrome.extension.getURL("images/icons/icon16.png");
+    icon16 = chrome.extension.getURL("images/icons/icon16.png")
     id = uuid.uuid4()
     button = E.span(class_="ct-beyond20-roll", id=str(id),
                     style="margin-right:3px; margin-left: 3px;",
@@ -734,7 +735,7 @@ def recursiveDiceReplace(node, cb):
             $(node).replaceWith($.parseHTML(text))
 
 def injectDiceToRolls(selector, character, name=""):
-    icon16 = chrome.extension.getURL("images/icons/icon16.png");
+    icon16 = chrome.extension.getURL("images/icons/icon16.png")
     replaceCB = def(dice, modifier):
         dice_formula = ("1d20" if dice == "" else dice) + modifier
         return '<u class="ct-beyond20-custom-roll"><strong>' + dice + modifier + '</strong>' + \

@@ -1,10 +1,15 @@
 from utils import sendCustomEvent, injectPageScript
 from settings import getDefaultSettings, getStoredSettings
 
+print("Beyond20: Foundry VTT module loaded.")
+
+settings = getDefaultSettings()
+
 def updateSettings(new_settings=None):
     nonlocal settings
     if new_settings:
         settings = new_settings
+        sendCustomEvent("NewSettings", (settings, 0))
     else:
         getStoredSettings(def(saved_settings):
                               updateSettings(saved_settings)
@@ -21,15 +26,15 @@ def handleMessage (request, sender, sendResponse):
         if settings["update-hp"]:
             sendCustomEvent("UpdateHP", (request.character.name, request.character.hp, request.character["max-hp"]))
     elif request.action == "roll":
-        sendCustomEvent("Roll", (request, settings))
+        sendCustomEvent("Roll", (request, 0))
 
-# Don't execute any code unless we're sure we're loaded in FVTT
-if "Foundry Virtual Tabletop" in document.title:
-    print("Beyond20: Foundry VTT module loaded.")
-    sendCustomEvent("disconnect")
-    injectPageScript(chrome.runtime.getURL('src/fvtt_script.js'))
-    settings = getDefaultSettings()
+def titleSet(mutations, observer):
     updateSettings()
     chrome.runtime.onMessage.addListener(handleMessage)
-    chrome.runtime.sendMessage({"action": "activate-icon"})
     chrome.runtime.sendMessage({"action": "register-fvtt-tab"})
+    observer.disconnect()
+
+observer = new window.MutationObserver(titleSet)
+observer.observe(document.getElementsByTagName("title")[0], {"childList": True})
+sendCustomEvent("disconnect")
+injectPageScript(chrome.runtime.getURL('src/fvtt_script.js'))

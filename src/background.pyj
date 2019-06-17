@@ -1,5 +1,5 @@
 import constants as c
-from utils import roll20TabTitle, getBrowser
+from utils import roll20Title, isFVTT, fvttTitle, getBrowser
 from settings import getDefaultSettings, getStoredSettings, mergeSettings
 
 settings = getDefaultSettings()
@@ -25,32 +25,40 @@ def sendMessageTo(url, request):
             chrome.tabs.sendMessage(tab.id, request)
     )
 
+def filterVTTTab(request, limit, tabs, titleCB):
+    found = False
+    for tab in tabs:
+        if (limit.id == 0 or tab.id == limit.id) and \
+                (limit.title == None or titleCB(tab.title) == limit.title):
+            chrome.tabs.sendMessage(tab.id, request)
+            found = True
+    if not found and limit.id != 0:
+        limit.id = 0
+        mergeSettings({"vtt-tab": limit})
+        for tab in tabs:
+            if titleCB(tab.title) == limit.title:
+                chrome.tabs.sendMessage(tab.id, request)
+                break
+
+
 def sendMessageToRoll20(request, limit=None):
     if limit:
-        chrome.tabs.query({"url": c.ROLL20_URL}, def(tabs):
-            found = False
-            for tab in tabs:
-                if (limit.id == 0 or tab.id == limit.id) and roll20TabTitle(tab) == limit.title:
-                    chrome.tabs.sendMessage(tab.id, request)
-                    found = True
-                    break
-            if not found and limit.id != 0:
-                limit.id = 0
-                mergeSettings({"roll20-tab": limit})
-                for tab in tabs:
-                    if roll20TabTitle(tab) == limit.title:
-                        chrome.tabs.sendMessage(tab.id, request)
-                        break
-        )
+        vtt = limit.vtt ? "roll20"
+        if vtt == "roll20":
+            chrome.tabs.query({"url": c.ROLL20_URL}, def(tabs): filterVTTTab(request, limit, tabs, roll20Title);)
     else:
         sendMessageTo(c.ROLL20_URL, request)
 
-def sendMessageToFVTT(request):
+def sendMessageToFVTT(request, limit):
     nonlocal fvtt_tabs
 
-    console.log("Sending message to tabs : ", fvtt_tabs)
-    for tab in fvtt_tabs:
-        chrome.tabs.sendMessage(tab, request)
+    if limit:
+        vtt = limit.vtt ? "roll20"
+        if vtt == "fvtt":
+            filterVTTTab(request, limit, fvtt_tabs, fvttTitle)
+    else:
+        for tab in fvtt_tabs:
+            chrome.tabs.sendMessage(tab.id, request)
     
 def sendMessageToBeyond(request):
     sendMessageTo(c.DNDBEYOND_CHARACTER_URL, request)
@@ -64,8 +72,8 @@ def onMessage(request, sender, sendResponse):
 
     console.log("Received message: ", request)
     if request.action in ["roll", "hp-update"]:
-        sendMessageToRoll20(request, settings["roll20-tab"])
-        sendMessageToFVTT(request)
+        sendMessageToRoll20(request, settings["vtt-tab"])
+        sendMessageToFVTT(request, settings["vtt-tab"])
     elif request.action == "settings":
         if request.type == "general":
             updateSettings(request.settings)
@@ -74,8 +82,10 @@ def onMessage(request, sender, sendResponse):
         sendMessageToFVTT(request)
     elif request.action == "activate-icon":
         chrome.pageAction.show(sender.tab.id)
+        if isFVTT(sender.tab.title):
+            chrome.tabs.executeScript(sender.tab.id, { "file": 'src/fvtt.js' })
     elif request.action == "register-fvtt-tab":
-        fvtt_tabs.append(sender.tab.id)
+        fvtt_tabs.append(sender.tab)
     elif request.action == "reload-me":
         chrome.tabs.reload(sender.tab.id)
 

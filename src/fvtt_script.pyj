@@ -112,7 +112,11 @@ def rollInitiative(request, custom_roll_dice=""):
 
     whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
     data = {"initiative": request.initiative, "custom_dice": custom_roll_dice}
-    rolld20("Initiative", request.character.name, data, whisper, request.advantage)
+    roll = rolld20("Initiative", request.character.name, data, whisper, request.advantage)
+
+    if settings["initiative-tracker"] and canvas.tokens.controlledTokens.length > 0:
+        token = canvas.tokens.controlledTokens[0]
+        game.combat.createCombatant({"tokenId": token.id, "hidden": token.data.hidden, "initiative": roll.total})
 
 def rollHitDice(request):
     rname = "Hit Dice" + (("(" + request.class + ")") if  request.multiclass else "")
@@ -250,11 +254,10 @@ def rollSpellAttack(request, custom_roll_dice):
     # TODO: Support don't auto-roll dmg
     postDescription(request.name, request.character.name, spell_card[0], spell_card[1], spell_card[2], rolls, whisper)
 
-def handleRoll(request, new_settings):
+def handleRoll(request):
     nonlocal settings
 
     console.log("Received roll request ", request)
-    settings = new_settings
     whisper = (request.character.type == "Monster" and settings["whisper-monsters"]) or settings["whispers"]
 
     custom_roll_dice = ""
@@ -315,6 +318,9 @@ def updateHP(name, current, total=None):
             if prefix:
                 token.update(canvas.id, {prefix + ".value": current,
                                          prefix + ".max": total})
+def setSettings(new_settings):
+    nonlocal settings
+    settings = new_settings
 
 def disconnectAllEvents():
     nonlocal registered_events
@@ -326,5 +332,7 @@ console.log("Beyond20: FVTT Page Script loaded")
 injectCSS(TOOLTIP_CSS)
 registered_events = []
 registered_events.append(addCustomEventListener("Roll", handleRoll))
+registered_events.append(addCustomEventListener("NewSettings", setSettings))
 registered_events.append(addCustomEventListener("UpdateHP", updateHP))
 registered_events.append(addCustomEventListener("disconnect", disconnectAllEvents))
+document.title = game.world.name + " • Foundry Virtual Tabletop"

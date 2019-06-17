@@ -1,10 +1,9 @@
-PYJ_GLOBALS='$$,chrome'
+PYJ_GLOBALS='$$,chrome,Marka'
 
 %.js: %.pyj
-	rapydscript lint --globals $(PYJ_GLOBALS) $< || true
-	rapydscript $< --output $@
+	rapydscript lint --globals $(PYJ_GLOBALS) $(PYJ_FLAGS) $<
+	rapydscript $(PYJ_FLAGS) $< --output $@
 
-src/fvtt_script.js: PYJ_GLOBALS='$$,chrome,game,canvas,Roll,ChatMessage'
 
 JS_FILES=src/background.js src/roll20.js src/roll20_script.js \
 	src/fvtt.js src/fvtt_script.js \
@@ -13,7 +12,13 @@ JS_FILES=src/background.js src/roll20.js src/roll20_script.js \
 	src/dndbeyond_vehicle.js src/options.js  src/popup.js 
 PYJ_DEPS=src/utils.pyj src/settings.pyj src/dndbeyond.pyj src/constants.pyj
 
-all: $(JS_FILES)
+src/fvtt_script.js: PYJ_GLOBALS='$$,chrome,game,canvas,Roll,ChatMessage'
+src/utils.pyj-cached: PYJ_GLOBALS='$$,chrome,browser,cloneInto'
+src/constants.pyj-cached: PYJ_FLAGS+=--noqa eol-semicolon
+
+all:  $(PYJ_DEPS:=-cached) $(JS_FILES)
+
+$(JS_FILES): $(PYJ_DEPS)
 
 build: all
 	rm -f *~ */*~ src/*.pyj-cached
@@ -22,6 +27,10 @@ build: all
 clean:
 	rm -f $(JS_FILES) *~ */*~ src/*.pyj-cached
 
-$(JS_FILES): $(PYJ_DEPS)
+%.pyj-cached: %.pyj
+	rapydscript lint --globals $(PYJ_GLOBALS) $(PYJ_FLAGS) $<
+	@rm $@
 
 
+
+.PHONY: all clean build

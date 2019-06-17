@@ -374,7 +374,7 @@ def addRollButtonEx(paneClass, where, small=False, append=False, prepend=False, 
         execute(paneClass)
     addRollButton(callback, where, small, append, prepend, image, text)
 
-def addDisplayButtonEx(paneClass, where, text="Display in Roll20"):
+def addDisplayButtonEx(paneClass, where, text="Display in VTT"):
     callback = def():
         displayPanel(paneClass)
     addDisplayButton(callback, where, text)
@@ -395,13 +395,13 @@ def injectRollButton(paneClass):
     elif paneClass in ["ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane"]:
         if isRollButtonAdded():
             return
-        addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Display in Roll20", image=False)
+        addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Display in VTT", image=False)
         name = $(".ct-sidebar__heading").text()
         checkAndInjectDiceToRolls(".ct-snippet__content", name)
     elif paneClass == "ct-trait-pane":
         if isRollButtonAdded():
             return
-        addRollButtonEx(paneClass, ".ct-trait-pane__content", text="Display in Roll20", image=False)
+        addRollButtonEx(paneClass, ".ct-trait-pane__content", text="Display in VTT", image=False)
     elif paneClass == "ct-item-pane":
         nonlocal lastItemName
         item_name = $(".ct-item-pane .ct-item-name").text()
@@ -445,10 +445,10 @@ def injectRollButton(paneClass):
             to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit")
 
         if damages.length > 0 or healings.length > 0 or to_hit != None:
-            addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on Roll20", small=True)
+            addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on VTT", small=True)
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll")
         else:
-            addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on Roll20", image=False)
+            addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on VTT", image=False)
 
         $(".ct-spell-caster__casting-action > button").on('click', def(event):
             execute(paneClass)

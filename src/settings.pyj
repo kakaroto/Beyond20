@@ -1,5 +1,5 @@
 from elementmaker import E 
-from utils import getBrowser, roll20TabTitle
+from utils import roll20Title, fvttTitle, isFVTT
 
 class Whisper:
     NO = 0
@@ -46,23 +46,29 @@ options_list = {
                        "default": True},
 
     "initiative-tracker": {"title": "Add initiative roll to the Turn Tracker",
-                           "description": "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in Roll20, and will also change the way the output of 'Advantage on initiative' rolls appear",
+                           "description": "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in the VTT\nIf using Roll20, it will also change the way the output of 'Advantage on initiative' rolls appear.",
                            "type": "bool",
                            "default": True},
 
-    "update-hp": {"title": "Update Roll20 Token HP",
-                  "description": "When changing HP here, update it in Roll20 tokens and sheets",
+    "update-hp": {"title": "Update VTT Token HP",
+                  "description": "When changing HP in D&D Beyond, update it in the VTT tokens and sheets",
                   "type": "bool",
                   "default": True},
 
-    "template": {"title": "Roll20 Character Sheet Setting",
+    "template": {"type": "migrate",
+                 "default": "roll20-template"},
+
+    "roll20-template": {"title": "Roll20 Character Sheet Setting",
                  "description": "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.",
                  "type": "combobox",
                  "default": "roll20",
                  "choices": {"roll20": "D&D 5E By Roll20", "default": "Other templates"}},
 
-    "subst-roll20": {"title": "Replace Dices formulas in Roll20",
-                     "description": "In Roll20, if a spell card or an item or a feat has a dice formula in its description,\nenabling this will make the formula clickable to generate the roll in chat.",
+    "subst-roll20": {"type": "migrate",
+                     "default": "subst-vtt"},
+
+    "subst-vtt": {"title": "Replace Dices formulas in the VTT",
+                     "description": "In Roll20 or Foundry VTT, if a spell card or an item or a feat has a dice formula in its description,\nenabling this will make the formula clickable to generate the roll in chat.",
                      "type": "bool",
                      "default": True},
 
@@ -97,10 +103,15 @@ options_list = {
                          "type": "string",
                          "default": "Components: "},
 
-    "roll20-tab": {"title": "Select the Roll20 tab or campaign to send rolls to", 
-                   "description": "Select the tab to send rolls to or the specific campaign name.\nYou can select the campaign or tab from the extension's popup menu in the Roll20 tab itself.\nAfter a specific tab is selected and that tab is closed, it will revert to sending rolls to the same campaign.",
+
+    "roll20-tab": {"type": "migrate",
+                   "default": "vtt-tab"},
+
+    "vtt-tab": {"title": "Select the VTT tab or Game to send rolls to", 
+                   "description": "Select the tab to send rolls to or the specific Game.\nYou can select the Game or tab from the extension's popup menu in the VTT tab itself.\nAfter a specific tab is selected and that tab is closed, it will revert to sending rolls to the same Game.",
                    "type": "special",
                    "default": None}, # callbacks will be added after the functions are defined
+
 
     "show-changelog": {"title": "Show Changelog when installing a new version",
                        "description": "When a new version is released and the extension has been updated,\nopen the changelog in a new window",
@@ -171,9 +182,15 @@ def storageGet(name, default_value, cb):
 def storageSet(name, value, cb=None):
     getStorage().set({name: value}, def ():
         if chrome.runtime.lastError:
-            console.log('Chrome Runtime Error', chrome.runtime.lastError.message);
+            console.log('Chrome Runtime Error', chrome.runtime.lastError.message)
         elif cb:
             cb(value)
+    )
+
+def storageRemove(names, cb=None):
+    getStorage().remove(names, def ():
+        if cb:
+            cb(names)
     )
 
 def getDefaultSettings(_list=options_list):
@@ -185,14 +202,27 @@ def getDefaultSettings(_list=options_list):
 
 def getStoredSettings(cb, key="settings", _list=options_list):
     settings = getDefaultSettings(_list)
-    storageGet(key, settings, def(stored_settings):
+    gotSettings = def(stored_settings):
         print("Beyond20: Stored settings (" + key + "):", stored_settings)
-        # On Firefox, if setting is not in storage, it won't return the default value
-        for key in settings:
-            if key not in stored_settings:
-                stored_settings[key] = settings[key]
+        migrated_keys = []
+        for opt in settings:
+            if _list[opt].type == "migrate":
+                if opt in stored_settings:
+                    if stored_settings[opt] != _list[opt].default:
+                        # Migrate opts over when loading them
+                        stored_settings[_list[opt].default] = stored_settings[opt]
+                        migrated_keys.append(opt)
+                    del stored_settings[opt]
+            elif opt not in stored_settings:
+                # On Firefox, if setting is not in storage, it won't return the default value
+                stored_settings[opt] = settings[opt]
+        if migrated_keys.length > 0:
+            print("Beyond20: Migrated some keys:", stored_settings)
+            storageSet(key, stored_settings)
+            
         cb(stored_settings)
-    )
+               
+    storageGet(key, settings, gotSettings)
 
 def setSettings(settings, cb=None, key="settings"):
     storageSet(key, settings, def(settings):
@@ -359,7 +389,6 @@ def loadSettings(settings, _list=options_list):
             _list[option].set(option, settings)
 
 def restoreSavedSettings(cb=None, key="settings", _list=options_list):
-    settings = getDefaultSettings(_list)
     load = def(stored_settings):
         loadSettings(stored_settings, _list)
         if cb:
@@ -374,103 +403,133 @@ def initializeSettings(cb=None):
     restoreSavedSettings(cb)
 
 def createRoll20TabCombobox(name, short, dropdown_options):
-    option = options_list[name]
-    description = "Restrict where rolls are sent.\nUseful if you have multiple Roll20 windows open" if short else option.description
-    title = "Send Beyond 20 rolls to" if short else option.title
+    opt = options_list[name]
+    description = "Restrict where rolls are sent.\nUseful if you have multiple VTT windows open" if short else opt.description
+    title = "Send Beyond 20 rolls to" if short else opt.title
     description_p = list(map(E.p, description.split("\n")))
+    options = []
+    for option in dropdown_options:
+        options.append(E.li(E.a(href="#", option)))
     for p in description_p:
         p.classList.add("select")
-    return E.li(id="beyond20-option-roll20-tab",
-                class_="list-group-item beyond20-option beyond20-option-combobox" + (" roll20-tab-short" if short else ""),
+
+    return E.li(id="beyond20-option-vtt-tab",
+                class_="list-group-item beyond20-option beyond20-option-combobox" + (" vtt-tab-short" if short else ""),
                 E.label(class_="list-content", for_=name,
                         E.h4(class_="select", title),
                         *description_p,
                         E.div(class_="button-group",
-                              E.a(id=name, class_="input select beyond20-option-input", href="", "All Roll20 Tabs"),
+                              E.a(id=name, class_="input select beyond20-option-input", href="", "All VTT Tabs"),
                               E.ul(class_="dropdown-menu",
-                                   *dropdown_options),
+                                   *options),
                               E.i(id=name + "--icon", class_="icon select")
                               )
                         )
                 )
 
-def createRoll20TabSetting(name, short):
+def createVTTTabSetting(name, short):
+    nonlocal current_tab
     if short:
-        dropdown_options = [E.li(E.a(href="#", "All Roll20 Tabs")),
-                            E.li(E.a(href="#", "This Campaign")),
-                            E.li(E.a(href="#", "This Specific Tab"))]
+        vtt = "Foundry VTT" if isFVTT(current_tab.title) else "Roll20"
+        campaign = "World" if vtt == "Foundry VTT" else "Campaign"
+        dropdown_options = [ "All VTT Tabs",
+                             "Only " + vtt + " Tabs",
+                             "This " + campaign,
+                             "This Specific Tab"]
     else:
-        dropdown_options = [E.li(E.a(href="#", "All Roll20 Tabs"))]
+        dropdown_options = ["All VTT Tabs",
+                            "Only Roll20 Tabs",
+                            "Only Foundry VTT Tabs"]
 
     return createRoll20TabCombobox(name, short, dropdown_options)
 
-def setRoll20TabSetting(name, settings):
+def setVTTTabSetting(name, settings):
     nonlocal current_tab
 
     val = settings[name]
-    combobox = $("#beyond20-option-roll20-tab")
+    combobox = $("#beyond20-option-vtt-tab")
     if combobox.length == 0:
         return
-    if combobox.hasClass("roll20-tab-short"):
-        console.log("Set roll20 tab, is SHORT ", val)
-        if val is None:
-            $("#" + name).text("All Roll20 Tabs")
-        else:
-            (id, title) = (val.id, val.title)
-            current_title = roll20TabTitle(current_tab)
+    if val is None:
+        $("#" + name).text("All VTT Tabs")
+    elif val.title is None:
+        vtt = val.vtt ? "roll20"
+        vtt_name = "Roll 20" if vtt == "roll20" else "Foundry VTT"
+        $("#" + name).text("Only " + vtt_name + " Tabs")
+    else:
+        id, title, vtt = (val.id, val.title, val.vtt ? "roll20")
+        vtt_name = "Roll 20" if vtt == "roll20" else "Foundry VTT"
+        campaign = "Campaign" if vtt == "roll20" else "World"
+        short = combobox.hasClass("vtt-tab-short")
+        if short:
+            console.log("Set roll20 tab, is SHORT ", val)
+            current_vtt = "fvtt" if isFVTT(current_tab.title) else "roll20"
+            current_vtt_name = "Foundry VTT" if current_vtt == "fvtt" else "Roll20"
+            current_campaign = "Campaign" if current_vtt == "roll20" else "World"
+            current_title = roll20Title(current_tab.title) if current_vtt == "roll20" else fvttTitle(current_tab.title)
             current_id = current_tab.id
-            console.log("roll20-tab settings are : ", id, title, current_id, current_title)
-            if id == 0 and title == current_title:
-                $("#" + name).text("This Campaign")
-            elif id == current_id and title == current_title:
+            console.log("vtt-tab settings are : ", id, title, vtt, current_id, current_title, current_vtt)
+            if id == 0 and title == current_title and current_vtt == vtt:
+                $("#" + name).text("This " + campaign)
+            elif id == current_id and title == current_title and current_vtt == vtt:
                 $("#" + name).text("This Specific Tab")
             else:
-                dropdown_options = [E.li(E.a(href="#", "All Roll20 Tabs")),
-                                    E.li(E.a(href="#", "This Campaign")),
-                                    E.li(E.a(href="#", "This Specific Tab")),
-                                    E.li(E.a(href="#", "Another tab or campaign (No change)"))]
-                combobox.replaceWith(createRoll20TabCombobox("roll20-tab", True, dropdown_options))
-                initializeMarkaGroup($("#beyond20-option-roll20-tab"))
-                console.log("Added new options", dropdown_options)
-                $("#" + name).text("Another tab or campaign (No change)")
-                $("#" + name).attr("x-beyond20-id", id)
-                $("#" + name).attr("x-beyond20-title", title)
-    else:
-        console.log("Set roll20 tab, is LONG ", val)
-        if val is None:
-            $("#" + name).text("All Roll20 Tabs")
+                new_options = [ "All VTT Tabs",
+                                "Only " + current_vtt_name + " Tabs",
+                                "This " + current_campaign,
+                                "This Specific Tab"]
+                if current_vtt == vtt:
+                    new_options.append("Another tab or " + campaign.toLowerCase() + "(No change)")
+                else:
+                    new_options.append("A " + vtt_name + " " + campaign.toLowerCase() + "(No change)")
         else:
-            (id, title) = (val.id, val.title)
-            console.log("roll20-tab settings are : ", id, title)
-            dropdown_options = [E.li(E.a(href="#", "All Roll20 Tabs")),
-                                E.li(E.a(href="#", "Campaign: " + title))]
+            console.log("Set vtt tab, is LONG ", val)
+            console.log("vtt-tab settings are : ", id, title, vtt)
+            new_options = ["All VTT Tabs",
+                           "Only Roll20 Tabs",
+                           "Only Foundry VTT Tabs",
+                           campaign + ": " + title]
             if id != 0:
-                dropdown_options.append(E.li(E.a(href="#", "Tab #" + id + " (" + title +")")))
-            combobox.replaceWith(createRoll20TabCombobox("roll20-tab", False, dropdown_options))
-            initializeMarkaGroup($("#beyond20-option-roll20-tab"))
+                new_options.append("Tab #" + id + " (" + title +")")
+
+        if new_options?:
+            dropdown_options = []
+            for option in new_options:
+                dropdown_options.append(E.li(E.a(href="#", option)))
+            combobox.replaceWith(createRoll20TabCombobox("vtt-tab", short, dropdown_options))
+            initializeMarkaGroup($("#beyond20-option-vtt-tab"))
             console.log("Added new options", dropdown_options)
-            $("#" + name).text($(dropdown_options[-1]).text())
+            $("#" + name).text(new_options[-1].replace("(No change)", ""))
             $("#" + name).attr("x-beyond20-id", id)
             $("#" + name).attr("x-beyond20-title", title)
+            $("#" + name).attr("x-beyond20-vtt", vtt)
 
-def getRoll20TabSetting(name):
+def getVTTTabSetting(name):
     nonlocal current_tab
 
     opt = $("#" + name)
     value = opt.text()
     saved_id = opt.attr("x-beyond20-id")
     saved_title = opt.attr("x-beyond20-title")
-    if value == "All Roll20 Tabs":
+    saved_vtt = opt.attr("x-beyond20-vtt")
+    vtt = "fvtt" if isFVTT(current_tab.title) else "roll20" 
+    title = fvttTitle(current_tab.title) if vtt == "fvtt" else roll20Title(current_tab.title)
+    if value == "All VTT Tabs":
         ret = None
-    elif value in ["This Campaign", "This Specific Tab"]:
-        ret = {"id": (0 if value == "This Campaign" else current_tab.id),
-               "title": roll20TabTitle(current_tab)}
-    elif value.startsWith("Campaign: "):
-        ret = {"id": 0, "title": saved_title}
-    elif value == "Another tab or campaign (No change)" or \
-            value.startsWith("Tab #"):
-        ret = {"id": saved_id, "title": saved_title}
-    console.log("Get roll20 tab: ", ret)
+    elif value in ["This Campaign", "This World", "This Specific Tab"]:
+        ret = {"id": (0 if value in ["This Campaign", "This World"] else current_tab.id),
+               "title": title,
+               "vtt": vtt}
+    elif value == "Only Roll20 Tabs":
+        ret = {"id": 0, "title": None, "vtt": "roll20"}
+    elif value == "Only Foundry VTT Tabs":
+        ret = {"id": 0, "title": None, "vtt": "fvtt"}
+    elif value.startsWith("Campaign: ") or value.startsWith("World: "):
+        ret = {"id": 0, "title": saved_title, "vtt": vtt}
+    else:
+        # "Another tab or campaign (No change)", "A Roll20 game", "A FVTT game", "Tab #"
+        ret = {"id": saved_id, "title": saved_title, "vtt": saved_vtt}
+    console.log("Get " + vtt + " tab: ", ret)
     return ret    
 
 def setCurrentTab(tab):
@@ -478,6 +537,7 @@ def setCurrentTab(tab):
     current_tab = tab
 
 current_tab = None
-options_list["roll20-tab"]["createHTMLElement"] = createRoll20TabSetting
-options_list["roll20-tab"]["set"] = setRoll20TabSetting
-options_list["roll20-tab"]["get"] = getRoll20TabSetting
+options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting
+options_list["vtt-tab"]["set"] = setVTTTabSetting
+options_list["vtt-tab"]["get"] = getVTTTabSetting
+

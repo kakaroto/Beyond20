@@ -5289,11 +5289,25 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["name", "callback"]}
         });
 
-        function roll20TabTitle(tab) {
-            return tab.title.replace(" | Roll20", "");
+        function roll20Title(title) {
+            return title.replace(" | Roll20", "");
         };
-        if (!roll20TabTitle.__argnames__) Object.defineProperties(roll20TabTitle, {
-            __argnames__ : {value: ["tab"]}
+        if (!roll20Title.__argnames__) Object.defineProperties(roll20Title, {
+            __argnames__ : {value: ["title"]}
+        });
+
+        function isFVTT(title) {
+            return ρσ_in("Foundry Virtual Tabletop", title);
+        };
+        if (!isFVTT.__argnames__) Object.defineProperties(isFVTT, {
+            __argnames__ : {value: ["title"]}
+        });
+
+        function fvttTitle(title) {
+            return title.replace(" • Foundry Virtual Tabletop", "");
+        };
+        if (!fvttTitle.__argnames__) Object.defineProperties(fvttTitle, {
+            __argnames__ : {value: ["title"]}
         });
 
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
@@ -5304,7 +5318,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.injectCSS = injectCSS;
         ρσ_modules.utils.sendCustomEvent = sendCustomEvent;
         ρσ_modules.utils.addCustomEventListener = addCustomEventListener;
-        ρσ_modules.utils.roll20TabTitle = roll20TabTitle;
+        ρσ_modules.utils.roll20Title = roll20Title;
+        ρσ_modules.utils.isFVTT = isFVTT;
+        ρσ_modules.utils.fvttTitle = fvttTitle;
     })();
 
     (function(){
@@ -5975,7 +5991,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var whisper, data;
+            var whisper, data, roll, token;
             whisper = (request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"] || settings["whispers"];
             data = (function(){
                 var ρσ_d = {};
@@ -5983,7 +5999,17 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["custom_dice"] = custom_roll_dice;
                 return ρσ_d;
             }).call(this);
-            rolld20("Initiative", request.character.name, data, whisper, request.advantage);
+            roll = rolld20("Initiative", request.character.name, data, whisper, request.advantage);
+            if (settings["initiative-tracker"] && canvas.tokens.controlledTokens.length > 0) {
+                token = canvas.tokens.controlledTokens[0];
+                game.combat.createCombatant((function(){
+                    var ρσ_d = {};
+                    ρσ_d["tokenId"] = token.id;
+                    ρσ_d["hidden"] = token.data.hidden;
+                    ρσ_d["initiative"] = roll.total;
+                    return ρσ_d;
+                }).call(this));
+            }
         };
         if (!rollInitiative.__defaults__) Object.defineProperties(rollInitiative, {
             __defaults__ : {value: {custom_roll_dice:""}},
@@ -6188,10 +6214,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request", "custom_roll_dice"]}
         });
 
-        function handleRoll(request, new_settings) {
+        function handleRoll(request) {
             var whisper, custom_roll_dice, mod, rname, chatOptions, roll;
             console.log("Received roll request ", request);
-            settings = new_settings;
             whisper = (request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster")) && settings["whisper-monsters"] || settings["whispers"];
             custom_roll_dice = "";
             if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character"))) {
@@ -6234,7 +6259,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
         };
         if (!handleRoll.__argnames__) Object.defineProperties(handleRoll, {
-            __argnames__ : {value: ["request", "new_settings"]}
+            __argnames__ : {value: ["request"]}
         });
 
         function updateHP() {
@@ -6296,6 +6321,13 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["name", "current", "total"]}
         });
 
+        function setSettings(new_settings) {
+            settings = new_settings;
+        };
+        if (!setSettings.__argnames__) Object.defineProperties(setSettings, {
+            __argnames__ : {value: ["new_settings"]}
+        });
+
         function disconnectAllEvents() {
             var event;
             var ρσ_Iter6 = ρσ_Iterable(registered_events);
@@ -6309,7 +6341,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         injectCSS(TOOLTIP_CSS);
         registered_events = ρσ_list_decorate([]);
         registered_events.append(addCustomEventListener("Roll", handleRoll));
+        registered_events.append(addCustomEventListener("NewSettings", setSettings));
         registered_events.append(addCustomEventListener("UpdateHP", updateHP));
         registered_events.append(addCustomEventListener("disconnect", disconnectAllEvents));
+        document.title = game.world.name + " • Foundry Virtual Tabletop";
     })();
 })();

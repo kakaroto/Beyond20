@@ -37,16 +37,16 @@ def isExtensionDisconnected():
 
 # Taken from https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script
 def injectPageScript(url):
-    s = document.createElement('script');
-    s.src = url;
+    s = document.createElement('script')
+    s.src = url
     s.onload = def():
         this.remove()
-    (document.head or document.documentElement).appendChild(s);
+    (document.head or document.documentElement).appendChild(s)
 
 def injectCSS(css):
-    s = document.createElement('style');
-    s.textContent = css;
-    (document.head or document.documentElement).appendChild(s);
+    s = document.createElement('style')
+    s.textContent = css
+    (document.head or document.documentElement).appendChild(s)
 
 def sendCustomEvent(name, data):
     if getBrowser() == "Firefox":
@@ -61,5 +61,11 @@ def addCustomEventListener(name, callback):
     document.addEventListener(*event)
     return event
 
-def roll20TabTitle(tab):
-    return tab.title.replace(" | Roll20", "")
+def roll20Title(title):
+    return title.replace(" | Roll20", "")
+
+def isFVTT(title):
+    return "Foundry Virtual Tabletop" in title
+
+def fvttTitle(title):
+    return title.replace(" • Foundry Virtual Tabletop", "")

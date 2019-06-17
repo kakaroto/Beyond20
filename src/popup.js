@@ -5589,11 +5589,25 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["name", "callback"]}
         });
 
-        function roll20TabTitle(tab) {
-            return tab.title.replace(" | Roll20", "");
+        function roll20Title(title) {
+            return title.replace(" | Roll20", "");
         };
-        if (!roll20TabTitle.__argnames__) Object.defineProperties(roll20TabTitle, {
-            __argnames__ : {value: ["tab"]}
+        if (!roll20Title.__argnames__) Object.defineProperties(roll20Title, {
+            __argnames__ : {value: ["title"]}
+        });
+
+        function isFVTT(title) {
+            return ρσ_in("Foundry Virtual Tabletop", title);
+        };
+        if (!isFVTT.__argnames__) Object.defineProperties(isFVTT, {
+            __argnames__ : {value: ["title"]}
+        });
+
+        function fvttTitle(title) {
+            return title.replace(" • Foundry Virtual Tabletop", "");
+        };
+        if (!fvttTitle.__argnames__) Object.defineProperties(fvttTitle, {
+            __argnames__ : {value: ["title"]}
         });
 
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
@@ -5604,7 +5618,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.injectCSS = injectCSS;
         ρσ_modules.utils.sendCustomEvent = sendCustomEvent;
         ρσ_modules.utils.addCustomEventListener = addCustomEventListener;
-        ρσ_modules.utils.roll20TabTitle = roll20TabTitle;
+        ρσ_modules.utils.roll20Title = roll20Title;
+        ρσ_modules.utils.isFVTT = isFVTT;
+        ρσ_modules.utils.fvttTitle = fvttTitle;
     })();
 
     (function(){
@@ -5612,8 +5628,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         var options_list, character_settings, current_tab;
         var E = ρσ_modules.elementmaker.E;
 
-        var getBrowser = ρσ_modules.utils.getBrowser;
-        var roll20TabTitle = ρσ_modules.utils.roll20TabTitle;
+        var roll20Title = ρσ_modules.utils.roll20Title;
+        var fvttTitle = ρσ_modules.utils.fvttTitle;
+        var isFVTT = ρσ_modules.utils.isFVTT;
 
         function Whisper() {
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
@@ -5690,20 +5707,26 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["initiative-tracker"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Add initiative roll to the Turn Tracker";
-                ρσ_d["description"] = "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in Roll20, and will also change the way the output of 'Advantage on initiative' rolls appear";
+                ρσ_d["description"] = "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in the VTT\nIf using Roll20, it will also change the way the output of 'Advantage on initiative' rolls appear.";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
             ρσ_d["update-hp"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["title"] = "Update Roll20 Token HP";
-                ρσ_d["description"] = "When changing HP here, update it in Roll20 tokens and sheets";
+                ρσ_d["title"] = "Update VTT Token HP";
+                ρσ_d["description"] = "When changing HP in D&D Beyond, update it in the VTT tokens and sheets";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
             ρσ_d["template"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["type"] = "migrate";
+                ρσ_d["default"] = "roll20-template";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["roll20-template"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Roll20 Character Sheet Setting";
                 ρσ_d["description"] = "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.";
@@ -5719,8 +5742,14 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             ρσ_d["subst-roll20"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["title"] = "Replace Dices formulas in Roll20";
-                ρσ_d["description"] = "In Roll20, if a spell card or an item or a feat has a dice formula in its description,\nenabling this will make the formula clickable to generate the roll in chat.";
+                ρσ_d["type"] = "migrate";
+                ρσ_d["default"] = "subst-vtt";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["subst-vtt"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Replace Dices formulas in the VTT";
+                ρσ_d["description"] = "In Roll20 or Foundry VTT, if a spell card or an item or a feat has a dice formula in its description,\nenabling this will make the formula clickable to generate the roll in chat.";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
@@ -5782,8 +5811,14 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             ρσ_d["roll20-tab"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["title"] = "Select the Roll20 tab or campaign to send rolls to";
-                ρσ_d["description"] = "Select the tab to send rolls to or the specific campaign name.\nYou can select the campaign or tab from the extension's popup menu in the Roll20 tab itself.\nAfter a specific tab is selected and that tab is closed, it will revert to sending rolls to the same campaign.";
+                ρσ_d["type"] = "migrate";
+                ρσ_d["default"] = "vtt-tab";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["vtt-tab"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Select the VTT tab or Game to send rolls to";
+                ρσ_d["description"] = "Select the tab to send rolls to or the specific Game.\nYou can select the Game or tab from the extension's popup menu in the VTT tab itself.\nAfter a specific tab is selected and that tab is closed, it will revert to sending rolls to the same Game.";
                 ρσ_d["type"] = "special";
                 ρσ_d["default"] = null;
                 return ρσ_d;
@@ -5942,6 +5977,26 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["name", "value", "cb"]}
         });
 
+        function storageRemove() {
+            var names = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var cb = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? storageRemove.__defaults__.cb : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
+                cb = ρσ_kwargs_obj.cb;
+            }
+            getStorage().remove(names, function () {
+                if (cb) {
+                    cb(names);
+                }
+            });
+        };
+        if (!storageRemove.__defaults__) Object.defineProperties(storageRemove, {
+            __defaults__ : {value: {cb:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["names", "cb"]}
+        });
+
         function getDefaultSettings() {
             var _list = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? getDefaultSettings.__defaults__._list : arguments[0];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
@@ -5977,18 +6032,31 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
                 _list = ρσ_kwargs_obj._list;
             }
-            var settings;
+            var settings, gotSettings;
             settings = getDefaultSettings(_list);
-            storageGet(key, settings, (function() {
+            gotSettings = (function() {
                 var ρσ_anonfunc = function (stored_settings) {
-                    var key;
+                    var migrated_keys, opt;
                     print("Beyond20: Stored settings (" + key + "):", stored_settings);
+                    migrated_keys = ρσ_list_decorate([]);
                     var ρσ_Iter1 = ρσ_Iterable(settings);
                     for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                        key = ρσ_Iter1[ρσ_Index1];
-                        if (!ρσ_in(key, stored_settings)) {
-                            stored_settings[(typeof key === "number" && key < 0) ? stored_settings.length + key : key] = settings[(typeof key === "number" && key < 0) ? settings.length + key : key];
+                        opt = ρσ_Iter1[ρσ_Index1];
+                        if ((_list[(typeof opt === "number" && opt < 0) ? _list.length + opt : opt].type === "migrate" || typeof _list[(typeof opt === "number" && opt < 0) ? _list.length + opt : opt].type === "object" && ρσ_equals(_list[(typeof opt === "number" && opt < 0) ? _list.length + opt : opt].type, "migrate"))) {
+                            if (ρσ_in(opt, stored_settings)) {
+                                if ((stored_settings[(typeof opt === "number" && opt < 0) ? stored_settings.length + opt : opt] !== _list[(typeof opt === "number" && opt < 0) ? _list.length + opt : opt].default && (typeof stored_settings[(typeof opt === "number" && opt < 0) ? stored_settings.length + opt : opt] !== "object" || ρσ_not_equals(stored_settings[(typeof opt === "number" && opt < 0) ? stored_settings.length + opt : opt], _list[(typeof opt === "number" && opt < 0) ? _list.length + opt : opt].default)))) {
+                                    stored_settings[ρσ_bound_index(_list[(typeof opt === "number" && opt < 0) ? _list.length + opt : opt].default, stored_settings)] = stored_settings[(typeof opt === "number" && opt < 0) ? stored_settings.length + opt : opt];
+                                    migrated_keys.append(opt);
+                                }
+                                ρσ_delitem(stored_settings, opt);
+                            }
+                        } else if (!ρσ_in(opt, stored_settings)) {
+                            stored_settings[(typeof opt === "number" && opt < 0) ? stored_settings.length + opt : opt] = settings[(typeof opt === "number" && opt < 0) ? settings.length + opt : opt];
                         }
+                    }
+                    if (migrated_keys.length > 0) {
+                        print("Beyond20: Migrated some keys:", stored_settings);
+                        storageSet(key, stored_settings);
                     }
                     cb(stored_settings);
                 };
@@ -5996,7 +6064,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                     __argnames__ : {value: ["stored_settings"]}
                 });
                 return ρσ_anonfunc;
-            })());
+            })();
+            storageGet(key, settings, gotSettings);
         };
         if (!getStoredSettings.__defaults__) Object.defineProperties(getStoredSettings, {
             __defaults__ : {value: {key:"settings", _list:options_list}},
@@ -6326,8 +6395,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
                 _list = ρσ_kwargs_obj._list;
             }
-            var settings, load;
-            settings = getDefaultSettings(_list);
+            var load;
             load = (function() {
                 var ρσ_anonfunc = function (stored_settings) {
                     loadSettings(stored_settings, _list);
@@ -6385,127 +6453,169 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function createRoll20TabCombobox(name, short, dropdown_options) {
-            var option, description, title, description_p, p;
-            option = options_list[(typeof name === "number" && name < 0) ? options_list.length + name : name];
-            description = (short) ? "Restrict where rolls are sent.\nUseful if you have multiple Roll20 windows open" : option.description;
-            title = (short) ? "Send Beyond 20 rolls to" : option.title;
+            var opt, description, title, description_p, options, option, p;
+            opt = options_list[(typeof name === "number" && name < 0) ? options_list.length + name : name];
+            description = (short) ? "Restrict where rolls are sent.\nUseful if you have multiple VTT windows open" : opt.description;
+            title = (short) ? "Send Beyond 20 rolls to" : opt.title;
             description_p = list(map(E.p, description.split("\n")));
-            var ρσ_Iter8 = ρσ_Iterable(description_p);
+            options = ρσ_list_decorate([]);
+            var ρσ_Iter8 = ρσ_Iterable(dropdown_options);
             for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                p = ρσ_Iter8[ρσ_Index8];
+                option = ρσ_Iter8[ρσ_Index8];
+                options.append(E.li(ρσ_interpolate_kwargs.call(E, E.a, [option].concat([ρσ_desugar_kwargs({href: "#"})]))));
+            }
+            var ρσ_Iter9 = ρσ_Iterable(description_p);
+            for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                p = ρσ_Iter9[ρσ_Index9];
                 p.classList.add("select");
             }
-            return ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, ["All Roll20 Tabs"].concat([ρσ_desugar_kwargs({id: name, class_: "input select beyond20-option-input", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({id: "beyond20-option-roll20-tab", class_: "list-group-item beyond20-option beyond20-option-combobox" + ((short) ? " roll20-tab-short" : "")})]));
+            return ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, ["All VTT Tabs"].concat([ρσ_desugar_kwargs({id: name, class_: "input select beyond20-option-input", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({id: "beyond20-option-vtt-tab", class_: "list-group-item beyond20-option beyond20-option-combobox" + ((short) ? " vtt-tab-short" : "")})]));
         };
         if (!createRoll20TabCombobox.__argnames__) Object.defineProperties(createRoll20TabCombobox, {
             __argnames__ : {value: ["name", "short", "dropdown_options"]}
         });
 
-        function createRoll20TabSetting(name, short) {
-            var dropdown_options;
+        function createVTTTabSetting(name, short) {
+            var vtt, campaign, dropdown_options;
             if (short) {
-                dropdown_options = ρσ_list_decorate([ E.li(ρσ_interpolate_kwargs.call(E, E.a, ["All Roll20 Tabs"].concat([ρσ_desugar_kwargs({href: "#"})]))), E.li(ρσ_interpolate_kwargs.call(E, E.a, ["This Campaign"].concat([ρσ_desugar_kwargs({href: "#"})]))), E.li(ρσ_interpolate_kwargs.call(E, E.a, ["This Specific Tab"].concat([ρσ_desugar_kwargs({href: "#"})]))) ]);
+                vtt = (isFVTT(current_tab.title)) ? "Foundry VTT" : "Roll20";
+                campaign = ((vtt === "Foundry VTT" || typeof vtt === "object" && ρσ_equals(vtt, "Foundry VTT"))) ? "World" : "Campaign";
+                dropdown_options = ρσ_list_decorate([ "All VTT Tabs", "Only " + vtt + " Tabs", "This " + campaign, "This Specific Tab" ]);
             } else {
-                dropdown_options = ρσ_list_decorate([ E.li(ρσ_interpolate_kwargs.call(E, E.a, ["All Roll20 Tabs"].concat([ρσ_desugar_kwargs({href: "#"})]))) ]);
+                dropdown_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs" ]);
             }
             return createRoll20TabCombobox(name, short, dropdown_options);
         };
-        if (!createRoll20TabSetting.__argnames__) Object.defineProperties(createRoll20TabSetting, {
+        if (!createVTTTabSetting.__argnames__) Object.defineProperties(createVTTTabSetting, {
             __argnames__ : {value: ["name", "short"]}
         });
 
-        function setRoll20TabSetting(name, settings) {
-            var val, combobox, ρσ_unpack, id, title, current_title, current_id, dropdown_options;
+        function setVTTTabSetting(name, settings) {
+            var val, combobox, vtt, vtt_name, ρσ_unpack, id, title, campaign, short, current_vtt, current_vtt_name, current_campaign, current_title, current_id, new_options, dropdown_options, option;
             val = settings[(typeof name === "number" && name < 0) ? settings.length + name : name];
-            combobox = $("#beyond20-option-roll20-tab");
+            combobox = $("#beyond20-option-vtt-tab");
             if ((combobox.length === 0 || typeof combobox.length === "object" && ρσ_equals(combobox.length, 0))) {
                 return;
             }
-            if (combobox.hasClass("roll20-tab-short")) {
-                console.log("Set roll20 tab, is SHORT ", val);
-                if (val === null) {
-                    $("#" + name).text("All Roll20 Tabs");
-                } else {
-                    ρσ_unpack = [val.id, val.title];
-                    id = ρσ_unpack[0];
-                    title = ρσ_unpack[1];
-                    current_title = roll20TabTitle(current_tab);
+            if (val === null) {
+                $("#" + name).text("All VTT Tabs");
+            } else if (val.title === null) {
+                vtt = ρσ_exists.e(val.vtt, "roll20");
+                vtt_name = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Roll 20" : "Foundry VTT";
+                $("#" + name).text("Only " + vtt_name + " Tabs");
+            } else {
+                ρσ_unpack = [val.id, val.title, ρσ_exists.e(val.vtt, "roll20")];
+                id = ρσ_unpack[0];
+                title = ρσ_unpack[1];
+                vtt = ρσ_unpack[2];
+                vtt_name = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Roll 20" : "Foundry VTT";
+                campaign = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Campaign" : "World";
+                short = combobox.hasClass("vtt-tab-short");
+                if (short) {
+                    console.log("Set roll20 tab, is SHORT ", val);
+                    current_vtt = (isFVTT(current_tab.title)) ? "fvtt" : "roll20";
+                    current_vtt_name = ((current_vtt === "fvtt" || typeof current_vtt === "object" && ρσ_equals(current_vtt, "fvtt"))) ? "Foundry VTT" : "Roll20";
+                    current_campaign = ((current_vtt === "roll20" || typeof current_vtt === "object" && ρσ_equals(current_vtt, "roll20"))) ? "Campaign" : "World";
+                    current_title = ((current_vtt === "roll20" || typeof current_vtt === "object" && ρσ_equals(current_vtt, "roll20"))) ? roll20Title(current_tab.title) : fvttTitle(current_tab.title);
                     current_id = current_tab.id;
-                    console.log("roll20-tab settings are : ", id, title, current_id, current_title);
-                    if ((id === 0 || typeof id === "object" && ρσ_equals(id, 0)) && (title === current_title || typeof title === "object" && ρσ_equals(title, current_title))) {
-                        $("#" + name).text("This Campaign");
-                    } else if ((id === current_id || typeof id === "object" && ρσ_equals(id, current_id)) && (title === current_title || typeof title === "object" && ρσ_equals(title, current_title))) {
+                    console.log("vtt-tab settings are : ", id, title, vtt, current_id, current_title, current_vtt);
+                    if ((id === 0 || typeof id === "object" && ρσ_equals(id, 0)) && (title === current_title || typeof title === "object" && ρσ_equals(title, current_title)) && (current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
+                        $("#" + name).text("This " + campaign);
+                    } else if ((id === current_id || typeof id === "object" && ρσ_equals(id, current_id)) && (title === current_title || typeof title === "object" && ρσ_equals(title, current_title)) && (current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
                         $("#" + name).text("This Specific Tab");
                     } else {
-                        dropdown_options = ρσ_list_decorate([ E.li(ρσ_interpolate_kwargs.call(E, E.a, ["All Roll20 Tabs"].concat([ρσ_desugar_kwargs({href: "#"})]))), E.li(ρσ_interpolate_kwargs.call(E, E.a, ["This Campaign"].concat([ρσ_desugar_kwargs({href: "#"})]))), E.li(ρσ_interpolate_kwargs.call(E, E.a, ["This Specific Tab"].concat([ρσ_desugar_kwargs({href: "#"})]))), E.li(ρσ_interpolate_kwargs.call(E, E.a, ["Another tab or campaign (No change)"].concat([ρσ_desugar_kwargs({href: "#"})]))) ]);
-                        combobox.replaceWith(createRoll20TabCombobox("roll20-tab", true, dropdown_options));
-                        initializeMarkaGroup($("#beyond20-option-roll20-tab"));
-                        console.log("Added new options", dropdown_options);
-                        $("#" + name).text("Another tab or campaign (No change)");
-                        $("#" + name).attr("x-beyond20-id", id);
-                        $("#" + name).attr("x-beyond20-title", title);
+                        new_options = ρσ_list_decorate([ "All VTT Tabs", "Only " + current_vtt_name + " Tabs", "This " + current_campaign, "This Specific Tab" ]);
+                        if ((current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
+                            new_options.append("Another tab or " + campaign.toLowerCase() + "(No change)");
+                        } else {
+                            new_options.append("A " + vtt_name + " " + campaign.toLowerCase() + "(No change)");
+                        }
+                    }
+                } else {
+                    console.log("Set vtt tab, is LONG ", val);
+                    console.log("vtt-tab settings are : ", id, title, vtt);
+                    new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", campaign + ": " + title ]);
+                    if ((id !== 0 && (typeof id !== "object" || ρσ_not_equals(id, 0)))) {
+                        new_options.append("Tab #" + id + " (" + title + ")");
                     }
                 }
-            } else {
-                console.log("Set roll20 tab, is LONG ", val);
-                if (val === null) {
-                    $("#" + name).text("All Roll20 Tabs");
-                } else {
-                    ρσ_unpack = [val.id, val.title];
-                    id = ρσ_unpack[0];
-                    title = ρσ_unpack[1];
-                    console.log("roll20-tab settings are : ", id, title);
-                    dropdown_options = ρσ_list_decorate([ E.li(ρσ_interpolate_kwargs.call(E, E.a, ["All Roll20 Tabs"].concat([ρσ_desugar_kwargs({href: "#"})]))), E.li(ρσ_interpolate_kwargs.call(E, E.a, ["Campaign: " + title].concat([ρσ_desugar_kwargs({href: "#"})]))) ]);
-                    if ((id !== 0 && (typeof id !== "object" || ρσ_not_equals(id, 0)))) {
-                        dropdown_options.append(E.li(ρσ_interpolate_kwargs.call(E, E.a, ["Tab #" + id + " (" + title + ")"].concat([ρσ_desugar_kwargs({href: "#"})]))));
+                if ((typeof new_options !== "undefined" && new_options !== null)) {
+                    dropdown_options = ρσ_list_decorate([]);
+                    var ρσ_Iter10 = ρσ_Iterable(new_options);
+                    for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                        option = ρσ_Iter10[ρσ_Index10];
+                        dropdown_options.append(E.li(ρσ_interpolate_kwargs.call(E, E.a, [option].concat([ρσ_desugar_kwargs({href: "#"})]))));
                     }
-                    combobox.replaceWith(createRoll20TabCombobox("roll20-tab", false, dropdown_options));
-                    initializeMarkaGroup($("#beyond20-option-roll20-tab"));
+                    combobox.replaceWith(createRoll20TabCombobox("vtt-tab", short, dropdown_options));
+                    initializeMarkaGroup($("#beyond20-option-vtt-tab"));
                     console.log("Added new options", dropdown_options);
-                    $("#" + name).text($(dropdown_options[dropdown_options.length-1]).text());
+                    $("#" + name).text(new_options[new_options.length-1]);
                     $("#" + name).attr("x-beyond20-id", id);
                     $("#" + name).attr("x-beyond20-title", title);
+                    $("#" + name).attr("x-beyond20-vtt", vtt);
                 }
             }
         };
-        if (!setRoll20TabSetting.__argnames__) Object.defineProperties(setRoll20TabSetting, {
+        if (!setVTTTabSetting.__argnames__) Object.defineProperties(setVTTTabSetting, {
             __argnames__ : {value: ["name", "settings"]}
         });
 
-        function getRoll20TabSetting(name) {
-            var opt, value, saved_id, saved_title, ret;
+        function getVTTTabSetting(name) {
+            var opt, value, saved_id, saved_title, saved_vtt, vtt, title, ret;
             opt = $("#" + name);
             value = opt.text();
             saved_id = opt.attr("x-beyond20-id");
             saved_title = opt.attr("x-beyond20-title");
-            if ((value === "All Roll20 Tabs" || typeof value === "object" && ρσ_equals(value, "All Roll20 Tabs"))) {
+            saved_vtt = opt.attr("x-beyond20-vtt");
+            vtt = (isFVTT(current_tab.title)) ? "fvtt" : "roll20";
+            title = ((vtt === "fvtt" || typeof vtt === "object" && ρσ_equals(vtt, "fvtt"))) ? fvttTitle(current_tab.title) : roll20Title(current_tab.title);
+            if ((value === "All VTT Tabs" || typeof value === "object" && ρσ_equals(value, "All VTT Tabs"))) {
                 ret = null;
-            } else if (ρσ_in(value, ρσ_list_decorate([ "This Campaign", "This Specific Tab" ]))) {
+            } else if (ρσ_in(value, ρσ_list_decorate([ "This Campaign", "This World", "This Specific Tab" ]))) {
                 ret = (function(){
                     var ρσ_d = {};
-                    ρσ_d["id"] = ((value === "This Campaign" || typeof value === "object" && ρσ_equals(value, "This Campaign"))) ? 0 : current_tab.id;
-                    ρσ_d["title"] = roll20TabTitle(current_tab);
+                    ρσ_d["id"] = (ρσ_in(value, ρσ_list_decorate([ "This Campaign", "This World" ]))) ? 0 : current_tab.id;
+                    ρσ_d["title"] = title;
+                    ρσ_d["vtt"] = vtt;
                     return ρσ_d;
                 }).call(this);
-            } else if (value.startsWith("Campaign: ")) {
+            } else if ((value === "Only Roll20 Tabs" || typeof value === "object" && ρσ_equals(value, "Only Roll20 Tabs"))) {
+                ret = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["id"] = 0;
+                    ρσ_d["title"] = null;
+                    ρσ_d["vtt"] = "roll20";
+                    return ρσ_d;
+                }).call(this);
+            } else if ((value === "Only Foundry VTT Tabs" || typeof value === "object" && ρσ_equals(value, "Only Foundry VTT Tabs"))) {
+                ret = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["id"] = 0;
+                    ρσ_d["title"] = null;
+                    ρσ_d["vtt"] = "fvtt";
+                    return ρσ_d;
+                }).call(this);
+            } else if (value.startsWith("Campaign: ") || value.startsWith("World: ")) {
                 ret = (function(){
                     var ρσ_d = {};
                     ρσ_d["id"] = 0;
                     ρσ_d["title"] = saved_title;
+                    ρσ_d["vtt"] = vtt;
                     return ρσ_d;
                 }).call(this);
-            } else if ((value === "Another tab or campaign (No change)" || typeof value === "object" && ρσ_equals(value, "Another tab or campaign (No change)")) || value.startsWith("Tab #")) {
+            } else {
                 ret = (function(){
                     var ρσ_d = {};
                     ρσ_d["id"] = saved_id;
                     ρσ_d["title"] = saved_title;
+                    ρσ_d["vtt"] = saved_vtt;
                     return ρσ_d;
                 }).call(this);
             }
-            console.log("Get roll20 tab: ", ret);
+            console.log("Get " + vtt + " tab: ", ret);
             return ret;
         };
-        if (!getRoll20TabSetting.__argnames__) Object.defineProperties(getRoll20TabSetting, {
+        if (!getVTTTabSetting.__argnames__) Object.defineProperties(getVTTTabSetting, {
             __argnames__ : {value: ["name"]}
         });
 
@@ -6517,9 +6627,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         current_tab = null;
-        options_list["roll20-tab"]["createHTMLElement"] = createRoll20TabSetting;
-        options_list["roll20-tab"]["set"] = setRoll20TabSetting;
-        options_list["roll20-tab"]["get"] = getRoll20TabSetting;
+        options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting;
+        options_list["vtt-tab"]["set"] = setVTTTabSetting;
+        options_list["vtt-tab"]["get"] = getVTTTabSetting;
         ρσ_modules.settings.options_list = options_list;
         ρσ_modules.settings.character_settings = character_settings;
         ρσ_modules.settings.current_tab = current_tab;
@@ -6528,6 +6638,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.settings.getStorage = getStorage;
         ρσ_modules.settings.storageGet = storageGet;
         ρσ_modules.settings.storageSet = storageSet;
+        ρσ_modules.settings.storageRemove = storageRemove;
         ρσ_modules.settings.getDefaultSettings = getDefaultSettings;
         ρσ_modules.settings.getStoredSettings = getStoredSettings;
         ρσ_modules.settings.setSettings = setSettings;
@@ -6543,9 +6654,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.settings.saveSettings = saveSettings;
         ρσ_modules.settings.initializeSettings = initializeSettings;
         ρσ_modules.settings.createRoll20TabCombobox = createRoll20TabCombobox;
-        ρσ_modules.settings.createRoll20TabSetting = createRoll20TabSetting;
-        ρσ_modules.settings.setRoll20TabSetting = setRoll20TabSetting;
-        ρσ_modules.settings.getRoll20TabSetting = getRoll20TabSetting;
+        ρσ_modules.settings.createVTTTabSetting = createVTTTabSetting;
+        ρσ_modules.settings.setVTTTabSetting = setVTTTabSetting;
+        ρσ_modules.settings.getVTTTabSetting = getVTTTabSetting;
         ρσ_modules.settings.setCurrentTab = setCurrentTab;
     })();
 
@@ -6593,6 +6704,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         var DNDBEYOND_CHARACTER_URL = ρσ_modules.constants.DNDBEYOND_CHARACTER_URL;
         var DNDBEYOND_MONSTER_URL = ρσ_modules.constants.DNDBEYOND_MONSTER_URL;
         var DNDBEYOND_ENCOUNTER_URL = ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL;
+
+        var isFVTT = ρσ_modules.utils.isFVTT;
 
         background = chrome.extension.getBackgroundPage();
         character = null;
@@ -6760,12 +6873,13 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function actOnCurrentTab(tabs) {
-            var e, options;
+            var vtt, e, options;
             setCurrentTab(tabs[0]);
-            if (tabMatches(tabs[0], ROLL20_URL)) {
-                e = options_list["roll20-tab"].createHTMLElement("roll20-tab", true);
+            if (tabMatches(tabs[0], ROLL20_URL) || isFVTT(tabs[0].title)) {
+                vtt = (isFVTT(tabs[0].title)) ? "Foundry VTT" : "Roll20";
+                e = options_list["vtt-tab"].createHTMLElement("vtt-tab", true);
                 options = $(".beyond20-options");
-                options.append(ρσ_interpolate_kwargs.call(E, E.li, [E.h4(" == Roll20 Tab Specific Options ==")].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option", style: "text-align: center; margin: 10px;"})])));
+                options.append(ρσ_interpolate_kwargs.call(E, E.li, [E.h4(" == " + vtt + " Tab Specific Options ==")].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option", style: "text-align: center; margin: 10px;"})])));
                 options.append(e);
                 initializeSettings(gotSettings);
             } else if (tabMatches(tabs[0], DNDBEYOND_CHARACTER_URL)) {

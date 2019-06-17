@@ -5287,11 +5287,25 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["name", "callback"]}
         });
 
-        function roll20TabTitle(tab) {
-            return tab.title.replace(" | Roll20", "");
+        function roll20Title(title) {
+            return title.replace(" | Roll20", "");
         };
-        if (!roll20TabTitle.__argnames__) Object.defineProperties(roll20TabTitle, {
-            __argnames__ : {value: ["tab"]}
+        if (!roll20Title.__argnames__) Object.defineProperties(roll20Title, {
+            __argnames__ : {value: ["title"]}
+        });
+
+        function isFVTT(title) {
+            return ρσ_in("Foundry Virtual Tabletop", title);
+        };
+        if (!isFVTT.__argnames__) Object.defineProperties(isFVTT, {
+            __argnames__ : {value: ["title"]}
+        });
+
+        function fvttTitle(title) {
+            return title.replace(" • Foundry Virtual Tabletop", "");
+        };
+        if (!fvttTitle.__argnames__) Object.defineProperties(fvttTitle, {
+            __argnames__ : {value: ["title"]}
         });
 
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
@@ -5302,7 +5316,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.injectCSS = injectCSS;
         ρσ_modules.utils.sendCustomEvent = sendCustomEvent;
         ρσ_modules.utils.addCustomEventListener = addCustomEventListener;
-        ρσ_modules.utils.roll20TabTitle = roll20TabTitle;
+        ρσ_modules.utils.roll20Title = roll20Title;
+        ρσ_modules.utils.isFVTT = isFVTT;
+        ρσ_modules.utils.fvttTitle = fvttTitle;
     })();
 
     (function(){
