@@ -37,12 +37,15 @@ BUTTON_STYLE_CSS = """
 }
 """
 
-TOOLTIP_CSS = """
+FVTT_CSS = """
+/* This is needed so the tooltip's absolute position is
+ * relative to the message's position in the chatlog
+ */
 .beyond20-roll-result {
    position: relative;
 }
 
-.tooltip .tooltiptext {
+.beyond20-tooltip .beyond20-tooltip-content {
   display: none;
   background-color: #f5f2ec;
   text-align: left;
@@ -50,7 +53,7 @@ TOOLTIP_CSS = """
   padding: 5px 10px;
   margin: 10px;
   width: 80%;
-  top: -120px;
+  top: -120px; /* Until I figure out how to make it move above the mouse */
   border: 2px solid black;
 
   /* Position the tooltip */
@@ -58,22 +61,13 @@ TOOLTIP_CSS = """
   z-index: 1;
 }
 
-.tooltip:hover .tooltiptext {
+.beyond20-tooltip:hover .beyond20-tooltip-content {
   display: block;
 }
 
-.tooltiptext .dice-tooltip {
+.beyond20-tooltip-content .dice-tooltip {
     display: block;
 }
-
-.beyond20-roll-result details {
-  display: inline;
-}
-
-.beyond20-roll-result details[open] {
-  width: 100%;
-}
-
 """
 
 ROLL20_WHISPER_QUERY="?{Whisper?|Public Roll,|Whisper Roll,/w gm }"

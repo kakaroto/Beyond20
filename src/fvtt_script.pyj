@@ -1,6 +1,6 @@
 from utils import addCustomEventListener, injectCSS
 from settings import WhisperType, RollType
-from constants import TOOLTIP_CSS
+from constants import FVTT_CSS
 
 settings = None
 
@@ -64,9 +64,7 @@ def rollToDetails(roll):
     fail = isCriticalFail(roll)
     color = 'blue' if hit and fail else ('green' if hit else ('red' if fail else 'black'))
     tooltip = v'await roll.getTooltip()'
-    #return "<details style='display: inline; color: " + color + ";'><summary>" + roll.total + "</summary>" + \
-    #    tooltip + "</details>"
-    return "<span class='tooltip' style='color: " + color + ";'>" + roll.total + "<span class='dice-roll tooltiptext'>" + \
+    return "<span class='beyond20-tooltip' style='color: " + color + ";'>" + roll.total + "<span class='dice-roll beyond20-tooltip-content'>" + \
         "<div class='dice-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>"
 
 v'async'
@@ -408,7 +406,7 @@ def setTitle():
         setTimeout(setTitle, 1000)
 
 console.log("Beyond20: FVTT Page Script loaded")
-injectCSS(TOOLTIP_CSS)
+injectCSS(FVTT_CSS)
 registered_events = []
 registered_events.append(addCustomEventListener("Roll", handleRoll))
 registered_events.append(addCustomEventListener("NewSettings", setSettings))
