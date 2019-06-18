@@ -6705,7 +6705,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
         CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
         BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
-        TOOLTIP_CSS = "\n.tooltip .tooltiptext {\n  visibility: hidden;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 10px;\n  margin: 10px;\n\n  /* Position the tooltip */\n  position: relative;\n  z-index: 1;\n}\n\n.tooltip:hover .tooltiptext {\n  visibility: visible;\n}\n";
+        TOOLTIP_CSS = "\n.tooltip .tooltiptext {\n  visibility: hidden;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 10px;\n  margin: 10px;\n\n  /* Position the tooltip */\n  position: relative;\n  z-index: 1;\n}\n\n.tooltip:hover .tooltiptext {\n  visibility: visible;\n}\n\n.beyond20-roll-result details {\n  display: inline;\n}\n\n.beyond20-roll-result details[open] {\n  width: 100%;\n}\n\n";
         ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
         ROLL20_ADVANTAGE_QUERY = "{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125 &#123&#123r2=[[0d20|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2=[[1d20|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2=[[1d20}";
         ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
@@ -6810,7 +6810,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["whisper"]}
         });
 
-        function postDescription() {
+        async        function postDescription() {
             var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var title = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
             var source = ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[2];
@@ -6826,9 +6826,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "open")){
                 open = ρσ_kwargs_obj.open;
             }
-            var style, html, attr, roll_name, roll_html, ρσ_unpack, roll, promise;
+            var style, html, attr, roll_name, roll_html, tooltip, ρσ_unpack, roll;
             style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;";
-            html = "<details><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>";
+            html = "<details" + ((open) ? " open" : "") + "><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>";
             if (source || attributes.length > 0) {
                 html += "<table style='" + style + "'>";
                 if (source) {
@@ -6851,23 +6851,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if ((typeof roll === "string" || typeof typeof roll === "object" && ρσ_equals(typeof roll, "string"))) {
                     roll_html = "<span>" + roll + "</span>";
                 } else {
-                    roll_html = "<details style='display: inline;'><summary>" + roll.total + "</summary><span>" + roll.formula + " = " + roll.result + "</span></details>";
+                    tooltip = await roll.getTooltip();
+                    roll_html = "<details style='display: inline;'><summary>" + roll.total + "</summary>" + tooltip + "</details>";
                 }
-                html += "<b>" + roll_name + ": </b>" + roll_html + "</br>";
+                html += "<div class='beyond20-roll-result'><b>" + roll_name + ": </b>" + roll_html + "</div>";
             }
-            promise = postChatMessage(html, request.character.name, (request.whisper === WhisperType.prototype.YES || typeof request.whisper === "object" && ρσ_equals(request.whisper, WhisperType.prototype.YES)));
-            promise.then((function() {
-                var ρσ_anonfunc = function (message) {
-                    console.log("Got a message : ", message);
-                    setTimeout(function () {
-                        $(".message[data-message-id=" + message.data._id + "] details").attr("open", "");
-                    }, 0);
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["message"]}
-                });
-                return ρσ_anonfunc;
-            })());
+            return postChatMessage(html, request.character.name, (request.whisper === WhisperType.prototype.YES || typeof request.whisper === "object" && ρσ_equals(request.whisper, WhisperType.prototype.YES)));
         };
         if (!postDescription.__defaults__) Object.defineProperties(postDescription, {
             __defaults__ : {value: {rolls:ρσ_list_decorate([]), open:false}},
@@ -7111,7 +7100,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_exists.n(request["save-dc"])) {
                 rolls.append(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
             }
-            console.log("Rolls : ", rolls);
             postDescription(request, request.name, null, data, ρσ_exists.e(request.description, ""), rolls);
         };
         if (!rollAttack.__defaults__) Object.defineProperties(rollAttack, {

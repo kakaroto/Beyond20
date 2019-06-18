@@ -27,10 +27,11 @@ def whisperToRollMode(whisper):
     except:
         return game.settings.get("core", "rollMode")
 
+v'async'
 def postDescription(request, title, source, attributes, description, rolls=[], open=False):
     style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;"
 
-    html = "<details><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>"
+    html = "<details" + (" open" if open else "") + "><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>"
     if source or attributes.length > 0:
         html += "<table style='" + style + "'>"
         if source:
@@ -46,17 +47,13 @@ def postDescription(request, title, source, attributes, description, rolls=[], o
         if jstype(roll) == 'string':
             roll_html = "<span>" + roll + "</span>"
         else:
-            roll_html = "<details style='display: inline;'><summary>" + roll.total + "</summary>" \
-                "<span>" + roll.formula + " = " +  roll.result + "</span></details>"
-        html += "<b>" + roll_name + ": </b>" + roll_html + "</br>"
+            tooltip = v'await roll.getTooltip()'
+            roll_html = "<details style='display: inline;'><summary>" + roll.total + "</summary>" + \
+                tooltip + "</details>"
+            #"<span>" + roll.formula + " = " +  roll.result + "</span></details>"
+        html += "<div class='beyond20-roll-result'><b>" + roll_name + ": </b>" + roll_html + "</div>"
 
-    promise = postChatMessage(html, request.character.name, request.whisper == WhisperType.YES)
-    if open:
-        # FVTT 0.3.1 strips out the 'open' attribute, so we need to do it this way. Won't open it on everyone' log though
-        promise.then(def(message):
-                         console.log("Got a message : ", message)
-                         setTimeout(def():$(".message[data-message-id=" + message.data._id + "] details").attr("open", "");, 0)
-                     )
+    return postChatMessage(html, request.character.name, request.whisper == WhisperType.YES)
 
 def rolldice(request, title, dice, data):
     rollMode = whisperToRollMode(request.whisper ? WhisperType.NO)

@@ -55,6 +55,15 @@ TOOLTIP_CSS = """
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
+
+.beyond20-roll-result details {
+  display: inline;
+}
+
+.beyond20-roll-result details[open] {
+  width: 100%;
+}
+
 """
 
 ROLL20_WHISPER_QUERY="?{Whisper?|Public Roll,|Whisper Roll,/w gm }"
