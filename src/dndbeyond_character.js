@@ -9128,7 +9128,7 @@ return this.__repr__();
                 custom_damage = character.getSetting("custom-damage-dice", "");
                 if (len(custom_damage) > 0) {
                     damages.append(custom_damage);
-                    damage_types.append("Custom Damage");
+                    damage_types.append("Custom");
                 }
                 if (ρσ_in("Rogue", character._classes) && character.getSetting("rogue-sneak-attack", false) && ((properties["Attack Type"] === "Ranged" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Ranged")) || ρσ_exists.n(properties["Properties"]) && properties["Properties"].includes("Finesse"))) {
                     sneak_attack = int(math.ceil(float(character._classes["Rogue"]) / 2)) + "d6";
@@ -9139,8 +9139,8 @@ return this.__repr__();
                 }
                 if (character.getSetting("sharpshooter", false) && (properties["Attack Type"] === "Ranged" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Ranged")) && (properties["Proficient"] === "Yes" || typeof properties["Proficient"] === "object" && ρσ_equals(properties["Proficient"], "Yes"))) {
                     to_hit += " - 5";
-                    damages[0] += " + 10";
-                    damage_types[0] += " | Sharpshooter";
+                    damages.insert(1, " + 10");
+                    damage_types.insert(1, "Sharpshooter");
                     character.mergeCharacterSettings((function(){
                         var ρσ_d = {};
                         ρσ_d["sharpshooter"] = false;
@@ -9149,8 +9149,8 @@ return this.__repr__();
                 }
                 if (character.getSetting("great-weapon-master", false) && (properties["Attack Type"] === "Melee" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Melee")) && properties["Properties"].includes("Heavy") && (properties["Proficient"] === "Yes" || typeof properties["Proficient"] === "object" && ρσ_equals(properties["Proficient"], "Yes"))) {
                     to_hit += " - 5";
-                    damages[0] += " + 10";
-                    damage_types[0] += " | Weapon Master";
+                    damages.insert(1, " + 10");
+                    damage_types.insert(1, "Weapon Master");
                     character.mergeCharacterSettings((function(){
                         var ρσ_d = {};
                         ρσ_d["great-weapon-master"] = false;
@@ -9211,7 +9211,7 @@ return this.__repr__();
                 custom_damage = character.getSetting("custom-damage-dice", "");
                 if (len(custom_damage) > 0) {
                     damages.append(custom_damage);
-                    damage_types.append("Custom Damage");
+                    damage_types.append("Custom");
                 }
                 roll_properties = buildAttackRoll("action", action_name, description, properties, damages, damage_types, ρσ_exists.e(properties["To Hit"], null));
                 sendRollWithCharacter("attack", damages[0], roll_properties);
@@ -9295,7 +9295,7 @@ return this.__repr__();
                 custom_damage = character.getSetting("custom-damage-dice", "");
                 if (len(custom_damage) > 0 && len(damages) > 0) {
                     damages.append(custom_damage);
-                    damage_types.append("Custom Damage");
+                    damage_types.append("Custom");
                 }
                 roll_properties = buildAttackRoll("spell", spell_name, description, properties, damages, damage_types, to_hit);
                 spell_properties = (function(){
