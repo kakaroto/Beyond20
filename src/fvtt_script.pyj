@@ -67,7 +67,7 @@ def rollToDetails(roll):
     #return "<details style='display: inline; color: " + color + ";'><summary>" + roll.total + "</summary>" + \
     #    tooltip + "</details>"
     return "<span class='tooltip' style='color: " + color + ";'>" + roll.total + "<span class='dice-roll tooltiptext'>" + \
-        "<div class='dice-formula'>" + roll.formula + "</div>" + tooltip.replace('class="dice-tooltip"', 'class="dice-tooltip" style="display:block;"') + "</span></span>"
+        "<div class='dice-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>"
 
 v'async'
 def postDescription(request, title, source, attributes, description, rolls=[], open=False):

@@ -62,6 +62,10 @@ TOOLTIP_CSS = """
   display: block;
 }
 
+.tooltiptext .dice-tooltip {
+    display: block;
+}
+
 .beyond20-roll-result details {
   display: inline;
 }
