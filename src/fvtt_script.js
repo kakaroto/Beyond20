@@ -6705,7 +6705,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
         CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
         BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
-        TOOLTIP_CSS = "\n.tooltip .tooltiptext {\n  visibility: hidden;\n  background-color: black;\n  color: #fff;\n  text-align: center;\n  border-radius: 6px;\n  padding: 5px 10px;\n  margin: 10px;\n\n  /* Position the tooltip */\n  position: relative;\n  z-index: 1;\n}\n\n.tooltip:hover .tooltiptext {\n  visibility: visible;\n}\n\n.beyond20-roll-result details {\n  display: inline;\n}\n\n.beyond20-roll-result details[open] {\n  width: 100%;\n}\n\n";
+        TOOLTIP_CSS = "\n.beyond20-roll-result {\n   position: relative;\n}\n\n.tooltip .tooltiptext {\n  display: none;\n  background-color: #f5f2ec;\n  text-align: left;\n  border-radius: 6px;\n  padding: 5px 10px;\n  margin: 10px;\n  width: 80%;\n  top: -120px;\n  border: 2px solid black;\n\n  /* Position the tooltip */\n  position: absolute;\n  z-index: 1;\n}\n\n.tooltip:hover .tooltiptext {\n  display: block;\n}\n\n.beyond20-roll-result details {\n  display: inline;\n}\n\n.beyond20-roll-result details[open] {\n  width: 100%;\n}\n\n";
         ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
         ROLL20_ADVANTAGE_QUERY = "{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125 &#123&#123r2=[[0d20|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2=[[1d20|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2=[[1d20}";
         ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
@@ -6760,43 +6760,13 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["name"]}
         });
 
-        function postChatMessage() {
-            var message = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var character = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postChatMessage.__defaults__.character : arguments[1];
-            var whisper = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postChatMessage.__defaults__.whisper : arguments[2];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "character")){
-                character = ρσ_kwargs_obj.character;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "whisper")){
-                whisper = ρσ_kwargs_obj.whisper;
-            }
-            var data;
-            data = (function(){
-                var ρσ_d = {};
-                ρσ_d["content"] = message;
-                ρσ_d["user"] = game.user._id;
-                ρσ_d["speaker"] = getSpeakerByName(character);
-                return ρσ_d;
-            }).call(this);
-            if (whisper) {
-                data["whisper"] = ChatMessage.getWhisperIDs("GM");
-            }
-            return ChatMessage.create(data);
-        };
-        if (!postChatMessage.__defaults__) Object.defineProperties(postChatMessage, {
-            __defaults__ : {value: {character:null, whisper:false}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["message", "character", "whisper"]}
-        });
-
         function whisperToRollMode(whisper) {
             try {
                 return (ρσ_expr_temp = (function(){
                     var ρσ_d = {};
                     ρσ_d[WhisperType.prototype.NO] = "roll";
                     ρσ_d[WhisperType.prototype.YES] = "gmroll";
+                    ρσ_d[WhisperType.prototype.QUERY] = game.settings.get("core", "rollMode");
                     return ρσ_d;
                 }).call(this))[(typeof whisper === "number" && whisper < 0) ? ρσ_expr_temp.length + whisper : whisper];
             } catch (ρσ_Exception) {
@@ -6808,6 +6778,139 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
         if (!whisperToRollMode.__argnames__) Object.defineProperties(whisperToRollMode, {
             __argnames__ : {value: ["whisper"]}
+        });
+
+        function postChatMessage(message, character, whisper) {
+            var data, rollMode;
+            data = (function(){
+                var ρσ_d = {};
+                ρσ_d["content"] = message;
+                ρσ_d["user"] = game.user._id;
+                ρσ_d["speaker"] = getSpeakerByName(character);
+                return ρσ_d;
+            }).call(this);
+            rollMode = whisperToRollMode(whisper);
+            if (ρσ_in(rollMode, ρσ_list_decorate([ "gmroll", "blindroll" ]))) {
+                data["whisper"] = ChatMessage.getWhisperIDs("GM");
+                if ((rollMode === "blindroll" || typeof rollMode === "object" && ρσ_equals(rollMode, "blindroll"))) {
+                    data["blind"] = true;
+                }
+            }
+            return ChatMessage.create(data);
+        };
+        if (!postChatMessage.__argnames__) Object.defineProperties(postChatMessage, {
+            __argnames__ : {value: ["message", "character", "whisper"]}
+        });
+
+        function postRoll(roll, character, title, whisper) {
+            var rollMode;
+            rollMode = whisperToRollMode(whisper);
+            roll.toMessage((function(){
+                var ρσ_d = {};
+                ρσ_d["speaker"] = getSpeakerByName(character);
+                ρσ_d["flavor"] = title;
+                ρσ_d["rollMode"] = rollMode;
+                return ρσ_d;
+            }).call(this));
+            return roll;
+        };
+        if (!postRoll.__argnames__) Object.defineProperties(postRoll, {
+            __argnames__ : {value: ["roll", "character", "title", "whisper"]}
+        });
+
+        function checkRollForCrits(roll, cb) {
+            var r, die;
+            var ρσ_Iter0 = ρσ_Iterable(roll.dice);
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                die = ρσ_Iter0[ρσ_Index0];
+                var ρσ_Iter1 = ρσ_Iterable(die.rolls);
+                for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                    r = ρσ_Iter1[ρσ_Index1];
+                    if (!ρσ_exists.e(r.discarded, false)) {
+                        if (cb(die.faces, r.roll)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        };
+        if (!checkRollForCrits.__argnames__) Object.defineProperties(checkRollForCrits, {
+            __argnames__ : {value: ["roll", "cb"]}
+        });
+
+        function isCriticalHit(roll) {
+            return checkRollForCrits(roll, (function() {
+                var ρσ_anonfunc = function (faces, value) {
+                    return (value === faces || typeof value === "object" && ρσ_equals(value, faces));
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["faces", "value"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!isCriticalHit.__argnames__) Object.defineProperties(isCriticalHit, {
+            __argnames__ : {value: ["roll"]}
+        });
+
+        function isCriticalFail(roll) {
+            return checkRollForCrits(roll, (function() {
+                var ρσ_anonfunc = function (faces, value) {
+                    return (value === 1 || typeof value === "object" && ρσ_equals(value, 1));
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["faces", "value"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!isCriticalFail.__argnames__) Object.defineProperties(isCriticalFail, {
+            __argnames__ : {value: ["roll"]}
+        });
+
+        function isCriticalHitD20() {
+            var rolls = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var limit = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? isCriticalHitD20.__defaults__.limit : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "limit")){
+                limit = ρσ_kwargs_obj.limit;
+            }
+            var roll;
+            var ρσ_Iter2 = ρσ_Iterable(rolls);
+            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                roll = ρσ_Iter2[ρσ_Index2];
+                if (checkRollForCrits(roll, (function() {
+                    var ρσ_anonfunc = function (faces, value) {
+                        return (faces === 20 || typeof faces === "object" && ρσ_equals(faces, 20)) && value >= limit;
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["faces", "value"]}
+                    });
+                    return ρσ_anonfunc;
+                })())) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        if (!isCriticalHitD20.__defaults__) Object.defineProperties(isCriticalHitD20, {
+            __defaults__ : {value: {limit:20}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["rolls", "limit"]}
+        });
+
+        async        function rollToDetails(roll) {
+            var hit, fail, color, tooltip;
+            hit = isCriticalHit(roll);
+            fail = isCriticalFail(roll);
+            color = (hit && fail) ? "blue" : (hit) ? "green" : (fail) ? "red" : "black";
+            tooltip = await roll.getTooltip();
+            return "<span class='tooltip' style='color: " + color + ";'>" + roll.total + "<span class='dice-roll tooltiptext'>" + "<div class='dice-formula'>" + roll.formula + "</div>" + tooltip.replace("class=\"dice-tooltip\"", "class=\"dice-tooltip\" style=\"display:block;\"") + "</span></span>";
+        };
+        if (!rollToDetails.__argnames__) Object.defineProperties(rollToDetails, {
+            __argnames__ : {value: ["roll"]}
         });
 
         async        function postDescription() {
@@ -6826,37 +6929,60 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "open")){
                 open = ρσ_kwargs_obj.open;
             }
-            var style, html, attr, roll_name, roll_html, tooltip, ρσ_unpack, roll;
+            var style, html, attr, roll_name, roll_html, roll_list, ρσ_unpack, i, roll;
             style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;";
-            html = "<details" + ((open) ? " open" : "") + "><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>";
-            if (source || attributes.length > 0) {
-                html += "<table style='" + style + "'>";
-                if (source) {
-                    html += "<tr><td colspan'2'><i>" + source + "</i></td></tr>";
+            if (description) {
+                html = "<details" + ((open) ? " open" : "") + "><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>";
+                if (source || attributes.length > 0) {
+                    html += "<table style='" + style + "'>";
+                    if (source) {
+                        html += "<tr><td colspan'2'><i>" + source + "</i></td></tr>";
+                    }
+                    var ρσ_Iter3 = ρσ_Iterable(attributes);
+                    for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                        attr = ρσ_Iter3[ρσ_Index3];
+                        html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[(typeof attr === "number" && attr < 0) ? attributes.length + attr : attr] + "</td></tr>";
+                    }
+                    html += "</table>";
                 }
-                var ρσ_Iter0 = ρσ_Iterable(attributes);
-                for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                    attr = ρσ_Iter0[ρσ_Index0];
-                    html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[(typeof attr === "number" && attr < 0) ? attributes.length + attr : attr] + "</td></tr>";
-                }
-                html += "</table>";
+                html += "<div style='" + style + "'>" + description.replace("\n", "</br>") + "</div></details>";
+            } else {
+                html = "<div style='" + style + "'>" + title + "</div>";
             }
-            html += "<div style='" + style + "'>" + description.replace("\n", "</br>") + "</div></details>";
-            var ρσ_Iter1 = ρσ_Iterable(rolls);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                ρσ_unpack = ρσ_Iter1[ρσ_Index1];
+            console.log("Rolls : ", rolls);
+            var ρσ_Iter4 = ρσ_Iterable(rolls);
+            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                ρσ_unpack = ρσ_Iter4[ρσ_Index4];
                 roll_name = ρσ_unpack[0];
                 roll = ρσ_unpack[1];
-                roll_name = roll_name[0].toUpperCase() + roll_name.slice(1);
-                if ((typeof roll === "string" || typeof typeof roll === "object" && ρσ_equals(typeof roll, "string"))) {
+                if (roll_name) {
+                    roll_name = roll_name[0].toUpperCase() + roll_name.slice(1) + ": ";
+                } else {
+                    roll_name = "";
+                }
+                if (ρσ_instanceof(roll, str)) {
                     roll_html = "<span>" + roll + "</span>";
                 } else {
-                    tooltip = await roll.getTooltip();
-                    roll_html = "<details style='display: inline;'><summary>" + roll.total + "</summary>" + tooltip + "</details>";
+                    if (ρσ_instanceof(roll, list)) {
+                        roll_list = roll;
+                        roll_html = "";
+                        var ρσ_Iter5 = ρσ_Iterable(enumerate(roll_list));
+                        for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                            ρσ_unpack = ρσ_Iter5[ρσ_Index5];
+                            i = ρσ_unpack[0];
+                            roll = ρσ_unpack[1];
+                            if (i > 0) {
+                                roll_html += " | ";
+                            }
+                            roll_html += await rollToDetails(roll);
+                        }
+                    } else {
+                        roll_html = await rollToDetails(roll);
+                    }
                 }
-                html += "<div class='beyond20-roll-result'><b>" + roll_name + ": </b>" + roll_html + "</div>";
+                html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>";
             }
-            return postChatMessage(html, request.character.name, (request.whisper === WhisperType.prototype.YES || typeof request.whisper === "object" && ρσ_equals(request.whisper, WhisperType.prototype.YES)));
+            return postChatMessage(html, request.character.name, request.whisper);
         };
         if (!postDescription.__defaults__) Object.defineProperties(postDescription, {
             __defaults__ : {value: {rolls:ρσ_list_decorate([]), open:false}},
@@ -6864,36 +6990,36 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request", "title", "source", "attributes", "description", "rolls", "open"]}
         });
 
-        function rolldice(request, title, dice, data) {
-            var rollMode, new_data, parts, new_key, key, roll;
-            rollMode = whisperToRollMode(ρσ_exists.e(request.whisper, WhisperType.prototype.NO));
+        function createRoll(dice, data) {
+            var new_data, parts, new_key, key;
             new_data = {};
             parts = ρσ_list_decorate([ dice ]);
-            var ρσ_Iter2 = ρσ_Iterable(data);
-            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                key = ρσ_Iter2[ρσ_Index2];
+            var ρσ_Iter6 = ρσ_Iterable(data);
+            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                key = ρσ_Iter6[ρσ_Index6];
                 if ((data[(typeof key === "number" && key < 0) ? data.length + key : key] !== "" && (typeof data[(typeof key === "number" && key < 0) ? data.length + key : key] !== "object" || ρσ_not_equals(data[(typeof key === "number" && key < 0) ? data.length + key : key], "")))) {
                     new_key = key.replace("_", "").toLowerCase();
                     new_data[(typeof new_key === "number" && new_key < 0) ? new_data.length + new_key : new_key] = data[(typeof key === "number" && key < 0) ? data.length + key : key];
                     parts.append(new_key);
                 }
             }
-            roll = new Roll(parts.join(" + @"), new_data);
-            roll.toMessage((function(){
-                var ρσ_d = {};
-                ρσ_d["speaker"] = getSpeakerByName(request.character.name);
-                ρσ_d["flavor"] = title;
-                ρσ_d["rollMode"] = rollMode;
-                return ρσ_d;
-            }).call(this));
-            return roll;
+            return new Roll(parts.join(" + @"), new_data);
         };
-        if (!rolldice.__argnames__) Object.defineProperties(rolldice, {
+        if (!createRoll.__argnames__) Object.defineProperties(createRoll, {
+            __argnames__ : {value: ["dice", "data"]}
+        });
+
+        function rollDice(request, title, dice, data) {
+            var roll;
+            roll = createRoll(dice, data);
+            return postRoll(roll, request.character.name, title, request.whisper);
+        };
+        if (!rollDice.__argnames__) Object.defineProperties(rollDice, {
             __argnames__ : {value: ["request", "title", "dice", "data"]}
         });
 
-        function rolld20(request, title, data) {
-            var dice, roll;
+        function rollD20(request, title, data) {
+            var dice, roll_1, roll_2;
             if ((request.advantage === RollType.prototype.NORMAL || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.NORMAL))) {
                 dice = "1d20";
             } else if ((request.advantage === RollType.prototype.ADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.ADVANTAGE))) {
@@ -6902,15 +7028,18 @@ var str = ρσ_str, repr = ρσ_repr;;
                 dice = "2d20kl";
             } else if ((request.advantage === RollType.prototype.DOUBLE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DOUBLE))) {
                 dice = "1d20";
-                roll = rolldice(request, title, dice, data);
-                rolldice(request, title, dice, data);
-                return roll;
+                roll_1 = createRoll(dice, data).roll();
+                roll_2 = createRoll(dice, data).roll();
+                console.log("Rolls :", roll_1, roll_2);
+                ρσ_interpolate_kwargs.call(this, postDescription, [request, title, null, {}, null].concat([ρσ_desugar_kwargs({rolls: ρσ_list_decorate([ [null, 
+                ρσ_list_decorate([ roll_1, roll_2 ])] ])})]));
+                return roll_1;
             } else {
                 dice = "1d20";
             }
-            return rolldice(request, title, dice, data);
+            return rollDice(request, title, dice, data);
         };
-        if (!rolld20.__argnames__) Object.defineProperties(rolld20, {
+        if (!rollD20.__argnames__) Object.defineProperties(rollD20, {
             __argnames__ : {value: ["request", "title", "data"]}
         });
 
@@ -6929,7 +7058,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["custom_dice"] = custom_roll_dice;
                 return ρσ_d;
             }).call(this);
-            rolld20(request, request.skill, data);
+            rollD20(request, request.skill + "(" + request.modifier + ")", data);
         };
         if (!rollSkill.__defaults__) Object.defineProperties(rollSkill, {
             __defaults__ : {value: {custom_roll_dice:""}},
@@ -6952,10 +7081,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["custom_dice"] = custom_roll_dice;
                 return ρσ_d;
             }).call(this);
-            if (ρσ_exists.n(request["JoaT"])) {
-                data["jack_of_all_trades"] = request["JoaT"];
-            }
-            rolld20(request, request.name, data);
+            rollD20(request, request.name + "(" + request.modifier + ")", data);
         };
         if (!rollAbility.__defaults__) Object.defineProperties(rollAbility, {
             __defaults__ : {value: {custom_roll_dice:""}},
@@ -6978,7 +7104,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["custom_dice"] = custom_roll_dice;
                 return ρσ_d;
             }).call(this);
-            rolld20(request, request.name + " Save", data);
+            rollD20(request, request.name + " Save" + "(" + request.modifier + ")", data);
         };
         if (!rollSavingThrow.__defaults__) Object.defineProperties(rollSavingThrow, {
             __defaults__ : {value: {custom_roll_dice:""}},
@@ -7001,19 +7127,26 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["custom_dice"] = custom_roll_dice;
                 return ρσ_d;
             }).call(this);
-            roll = rolld20(request, "Initiative", data);
-            if (settings["initiative-tracker"] && canvas.tokens.controlledTokens.length > 0) {
-                token = canvas.tokens.controlledTokens[0];
-                if (ρσ_exists.n(game.combat)) {
-                    game.combat.createCombatant((function(){
-                        var ρσ_d = {};
-                        ρσ_d["tokenId"] = token.id;
-                        ρσ_d["hidden"] = token.data.hidden;
-                        ρσ_d["initiative"] = roll.total;
-                        return ρσ_d;
-                    }).call(this));
+            roll = rollD20(request, "Initiative" + "(" + request.initiative + ")", data);
+            if (settings["initiative-tracker"]) {
+                if (canvas.tokens.controlledTokens.length > 0) {
+                    if (ρσ_exists.n(game.combat)) {
+                        var ρσ_Iter7 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                        for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                            token = ρσ_Iter7[ρσ_Index7];
+                            game.combat.createCombatant((function(){
+                                var ρσ_d = {};
+                                ρσ_d["tokenId"] = token.id;
+                                ρσ_d["hidden"] = token.data.hidden;
+                                ρσ_d["initiative"] = roll.total;
+                                return ρσ_d;
+                            }).call(this));
+                        }
+                    } else {
+                        ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet");
+                    }
                 } else {
-                    ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet");
+                    ui.notifications.warn("Cannot add initiative to tracker: no token is currently selected");
                 }
             }
         };
@@ -7026,7 +7159,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         function rollHitDice(request) {
             var rname;
             rname = "Hit Dice" + ((request.multiclass) ? "(" + request.class + ")" : "");
-            rolldice(request, rname, request["hit-dice"], {});
+            rollDice(request, rname, request["hit-dice"], {});
         };
         if (!rollHitDice.__argnames__) Object.defineProperties(rollHitDice, {
             __argnames__ : {value: ["request"]}
@@ -7040,7 +7173,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            rolld20(request, "Death Saving Throw", (function(){
+            rollD20(request, "Death Saving Throw", (function(){
                 var ρσ_d = {};
                 ρσ_d["custom_dice"] = custom_roll_dice;
                 return ρσ_d;
@@ -7070,6 +7203,81 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request"]}
         });
 
+        function buildAttackRolls(request, custom_roll_dice) {
+            var rolls, is_critical, critical_limit, custom, to_hit, roll_1, roll_2, to_hit_roll, dice, damages, damage_types, total_damage, roll, dmg_type, suffix, i, total_critical_damage;
+            rolls = ρσ_list_decorate([]);
+            is_critical = false;
+            if (ρσ_exists.n(request["to-hit"])) {
+                critical_limit = 20;
+                if ((request["attack-source"] === "item" || typeof request["attack-source"] === "object" && ρσ_equals(request["attack-source"], "item"))) {
+                    if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Improved Critical", request.character["class-features"])) {
+                        critical_limit = 19;
+                    }
+                    if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Superior Critical", request.character["class-features"])) {
+                        critical_limit = 18;
+                    }
+                }
+                custom = ((custom_roll_dice === "" || typeof custom_roll_dice === "object" && ρσ_equals(custom_roll_dice, ""))) ? "" : " + " + custom_roll_dice;
+                to_hit = " + " + request["to-hit"] + custom;
+                if ((request.advantage === RollType.prototype.DOUBLE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DOUBLE))) {
+                    roll_1 = new Roll("1d20" + to_hit).roll();
+                    roll_2 = new Roll("1d20" + to_hit).roll();
+                    to_hit_roll = ρσ_list_decorate([ roll_1, roll_2 ]);
+                    is_critical = isCriticalHitD20(to_hit_roll, critical_limit);
+                } else {
+                    if ((request.advantage === RollType.prototype.NORMAL || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.NORMAL))) {
+                        dice = "1d20";
+                    } else if ((request.advantage === RollType.prototype.ADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.ADVANTAGE))) {
+                        dice = "2d20kh";
+                    } else if ((request.advantage === RollType.prototype.DISADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DISADVANTAGE))) {
+                        dice = "2d20kl";
+                    } else {
+                        dice = "1d20";
+                    }
+                    to_hit_roll = new Roll(dice + to_hit).roll();
+                    is_critical = isCriticalHitD20(ρσ_list_decorate([ to_hit_roll ]), critical_limit);
+                }
+                rolls.append(["To Hit", to_hit_roll]);
+            }
+            if (ρσ_exists.n(request.damages)) {
+                damages = list(request.damages);
+                damage_types = list(request["damage-types"]);
+                total_damage = "";
+                for (var ρσ_Index8 = 0; ρσ_Index8 < damages.length; ρσ_Index8++) {
+                    i = ρσ_Index8;
+                    roll = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
+                    total_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
+                    dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
+                    suffix = (!ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) ? " Damage" : "";
+                    rolls.append([dmg_type + suffix, roll]);
+                }
+            }
+            if (is_critical && ρσ_exists.n(request["critical-damages"])) {
+                damages = list(request["critical-damages"]);
+                damage_types = list(request["critical-damage-types"]);
+                total_critical_damage = "";
+                for (var ρσ_Index9 = 0; ρσ_Index9 < damages.length; ρσ_Index9++) {
+                    i = ρσ_Index9;
+                    roll = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
+                    total_critical_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
+                    dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
+                    suffix = (!ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) ? " Critical Damage" : "";
+                    rolls.append([dmg_type + suffix, roll]);
+                }
+            }
+            if ((typeof total_damage !== "undefined" && total_damage !== null) && ρσ_in("+", total_damage)) {
+                rolls.append([null, "------"]);
+                rolls.append(["Total Damage", new Roll(total_damage).roll()]);
+                if ((typeof total_critical_damage !== "undefined" && total_critical_damage !== null)) {
+                    rolls.append(["Total Critical Damage", new Roll(total_critical_damage).roll()]);
+                }
+            }
+            return rolls;
+        };
+        if (!buildAttackRolls.__argnames__) Object.defineProperties(buildAttackRolls, {
+            __argnames__ : {value: ["request", "custom_roll_dice"]}
+        });
+
         function rollAttack() {
             var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var custom_roll_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollAttack.__defaults__.custom_roll_dice : arguments[1];
@@ -7078,21 +7286,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var rolls, custom, damages, damage_types, i, data;
-            rolls = ρσ_list_decorate([]);
-            if (ρσ_exists.n(request["to-hit"])) {
-                custom = ((custom_roll_dice === "" || typeof custom_roll_dice === "object" && ρσ_equals(custom_roll_dice, ""))) ? "" : " + " + custom_roll_dice;
-                rolls.append(["To Hit", new Roll("1d20 + " + request["to-hit"] + custom).roll()]);
-            }
-            if (ρσ_exists.n(request.damages)) {
-                damages = list(request.damages);
-                damage_types = list(request["damage-types"]);
-                for (var ρσ_Index3 = 0; ρσ_Index3 < damages.length; ρσ_Index3++) {
-                    i = ρσ_Index3;
-                    rolls.append([damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i] + " Damage", 
-                    new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll()]);
-                }
-            }
+            var rolls, data;
+            rolls = buildAttackRolls(request, custom_roll_dice);
             data = {};
             if (ρσ_exists.n(request.range)) {
                 data["Range"] = request.range;
@@ -7146,27 +7341,11 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollSpellAttack(request, custom_roll_dice) {
-            var spell_card, rolls, custom, dmg_type, i, attributes, components, prefix;
+            var spell_card, rolls, components, prefix;
             spell_card = buildSpellCard(request);
             rolls = ρσ_list_decorate([]);
-            if (ρσ_exists.n(request["to-hit"])) {
-                custom = ((custom_roll_dice === "" || typeof custom_roll_dice === "object" && ρσ_equals(custom_roll_dice, ""))) ? "" : " + " + custom_roll_dice;
-                rolls.append(["To Hit", new Roll("1d20 + " + request["to-hit"] + custom).roll()]);
-            }
-            if (ρσ_exists.n(request.damages)) {
-                for (var ρσ_Index4 = 0; ρσ_Index4 < request.damages.length; ρσ_Index4++) {
-                    i = ρσ_Index4;
-                    dmg_type = (ρσ_expr_temp = request["damage-types"])[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i];
-                    rolls.append([dmg_type + (((dmg_type !== "Healing" && (typeof dmg_type !== "object" || ρσ_not_equals(dmg_type, "Healing")))) ? " Damage" : ""), 
-                    new Roll((ρσ_expr_temp = request.damages)[(typeof i === "number" && i < 0) ? ρσ_expr_temp.length + i : i]).roll()]);
-                }
-            }
-            attributes = {};
             if (ρσ_exists.n(request.range)) {
-                attributes["Range"] = request.range;
-            }
-            if (ρσ_exists.n(request["save-dc"])) {
-                rolls.append(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
+                rolls.append(["Range", request.range]);
             }
             if (ρσ_exists.n(request["cast-at"])) {
                 rolls.append(["Cast at", request["cast-at"] + " Level"]);
@@ -7191,6 +7370,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }
                 }
             }
+            if (ρσ_exists.n(request["save-dc"])) {
+                rolls.append(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
+            }
+            rolls.extend(buildAttackRolls(request, custom_roll_dice));
             postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls);
         };
         if (!rollSpellAttack.__argnames__) Object.defineProperties(rollSpellAttack, {
@@ -7227,7 +7410,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             } else {
                 mod = (ρσ_exists.n(request.modifier)) ? request.modifier : request.roll;
                 rname = (ρσ_exists.n(request.name)) ? request.name : request.type;
-                rolldice(request, rname + "(" + mod + ")", mod, {});
+                rollDice(request, rname + "(" + mod + ")", mod, {});
             }
         };
         if (!handleRoll.__argnames__) Object.defineProperties(handleRoll, {
@@ -7255,9 +7438,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 });
                 return ρσ_anonfunc;
             })());
-            var ρσ_Iter5 = ρσ_Iterable(tokens);
-            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                token = ρσ_Iter5[ρσ_Index5];
+            var ρσ_Iter10 = ρσ_Iterable(tokens);
+            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                token = ρσ_Iter10[ρσ_Index10];
                 if (token.actor && token.data.actorLink) {
                     total = (total) ? total : token.actor.data.attributes.hp.max;
                     token.actor.update((function(){
@@ -7302,9 +7485,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter6 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                event = ρσ_Iter6[ρσ_Index6];
+            var ρσ_Iter11 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                event = ρσ_Iter11[ρσ_Index11];
                 document.removeEventListener.apply(document, event);
             }
         };

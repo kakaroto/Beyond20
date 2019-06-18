@@ -38,22 +38,28 @@ BUTTON_STYLE_CSS = """
 """
 
 TOOLTIP_CSS = """
+.beyond20-roll-result {
+   position: relative;
+}
+
 .tooltip .tooltiptext {
-  visibility: hidden;
-  background-color: black;
-  color: #fff;
-  text-align: center;
+  display: none;
+  background-color: #f5f2ec;
+  text-align: left;
   border-radius: 6px;
   padding: 5px 10px;
   margin: 10px;
+  width: 80%;
+  top: -120px;
+  border: 2px solid black;
 
   /* Position the tooltip */
-  position: relative;
+  position: absolute;
   z-index: 1;
 }
 
 .tooltip:hover .tooltiptext {
-  visibility: visible;
+  display: block;
 }
 
 .beyond20-roll-result details {

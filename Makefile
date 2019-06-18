@@ -3,7 +3,7 @@ PYJ_GLOBALS='$$,chrome,Marka'
 %.js: %.pyj
 	rapydscript lint --globals $(PYJ_GLOBALS) $(PYJ_FLAGS) $<
 	rapydscript $(PYJ_FLAGS) $< --output $@
-	sed -e ':a;N;$$!ba;s/async;\n/async/' -i $@
+	sed -e ':a;N;$$!ba;s/async;\n/async/g' -i $@
 
 
 JS_FILES=src/background.js src/roll20.js src/roll20_script.js \

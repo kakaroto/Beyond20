@@ -501,13 +501,13 @@ def injectRollButton(paneClass):
     elif paneClass == "ct-creature-pane":
         if isRollButtonAdded() or isCustomRollIconsAdded():
             return
-        character = Monster("Creature")
-        character.parseStatBlock(add_dice=settings['handle-stat-blocks'], inject_descriptions=settings['subst-dndbeyond-stat-blocks'])
+        character = Monster("Creature", global_settings=settings)
+        character.parseStatBlock()
     elif paneClass == "ct-vehicle-pane":
         if isRollButtonAdded() or isCustomRollIconsAdded():
             return
-        character = Monster("Vehicle", ".ct-vehicle-block")
-        character.parseStatBlock(add_dice=settings['handle-stat-blocks'], inject_descriptions=settings['subst-dndbeyond-stat-blocks'])
+        character = Monster("Vehicle", ".ct-vehicle-block", global_settings=settings)
+        character.parseStatBlock()
     else:
         removeRollButtons()
 

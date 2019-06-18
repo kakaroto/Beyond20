@@ -11,52 +11,104 @@ def getSpeakerByName(name):
     speaker["alias"] = name
     return speaker
 
-def postChatMessage(message, character=None, whisper=False):
-    data = {"content": message, 
-            "user": game.user._id,
-            "speaker": getSpeakerByName(character)}
-    if whisper:
-        data["whisper"] = ChatMessage.getWhisperIDs("GM")
-    return ChatMessage.create(data)
-
 def whisperToRollMode(whisper):
     try:
         return {WhisperType.NO: "roll",
                 WhisperType.YES: "gmroll",
+                WhisperType.QUERY: game.settings.get("core", "rollMode")
                 }[whisper]
     except:
         return game.settings.get("core", "rollMode")
+
+def postChatMessage(message, character, whisper):
+    data = {"content": message, 
+            "user": game.user._id,
+            "speaker": getSpeakerByName(character)}
+    rollMode = whisperToRollMode(whisper)
+    if rollMode in ["gmroll", "blindroll"]:
+        data["whisper"] = ChatMessage.getWhisperIDs("GM")
+        if rollMode == "blindroll":
+            data["blind"] = True
+    return ChatMessage.create(data)
+
+def postRoll(roll, character, title, whisper):
+    rollMode = whisperToRollMode(whisper)
+    roll.toMessage({"speaker": getSpeakerByName(character),
+                    "flavor": title,
+                    "rollMode": rollMode})
+    return roll
+
+def checkRollForCrits(roll, cb):
+    for die in roll.dice:
+        for r in die.rolls:
+            if not (r.discarded ? False):
+                if cb(die.faces, r.roll):
+                    return True
+    return False
+
+def isCriticalHit(roll):
+    return checkRollForCrits(roll, def(faces, value): return value == faces;)
+
+def isCriticalFail(roll):
+    return checkRollForCrits(roll, def(faces, value): return value == 1;)
+
+def isCriticalHitD20(rolls, limit=20):
+    for roll in rolls:
+        if checkRollForCrits(roll, def(faces, value): return faces == 20 and value >= limit;):
+            return True
+    return False
+
+v'async'
+def rollToDetails(roll):
+    hit = isCriticalHit(roll)
+    fail = isCriticalFail(roll)
+    color = 'blue' if hit and fail else ('green' if hit else ('red' if fail else 'black'))
+    tooltip = v'await roll.getTooltip()'
+    #return "<details style='display: inline; color: " + color + ";'><summary>" + roll.total + "</summary>" + \
+    #    tooltip + "</details>"
+    return "<span class='tooltip' style='color: " + color + ";'>" + roll.total + "<span class='dice-roll tooltiptext'>" + \
+        "<div class='dice-formula'>" + roll.formula + "</div>" + tooltip.replace('class="dice-tooltip"', 'class="dice-tooltip" style="display:block;"') + "</span></span>"
 
 v'async'
 def postDescription(request, title, source, attributes, description, rolls=[], open=False):
     style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;"
 
-    html = "<details" + (" open" if open else "") + "><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>"
-    if source or attributes.length > 0:
-        html += "<table style='" + style + "'>"
-        if source:
-            html += "<tr><td colspan'2'><i>" + source + "</i></td></tr>"
-        for attr in attributes:
-            html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[attr] + "</td></tr>"
-        html += "</table>"
-    html += "<div style='" + style + "'>" + description.replace("\n", "</br>") + "</div></details>"
-    # TODO: handle 2d20kh1 where r.dice.rolls is more than 1 dice.
-    # TODO: Support critical
+    if description:
+        html = "<details" + (" open" if open else "") + "><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>"
+        if source or attributes.length > 0:
+            html += "<table style='" + style + "'>"
+            if source:
+                html += "<tr><td colspan'2'><i>" + source + "</i></td></tr>"
+            for attr in attributes:
+                html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[attr] + "</td></tr>"
+            html += "</table>"
+        html += "<div style='" + style + "'>" + description.replace("\n", "</br>") + "</div></details>"
+    else:
+        html = "<div style='" + style + "'>" + title + "</div>"
+
+    console.log("Rolls : ", rolls)
     for (roll_name, roll) in rolls:
-        roll_name = roll_name[0].toUpperCase() + roll_name[1:]
-        if jstype(roll) == 'string':
+        if roll_name:
+            roll_name = roll_name[0].toUpperCase() + roll_name[1:] + ": "
+        else:
+            roll_name = ""
+        if isinstance(roll, str):
             roll_html = "<span>" + roll + "</span>"
         else:
-            tooltip = v'await roll.getTooltip()'
-            roll_html = "<details style='display: inline;'><summary>" + roll.total + "</summary>" + \
-                tooltip + "</details>"
-            #"<span>" + roll.formula + " = " +  roll.result + "</span></details>"
-        html += "<div class='beyond20-roll-result'><b>" + roll_name + ": </b>" + roll_html + "</div>"
+            if isinstance(roll, list):
+                roll_list = roll
+                roll_html = ""
+                for i, roll in enumerate(roll_list):
+                    if i > 0:
+                        roll_html += " | "
+                    roll_html += v'await rollToDetails(roll)'
+            else:
+                roll_html = v'await rollToDetails(roll)'
+        html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>"
 
-    return postChatMessage(html, request.character.name, request.whisper == WhisperType.YES)
+    return postChatMessage(html, request.character.name, request.whisper)
 
-def rolldice(request, title, dice, data):
-    rollMode = whisperToRollMode(request.whisper ? WhisperType.NO)
+def createRoll(dice, data):
     new_data = {}
     parts = [dice]
     for key in data:
@@ -64,14 +116,13 @@ def rolldice(request, title, dice, data):
             new_key = key.replace("_", "").toLowerCase()
             new_data[new_key] = data[key]
             parts.append(new_key)
-    roll = new Roll(parts.join(" + @"), new_data)
+    return new Roll(parts.join(" + @"), new_data)
 
-    roll.toMessage({"speaker": getSpeakerByName(request.character.name),
-                    "flavor": title,
-                    "rollMode": rollMode})
-    return roll
+def rollDice(request, title, dice, data):
+    roll = createRoll(dice, data)
+    return postRoll(roll, request.character.name, title, request.whisper)
 
-def rolld20(request, title, data):
+def rollD20(request, title, data):
     if request.advantage == RollType.NORMAL:
         dice = "1d20"
     elif request.advantage == RollType.ADVANTAGE:
@@ -80,48 +131,52 @@ def rolld20(request, title, data):
         dice = "2d20kl"
     elif request.advantage == RollType.DOUBLE:
         dice = "1d20"
-        roll = rolldice(request, title, dice, data)
-        rolldice(request, title, dice, data)
-        return roll
+        roll_1 = createRoll(dice, data).roll()
+        roll_2 = createRoll(dice, data).roll()
+        console.log("Rolls :", roll_1, roll_2)
+        postDescription(request, title, None, {}, None, rolls=[(None, [roll_1, roll_2])])
+        return roll_1
     else:
         dice = "1d20" # TODO: query dialog
 
-    return rolldice(request, title, dice, data)
+    return rollDice(request, title, dice, data)
     
 def rollSkill(request, custom_roll_dice=""):
     data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
     # TODO: if modifier == "--": Query ability.
-    rolld20(request, request.skill, data)
+    rollD20(request, request.skill + "(" + request.modifier + ")", data)
 
 def rollAbility(request, custom_roll_dice=""): 
     data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
-    if request["JoaT"]?:
-        data["jack_of_all_trades"] = request["JoaT"]
-    rolld20(request, request.name, data)
+    rollD20(request, request.name + "(" + request.modifier + ")", data)
 
 def rollSavingThrow(request, custom_roll_dice=""):
     data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
-    rolld20(request, request.name + " Save", data)
+    rollD20(request, request.name + " Save" + "(" + request.modifier + ")", data)
   
 def rollInitiative(request, custom_roll_dice=""):
     nonlocal settings
 
     data = {"initiative": request.initiative, "custom_dice": custom_roll_dice}
-    roll = rolld20(request, "Initiative", data)
+    roll = rollD20(request, "Initiative" + "(" + request.initiative + ")", data)
 
-    if settings["initiative-tracker"] and canvas.tokens.controlledTokens.length > 0:
-        token = canvas.tokens.controlledTokens[0]
-        if game.combat?:
-            game.combat.createCombatant({"tokenId": token.id, "hidden": token.data.hidden, "initiative": roll.total})
+    if settings["initiative-tracker"]:
+        if canvas.tokens.controlledTokens.length > 0:
+            if game.combat?:
+                for token in canvas.tokens.controlledTokens:
+                    game.combat.createCombatant({"tokenId": token.id, "hidden": token.data.hidden, "initiative": roll.total})
+            else:
+                ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet")
         else:
-            ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet")
+                ui.notifications.warn("Cannot add initiative to tracker: no token is currently selected")
+
 
 def rollHitDice(request):
     rname = "Hit Dice" + (("(" + request.class + ")") if  request.multiclass else "")
-    rolldice(request, rname, request["hit-dice"], {})
+    rollDice(request, rname, request["hit-dice"], {})
 
 def rollDeathSave(request, custom_roll_dice=""):
-    rolld20(request, "Death Saving Throw", {"custom_dice": custom_roll_dice})
+    rollD20(request, "Death Saving Throw", {"custom_dice": custom_roll_dice})
 
 def rollTrait(request):
     if request["source-type"]?:
@@ -136,21 +191,75 @@ def rollTrait(request):
     # TODO: Sub description
     postDescription(request, request.name, source, {}, request.description, open=True)
 
+def buildAttackRolls(request, custom_roll_dice):
+    rolls = []
+    is_critical = False
+    if request["to-hit"]?:
+        critical_limit = 20
+        if request["attack-source"] == "item":
+            if request.character.type == "Character" and \
+                    "Improved Critical" in request.character["class-features"]:
+                critical_limit = 19
+            if request.character.type == "Character" and \
+                    "Superior Critical" in request.character["class-features"]:
+                critical_limit = 18
+
+        custom = "" if custom_roll_dice == "" else (" + " + custom_roll_dice)
+        to_hit = " + " + request["to-hit"] + custom
+
+        if request.advantage == RollType.DOUBLE:
+            roll_1 = new Roll("1d20" + to_hit).roll()
+            roll_2 = new Roll("1d20" + to_hit).roll()
+            to_hit_roll = [roll_1, roll_2]
+            is_critical = isCriticalHitD20(to_hit_roll, critical_limit)
+        else:
+            if request.advantage == RollType.NORMAL:
+                dice = "1d20"
+            elif request.advantage == RollType.ADVANTAGE:
+                dice = "2d20kh"
+            elif request.advantage == RollType.DISADVANTAGE:
+                dice = "2d20kl"
+            else:
+                dice = "1d20" # TODO : Support dialog
+            to_hit_roll = new Roll(dice + to_hit).roll()
+            is_critical = isCriticalHitD20([to_hit_roll], critical_limit)
+        rolls.append(("To Hit", to_hit_roll))
+
+    if request.damages?:
+        damages = list(request.damages)
+        damage_types = list(request["damage-types"])
+        total_damage = ""
+        for i in range(damages.length):
+            roll = new Roll(damages[i]).roll()
+            total_damage += ("" if i == 0 else " + ") + str(roll.total)
+            dmg_type = damage_types[i]
+            suffix = " Damage" if dmg_type not in ["Healing", "Disciple of Life"] else ""
+            rolls.append((dmg_type + suffix, roll))
+
+    if is_critical and request["critical-damages"]?:
+        damages = list(request["critical-damages"])
+        damage_types = list(request["critical-damage-types"])
+        total_critical_damage = ""
+        for i in range(damages.length):
+            roll = new Roll(damages[i]).roll()
+            total_critical_damage += ("" if i == 0 else " + ") + str(roll.total)
+            dmg_type = damage_types[i]
+            suffix = " Critical Damage" if dmg_type not in ["Healing", "Disciple of Life"] else ""
+            rolls.append((dmg_type + suffix, roll))
+
+    if total_damage? and "+" in total_damage:
+        rolls.append((None, "------"))
+        rolls.append(("Total Damage", new Roll(total_damage).roll()))
+        if total_critical_damage?:
+            rolls.append(("Total Critical Damage", new Roll(total_critical_damage).roll()))
+
+    return rolls
 
 def rollAttack(request, custom_roll_dice=""):
     nonlocal settings
 
-    rolls = []
-    if request["to-hit"]?:
-        # TODO: if advantage
-        # TODO: super critical
-        custom = "" if custom_roll_dice == "" else (" + " + custom_roll_dice)
-        rolls.append(("To Hit", new Roll("1d20 + " + request["to-hit"] + custom).roll()))
-    if request.damages?:
-        damages = list(request.damages)
-        damage_types = list(request["damage-types"])
-        for i in range(damages.length):
-            rolls.append((damage_types[i] + " Damage", new Roll(damages[i]).roll()))
+    rolls = buildAttackRolls(request, custom_roll_dice)
+
     data = {}
     if request.range?:
         data["Range"] = request.range
@@ -192,20 +301,8 @@ def rollSpellAttack(request, custom_roll_dice):
     spell_card = buildSpellCard(request)
 
     rolls = []
-    if request["to-hit"]?:
-        custom = "" if custom_roll_dice == "" else (" + " + custom_roll_dice)
-        rolls.append(("To Hit", new Roll("1d20 + " + request["to-hit"] + custom).roll()))
-    if request.damages?:
-        # TODO: Handle Chromatic Orb
-        for i in range(request.damages.length):
-            dmg_type = request["damage-types"][i]
-            rolls.append((dmg_type + (" Damage" if dmg_type != "Healing" else ""), new Roll(request.damages[i]).roll()))
-    attributes = {}
     if request.range?:
-        attributes["Range"] = request.range
-
-    if request["save-dc"]?:
-        rolls.append(("Save", request["save-ability"] + " DC " + request["save-dc"]))
+        rolls.append(("Range", request.range))
 
     if request["cast-at"]?:
         rolls.append(("Cast at", request["cast-at"] + " Level"))
@@ -223,6 +320,11 @@ def rollSpellAttack(request, custom_roll_dice):
             if components[0] == "M":
                 rolls.append((prefix or "Materials", settings["component-prefix"] + components[2:-1]))
                 components = ""
+
+    if request["save-dc"]?:
+        rolls.append(("Save", request["save-ability"] + " DC " + request["save-dc"]))
+
+    rolls.extend(buildAttackRolls(request, custom_roll_dice))
 
     # TODO: Support don't auto-roll dmg
     postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls)
@@ -260,7 +362,7 @@ def handleRoll(request):
         mod = request.modifier if request.modifier? else request.roll
         rname = request.name if request.name? else request.type
 
-        rolldice(request, rname + "(" + mod + ")", mod, {})
+        rollDice(request, rname + "(" + mod + ")", mod, {})
 
 def updateHP(name, current, total=None):
     console.log("Updating HP for " + name + " : " + current + "/" + total)

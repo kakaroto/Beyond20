@@ -9659,14 +9659,14 @@ return this.__repr__();
                 if (isRollButtonAdded() || isCustomRollIconsAdded()) {
                     return;
                 }
-                character = new Monster("Creature");
-                ρσ_interpolate_kwargs.call(character, character.parseStatBlock, [ρσ_desugar_kwargs({add_dice: settings["handle-stat-blocks"], inject_descriptions: settings["subst-dndbeyond-stat-blocks"]})]);
+                character = ρσ_interpolate_kwargs_constructor.call(Object.create(Monster.prototype), false, Monster, ["Creature"].concat([ρσ_desugar_kwargs({global_settings: settings})]));
+                character.parseStatBlock();
             } else if ((paneClass === "ct-vehicle-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-vehicle-pane"))) {
                 if (isRollButtonAdded() || isCustomRollIconsAdded()) {
                     return;
                 }
-                character = new Monster("Vehicle", ".ct-vehicle-block");
-                ρσ_interpolate_kwargs.call(character, character.parseStatBlock, [ρσ_desugar_kwargs({add_dice: settings["handle-stat-blocks"], inject_descriptions: settings["subst-dndbeyond-stat-blocks"]})]);
+                character = ρσ_interpolate_kwargs_constructor.call(Object.create(Monster.prototype), false, Monster, ["Vehicle", ".ct-vehicle-block"].concat([ρσ_desugar_kwargs({global_settings: settings})]));
+                character.parseStatBlock();
             } else {
                 removeRollButtons();
             }
