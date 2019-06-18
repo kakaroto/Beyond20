@@ -1,0 +1,30 @@
+/* This is needed so the tooltip's absolute position is
+ * relative to the message's position in the chatlog
+ */
+.beyond20-roll-result {
+   position: relative;
+}
+
+.beyond20-tooltip .beyond20-tooltip-content {
+  display: none;
+  background-color: #f5f2ec;
+  text-align: left;
+  border-radius: 6px;
+  padding: 5px 10px;
+  margin: 10px;
+  width: 80%;
+  top: -120px; /* Until I figure out how to make it move above the mouse */
+  border: 2px solid black;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.beyond20-tooltip:hover .beyond20-tooltip-content {
+  display: block;
+}
+
+.beyond20-tooltip-content .dice-tooltip {
+    display: block;
+}
