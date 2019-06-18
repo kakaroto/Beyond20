@@ -7950,16 +7950,21 @@ return this.__repr__();
                     console.log("Found action: ", action);
                     firstChild = action.firstElementChild;
                     if (firstChild && (firstChild.tagName === "EM" || typeof firstChild.tagName === "object" && ρσ_equals(firstChild.tagName, "EM"))) {
-                        action_name = firstChild.textContent.slice(0, -1);
+                        action_name = $(firstChild).find("strong").text().trim();
+                    } else if (firstChild && (firstChild.tagName === "STRONG" || typeof firstChild.tagName === "object" && ρσ_equals(firstChild.tagName, "STRONG"))) {
+                        action_name = $(firstChild).find("em").text().trim();
                     } else {
                         if (inject_descriptions) {
                             injectDiceToRolls(action, self, self._name);
                         }
                         continue;
                     }
+                    if ((action_name[action_name.length-1] === "." || typeof action_name[action_name.length-1] === "object" && ρσ_equals(action_name[action_name.length-1], "."))) {
+                        action_name = action_name.slice(0, -1);
+                    }
                     if (add_dice && (section_name === "Actions" || typeof section_name === "object" && ρσ_equals(section_name, "Actions"))) {
                         description = "";
-                        nextSibling = firstChild.nextSibling;
+                        nextSibling = firstChild;
                         while (nextSibling !== null) {
                             description += nextSibling.textContent;
                             nextSibling = nextSibling.nextSibling;
