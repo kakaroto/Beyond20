@@ -21,6 +21,10 @@ Some issues are already known and being worked on. This list might not always be
 
 {% include_relative known_issues.md %}
 
+## Release Notes
+
+Click here to see the full [release notes](release_notes) for the extension.
+
 ## Changelog
 
 Click here to see the full [changelog](Changelog) for the extension.

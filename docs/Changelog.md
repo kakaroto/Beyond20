@@ -1,3 +1,18 @@
+v0.3
+===
+
+- **Feature**: Support for sending the rolls to [Foundry Virtual TableTop](http://foundryvtt.com) (FVTT) as an alternative to Roll20
+- **Feature**: The Whisper rolls Yes/No option has now become a Yes/No/Query where it can now prompt the user on every roll
+- **Feature**: The Roll Advantage Yes/No Option has now become a Normal/Double/Query/Advantage/Disadvantage option
+- **Feature**: Add support for Melee/Ranged Spell attack actions for monster stat blocks.
+- **Feature**: Parse "+ your <class> level" or "+ your <ability> bonus" to the dice formula parsing algorithm.
+- **Feature**: Support the new "My Encounters" website format since the recent D&D Beyond update.
+- **Bugfix**: *Roll20*: Fix HP syncing when it didn't always update the HP in the character sheet itself.
+- **Bugfix**: Make attack buttons in monster stat blocks styled correctly after D&D Beyond removed the CSS for it
+- **Bugfix**: Fix action descriptions having extra spaces in a monster stat block
+- **Bugfix**: Fix damage for actions (like Unarmed attacks) when a custom dice is set.
+- **Bugfix**: More relaxed monster action parsing algorithm to work better with homebrewed monsters.
+
 v0.2
 ===
 

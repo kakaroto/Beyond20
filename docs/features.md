@@ -1,3 +1,7 @@
+# Virtual Tabletops supported
+* [Roll 20](https://roll20.net)
+* [Foundry VTT](http://foundryvtt.com)
+
 # Feature list
 
 See the [Screenshots](screenshots) page for a video tour of all the features listed here.
@@ -6,7 +10,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Ability checks
 * Saving throws
 * Skill checks
-  * Custom skills (if no ability is specified, a macro will ask the player in Roll2)
+  * Custom skills (if no ability is specified, a macro will ask the player in the VTT)
 * Initiative rolls
   * Rolls with Advantage if the character has the feat
   * Adds the initiative to the tracker
@@ -28,8 +32,8 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * The attack spell modifiers can be clicked to roll the dice if needed
 * Dice formulas in descriptions can be clicked to roll the dice
   * Dice formulas are detected in items, spells, actions or custom actions, class features, racial traits or Feats
-  * The dice formula is clickable in the D&D beyond side panel, as well as in the Roll20 chat text
-  * The clickable dice can be disabled to not show in the D&D Beyond page or in the Roll20 text, separately
+  * The dice formula is clickable in the D&D beyond side panel, as well as in the VTT chat text
+  * The clickable dice can be disabled to not show in the D&D Beyond page or in the VTT text, separately
 * Creatures stat blocks
 * Vehicles stat blocks
 
@@ -50,7 +54,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Display button to display the spell card
 
 ## Information sharing
-* Spell cards can be displayed in Roll20
+* Spell cards can be displayed in VTT
   * Higher level casts will be detected and shown
 * Attack spells can also be displayed instead of rolled
 * Attack spells with material components will have the material printed
@@ -77,16 +81,16 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Chromatic Orb: Macro to ask which damage type to use
 
 ## Configurable options
-* Whisper rolls
+* Whisper rolls (yes, no, query the user)
 * Whisper rolls for monster pages
-* Roll twice for advantage/disadvantage
+* Roll types (normal, roll twice, query the user, roll with advantage, roll with disadvantage)
 * Auto roll damage and crit
 * Add initiative to the tracker (requires token to be selected)
-* Automatically update HP in the Roll20 sheets and tokens
+* Automatically update HP in the VTT sheets and tokens
 * Roll20 Character Sheet Template to use
   * D&D 5E By Roll20
   * Other Templates
-* Replace dice formulas in Roll20 text
+* Replace dice formulas in VTT text
 * Add dice formulas roller icon to D&D Beyond spell page and character sheet
 * Add dice formulas roller icon to D&D Beyond stat blocks
 * Add roll buttons to monster, creature and vehicle stat blocks
@@ -96,10 +100,10 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
   * Only material components if needed
   * No components
 * Prefix to display with spell components during an attack
-* Roll20 tab specific options
+* VTT tab specific options
   * Select a tab to send all rolls to
-  * Select the campaign to send the rolls to
-  * Send rolls to all Roll20 tabs
+  * Select the campaign (Roll2) or world (FVTT) to send the rolls to
+  * Send rolls to All tabs, Only Roll20 Tabs, Only FVTT Tabs
 * D&D Beyond character specific options
   * Custom roll dice formula bonus
   * Custom damage dice formula bonus
@@ -120,7 +124,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 ## Misc
 * Chrome support
 * Firefox support
-* Friendly developer
+* Friendly developer :)
 
 # TODO
 

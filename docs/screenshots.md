@@ -10,6 +10,9 @@ If you don't even have 2 minutes to spend watching that, then here are some scre
 [![s1](images/screenshots/feature-equipment-attack.png)](images/screenshots/feature-equipment-attack.png)
 ![up](images/up-arrow.png){:height="16px"} This shows the "Beyond20" roll button and "Display in Roll20" button that get added to the side panels, as well as the Roll20 chat showing a class Feature display, an equipment item, a roll from clicking on the dice in the potion's description, and finally an attack of a multi-damage weapon.
 
+[![s1](images/screenshots/fvtt-firefox.png)](images/screenshots/fvtt-firefox.png)
+![up](images/up-arrow.png){:height="16px"} This shows Beyond20 (v0.3) running on Firefox and sending rolls to Foundry VTT. Notice the roll details showing as a tooltip on mouse hover, spell cards and weapon descriptions are expandable/collapsable in attacks as well.
+
 [![s2](images/screenshots/spell-cast.png)](images/screenshots/spell-cast.png)
 ![up](images/up-arrow.png){:height="16px"} This shows how a spell card is displayed in Roll20 as well as an attack spell beingcast :
 
