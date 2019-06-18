@@ -14,7 +14,7 @@ Here's what people have to say about Beyond20 (You can also check out reviews on
 
 {% include_relative donations.html %}
 
-All user notes when making a donation are included as anonymous testimonials. If you don't want your note included here or you are ok with your name not being anonymized, let me know when making your donation (or [after](mailto:kakaroto@kakaroto.homelinux.net)).
+All user notes when making a donation are included as anonymous testimonials. If you don't want your note included here or you are ok with your name not being anonymized, let me know when making your donation.
 
 If you want to help me feed my familiar, you can donate with [Paypal](https://paypal.me/KaKaRoTo) or a [credit card]({% include_relative donate_link.txt %}) or become a [Patreon supporter](https://patreon.com/kakaroto)
 
