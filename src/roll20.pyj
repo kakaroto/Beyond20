@@ -92,12 +92,14 @@ def damagesToRollProperties(damages, damage_types, crits, crit_types):
 
     properties["dmg1"] = subDamageRolls(damages[0])
     properties["dmg1type"] = damage_types[0]
-    properties["crit1"] = settings["crit-prefix"] + subDamageRolls(crits[0])
+    if crits? and len(crits) > 0:
+        properties["crit1"] = settings["crit-prefix"] + subDamageRolls(crits[0])
     if len(damages) > 1:
         properties["dmg2flag"] = 1
         properties["dmg2"] = subDamageRolls(str.join(" | ", list(damages[1:])))
         properties["dmg2type"] = str.join(" | ", damage_types[1:])
-        properties["crit2"] = settings["crit-prefix"] + subDamageRolls(str.join(" | ", crits[1:]))
+        if crits? and len(crits) > 1:
+            properties["crit2"] = settings["crit-prefix"] + subDamageRolls(str.join(" | ", crits[1:]))
 
     return properties
 

@@ -6926,12 +6926,16 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             properties["dmg1"] = subDamageRolls(damages[0]);
             properties["dmg1type"] = damage_types[0];
-            properties["crit1"] = settings["crit-prefix"] + subDamageRolls(crits[0]);
+            if ((typeof crits !== "undefined" && crits !== null) && len(crits) > 0) {
+                properties["crit1"] = settings["crit-prefix"] + subDamageRolls(crits[0]);
+            }
             if (len(damages) > 1) {
                 properties["dmg2flag"] = 1;
                 properties["dmg2"] = subDamageRolls(str.join(" | ", list(damages.slice(1))));
                 properties["dmg2type"] = str.join(" | ", damage_types.slice(1));
-                properties["crit2"] = settings["crit-prefix"] + subDamageRolls(str.join(" | ", crits.slice(1)));
+                if ((typeof crits !== "undefined" && crits !== null) && len(crits) > 1) {
+                    properties["crit2"] = settings["crit-prefix"] + subDamageRolls(str.join(" | ", crits.slice(1)));
+                }
             }
             return properties;
         };

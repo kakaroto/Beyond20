@@ -8193,39 +8193,41 @@ return this.__repr__();
             if (len(damages) > 0) {
                 roll_properties["damages"] = damages.as_array();
                 roll_properties["damage-types"] = damage_types.as_array();
-                crits = damagesToCrits(damages, damage_types);
-                crit_damages = ρσ_list_decorate([]);
-                crit_damage_types = ρσ_list_decorate([]);
-                var ρσ_Iter22 = ρσ_Iterable(enumerate(crits));
-                for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
-                    ρσ_unpack = ρσ_Iter22[ρσ_Index22];
-                    i = ρσ_unpack[0];
-                    dmg = ρσ_unpack[1];
-                    if ((dmg !== "" && (typeof dmg !== "object" || ρσ_not_equals(dmg, "")))) {
-                        crit_damages.append(dmg);
-                        crit_damage_types.append(damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i]);
-                    }
-                }
-                if (brutal > 0) {
-                    highest_dice = 0;
-                    var ρσ_Iter23 = ρσ_Iterable(crit_damages);
-                    for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
-                        dmg = ρσ_Iter23[ρσ_Index23];
-                        match = re.search("[0-9]*d([0-9]+)", dmg);
-                        if ((typeof match !== "undefined" && match !== null)) {
-                            sides = int(match.group(1));
-                            if (sides > highest_dice) {
-                                highest_dice = sides;
-                            }
+                if (to_hit) {
+                    crits = damagesToCrits(damages, damage_types);
+                    crit_damages = ρσ_list_decorate([]);
+                    crit_damage_types = ρσ_list_decorate([]);
+                    var ρσ_Iter22 = ρσ_Iterable(enumerate(crits));
+                    for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
+                        ρσ_unpack = ρσ_Iter22[ρσ_Index22];
+                        i = ρσ_unpack[0];
+                        dmg = ρσ_unpack[1];
+                        if ((dmg !== "" && (typeof dmg !== "object" || ρσ_not_equals(dmg, "")))) {
+                            crit_damages.append(dmg);
+                            crit_damage_types.append(damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i]);
                         }
                     }
-                    if ((highest_dice !== 0 && (typeof highest_dice !== "object" || ρσ_not_equals(highest_dice, 0)))) {
-                        crit_damages.append(str(brutal) + "d" + str(highest_dice));
-                        crit_damage_types.append("Brutal");
+                    if (brutal > 0) {
+                        highest_dice = 0;
+                        var ρσ_Iter23 = ρσ_Iterable(crit_damages);
+                        for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
+                            dmg = ρσ_Iter23[ρσ_Index23];
+                            match = re.search("[0-9]*d([0-9]+)", dmg);
+                            if ((typeof match !== "undefined" && match !== null)) {
+                                sides = int(match.group(1));
+                                if (sides > highest_dice) {
+                                    highest_dice = sides;
+                                }
+                            }
+                        }
+                        if ((highest_dice !== 0 && (typeof highest_dice !== "object" || ρσ_not_equals(highest_dice, 0)))) {
+                            crit_damages.append(str(brutal) + "d" + str(highest_dice));
+                            crit_damage_types.append("Brutal");
+                        }
                     }
+                    roll_properties["critical-damages"] = crit_damages.as_array();
+                    roll_properties["critical-damage-types"] = crit_damage_types.as_array();
                 }
-                roll_properties["critical-damages"] = crit_damages.as_array();
-                roll_properties["critical-damage-types"] = crit_damage_types.as_array();
             }
             return roll_properties;
         };
