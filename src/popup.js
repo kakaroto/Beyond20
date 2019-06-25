@@ -6912,13 +6912,17 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function actOnCurrentTab(tabs) {
-            var vtt, e, options;
+            var vtt, options, e;
             setCurrentTab(tabs[0]);
             if (urlMatches(tabs[0].url, ROLL20_URL) || isFVTT(tabs[0].title)) {
                 vtt = (isFVTT(tabs[0].title)) ? "Foundry VTT" : "Roll20";
-                e = options_list["vtt-tab"].createHTMLElement("vtt-tab", true);
                 options = $(".beyond20-options");
                 options.append(ρσ_interpolate_kwargs.call(E, E.li, [E.h4(" == " + vtt + " Tab Specific Options ==")].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option", style: "text-align: center; margin: 10px;"})])));
+                if ((vtt === "Roll20" || typeof vtt === "object" && ρσ_equals(vtt, "Roll20"))) {
+                    e = createHTMLOption("roll20-template", false);
+                    options.append(e);
+                }
+                e = options_list["vtt-tab"].createHTMLElement("vtt-tab", true);
                 options.append(e);
                 initializeSettings(gotSettings);
             } else if (urlMatches(tabs[0].url, DNDBEYOND_CHARACTER_URL)) {

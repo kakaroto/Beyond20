@@ -112,11 +112,14 @@ def actOnCurrentTab(tabs):
     setCurrentTab(tabs[0])
     if urlMatches(tabs[0].url, ROLL20_URL) or isFVTT(tabs[0].title):
         vtt = "Foundry VTT" if isFVTT(tabs[0].title) else "Roll20"
-        e = options_list["vtt-tab"].createHTMLElement("vtt-tab", True)
         options = $(".beyond20-options")
         options.append(E.li(class_="list-group-item beyond20-option", style="text-align: center; margin: 10px;",
                                            E.h4(" == " + vtt + " Tab Specific Options ==")
                                            ))
+        if vtt == "Roll20":
+            e = createHTMLOption("roll20-template", False)
+            options.append(e)
+        e = options_list["vtt-tab"].createHTMLElement("vtt-tab", True)
         options.append(e)
         initializeSettings(gotSettings)
     elif urlMatches(tabs[0].url, DNDBEYOND_CHARACTER_URL):
