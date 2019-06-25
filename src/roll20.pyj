@@ -105,14 +105,14 @@ def damagesToRollProperties(damages, damage_types, crits, crit_types):
 
 def advantageString(advantage, r1):
     try:
-        return {RollType.NORMAL: "{{normal=1}}",
-                RollType.DOUBLE: "{{always=1}} {{r2=" + r1 + "}}",
+        return {RollType.NORMAL: " {{normal=1}}",
+                RollType.DOUBLE: " {{always=1}} {{r2=" + r1 + "}}",
                 RollType.QUERY: ROLL20_ADVANTAGE_QUERY + r1.replace("[[1d20", "") + "}}",
-                RollType.ADVANTAGE: "{{advantage=1}} {{r2=" + r1 + "}}",
-                RollType.DISADVANTAGE: "{{disadvantage=1}} {{r2=" + r1 + "}}",
+                RollType.ADVANTAGE: " {{advantage=1}} {{r2=" + r1 + "}}",
+                RollType.DISADVANTAGE: " {{disadvantage=1}} {{r2=" + r1 + "}}",
                 }[advantage]
     except:
-        return "{{normal=1}}"
+        return " {{normal=1}}"
 
 def whisperString(whisper):
     try:
@@ -135,17 +135,21 @@ def template(request, name, properties):
         result += advantageString(request.advantage, properties["r1"])
 
     if settings["roll20-template"] == "default":
-        result.replace("&{template:" + name + "}", "&{template:default}")
+        result = result.replace("&{template:" + name + "}", "&{template:default}")
 
         renameProp = def(old_key, new_key):
-            result.replace("{{" + old_key + "=", "{{" + new_key + "=")
+            nonlocal result
+            result = result.replace("{{" + old_key + "=", "{{" + new_key + "=")
+        removeProp = def(key):
+            nonlocal result, properties
+            result = result.replace("{{" + key + "=" + (properties[key] if key in properties else "1") + "}}", "")
 
         renameProp("charname", "Character name")
         renameProp("rname", "name")
         if "{{r2=" in result:
             renameProp("r1", "Regular Roll")
             renameProp("r2", "Roll with [Dis]Advantage")
-            result.replace("&#123&#123r2=", "&#123&#123Roll with [Dis]Advantage)=")
+            result = result.replace("&#123&#123r2=", "&#123&#123Roll with [Dis]Advantage)=")
         else:
             renameProp("r1", "Dice Roll")
         renameProp("mod", "Modifier")
@@ -166,15 +170,17 @@ def template(request, name, properties):
         renameProp("castingtime", "Casting Time")
         renameProp("hldmg", "Higher level cast")
 
-        del properties["attack"]
-        del properties["damage"]
-        del properties["save"]
-        del properties["dmg1flag"]
-        del properties["dmg2flag"]
-        del properties["always"]
-        del properties["normal"]
-        del properties["advantage"]
-        del properties["disadvantage"]
+        removeProp("attack")
+        removeProp("attack")
+        removeProp("damage")
+        removeProp("save")
+        removeProp("dmg1flag")
+        removeProp("dmg2flag")
+        removeProp("always")
+        removeProp("normal")
+        removeProp("advantage")
+        removeProp("disadvantage")
+        removeProp("query")
 
     return result
 

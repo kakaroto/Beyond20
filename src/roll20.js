@@ -6947,17 +6947,17 @@ var str = ρσ_str, repr = ρσ_repr;;
             try {
                 return (ρσ_expr_temp = (function(){
                     var ρσ_d = {};
-                    ρσ_d[RollType.prototype.NORMAL] = "{{normal=1}}";
-                    ρσ_d[RollType.prototype.DOUBLE] = "{{always=1}} {{r2=" + r1 + "}}";
+                    ρσ_d[RollType.prototype.NORMAL] = " {{normal=1}}";
+                    ρσ_d[RollType.prototype.DOUBLE] = " {{always=1}} {{r2=" + r1 + "}}";
                     ρσ_d[RollType.prototype.QUERY] = ROLL20_ADVANTAGE_QUERY + r1.replace("[[1d20", "") + "}}";
-                    ρσ_d[RollType.prototype.ADVANTAGE] = "{{advantage=1}} {{r2=" + r1 + "}}";
-                    ρσ_d[RollType.prototype.DISADVANTAGE] = "{{disadvantage=1}} {{r2=" + r1 + "}}";
+                    ρσ_d[RollType.prototype.ADVANTAGE] = " {{advantage=1}} {{r2=" + r1 + "}}";
+                    ρσ_d[RollType.prototype.DISADVANTAGE] = " {{disadvantage=1}} {{r2=" + r1 + "}}";
                     return ρσ_d;
                 }).call(this))[(typeof advantage === "number" && advantage < 0) ? ρσ_expr_temp.length + advantage : advantage];
             } catch (ρσ_Exception) {
                 ρσ_last_exception = ρσ_Exception;
                 {
-                    return "{{normal=1}}";
+                    return " {{normal=1}}";
                 } 
             }
         };
@@ -6986,7 +6986,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function template(request, name, properties) {
-            var result, key, renameProp;
+            var result, key, renameProp, removeProp;
             result = whisperString(request.whisper);
             result += " &{template:" + name + "}";
             var ρσ_Iter2 = ρσ_Iterable(properties);
@@ -6998,13 +6998,22 @@ var str = ρσ_str, repr = ρσ_repr;;
                 result += advantageString(request.advantage, properties["r1"]);
             }
             if ((settings["roll20-template"] === "default" || typeof settings["roll20-template"] === "object" && ρσ_equals(settings["roll20-template"], "default"))) {
-                result.replace("&{template:" + name + "}", "&{template:default}");
+                result = result.replace("&{template:" + name + "}", "&{template:default}");
                 renameProp = (function() {
                     var ρσ_anonfunc = function (old_key, new_key) {
-                        result.replace("{{" + old_key + "=", "{{" + new_key + "=");
+                        result = result.replace("{{" + old_key + "=", "{{" + new_key + "=");
                     };
                     if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                         __argnames__ : {value: ["old_key", "new_key"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                removeProp = (function() {
+                    var ρσ_anonfunc = function (key) {
+                        result = result.replace("{{" + key + "=" + ((ρσ_in(key, properties)) ? properties[(typeof key === "number" && key < 0) ? properties.length + key : key] : "1") + "}}", "");
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["key"]}
                     });
                     return ρσ_anonfunc;
                 })();
@@ -7013,7 +7022,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if (ρσ_in("{{r2=", result)) {
                     renameProp("r1", "Regular Roll");
                     renameProp("r2", "Roll with [Dis]Advantage");
-                    result.replace("&#123&#123r2=", "&#123&#123Roll with [Dis]Advantage)=");
+                    result = result.replace("&#123&#123r2=", "&#123&#123Roll with [Dis]Advantage)=");
                 } else {
                     renameProp("r1", "Dice Roll");
                 }
@@ -7036,15 +7045,17 @@ var str = ρσ_str, repr = ρσ_repr;;
                 renameProp("athigherlevels", "At Higher Levels");
                 renameProp("castingtime", "Casting Time");
                 renameProp("hldmg", "Higher level cast");
-                ρσ_delitem(properties, "attack");
-                ρσ_delitem(properties, "damage");
-                ρσ_delitem(properties, "save");
-                ρσ_delitem(properties, "dmg1flag");
-                ρσ_delitem(properties, "dmg2flag");
-                ρσ_delitem(properties, "always");
-                ρσ_delitem(properties, "normal");
-                ρσ_delitem(properties, "advantage");
-                ρσ_delitem(properties, "disadvantage");
+                removeProp("attack");
+                removeProp("attack");
+                removeProp("damage");
+                removeProp("save");
+                removeProp("dmg1flag");
+                removeProp("dmg2flag");
+                removeProp("always");
+                removeProp("normal");
+                removeProp("advantage");
+                removeProp("disadvantage");
+                removeProp("query");
             }
             return result;
         };
