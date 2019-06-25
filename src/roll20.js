@@ -6957,7 +6957,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             } catch (ρσ_Exception) {
                 ρσ_last_exception = ρσ_Exception;
                 {
-                    return ρσ_interpolate_kwargs.call(str, str.format, [ROLL20_ADVANTAGE_QUERY].concat([ρσ_desugar_kwargs({r2: r1})]));
                     return " {{normal=1}}";
                 } 
             }

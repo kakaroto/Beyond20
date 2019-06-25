@@ -112,7 +112,6 @@ def advantageString(advantage, r1):
                 RollType.DISADVANTAGE: " {{disadvantage=1}} {{r2=" + r1 + "}}",
                 }[advantage]
     except:
-        return str.format(ROLL20_ADVANTAGE_QUERY, r2=r1)
         return " {{normal=1}}"
 
 def whisperString(whisper):
