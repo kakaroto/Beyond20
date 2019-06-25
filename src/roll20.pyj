@@ -107,11 +107,12 @@ def advantageString(advantage, r1):
     try:
         return {RollType.NORMAL: " {{normal=1}}",
                 RollType.DOUBLE: " {{always=1}} {{r2=" + r1 + "}}",
-                RollType.QUERY: ROLL20_ADVANTAGE_QUERY + r1.replace("[[1d20", "") + "}}",
+                RollType.QUERY: str.format(ROLL20_ADVANTAGE_QUERY, r2=r1),
                 RollType.ADVANTAGE: " {{advantage=1}} {{r2=" + r1 + "}}",
                 RollType.DISADVANTAGE: " {{disadvantage=1}} {{r2=" + r1 + "}}",
                 }[advantage]
     except:
+        return str.format(ROLL20_ADVANTAGE_QUERY, r2=r1)
         return " {{normal=1}}"
 
 def whisperString(whisper):
@@ -143,13 +144,15 @@ def template(request, name, properties):
         removeProp = def(key):
             nonlocal result, properties
             result = result.replace("{{" + key + "=" + (properties[key] if key in properties else "1") + "}}", "")
+            result = result.replace("&#123&#123" + key + "=" + (properties[key] if key in properties else "1") + "&#125&#125", "")
 
         renameProp("charname", "Character name")
         renameProp("rname", "name")
-        if "{{r2=" in result:
+        if "{{r2=" in result or "&#123&#123r2=" in result:
             renameProp("r1", "Regular Roll")
             renameProp("r2", "Roll with [Dis]Advantage")
-            result = result.replace("&#123&#123r2=", "&#123&#123Roll with [Dis]Advantage)=")
+            result = result.replace("&#123&#123r2=", "&#123&#123Roll with Advantage=")
+            result = result.replace("&#123&#123r2=", "&#123&#123Roll with Disadvantage=")
         else:
             renameProp("r1", "Dice Roll")
         renameProp("mod", "Modifier")

@@ -1,3 +1,4 @@
+* Roll20: Rolling using 'Other templates' is broken in 0.3 (fixed in development version)
 * Foundry VTT: It doesn't yet ask for whether to roll with advantage or not if the option is set to "always ask" (planned for next release)
 * Foundry VTT: It doesn't replace dice formulas in spell descriptions (planned for next release)
 * Foundry VTT: A critical hit dice with Improved Critical or Superior Critical won't appear green when displayed if it's not 20

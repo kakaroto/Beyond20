@@ -6707,7 +6707,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
         FVTT_CSS = "\n/* This is needed so the tooltip's absolute position is\n * relative to the message's position in the chatlog\n */\n.beyond20-roll-result {\n   position: relative;\n}\n\n.beyond20-tooltip .beyond20-tooltip-content {\n  display: none;\n  background-color: #f5f2ec;\n  text-align: left;\n  border-radius: 6px;\n  padding: 5px 10px;\n  margin: 10px;\n  width: 80%;\n  top: -120px; /* Until I figure out how to make it move above the mouse */\n  border: 2px solid black;\n\n  /* Position the tooltip */\n  position: absolute;\n  z-index: 1;\n}\n\n.beyond20-tooltip:hover .beyond20-tooltip-content {\n  display: block;\n}\n\n.beyond20-tooltip-content .dice-tooltip {\n    display: block;\n}\n";
         ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
-        ROLL20_ADVANTAGE_QUERY = "{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125 &#123&#123r2=[[0d20|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2=[[1d20|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2=[[1d20}";
+        ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125}}";
         ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
         ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
         ρσ_modules.constants.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
@@ -6949,7 +6949,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_d = {};
                     ρσ_d[RollType.prototype.NORMAL] = " {{normal=1}}";
                     ρσ_d[RollType.prototype.DOUBLE] = " {{always=1}} {{r2=" + r1 + "}}";
-                    ρσ_d[RollType.prototype.QUERY] = ROLL20_ADVANTAGE_QUERY + r1.replace("[[1d20", "") + "}}";
+                    ρσ_d[RollType.prototype.QUERY] = ρσ_interpolate_kwargs.call(str, str.format, [ROLL20_ADVANTAGE_QUERY].concat([ρσ_desugar_kwargs({r2: r1})]));
                     ρσ_d[RollType.prototype.ADVANTAGE] = " {{advantage=1}} {{r2=" + r1 + "}}";
                     ρσ_d[RollType.prototype.DISADVANTAGE] = " {{disadvantage=1}} {{r2=" + r1 + "}}";
                     return ρσ_d;
@@ -6957,6 +6957,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             } catch (ρσ_Exception) {
                 ρσ_last_exception = ρσ_Exception;
                 {
+                    return ρσ_interpolate_kwargs.call(str, str.format, [ROLL20_ADVANTAGE_QUERY].concat([ρσ_desugar_kwargs({r2: r1})]));
                     return " {{normal=1}}";
                 } 
             }
@@ -7011,6 +7012,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 removeProp = (function() {
                     var ρσ_anonfunc = function (key) {
                         result = result.replace("{{" + key + "=" + ((ρσ_in(key, properties)) ? properties[(typeof key === "number" && key < 0) ? properties.length + key : key] : "1") + "}}", "");
+                        result = result.replace("&#123&#123" + key + "=" + ((ρσ_in(key, properties)) ? properties[(typeof key === "number" && key < 0) ? properties.length + key : key] : "1") + "&#125&#125", "");
                     };
                     if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                         __argnames__ : {value: ["key"]}
@@ -7019,10 +7021,11 @@ var str = ρσ_str, repr = ρσ_repr;;
                 })();
                 renameProp("charname", "Character name");
                 renameProp("rname", "name");
-                if (ρσ_in("{{r2=", result)) {
+                if (ρσ_in("{{r2=", result) || ρσ_in("&#123&#123r2=", result)) {
                     renameProp("r1", "Regular Roll");
                     renameProp("r2", "Roll with [Dis]Advantage");
-                    result = result.replace("&#123&#123r2=", "&#123&#123Roll with [Dis]Advantage)=");
+                    result = result.replace("&#123&#123r2=", "&#123&#123Roll with Advantage=");
+                    result = result.replace("&#123&#123r2=", "&#123&#123Roll with Disadvantage=");
                 } else {
                     renameProp("r1", "Dice Roll");
                 }
