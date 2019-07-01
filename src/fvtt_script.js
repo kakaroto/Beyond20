@@ -3729,6 +3729,7 @@ var str = ρσ_str, repr = ρσ_repr;;
     ρσ_modules.elementmaker = {};
     ρσ_modules.settings = {};
     ρσ_modules.constants = {};
+    ρσ_modules.math = {};
 
     (function(){
         var __name__ = "re";
@@ -6737,6 +6738,377 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
+        var __name__ = "math";
+        var pi, e;
+        pi = Math.PI;
+        e = Math.E;
+        function ceil(x) {
+            return Math.ceil(x);
+        };
+        if (!ceil.__argnames__) Object.defineProperties(ceil, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function copysign(x, y) {
+            x = Math.abs(x);
+            if (y < 0) {
+                return -x;
+            } else {
+                return x;
+            }
+        };
+        if (!copysign.__argnames__) Object.defineProperties(copysign, {
+            __argnames__ : {value: ["x", "y"]}
+        });
+
+        function fabs(x) {
+            return Math.abs(x);
+        };
+        if (!fabs.__argnames__) Object.defineProperties(fabs, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function factorial(x) {
+            var r;
+            if (Math.abs(int(x)) !== x) {
+                throw new ValueError("factorial() only accepts integral values");
+            }
+            factorial.cache = ρσ_list_decorate([]);
+            r = (function() {
+                var ρσ_anonfunc = function (n) {
+                    if (n === 0 || n === 1) {
+                        return 1;
+                    }
+                    if (!(ρσ_expr_temp = factorial.cache)[(typeof n === "number" && n < 0) ? ρσ_expr_temp.length + n : n]) {
+                        (ρσ_expr_temp = factorial.cache)[(typeof n === "number" && n < 0) ? ρσ_expr_temp.length + n : n] = r(n - 1) * n;
+                    }
+                    return (ρσ_expr_temp = factorial.cache)[(typeof n === "number" && n < 0) ? ρσ_expr_temp.length + n : n];
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["n"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            return r(x);
+        };
+        if (!factorial.__argnames__) Object.defineProperties(factorial, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function floor(x) {
+            return Math.floor(x);
+        };
+        if (!floor.__argnames__) Object.defineProperties(floor, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function fmod(x, y) {
+            while (y <= x) {
+                x -= y;
+            }
+            return x;
+        };
+        if (!fmod.__argnames__) Object.defineProperties(fmod, {
+            __argnames__ : {value: ["x", "y"]}
+        });
+
+        function fsum(iterable) {
+            var partials, i, ρσ_unpack, x, y, hi, lo;
+            partials = ρσ_list_decorate([]);
+            var ρσ_Iter0 = ρσ_Iterable(iterable);
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                x = ρσ_Iter0[ρσ_Index0];
+                i = 0;
+                var ρσ_Iter1 = ρσ_Iterable(partials);
+                for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                    y = ρσ_Iter1[ρσ_Index1];
+                    if (Math.abs(x) < Math.abs(y)) {
+                        ρσ_unpack = [y, x];
+                        x = ρσ_unpack[0];
+                        y = ρσ_unpack[1];
+                    }
+                    hi = x + y;
+                    lo = y - (hi - x);
+                    if (lo) {
+                        partials[(typeof i === "number" && i < 0) ? partials.length + i : i] = lo;
+                        i += 1;
+                    }
+                    x = hi;
+                }
+                partials.splice(i, partials.length - i, x);
+            }
+            return sum(partials);
+        };
+        if (!fsum.__argnames__) Object.defineProperties(fsum, {
+            __argnames__ : {value: ["iterable"]}
+        });
+
+        function isinf(x) {
+            return !isFinite(x);
+        };
+        if (!isinf.__argnames__) Object.defineProperties(isinf, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function isnan(x) {
+            return isNaN(x);
+        };
+        if (!isnan.__argnames__) Object.defineProperties(isnan, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function modf(x) {
+            var m;
+            m = fmod(x, 1);
+            return [m, x - m];
+        };
+        if (!modf.__argnames__) Object.defineProperties(modf, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function trunc(x) {
+            return x | 0;
+        };
+        if (!trunc.__argnames__) Object.defineProperties(trunc, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function exp(x) {
+            return Math.exp(x);
+        };
+        if (!exp.__argnames__) Object.defineProperties(exp, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function expm1(x) {
+            if (Math.abs(x) < 1e-5) {
+                return x + .5 * x * x;
+            } else {
+                return Math.exp(x) - 1;
+            }
+        };
+        if (!expm1.__argnames__) Object.defineProperties(expm1, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function log() {
+            var x = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var base = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? log.__defaults__.base : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "base")){
+                base = ρσ_kwargs_obj.base;
+            }
+            return Math.log(x) / Math.log(base);
+        };
+        if (!log.__defaults__) Object.defineProperties(log, {
+            __defaults__ : {value: {base:e}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["x", "base"]}
+        });
+
+        function log1p(x) {
+            var ret, n, i;
+            ret = 0;
+            n = 50;
+            if (x <= -1) {
+                return Number.NEGATIVE_INFINITY;
+            }
+            if (x < 0 || x > 1) {
+                return Math.log(1 + x);
+            }
+            for (var ρσ_Index2 = 1; ρσ_Index2 < n; ρσ_Index2++) {
+                i = ρσ_Index2;
+                if (i % 2 === 0) {
+                    ret -= Math.pow(x, i) / i;
+                } else {
+                    ret += Math.pow(x, i) / i;
+                }
+            }
+            return ret;
+        };
+        if (!log1p.__argnames__) Object.defineProperties(log1p, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function log10(x) {
+            return Math.log(x) / Math.LN10;
+        };
+        if (!log10.__argnames__) Object.defineProperties(log10, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function pow(x, y) {
+            if (x < 0 && int(y) !== y) {
+                throw new ValueError("math domain error");
+            }
+            if (isnan(y) && x === 1) {
+                return 1;
+            }
+            return Math.pow(x, y);
+        };
+        if (!pow.__argnames__) Object.defineProperties(pow, {
+            __argnames__ : {value: ["x", "y"]}
+        });
+
+        function sqrt(x) {
+            return Math.sqrt(x);
+        };
+        if (!sqrt.__argnames__) Object.defineProperties(sqrt, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function acos(x) {
+            return Math.acos(x);
+        };
+        if (!acos.__argnames__) Object.defineProperties(acos, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function asin(x) {
+            return Math.asin(x);
+        };
+        if (!asin.__argnames__) Object.defineProperties(asin, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function atan(x) {
+            return Math.atan(x);
+        };
+        if (!atan.__argnames__) Object.defineProperties(atan, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function atan2(y, x) {
+            return Math.atan2(y, x);
+        };
+        if (!atan2.__argnames__) Object.defineProperties(atan2, {
+            __argnames__ : {value: ["y", "x"]}
+        });
+
+        function cos(x) {
+            return Math.cos(x);
+        };
+        if (!cos.__argnames__) Object.defineProperties(cos, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function sin(x) {
+            return Math.sin(x);
+        };
+        if (!sin.__argnames__) Object.defineProperties(sin, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function hypot(x, y) {
+            return Math.sqrt(x * x + y * y);
+        };
+        if (!hypot.__argnames__) Object.defineProperties(hypot, {
+            __argnames__ : {value: ["x", "y"]}
+        });
+
+        function tan(x) {
+            return Math.tan(x);
+        };
+        if (!tan.__argnames__) Object.defineProperties(tan, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function degrees(x) {
+            return x * 180 / pi;
+        };
+        if (!degrees.__argnames__) Object.defineProperties(degrees, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function radians(x) {
+            return x * pi / 180;
+        };
+        if (!radians.__argnames__) Object.defineProperties(radians, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function acosh(x) {
+            return Math.log(x + Math.sqrt(x * x - 1));
+        };
+        if (!acosh.__argnames__) Object.defineProperties(acosh, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function asinh(x) {
+            return Math.log(x + Math.sqrt(x * x + 1));
+        };
+        if (!asinh.__argnames__) Object.defineProperties(asinh, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function atanh(x) {
+            return .5 * Math.log((1 + x) / (1 - x));
+        };
+        if (!atanh.__argnames__) Object.defineProperties(atanh, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function cosh(x) {
+            return (Math.exp(x) + Math.exp(-x)) / 2;
+        };
+        if (!cosh.__argnames__) Object.defineProperties(cosh, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function sinh(x) {
+            return (Math.exp(x) - Math.exp(-x)) / 2;
+        };
+        if (!sinh.__argnames__) Object.defineProperties(sinh, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        function tanh(x) {
+            return (Math.exp(x) - Math.exp(-x)) / (Math.exp(x) + Math.exp(-x));
+        };
+        if (!tanh.__argnames__) Object.defineProperties(tanh, {
+            __argnames__ : {value: ["x"]}
+        });
+
+        ρσ_modules.math.pi = pi;
+        ρσ_modules.math.e = e;
+        ρσ_modules.math.ceil = ceil;
+        ρσ_modules.math.copysign = copysign;
+        ρσ_modules.math.fabs = fabs;
+        ρσ_modules.math.factorial = factorial;
+        ρσ_modules.math.floor = floor;
+        ρσ_modules.math.fmod = fmod;
+        ρσ_modules.math.fsum = fsum;
+        ρσ_modules.math.isinf = isinf;
+        ρσ_modules.math.isnan = isnan;
+        ρσ_modules.math.modf = modf;
+        ρσ_modules.math.trunc = trunc;
+        ρσ_modules.math.exp = exp;
+        ρσ_modules.math.expm1 = expm1;
+        ρσ_modules.math.log = log;
+        ρσ_modules.math.log1p = log1p;
+        ρσ_modules.math.log10 = log10;
+        ρσ_modules.math.pow = pow;
+        ρσ_modules.math.sqrt = sqrt;
+        ρσ_modules.math.acos = acos;
+        ρσ_modules.math.asin = asin;
+        ρσ_modules.math.atan = atan;
+        ρσ_modules.math.atan2 = atan2;
+        ρσ_modules.math.cos = cos;
+        ρσ_modules.math.sin = sin;
+        ρσ_modules.math.hypot = hypot;
+        ρσ_modules.math.tan = tan;
+        ρσ_modules.math.degrees = degrees;
+        ρσ_modules.math.radians = radians;
+        ρσ_modules.math.acosh = acosh;
+        ρσ_modules.math.asinh = asinh;
+        ρσ_modules.math.atanh = atanh;
+        ρσ_modules.math.cosh = cosh;
+        ρσ_modules.math.sinh = sinh;
+        ρσ_modules.math.tanh = tanh;
+    })();
+
+    (function(){
 
         var __name__ = "__main__";
 
@@ -6750,6 +7122,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         var RollType = ρσ_modules.settings.RollType;
 
         var FVTT_CSS = ρσ_modules.constants.FVTT_CSS;
+
+        var math = ρσ_modules.math;
 
         settings = null;
         extension_url = "/public/modules/beyond20/";
@@ -6925,7 +7299,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 var ρσ_anonfunc = function (dice, modifier) {
                     var dice_formula;
                     dice_formula = (((dice === "" || typeof dice === "object" && ρσ_equals(dice, ""))) ? "1d20" : dice) + modifier;
-                    return "<span class=\"ct-beyond20-custom-roll\"><strong>" + dice + modifier + "</strong>" + "<img class=\"ct-beyond20-custom-icon\" src=\"" + icon16 + "\" style=\"margin-right: 3px; margin-left: 3px;\"></img>" + "<span class=\"beyond20-roll-formula\" style=\"display: none;\">" + dice_formula + "</span></span>";
+                    return "<span class=\"ct-beyond20-custom-roll\"><strong>" + dice + modifier + "</strong>" + "<img class=\"ct-beyond20-custom-icon\" src=\"" + icon16 + "\" style=\"margin-right: 3px; margin-left: 3px; border: 0px;\"></img>" + "<span class=\"beyond20-roll-formula\" style=\"display: none;\">" + dice_formula + "</span></span>";
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                     __argnames__ : {value: ["dice", "modifier"]}
@@ -7090,7 +7464,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         async        function rollD20(request, title, data) {
-            var dice, roll_1, roll_2;
+            var icon, dice, roll_1, roll_2;
+            icon = "<img style=\"border: 0px;\" src=\"" + extension_url + "images/icons/icon16.png" + "\"></img>";
             if ((request.advantage === RollType.prototype.NORMAL || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.NORMAL))) {
                 dice = "1d20";
             } else if ((request.advantage === RollType.prototype.ADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.ADVANTAGE))) {
@@ -7106,7 +7481,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_list_decorate([ roll_1, roll_2 ])] ])})]));
                 return Promise.resolve(roll_1);
             } else {
-                dice = "1d20";
                 return new Promise((function() {
                     var ρσ_anonfunc = function (resolve, reject) {
                         var adv;
@@ -7120,6 +7494,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                                 ρσ_d["advantage"] = (function(){
                                     var ρσ_d = {};
                                     ρσ_d["label"] = "Advantage";
+                                    ρσ_d["icon"] = icon;
                                     ρσ_d["callback"] = function () {
                                         adv = 1;
                                     };
@@ -7128,11 +7503,13 @@ var str = ρσ_str, repr = ρσ_repr;;
                                 ρσ_d["normal"] = (function(){
                                     var ρσ_d = {};
                                     ρσ_d["label"] = "Normal";
+                                    ρσ_d["icon"] = icon;
                                     return ρσ_d;
                                 }).call(this);
                                 ρσ_d["disadvantage"] = (function(){
                                     var ρσ_d = {};
                                     ρσ_d["label"] = "Disadvantage";
+                                    ρσ_d["icon"] = icon;
                                     ρσ_d["callback"] = function () {
                                         adv = -1;
                                     };
@@ -7175,14 +7552,80 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var data;
+            var icon, data, prof, prof_val, formula, html, modifiers, ability;
+            icon = "<img style=\"border: 0px;\" src=\"" + extension_url + "images/icons/icon16.png" + "\"></img>";
             data = (function(){
                 var ρσ_d = {};
                 ρσ_d[request.ability] = request.modifier;
                 ρσ_d["custom_dice"] = custom_roll_dice;
                 return ρσ_d;
             }).call(this);
-            rollD20(request, request.skill + "(" + request.modifier + ")", data);
+            if ((request.modifier === "--" || typeof request.modifier === "object" && ρσ_equals(request.modifier, "--")) && request.character.abilities.length > 0) {
+                prof = "";
+                prof_val = "";
+                if ((request.proficiency === "Proficiency" || typeof request.proficiency === "object" && ρσ_equals(request.proficiency, "Proficiency"))) {
+                    prof = "proficiency";
+                    prof_val = request.character.proficiency;
+                } else if ((request.proficiency === "Half Proficiency" || typeof request.proficiency === "object" && ρσ_equals(request.proficiency, "Half Proficiency"))) {
+                    prof = "half_proficiency";
+                    prof_val += math.floor(request.character.proficiency / 2);
+                } else if ((request.proficiency === "Expertise" || typeof request.proficiency === "object" && ρσ_equals(request.proficiency, "Expertise"))) {
+                    prof = "expertise";
+                    prof_val += request.character.proficiency * 2;
+                }
+                formula = "1d20 + @ability " + (((prof !== "" && (typeof prof !== "object" || ρσ_not_equals(prof, "")))) ? " + @" + prof : prof) + " + @custom_dice";
+                html = "<form>";
+                html += "<div class=\"form-group\"><label>Roll Formula</label><input type=\"text\" value=\"" + formula + "\" disabled></div>";
+                html += "<div class=\"form-group\"><label>Select Ability</label><select name=\"ability\">";
+                modifiers = {};
+                var ρσ_Iter7 = ρσ_Iterable(request.character.abilities);
+                for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                    ability = ρσ_Iter7[ρσ_Index7];
+                    html += "<option value=\"" + ability[0] + "\">" + ability[0] + "</option>";
+                    modifiers[ρσ_bound_index(ability[0], modifiers)] = ability[3];
+                }
+                html += "</select></div>";
+                html += "</form>";
+                new Dialog((function(){
+                    var ρσ_d = {};
+                    ρσ_d["title"] = "Custom Skill";
+                    ρσ_d["content"] = html;
+                    ρσ_d["buttons"] = (function(){
+                        var ρσ_d = {};
+                        ρσ_d["ok"] = (function(){
+                            var ρσ_d = {};
+                            ρσ_d["label"] = request.skill;
+                            ρσ_d["icon"] = icon;
+                            return ρσ_d;
+                        }).call(this);
+                        return ρσ_d;
+                    }).call(this);
+                    ρσ_d["default"] = "ok";
+                    ρσ_d["close"] = (function() {
+                        var ρσ_anonfunc = function (html) {
+                            var ability, mod, data;
+                            ability = html.find("[name=\"ability\"]").val();
+                            mod = modifiers[(typeof ability === "number" && ability < 0) ? modifiers.length + ability : ability];
+                            console.log("Modifier : ", mod);
+                            data = (function(){
+                                var ρσ_d = {};
+                                ρσ_d["ability"] = mod;
+                                ρσ_d["prof"] = prof_val;
+                                ρσ_d["custom_dice"] = custom_roll_dice;
+                                return ρσ_d;
+                            }).call(this);
+                            rollD20(request, request.skill + "(" + ability + ")", data);
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["html"]}
+                        });
+                        return ρσ_anonfunc;
+                    })();
+                    return ρσ_d;
+                }).call(this)).render(true);
+            } else {
+                rollD20(request, request.skill + "(" + request.modifier + ")", data);
+            }
         };
         if (!rollSkill.__defaults__) Object.defineProperties(rollSkill, {
             __defaults__ : {value: {custom_roll_dice:""}},
@@ -7257,9 +7700,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if (settings["initiative-tracker"]) {
                         if (canvas.tokens.controlledTokens.length > 0) {
                             if (ρσ_exists.n(game.combat)) {
-                                var ρσ_Iter7 = ρσ_Iterable(canvas.tokens.controlledTokens);
-                                for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                                    token = ρσ_Iter7[ρσ_Index7];
+                                var ρσ_Iter8 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                                for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                                    token = ρσ_Iter8[ρσ_Index8];
                                     game.combat.createCombatant((function(){
                                         var ρσ_d = {};
                                         ρσ_d["tokenId"] = token.id;
@@ -7375,8 +7818,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damages = list(request.damages);
                 damage_types = list(request["damage-types"]);
                 total_damage = "";
-                for (var ρσ_Index8 = 0; ρσ_Index8 < damages.length; ρσ_Index8++) {
-                    i = ρσ_Index8;
+                for (var ρσ_Index9 = 0; ρσ_Index9 < damages.length; ρσ_Index9++) {
+                    i = ρσ_Index9;
                     roll = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
                     total_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
                     dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
@@ -7388,8 +7831,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damages = list(request["critical-damages"]);
                 damage_types = list(request["critical-damage-types"]);
                 total_critical_damage = "";
-                for (var ρσ_Index9 = 0; ρσ_Index9 < damages.length; ρσ_Index9++) {
-                    i = ρσ_Index9;
+                for (var ρσ_Index10 = 0; ρσ_Index10 < damages.length; ρσ_Index10++) {
+                    i = ρσ_Index10;
                     roll = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
                     total_critical_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
                     dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
@@ -7570,9 +8013,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 });
                 return ρσ_anonfunc;
             })());
-            var ρσ_Iter10 = ρσ_Iterable(tokens);
-            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
-                token = ρσ_Iter10[ρσ_Index10];
+            var ρσ_Iter11 = ρσ_Iterable(tokens);
+            for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                token = ρσ_Iter11[ρσ_Index11];
                 if (token.actor && token.data.actorLink) {
                     total = (total) ? total : token.actor.data.attributes.hp.max;
                     token.actor.update((function(){
@@ -7618,9 +8061,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter11 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
-                event = ρσ_Iter11[ρσ_Index11];
+            var ρσ_Iter12 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                event = ρσ_Iter12[ρσ_Index12];
                 document.removeEventListener.apply(document, event);
             }
         };

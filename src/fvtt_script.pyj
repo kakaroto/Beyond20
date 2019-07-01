@@ -1,6 +1,7 @@
 from utils import addCustomEventListener, injectCSS, replaceRolls
 from settings import WhisperType, RollType
 from constants import FVTT_CSS
+import math
 
 settings = None
 extension_url = "/public/modules/beyond20/"
@@ -67,7 +68,7 @@ def injectRollsInDescription(description):
         # <u> is filtered out in 0.3.2, so using <span> instead
         return '<span class="ct-beyond20-custom-roll"><strong>' + dice + modifier + '</strong>' + \
             '<img class="ct-beyond20-custom-icon" src="' + icon16 + \
-            '" style="margin-right: 3px; margin-left: 3px;"></img>' + \
+            '" style="margin-right: 3px; margin-left: 3px; border: 0px;"></img>' + \
             '<span class="beyond20-roll-formula" style="display: none;">' + dice_formula + '</span></span>'
     return replaceRolls(description, replaceCB)
 
@@ -145,6 +146,9 @@ def rollDice(request, title, dice, data={}):
 
 v'async'
 def rollD20(request, title, data):
+    nonlocal extension_url
+    icon = '<img style="border: 0px;" src="' + extension_url + "images/icons/icon16.png" + '"></img>'
+
     if request.advantage == RollType.NORMAL:
         dice = "1d20"
     elif request.advantage == RollType.ADVANTAGE:
@@ -159,18 +163,20 @@ def rollD20(request, title, data):
         postDescription(request, title, None, {}, None, rolls=[(None, [roll_1, roll_2])])
         return Promise.resolve(roll_1)
     else:
-        dice = "1d20" # TODO: query dialog
         return new Promise(def(resolve, reject):
                                adv = 0
                                new Dialog({"title": title,
                                  "content": "Choose roll mode for : " + title,
                                  "buttons": {"advantage": {"label": "Advantage",
+                                                           "icon": icon,
                                                            "callback": def():
                                                                nonlocal adv
                                                                adv = 1
                                                            },
-                                             "normal": {"label": "Normal"},
+                                             "normal": {"label": "Normal",
+                                                        "icon": icon},
                                              "disadvantage": {"label": "Disadvantage",
+                                                              "icon": icon,
                                                               "callback": def():
                                                                   nonlocal adv
                                                                   adv = -1
@@ -187,9 +193,47 @@ def rollD20(request, title, data):
     return Promise.resolve(rollDice(request, title, dice, data))
     
 def rollSkill(request, custom_roll_dice=""):
+    nonlocal extension_url
+    icon = '<img style="border: 0px;" src="' + extension_url + "images/icons/icon16.png" + '"></img>'
     data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
-    # TODO: if modifier == "--": Query ability.
-    rollD20(request, request.skill + "(" + request.modifier + ")", data)
+
+    # Custom skill
+    if request.modifier == "--" and request.character.abilities.length > 0:
+        prof = ""
+        prof_val = ""
+        if request.proficiency == "Proficiency":
+            prof = "proficiency"
+            prof_val = request.character.proficiency
+        elif request.proficiency == "Half Proficiency":
+            prof = "half_proficiency"
+            prof_val += math.floor(request.character.proficiency / 2)
+        elif request.proficiency == "Expertise":
+            prof = "expertise"
+            prof_val += request.character.proficiency * 2
+        formula = "1d20 + @ability " + ((" + @" + prof) if prof != "" else prof) + " + @custom_dice"
+        html = '<form>'
+        html += '<div class="form-group"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>'
+        html += '<div class="form-group"><label>Select Ability</label><select name="ability">'
+        modifiers = {}
+        for ability in request.character.abilities:
+            html += '<option value="' + ability[0] + '">' + ability[0] + '</option>'
+            modifiers[ability[0]] = ability[3]
+        html += "</select></div>"
+        html += '</form>'
+        new Dialog({"title": "Custom Skill",
+                    "content": html,
+                    "buttons": {"ok": {"label": request.skill,
+                                       "icon": icon}},
+                    "default": "ok",
+                    "close": def(html):
+                        ability = html.find('[name="ability"]').val()
+                        mod = modifiers[ability]
+                        console.log("Modifier : ", mod)
+                        data = {"ability": mod, "prof": prof_val, "custom_dice": custom_roll_dice}
+                        rollD20(request, request.skill + "(" + ability + ")", data)
+                    }).render(True)
+    else:
+        rollD20(request, request.skill + "(" + request.modifier + ")", data)
 
 def rollAbility(request, custom_roll_dice=""): 
     data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
