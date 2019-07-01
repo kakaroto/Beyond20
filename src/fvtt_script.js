@@ -7822,7 +7822,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         async        function buildAttackRolls(request, custom_roll_dice) {
-            var rolls, damage_rolls, is_critical, critical_limit, custom, to_hit, roll_1, roll_2, to_hit_roll, dice, adv, damages, damage_types, total_damage, roll, dmg_type, suffix, i, total_critical_damage;
+            var rolls, damage_rolls, is_critical, critical_limit, custom, to_hit, roll_1, roll_2, to_hit_roll, dice, adv, damages, damage_types, has_versatile, total_damage, total_versatile_damage, roll, dmg_type, suffix, i, total_critical_damage, total_critical_versatile_damage;
             rolls = ρσ_list_decorate([]);
             damage_rolls = ρσ_list_decorate([]);
             is_critical = false;
@@ -7862,11 +7862,18 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_exists.n(request.damages)) {
                 damages = list(request.damages);
                 damage_types = list(request["damage-types"]);
+                has_versatile = len(damage_types) > 1 && (damage_types[1] === "Two-Handed" || typeof damage_types[1] === "object" && ρσ_equals(damage_types[1], "Two-Handed"));
                 total_damage = "";
+                total_versatile_damage = "";
                 for (var ρσ_Index11 = 0; ρσ_Index11 < damages.length; ρσ_Index11++) {
                     i = ρσ_Index11;
                     roll = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
-                    total_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
+                    if (!has_versatile || (i !== 1 && (typeof i !== "object" || ρσ_not_equals(i, 1)))) {
+                        total_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
+                    }
+                    if (has_versatile && (i !== 0 && (typeof i !== "object" || ρσ_not_equals(i, 0)))) {
+                        total_versatile_damage += (((i === 1 || typeof i === "object" && ρσ_equals(i, 1))) ? "" : " + ") + str(roll.total);
+                    }
                     dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
                     suffix = (!ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) ? " Damage" : "";
                     damage_rolls.append([dmg_type + suffix, roll]);
@@ -7876,10 +7883,16 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damages = list(request["critical-damages"]);
                 damage_types = list(request["critical-damage-types"]);
                 total_critical_damage = "";
+                total_critical_versatile_damage = "";
                 for (var ρσ_Index12 = 0; ρσ_Index12 < damages.length; ρσ_Index12++) {
                     i = ρσ_Index12;
                     roll = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
-                    total_critical_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
+                    if (!has_versatile || (i !== 1 && (typeof i !== "object" || ρσ_not_equals(i, 1)))) {
+                        total_critical_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
+                    }
+                    if (has_versatile && (i !== 0 && (typeof i !== "object" || ρσ_not_equals(i, 0)))) {
+                        total_critical_versatile_damage += (((i === 1 || typeof i === "object" && ρσ_equals(i, 1))) ? "" : " + ") + str(roll.total);
+                    }
                     dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
                     suffix = (!ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) ? " Critical Damage" : "";
                     damage_rolls.append([dmg_type + suffix, roll]);
@@ -7888,8 +7901,14 @@ var str = ρσ_str, repr = ρσ_repr;;
             if ((typeof total_damage !== "undefined" && total_damage !== null) && ρσ_in("+", total_damage)) {
                 damage_rolls.append(["------", ρσ_list_decorate([])]);
                 damage_rolls.append(["Total Damage", new Roll(total_damage).roll()]);
+                if ((total_versatile_damage !== "" && (typeof total_versatile_damage !== "object" || ρσ_not_equals(total_versatile_damage, "")))) {
+                    damage_rolls.append(["Total Two-Handed Damage", new Roll(total_versatile_damage).roll()]);
+                }
                 if ((typeof total_critical_damage !== "undefined" && total_critical_damage !== null)) {
                     damage_rolls.append(["Total Critical Damage", new Roll(total_critical_damage).roll()]);
+                    if ((total_critical_versatile_damage !== "" && (typeof total_critical_versatile_damage !== "object" || ρσ_not_equals(total_critical_versatile_damage, "")))) {
+                        damage_rolls.append(["Total Critical Two-Handed Damage", new Roll(total_critical_versatile_damage).roll()]);
+                    }
                 }
             }
             return ρσ_list_decorate([ rolls, damage_rolls ]);

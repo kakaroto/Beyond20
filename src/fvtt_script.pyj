@@ -337,10 +337,15 @@ def buildAttackRolls(request, custom_roll_dice):
     if request.damages?:
         damages = list(request.damages)
         damage_types = list(request["damage-types"])
+        has_versatile = len(damage_types) > 1 and damage_types[1] == "Two-Handed"
         total_damage = ""
+        total_versatile_damage = ""
         for i in range(damages.length):
             roll = new Roll(damages[i]).roll()
-            total_damage += ("" if i == 0 else " + ") + str(roll.total)
+            if (not has_versatile) or i != 1:
+                total_damage += ("" if i == 0 else " + ") + str(roll.total)
+            if has_versatile and i != 0:
+                total_versatile_damage += ("" if i == 1 else " + ") + str(roll.total)
             dmg_type = damage_types[i]
             suffix = " Damage" if dmg_type not in ["Healing", "Disciple of Life"] else ""
             damage_rolls.append((dmg_type + suffix, roll))
@@ -349,9 +354,13 @@ def buildAttackRolls(request, custom_roll_dice):
         damages = list(request["critical-damages"])
         damage_types = list(request["critical-damage-types"])
         total_critical_damage = ""
+        total_critical_versatile_damage = ""
         for i in range(damages.length):
             roll = new Roll(damages[i]).roll()
-            total_critical_damage += ("" if i == 0 else " + ") + str(roll.total)
+            if (not has_versatile) or i != 1:
+                total_critical_damage += ("" if i == 0 else " + ") + str(roll.total)
+            if has_versatile and i != 0:
+                total_critical_versatile_damage += ("" if i == 1 else " + ") + str(roll.total)
             dmg_type = damage_types[i]
             suffix = " Critical Damage" if dmg_type not in ["Healing", "Disciple of Life"] else ""
             damage_rolls.append((dmg_type + suffix, roll))
@@ -359,8 +368,12 @@ def buildAttackRolls(request, custom_roll_dice):
     if total_damage? and "+" in total_damage:
         damage_rolls.append(("------", []))
         damage_rolls.append(("Total Damage", new Roll(total_damage).roll()))
+        if total_versatile_damage != "":
+            damage_rolls.append(("Total Two-Handed Damage", new Roll(total_versatile_damage).roll()))
         if total_critical_damage?:
             damage_rolls.append(("Total Critical Damage", new Roll(total_critical_damage).roll()))
+            if total_critical_versatile_damage != "":
+                damage_rolls.append(("Total Critical Two-Handed Damage", new Roll(total_critical_versatile_damage).roll()))
 
     return [rolls, damage_rolls]
 
