@@ -100,12 +100,25 @@ def rollItem(force_display=False):
         for i in range(prop_list.length):
             if prop_list.eq(i).find(".ct-property-list__property-label").text() == "Damage:":
                 value = prop_list.eq(i).find(".ct-property-list__property-content")
-                damages.append(value.find(".ct-damage__value").text())
-                damage_types.append(properties["Damage Type"] ? "")
+                damage = value.find(".ct-damage__value").text()
+                damage_type = properties["Damage Type"] ? ""
                 versatile_damage = value.find(".ct-item-detail__versatile-damage").text()
                 if versatile_damage != "":
-                    damages.append(versatile_damage[1:-1])
-                    damage_types.append("Two-Handed")
+                    versatile_choice = character.getSetting("versatile-choice", "both")
+                    if versatile_choice == "one":
+                        damages.append(damage)
+                        damage_types.append(damage_type)
+                    elif versatile_choice == "two":
+                        damages.append(versatile_damage[1:-1])
+                        damage_types.append(damage_type)
+                    else:
+                        damages.append(damage)
+                        damage_types.append(damage_type)
+                        damages.append(versatile_damage[1:-1])
+                        damage_types.append("Two-Handed")
+                else:
+                    damages.append(damage)
+                    damage_types.append(damage_type)
                 additional_damages = value.find(".ct-item-detail__additional-damage")
                 for j in range(additional_damages.length):
                     dmg = additional_damages.eq(j).text()

@@ -64,6 +64,8 @@ def populateCharacter(response):
                             E.p(response.name, style="margin: 0px;"))
                        )
 
+        e = createHTMLOption("versatile-choice", False, character_settings)
+        options.append(e)
         e = createHTMLOption("custom-roll-dice", False, character_settings)
         options.append(e)
         e = createHTMLOption("custom-damage-dice", False, character_settings)

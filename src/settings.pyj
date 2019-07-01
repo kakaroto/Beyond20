@@ -152,6 +152,11 @@ options_list = {
     }
 
 character_settings = {
+    "versatile-choice": {"title": "Versatile weapon choice",
+                         "description": "How to roll damage for Versatile weapons",
+                         "type": "combobox",
+                         "default": "both",
+                         "choices": {"both": "Roll both damages separately", "one": "Use weapon One-handed", "two": "Use weapon Two-handed"}},
     "custom-roll-dice": {"title": "Custom Roll dice formula bonus",
                            "description": "Add custom formula to d20 rolls (Bless, Guidance, Bane, Magic Weapon, etc..)",
                            "type": "string",

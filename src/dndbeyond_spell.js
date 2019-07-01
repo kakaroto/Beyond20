@@ -5886,6 +5886,21 @@ var str = ρσ_str, repr = ρσ_repr;;
         }).call(this);
         character_settings = (function(){
             var ρσ_d = {};
+            ρσ_d["versatile-choice"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Versatile weapon choice";
+                ρσ_d["description"] = "How to roll damage for Versatile weapons";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = "both";
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["both"] = "Roll both damages separately";
+                    ρσ_d["one"] = "Use weapon One-handed";
+                    ρσ_d["two"] = "Use weapon Two-handed";
+                    return ρσ_d;
+                }).call(this);
+                return ρσ_d;
+            }).call(this);
             ρσ_d["custom-roll-dice"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Custom Roll dice formula bonus";
