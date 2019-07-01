@@ -6731,7 +6731,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             if (new_settings) {
                 settings = new_settings;
-                sendCustomEvent("NewSettings", [settings, 0]);
+                sendCustomEvent("NewSettings", [settings, chrome.runtime.getURL("")]);
             } else {
                 getStoredSettings((function() {
                     var ρσ_anonfunc = function (saved_settings) {

@@ -9,7 +9,7 @@ def updateSettings(new_settings=None):
     nonlocal settings
     if new_settings:
         settings = new_settings
-        sendCustomEvent("NewSettings", (settings, 0))
+        sendCustomEvent("NewSettings", (settings, chrome.runtime.getURL("")))
     else:
         getStoredSettings(def(saved_settings):
                               updateSettings(saved_settings)

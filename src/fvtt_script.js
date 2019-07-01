@@ -6741,9 +6741,10 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var settings, registered_events;
+        var settings, extension_url, registered_events;
         var addCustomEventListener = ρσ_modules.utils.addCustomEventListener;
         var injectCSS = ρσ_modules.utils.injectCSS;
+        var replaceRolls = ρσ_modules.utils.replaceRolls;
 
         var WhisperType = ρσ_modules.settings.WhisperType;
         var RollType = ρσ_modules.settings.RollType;
@@ -6751,6 +6752,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var FVTT_CSS = ρσ_modules.constants.FVTT_CSS;
 
         settings = null;
+        extension_url = "/public/modules/beyond20/";
         function getSpeakerByName(name) {
             var low_name, actor, speaker;
             low_name = name.toLowerCase();
@@ -6916,6 +6918,26 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["rolls", "limit"]}
         });
 
+        function injectRollsInDescription(description) {
+            var icon16, replaceCB;
+            icon16 = extension_url + "images/icons/icon16.png";
+            replaceCB = (function() {
+                var ρσ_anonfunc = function (dice, modifier) {
+                    var dice_formula;
+                    dice_formula = (((dice === "" || typeof dice === "object" && ρσ_equals(dice, ""))) ? "1d20" : dice) + modifier;
+                    return "<span class=\"ct-beyond20-custom-roll\"><strong>" + dice + modifier + "</strong>" + "<img class=\"ct-beyond20-custom-icon\" src=\"" + icon16 + "\" style=\"margin-right: 3px; margin-left: 3px;\"></img>" + "<span class=\"beyond20-roll-formula\" style=\"display: none;\">" + dice_formula + "</span></span>";
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["dice", "modifier"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            return replaceRolls(description, replaceCB);
+        };
+        if (!injectRollsInDescription.__argnames__) Object.defineProperties(injectRollsInDescription, {
+            __argnames__ : {value: ["description"]}
+        });
+
         async        function rollToDetails(roll) {
             var hit, fail, color, tooltip;
             hit = isCriticalHit(roll);
@@ -6960,7 +6982,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }
                     html += "</table>";
                 }
-                html += "<div style='" + style + "'>" + description.replace("\n", "</br>") + "</div></details>";
+                description = injectRollsInDescription(description).replace("\n", "</br>");
+                html += "<div style='" + style + "'>" + description + "</div></details>";
             } else {
                 html = "<div style='" + style + "'>" + title + "</div>";
             }
@@ -6997,6 +7020,28 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>";
             }
+            Hooks.once("renderChatMessage", (function() {
+                var ρσ_anonfunc = function (chat_message, data, html) {
+                    console.log("chat message rendered : ", html);
+                    html.find(".ct-beyond20-custom-roll").on("click", (function() {
+                        var ρσ_anonfunc = function (event) {
+                            var roll;
+                            console.log("clicked!");
+                            roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
+                            console.log("Formula : ", roll);
+                            rollDice(request, title, roll);
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["event"]}
+                        });
+                        return ρσ_anonfunc;
+                    })());
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["chat_message", "data", "html"]}
+                });
+                return ρσ_anonfunc;
+            })());
             return postChatMessage(html, request.character.name, request.whisper);
         };
         if (!postDescription.__defaults__) Object.defineProperties(postDescription, {
@@ -7024,16 +7069,27 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["dice", "data"]}
         });
 
-        function rollDice(request, title, dice, data) {
+        function rollDice() {
+            var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var title = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var dice = ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[2];
+            var data = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollDice.__defaults__.data : arguments[3];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "data")){
+                data = ρσ_kwargs_obj.data;
+            }
             var roll;
             roll = createRoll(dice, data);
             return postRoll(roll, request.character.name, title, request.whisper);
         };
-        if (!rollDice.__argnames__) Object.defineProperties(rollDice, {
+        if (!rollDice.__defaults__) Object.defineProperties(rollDice, {
+            __defaults__ : {value: {data:{}}},
+            __handles_kwarg_interpolation__ : {value: true},
             __argnames__ : {value: ["request", "title", "dice", "data"]}
         });
 
-        function rollD20(request, title, data) {
+        async        function rollD20(request, title, data) {
             var dice, roll_1, roll_2;
             if ((request.advantage === RollType.prototype.NORMAL || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.NORMAL))) {
                 dice = "1d20";
@@ -7048,11 +7104,64 @@ var str = ρσ_str, repr = ρσ_repr;;
                 console.log("Rolls :", roll_1, roll_2);
                 ρσ_interpolate_kwargs.call(this, postDescription, [request, title, null, {}, null].concat([ρσ_desugar_kwargs({rolls: ρσ_list_decorate([ [null, 
                 ρσ_list_decorate([ roll_1, roll_2 ])] ])})]));
-                return roll_1;
+                return Promise.resolve(roll_1);
             } else {
                 dice = "1d20";
+                return new Promise((function() {
+                    var ρσ_anonfunc = function (resolve, reject) {
+                        var adv;
+                        adv = 0;
+                        new Dialog((function(){
+                            var ρσ_d = {};
+                            ρσ_d["title"] = title;
+                            ρσ_d["content"] = "Choose roll mode for : " + title;
+                            ρσ_d["buttons"] = (function(){
+                                var ρσ_d = {};
+                                ρσ_d["advantage"] = (function(){
+                                    var ρσ_d = {};
+                                    ρσ_d["label"] = "Advantage";
+                                    ρσ_d["callback"] = function () {
+                                        adv = 1;
+                                    };
+                                    return ρσ_d;
+                                }).call(this);
+                                ρσ_d["normal"] = (function(){
+                                    var ρσ_d = {};
+                                    ρσ_d["label"] = "Normal";
+                                    return ρσ_d;
+                                }).call(this);
+                                ρσ_d["disadvantage"] = (function(){
+                                    var ρσ_d = {};
+                                    ρσ_d["label"] = "Disadvantage";
+                                    ρσ_d["callback"] = function () {
+                                        adv = -1;
+                                    };
+                                    return ρσ_d;
+                                }).call(this);
+                                return ρσ_d;
+                            }).call(this);
+                            ρσ_d["default"] = "normal";
+                            ρσ_d["close"] = (function() {
+                                var ρσ_anonfunc = function (html) {
+                                    var dice;
+                                    dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh" : "kl");
+                                    resolve(rollDice(request, title, dice, data));
+                                };
+                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                    __argnames__ : {value: ["html"]}
+                                });
+                                return ρσ_anonfunc;
+                            })();
+                            return ρσ_d;
+                        }).call(this)).render(true);
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["resolve", "reject"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
             }
-            return rollDice(request, title, dice, data);
+            return Promise.resolve(rollDice(request, title, dice, data));
         };
         if (!rollD20.__argnames__) Object.defineProperties(rollD20, {
             __argnames__ : {value: ["request", "title", "data"]}
@@ -7135,35 +7244,43 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var data, roll, token;
+            var data;
             data = (function(){
                 var ρσ_d = {};
                 ρσ_d["initiative"] = request.initiative;
                 ρσ_d["custom_dice"] = custom_roll_dice;
                 return ρσ_d;
             }).call(this);
-            roll = rollD20(request, "Initiative" + "(" + request.initiative + ")", data);
-            if (settings["initiative-tracker"]) {
-                if (canvas.tokens.controlledTokens.length > 0) {
-                    if (ρσ_exists.n(game.combat)) {
-                        var ρσ_Iter7 = ρσ_Iterable(canvas.tokens.controlledTokens);
-                        for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                            token = ρσ_Iter7[ρσ_Index7];
-                            game.combat.createCombatant((function(){
-                                var ρσ_d = {};
-                                ρσ_d["tokenId"] = token.id;
-                                ρσ_d["hidden"] = token.data.hidden;
-                                ρσ_d["initiative"] = roll.total;
-                                return ρσ_d;
-                            }).call(this));
+            rollD20(request, "Initiative" + "(" + request.initiative + ")", data).then((function() {
+                var ρσ_anonfunc = function (roll) {
+                    var token;
+                    if (settings["initiative-tracker"]) {
+                        if (canvas.tokens.controlledTokens.length > 0) {
+                            if (ρσ_exists.n(game.combat)) {
+                                var ρσ_Iter7 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                                for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                                    token = ρσ_Iter7[ρσ_Index7];
+                                    game.combat.createCombatant((function(){
+                                        var ρσ_d = {};
+                                        ρσ_d["tokenId"] = token.id;
+                                        ρσ_d["hidden"] = token.data.hidden;
+                                        ρσ_d["initiative"] = roll.total;
+                                        return ρσ_d;
+                                    }).call(this));
+                                }
+                            } else {
+                                ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet");
+                            }
+                        } else {
+                            ui.notifications.warn("Cannot add initiative to tracker: no token is currently selected");
                         }
-                    } else {
-                        ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet");
                     }
-                } else {
-                    ui.notifications.warn("Cannot add initiative to tracker: no token is currently selected");
-                }
-            }
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["roll"]}
+                });
+                return ρσ_anonfunc;
+            })());
         };
         if (!rollInitiative.__defaults__) Object.defineProperties(rollInitiative, {
             __defaults__ : {value: {custom_roll_dice:""}},
@@ -7491,11 +7608,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["name", "current", "total"]}
         });
 
-        function setSettings(new_settings) {
+        function setSettings(new_settings, url) {
             settings = new_settings;
+            extension_url = url;
         };
         if (!setSettings.__argnames__) Object.defineProperties(setSettings, {
-            __argnames__ : {value: ["new_settings"]}
+            __argnames__ : {value: ["new_settings", "url"]}
         });
 
         function disconnectAllEvents() {

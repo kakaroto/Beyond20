@@ -1,8 +1,9 @@
-from utils import addCustomEventListener, injectCSS
+from utils import addCustomEventListener, injectCSS, replaceRolls
 from settings import WhisperType, RollType
 from constants import FVTT_CSS
 
 settings = None
+extension_url = "/public/modules/beyond20/"
 
 def getSpeakerByName(name):
     low_name = name.toLowerCase()
@@ -58,6 +59,18 @@ def isCriticalHitD20(rolls, limit=20):
             return True
     return False
 
+def injectRollsInDescription(description):
+    nonlocal extension_url
+    icon16 = extension_url + "images/icons/icon16.png"
+    replaceCB = def(dice, modifier):
+        dice_formula = ("1d20" if dice == "" else dice) + modifier
+        # <u> is filtered out in 0.3.2, so using <span> instead
+        return '<span class="ct-beyond20-custom-roll"><strong>' + dice + modifier + '</strong>' + \
+            '<img class="ct-beyond20-custom-icon" src="' + icon16 + \
+            '" style="margin-right: 3px; margin-left: 3px;"></img>' + \
+            '<span class="beyond20-roll-formula" style="display: none;">' + dice_formula + '</span></span>'
+    return replaceRolls(description, replaceCB)
+
 v'async'
 def rollToDetails(roll):
     hit = isCriticalHit(roll)
@@ -80,7 +93,8 @@ def postDescription(request, title, source, attributes, description, rolls=[], o
             for attr in attributes:
                 html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[attr] + "</td></tr>"
             html += "</table>"
-        html += "<div style='" + style + "'>" + description.replace("\n", "</br>") + "</div></details>"
+        description = injectRollsInDescription(description).replace("\n", "</br>")
+        html += "<div style='" + style + "'>" + description + "</div></details>"
     else:
         html = "<div style='" + style + "'>" + title + "</div>"
 
@@ -104,6 +118,15 @@ def postDescription(request, title, source, attributes, description, rolls=[], o
                 roll_html = v'await rollToDetails(roll)'
         html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>"
 
+    Hooks.once('renderChatMessage', def(chat_message, data, html):
+                   console.log("chat message rendered : ", html)
+                   html.find(".ct-beyond20-custom-roll").on('click', def(event):
+                                                                console.log("clicked!")
+                                                                roll = $(event.currentTarget).find(".beyond20-roll-formula").text()
+                                                                console.log("Formula : ", roll)
+                                                                rollDice(request, title, roll)
+                                                            )
+               )
     return postChatMessage(html, request.character.name, request.whisper)
 
 def createRoll(dice, data):
@@ -116,10 +139,11 @@ def createRoll(dice, data):
             parts.append(new_key)
     return new Roll(parts.join(" + @"), new_data)
 
-def rollDice(request, title, dice, data):
+def rollDice(request, title, dice, data={}):
     roll = createRoll(dice, data)
     return postRoll(roll, request.character.name, title, request.whisper)
 
+v'async'
 def rollD20(request, title, data):
     if request.advantage == RollType.NORMAL:
         dice = "1d20"
@@ -133,11 +157,34 @@ def rollD20(request, title, data):
         roll_2 = createRoll(dice, data).roll()
         console.log("Rolls :", roll_1, roll_2)
         postDescription(request, title, None, {}, None, rolls=[(None, [roll_1, roll_2])])
-        return roll_1
+        return Promise.resolve(roll_1)
     else:
         dice = "1d20" # TODO: query dialog
+        return new Promise(def(resolve, reject):
+                               adv = 0
+                               new Dialog({"title": title,
+                                 "content": "Choose roll mode for : " + title,
+                                 "buttons": {"advantage": {"label": "Advantage",
+                                                           "callback": def():
+                                                               nonlocal adv
+                                                               adv = 1
+                                                           },
+                                             "normal": {"label": "Normal"},
+                                             "disadvantage": {"label": "Disadvantage",
+                                                              "callback": def():
+                                                                  nonlocal adv
+                                                                  adv = -1
+                                                              }
+                                             },
+                                           "default": "normal",
+                                           "close": def(html):
+                                               nonlocal adv
+                                               dice = "1d20" if adv == 0 else ("2d20" + ("kh" if adv == 1 else "kl"))
+                                               resolve(rollDice(request, title, dice, data))
+                                           }).render(True)
+                           )
 
-    return rollDice(request, title, dice, data)
+    return Promise.resolve(rollDice(request, title, dice, data))
     
 def rollSkill(request, custom_roll_dice=""):
     data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
@@ -156,18 +203,17 @@ def rollInitiative(request, custom_roll_dice=""):
     nonlocal settings
 
     data = {"initiative": request.initiative, "custom_dice": custom_roll_dice}
-    roll = rollD20(request, "Initiative" + "(" + request.initiative + ")", data)
-
-    if settings["initiative-tracker"]:
-        if canvas.tokens.controlledTokens.length > 0:
-            if game.combat?:
-                for token in canvas.tokens.controlledTokens:
-                    game.combat.createCombatant({"tokenId": token.id, "hidden": token.data.hidden, "initiative": roll.total})
+    rollD20(request, "Initiative" + "(" + request.initiative + ")", data).then(def(roll):
+        if settings["initiative-tracker"]:
+            if canvas.tokens.controlledTokens.length > 0:
+                if game.combat?:
+                    for token in canvas.tokens.controlledTokens:
+                        game.combat.createCombatant({"tokenId": token.id, "hidden": token.data.hidden, "initiative": roll.total})
+                else:
+                    ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet")
             else:
-                ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet")
-        else:
-                ui.notifications.warn("Cannot add initiative to tracker: no token is currently selected")
-
+                    ui.notifications.warn("Cannot add initiative to tracker: no token is currently selected")
+    )
 
 def rollHitDice(request):
     rname = "Hit Dice" + (("(" + request.class + ")") if  request.multiclass else "")
@@ -186,7 +232,6 @@ def rollTrait(request):
     else:
         source = request.type
 
-    # TODO: Sub description
     postDescription(request, request.name, source, {}, request.description, open=True)
 
 def buildAttackRolls(request, custom_roll_dice):
@@ -385,9 +430,10 @@ def updateHP(name, current, total=None):
             if prefix:
                 token.update(canvas.id, {prefix + ".value": current,
                                          prefix + ".max": total})
-def setSettings(new_settings):
-    nonlocal settings
+def setSettings(new_settings, url):
+    nonlocal settings, extension_url
     settings = new_settings
+    extension_url = url
 
 def disconnectAllEvents():
     nonlocal registered_events
