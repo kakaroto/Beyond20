@@ -507,7 +507,7 @@ def injectRollButton(paneClass):
             if isRollButtonAdded():
                 return
             cb = def():
-                sendRollWithCharacter("death-save", "1d20", {})
+                sendRollWithCharacter("death-save", "1d20", {"advantage": RollType.NORMAL})
             addIconButton(cb, ".ct-health-manager__deathsaves-group--fails")
         else:
             removeRollButtons()

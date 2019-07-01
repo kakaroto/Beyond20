@@ -261,7 +261,7 @@ def rollDeathSave(request, custom_roll_dice=""):
     return template(request, "simple",
                     {"charname": request.character.name,
                      "rname" : "Death Saving Throw",
-                     "r1": genRoll("1d20cs>10cf<9", {"CUSTOM": custom_roll_dice}),
+                     "r1": genRoll("1d20", {"CUSTOM": custom_roll_dice}),
                      "normal": 1})
 
 def rollTrait(request):

@@ -9694,7 +9694,11 @@ return this.__repr__();
                         return;
                     }
                     cb = function () {
-                        sendRollWithCharacter("death-save", "1d20", {});
+                        sendRollWithCharacter("death-save", "1d20", (function(){
+                            var ρσ_d = {};
+                            ρσ_d["advantage"] = RollType.prototype.NORMAL;
+                            return ρσ_d;
+                        }).call(this));
                     };
                     addIconButton(cb, ".ct-health-manager__deathsaves-group--fails");
                 } else {

@@ -7276,7 +7276,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 var ρσ_d = {};
                 ρσ_d["charname"] = request.character.name;
                 ρσ_d["rname"] = "Death Saving Throw";
-                ρσ_d["r1"] = genRoll("1d20cs>10cf<9", (function(){
+                ρσ_d["r1"] = genRoll("1d20", (function(){
                     var ρσ_d = {};
                     ρσ_d["CUSTOM"] = custom_roll_dice;
                     return ρσ_d;
