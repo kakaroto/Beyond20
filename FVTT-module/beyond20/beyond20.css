@@ -28,3 +28,23 @@
 .beyond20-tooltip-content .dice-tooltip {
     display: block;
 }
+
+.beyond20-roll-result.beyond20-roll-cells {
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid #999;
+}
+
+.beyond20-roll-result .roll-separator {
+   display: inline-block;
+   width: 0px;
+   border: 1px solid black;
+   height: 25px;
+}
+
+.beyond20-roll-result .roll-cell {
+   display: inline-block;
+   text-align: center;
+   vertical-align: middle;
+   margin-top: 0.5em;
+   margin-bottom: 0.5em;
+}
