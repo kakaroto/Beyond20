@@ -482,6 +482,15 @@ def updateHP(name, current, total=None):
 
     tokens = canvas.tokens.objects.children.filter(def(t): return t.data.name.toLowerCase() == name;)
 
+    if len(tokens) == 0:
+        actor = game.actors.entities.find(def(a):
+                                                 return a.permission == ENTITY_PERMISSIONS.OWNER and \
+                                                     a.data.name.toLowerCase() == name
+                                             )
+        if actor?:
+            actor.update({"data.attributes.hp.value" : current,
+                          "data.attributes.hp.max" : total})
+
     for token in tokens:
         if token.actor and token.data.actorLink:
             total = total if total else token.actor.data.attributes.hp.max

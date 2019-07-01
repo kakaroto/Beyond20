@@ -8063,7 +8063,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "total")){
                 total = ρσ_kwargs_obj.total;
             }
-            var tokens, prefix, token;
+            var tokens, actor, prefix, token;
             console.log("Updating HP for " + name + " : " + current + "/" + total);
             name = name.toLowerCase();
             tokens = canvas.tokens.objects.children.filter((function() {
@@ -8075,6 +8075,25 @@ var str = ρσ_str, repr = ρσ_repr;;
                 });
                 return ρσ_anonfunc;
             })());
+            if (ρσ_equals(len(tokens), 0)) {
+                actor = game.actors.entities.find((function() {
+                    var ρσ_anonfunc = function (a) {
+                        return (a.permission === ENTITY_PERMISSIONS.OWNER || typeof a.permission === "object" && ρσ_equals(a.permission, ENTITY_PERMISSIONS.OWNER)) && ρσ_equals(a.data.name.toLowerCase(), name);
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["a"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
+                if ((typeof actor !== "undefined" && actor !== null)) {
+                    actor.update((function(){
+                        var ρσ_d = {};
+                        ρσ_d["data.attributes.hp.value"] = current;
+                        ρσ_d["data.attributes.hp.max"] = total;
+                        return ρσ_d;
+                    }).call(this));
+                }
+            }
             var ρσ_Iter12 = ρσ_Iterable(tokens);
             for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
                 token = ρσ_Iter12[ρσ_Index12];
