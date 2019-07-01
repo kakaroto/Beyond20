@@ -7171,6 +7171,68 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["whisper"]}
         });
 
+        async        function queryAdvantage(title) {
+            var icon;
+            icon = "<img style=\"border: 0px;\" src=\"" + extension_url + "images/icons/icon16.png" + "\"></img>";
+            return new Promise((function() {
+                var ρσ_anonfunc = function (resolve, reject) {
+                    var adv;
+                    adv = 0;
+                    new Dialog((function(){
+                        var ρσ_d = {};
+                        ρσ_d["title"] = title;
+                        ρσ_d["content"] = "Choose roll mode for : " + title;
+                        ρσ_d["buttons"] = (function(){
+                            var ρσ_d = {};
+                            ρσ_d["advantage"] = (function(){
+                                var ρσ_d = {};
+                                ρσ_d["label"] = "Advantage";
+                                ρσ_d["icon"] = icon;
+                                ρσ_d["callback"] = function () {
+                                    adv = 1;
+                                };
+                                return ρσ_d;
+                            }).call(this);
+                            ρσ_d["normal"] = (function(){
+                                var ρσ_d = {};
+                                ρσ_d["label"] = "Normal";
+                                ρσ_d["icon"] = icon;
+                                return ρσ_d;
+                            }).call(this);
+                            ρσ_d["disadvantage"] = (function(){
+                                var ρσ_d = {};
+                                ρσ_d["label"] = "Disadvantage";
+                                ρσ_d["icon"] = icon;
+                                ρσ_d["callback"] = function () {
+                                    adv = -1;
+                                };
+                                return ρσ_d;
+                            }).call(this);
+                            return ρσ_d;
+                        }).call(this);
+                        ρσ_d["default"] = "normal";
+                        ρσ_d["close"] = (function() {
+                            var ρσ_anonfunc = function (html) {
+                                resolve(adv);
+                            };
+                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                __argnames__ : {value: ["html"]}
+                            });
+                            return ρσ_anonfunc;
+                        })();
+                        return ρσ_d;
+                    }).call(this)).render(true);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["resolve", "reject"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!queryAdvantage.__argnames__) Object.defineProperties(queryAdvantage, {
+            __argnames__ : {value: ["title"]}
+        });
+
         function postChatMessage(message, character, whisper) {
             var data, rollMode;
             data = (function(){
@@ -7464,8 +7526,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         async        function rollD20(request, title, data) {
-            var icon, dice, roll_1, roll_2;
-            icon = "<img style=\"border: 0px;\" src=\"" + extension_url + "images/icons/icon16.png" + "\"></img>";
+            var dice, roll_1, roll_2, adv;
             if ((request.advantage === RollType.prototype.NORMAL || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.NORMAL))) {
                 dice = "1d20";
             } else if ((request.advantage === RollType.prototype.ADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.ADVANTAGE))) {
@@ -7479,66 +7540,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                 console.log("Rolls :", roll_1, roll_2);
                 ρσ_interpolate_kwargs.call(this, postDescription, [request, title, null, {}, null].concat([ρσ_desugar_kwargs({rolls: ρσ_list_decorate([ [null, 
                 ρσ_list_decorate([ roll_1, roll_2 ])] ])})]));
-                return Promise.resolve(roll_1);
+                return roll_1;
             } else {
-                return new Promise((function() {
-                    var ρσ_anonfunc = function (resolve, reject) {
-                        var adv;
-                        adv = 0;
-                        new Dialog((function(){
-                            var ρσ_d = {};
-                            ρσ_d["title"] = title;
-                            ρσ_d["content"] = "Choose roll mode for : " + title;
-                            ρσ_d["buttons"] = (function(){
-                                var ρσ_d = {};
-                                ρσ_d["advantage"] = (function(){
-                                    var ρσ_d = {};
-                                    ρσ_d["label"] = "Advantage";
-                                    ρσ_d["icon"] = icon;
-                                    ρσ_d["callback"] = function () {
-                                        adv = 1;
-                                    };
-                                    return ρσ_d;
-                                }).call(this);
-                                ρσ_d["normal"] = (function(){
-                                    var ρσ_d = {};
-                                    ρσ_d["label"] = "Normal";
-                                    ρσ_d["icon"] = icon;
-                                    return ρσ_d;
-                                }).call(this);
-                                ρσ_d["disadvantage"] = (function(){
-                                    var ρσ_d = {};
-                                    ρσ_d["label"] = "Disadvantage";
-                                    ρσ_d["icon"] = icon;
-                                    ρσ_d["callback"] = function () {
-                                        adv = -1;
-                                    };
-                                    return ρσ_d;
-                                }).call(this);
-                                return ρσ_d;
-                            }).call(this);
-                            ρσ_d["default"] = "normal";
-                            ρσ_d["close"] = (function() {
-                                var ρσ_anonfunc = function (html) {
-                                    var dice;
-                                    dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh" : "kl");
-                                    resolve(rollDice(request, title, dice, data));
-                                };
-                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                    __argnames__ : {value: ["html"]}
-                                });
-                                return ρσ_anonfunc;
-                            })();
-                            return ρσ_d;
-                        }).call(this)).render(true);
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["resolve", "reject"]}
-                    });
-                    return ρσ_anonfunc;
-                })());
+                adv = await queryAdvantage(title);
+                dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh" : "kl");
             }
-            return Promise.resolve(rollDice(request, title, dice, data));
+            return rollDice(request, title, dice, data);
         };
         if (!rollD20.__argnames__) Object.defineProperties(rollD20, {
             __argnames__ : {value: ["request", "title", "data"]}
@@ -7778,8 +7785,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request"]}
         });
 
-        function buildAttackRolls(request, custom_roll_dice) {
-            var rolls, is_critical, critical_limit, custom, to_hit, roll_1, roll_2, to_hit_roll, dice, damages, damage_types, total_damage, roll, dmg_type, suffix, i, total_critical_damage;
+        async        function buildAttackRolls(request, custom_roll_dice) {
+            var rolls, is_critical, critical_limit, custom, to_hit, roll_1, roll_2, to_hit_roll, dice, adv, damages, damage_types, total_damage, roll, dmg_type, suffix, i, total_critical_damage;
             rolls = ρσ_list_decorate([]);
             is_critical = false;
             if (ρσ_exists.n(request["to-hit"])) {
@@ -7807,7 +7814,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                     } else if ((request.advantage === RollType.prototype.DISADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DISADVANTAGE))) {
                         dice = "2d20kl";
                     } else {
-                        dice = "1d20";
+                        adv = await queryAdvantage(request.name);
+                        dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh" : "kl");
                     }
                     to_hit_roll = new Roll(dice + to_hit).roll();
                     is_critical = isCriticalHitD20(ρσ_list_decorate([ to_hit_roll ]), critical_limit);
@@ -7853,7 +7861,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request", "custom_roll_dice"]}
         });
 
-        function rollAttack() {
+        async        function rollAttack() {
             var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var custom_roll_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollAttack.__defaults__.custom_roll_dice : arguments[1];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
@@ -7862,7 +7870,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
             var rolls, data;
-            rolls = buildAttackRolls(request, custom_roll_dice);
+            rolls = await buildAttackRolls(request, custom_roll_dice);
             data = {};
             if (ρσ_exists.n(request.range)) {
                 data["Range"] = request.range;
@@ -7915,8 +7923,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request"]}
         });
 
-        function rollSpellAttack(request, custom_roll_dice) {
-            var spell_card, rolls, components, prefix;
+        async        function rollSpellAttack(request, custom_roll_dice) {
+            var spell_card, rolls, components, prefix, attack_rolls;
             spell_card = buildSpellCard(request);
             rolls = ρσ_list_decorate([]);
             if (ρσ_exists.n(request.range)) {
@@ -7948,7 +7956,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_exists.n(request["save-dc"])) {
                 rolls.append(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
             }
-            rolls.extend(buildAttackRolls(request, custom_roll_dice));
+            attack_rolls = await buildAttackRolls(request, custom_roll_dice);
+            rolls.extend(attack_rolls);
             postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls);
         };
         if (!rollSpellAttack.__argnames__) Object.defineProperties(rollSpellAttack, {

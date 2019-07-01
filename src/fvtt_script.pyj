@@ -22,6 +22,37 @@ def whisperToRollMode(whisper):
     except:
         return game.settings.get("core", "rollMode")
 
+v'async'
+def queryAdvantage(title):
+    nonlocal extension_url
+    icon = '<img style="border: 0px;" src="' + extension_url + "images/icons/icon16.png" + '"></img>'
+
+    return new Promise(def(resolve, reject):
+                           adv = 0
+                           new Dialog({"title": title,
+                             "content": "Choose roll mode for : " + title,
+                             "buttons": {"advantage": {"label": "Advantage",
+                                                       "icon": icon,
+                                                       "callback": def():
+                                                           nonlocal adv
+                                                           adv = 1
+                                                       },
+                                         "normal": {"label": "Normal",
+                                                    "icon": icon},
+                                         "disadvantage": {"label": "Disadvantage",
+                                                          "icon": icon,
+                                                          "callback": def():
+                                                              nonlocal adv
+                                                              adv = -1
+                                                          }
+                                         },
+                                       "default": "normal",
+                                       "close": def(html):
+                                           nonlocal adv
+                                           resolve(adv)
+                                       }).render(True)
+                       )
+
 def postChatMessage(message, character, whisper):
     data = {"content": message, 
             "user": game.user._id,
@@ -146,9 +177,6 @@ def rollDice(request, title, dice, data={}):
 
 v'async'
 def rollD20(request, title, data):
-    nonlocal extension_url
-    icon = '<img style="border: 0px;" src="' + extension_url + "images/icons/icon16.png" + '"></img>'
-
     if request.advantage == RollType.NORMAL:
         dice = "1d20"
     elif request.advantage == RollType.ADVANTAGE:
@@ -161,36 +189,12 @@ def rollD20(request, title, data):
         roll_2 = createRoll(dice, data).roll()
         console.log("Rolls :", roll_1, roll_2)
         postDescription(request, title, None, {}, None, rolls=[(None, [roll_1, roll_2])])
-        return Promise.resolve(roll_1)
+        return roll_1
     else:
-        return new Promise(def(resolve, reject):
-                               adv = 0
-                               new Dialog({"title": title,
-                                 "content": "Choose roll mode for : " + title,
-                                 "buttons": {"advantage": {"label": "Advantage",
-                                                           "icon": icon,
-                                                           "callback": def():
-                                                               nonlocal adv
-                                                               adv = 1
-                                                           },
-                                             "normal": {"label": "Normal",
-                                                        "icon": icon},
-                                             "disadvantage": {"label": "Disadvantage",
-                                                              "icon": icon,
-                                                              "callback": def():
-                                                                  nonlocal adv
-                                                                  adv = -1
-                                                              }
-                                             },
-                                           "default": "normal",
-                                           "close": def(html):
-                                               nonlocal adv
-                                               dice = "1d20" if adv == 0 else ("2d20" + ("kh" if adv == 1 else "kl"))
-                                               resolve(rollDice(request, title, dice, data))
-                                           }).render(True)
-                           )
+        adv = v'await queryAdvantage(title)'
+        dice = "1d20" if adv == 0 else ("2d20" + ("kh" if adv == 1 else "kl"))
 
-    return Promise.resolve(rollDice(request, title, dice, data))
+    return rollDice(request, title, dice, data)
     
 def rollSkill(request, custom_roll_dice=""):
     nonlocal extension_url
@@ -278,6 +282,7 @@ def rollTrait(request):
 
     postDescription(request, request.name, source, {}, request.description, open=True)
 
+v'async'
 def buildAttackRolls(request, custom_roll_dice):
     rolls = []
     is_critical = False
@@ -307,7 +312,8 @@ def buildAttackRolls(request, custom_roll_dice):
             elif request.advantage == RollType.DISADVANTAGE:
                 dice = "2d20kl"
             else:
-                dice = "1d20" # TODO : Support dialog
+                adv = v'await queryAdvantage(request.name)'
+                dice = "1d20" if adv == 0 else ("2d20" + ("kh" if adv == 1 else "kl"))
             to_hit_roll = new Roll(dice + to_hit).roll()
             is_critical = isCriticalHitD20([to_hit_roll], critical_limit)
         rolls.append(("To Hit", to_hit_roll))
@@ -342,10 +348,11 @@ def buildAttackRolls(request, custom_roll_dice):
 
     return rolls
 
+v'async'
 def rollAttack(request, custom_roll_dice=""):
     nonlocal settings
 
-    rolls = buildAttackRolls(request, custom_roll_dice)
+    rolls = v'await buildAttackRolls(request, custom_roll_dice)'
 
     data = {}
     if request.range?:
@@ -382,6 +389,7 @@ def rollSpellCard(request):
     spell_card = buildSpellCard(request)
     postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], open=True)
 
+v'async'
 def rollSpellAttack(request, custom_roll_dice):
     nonlocal settings
 
@@ -411,7 +419,8 @@ def rollSpellAttack(request, custom_roll_dice):
     if request["save-dc"]?:
         rolls.append(("Save", request["save-ability"] + " DC " + request["save-dc"]))
 
-    rolls.extend(buildAttackRolls(request, custom_roll_dice))
+    attack_rolls = v'await buildAttackRolls(request, custom_roll_dice)'
+    rolls.extend(attack_rolls)
 
     # TODO: Support don't auto-roll dmg
     postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls)
