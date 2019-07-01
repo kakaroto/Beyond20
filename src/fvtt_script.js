@@ -6721,7 +6721,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
         CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
         BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
-        FVTT_CSS = "\n/* This is needed so the tooltip's absolute position is\n * relative to the message's position in the chatlog\n */\n.beyond20-roll-result {\n   position: relative;\n}\n\n.beyond20-tooltip .beyond20-tooltip-content {\n  display: none;\n  background-color: #f5f2ec;\n  text-align: left;\n  border-radius: 6px;\n  padding: 5px 10px;\n  margin: 10px;\n  width: 80%;\n  top: -120px; /* Until I figure out how to make it move above the mouse */\n  border: 2px solid black;\n\n  /* Position the tooltip */\n  position: absolute;\n  z-index: 1;\n}\n\n.beyond20-tooltip:hover .beyond20-tooltip-content {\n  display: block;\n}\n\n.beyond20-tooltip-content .dice-tooltip {\n    display: block;\n}\n";
+        FVTT_CSS = "\n/* This is needed so the tooltip's absolute position is\n * relative to the message's position in the chatlog\n */\n.beyond20-roll-result {\n   position: relative;\n}\n\n.beyond20-tooltip .beyond20-tooltip-content {\n  display: none;\n  background-color: #f5f2ec;\n  text-align: left;\n  border-radius: 6px;\n  padding: 5px 10px;\n  margin: 10px;\n  width: 80%;\n  top: -120px; /* Until I figure out how to make it move above the mouse */\n  border: 2px solid black;\n\n  /* Position the tooltip */\n  position: absolute;\n  z-index: 1;\n}\n\n.beyond20-tooltip:hover .beyond20-tooltip-content {\n  display: block;\n}\n\n.beyond20-tooltip-content .dice-tooltip {\n    display: block;\n}\n\n.beyond20-roll-result.beyond20-roll-cells {\n    background: rgba(0, 0, 0, 0.1);\n    border: 1px solid #999;\n}\n\n.beyond20-roll-result .roll-separator {\n   display: inline-block;\n   width: 0px;\n   border: 1px solid black;\n   height: 25px;\n}\n\n.beyond20-roll-result .roll-cell {\n   display: inline-block;\n   text-align: center;\n   vertical-align: middle;\n   margin-top: 0.5em;\n   margin-bottom: 0.5em;\n}\n\n";
         ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
         ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125}}";
         ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
@@ -7386,6 +7386,25 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["roll"]}
         });
 
+        function rollsToCells(html) {
+            var result, rolls, width, roll;
+            result = "";
+            rolls = html.split(" | ");
+            width = 100 / len(rolls) - 5 * (len(rolls) - 1);
+            var ρσ_Iter3 = ρσ_Iterable(rolls);
+            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                roll = ρσ_Iter3[ρσ_Index3];
+                if ((result !== "" && (typeof result !== "object" || ρσ_not_equals(result, "")))) {
+                    result += "<div class=\"roll-separator\"></div>";
+                }
+                result += "<div class=\"roll-cell\" style=\"width: " + width + "%;\">" + roll + "</div>";
+            }
+            return result;
+        };
+        if (!rollsToCells.__argnames__) Object.defineProperties(rollsToCells, {
+            __argnames__ : {value: ["html"]}
+        });
+
         async        function postDescription() {
             var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var title = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
@@ -7406,7 +7425,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "open")){
                 open = ρσ_kwargs_obj.open;
             }
-            var style, html, attr, roll_name, roll_html, roll_list, ρσ_unpack, i, roll, button;
+            var style, html, attr, roll_html, roll_list, ρσ_unpack, i, roll, roll_name, button;
             style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;";
             if (description) {
                 html = "<details" + ((open) ? " open" : "") + "><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>";
@@ -7415,9 +7434,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if (source) {
                         html += "<tr><td colspan'2'><i>" + source + "</i></td></tr>";
                     }
-                    var ρσ_Iter3 = ρσ_Iterable(attributes);
-                    for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                        attr = ρσ_Iter3[ρσ_Index3];
+                    var ρσ_Iter4 = ρσ_Iterable(attributes);
+                    for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                        attr = ρσ_Iter4[ρσ_Index4];
                         html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[(typeof attr === "number" && attr < 0) ? attributes.length + attr : attr] + "</td></tr>";
                     }
                     html += "</table>";
@@ -7428,25 +7447,20 @@ var str = ρσ_str, repr = ρσ_repr;;
                 html = "<div style='" + style + "'>" + title + "</div>";
             }
             console.log("Rolls : ", rolls);
-            var ρσ_Iter4 = ρσ_Iterable(rolls);
-            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                ρσ_unpack = ρσ_Iter4[ρσ_Index4];
+            var ρσ_Iter5 = ρσ_Iterable(rolls);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                ρσ_unpack = ρσ_Iter5[ρσ_Index5];
                 roll_name = ρσ_unpack[0];
                 roll = ρσ_unpack[1];
-                if (roll_name) {
-                    roll_name = roll_name[0].toUpperCase() + roll_name.slice(1) + ": ";
-                } else {
-                    roll_name = "";
-                }
                 if (ρσ_instanceof(roll, str)) {
                     roll_html = "<span>" + roll + "</span>";
                 } else {
                     if (ρσ_instanceof(roll, list)) {
                         roll_list = roll;
                         roll_html = "";
-                        var ρσ_Iter5 = ρσ_Iterable(enumerate(roll_list));
-                        for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                            ρσ_unpack = ρσ_Iter5[ρσ_Index5];
+                        var ρσ_Iter6 = ρσ_Iterable(enumerate(roll_list));
+                        for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                            ρσ_unpack = ρσ_Iter6[ρσ_Index6];
                             i = ρσ_unpack[0];
                             roll = ρσ_unpack[1];
                             if (i > 0) {
@@ -7458,11 +7472,16 @@ var str = ρσ_str, repr = ρσ_repr;;
                         roll_html = await rollToDetails(roll);
                     }
                 }
-                html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>";
+                if (roll_name) {
+                    roll_name = roll_name[0].toUpperCase() + roll_name.slice(1) + ((roll_html) ? ": " : "");
+                    html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>";
+                } else {
+                    html += "<div class='beyond20-roll-result beyond20-roll-cells'>" + rollsToCells(roll_html) + "</div>";
+                }
             }
-            var ρσ_Iter6 = ρσ_Iterable(buttons);
-            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                button = ρσ_Iter6[ρσ_Index6];
+            var ρσ_Iter7 = ρσ_Iterable(buttons);
+            for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                button = ρσ_Iter7[ρσ_Index7];
                 html += "<button class=\"beyond20-chat-button\">" + button + "</button>";
             }
             Hooks.once("renderChatMessage", (function() {
@@ -7507,9 +7526,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             var new_data, parts, new_key, key;
             new_data = {};
             parts = ρσ_list_decorate([ dice ]);
-            var ρσ_Iter7 = ρσ_Iterable(data);
-            for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                key = ρσ_Iter7[ρσ_Index7];
+            var ρσ_Iter8 = ρσ_Iterable(data);
+            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                key = ρσ_Iter8[ρσ_Index8];
                 if ((data[(typeof key === "number" && key < 0) ? data.length + key : key] !== "" && (typeof data[(typeof key === "number" && key < 0) ? data.length + key : key] !== "object" || ρσ_not_equals(data[(typeof key === "number" && key < 0) ? data.length + key : key], "")))) {
                     new_key = key.replace("_", "").toLowerCase();
                     new_data[(typeof new_key === "number" && new_key < 0) ? new_data.length + new_key : new_key] = data[(typeof key === "number" && key < 0) ? data.length + key : key];
@@ -7602,9 +7621,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 html += "<div class=\"form-group\"><label>Roll Formula</label><input type=\"text\" value=\"" + formula + "\" disabled></div>";
                 html += "<div class=\"form-group\"><label>Select Ability</label><select name=\"ability\">";
                 modifiers = {};
-                var ρσ_Iter8 = ρσ_Iterable(request.character.abilities);
-                for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                    ability = ρσ_Iter8[ρσ_Index8];
+                var ρσ_Iter9 = ρσ_Iterable(request.character.abilities);
+                for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                    ability = ρσ_Iter9[ρσ_Index9];
                     html += "<option value=\"" + ability[0] + "\">" + ability[0] + "</option>";
                     modifiers[ρσ_bound_index(ability[0], modifiers)] = ability[3];
                 }
@@ -7724,9 +7743,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if (settings["initiative-tracker"]) {
                         if (canvas.tokens.controlledTokens.length > 0) {
                             if (ρσ_exists.n(game.combat)) {
-                                var ρσ_Iter9 = ρσ_Iterable(canvas.tokens.controlledTokens);
-                                for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
-                                    token = ρσ_Iter9[ρσ_Index9];
+                                var ρσ_Iter10 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                                for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                                    token = ρσ_Iter10[ρσ_Index10];
                                     game.combat.createCombatant((function(){
                                         var ρσ_d = {};
                                         ρσ_d["tokenId"] = token.id;
@@ -7838,14 +7857,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                     to_hit_roll = new Roll(dice + to_hit).roll();
                     is_critical = isCriticalHitD20(ρσ_list_decorate([ to_hit_roll ]), critical_limit);
                 }
-                rolls.append(["To Hit", to_hit_roll]);
+                rolls.append([null, to_hit_roll]);
             }
             if (ρσ_exists.n(request.damages)) {
                 damages = list(request.damages);
                 damage_types = list(request["damage-types"]);
                 total_damage = "";
-                for (var ρσ_Index10 = 0; ρσ_Index10 < damages.length; ρσ_Index10++) {
-                    i = ρσ_Index10;
+                for (var ρσ_Index11 = 0; ρσ_Index11 < damages.length; ρσ_Index11++) {
+                    i = ρσ_Index11;
                     roll = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
                     total_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
                     dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
@@ -7857,8 +7876,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damages = list(request["critical-damages"]);
                 damage_types = list(request["critical-damage-types"]);
                 total_critical_damage = "";
-                for (var ρσ_Index11 = 0; ρσ_Index11 < damages.length; ρσ_Index11++) {
-                    i = ρσ_Index11;
+                for (var ρσ_Index12 = 0; ρσ_Index12 < damages.length; ρσ_Index12++) {
+                    i = ρσ_Index12;
                     roll = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
                     total_critical_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
                     dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
@@ -7867,7 +7886,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
             }
             if ((typeof total_damage !== "undefined" && total_damage !== null) && ρσ_in("+", total_damage)) {
-                damage_rolls.append([null, "------"]);
+                damage_rolls.append(["------", ρσ_list_decorate([])]);
                 damage_rolls.append(["Total Damage", new Roll(total_damage).roll()]);
                 if ((typeof total_critical_damage !== "undefined" && total_critical_damage !== null)) {
                     damage_rolls.append(["Total Critical Damage", new Roll(total_critical_damage).roll()]);
@@ -8094,9 +8113,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }).call(this));
                 }
             }
-            var ρσ_Iter12 = ρσ_Iterable(tokens);
-            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
-                token = ρσ_Iter12[ρσ_Index12];
+            var ρσ_Iter13 = ρσ_Iterable(tokens);
+            for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
+                token = ρσ_Iter13[ρσ_Index13];
                 if (token.actor && token.data.actorLink) {
                     total = (total) ? total : token.actor.data.attributes.hp.max;
                     token.actor.update((function(){
@@ -8142,9 +8161,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter13 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
-                event = ρσ_Iter13[ρσ_Index13];
+            var ρσ_Iter14 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
+                event = ρσ_Iter14[ρσ_Index14];
                 document.removeEventListener.apply(document, event);
             }
         };

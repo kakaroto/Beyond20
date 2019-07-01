@@ -112,6 +112,17 @@ def rollToDetails(roll):
     return "<span class='beyond20-tooltip' style='color: " + color + ";'>" + roll.total + "<span class='dice-roll beyond20-tooltip-content'>" + \
         "<div class='dice-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>"
 
+def rollsToCells(html):
+    result = ""
+    rolls = html.split(" | ")
+    width = (100.0 / len(rolls)) - (5 * (len(rolls) - 1))
+    for roll in rolls:
+        if result != "":
+            result += '<div class="roll-separator"></div>'
+        result += '<div class="roll-cell" style="width: ' + width +'%;">' + roll + '</div>'
+    return result
+
+
 v'async'
 def postDescription(request, title, source, attributes, description, rolls=[], buttons={}, open=False):
     style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;"
@@ -132,10 +143,6 @@ def postDescription(request, title, source, attributes, description, rolls=[], b
 
     console.log("Rolls : ", rolls)
     for (roll_name, roll) in rolls:
-        if roll_name:
-            roll_name = roll_name[0].toUpperCase() + roll_name[1:] + ": "
-        else:
-            roll_name = ""
         if isinstance(roll, str):
             roll_html = "<span>" + roll + "</span>"
         else:
@@ -148,7 +155,11 @@ def postDescription(request, title, source, attributes, description, rolls=[], b
                     roll_html += v'await rollToDetails(roll)'
             else:
                 roll_html = v'await rollToDetails(roll)'
-        html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>"
+        if roll_name:
+            roll_name = roll_name[0].toUpperCase() + roll_name[1:] + (": " if roll_html else "")
+            html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>"
+        else:
+            html += "<div class='beyond20-roll-result beyond20-roll-cells'>" + rollsToCells(roll_html) + "</div>"
 
     for button in buttons:
         html += '<button class="beyond20-chat-button">' + button + '</button>'
@@ -321,7 +332,7 @@ def buildAttackRolls(request, custom_roll_dice):
                 dice = "1d20" if adv == 0 else ("2d20" + ("kh" if adv == 1 else "kl"))
             to_hit_roll = new Roll(dice + to_hit).roll()
             is_critical = isCriticalHitD20([to_hit_roll], critical_limit)
-        rolls.append(("To Hit", to_hit_roll))
+        rolls.append((None, to_hit_roll))
 
     if request.damages?:
         damages = list(request.damages)
@@ -346,7 +357,7 @@ def buildAttackRolls(request, custom_roll_dice):
             damage_rolls.append((dmg_type + suffix, roll))
 
     if total_damage? and "+" in total_damage:
-        damage_rolls.append((None, "------"))
+        damage_rolls.append(("------", []))
         damage_rolls.append(("Total Damage", new Roll(total_damage).roll()))
         if total_critical_damage?:
             damage_rolls.append(("Total Critical Damage", new Roll(total_critical_damage).roll()))
