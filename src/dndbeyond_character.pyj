@@ -528,8 +528,6 @@ def injectRollButton(paneClass):
 def injectRollToSpellAttack():
     groups = $(".ct-spells-level-casting__info-group")
 
-    # FIXME: bug here, it doesn't seem to want to add them in mobile mode
-    # looks like the page itself removes them continuously?
     for group in groups:
         label = $(group).find(".ct-spells-level-casting__info-label")
         if label.text() == "Spell Attack":
@@ -543,11 +541,11 @@ def injectRollToSpellAttack():
                 name = "Spell Attack"
                 if items.length > 1:
                     name += "(" + item.getAttribute("data-original-title") + ")"
-                img = E.img(class_="ct-beyond20-custom-icon ct-beyond20-spell-attack",
+                img = E.img(class_="ct-beyond20-spell-attack-icon ct-beyond20-spell-attack",
                             x_beyond20_name=name, x_beyond20_modifier=modifier, src=icon16)
                 item.append(img)
                 console.log(item)
-            $(".ct-beyond20-custom-icon").css("margin-left", "3px")
+            $(".ct-beyond20-spell-attack-icon").css("margin-left", "3px")
             $(".ct-beyond20-spell-attack").on('click', def(event):
                 name = $(event.currentTarget).attr("x-beyond20-name")
                 mod = $(event.currentTarget).attr("x-beyond20-modifier")

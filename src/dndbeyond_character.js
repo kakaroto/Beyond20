@@ -9733,11 +9733,11 @@ return this.__repr__();
                         if (items.length > 1) {
                             name += "(" + item.getAttribute("data-original-title") + ")";
                         }
-                        img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-custom-icon ct-beyond20-spell-attack", x_beyond20_name: name, x_beyond20_modifier: modifier, src: icon16})]);
+                        img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-spell-attack-icon ct-beyond20-spell-attack", x_beyond20_name: name, x_beyond20_modifier: modifier, src: icon16})]);
                         item.append(img);
                         console.log(item);
                     }
-                    $(".ct-beyond20-custom-icon").css("margin-left", "3px");
+                    $(".ct-beyond20-spell-attack-icon").css("margin-left", "3px");
                     $(".ct-beyond20-spell-attack").on("click", (function() {
                         var ρσ_anonfunc = function (event) {
                             var name, mod;
