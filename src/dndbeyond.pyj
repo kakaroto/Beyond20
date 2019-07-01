@@ -173,16 +173,19 @@ class Character(CharacterBase):
             req = {"action": "hp-update", "character": self.getDict()}
             console.log("Sending message: ", req)
             chrome.runtime.sendMessage(req)
-                
-    # TODO: Do the same thing for ".ct-feature-snippet-option > .ct-feature-snippet__heading" and
-    # build a dict of {feature: option} so we could have things like {"Favored Enemy": "Undead"}, etc..
-    # Or maybe just remove the ".ct-feature-snippet > " and have the "Undead" be part of the list of features
-    # and just check that the previous one in the list is "Favored Enemy" for example.?
+
     def featureDetailsToList(self, selector):
         features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading")
         feature_list = []
         for feat in features:
-            feature_list.append(feat.childNodes[0].textContent.trim())
+            feat_name = feat.childNodes[0].textContent.trim()
+            feature_list.append(feat_name)
+            options = $(feat).parent().find(".ct-feature-snippet__option > .ct-feature-snippet__heading")
+            for option in options:
+                option_name = option.childNodes[0].textContent.trim()
+                feature_list.append(feat_name + ": " + option_name)
+                
+        console.log("Feature list : ", feature_list)
         return feature_list
 
     def updateFeatures(self):
