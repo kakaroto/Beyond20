@@ -7393,16 +7393,20 @@ var str = ρσ_str, repr = ρσ_repr;;
             var attributes = ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[3];
             var description = ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[4];
             var rolls = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postDescription.__defaults__.rolls : arguments[5];
-            var open = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postDescription.__defaults__.open : arguments[6];
+            var buttons = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postDescription.__defaults__.buttons : arguments[6];
+            var open = (arguments[7] === undefined || ( 7 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postDescription.__defaults__.open : arguments[7];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "rolls")){
                 rolls = ρσ_kwargs_obj.rolls;
             }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "buttons")){
+                buttons = ρσ_kwargs_obj.buttons;
+            }
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "open")){
                 open = ρσ_kwargs_obj.open;
             }
-            var style, html, attr, roll_name, roll_html, roll_list, ρσ_unpack, i, roll;
+            var style, html, attr, roll_name, roll_html, roll_list, ρσ_unpack, i, roll, button;
             style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;";
             if (description) {
                 html = "<details" + ((open) ? " open" : "") + "><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>";
@@ -7456,16 +7460,29 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>";
             }
+            var ρσ_Iter6 = ρσ_Iterable(buttons);
+            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                button = ρσ_Iter6[ρσ_Index6];
+                html += "<button class=\"beyond20-chat-button\">" + button + "</button>";
+            }
             Hooks.once("renderChatMessage", (function() {
                 var ρσ_anonfunc = function (chat_message, data, html) {
-                    console.log("chat message rendered : ", html);
                     html.find(".ct-beyond20-custom-roll").on("click", (function() {
                         var ρσ_anonfunc = function (event) {
                             var roll;
-                            console.log("clicked!");
                             roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
-                            console.log("Formula : ", roll);
                             rollDice(request, title, roll);
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["event"]}
+                        });
+                        return ρσ_anonfunc;
+                    })());
+                    html.find(".beyond20-chat-button").on("click", (function() {
+                        var ρσ_anonfunc = function (event) {
+                            var button;
+                            button = $(event.currentTarget).text();
+                            buttons[(typeof button === "number" && button < 0) ? buttons.length + button : button]();
                         };
                         if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                             __argnames__ : {value: ["event"]}
@@ -7481,18 +7498,18 @@ var str = ρσ_str, repr = ρσ_repr;;
             return postChatMessage(html, request.character.name, request.whisper);
         };
         if (!postDescription.__defaults__) Object.defineProperties(postDescription, {
-            __defaults__ : {value: {rolls:ρσ_list_decorate([]), open:false}},
+            __defaults__ : {value: {rolls:ρσ_list_decorate([]), buttons:{}, open:false}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["request", "title", "source", "attributes", "description", "rolls", "open"]}
+            __argnames__ : {value: ["request", "title", "source", "attributes", "description", "rolls", "buttons", "open"]}
         });
 
         function createRoll(dice, data) {
             var new_data, parts, new_key, key;
             new_data = {};
             parts = ρσ_list_decorate([ dice ]);
-            var ρσ_Iter6 = ρσ_Iterable(data);
-            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                key = ρσ_Iter6[ρσ_Index6];
+            var ρσ_Iter7 = ρσ_Iterable(data);
+            for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                key = ρσ_Iter7[ρσ_Index7];
                 if ((data[(typeof key === "number" && key < 0) ? data.length + key : key] !== "" && (typeof data[(typeof key === "number" && key < 0) ? data.length + key : key] !== "object" || ρσ_not_equals(data[(typeof key === "number" && key < 0) ? data.length + key : key], "")))) {
                     new_key = key.replace("_", "").toLowerCase();
                     new_data[(typeof new_key === "number" && new_key < 0) ? new_data.length + new_key : new_key] = data[(typeof key === "number" && key < 0) ? data.length + key : key];
@@ -7585,9 +7602,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 html += "<div class=\"form-group\"><label>Roll Formula</label><input type=\"text\" value=\"" + formula + "\" disabled></div>";
                 html += "<div class=\"form-group\"><label>Select Ability</label><select name=\"ability\">";
                 modifiers = {};
-                var ρσ_Iter7 = ρσ_Iterable(request.character.abilities);
-                for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                    ability = ρσ_Iter7[ρσ_Index7];
+                var ρσ_Iter8 = ρσ_Iterable(request.character.abilities);
+                for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                    ability = ρσ_Iter8[ρσ_Index8];
                     html += "<option value=\"" + ability[0] + "\">" + ability[0] + "</option>";
                     modifiers[ρσ_bound_index(ability[0], modifiers)] = ability[3];
                 }
@@ -7707,9 +7724,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if (settings["initiative-tracker"]) {
                         if (canvas.tokens.controlledTokens.length > 0) {
                             if (ρσ_exists.n(game.combat)) {
-                                var ρσ_Iter8 = ρσ_Iterable(canvas.tokens.controlledTokens);
-                                for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                                    token = ρσ_Iter8[ρσ_Index8];
+                                var ρσ_Iter9 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                                for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                                    token = ρσ_Iter9[ρσ_Index9];
                                     game.combat.createCombatant((function(){
                                         var ρσ_d = {};
                                         ρσ_d["tokenId"] = token.id;
@@ -7786,8 +7803,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         async        function buildAttackRolls(request, custom_roll_dice) {
-            var rolls, is_critical, critical_limit, custom, to_hit, roll_1, roll_2, to_hit_roll, dice, adv, damages, damage_types, total_damage, roll, dmg_type, suffix, i, total_critical_damage;
+            var rolls, damage_rolls, is_critical, critical_limit, custom, to_hit, roll_1, roll_2, to_hit_roll, dice, adv, damages, damage_types, total_damage, roll, dmg_type, suffix, i, total_critical_damage;
             rolls = ρσ_list_decorate([]);
+            damage_rolls = ρσ_list_decorate([]);
             is_critical = false;
             if (ρσ_exists.n(request["to-hit"])) {
                 critical_limit = 20;
@@ -7826,36 +7844,36 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damages = list(request.damages);
                 damage_types = list(request["damage-types"]);
                 total_damage = "";
-                for (var ρσ_Index9 = 0; ρσ_Index9 < damages.length; ρσ_Index9++) {
-                    i = ρσ_Index9;
+                for (var ρσ_Index10 = 0; ρσ_Index10 < damages.length; ρσ_Index10++) {
+                    i = ρσ_Index10;
                     roll = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
                     total_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
                     dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
                     suffix = (!ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) ? " Damage" : "";
-                    rolls.append([dmg_type + suffix, roll]);
+                    damage_rolls.append([dmg_type + suffix, roll]);
                 }
             }
             if (is_critical && ρσ_exists.n(request["critical-damages"])) {
                 damages = list(request["critical-damages"]);
                 damage_types = list(request["critical-damage-types"]);
                 total_critical_damage = "";
-                for (var ρσ_Index10 = 0; ρσ_Index10 < damages.length; ρσ_Index10++) {
-                    i = ρσ_Index10;
+                for (var ρσ_Index11 = 0; ρσ_Index11 < damages.length; ρσ_Index11++) {
+                    i = ρσ_Index11;
                     roll = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
                     total_critical_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
                     dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
                     suffix = (!ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) ? " Critical Damage" : "";
-                    rolls.append([dmg_type + suffix, roll]);
+                    damage_rolls.append([dmg_type + suffix, roll]);
                 }
             }
             if ((typeof total_damage !== "undefined" && total_damage !== null) && ρσ_in("+", total_damage)) {
-                rolls.append([null, "------"]);
-                rolls.append(["Total Damage", new Roll(total_damage).roll()]);
+                damage_rolls.append([null, "------"]);
+                damage_rolls.append(["Total Damage", new Roll(total_damage).roll()]);
                 if ((typeof total_critical_damage !== "undefined" && total_critical_damage !== null)) {
-                    rolls.append(["Total Critical Damage", new Roll(total_critical_damage).roll()]);
+                    damage_rolls.append(["Total Critical Damage", new Roll(total_critical_damage).roll()]);
                 }
             }
-            return rolls;
+            return ρσ_list_decorate([ rolls, damage_rolls ]);
         };
         if (!buildAttackRolls.__argnames__) Object.defineProperties(buildAttackRolls, {
             __argnames__ : {value: ["request", "custom_roll_dice"]}
@@ -7869,8 +7887,11 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var rolls, data;
-            rolls = await buildAttackRolls(request, custom_roll_dice);
+            var ρσ_unpack, rolls, damage_rolls, data, cb;
+            ρσ_unpack = await buildAttackRolls(request, custom_roll_dice);
+ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
+            rolls = ρσ_unpack[0];
+            damage_rolls = ρσ_unpack[1];
             data = {};
             if (ρσ_exists.n(request.range)) {
                 data["Range"] = request.range;
@@ -7878,7 +7899,18 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_exists.n(request["save-dc"])) {
                 rolls.append(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
             }
-            postDescription(request, request.name, null, data, ρσ_exists.e(request.description, ""), rolls);
+            if (len(damage_rolls) > 0 && len(rolls) > 0 && !settings["auto-roll-damage"]) {
+                cb = function () {
+                    postDescription(request, request.name, null, data, ρσ_exists.e(request.description, ""), damage_rolls);
+                };
+                ρσ_interpolate_kwargs.call(this, postDescription, [request, request.name, null, data, ρσ_exists.e(request.description, ""), rolls].concat([ρσ_desugar_kwargs({buttons: (function(){
+                    var ρσ_d = {};
+                    ρσ_d["Roll Damages"] = cb;
+                    return ρσ_d;
+                }).call(this)})]));
+            } else {
+                postDescription(request, request.name, null, data, ρσ_exists.e(request.description, ""), rolls.concat(damage_rolls));
+            }
         };
         if (!rollAttack.__defaults__) Object.defineProperties(rollAttack, {
             __defaults__ : {value: {custom_roll_dice:""}},
@@ -7915,16 +7947,23 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollSpellCard(request) {
-            var spell_card;
+            var spell_card, cb;
             spell_card = buildSpellCard(request);
-            ρσ_interpolate_kwargs.call(this, postDescription, [request, request.name, spell_card[0], spell_card[1], spell_card[2]].concat([ρσ_desugar_kwargs({open: true})]));
+            cb = function () {
+                console.log("chicos called");
+            };
+            ρσ_interpolate_kwargs.call(this, postDescription, [request, request.name, spell_card[0], spell_card[1], spell_card[2]].concat([ρσ_desugar_kwargs({buttons: (function(){
+                var ρσ_d = {};
+                ρσ_d["Hola chicos!"] = cb;
+                return ρσ_d;
+            }).call(this), open: true})]));
         };
         if (!rollSpellCard.__argnames__) Object.defineProperties(rollSpellCard, {
             __argnames__ : {value: ["request"]}
         });
 
         async        function rollSpellAttack(request, custom_roll_dice) {
-            var spell_card, rolls, components, prefix, attack_rolls;
+            var spell_card, rolls, components, prefix, ρσ_unpack, attack_rolls, damage_rolls, cb;
             spell_card = buildSpellCard(request);
             rolls = ρσ_list_decorate([]);
             if (ρσ_exists.n(request.range)) {
@@ -7956,9 +7995,23 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_exists.n(request["save-dc"])) {
                 rolls.append(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
             }
-            attack_rolls = await buildAttackRolls(request, custom_roll_dice);
+            ρσ_unpack = await buildAttackRolls(request, custom_roll_dice);
+ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
+            attack_rolls = ρσ_unpack[0];
+            damage_rolls = ρσ_unpack[1];
             rolls.extend(attack_rolls);
-            postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls);
+            if (len(damage_rolls) > 0 && len(attack_rolls) > 0 && !settings["auto-roll-damage"]) {
+                cb = function () {
+                    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], damage_rolls);
+                };
+                ρσ_interpolate_kwargs.call(this, postDescription, [request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls].concat([ρσ_desugar_kwargs({buttons: (function(){
+                    var ρσ_d = {};
+                    ρσ_d["Roll Damages"] = cb;
+                    return ρσ_d;
+                }).call(this)})]));
+            } else {
+                postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls.concat(damage_rolls));
+            }
         };
         if (!rollSpellAttack.__argnames__) Object.defineProperties(rollSpellAttack, {
             __argnames__ : {value: ["request", "custom_roll_dice"]}
@@ -8022,9 +8075,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 });
                 return ρσ_anonfunc;
             })());
-            var ρσ_Iter11 = ρσ_Iterable(tokens);
-            for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
-                token = ρσ_Iter11[ρσ_Index11];
+            var ρσ_Iter12 = ρσ_Iterable(tokens);
+            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                token = ρσ_Iter12[ρσ_Index12];
                 if (token.actor && token.data.actorLink) {
                     total = (total) ? total : token.actor.data.attributes.hp.max;
                     token.actor.update((function(){
@@ -8070,9 +8123,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter12 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
-                event = ρσ_Iter12[ρσ_Index12];
+            var ρσ_Iter13 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
+                event = ρσ_Iter13[ρσ_Index13];
                 document.removeEventListener.apply(document, event);
             }
         };

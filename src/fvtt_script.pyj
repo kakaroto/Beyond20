@@ -113,7 +113,7 @@ def rollToDetails(roll):
         "<div class='dice-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>"
 
 v'async'
-def postDescription(request, title, source, attributes, description, rolls=[], open=False):
+def postDescription(request, title, source, attributes, description, rolls=[], buttons={}, open=False):
     style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;"
 
     if description:
@@ -150,14 +150,18 @@ def postDescription(request, title, source, attributes, description, rolls=[], o
                 roll_html = v'await rollToDetails(roll)'
         html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>"
 
+    for button in buttons:
+        html += '<button class="beyond20-chat-button">' + button + '</button>'
+
     Hooks.once('renderChatMessage', def(chat_message, data, html):
-                   console.log("chat message rendered : ", html)
                    html.find(".ct-beyond20-custom-roll").on('click', def(event):
-                                                                console.log("clicked!")
                                                                 roll = $(event.currentTarget).find(".beyond20-roll-formula").text()
-                                                                console.log("Formula : ", roll)
                                                                 rollDice(request, title, roll)
                                                             )
+                   html.find(".beyond20-chat-button").on('click', def(event):
+                                                             button = $(event.currentTarget).text()
+                                                             buttons[button]()
+                                                         )
                )
     return postChatMessage(html, request.character.name, request.whisper)
 
@@ -285,6 +289,7 @@ def rollTrait(request):
 v'async'
 def buildAttackRolls(request, custom_roll_dice):
     rolls = []
+    damage_rolls = []
     is_critical = False
     if request["to-hit"]?:
         critical_limit = 20
@@ -327,7 +332,7 @@ def buildAttackRolls(request, custom_roll_dice):
             total_damage += ("" if i == 0 else " + ") + str(roll.total)
             dmg_type = damage_types[i]
             suffix = " Damage" if dmg_type not in ["Healing", "Disciple of Life"] else ""
-            rolls.append((dmg_type + suffix, roll))
+            damage_rolls.append((dmg_type + suffix, roll))
 
     if is_critical and request["critical-damages"]?:
         damages = list(request["critical-damages"])
@@ -338,21 +343,21 @@ def buildAttackRolls(request, custom_roll_dice):
             total_critical_damage += ("" if i == 0 else " + ") + str(roll.total)
             dmg_type = damage_types[i]
             suffix = " Critical Damage" if dmg_type not in ["Healing", "Disciple of Life"] else ""
-            rolls.append((dmg_type + suffix, roll))
+            damage_rolls.append((dmg_type + suffix, roll))
 
     if total_damage? and "+" in total_damage:
-        rolls.append((None, "------"))
-        rolls.append(("Total Damage", new Roll(total_damage).roll()))
+        damage_rolls.append((None, "------"))
+        damage_rolls.append(("Total Damage", new Roll(total_damage).roll()))
         if total_critical_damage?:
-            rolls.append(("Total Critical Damage", new Roll(total_critical_damage).roll()))
+            damage_rolls.append(("Total Critical Damage", new Roll(total_critical_damage).roll()))
 
-    return rolls
+    return [rolls, damage_rolls]
 
 v'async'
 def rollAttack(request, custom_roll_dice=""):
     nonlocal settings
 
-    rolls = v'await buildAttackRolls(request, custom_roll_dice)'
+    [rolls, damage_rolls] = v'await buildAttackRolls(request, custom_roll_dice)'
 
     data = {}
     if request.range?:
@@ -361,8 +366,13 @@ def rollAttack(request, custom_roll_dice=""):
     if request["save-dc"]?:
         rolls.append(("Save", request["save-ability"] + " DC " + request["save-dc"]))
 
-    # TODO: Support don't auto-roll dmg
-    postDescription(request, request.name, None, data, request.description? "", rolls)
+    if len(damage_rolls) > 0 and len(rolls) > 0 and not settings["auto-roll-damage"]:
+        cb = def():
+            postDescription(request, request.name, None, data, request.description? "", damage_rolls)
+        postDescription(request, request.name, None, data, request.description? "", rolls, buttons={"Roll Damages" : cb})
+    else:
+        postDescription(request, request.name, None, data, request.description? "", rolls.concat(damage_rolls))
+
 
 
 def buildSpellCard(request):
@@ -387,7 +397,9 @@ def buildSpellCard(request):
 
 def rollSpellCard(request):
     spell_card = buildSpellCard(request)
-    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], open=True)
+    cb = def():
+        console.log("chicos called")
+    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], buttons={"Hola chicos!" : cb}, open=True)
 
 v'async'
 def rollSpellAttack(request, custom_roll_dice):
@@ -419,11 +431,15 @@ def rollSpellAttack(request, custom_roll_dice):
     if request["save-dc"]?:
         rolls.append(("Save", request["save-ability"] + " DC " + request["save-dc"]))
 
-    attack_rolls = v'await buildAttackRolls(request, custom_roll_dice)'
+    [attack_rolls, damage_rolls] = v'await buildAttackRolls(request, custom_roll_dice)'
     rolls.extend(attack_rolls)
 
-    # TODO: Support don't auto-roll dmg
-    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls)
+    if len(damage_rolls) > 0 and len(attack_rolls) > 0 and not settings["auto-roll-damage"]:
+        cb = def():
+            postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], damage_rolls)
+        postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls, buttons={"Roll Damages" : cb})
+    else:
+        postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls.concat(damage_rolls))
 
 def handleRoll(request):
     nonlocal settings
