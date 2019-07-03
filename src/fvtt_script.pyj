@@ -4,7 +4,7 @@ from constants import FVTT_CSS
 import math
 
 settings = None
-extension_url = "/public/modules/beyond20/"
+extension_url = "/modules/beyond20/"
 
 def getSpeakerByName(name):
     low_name = name.toLowerCase()
@@ -92,8 +92,7 @@ def isCriticalHitD20(rolls, limit=20):
     return False
 
 def injectRollsInDescription(description):
-    nonlocal extension_url
-    icon16 = extension_url + "images/icons/icon16.png"
+    icon16 = "/modules/beyond20/images/icons/icon16.png"
     replaceCB = def(dice, modifier):
         dice_formula = ("1d20" if dice == "" else dice) + modifier
         # <u> is filtered out in 0.3.2, so using <span> instead
@@ -114,32 +113,27 @@ def rollToDetails(roll):
 
 def rollsToCells(html):
     result = ""
-    rolls = html.split(" | ")
-    width = (100.0 / len(rolls)) - (5 * (len(rolls) - 1))
-    for roll in rolls:
-        if result != "":
-            result += '<div class="roll-separator"></div>'
-        result += '<div class="roll-cell" style="width: ' + width +'%;">' + roll + '</div>'
+    for roll in html.split(" | "):
+        result += '<div class="beyond20-roll-cell">' + roll + '</div>'
     return result
 
 
 v'async'
 def postDescription(request, title, source, attributes, description, rolls=[], buttons={}, open=False):
-    style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;"
-
+    html = '<div class="beyond20-message">'
     if description:
-        html = "<details" + (" open" if open else "") + "><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>"
+        html += "<details" + (" open" if open else "") + "><summary><a>" + title + "</a></summary>"
         if source or attributes.length > 0:
-            html += "<table style='" + style + "'>"
+            html += "<table>"
             if source:
                 html += "<tr><td colspan'2'><i>" + source + "</i></td></tr>"
             for attr in attributes:
                 html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[attr] + "</td></tr>"
             html += "</table>"
         description = injectRollsInDescription(description).replace("\n", "</br>")
-        html += "<div style='" + style + "'>" + description + "</div></details>"
+        html += "<div class='beyond20-description'>" + description + "</div></details>"
     else:
-        html = "<div style='" + style + "'>" + title + "</div>"
+        html = "<div class='beyond20-title'>" + title + "</div>"
 
     console.log("Rolls : ", rolls)
     for (roll_name, roll) in rolls:
@@ -163,8 +157,12 @@ def postDescription(request, title, source, attributes, description, rolls=[], b
 
     for button in buttons:
         html += '<button class="beyond20-chat-button">' + button + '</button>'
+    html += "</div>"
 
     Hooks.once('renderChatMessage', def(chat_message, data, html):
+                   nonlocal extension_url
+                   icon16 = extension_url + "images/icons/icon16.png"
+                   html.find(".ct-beyond20-custom-icon").attr('src', icon16)
                    html.find(".ct-beyond20-custom-roll").on('click', def(event):
                                                                 roll = $(event.currentTarget).find(".beyond20-roll-formula").text()
                                                                 rollDice(request, title, roll)
@@ -212,12 +210,13 @@ def rollD20(request, title, data):
     return rollDice(request, title, dice, data)
     
 def rollSkill(request, custom_roll_dice=""):
-    nonlocal extension_url
-    icon = '<img style="border: 0px;" src="' + extension_url + "images/icons/icon16.png" + '"></img>'
     data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
 
     # Custom skill
     if request.modifier == "--" and request.character.abilities.length > 0:
+        nonlocal extension_url
+        icon = '<img style="border: 0px;" src="' + extension_url + "images/icons/icon16.png" + '"></img>'
+
         prof = ""
         prof_val = ""
         if request.proficiency == "Proficiency":
@@ -421,9 +420,7 @@ def buildSpellCard(request):
 
 def rollSpellCard(request):
     spell_card = buildSpellCard(request)
-    cb = def():
-        console.log("chicos called")
-    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], buttons={"Hola chicos!" : cb}, open=True)
+    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], open=True)
 
 v'async'
 def rollSpellAttack(request, custom_roll_dice):

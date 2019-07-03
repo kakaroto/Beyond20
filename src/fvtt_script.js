@@ -6721,7 +6721,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
         CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
         BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
-        FVTT_CSS = "\n/* This is needed so the tooltip's absolute position is\n * relative to the message's position in the chatlog\n */\n.beyond20-roll-result {\n   position: relative;\n}\n\n.beyond20-tooltip .beyond20-tooltip-content {\n  display: none;\n  background-color: #f5f2ec;\n  text-align: left;\n  border-radius: 6px;\n  padding: 5px 10px;\n  margin: 10px;\n  width: 80%;\n  top: -120px; /* Until I figure out how to make it move above the mouse */\n  border: 2px solid black;\n\n  /* Position the tooltip */\n  position: absolute;\n  z-index: 1;\n}\n\n.beyond20-tooltip:hover .beyond20-tooltip-content {\n  display: block;\n}\n\n.beyond20-tooltip-content .dice-tooltip {\n    display: block;\n}\n\n.beyond20-roll-result.beyond20-roll-cells {\n    background: rgba(0, 0, 0, 0.1);\n    border: 1px solid #999;\n}\n\n.beyond20-roll-result .roll-separator {\n   display: inline-block;\n   width: 0px;\n   border: 1px solid black;\n   height: 25px;\n}\n\n.beyond20-roll-result .roll-cell {\n   display: inline-block;\n   text-align: center;\n   vertical-align: middle;\n   margin-top: 0.5em;\n   margin-bottom: 0.5em;\n}\n\n";
+        FVTT_CSS = "\n/* This is needed so the tooltip's absolute position is\n * relative to the message's position in the chatlog\n */\n.beyond20-roll-result {\n   position: relative;\n}\n\n.beyond20-message details summary, .beyond20-title {\n    font-style: italic;\n    color: #500;\n    font-size: 1.2em;\n}\n\n.beyond20-message .beyond20-description, .beyond20-message details table {\n    margin: 2px 0px;\n    border: 1px solid #333;\n    width: 100%;\n    border-spacing: 0;\n    border-collapse: collapse;\n    background-color: #DDD;\n}\n\n\n.beyond20-roll-cells {\n    display: flex;\n    flex-direction: row;\n    flex-wrap: nowrap;\n}\n\n.beyond20-roll-cell {\n    flex: 1 0 auto;\n    margin: 1px;\n \n    text-align: center;\n    border: thin solid black;\n    border-radius: 2px;\n    background-color: lightgray;\n}\n \n\n.beyond20-tooltip .beyond20-tooltip-content {\n    display: none;\n    background-color: #f5f2ec;\n    text-align: left;\n    border-radius: 6px;\n    padding: 5px 10px;\n    margin: 10px;\n    width: 90%;\n    top: -50%;\n    left: 0;\n    border: 2px solid black;\n\n    /* Position the tooltip */\n    position: absolute;\n    z-index: 1;\n}\n\n.beyond20-tooltip:hover .beyond20-tooltip-content {\n    display: block;\n    /* Move the tooltip above the parent element. */\n    transform: translate(0, -100%);\n}\n\n.beyond20-tooltip-content .dice-tooltip {\n    display: block;\n}\n";
         ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
         ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125}}";
         ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
@@ -7126,7 +7126,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var math = ρσ_modules.math;
 
         settings = null;
-        extension_url = "/public/modules/beyond20/";
+        extension_url = "/modules/beyond20/";
         function getSpeakerByName(name) {
             var low_name, actor, speaker;
             low_name = name.toLowerCase();
@@ -7356,7 +7356,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function injectRollsInDescription(description) {
             var icon16, replaceCB;
-            icon16 = extension_url + "images/icons/icon16.png";
+            icon16 = "/modules/beyond20/images/icons/icon16.png";
             replaceCB = (function() {
                 var ρσ_anonfunc = function (dice, modifier) {
                     var dice_formula;
@@ -7387,17 +7387,12 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollsToCells(html) {
-            var result, rolls, width, roll;
+            var result, roll;
             result = "";
-            rolls = html.split(" | ");
-            width = 100 / len(rolls) - 5 * (len(rolls) - 1);
-            var ρσ_Iter3 = ρσ_Iterable(rolls);
+            var ρσ_Iter3 = ρσ_Iterable(html.split(" | "));
             for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
                 roll = ρσ_Iter3[ρσ_Index3];
-                if ((result !== "" && (typeof result !== "object" || ρσ_not_equals(result, "")))) {
-                    result += "<div class=\"roll-separator\"></div>";
-                }
-                result += "<div class=\"roll-cell\" style=\"width: " + width + "%;\">" + roll + "</div>";
+                result += "<div class=\"beyond20-roll-cell\">" + roll + "</div>";
             }
             return result;
         };
@@ -7425,12 +7420,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "open")){
                 open = ρσ_kwargs_obj.open;
             }
-            var style, html, attr, roll_html, roll_list, ρσ_unpack, i, roll, roll_name, button;
-            style = "margin: 2px 0px; border: 1px solid #333; width: 100%; border-spacing: 0; border-collapse: collapse; background-color: #DDD;";
+            var html, attr, roll_html, roll_list, ρσ_unpack, i, roll, roll_name, button;
+            html = "<div class=\"beyond20-message\">";
             if (description) {
-                html = "<details" + ((open) ? " open" : "") + "><summary><a><font style='color: #A00; font-size: 1.25em;'>" + title + "</font></a></summary>";
+                html += "<details" + ((open) ? " open" : "") + "><summary><a>" + title + "</a></summary>";
                 if (source || attributes.length > 0) {
-                    html += "<table style='" + style + "'>";
+                    html += "<table>";
                     if (source) {
                         html += "<tr><td colspan'2'><i>" + source + "</i></td></tr>";
                     }
@@ -7442,9 +7437,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     html += "</table>";
                 }
                 description = injectRollsInDescription(description).replace("\n", "</br>");
-                html += "<div style='" + style + "'>" + description + "</div></details>";
+                html += "<div class='beyond20-description'>" + description + "</div></details>";
             } else {
-                html = "<div style='" + style + "'>" + title + "</div>";
+                html = "<div class='beyond20-title'>" + title + "</div>";
             }
             console.log("Rolls : ", rolls);
             var ρσ_Iter5 = ρσ_Iterable(rolls);
@@ -7484,8 +7479,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                 button = ρσ_Iter7[ρσ_Index7];
                 html += "<button class=\"beyond20-chat-button\">" + button + "</button>";
             }
+            html += "</div>";
             Hooks.once("renderChatMessage", (function() {
                 var ρσ_anonfunc = function (chat_message, data, html) {
+                    var icon16;
+                    icon16 = extension_url + "images/icons/icon16.png";
+                    html.find(".ct-beyond20-custom-icon").attr("src", icon16);
                     html.find(".ct-beyond20-custom-roll").on("click", (function() {
                         var ρσ_anonfunc = function (event) {
                             var roll;
@@ -7595,8 +7594,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var icon, data, prof, prof_val, formula, html, modifiers, ability;
-            icon = "<img style=\"border: 0px;\" src=\"" + extension_url + "images/icons/icon16.png" + "\"></img>";
+            var data, icon, prof, prof_val, formula, html, modifiers, ability;
             data = (function(){
                 var ρσ_d = {};
                 ρσ_d[request.ability] = request.modifier;
@@ -7604,6 +7602,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_d;
             }).call(this);
             if ((request.modifier === "--" || typeof request.modifier === "object" && ρσ_equals(request.modifier, "--")) && request.character.abilities.length > 0) {
+                icon = "<img style=\"border: 0px;\" src=\"" + extension_url + "images/icons/icon16.png" + "\"></img>";
                 prof = "";
                 prof_val = "";
                 if ((request.proficiency === "Proficiency" || typeof request.proficiency === "object" && ρσ_equals(request.proficiency, "Proficiency"))) {
@@ -7985,16 +7984,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollSpellCard(request) {
-            var spell_card, cb;
+            var spell_card;
             spell_card = buildSpellCard(request);
-            cb = function () {
-                console.log("chicos called");
-            };
-            ρσ_interpolate_kwargs.call(this, postDescription, [request, request.name, spell_card[0], spell_card[1], spell_card[2]].concat([ρσ_desugar_kwargs({buttons: (function(){
-                var ρσ_d = {};
-                ρσ_d["Hola chicos!"] = cb;
-                return ρσ_d;
-            }).call(this), open: true})]));
+            ρσ_interpolate_kwargs.call(this, postDescription, [request, request.name, spell_card[0], spell_card[1], spell_card[2]].concat([ρσ_desugar_kwargs({open: true})]));
         };
         if (!rollSpellCard.__argnames__) Object.defineProperties(rollSpellCard, {
             __argnames__ : {value: ["request"]}
