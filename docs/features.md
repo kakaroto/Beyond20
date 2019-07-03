@@ -107,6 +107,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * D&D Beyond character specific options
   * Custom roll dice formula bonus
   * Custom damage dice formula bonus
+  * Versatile weapon choice (one-handed, two-handed, roll both options)
   * Send sneak attack damage (Only Rogues)
   * Send Disciple of Life healing bonus (Only Life domain Cleric)
   * Add Jack of all Trades bonus to raw ability checks (Only Bards >= 2nd level)

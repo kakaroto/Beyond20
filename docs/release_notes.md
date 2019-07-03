@@ -1,3 +1,11 @@
+v0.4
+===
+
+A small update but it took a while to do as I'm working on other things lately. I've finished the support for FVTT basically and fixed the outstanding bugs. I'll now be mostly concentrating on FVTT modules and other similar work, though Beyond20 will continue to get updates to fix any bugs found or add features as they get requested.
+
+In other news, it's my birthday in a few days, so yeay!
+
+
 v0.3
 ===
 

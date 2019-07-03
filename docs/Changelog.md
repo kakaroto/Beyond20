@@ -1,3 +1,17 @@
+v0.4
+===
+
+- **Feature**: Add option to decide if character is using one-handed or two-handed versatile weapons
+- **Feature**: *FVTT*: query for advantage and custom skills.
+- **Feature**: *FVTT*: Replace dice in description text.
+- **Feature**: *FVTT*: Add support for the auto-roll damage option
+- **Feature**: *FVTT*: Nicer display output for rolls
+- **Feature**: Add "Roll20 Template" option in the Roll20 popup menu
+- **Bugfix**: Fix non-visible messages on Roll20 when using other tempaltes even if template is set to 'Other templates'
+- **Bugfix**: No need to roll critical damages for spells that have no 'to-hit'. Fixes 3d Dice rolls doubled on healing spells.
+- **Bugfix**: Fix spell attack dice disappearing
+- **Misc**: Remove the green/red on death saving throws above/below 10 as it was apparently confusing to players (might re-add as an option).
+
 v0.3
 ===
 
