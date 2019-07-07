@@ -8687,7 +8687,7 @@ return this.__repr__();
         function addDisplayButton() {
             var icon32, button;
             icon32 = chrome.extension.getURL("images/icons/icon32.png");
-            button = ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.span, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon32, style: "margin-right: 10px;"})]), "Display Spell Card on Roll 20"].concat([ρσ_desugar_kwargs({class_: "label"})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll button-alt", href: "#"})]));
+            button = ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.span, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon32, style: "margin-right: 10px;"})]), "Display Spell Card on VTT"].concat([ρσ_desugar_kwargs({class_: "label"})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll button-alt", href: "#"})]));
             $(".page-heading__content").append(button);
             $(".ct-beyond20-roll").css((function(){
                 var ρσ_d = {};

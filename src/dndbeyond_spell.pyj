@@ -59,7 +59,7 @@ def addDisplayButton():
     button = E.a(class_="ct-beyond20-roll button-alt", href="#",
                  E.span(class_="label",
                         E.img(class_="ct-beyond20-icon", src=icon32, style="margin-right: 10px;"),
-                        "Display Spell Card on Roll 20")
+                        "Display Spell Card on VTT")
                  )
     $(".page-heading__content").append(button)
     $(".ct-beyond20-roll").css({"float": "right",
