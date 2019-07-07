@@ -682,7 +682,7 @@ def sendRoll(character, rollType, fallback, args):
     whisper_monster = int(character.getGlobalSetting("whisper-type-monsters", WhisperType.YES))
     if character.type() == "Monster" and whisper_monster != WhisperType.NO:
         whisper = whisper_monster
-    advantage = int(character.getGlobalSetting("roll-type", RollType.ADVANTAGE_NORMAL))
+    advantage = int(character.getGlobalSetting("roll-type", RollType.NORMAL))
 
     # Default advantage/whisper would get overriden if they are part of provided args
     req = {"action": "roll", "character": character.getDict(), "type": rollType, "roll": fallback,

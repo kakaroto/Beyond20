@@ -8268,7 +8268,7 @@ return this.__repr__();
             if (ρσ_equals(character.type(), "Monster") && (whisper_monster !== WhisperType.prototype.NO && (typeof whisper_monster !== "object" || ρσ_not_equals(whisper_monster, WhisperType.prototype.NO)))) {
                 whisper = whisper_monster;
             }
-            advantage = int(character.getGlobalSetting("roll-type", RollType.ADVANTAGE_NORMAL));
+            advantage = int(character.getGlobalSetting("roll-type", RollType.prototype.NORMAL));
             req = (function(){
                 var ρσ_d = {};
                 ρσ_d["action"] = "roll";
