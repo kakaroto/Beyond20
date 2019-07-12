@@ -23,7 +23,7 @@ When the D&D Beyond character sheet shows the information about the item you sel
 
 If a spell/item/action/feat description contains a dice formula (`2d10 + 3` for example) or a modifier formula (`+ 3` for example), that text will be underlined and a B20 dice icon will appear next to it. Click on the formula or the dice to make the roll in the Roll20 tab.
 
-If you click on the Beyond20 button in the toolbar, it will enable/disable whispering of rolls (for now).
+If you click on the Beyond20 button in the toolbar, it will pop open the quick settings menu. Note that the quick settings menu will be different whether you are on the VTT tab or D&D Beyond tab, and it will contain the per-character configuration.
 
 # Build
 
