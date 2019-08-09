@@ -7449,7 +7449,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollSpellAttack(request, custom_roll_dice) {
-            var properties, template_type, dmg_props, damages, damage_types, critical_damages, critical_damage_types, chromatic_type, idx, chromatic_damage, crit_damage, dmgtype, components, dmg_template_crit, dmg_template, key, roll;
+            var properties, template_type, dmg_props, damages, damage_types, critical_damages, critical_damage_types, chromatic_type, idx, chromatic_damage, crit_damage, dmgtype, base_damage, components, dmg_template_crit, dmg_template, key, roll;
             properties = (function(){
                 var ρσ_d = {};
                 ρσ_d["charname"] = request.character.name;
@@ -7493,6 +7493,21 @@ var str = ρσ_str, repr = ρσ_repr;;
                     damage_types.insert(0, chromatic_type);
                     critical_damages.insert(0, crit_damage);
                     critical_damage_types.insert(0, chromatic_type);
+                } else if ((request.name === "Chaos Bolt" || typeof request.name === "object" && ρσ_equals(request.name, "Chaos Bolt"))) {
+                    var ρσ_Iter6 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder" ]));
+                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                        dmgtype = ρσ_Iter6[ρσ_Index6];
+                        idx = damage_types.index(dmgtype);
+                        base_damage = damages.pypop(idx);
+                        damage_types.pypop(idx);
+                        idx = critical_damage_types.index(dmgtype);
+                        crit_damage = critical_damages.pypop(idx);
+                        critical_damage_types.pypop(idx);
+                    }
+                    damages.insert(0, base_damage);
+                    damage_types.insert(0, "Chaotic energy");
+                    critical_damages.insert(0, crit_damage);
+                    critical_damage_types.insert(0, "Chaotic energy");
                 }
                 dmg_props = damagesToRollProperties(damages, damage_types, critical_damages, critical_damage_types);
             }
@@ -7540,9 +7555,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 properties["rname"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")";
                 properties["rnamec"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")";
             } else {
-                var ρσ_Iter6 = ρσ_Iterable(dmg_props);
-                for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                    key = ρσ_Iter6[ρσ_Index6];
+                var ρσ_Iter7 = ρσ_Iterable(dmg_props);
+                for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                    key = ρσ_Iter7[ρσ_Index7];
                     properties[(typeof key === "number" && key < 0) ? properties.length + key : key] = dmg_props[(typeof key === "number" && key < 0) ? dmg_props.length + key : key];
                 }
             }
