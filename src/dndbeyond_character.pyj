@@ -196,7 +196,7 @@ def rollAction(paneClass):
     print("Properties are : " + str(properties))
     action_name = $(".ct-sidebar__heading").text()
     description = descriptionToString(".ct-action-detail__description")
-    if "Damage" in properties and (properties["To Hit"]? or properties["Attack/Save"]?):
+    if "Damage" in properties or properties["To Hit"]? or properties["Attack/Save"]?:
         if "Damage" in properties:
             damages = [properties["Damage"]]
             damage_types = [properties["Damage Type"] ? ""]
