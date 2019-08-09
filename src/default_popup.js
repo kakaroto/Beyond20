@@ -3728,7 +3728,6 @@ var str = ρσ_str, repr = ρσ_repr;;
     ρσ_modules.re = {};
     ρσ_modules.utils = {};
     ρσ_modules.settings = {};
-    ρσ_modules.constants = {};
 
     (function(){
         var __name__ = "elementmaker";
@@ -6711,80 +6710,22 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
-        var __name__ = "constants";
-        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, FVTT_CSS, ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY;
-        ROLL20_URL = "*://app.roll20.net/editor/";
-        DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
-        DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
-        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
-        DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
-        DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
-        CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
-        BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
-        FVTT_CSS = "\n/* This is needed so the tooltip's absolute position is\n * relative to the message's position in the chatlog\n */\n.beyond20-roll-result {\n   position: relative;\n}\n\n.beyond20-message details summary, .beyond20-title {\n    font-style: italic;\n    color: #500;\n    font-size: 1.2em;\n}\n\n.beyond20-message .beyond20-description, .beyond20-message details table {\n    margin: 2px 0px;\n    border: 1px solid #333;\n    width: 100%;\n    border-spacing: 0;\n    border-collapse: collapse;\n    background-color: #DDD;\n}\n\n\n.beyond20-roll-cells {\n    display: flex;\n    flex-direction: row;\n    flex-wrap: nowrap;\n}\n\n.beyond20-roll-cell {\n    flex: 1 0 auto;\n    margin: 1px;\n \n    text-align: center;\n    border: thin solid black;\n    border-radius: 2px;\n    background-color: lightgray;\n}\n \n\n.beyond20-tooltip .beyond20-tooltip-content {\n    display: none;\n    background-color: #f5f2ec;\n    text-align: left;\n    border-radius: 6px;\n    padding: 5px 10px;\n    margin: 10px;\n    width: 90%;\n    top: -50%;\n    left: 0;\n    border: 2px solid black;\n\n    /* Position the tooltip */\n    position: absolute;\n    z-index: 1;\n}\n\n.beyond20-tooltip:hover .beyond20-tooltip-content {\n    display: block;\n    /* Move the tooltip above the parent element. */\n    transform: translate(0, -100%);\n}\n\n.beyond20-tooltip-content .dice-tooltip {\n    display: block;\n}\n";
-        ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
-        ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125}}";
-        ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
-        ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
-        ρσ_modules.constants.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
-        ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
-        ρσ_modules.constants.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
-        ρσ_modules.constants.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
-        ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
-        ρσ_modules.constants.BUTTON_STYLE_CSS = BUTTON_STYLE_CSS;
-        ρσ_modules.constants.FVTT_CSS = FVTT_CSS;
-        ρσ_modules.constants.ROLL20_WHISPER_QUERY = ROLL20_WHISPER_QUERY;
-        ρσ_modules.constants.ROLL20_ADVANTAGE_QUERY = ROLL20_ADVANTAGE_QUERY;
-    })();
-
-    (function(){
 
         var __name__ = "__main__";
 
 
-        var character, settings;
         var E = ρσ_modules.elementmaker.E;
 
         var options_list = ρσ_modules.settings.options_list;
-        var character_settings = ρσ_modules.settings.character_settings;
-        var createHTMLOption = ρσ_modules.settings.createHTMLOption;
         var createHTMLOptionEx = ρσ_modules.settings.createHTMLOptionEx;
-        var initializeSettings = ρσ_modules.settings.initializeSettings;
-        var saveSettings = ρσ_modules.settings.saveSettings;
-        var setCurrentTab = ρσ_modules.settings.setCurrentTab;
-        var loadSettings = ρσ_modules.settings.loadSettings;
-
-        var ROLL20_URL = ρσ_modules.constants.ROLL20_URL;
-        var DNDBEYOND_CHARACTER_URL = ρσ_modules.constants.DNDBEYOND_CHARACTER_URL;
-        var DNDBEYOND_MONSTER_URL = ρσ_modules.constants.DNDBEYOND_MONSTER_URL;
-        var DNDBEYOND_ENCOUNTER_URL = ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL;
 
         var isFVTT = ρσ_modules.utils.isFVTT;
-        var urlMatches = ρσ_modules.utils.urlMatches;
-
-        character = null;
-        settings = null;
-        function gotSettings(stored_settings) {
-            settings = stored_settings;
-            $("ul").removeClass("disabled");
-        };
-        if (!gotSettings.__argnames__) Object.defineProperties(gotSettings, {
-            __argnames__ : {value: ["stored_settings"]}
-        });
+        var injectPageScript = ρσ_modules.utils.injectPageScript;
 
         function createOptionList() {
-            var options, child, option, img;
-            options = ρσ_list_decorate([]);
-            var ρσ_Iter0 = ρσ_Iterable(options_list);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                option = ρσ_Iter0[ρσ_Index0];
-                child = createHTMLOption(option, true);
-                if (child) {
-                    options.append(child);
-                }
-            }
-            $("main").prepend(ρσ_interpolate_kwargs.call(E, E.ul, options.concat([ρσ_desugar_kwargs({class_: "list-group beyond20-options"})])));
-            $(".beyond20-options").append(ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4("More Options")].concat([ρσ_desugar_kwargs({id: "openOptions", class_: "list-content", href: "#"})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option"})])));
+            var img;
+            $("main").prepend(ρσ_interpolate_kwargs.call(E, E.ul, [createHTMLOptionEx("donate", options_list["donate"], true)].concat([ρσ_desugar_kwargs({class_: "list-group beyond20-options"})])));
+            $(".beyond20-options").append(ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4("Beyond20 Options")].concat([ρσ_desugar_kwargs({id: "openOptions", class_: "list-content", href: "#"})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option"})])));
             img = $("#donate").find("img");
             img.attr("src", img.attr("src").replace("donate.png", "donate32.png"));
             $("#openOptions").bind("click", (function() {
@@ -6798,46 +6739,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             })());
         };
 
-        function save_settings() {
-            saveSettings((function() {
-                var ρσ_anonfunc = function (settings) {
-                    chrome.runtime.sendMessage((function(){
-                        var ρσ_d = {};
-                        ρσ_d["action"] = "settings";
-                        ρσ_d["type"] = "general";
-                        ρσ_d["settings"] = settings;
-                        return ρσ_d;
-                    }).call(this));
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["settings"]}
-                });
-                return ρσ_anonfunc;
-            })());
-            if (character !== null) {
-                saveSettings((function() {
-                    var ρσ_anonfunc = function (settings) {
-                        chrome.runtime.sendMessage((function(){
-                            var ρσ_d = {};
-                            ρσ_d["action"] = "settings";
-                            ρσ_d["type"] = "character";
-                            ρσ_d["id"] = character.id;
-                            ρσ_d["settings"] = settings;
-                            return ρσ_d;
-                        }).call(this));
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["settings"]}
-                    });
-                    return ρσ_anonfunc;
-                })(), "character-" + character.id, character_settings);
-            }
-        };
-
         function setupHTML() {
             createOptionList();
-            $(".beyond20-option-input").change(save_settings);
-            $(".beyond20-options").on("markaChanged", save_settings);
             $(document).on("click", "a", (function() {
                 var ρσ_anonfunc = function (ev) {
                     var href;
@@ -6856,109 +6759,25 @@ var str = ρσ_str, repr = ρσ_repr;;
                 });
                 return ρσ_anonfunc;
             })());
-            $("ul").addClass("disabled");
         };
-
-        function populateCharacter(response) {
-            var options, e;
-            character = response;
-            if ((typeof response !== "undefined" && response !== null)) {
-                console.log("Received character: ", response);
-                options = $(".beyond20-options");
-                options.append(ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.h4, [" == Character Specific Options =="].concat([ρσ_desugar_kwargs({style: "margin: 0px;"})])), ρσ_interpolate_kwargs.call(E, E.p, [response.name].concat([ρσ_desugar_kwargs({style: "margin: 0px;"})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option", id: "character-option", style: "text-align: center; padding: 10px 15px;"})])));
-                e = createHTMLOption("versatile-choice", false, character_settings);
-                options.append(e);
-                e = createHTMLOption("custom-roll-dice", false, character_settings);
-                options.append(e);
-                e = createHTMLOption("custom-damage-dice", false, character_settings);
-                options.append(e);
-                if (ρσ_in("Rogue", response.classes)) {
-                    e = createHTMLOption("rogue-sneak-attack", false, character_settings);
-                    options.append(e);
-                }
-                if (ρσ_in("Disciple of Life", response["class-features"])) {
-                    e = createHTMLOption("cleric-disciple-life", false, character_settings);
-                    options.append(e);
-                }
-                if (ρσ_in("Bard", response.classes)) {
-                    e = createHTMLOption("bard-joat", false, character_settings);
-                    options.append(e);
-                }
-                if (ρσ_in("Sharpshooter", response["feats"])) {
-                    e = createHTMLOption("sharpshooter", false, character_settings);
-                    options.append(e);
-                }
-                if (ρσ_in("Great Weapon Master", response["feats"])) {
-                    e = createHTMLOption("great-weapon-master", false, character_settings);
-                    options.append(e);
-                }
-                if (ρσ_in("Brutal Critical", response["class-features"]) || ρσ_in("Savage Attacks", response["racial-traits"])) {
-                    e = createHTMLOption("brutal-critical", false, character_settings);
-                    options.append(e);
-                }
-                if (ρσ_in("Rage", response["class-features"])) {
-                    e = createHTMLOption("barbarian-rage", false, character_settings);
-                    options.append(e);
-                }
-                loadSettings(response.settings, character_settings);
-            }
-            $(".beyond20-option-input").off("change", save_settings);
-            $(".beyond20-option-input").change(save_settings);
-            initializeSettings(gotSettings);
-        };
-        if (!populateCharacter.__argnames__) Object.defineProperties(populateCharacter, {
-            __argnames__ : {value: ["response"]}
-        });
-
-        function addMonsterOptions() {
-            var option, e;
-            option = options_list["whisper-type-monsters"];
-            option["short"] = "Whisper monster rolls";
-            e = createHTMLOptionEx("whisper-type-monsters", option, true);
-            $(e).insertAfter($("#whisper-type").parents("li"));
-            $(".beyond20-option-input").off("change", save_settings);
-            $(".beyond20-option-input").change(save_settings);
-            initializeSettings(gotSettings);
-        };
-
-        function tabMatches(tab, url) {
-            return ρσ_not_equals(tab.url.match(url.replace(/\*/g, "[^]*")), null);
-        };
-        if (!tabMatches.__argnames__) Object.defineProperties(tabMatches, {
-            __argnames__ : {value: ["tab", "url"]}
-        });
 
         function actOnCurrentTab(tabs) {
-            var vtt, options, e;
-            setCurrentTab(tabs[0]);
-            if (urlMatches(tabs[0].url, ROLL20_URL) || isFVTT(tabs[0].title)) {
-                vtt = (isFVTT(tabs[0].title)) ? "Foundry VTT" : "Roll20";
-                options = $(".beyond20-options");
-                options.append(ρσ_interpolate_kwargs.call(E, E.li, [E.h4(" == " + vtt + " Tab Specific Options ==")].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option", style: "text-align: center; margin: 10px;"})])));
-                if ((vtt === "Roll20" || typeof vtt === "object" && ρσ_equals(vtt, "Roll20"))) {
-                    e = createHTMLOption("roll20-template", false);
-                    options.append(e);
-                }
-                e = options_list["vtt-tab"].createHTMLElement("vtt-tab", true);
-                options.append(e);
-                initializeSettings(gotSettings);
-            } else if (urlMatches(tabs[0].url, DNDBEYOND_CHARACTER_URL)) {
-                chrome.tabs.sendMessage(tabs[0].id, (function(){
+            if (isFVTT(tabs[0].title)) {
+                chrome.runtime.sendMessage((function(){
                     var ρσ_d = {};
-                    ρσ_d["action"] = "get-character";
+                    ρσ_d["action"] = "activate-icon";
+                    ρσ_d["tab"] = tabs[0];
                     return ρσ_d;
-                }).call(this), populateCharacter);
-            } else if (urlMatches(tabs[0].url, DNDBEYOND_MONSTER_URL) || urlMatches(tabs[0].url, DNDBEYOND_ENCOUNTER_URL)) {
-                addMonsterOptions();
+                }).call(this));
+                injectPageScript("src/popup.js");
             } else {
-                initializeSettings(gotSettings);
+                setupHTML();
             }
         };
         if (!actOnCurrentTab.__argnames__) Object.defineProperties(actOnCurrentTab, {
             __argnames__ : {value: ["tabs"]}
         });
 
-        setupHTML();
         chrome.tabs.query((function(){
             var ρσ_d = {};
             ρσ_d["active"] = true;

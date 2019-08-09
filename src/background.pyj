@@ -99,9 +99,16 @@ def onMessage(request, sender, sendResponse):
         sendMessageToBeyond(request)
         sendMessageToFVTT(request)
     elif request.action == "activate-icon":
-        chrome.pageAction.show(sender.tab.id)
-        if isFVTT(sender.tab.title):
-            chrome.tabs.executeScript(sender.tab.id, { "file": 'src/fvtt.js' })
+        # popup doesn't have sender.tab so we grab it from the request.
+        tab = request.tab or sender.tab
+        # Using browserAction on Chrome but pageAction on Firefox
+        if getBrowser() == "Chrome":
+            chrome.browserAction.setPopup({"tabId": tab.id, "popup": "popup.html"})
+        else:
+            chrome.pageAction.show(tab.id)
+        if isFVTT(tab.title):
+            chrome.tabs.executeScript(tab.id, {"file": 'src/fvtt.js'})
+
     elif request.action == "register-fvtt-tab":
         addFVTTTab(sender.tab)
     elif request.action == "reload-me":
@@ -121,12 +128,16 @@ def onTabsUpdated(id, changes, tab):
 def onTabRemoved(id, info):
     removeFVTTTab(id)
 
+def browserActionClicked(tab):
+    chrome.tabs.executeScript(tab.id, { "file": "src/fvtt_test.js" })
+
 updateSettings()
 chrome.runtime.onMessage.addListener(onMessage)
 chrome.tabs.onUpdated.addListener(onTabsUpdated)
 chrome.tabs.onRemoved.addListener(onTabRemoved)
 
 if getBrowser() == "Chrome":
+    chrome.browserAction.onClicked.addListener(browserActionClicked)
     manifest = chrome.runtime.getManifest()
     for script in manifest.content_scripts:
         cb = def(files):

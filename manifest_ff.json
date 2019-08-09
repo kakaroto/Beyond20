@@ -3,7 +3,12 @@
     "version": "0.4",
     "manifest_version": 2,
     "description": "Integrates the D&D Beyond Character Sheets with Roll20 and Foundry VTT.",
-    "permissions": [ "activeTab", "tabs", "storage", "*://app.roll20.net/editor/", "*://*.dndbeyond.com/*"],
+    "permissions": [ "activeTab", "tabs", "storage", "*://app.roll20.net/editor/", "*://*.dndbeyond.com/*", "*://*/game" ],
+    "browser_specific_settings": {
+	"gecko": {
+	    "id": "beyond20@kakaroto.homelinux.net"
+	}
+    },
     "icons": {
         "16": "images/icons/icon16.png",
         "24": "images/icons/icon24.png",
@@ -17,9 +22,9 @@
 	"page": "options.html",
 	"open_in_tab": false
     },
-    "browser_action": {
-		"default_popup": "default_popup.html",
-		"default_icon": "images/icons/icon16.png"
+    "page_action": {
+	"default_popup": "popup.html",
+	"default_icon": "images/icons/icon16.png"
     },
     "web_accessible_resources": [ "images/*", "src/roll20_script.js", "src/fvtt_script.js"],
     "background": {
@@ -55,6 +60,11 @@
 	"matches": [ "*://app.roll20.net/editor/" ],
 	"js": [
 	    "src/roll20.js"
+	]
+    },{
+	"matches": [ "*://*/game" ],
+	"js": [
+	    "src/fvtt_test.js"
 	]
     }]
 }

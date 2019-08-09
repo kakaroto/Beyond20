@@ -5233,6 +5233,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var s;
             s = document.createElement("script");
             s.src = url;
+            s.charset = "UTF-8";
             s.onload = function () {
                 this.remove();
             };

@@ -5263,6 +5263,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var s;
             s = document.createElement("script");
             s.src = url;
+            s.charset = "UTF-8";
             s.onload = function () {
                 this.remove();
             };
@@ -6953,6 +6954,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function onMessage(request, sender, sendResponse) {
+            var tab;
             console.log("Received message: ", request);
             if (ρσ_in(request.action, ρσ_list_decorate([ "roll", "hp-update" ]))) {
                 sendMessageToRoll20(request, settings["vtt-tab"]);
@@ -6965,9 +6967,19 @@ var str = ρσ_str, repr = ρσ_repr;;
                 sendMessageToBeyond(request);
                 sendMessageToFVTT(request);
             } else if ((request.action === "activate-icon" || typeof request.action === "object" && ρσ_equals(request.action, "activate-icon"))) {
-                chrome.pageAction.show(sender.tab.id);
-                if (isFVTT(sender.tab.title)) {
-                    chrome.tabs.executeScript(sender.tab.id, (function(){
+                tab = request.tab || sender.tab;
+                if (ρσ_equals(getBrowser(), "Chrome")) {
+                    chrome.browserAction.setPopup((function(){
+                        var ρσ_d = {};
+                        ρσ_d["tabId"] = tab.id;
+                        ρσ_d["popup"] = "popup.html";
+                        return ρσ_d;
+                    }).call(this));
+                } else {
+                    chrome.pageAction.show(tab.id);
+                }
+                if (isFVTT(tab.title)) {
+                    chrome.tabs.executeScript(tab.id, (function(){
                         var ρσ_d = {};
                         ρσ_d["file"] = "src/fvtt.js";
                         return ρσ_d;
@@ -7019,11 +7031,23 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["id", "info"]}
         });
 
+        function browserActionClicked(tab) {
+            chrome.tabs.executeScript(tab.id, (function(){
+                var ρσ_d = {};
+                ρσ_d["file"] = "src/fvtt_test.js";
+                return ρσ_d;
+            }).call(this));
+        };
+        if (!browserActionClicked.__argnames__) Object.defineProperties(browserActionClicked, {
+            __argnames__ : {value: ["tab"]}
+        });
+
         updateSettings();
         chrome.runtime.onMessage.addListener(onMessage);
         chrome.tabs.onUpdated.addListener(onTabsUpdated);
         chrome.tabs.onRemoved.addListener(onTabRemoved);
         if (ρσ_equals(getBrowser(), "Chrome")) {
+            chrome.browserAction.onClicked.addListener(browserActionClicked);
             manifest = chrome.runtime.getManifest();
             var ρσ_Iter8 = ρσ_Iterable(manifest.content_scripts);
             for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
