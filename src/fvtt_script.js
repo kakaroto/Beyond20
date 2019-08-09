@@ -7821,8 +7821,63 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request"]}
         });
 
+        async        function queryDamageType(title, damage_types) {
+            var content, selected, value, ρσ_unpack, i, option;
+            content = "\n    <div class=\"form-group\">\n      <label>Choose Damage Type :</label>\n      <select id=\"damage_type\" name=\"damage_type\">\n      ";
+            var ρσ_Iter11 = ρσ_Iterable(enumerate(damage_types));
+            for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                ρσ_unpack = ρσ_Iter11[ρσ_Index11];
+                i = ρσ_unpack[0];
+                option = ρσ_unpack[1];
+                selected = ((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? " selected" : "";
+                value = damage_types[(typeof option === "number" && option < 0) ? damage_types.length + option : option];
+                if (value) {
+                    content += "<option value=\"" + option + "\"" + selected + ">" + option + "(" + value + ")" + "</option>";
+                } else {
+                    content += "<option value=\"" + option + "\"" + selected + ">" + option + "</option>";
+                }
+            }
+            content += "\n      </select>\n    </div>\n    ";
+            return new Promise((function() {
+                var ρσ_anonfunc = function (resolve, reject) {
+                    new Dialog((function(){
+                        var ρσ_d = {};
+                        ρσ_d["title"] = title;
+                        ρσ_d["content"] = content;
+                        ρσ_d["buttons"] = (function(){
+                            var ρσ_d = {};
+                            ρσ_d["ok"] = (function(){
+                                var ρσ_d = {};
+                                ρσ_d["label"] = "Roll";
+                                return ρσ_d;
+                            }).call(this);
+                            return ρσ_d;
+                        }).call(this);
+                        ρσ_d["default"] = "ok";
+                        ρσ_d["close"] = (function() {
+                            var ρσ_anonfunc = function (html) {
+                                resolve(html.find("#damage_type").val());
+                            };
+                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                __argnames__ : {value: ["html"]}
+                            });
+                            return ρσ_anonfunc;
+                        })();
+                        return ρσ_d;
+                    }).call(this)).render(true);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["resolve", "reject"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!queryDamageType.__argnames__) Object.defineProperties(queryDamageType, {
+            __argnames__ : {value: ["title", "damage_types"]}
+        });
+
         async        function buildAttackRolls(request, custom_roll_dice) {
-            var rolls, damage_rolls, is_critical, critical_limit, custom, to_hit, roll_1, roll_2, to_hit_roll, dice, adv, damages, damage_types, has_versatile, total_damage, total_versatile_damage, roll, dmg_type, suffix, i, total_critical_damage, total_critical_versatile_damage;
+            var rolls, damage_rolls, is_critical, critical_limit, custom, to_hit, roll_1, roll_2, to_hit_roll, dice, adv, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, has_versatile, total_damage, total_versatile_damage, roll, dmg_type, suffix, i, ρσ_unpack, chaos_bolt_damages, r, chaotic_type, dmg_roll, total_critical_damage, total_critical_versatile_damage;
             rolls = ρσ_list_decorate([]);
             damage_rolls = ρσ_list_decorate([]);
             is_critical = false;
@@ -7862,11 +7917,50 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_exists.n(request.damages)) {
                 damages = list(request.damages);
                 damage_types = list(request["damage-types"]);
+                critical_damages = list(request["critical-damages"]);
+                critical_damage_types = list(request["critical-damage-types"]);
+                if ((request.name === "Chromatic Orb" || typeof request.name === "object" && ρσ_equals(request.name, "Chromatic Orb"))) {
+                    damage_choices = {};
+                    critical_damage_choices = {};
+                    var ρσ_Iter12 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder" ]));
+                    for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                        dmgtype = ρσ_Iter12[ρσ_Index12];
+                        idx = damage_types.index(dmgtype);
+                        damage_choices[ρσ_bound_index(damage_types.pypop(idx), damage_choices)] = damages.pypop(idx);
+                        idx = critical_damage_types.index(dmgtype);
+                        if (idx >= 0) {
+                            critical_damage_choices[ρσ_bound_index(critical_damage_types.pypop(idx), critical_damage_choices)] = critical_damages.pypop(idx);
+                        }
+                    }
+                    chromatic_type = await queryDamageType(request.name, damage_choices);
+                    damages.insert(0, damage_choices[(typeof chromatic_type === "number" && chromatic_type < 0) ? damage_choices.length + chromatic_type : chromatic_type]);
+                    damage_types.insert(0, chromatic_type);
+                    if (ρσ_in(chromatic_type, critical_damage_choices)) {
+                        crit_damage = critical_damage_choices[(typeof chromatic_type === "number" && chromatic_type < 0) ? critical_damage_choices.length + chromatic_type : chromatic_type];
+                        critical_damages.insert(0, crit_damage);
+                        critical_damage_types.insert(0, chromatic_type);
+                    }
+                } else if ((request.name === "Chaos Bolt" || typeof request.name === "object" && ρσ_equals(request.name, "Chaos Bolt"))) {
+                    var ρσ_Iter13 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder" ]));
+                    for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
+                        dmgtype = ρσ_Iter13[ρσ_Index13];
+                        idx = damage_types.index(dmgtype);
+                        base_damage = damages.pypop(idx);
+                        damage_types.pypop(idx);
+                        idx = critical_damage_types.index(dmgtype);
+                        crit_damage = critical_damages.pypop(idx);
+                        critical_damage_types.pypop(idx);
+                    }
+                    damages.insert(0, base_damage);
+                    damage_types.insert(0, "Chaotic energy");
+                    critical_damages.insert(0, crit_damage);
+                    critical_damage_types.insert(0, "Chaotic energy");
+                }
                 has_versatile = len(damage_types) > 1 && (damage_types[1] === "Two-Handed" || typeof damage_types[1] === "object" && ρσ_equals(damage_types[1], "Two-Handed"));
                 total_damage = "";
                 total_versatile_damage = "";
-                for (var ρσ_Index11 = 0; ρσ_Index11 < damages.length; ρσ_Index11++) {
-                    i = ρσ_Index11;
+                for (var ρσ_Index14 = 0; ρσ_Index14 < damages.length; ρσ_Index14++) {
+                    i = ρσ_Index14;
                     roll = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
                     if (!has_versatile || (i !== 1 && (typeof i !== "object" || ρσ_not_equals(i, 1)))) {
                         total_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
@@ -7878,24 +7972,55 @@ var str = ρσ_str, repr = ρσ_repr;;
                     suffix = (!ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) ? " Damage" : "";
                     damage_rolls.append([dmg_type + suffix, roll]);
                 }
-            }
-            if (is_critical && ρσ_exists.n(request["critical-damages"])) {
-                damages = list(request["critical-damages"]);
-                damage_types = list(request["critical-damage-types"]);
-                total_critical_damage = "";
-                total_critical_versatile_damage = "";
-                for (var ρσ_Index12 = 0; ρσ_Index12 < damages.length; ρσ_Index12++) {
-                    i = ρσ_Index12;
-                    roll = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
-                    if (!has_versatile || (i !== 1 && (typeof i !== "object" || ρσ_not_equals(i, 1)))) {
-                        total_critical_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
+                if ((request.name === "Chaos Bolt" || typeof request.name === "object" && ρσ_equals(request.name, "Chaos Bolt"))) {
+                    var ρσ_Iter15 = ρσ_Iterable(enumerate(damage_rolls));
+                    for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
+                        ρσ_unpack = ρσ_Iter15[ρσ_Index15];
+                        i = ρσ_unpack[0];
+                        dmg_roll = ρσ_unpack[1];
+                        ρσ_unpack = dmg_roll;
+ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
+                        dmg_type = ρσ_unpack[0];
+                        roll = ρσ_unpack[1];
+                        if ((dmg_type === "Chaotic energy Damage" || typeof dmg_type === "object" && ρσ_equals(dmg_type, "Chaotic energy Damage")) && (roll.dice[0].faces === 8 || typeof roll.dice[0].faces === "object" && ρσ_equals(roll.dice[0].faces, 8))) {
+                            chaos_bolt_damages = ρσ_list_decorate([ "Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder" ]);
+                            damage_choices = {};
+                            var ρσ_Iter16 = ρσ_Iterable(roll.dice[0].rolls);
+                            for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
+                                r = ρσ_Iter16[ρσ_Index16];
+                                damage_choices[ρσ_bound_index(chaos_bolt_damages[ρσ_bound_index(r.roll - 1, chaos_bolt_damages)], damage_choices)] = null;
+                            }
+                            console.log("Damage choices : ", damage_choices, damage_choices.length);
+                            if ((Object.keys(damage_choices).length === 1 || typeof Object.keys(damage_choices).length === "object" && ρσ_equals(Object.keys(damage_choices).length, 1))) {
+                                damage_rolls.append(["Chaotic energy leaps from the target to a different creature of your choice within 30 feet of it", 
+                                ρσ_list_decorate([])]);
+                                chaotic_type = Object.keys(damage_choices)[0];
+                            } else {
+                                chaotic_type = await queryDamageType(request.name, damage_choices);
+                            }
+                            damage_rolls[(typeof i === "number" && i < 0) ? damage_rolls.length + i : i] = [chaotic_type + " Damage", 
+                            roll];
+                            critical_damage_types[0] = chaotic_type;
+                            break;
+                        }
                     }
-                    if (has_versatile && (i !== 0 && (typeof i !== "object" || ρσ_not_equals(i, 0)))) {
-                        total_critical_versatile_damage += (((i === 1 || typeof i === "object" && ρσ_equals(i, 1))) ? "" : " + ") + str(roll.total);
+                }
+                if (is_critical) {
+                    total_critical_damage = "";
+                    total_critical_versatile_damage = "";
+                    for (var ρσ_Index17 = 0; ρσ_Index17 < critical_damages.length; ρσ_Index17++) {
+                        i = ρσ_Index17;
+                        roll = new Roll(critical_damages[(typeof i === "number" && i < 0) ? critical_damages.length + i : i]).roll();
+                        if (!has_versatile || (i !== 1 && (typeof i !== "object" || ρσ_not_equals(i, 1)))) {
+                            total_critical_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
+                        }
+                        if (has_versatile && (i !== 0 && (typeof i !== "object" || ρσ_not_equals(i, 0)))) {
+                            total_critical_versatile_damage += (((i === 1 || typeof i === "object" && ρσ_equals(i, 1))) ? "" : " + ") + str(roll.total);
+                        }
+                        dmg_type = critical_damage_types[(typeof i === "number" && i < 0) ? critical_damage_types.length + i : i];
+                        suffix = (!ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) ? " Critical Damage" : "";
+                        damage_rolls.append([dmg_type + suffix, roll]);
                     }
-                    dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
-                    suffix = (!ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) ? " Critical Damage" : "";
-                    damage_rolls.append([dmg_type + suffix, roll]);
                 }
             }
             if ((typeof total_damage !== "undefined" && total_damage !== null) && ρσ_in("+", total_damage)) {
@@ -8125,9 +8250,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }).call(this));
                 }
             }
-            var ρσ_Iter13 = ρσ_Iterable(tokens);
-            for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
-                token = ρσ_Iter13[ρσ_Index13];
+            var ρσ_Iter18 = ρσ_Iterable(tokens);
+            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
+                token = ρσ_Iter18[ρσ_Index18];
                 if (token.actor && token.data.actorLink) {
                     total = (total) ? total : token.actor.data.attributes.hp.max;
                     token.actor.update((function(){
@@ -8173,9 +8298,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter14 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
-                event = ρσ_Iter14[ρσ_Index14];
+            var ρσ_Iter19 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
+                event = ρσ_Iter19[ρσ_Index19];
                 document.removeEventListener.apply(document, event);
             }
         };

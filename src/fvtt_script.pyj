@@ -297,6 +297,34 @@ def rollTrait(request):
     postDescription(request, request.name, source, {}, request.description, open=True)
 
 v'async'
+def queryDamageType(title, damage_types):
+    content = """
+    <div class="form-group">
+      <label>Choose Damage Type :</label>
+      <select id="damage_type" name="damage_type">
+      """
+    for i, option in enumerate(damage_types):
+        selected = " selected" if i == 0 else ""
+        value = damage_types[option]
+        if value:
+            content += '<option value="' + option + '"' + selected + '>' + option + '(' + value + ')' + '</option>'
+        else:
+            content += '<option value="' + option + '"' + selected + '>' + option + '</option>'
+    content += """
+      </select>
+    </div>
+    """
+    return new Promise(def(resolve, reject):
+                            new Dialog({"title": title,
+                                "content": content,
+                                "buttons": {"ok": {"label": "Roll"}},
+                                        "default": "ok",
+                                        "close": def(html):
+                                            resolve(html.find("#damage_type").val())
+                                        }).render(True)
+                        )
+    
+v'async'
 def buildAttackRolls(request, custom_roll_dice):
     rolls = []
     damage_rolls = []
@@ -333,9 +361,42 @@ def buildAttackRolls(request, custom_roll_dice):
             is_critical = isCriticalHitD20([to_hit_roll], critical_limit)
         rolls.append((None, to_hit_roll))
 
+
     if request.damages?:
         damages = list(request.damages)
         damage_types = list(request["damage-types"])
+        critical_damages = list(request["critical-damages"])
+        critical_damage_types = list(request["critical-damage-types"])
+        if request.name == "Chromatic Orb":
+            damage_choices = {}
+            critical_damage_choices = {}
+            for dmgtype in ["Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder"]:
+                idx = damage_types.index(dmgtype)
+                damage_choices[damage_types.pypop(idx)] = damages.pypop(idx)
+                idx = critical_damage_types.index(dmgtype)
+                if idx >= 0:
+                    critical_damage_choices[critical_damage_types.pypop(idx)] = critical_damages.pypop(idx)
+                    
+            chromatic_type = v'await queryDamageType(request.name, damage_choices)'
+            damages.insert(0, damage_choices[chromatic_type])
+            damage_types.insert(0, chromatic_type)
+            if chromatic_type in critical_damage_choices:
+                crit_damage = critical_damage_choices[chromatic_type]
+                critical_damages.insert(0, crit_damage)
+                critical_damage_types.insert(0, chromatic_type)
+        elif request.name == "Chaos Bolt":
+            for dmgtype in ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]:
+                idx = damage_types.index(dmgtype)
+                base_damage = damages.pypop(idx)
+                damage_types.pypop(idx)
+                idx = critical_damage_types.index(dmgtype)
+                crit_damage = critical_damages.pypop(idx)
+                critical_damage_types.pypop(idx)
+            damages.insert(0, base_damage)
+            damage_types.insert(0, "Chaotic energy")
+            critical_damages.insert(0, crit_damage)
+            critical_damage_types.insert(0, "Chaotic energy")
+
         has_versatile = len(damage_types) > 1 and damage_types[1] == "Two-Handed"
         total_damage = ""
         total_versatile_damage = ""
@@ -348,21 +409,37 @@ def buildAttackRolls(request, custom_roll_dice):
             dmg_type = damage_types[i]
             suffix = " Damage" if dmg_type not in ["Healing", "Disciple of Life"] else ""
             damage_rolls.append((dmg_type + suffix, roll))
+            
+        if request.name == "Chaos Bolt":
+            for i, dmg_roll in enumerate(damage_rolls):
+                dmg_type, roll = dmg_roll
+                if dmg_type == "Chaotic energy Damage" and roll.dice[0].faces == 8:
+                    chaos_bolt_damages = ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]
+                    damage_choices = {}
+                    for r in roll.dice[0].rolls:
+                        damage_choices[chaos_bolt_damages[r.roll - 1]] = None
+                    console.log("Damage choices : ", damage_choices, damage_choices.length)
+                    if Object.keys(damage_choices).length == 1:
+                        damage_rolls.append(("Chaotic energy leaps from the target to a different creature of your choice within 30 feet of it", []))
+                        chaotic_type = Object.keys(damage_choices)[0]
+                    else:
+                        chaotic_type = v'await queryDamageType(request.name, damage_choices)'
+                    damage_rolls[i] = (chaotic_type + " Damage", roll)
+                    critical_damage_types[0] = chaotic_type
+                    break
 
-    if is_critical and request["critical-damages"]?:
-        damages = list(request["critical-damages"])
-        damage_types = list(request["critical-damage-types"])
-        total_critical_damage = ""
-        total_critical_versatile_damage = ""
-        for i in range(damages.length):
-            roll = new Roll(damages[i]).roll()
-            if (not has_versatile) or i != 1:
-                total_critical_damage += ("" if i == 0 else " + ") + str(roll.total)
-            if has_versatile and i != 0:
-                total_critical_versatile_damage += ("" if i == 1 else " + ") + str(roll.total)
-            dmg_type = damage_types[i]
-            suffix = " Critical Damage" if dmg_type not in ["Healing", "Disciple of Life"] else ""
-            damage_rolls.append((dmg_type + suffix, roll))
+        if is_critical:
+            total_critical_damage = ""
+            total_critical_versatile_damage = ""
+            for i in range(critical_damages.length):
+                roll = new Roll(critical_damages[i]).roll()
+                if (not has_versatile) or i != 1:
+                    total_critical_damage += ("" if i == 0 else " + ") + str(roll.total)
+                if has_versatile and i != 0:
+                    total_critical_versatile_damage += ("" if i == 1 else " + ") + str(roll.total)
+                dmg_type = critical_damage_types[i]
+                suffix = " Critical Damage" if dmg_type not in ["Healing", "Disciple of Life"] else ""
+                damage_rolls.append((dmg_type + suffix, roll))
 
     if total_damage? and "+" in total_damage:
         damage_rolls.append(("------", []))
