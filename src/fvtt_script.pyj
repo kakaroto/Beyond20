@@ -492,6 +492,15 @@ def buildAttackRolls(request, custom_roll_dice):
 
     return [rolls, damage_rolls]
 
+def rerollDamages(rolls):
+    new_rolls = []
+    for (roll_name, roll) in rolls:
+        if isinstance(roll, str) or isinstance(roll, list):
+            new_rolls.append((roll_name, roll))
+        else:
+            new_rolls.append((roll_name, roll.reroll()))
+    return new_rolls
+
 v'async'
 def rollAttack(request, custom_roll_dice=""):
     nonlocal settings
@@ -507,7 +516,7 @@ def rollAttack(request, custom_roll_dice=""):
 
     if len(damage_rolls) > 0 and len(rolls) > 0 and not settings["auto-roll-damage"]:
         cb = def():
-            postDescription(request, request.name, None, data, request.description? "", damage_rolls)
+            postDescription(request, request.name, None, data, request.description? "", rerollDamages(damage_rolls))
         postDescription(request, request.name, None, data, request.description? "", rolls, buttons={"Roll Damages" : cb})
     else:
         postDescription(request, request.name, None, data, request.description? "", rolls.concat(damage_rolls))
@@ -573,7 +582,7 @@ def rollSpellAttack(request, custom_roll_dice):
 
     if len(damage_rolls) > 0 and len(attack_rolls) > 0 and not settings["auto-roll-damage"]:
         cb = def():
-            postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], damage_rolls)
+            postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rerollDamages(damage_rolls))
         postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls, buttons={"Roll Damages" : cb})
     else:
         postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls.concat(damage_rolls))

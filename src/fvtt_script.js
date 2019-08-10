@@ -7841,7 +7841,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 html += "</form>";
                 new Dialog((function(){
                     var ρσ_d = {};
-                    ρσ_d["title"] = "Custom Skill";
+                    ρσ_d["title"] = "Using a tool";
                     ρσ_d["content"] = html;
                     ρσ_d["buttons"] = (function(){
                         var ρσ_d = {};
@@ -8125,6 +8125,26 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request", "custom_roll_dice"]}
         });
 
+        function rerollDamages(rolls) {
+            var new_rolls, ρσ_unpack, roll_name, roll;
+            new_rolls = ρσ_list_decorate([]);
+            var ρσ_Iter20 = ρσ_Iterable(rolls);
+            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
+                ρσ_unpack = ρσ_Iter20[ρσ_Index20];
+                roll_name = ρσ_unpack[0];
+                roll = ρσ_unpack[1];
+                if (ρσ_instanceof(roll, str) || ρσ_instanceof(roll, list)) {
+                    new_rolls.append([roll_name, roll]);
+                } else {
+                    new_rolls.append([roll_name, roll.reroll()]);
+                }
+            }
+            return new_rolls;
+        };
+        if (!rerollDamages.__argnames__) Object.defineProperties(rerollDamages, {
+            __argnames__ : {value: ["rolls"]}
+        });
+
         async        function rollAttack() {
             var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var custom_roll_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollAttack.__defaults__.custom_roll_dice : arguments[1];
@@ -8147,7 +8167,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             if (len(damage_rolls) > 0 && len(rolls) > 0 && !settings["auto-roll-damage"]) {
                 cb = function () {
-                    postDescription(request, request.name, null, data, ρσ_exists.e(request.description, ""), damage_rolls);
+                    postDescription(request, request.name, null, data, ρσ_exists.e(request.description, ""), rerollDamages(damage_rolls));
                 };
                 ρσ_interpolate_kwargs.call(this, postDescription, [request, request.name, null, data, ρσ_exists.e(request.description, ""), rolls].concat([ρσ_desugar_kwargs({buttons: (function(){
                     var ρσ_d = {};
@@ -8241,7 +8261,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             rolls.extend(attack_rolls);
             if (len(damage_rolls) > 0 && len(attack_rolls) > 0 && !settings["auto-roll-damage"]) {
                 cb = function () {
-                    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], damage_rolls);
+                    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rerollDamages(damage_rolls));
                 };
                 ρσ_interpolate_kwargs.call(this, postDescription, [request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls].concat([ρσ_desugar_kwargs({buttons: (function(){
                     var ρσ_d = {};
@@ -8335,9 +8355,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }).call(this));
                 }
             }
-            var ρσ_Iter20 = ρσ_Iterable(tokens);
-            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
-                token = ρσ_Iter20[ρσ_Index20];
+            var ρσ_Iter21 = ρσ_Iterable(tokens);
+            for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
+                token = ρσ_Iter21[ρσ_Index21];
                 if (token.actor && token.data.actorLink) {
                     total = (total) ? total : token.actor.data.attributes.hp.max;
                     token.actor.update((function(){
@@ -8383,9 +8403,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter21 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
-                event = ρσ_Iter21[ρσ_Index21];
+            var ρσ_Iter22 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
+                event = ρσ_Iter22[ρσ_Index22];
                 document.removeEventListener.apply(document, event);
             }
         };
