@@ -7292,6 +7292,53 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request", "custom_roll_dice"]}
         });
 
+        function rollItem() {
+            var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var custom_roll_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollItem.__defaults__.custom_roll_dice : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
+                custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
+            }
+            var source, modifier, ability, proficiency, half_proficiency, expertise, prof;
+            source = request["item-type"].trim().toLowerCase();
+            if ((source === "tool, common" || typeof source === "object" && ρσ_equals(source, "tool, common"))) {
+                console.log("Is a tool!");
+                modifier = "?{Choose Ability";
+                var ρσ_Iter4 = ρσ_Iterable(request.character.abilities);
+                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                    ability = ρσ_Iter4[ρσ_Index4];
+                    modifier += "|" + ability[0] + ", " + ability[3];
+                }
+                modifier += "}";
+                proficiency = request.character.proficiency;
+                half_proficiency = "+[[floor(" + proficiency + " / 2)]]";
+                expertise = "+[[" + proficiency + " * 2]]";
+                prof = "?{Select Proficiency|None,+0|Half-Proficient," + half_proficiency + "|Profient," + proficiency + "|Expert," + expertise + "}";
+                return rollTrait(request) + "\n" + template(request, "simple", (function(){
+                    var ρσ_d = {};
+                    ρσ_d["charname"] = request.character.name;
+                    ρσ_d["rname"] = request.name;
+                    ρσ_d["mod"] = "[[" + modifier + prof + "]]";
+                    ρσ_d["r1"] = genRoll("1d20", (function(){
+                        var ρσ_d = {};
+                        ρσ_d["ABILITY"] = modifier;
+                        ρσ_d["PROF"] = prof;
+                        ρσ_d["CUSTOM"] = custom_roll_dice;
+                        return ρσ_d;
+                    }).call(this));
+                    return ρσ_d;
+                }).call(this));
+            } else {
+                return rollTrait(request);
+            }
+        };
+        if (!rollItem.__defaults__) Object.defineProperties(rollItem, {
+            __defaults__ : {value: {custom_roll_dice:""}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["request", "custom_roll_dice"]}
+        });
+
         function rollTrait(request) {
             var source;
             if (ρσ_exists.n(request["source-type"])) {
@@ -7381,9 +7428,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 properties["rname"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")";
                 properties["rnamec"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")";
             } else {
-                var ρσ_Iter4 = ρσ_Iterable(dmg_props);
-                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                    key = ρσ_Iter4[ρσ_Index4];
+                var ρσ_Iter5 = ρσ_Iterable(dmg_props);
+                for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                    key = ρσ_Iter5[ρσ_Index5];
                     properties[(typeof key === "number" && key < 0) ? properties.length + key : key] = dmg_props[(typeof key === "number" && key < 0) ? dmg_props.length + key : key];
                 }
             }
@@ -7475,9 +7522,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 critical_damage_types = list(request["critical-damage-types"]);
                 if ((request.name === "Chromatic Orb" || typeof request.name === "object" && ρσ_equals(request.name, "Chromatic Orb"))) {
                     chromatic_type = "?{Choose damage type";
-                    var ρσ_Iter5 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder" ]));
-                    for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                        dmgtype = ρσ_Iter5[ρσ_Index5];
+                    var ρσ_Iter6 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder" ]));
+                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                        dmgtype = ρσ_Iter6[ρσ_Index6];
                         idx = damage_types.index(dmgtype);
                         chromatic_damage = damages.pypop(idx);
                         damage_types.pypop(idx);
@@ -7494,9 +7541,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     critical_damages.insert(0, crit_damage);
                     critical_damage_types.insert(0, chromatic_type);
                 } else if ((request.name === "Chaos Bolt" || typeof request.name === "object" && ρσ_equals(request.name, "Chaos Bolt"))) {
-                    var ρσ_Iter6 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder" ]));
-                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                        dmgtype = ρσ_Iter6[ρσ_Index6];
+                    var ρσ_Iter7 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder" ]));
+                    for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                        dmgtype = ρσ_Iter7[ρσ_Index7];
                         idx = damage_types.index(dmgtype);
                         base_damage = damages.pypop(idx);
                         damage_types.pypop(idx);
@@ -7555,9 +7602,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 properties["rname"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")";
                 properties["rnamec"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")";
             } else {
-                var ρσ_Iter7 = ρσ_Iterable(dmg_props);
-                for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                    key = ρσ_Iter7[ρσ_Index7];
+                var ρσ_Iter8 = ρσ_Iterable(dmg_props);
+                for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                    key = ρσ_Iter8[ρσ_Index8];
                     properties[(typeof key === "number" && key < 0) ? properties.length + key : key] = dmg_props[(typeof key === "number" && key < 0) ? dmg_props.length + key : key];
                 }
             }
@@ -7623,7 +7670,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     roll = rollInitiative(request, custom_roll_dice);
                 } else if ((request.type === "hit-dice" || typeof request.type === "object" && ρσ_equals(request.type, "hit-dice"))) {
                     roll = rollHitDice(request);
-                } else if (ρσ_in(request.type, ρσ_list_decorate([ "item", "feature", "trait", "action" ]))) {
+                } else if ((request.type === "item" || typeof request.type === "object" && ρσ_equals(request.type, "item"))) {
+                    roll = rollItem(request, custom_roll_dice);
+                } else if (ρσ_in(request.type, ρσ_list_decorate([ "feature", "trait", "action" ]))) {
                     roll = rollTrait(request);
                 } else if ((request.type === "death-save" || typeof request.type === "object" && ρσ_equals(request.type, "death-save"))) {
                     roll = rollDeathSave(request, custom_roll_dice);
