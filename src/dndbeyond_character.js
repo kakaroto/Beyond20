@@ -9236,12 +9236,23 @@ return this.__repr__();
         });
 
         function rollAction(paneClass) {
-            var properties, action_name, description, damages, damage_types, custom_damage, roll_properties;
+            var properties, action_name, action_parent, description, fighter_level, superiority_die, damages, damage_types, custom_damage, roll_properties;
             properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"));
             print("Properties are : " + str(properties));
             action_name = $(".ct-sidebar__heading").text();
+            action_parent = $(".ct-sidebar__header-parent").text();
             description = descriptionToString(".ct-action-detail__description");
-            if (ρσ_in("Damage", properties) || ρσ_exists.n(properties["To Hit"]) || ρσ_exists.n(properties["Attack/Save"])) {
+            if ((action_name === "Superiority Dice" || typeof action_name === "object" && ρσ_equals(action_name, "Superiority Dice")) || (action_parent === "Maneuvers" || typeof action_parent === "object" && ρσ_equals(action_parent, "Maneuvers"))) {
+                fighter_level = character.getClassLevel("Fighter");
+                superiority_die = (fighter_level < 10) ? "1d8" : (fighter_level < 18) ? "1d10" : "1d12";
+                sendRollWithCharacter("custom", superiority_die, (function(){
+                    var ρσ_d = {};
+                    ρσ_d["name"] = action_name;
+                    ρσ_d["description"] = description;
+                    ρσ_d["modifier"] = superiority_die;
+                    return ρσ_d;
+                }).call(this));
+            } else if (ρσ_in("Damage", properties) || ρσ_exists.n(properties["To Hit"]) || ρσ_exists.n(properties["Attack/Save"])) {
                 if (ρσ_in("Damage", properties)) {
                     damages = ρσ_list_decorate([ properties["Damage"] ]);
                     damage_types = ρσ_list_decorate([ ρσ_exists.e(properties["Damage Type"], "") ]);

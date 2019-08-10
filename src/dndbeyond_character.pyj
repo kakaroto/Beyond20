@@ -195,8 +195,15 @@ def rollAction(paneClass):
     properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"))
     print("Properties are : " + str(properties))
     action_name = $(".ct-sidebar__heading").text()
+    action_parent = $(".ct-sidebar__header-parent").text()
     description = descriptionToString(".ct-action-detail__description")
-    if "Damage" in properties or properties["To Hit"]? or properties["Attack/Save"]?:
+    if action_name == "Superiority Dice" or action_parent == "Maneuvers":
+        fighter_level = character.getClassLevel("Fighter")
+        superiority_die = "1d8" if fighter_level < 10 else ("1d10" if fighter_level < 18 else "1d12")
+        sendRollWithCharacter("custom", superiority_die, {"name": action_name,
+                                                          "description": description,
+                                                          "modifier": superiority_die})
+    elif "Damage" in properties or properties["To Hit"]? or properties["Attack/Save"]?:
         if "Damage" in properties:
             damages = [properties["Damage"]]
             damage_types = [properties["Damage Type"] ? ""]
