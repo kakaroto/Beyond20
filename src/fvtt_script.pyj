@@ -246,7 +246,6 @@ def rollSkill(request, custom_roll_dice=""):
                     "close": def(html):
                         ability = html.find('[name="ability"]').val()
                         mod = modifiers[ability]
-                        console.log("Modifier : ", mod)
                         data = {"ability": mod, "prof": prof_val, "custom_dice": custom_roll_dice}
                         rollD20(request, request.skill + "(" + ability + ")", data)
                     }).render(True)
@@ -283,6 +282,46 @@ def rollHitDice(request):
 
 def rollDeathSave(request, custom_roll_dice=""):
     rollD20(request, "Death Saving Throw", {"custom_dice": custom_roll_dice})
+
+def rollItem(request, custom_roll_dice=""):
+    source = request["item-type"].trim().toLowerCase()
+    if source == "tool, common" and request.character.abilities.length > 0:
+        nonlocal extension_url
+        icon = '<img style="border: 0px;" src="' + extension_url + "images/icons/icon16.png" + '"></img>'
+
+        proficiencies = {}
+        proficiencies["None"] = 0
+        proficiencies["Half Proficient"] = math.floor(request.character.proficiency / 2)
+        proficiencies["Proficient"] = request.character.proficiency
+        proficiencies["Expert"] = request.character.proficiency * 2
+        formula = "1d20 + @ability + @proficiency + @custom_dice"
+        html = '<form>'
+        html += '<div class="form-group"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>'
+        html += '<div class="form-group"><label>Select Ability</label><select name="ability">'
+        modifiers = {}
+        for ability in request.character.abilities:
+            html += '<option value="' + ability[0] + '">' + ability[0] + '</option>'
+            modifiers[ability[0]] = ability[3]
+        html += "</select></div>"
+        html += '<div class="form-group"><label>Select Proficiency</label><select name="proficiency">'
+        for prof in proficiencies:
+            html += '<option value="' + prof + '">' + prof + '</option>'
+        html += "</select></div>"
+        html += '</form>'
+        new Dialog({"title": "Using a tool",
+                    "content": html,
+                    "buttons": {"ok": {"label": request.name,
+                                       "icon": icon}},
+                    "default": "ok",
+                    "close": def(html):
+                        ability = html.find('[name="ability"]').val()
+                        mod = modifiers[ability]
+                        proficiency = html.find('[name="proficiency"]').val()
+                        prof_value = proficiencies[proficiency]
+                        data = {"ability": mod, "proficiency": prof_value, "custom_dice": custom_roll_dice}
+                        rollD20(request, request.name + "(" + ability + ")", data)
+                    }).render(True)
+    return rollTrait(request)
 
 def rollTrait(request):
     if request["source-type"]?:
@@ -557,7 +596,9 @@ def handleRoll(request):
         rollInitiative(request, custom_roll_dice)
     elif request.type == "hit-dice":
         rollHitDice(request)
-    elif request.type in ["item", "feature", "trait", "action"]:
+    elif request.type == "item":
+        rollItem(request, custom_roll_dice)
+    elif request.type in ["feature", "trait", "action"]:
         rollTrait(request)
     elif request.type == "death-save":
         rollDeathSave(request, custom_roll_dice)

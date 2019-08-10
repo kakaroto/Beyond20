@@ -7302,8 +7302,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var source, modifier, ability, proficiency, half_proficiency, expertise, prof;
             source = request["item-type"].trim().toLowerCase();
-            if ((source === "tool, common" || typeof source === "object" && ρσ_equals(source, "tool, common"))) {
-                console.log("Is a tool!");
+            if ((source === "tool, common" || typeof source === "object" && ρσ_equals(source, "tool, common")) && request.character.abilities.length > 0) {
                 modifier = "?{Choose Ability";
                 var ρσ_Iter4 = ρσ_Iterable(request.character.abilities);
                 for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {

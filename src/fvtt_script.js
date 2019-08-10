@@ -7649,7 +7649,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                             var ability, mod, data;
                             ability = html.find("[name=\"ability\"]").val();
                             mod = modifiers[(typeof ability === "number" && ability < 0) ? modifiers.length + ability : ability];
-                            console.log("Modifier : ", mod);
                             data = (function(){
                                 var ρσ_d = {};
                                 ρσ_d["ability"] = mod;
@@ -7803,6 +7802,90 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request", "custom_roll_dice"]}
         });
 
+        function rollItem() {
+            var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var custom_roll_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollItem.__defaults__.custom_roll_dice : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
+                custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
+            }
+            var source, icon, proficiencies, formula, html, modifiers, ability, prof;
+            source = request["item-type"].trim().toLowerCase();
+            if ((source === "tool, common" || typeof source === "object" && ρσ_equals(source, "tool, common")) && request.character.abilities.length > 0) {
+                icon = "<img style=\"border: 0px;\" src=\"" + extension_url + "images/icons/icon16.png" + "\"></img>";
+                proficiencies = {};
+                proficiencies["None"] = 0;
+                proficiencies["Half Proficient"] = math.floor(request.character.proficiency / 2);
+                proficiencies["Proficient"] = request.character.proficiency;
+                proficiencies["Expert"] = request.character.proficiency * 2;
+                formula = "1d20 + @ability + @proficiency + @custom_dice";
+                html = "<form>";
+                html += "<div class=\"form-group\"><label>Roll Formula</label><input type=\"text\" value=\"" + formula + "\" disabled></div>";
+                html += "<div class=\"form-group\"><label>Select Ability</label><select name=\"ability\">";
+                modifiers = {};
+                var ρσ_Iter11 = ρσ_Iterable(request.character.abilities);
+                for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                    ability = ρσ_Iter11[ρσ_Index11];
+                    html += "<option value=\"" + ability[0] + "\">" + ability[0] + "</option>";
+                    modifiers[ρσ_bound_index(ability[0], modifiers)] = ability[3];
+                }
+                html += "</select></div>";
+                html += "<div class=\"form-group\"><label>Select Proficiency</label><select name=\"proficiency\">";
+                var ρσ_Iter12 = ρσ_Iterable(proficiencies);
+                for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                    prof = ρσ_Iter12[ρσ_Index12];
+                    html += "<option value=\"" + prof + "\">" + prof + "</option>";
+                }
+                html += "</select></div>";
+                html += "</form>";
+                new Dialog((function(){
+                    var ρσ_d = {};
+                    ρσ_d["title"] = "Custom Skill";
+                    ρσ_d["content"] = html;
+                    ρσ_d["buttons"] = (function(){
+                        var ρσ_d = {};
+                        ρσ_d["ok"] = (function(){
+                            var ρσ_d = {};
+                            ρσ_d["label"] = request.name;
+                            ρσ_d["icon"] = icon;
+                            return ρσ_d;
+                        }).call(this);
+                        return ρσ_d;
+                    }).call(this);
+                    ρσ_d["default"] = "ok";
+                    ρσ_d["close"] = (function() {
+                        var ρσ_anonfunc = function (html) {
+                            var ability, mod, proficiency, prof_value, data;
+                            ability = html.find("[name=\"ability\"]").val();
+                            mod = modifiers[(typeof ability === "number" && ability < 0) ? modifiers.length + ability : ability];
+                            proficiency = html.find("[name=\"proficiency\"]").val();
+                            prof_value = proficiencies[(typeof proficiency === "number" && proficiency < 0) ? proficiencies.length + proficiency : proficiency];
+                            data = (function(){
+                                var ρσ_d = {};
+                                ρσ_d["ability"] = mod;
+                                ρσ_d["proficiency"] = prof_value;
+                                ρσ_d["custom_dice"] = custom_roll_dice;
+                                return ρσ_d;
+                            }).call(this);
+                            rollD20(request, request.name + "(" + ability + ")", data);
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["html"]}
+                        });
+                        return ρσ_anonfunc;
+                    })();
+                    return ρσ_d;
+                }).call(this)).render(true);
+            }
+            return rollTrait(request);
+        };
+        if (!rollItem.__defaults__) Object.defineProperties(rollItem, {
+            __defaults__ : {value: {custom_roll_dice:""}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["request", "custom_roll_dice"]}
+        });
+
         function rollTrait(request) {
             var source;
             if (ρσ_exists.n(request["source-type"])) {
@@ -7824,9 +7907,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         async        function queryDamageType(title, damage_types) {
             var content, selected, value, ρσ_unpack, i, option;
             content = "\n    <div class=\"form-group\">\n      <label>Choose Damage Type :</label>\n      <select id=\"damage_type\" name=\"damage_type\">\n      ";
-            var ρσ_Iter11 = ρσ_Iterable(enumerate(damage_types));
-            for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
-                ρσ_unpack = ρσ_Iter11[ρσ_Index11];
+            var ρσ_Iter13 = ρσ_Iterable(enumerate(damage_types));
+            for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
+                ρσ_unpack = ρσ_Iter13[ρσ_Index13];
                 i = ρσ_unpack[0];
                 option = ρσ_unpack[1];
                 selected = ((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? " selected" : "";
@@ -7922,9 +8005,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if ((request.name === "Chromatic Orb" || typeof request.name === "object" && ρσ_equals(request.name, "Chromatic Orb"))) {
                     damage_choices = {};
                     critical_damage_choices = {};
-                    var ρσ_Iter12 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder" ]));
-                    for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
-                        dmgtype = ρσ_Iter12[ρσ_Index12];
+                    var ρσ_Iter14 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder" ]));
+                    for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
+                        dmgtype = ρσ_Iter14[ρσ_Index14];
                         idx = damage_types.index(dmgtype);
                         damage_choices[ρσ_bound_index(damage_types.pypop(idx), damage_choices)] = damages.pypop(idx);
                         idx = critical_damage_types.index(dmgtype);
@@ -7941,9 +8024,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                         critical_damage_types.insert(0, chromatic_type);
                     }
                 } else if ((request.name === "Chaos Bolt" || typeof request.name === "object" && ρσ_equals(request.name, "Chaos Bolt"))) {
-                    var ρσ_Iter13 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder" ]));
-                    for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
-                        dmgtype = ρσ_Iter13[ρσ_Index13];
+                    var ρσ_Iter15 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder" ]));
+                    for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
+                        dmgtype = ρσ_Iter15[ρσ_Index15];
                         idx = damage_types.index(dmgtype);
                         base_damage = damages.pypop(idx);
                         damage_types.pypop(idx);
@@ -7959,8 +8042,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 has_versatile = len(damage_types) > 1 && (damage_types[1] === "Two-Handed" || typeof damage_types[1] === "object" && ρσ_equals(damage_types[1], "Two-Handed"));
                 total_damage = "";
                 total_versatile_damage = "";
-                for (var ρσ_Index14 = 0; ρσ_Index14 < damages.length; ρσ_Index14++) {
-                    i = ρσ_Index14;
+                for (var ρσ_Index16 = 0; ρσ_Index16 < damages.length; ρσ_Index16++) {
+                    i = ρσ_Index16;
                     roll = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
                     if (!has_versatile || (i !== 1 && (typeof i !== "object" || ρσ_not_equals(i, 1)))) {
                         total_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
@@ -7973,9 +8056,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     damage_rolls.append([dmg_type + suffix, roll]);
                 }
                 if ((request.name === "Chaos Bolt" || typeof request.name === "object" && ρσ_equals(request.name, "Chaos Bolt"))) {
-                    var ρσ_Iter15 = ρσ_Iterable(enumerate(damage_rolls));
-                    for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
-                        ρσ_unpack = ρσ_Iter15[ρσ_Index15];
+                    var ρσ_Iter17 = ρσ_Iterable(enumerate(damage_rolls));
+                    for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
+                        ρσ_unpack = ρσ_Iter17[ρσ_Index17];
                         i = ρσ_unpack[0];
                         dmg_roll = ρσ_unpack[1];
                         ρσ_unpack = dmg_roll;
@@ -7985,9 +8068,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                         if ((dmg_type === "Chaotic energy Damage" || typeof dmg_type === "object" && ρσ_equals(dmg_type, "Chaotic energy Damage")) && (roll.dice[0].faces === 8 || typeof roll.dice[0].faces === "object" && ρσ_equals(roll.dice[0].faces, 8))) {
                             chaos_bolt_damages = ρσ_list_decorate([ "Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder" ]);
                             damage_choices = {};
-                            var ρσ_Iter16 = ρσ_Iterable(roll.dice[0].rolls);
-                            for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
-                                r = ρσ_Iter16[ρσ_Index16];
+                            var ρσ_Iter18 = ρσ_Iterable(roll.dice[0].rolls);
+                            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
+                                r = ρσ_Iter18[ρσ_Index18];
                                 damage_choices[ρσ_bound_index(chaos_bolt_damages[ρσ_bound_index(r.roll - 1, chaos_bolt_damages)], damage_choices)] = null;
                             }
                             console.log("Damage choices : ", damage_choices, damage_choices.length);
@@ -8008,8 +8091,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if (is_critical) {
                     total_critical_damage = "";
                     total_critical_versatile_damage = "";
-                    for (var ρσ_Index17 = 0; ρσ_Index17 < critical_damages.length; ρσ_Index17++) {
-                        i = ρσ_Index17;
+                    for (var ρσ_Index19 = 0; ρσ_Index19 < critical_damages.length; ρσ_Index19++) {
+                        i = ρσ_Index19;
                         roll = new Roll(critical_damages[(typeof i === "number" && i < 0) ? critical_damages.length + i : i]).roll();
                         if (!has_versatile || (i !== 1 && (typeof i !== "object" || ρσ_not_equals(i, 1)))) {
                             total_critical_damage += (((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) ? "" : " + ") + str(roll.total);
@@ -8190,7 +8273,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 rollInitiative(request, custom_roll_dice);
             } else if ((request.type === "hit-dice" || typeof request.type === "object" && ρσ_equals(request.type, "hit-dice"))) {
                 rollHitDice(request);
-            } else if (ρσ_in(request.type, ρσ_list_decorate([ "item", "feature", "trait", "action" ]))) {
+            } else if ((request.type === "item" || typeof request.type === "object" && ρσ_equals(request.type, "item"))) {
+                rollItem(request, custom_roll_dice);
+            } else if (ρσ_in(request.type, ρσ_list_decorate([ "feature", "trait", "action" ]))) {
                 rollTrait(request);
             } else if ((request.type === "death-save" || typeof request.type === "object" && ρσ_equals(request.type, "death-save"))) {
                 rollDeathSave(request, custom_roll_dice);
@@ -8250,9 +8335,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }).call(this));
                 }
             }
-            var ρσ_Iter18 = ρσ_Iterable(tokens);
-            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
-                token = ρσ_Iter18[ρσ_Index18];
+            var ρσ_Iter20 = ρσ_Iterable(tokens);
+            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
+                token = ρσ_Iter20[ρσ_Index20];
                 if (token.actor && token.data.actorLink) {
                     total = (total) ? total : token.actor.data.attributes.hp.max;
                     token.actor.update((function(){
@@ -8298,9 +8383,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter19 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
-                event = ρσ_Iter19[ρσ_Index19];
+            var ρσ_Iter21 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
+                event = ρσ_Iter21[ρσ_Index21];
                 document.removeEventListener.apply(document, event);
             }
         };

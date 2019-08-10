@@ -266,8 +266,7 @@ def rollDeathSave(request, custom_roll_dice=""):
 
 def rollItem(request, custom_roll_dice=""):
     source = request["item-type"].trim().toLowerCase()
-    if source == "tool, common":
-        console.log("Is a tool!")
+    if source == "tool, common" and request.character.abilities.length > 0:
         modifier = "?{Choose Ability"
         # [name, abbr, value, mod]
         for ability in request.character.abilities:
