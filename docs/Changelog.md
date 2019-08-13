@@ -1,3 +1,16 @@
+v0.5
+===
+
+- **Feature**: Roll the appropriate die when clicking on a Superiority Die or Maneuvers feature instead of displaying its description
+- **Feature**: Query for skill and proficiency when rolling a tool from the equipment
+- **Feature**: Improve support for casting Chaos Bolt spell.
+- **Feature**: *FVTT*: Add custom support for Chromatic Orb and Chaos Bolt spells.
+- **Bugfix**: Fix rolling from spell pages not working anymore
+- **Bugfix**: Roll damages even without a "To-Hit" for Custom Actions
+- **Bugfix**: *FVTT*: Clicking 'Roll Damages' when auto-roll damage is disabled will now re-roll the damage dice.
+- **Misc**: Decrease Chrome extension permissions and require manual activation for FVTT installations (See [Release Notes](release_notes#v05) for more information)
+- **Misc**: Replace all remaining occurences of "Roll20" with "VTT"
+
 v0.4
 ===
 

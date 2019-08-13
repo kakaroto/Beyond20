@@ -36,6 +36,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
   * The clickable dice can be disabled to not show in the D&D Beyond page or in the VTT text, separately
 * Creatures stat blocks
 * Vehicles stat blocks
+* Tools
 
 ## Monsters and Character creatures
 * Hit points
@@ -79,6 +80,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 
 # Special Spells supported
 * Chromatic Orb: Macro to ask which damage type to use
+* Chaos Bolt: Damage type set to 'chaotic energy' instead of rolling for each damage (Roll20) or query damage type depending on roll result.
 
 ## Configurable options
 * Whisper rolls (yes, no, query the user)
