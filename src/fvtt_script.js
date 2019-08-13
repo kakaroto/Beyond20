@@ -7130,6 +7130,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         extension_url = "/modules/beyond20/";
         function getSpeakerByName(name) {
             var low_name, actor, speaker;
+            if (name === null) {
+                return ChatMessage.getSpeaker();
+            }
             low_name = name.toLowerCase();
             actor = game.actors.entities.find((function() {
                 var ρσ_anonfunc = function (actor) {
