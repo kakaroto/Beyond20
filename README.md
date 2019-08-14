@@ -17,9 +17,9 @@ To install Beyond 20 on Firefox, simply head over to [Firefox Extensions](https:
 
 ## Use 
 
-Open Roll20 or Foundry VTT in a tab of Chrome or Firefox then your character sheet in D&D Beyond in another tab, click on the item you want to roll, whether it's initiative, a skill, ability or saving throw check, a weapon or spell attack, a class/racial feat or trait or hit dice, death saving throw, etc...
+Open Roll20 or Foundry VTT in a tab of Chrome or Firefox then your character sheet in D&D Beyond in another tab. If you are using Chrome with Foundry VTT, then you need to click on the Beyond20 icon in the Chrome window's toolbar to activate Beyond20 for your FVTT installation.
 
-When the D&D Beyond character sheet shows the information about the item you selected in its side panel, there should be a Beyond20 button or B20 icon that appear in the side panel to make the roll. It will automatically pick up on what was selected, and send the roll to all Roll20 or Foundry VTT tabs open.
+Click on the item you want to roll, whether it's initiative, a skill, ability or saving throw check, a weapon or spell attack, a class/racial feat or trait or hit dice, death saving throw, etc... When the D&D Beyond character sheet shows the information about the item you selected in its side panel, there should be a Beyond20 button or B20 icon that appear in the side panel to make the roll. It will automatically pick up on what was selected, and send the roll to all Roll20 or Foundry VTT tabs open.
 
 If a spell/item/action/feat description contains a dice formula (`2d10 + 3` for example) or a modifier formula (`+ 3` for example), that text will be underlined and a B20 dice icon will appear next to it. Click on the formula or the dice to make the roll in the Roll20 tab.
 
@@ -53,9 +53,10 @@ All you need is to load the extension from the source :
 
 ## Firefox
 
-3. Open "[about:debugging](about:debugging)" in Firefox
-4. Click "Load Temporary Add-on"
-5. Select the `manifest.json` file from the extension's directory
+3. Rename the file `manifest_ff.json` into `manifest.json` from the extension's directory
+4. Open "[about:debugging](about:debugging)" in Firefox
+5. Click "Load Temporary Add-on"
+6. Select the `manifest.json` file from the extension's directory
 
 # License
 
