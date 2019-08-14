@@ -586,7 +586,7 @@ def propertyListToDict(propList):
     return properties
 
 def descriptionToString(selector, separator="\n"):
-    description_p = $(selector).children()
+    description_p = $(selector).find("p")
     if description_p.length == 0:
         return $(selector).text()
     description = ""

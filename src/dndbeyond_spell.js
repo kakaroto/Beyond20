@@ -8091,7 +8091,7 @@ return this.__repr__();
                 separator = ρσ_kwargs_obj.separator;
             }
             var description_p, description, i;
-            description_p = $(selector).children();
+            description_p = $(selector).find("p");
             if ((description_p.length === 0 || typeof description_p.length === "object" && ρσ_equals(description_p.length, 0))) {
                 return $(selector).text();
             }
