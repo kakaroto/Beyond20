@@ -7237,7 +7237,16 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["title"]}
         });
 
-        function postChatMessage(message, character, whisper) {
+        function postChatMessage() {
+            var message = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var character = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var whisper = ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[2];
+            var play_sound = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? postChatMessage.__defaults__.play_sound : arguments[3];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "play_sound")){
+                play_sound = ρσ_kwargs_obj.play_sound;
+            }
             var data, rollMode;
             data = (function(){
                 var ρσ_d = {};
@@ -7253,10 +7262,15 @@ var str = ρσ_str, repr = ρσ_repr;;
                     data["blind"] = true;
                 }
             }
+            if (play_sound) {
+                data["sound"] = CONFIG.sounds.dice;
+            }
             return ChatMessage.create(data);
         };
-        if (!postChatMessage.__argnames__) Object.defineProperties(postChatMessage, {
-            __argnames__ : {value: ["message", "character", "whisper"]}
+        if (!postChatMessage.__defaults__) Object.defineProperties(postChatMessage, {
+            __defaults__ : {value: {play_sound:false}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["message", "character", "whisper", "play_sound"]}
         });
 
         function postRoll(roll, character, title, whisper) {
@@ -7424,7 +7438,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "open")){
                 open = ρσ_kwargs_obj.open;
             }
-            var html, attr, roll_html, roll_list, ρσ_unpack, i, roll, roll_name, button;
+            var play_sound, html, attr, roll_html, roll_list, ρσ_unpack, i, roll, roll_name, button;
+            play_sound = false;
             html = "<div class=\"beyond20-message\">";
             if (description) {
                 html += "<details" + ((open) ? " open" : "") + "><summary><a>" + title + "</a></summary>";
@@ -7466,9 +7481,11 @@ var str = ρσ_str, repr = ρσ_repr;;
                                 roll_html += " | ";
                             }
                             roll_html += await rollToDetails(roll);
+                            play_sound = true;
                         }
                     } else {
                         roll_html = await rollToDetails(roll);
+                        play_sound = true;
                     }
                 }
                 if (roll_name) {
@@ -7517,7 +7534,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 });
                 return ρσ_anonfunc;
             })());
-            return postChatMessage(html, request.character.name, request.whisper);
+            return postChatMessage(html, request.character.name, request.whisper, play_sound);
         };
         if (!postDescription.__defaults__) Object.defineProperties(postDescription, {
             __defaults__ : {value: {rolls:ρσ_list_decorate([]), buttons:{}, open:false}},

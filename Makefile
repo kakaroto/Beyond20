@@ -13,7 +13,7 @@ JS_FILES=src/background.js src/roll20.js src/roll20_script.js \
 	src/dndbeyond_vehicle.js src/options.js  src/popup.js src/default_popup.js
 PYJ_DEPS=src/utils.pyj src/settings.pyj src/dndbeyond.pyj src/constants.pyj
 
-src/fvtt_script.js: PYJ_GLOBALS='$$,chrome,game,canvas,Roll,ChatMessage,ui,Hooks,Dialog,ENTITY_PERMISSIONS'
+src/fvtt_script.js: PYJ_GLOBALS='$$,chrome,game,canvas,Roll,ChatMessage,ui,Hooks,Dialog,ENTITY_PERMISSIONS,CONFIG'
 src/utils.pyj-cached: PYJ_GLOBALS='$$,chrome,browser,cloneInto'
 src/constants.pyj-cached: PYJ_FLAGS+=--noqa eol-semicolon
 

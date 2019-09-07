@@ -55,7 +55,7 @@ def queryAdvantage(title):
                                        }).render(True)
                        )
 
-def postChatMessage(message, character, whisper):
+def postChatMessage(message, character, whisper, play_sound=False):
     data = {"content": message, 
             "user": game.user._id,
             "speaker": getSpeakerByName(character)}
@@ -64,6 +64,8 @@ def postChatMessage(message, character, whisper):
         data["whisper"] = ChatMessage.getWhisperIDs("GM")
         if rollMode == "blindroll":
             data["blind"] = True
+    if play_sound:
+        data["sound"] = CONFIG.sounds.dice
     return ChatMessage.create(data)
 
 def postRoll(roll, character, title, whisper):
@@ -122,6 +124,7 @@ def rollsToCells(html):
 
 v'async'
 def postDescription(request, title, source, attributes, description, rolls=[], buttons={}, open=False):
+    play_sound = False
     html = '<div class="beyond20-message">'
     if description:
         html += "<details" + (" open" if open else "") + "><summary><a>" + title + "</a></summary>"
@@ -149,8 +152,10 @@ def postDescription(request, title, source, attributes, description, rolls=[], b
                     if i > 0:
                         roll_html += " | "
                     roll_html += v'await rollToDetails(roll)'
+                    play_sound = True
             else:
                 roll_html = v'await rollToDetails(roll)'
+                play_sound = True
         if roll_name:
             roll_name = roll_name[0].toUpperCase() + roll_name[1:] + (": " if roll_html else "")
             html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>"
@@ -174,7 +179,7 @@ def postDescription(request, title, source, attributes, description, rolls=[], b
                                                              buttons[button]()
                                                          )
                )
-    return postChatMessage(html, request.character.name, request.whisper)
+    return postChatMessage(html, request.character.name, request.whisper, play_sound)
 
 def createRoll(dice, data):
     new_data = {}
