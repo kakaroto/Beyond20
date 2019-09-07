@@ -7758,27 +7758,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             rollD20(request, "Initiative" + "(" + request.initiative + ")", data).then((function() {
                 var ρσ_anonfunc = function (roll) {
-                    var token;
                     if (settings["initiative-tracker"]) {
-                        if (canvas.tokens.controlledTokens.length > 0) {
-                            if (ρσ_exists.n(game.combat)) {
-                                var ρσ_Iter10 = ρσ_Iterable(canvas.tokens.controlledTokens);
-                                for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
-                                    token = ρσ_Iter10[ρσ_Index10];
-                                    game.combat.createCombatant((function(){
-                                        var ρσ_d = {};
-                                        ρσ_d["tokenId"] = token.id;
-                                        ρσ_d["hidden"] = token.data.hidden;
-                                        ρσ_d["initiative"] = roll.total;
-                                        return ρσ_d;
-                                    }).call(this));
-                                }
-                            } else {
-                                ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet");
-                            }
-                        } else {
-                            ui.notifications.warn("Cannot add initiative to tracker: no token is currently selected");
-                        }
+                        addInitiativeToCombat(roll);
                     }
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
@@ -7791,6 +7772,48 @@ var str = ρσ_str, repr = ρσ_repr;;
             __defaults__ : {value: {custom_roll_dice:""}},
             __handles_kwarg_interpolation__ : {value: true},
             __argnames__ : {value: ["request", "custom_roll_dice"]}
+        });
+
+        async        function addInitiativeToCombat(roll) {
+            var combatant, promise, token;
+            if (canvas.tokens.controlledTokens.length > 0) {
+                if (ρσ_exists.n(game.combat)) {
+                    if ((game.combat.scene.id !== canvas.scene.id && (typeof game.combat.scene.id !== "object" || ρσ_not_equals(game.combat.scene.id, canvas.scene.id)))) {
+                        ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene");
+                    } else {
+                        var ρσ_Iter10 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                        for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                            token = ρσ_Iter10[ρσ_Index10];
+                            combatant = game.combat.getCombatantByToken(token.id);
+                            if (combatant) {
+                                promise = game.combat.updateCombatant((function(){
+                                    var ρσ_d = {};
+                                    ρσ_d["id"] = combatant.id;
+                                    ρσ_d["initiative"] = roll.total;
+                                    return ρσ_d;
+                                }).call(this));
+                            } else {
+                                promise = game.combat.createCombatant((function(){
+                                    var ρσ_d = {};
+                                    ρσ_d["tokenId"] = token.id;
+                                    ρσ_d["hidden"] = token.data.hidden;
+                                    ρσ_d["initiative"] = roll.total;
+                                    return ρσ_d;
+                                }).call(this));
+                            }
+                            promise;
+                            await promise;
+                        }
+                    }
+                } else {
+                    ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet");
+                }
+            } else {
+                ui.notifications.warn("Cannot add initiative to tracker: no token is currently selected");
+            }
+        };
+        if (!addInitiativeToCombat.__argnames__) Object.defineProperties(addInitiativeToCombat, {
+            __argnames__ : {value: ["roll"]}
         });
 
         function rollHitDice(request) {

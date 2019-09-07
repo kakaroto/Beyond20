@@ -266,22 +266,37 @@ def rollAbility(request, custom_roll_dice=""):
 def rollSavingThrow(request, custom_roll_dice=""):
     data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
     rollD20(request, request.name + " Save" + "(" + request.modifier + ")", data)
-  
+
+
 def rollInitiative(request, custom_roll_dice=""):
     nonlocal settings
 
     data = {"initiative": request.initiative, "custom_dice": custom_roll_dice}
     rollD20(request, "Initiative" + "(" + request.initiative + ")", data).then(def(roll):
         if settings["initiative-tracker"]:
-            if canvas.tokens.controlledTokens.length > 0:
-                if game.combat?:
-                    for token in canvas.tokens.controlledTokens:
-                        game.combat.createCombatant({"tokenId": token.id, "hidden": token.data.hidden, "initiative": roll.total})
-                else:
-                    ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet")
-            else:
-                    ui.notifications.warn("Cannot add initiative to tracker: no token is currently selected")
+            addInitiativeToCombat(roll)
     )
+
+v'async'
+def addInitiativeToCombat(roll):
+    if canvas.tokens.controlledTokens.length > 0:
+        if game.combat?:
+            if game.combat.scene.id != canvas.scene.id:
+                ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene")
+            else:
+                for token in canvas.tokens.controlledTokens:
+                    combatant = game.combat.getCombatantByToken(token.id)
+                    if combatant:
+                        promise = game.combat.updateCombatant({"id": combatant.id, "initiative": roll.total})
+                    else:
+                        promise = game.combat.createCombatant({"tokenId": token.id, "hidden": token.data.hidden, "initiative": roll.total})
+                    # to avoid a 'defined but not used' 
+                    promise
+                    v'await promise'
+        else:
+            ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet")
+    else:
+            ui.notifications.warn("Cannot add initiative to tracker: no token is currently selected")
 
 def rollHitDice(request):
     rname = "Hit Dice" + (("(" + request.class + ")") if  request.multiclass else "")
