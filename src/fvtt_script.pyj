@@ -139,6 +139,19 @@ def rollsToCells(html):
 v'async'
 def postDescription(request, title, source, attributes, description, attack_rolls=[], roll_info=[], damage_rolls=[], buttons={}, open=False):
     play_sound = False
+    # Handle the case where you don't want to auto-roll damages
+    if len(damage_rolls) > 0 and len(attack_rolls) > 0 and not settings["auto-roll-damage"]:
+        makeCB = def(request, title, source, attributes, description, damage_rolls):
+            roll_damages_args = {"damages": damage_rolls, "num_rolls": 0}
+            return def():
+                damages = roll_damages_args.damages
+                if roll_damages_args.num_rolls > 0:
+                    damages = rerollDamages(damages)
+                roll_damages_args.num_rolls += 1
+                postDescription(request, title, source, attributes, description, damage_rolls=damages)
+        buttons = {"Roll Damages": makeCB(request, title, source, attributes, description, damage_rolls)}
+        damage_rolls = []
+
     html = '<div class="beyond20-message">'
     if description:
         html += "<details" + (" open" if open else "") + "><summary><a>" + title + "</a></summary>"
@@ -155,12 +168,6 @@ def postDescription(request, title, source, attributes, description, attack_roll
         html = "<div class='beyond20-title'>" + title + "</div>"
 
     #console.log("Rolls : ", attack_rolls, roll_info, damage_rolls)
-
-    ##
-    #if len(damage_rolls) > 0 and len(to_hit) > 0 and not settings["auto-roll-damage"]:
-    #    cb = def():
-    #        postDescription(request, request.name, None, data, request.description? "", rerollDamages(damage_rolls))
-    #    postDescription(request, request.name, None, data, request.description? "", rolls, buttons={"Roll Damages" : cb})
 
     for (name, value) in roll_info:
         html += "<div class='beyond20-roll-result'><b>" + name + ": </b><span>" + value + "</span></div>"
@@ -561,11 +568,8 @@ def buildAttackRolls(request, custom_roll_dice):
 
 def rerollDamages(rolls):
     new_rolls = []
-    for (roll_name, roll) in rolls:
-        if isinstance(roll, str) or isinstance(roll, list):
-            new_rolls.append((roll_name, roll))
-        else:
-            new_rolls.append((roll_name, roll.reroll()))
+    for (roll_name, roll, flags) in rolls:
+        new_rolls.append((roll_name, roll.reroll(), flags))
     return new_rolls
 
 v'async'

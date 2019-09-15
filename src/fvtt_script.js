@@ -7482,8 +7482,40 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "open")){
                 open = ρσ_kwargs_obj.open;
             }
-            var play_sound, html, attr, ρσ_unpack, name, value, roll_html, i, roll, add_totals, total_damages, is_total, roll_name, kind_of_damage, regular, versatile, flags, key, button;
+            var play_sound, makeCB, html, attr, ρσ_unpack, name, value, roll_html, i, roll, add_totals, total_damages, is_total, roll_name, kind_of_damage, regular, versatile, flags, key, button;
             play_sound = false;
+            if (len(damage_rolls) > 0 && len(attack_rolls) > 0 && !settings["auto-roll-damage"]) {
+                makeCB = (function() {
+                    var ρσ_anonfunc = function (request, title, source, attributes, description, damage_rolls) {
+                        var roll_damages_args;
+                        roll_damages_args = (function(){
+                            var ρσ_d = {};
+                            ρσ_d["damages"] = damage_rolls;
+                            ρσ_d["num_rolls"] = 0;
+                            return ρσ_d;
+                        }).call(this);
+                        return function () {
+                            var damages;
+                            damages = roll_damages_args.damages;
+                            if (roll_damages_args.num_rolls > 0) {
+                                damages = rerollDamages(damages);
+                            }
+                            roll_damages_args.num_rolls += 1;
+                            ρσ_interpolate_kwargs.call(this, postDescription, [request, title, source, attributes, description].concat([ρσ_desugar_kwargs({damage_rolls: damages})]));
+                        };
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["request", "title", "source", "attributes", "description", "damage_rolls"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                buttons = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["Roll Damages"] = makeCB(request, title, source, attributes, description, damage_rolls);
+                    return ρσ_d;
+                }).call(this);
+                damage_rolls = ρσ_list_decorate([]);
+            }
             html = "<div class=\"beyond20-message\">";
             if (description) {
                 html += "<details" + ((open) ? " open" : "") + "><summary><a>" + title + "</a></summary>";
@@ -8246,18 +8278,15 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rerollDamages(rolls) {
-            var new_rolls, ρσ_unpack, roll_name, roll;
+            var new_rolls, ρσ_unpack, roll_name, roll, flags;
             new_rolls = ρσ_list_decorate([]);
             var ρσ_Iter22 = ρσ_Iterable(rolls);
             for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
-                ρσ_unpack = ρσ_Iter22[ρσ_Index22];
+                ρσ_unpack = ρσ_flatten(ρσ_Iter22[ρσ_Index22]);
                 roll_name = ρσ_unpack[0];
                 roll = ρσ_unpack[1];
-                if (ρσ_instanceof(roll, str) || ρσ_instanceof(roll, list)) {
-                    new_rolls.append([roll_name, roll]);
-                } else {
-                    new_rolls.append([roll_name, roll.reroll()]);
-                }
+                flags = ρσ_unpack[2];
+                new_rolls.append([roll_name, roll.reroll(), flags]);
             }
             return new_rolls;
         };
