@@ -337,7 +337,13 @@ def displayTrait():
     trait = $(".ct-sidebar__heading").text()
     description = $(".ct-trait-pane__input").text()
     sendRollWithCharacter("trait", 0, {"name": trait,
-                            "description": description} )
+                            "description": description})
+                            
+def displayAction(paneClass):
+    action_name = $(".ct-sidebar__heading").text()
+    description = descriptionToString(".ct-action-detail__description")
+    sendRollWithCharacter("action", 0, {"name": action_name,
+                                        "description" : description})
 
 def execute(paneClass):
     print("Beyond20: Executing panel : " + paneClass)
@@ -368,6 +374,8 @@ def displayPanel(paneClass):
         displayFeature(paneClass)
     elif paneClass == "ct-trait-pane":
         displayTrait()
+    elif paneClass in ["ct-action-pane", "ct-custom-action-pane"]:
+        displayAction(paneClass)
     else:
         alert("Not recognizing the currently open sidebar")
 
@@ -468,8 +476,16 @@ def injectRollButton(paneClass):
     elif paneClass in ["ct-action-pane", "ct-custom-action-pane"]:
         if isRollButtonAdded():
             return
-        addRollButtonEx(paneClass, ".ct-sidebar__heading")
+            
+        properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"))
         action_name = $(".ct-sidebar__heading").text()
+        action_parent = $(".ct-sidebar__header-parent").text()
+        if (action_name == "Superiority Dice" or action_parent == "Maneuvers") or \
+           ("Damage" in properties or properties["To Hit"]? or properties["Attack/Save"]?):
+            addRollButtonEx(paneClass, ".ct-sidebar__heading", small=True)
+            addDisplayButtonEx(paneClass, ".ct-beyond20-roll")
+        else:
+            addRollButtonEx(paneClass, ".ct-sidebar__heading")
         checkAndInjectDiceToRolls(".ct-action-detail__description", action_name)
     elif paneClass == "ct-spell-pane":
         nonlocal lastSpellName
