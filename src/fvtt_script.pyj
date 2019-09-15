@@ -7,6 +7,7 @@ settings = None
 extension_url = "/modules/beyond20/"
 
 class DAMAGE_FLAGS:
+    MESSAGE = 0
     REGULAR = 1
     VERSATILE = 2
     ADDITIONAL = 4
@@ -185,7 +186,10 @@ def postDescription(request, title, source, attributes, description, attack_roll
     total_damages = {}
     for (roll_name, roll, flags) in damage_rolls:
         is_total = not add_totals and (flags & DAMAGE_FLAGS.CRITICAL) == 0
-        roll_html = v'await rollToDetails(roll, is_total)'
+        if isinstance(roll, str):
+            roll_html = "<span>" + roll + "</span>"
+        else:
+            roll_html = v'await rollToDetails(roll, is_total)'
         play_sound = True
         roll_name = roll_name[0].toUpperCase() + roll_name[1:] + ": "
         html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>"
@@ -205,6 +209,8 @@ def postDescription(request, title, source, attributes, description, attack_roll
                     total_damages[regular] += " + " + str(roll.total)
                 if versatile in total_damages:
                     total_damages[versatile] += " + " + str(roll.total)
+                continue
+            else:
                 continue
             if kind_of_damage in total_damages:
                 total_damages[kind_of_damage] += " + " + str(roll.total)
@@ -530,10 +536,10 @@ def buildAttackRolls(request, custom_roll_dice):
                 damage_flags = DAMAGE_FLAGS.ADDITIONAL
             suffix = " Damage" if not (damage_flags & DAMAGE_FLAGS.HEALING) else ""
             damage_rolls.append((dmg_type + suffix, roll, damage_flags))
-            
+
         if request.name == "Chaos Bolt":
             for i, dmg_roll in enumerate(damage_rolls):
-                dmg_type, roll = dmg_roll
+                dmg_type, roll, flags = dmg_roll
                 if dmg_type == "Chaotic energy Damage" and roll.dice[0].faces == 8:
                     chaos_bolt_damages = ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]
                     damage_choices = {}
@@ -541,11 +547,11 @@ def buildAttackRolls(request, custom_roll_dice):
                         damage_choices[chaos_bolt_damages[r.roll - 1]] = None
                     console.log("Damage choices : ", damage_choices, damage_choices.length)
                     if Object.keys(damage_choices).length == 1:
-                        damage_rolls.append(("Chaotic energy leaps from the target to a different creature of your choice within 30 feet of it", []))
+                        damage_rolls.append(("Chaotic energy leaps from the target to a different creature of your choice within 30 feet of it", "", DAMAGE_FLAGS.MESSAGE))
                         chaotic_type = Object.keys(damage_choices)[0]
                     else:
                         chaotic_type = v'await queryDamageType(request.name, damage_choices)'
-                    damage_rolls[i] = (chaotic_type + " Damage", roll)
+                    damage_rolls[i] = (chaotic_type + " Damage", roll, flags)
                     critical_damage_types[0] = chaotic_type
                     break
 
@@ -569,7 +575,10 @@ def buildAttackRolls(request, custom_roll_dice):
 def rerollDamages(rolls):
     new_rolls = []
     for (roll_name, roll, flags) in rolls:
-        new_rolls.append((roll_name, roll.reroll(), flags))
+        if isinstance(roll, str) or isinstance(roll, list):
+            new_rolls.append((roll_name, roll, flags))
+        else:
+            new_rolls.append((roll_name, roll.reroll(), flags))
     return new_rolls
 
 v'async'
