@@ -172,7 +172,7 @@ class Character(CharacterBase):
 
             req = {"action": "hp-update", "character": self.getDict()}
             console.log("Sending message: ", req)
-            chrome.runtime.sendMessage(req)
+            chrome.runtime.sendMessage(req, beyond20SendMessageFailure)
 
     def featureDetailsToList(self, selector):
         features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading")
@@ -690,7 +690,7 @@ def sendRoll(character, rollType, fallback, args):
     for key in args:
         req[key] = args[key]
     console.log("Sending message: ", req)
-    chrome.runtime.sendMessage(req)
+    chrome.runtime.sendMessage(req, beyond20SendMessageFailure)
 
 def isRollButtonAdded():
     return $(".ct-beyond20-roll").length > 0
@@ -828,3 +828,7 @@ def injectDiceToRolls(selector, character, name=""):
     )
 
 
+def beyond20SendMessageFailure(response):
+    console.log("Received response : ", response)
+    if response.error?:
+        alert(response.error)

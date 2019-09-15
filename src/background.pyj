@@ -19,8 +19,10 @@ def updateSettings(new_settings=None):
                 chrome.tabs.create({"url": c.CHANGELOG_URL})
         )
 
-def sendMessageTo(url, request):
+def sendMessageTo(url, request, failure=None):
     chrome.tabs.query({"url": url}, def(tabs):
+        if failure:
+            failure(tabs.length == 0)
         for tab in tabs:
             chrome.tabs.sendMessage(tab.id, request)
     )
@@ -38,26 +40,40 @@ def filterVTTTab(request, limit, tabs, titleCB):
         for tab in tabs:
             if titleCB(tab.title) == limit.title:
                 chrome.tabs.sendMessage(tab.id, request)
+                found = True
                 break
+    return found
 
 
-def sendMessageToRoll20(request, limit=None):
+def sendMessageToRoll20(request, limit=None, failure=None):
     if limit:
         vtt = limit.vtt ? "roll20"
         if vtt == "roll20":
-            chrome.tabs.query({"url": c.ROLL20_URL}, def(tabs): filterVTTTab(request, limit, tabs, roll20Title);)
+            chrome.tabs.query({"url": c.ROLL20_URL}, def(tabs):
+                found = filterVTTTab(request, limit, tabs, roll20Title)
+                if failure:
+                    failure(not found)
+            )
+        else:
+            failure(True)
     else:
-        sendMessageTo(c.ROLL20_URL, request)
+        sendMessageTo(c.ROLL20_URL, request, failure=failure)
 
-def sendMessageToFVTT(request, limit):
+def sendMessageToFVTT(request, limit, failure=None):
     nonlocal fvtt_tabs
 
     console.log("Sending msg to FVTT ", fvtt_tabs)
     if limit:
         vtt = limit.vtt ? "roll20"
         if vtt == "fvtt":
-            filterVTTTab(request, limit, fvtt_tabs, fvttTitle)
+            found = filterVTTTab(request, limit, fvtt_tabs, fvttTitle)
+            if failure:
+                failure(not found)
+        else:
+            failure(True)
     else:
+        if failure:
+            failure(fvtt_tabs.length == 0)
         for tab in fvtt_tabs:
             chrome.tabs.sendMessage(tab.id, request)
     
@@ -85,13 +101,50 @@ def removeFVTTTab(id):
             console.log("Removed ", id, " from fvtt tabs.")
             return
 
+def onRollFailure(request, sendResponse):
+    console.log("Failure to find a VTT")
+    chrome.tabs.query({"url": c.FVTT_URL}, def(tabs):
+        found = False
+        for tab in tabs:
+            if isFVTT(tab.title):
+                found = True
+                break
+        console.log("Found FVTT tabs : ", found, tabs)
+        # Don't show the same message if the tab is active but doesn't match the settings
+        if fvtt_tabs.length > 0:
+            found = False
+        if found:
+            sendResponse({"success": False, "vtt": None, "request": request, \
+                 "error": "Found a FVTT tab that has not been activated. Please click on the Beyond20 icon in the toolbar of that tab in order to give Beyond20 access."})
+        else:
+            sendResponse({"success": False, "vtt": None, "request": request, \
+                 "error": "No VTT found that matches your settings. Open a VTT window, or check that the settings don't restrict access to a specific campaign."})
+    )
+
 def onMessage(request, sender, sendResponse):
     nonlocal settings
 
     console.log("Received message: ", request)
     if request.action in ["roll", "hp-update"]:
-        sendMessageToRoll20(request, settings["vtt-tab"])
-        sendMessageToFVTT(request, settings["vtt-tab"])
+        makeFailureCB = def(trackFailure, vtt, sendResponse):
+            return def(result):
+                trackFailure[vtt] = result
+                console.log("Result of sending to VTT ", vtt, ": ", result)
+                if trackFailure["roll20"] is not None and trackFailure["fvtt"] is not None:
+                    if trackFailure["roll20"] == True and trackFailure["fvtt"] == True:
+                        onRollFailure(request, sendResponse)
+                    else:
+                        vtts = []
+                        for key in trackFailure:
+                            if not trackFailure[key]:
+                                vtts.append(key)
+                        sendResponse({"success": True, "vtt": vtts, "error": None})
+        trackFailure = {"roll20": None, "fvtt": None}
+        if settings["vtt-tab"] == "dndbeyond":
+            sendResponse({"success": True, "vtt": "dndbeyond", "error": None, "request": request})
+        sendMessageToRoll20(request, settings["vtt-tab"], failure=makeFailureCB(trackFailure, "roll20", sendResponse))
+        sendMessageToFVTT(request, settings["vtt-tab"], failure=makeFailureCB(trackFailure, "fvtt", sendResponse))
+        return True
     elif request.action == "settings":
         if request.type == "general":
             updateSettings(request.settings)
@@ -113,6 +166,7 @@ def onMessage(request, sender, sendResponse):
         addFVTTTab(sender.tab)
     elif request.action == "reload-me":
         chrome.tabs.reload(sender.tab.id)
+    return False
 
 def executeScripts(tabs, js_files):
     for tab in tabs:
@@ -122,7 +176,9 @@ def executeScripts(tabs, js_files):
 def onTabsUpdated(id, changes, tab):
     nonlocal fvtt_tabs
 
-    if "url" in changes and not urlMatches(changes["url"], "*://*/game"):
+    if id in fvtt_tabs and \
+        ("url" in changes and not urlMatches(changes["url"], "*://*/game")) or \
+        ("status" in changes and changes["status"] == "loading"):
         removeFVTTTab(id)
 
 def onTabRemoved(id, info):

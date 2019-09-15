@@ -3732,19 +3732,21 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "constants";
-        var ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, FVTT_CSS, ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY;
+        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, FVTT_CSS, ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY;
         ROLL20_URL = "*://app.roll20.net/editor/";
+        FVTT_URL = "*://*/game";
         DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
         DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
         DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
         DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
         DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
-        CHANGELOG_URL = "https://kakaroto.github.io/Beyond20/update";
+        CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
         BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
         FVTT_CSS = "\n/* This is needed so the tooltip's absolute position is\n * relative to the message's position in the chatlog\n */\n.beyond20-roll-result {\n   position: relative;\n}\n\n.beyond20-roll-total {\n    text-decoration: underline;\n}\n.beyond20-message details summary, .beyond20-title {\n    font-style: italic;\n    color: #500;\n    font-size: 1.2em;\n}\n\n.beyond20-message .beyond20-description, .beyond20-message details table {\n    margin: 2px 0px;\n    border: 1px solid #333;\n    width: 100%;\n    border-spacing: 0;\n    border-collapse: collapse;\n    background-color: #DDD;\n}\n\n\n.beyond20-roll-cells {\n    display: flex;\n    flex-direction: row;\n    flex-wrap: nowrap;\n}\n\n.beyond20-roll-cell {\n    flex: 1 0 auto;\n    margin: 1px;\n \n    text-align: center;\n    border: thin solid black;\n    border-radius: 2px;\n    background-color: lightgray;\n}\n \n\n.beyond20-tooltip .beyond20-tooltip-content {\n    display: none;\n    background-color: #f5f2ec;\n    text-align: left;\n    border-radius: 6px;\n    padding: 5px 10px;\n    margin: 10px;\n    width: 90%;\n    top: -50%;\n    left: 0;\n    border: 2px solid black;\n\n    /* Position the tooltip */\n    position: absolute;\n    z-index: 1;\n}\n\n.beyond20-tooltip:hover .beyond20-tooltip-content {\n    display: block;\n    /* Move the tooltip above the parent element. */\n    transform: translate(0, -100%);\n}\n\n.beyond20-tooltip-content .dice-tooltip {\n    display: block;\n}\n";
         ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
         ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125}}";
         ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
+        ρσ_modules.constants.FVTT_URL = FVTT_URL;
         ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
         ρσ_modules.constants.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
         ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
@@ -6798,7 +6800,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["new_settings"]}
         });
 
-        function sendMessageTo(url, request) {
+        function sendMessageTo() {
+            var url = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var request = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var failure = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? sendMessageTo.__defaults__.failure : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "failure")){
+                failure = ρσ_kwargs_obj.failure;
+            }
             chrome.tabs.query((function(){
                 var ρσ_d = {};
                 ρσ_d["url"] = url;
@@ -6806,6 +6816,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this), (function() {
                 var ρσ_anonfunc = function (tabs) {
                     var tab;
+                    if (failure) {
+                        failure((tabs.length === 0 || typeof tabs.length === "object" && ρσ_equals(tabs.length, 0)));
+                    }
                     var ρσ_Iter0 = ρσ_Iterable(tabs);
                     for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
                         tab = ρσ_Iter0[ρσ_Index0];
@@ -6818,8 +6831,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_anonfunc;
             })());
         };
-        if (!sendMessageTo.__argnames__) Object.defineProperties(sendMessageTo, {
-            __argnames__ : {value: ["url", "request"]}
+        if (!sendMessageTo.__defaults__) Object.defineProperties(sendMessageTo, {
+            __defaults__ : {value: {failure:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["url", "request", "failure"]}
         });
 
         function filterVTTTab(request, limit, tabs, titleCB) {
@@ -6845,10 +6860,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                     tab = ρσ_Iter2[ρσ_Index2];
                     if (ρσ_equals(titleCB(tab.title), limit.title)) {
                         chrome.tabs.sendMessage(tab.id, request);
+                        found = true;
                         break;
                     }
                 }
             }
+            return found;
         };
         if (!filterVTTTab.__argnames__) Object.defineProperties(filterVTTTab, {
             __argnames__ : {value: ["request", "limit", "tabs", "titleCB"]}
@@ -6857,10 +6874,14 @@ var str = ρσ_str, repr = ρσ_repr;;
         function sendMessageToRoll20() {
             var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var limit = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? sendMessageToRoll20.__defaults__.limit : arguments[1];
+            var failure = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? sendMessageToRoll20.__defaults__.failure : arguments[2];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "limit")){
                 limit = ρσ_kwargs_obj.limit;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "failure")){
+                failure = ρσ_kwargs_obj.failure;
             }
             var vtt;
             if (limit) {
@@ -6872,33 +6893,55 @@ var str = ρσ_str, repr = ρσ_repr;;
                         return ρσ_d;
                     }).call(this), (function() {
                         var ρσ_anonfunc = function (tabs) {
-                            filterVTTTab(request, limit, tabs, roll20Title);
+                            var found;
+                            found = filterVTTTab(request, limit, tabs, roll20Title);
+                            if (failure) {
+                                failure(!found);
+                            }
                         };
                         if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                             __argnames__ : {value: ["tabs"]}
                         });
                         return ρσ_anonfunc;
                     })());
+                } else {
+                    failure(true);
                 }
             } else {
-                sendMessageTo(c.ROLL20_URL, request);
+                ρσ_interpolate_kwargs.call(this, sendMessageTo, [c.ROLL20_URL, request].concat([ρσ_desugar_kwargs({failure: failure})]));
             }
         };
         if (!sendMessageToRoll20.__defaults__) Object.defineProperties(sendMessageToRoll20, {
-            __defaults__ : {value: {limit:null}},
+            __defaults__ : {value: {limit:null, failure:null}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["request", "limit"]}
+            __argnames__ : {value: ["request", "limit", "failure"]}
         });
 
-        function sendMessageToFVTT(request, limit) {
-            var vtt, tab;
+        function sendMessageToFVTT() {
+            var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var limit = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var failure = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? sendMessageToFVTT.__defaults__.failure : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "failure")){
+                failure = ρσ_kwargs_obj.failure;
+            }
+            var vtt, found, tab;
             console.log("Sending msg to FVTT ", fvtt_tabs);
             if (limit) {
                 vtt = ρσ_exists.e(limit.vtt, "roll20");
                 if ((vtt === "fvtt" || typeof vtt === "object" && ρσ_equals(vtt, "fvtt"))) {
-                    filterVTTTab(request, limit, fvtt_tabs, fvttTitle);
+                    found = filterVTTTab(request, limit, fvtt_tabs, fvttTitle);
+                    if (failure) {
+                        failure(!found);
+                    }
+                } else {
+                    failure(true);
                 }
             } else {
+                if (failure) {
+                    failure((fvtt_tabs.length === 0 || typeof fvtt_tabs.length === "object" && ρσ_equals(fvtt_tabs.length, 0)));
+                }
                 var ρσ_Iter3 = ρσ_Iterable(fvtt_tabs);
                 for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
                     tab = ρσ_Iter3[ρσ_Index3];
@@ -6906,8 +6949,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
             }
         };
-        if (!sendMessageToFVTT.__argnames__) Object.defineProperties(sendMessageToFVTT, {
-            __argnames__ : {value: ["request", "limit"]}
+        if (!sendMessageToFVTT.__defaults__) Object.defineProperties(sendMessageToFVTT, {
+            __defaults__ : {value: {failure:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["request", "limit", "failure"]}
         });
 
         function sendMessageToBeyond(request) {
@@ -6953,12 +6998,121 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["id"]}
         });
 
+        function onRollFailure(request, sendResponse) {
+            console.log("Failure to find a VTT");
+            chrome.tabs.query((function(){
+                var ρσ_d = {};
+                ρσ_d["url"] = c.FVTT_URL;
+                return ρσ_d;
+            }).call(this), (function() {
+                var ρσ_anonfunc = function (tabs) {
+                    var found, tab;
+                    found = false;
+                    var ρσ_Iter6 = ρσ_Iterable(tabs);
+                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                        tab = ρσ_Iter6[ρσ_Index6];
+                        if (isFVTT(tab.title)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    console.log("Found FVTT tabs : ", found, tabs);
+                    if (fvtt_tabs.length > 0) {
+                        found = false;
+                    }
+                    if (found) {
+                        sendResponse((function(){
+                            var ρσ_d = {};
+                            ρσ_d["success"] = false;
+                            ρσ_d["vtt"] = null;
+                            ρσ_d["request"] = request;
+                            ρσ_d["error"] = "Found a FVTT tab that has not been activated. Please click on the Beyond20 icon in the toolbar of that tab in order to give Beyond20 access.";
+                            return ρσ_d;
+                        }).call(this));
+                    } else {
+                        sendResponse((function(){
+                            var ρσ_d = {};
+                            ρσ_d["success"] = false;
+                            ρσ_d["vtt"] = null;
+                            ρσ_d["request"] = request;
+                            ρσ_d["error"] = "No VTT found that matches your settings. Open a VTT window, or check that the settings don't restrict access to a specific campaign.";
+                            return ρσ_d;
+                        }).call(this));
+                    }
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["tabs"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!onRollFailure.__argnames__) Object.defineProperties(onRollFailure, {
+            __argnames__ : {value: ["request", "sendResponse"]}
+        });
+
         function onMessage(request, sender, sendResponse) {
-            var tab;
+            var makeFailureCB, trackFailure, tab;
             console.log("Received message: ", request);
             if (ρσ_in(request.action, ρσ_list_decorate([ "roll", "hp-update" ]))) {
-                sendMessageToRoll20(request, settings["vtt-tab"]);
-                sendMessageToFVTT(request, settings["vtt-tab"]);
+                makeFailureCB = (function() {
+                    var ρσ_anonfunc = function (trackFailure, vtt, sendResponse) {
+                        return (function() {
+                            var ρσ_anonfunc = function (result) {
+                                var vtts, key;
+                                trackFailure[(typeof vtt === "number" && vtt < 0) ? trackFailure.length + vtt : vtt] = result;
+                                console.log("Result of sending to VTT ", vtt, ": ", result);
+                                if (trackFailure["roll20"] !== null && trackFailure["fvtt"] !== null) {
+                                    if ((trackFailure["roll20"] === true || typeof trackFailure["roll20"] === "object" && ρσ_equals(trackFailure["roll20"], true)) && (trackFailure["fvtt"] === true || typeof trackFailure["fvtt"] === "object" && ρσ_equals(trackFailure["fvtt"], true))) {
+                                        onRollFailure(request, sendResponse);
+                                    } else {
+                                        vtts = ρσ_list_decorate([]);
+                                        var ρσ_Iter7 = ρσ_Iterable(trackFailure);
+                                        for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                                            key = ρσ_Iter7[ρσ_Index7];
+                                            if (!trackFailure[(typeof key === "number" && key < 0) ? trackFailure.length + key : key]) {
+                                                vtts.append(key);
+                                            }
+                                        }
+                                        sendResponse((function(){
+                                            var ρσ_d = {};
+                                            ρσ_d["success"] = true;
+                                            ρσ_d["vtt"] = vtts;
+                                            ρσ_d["error"] = null;
+                                            return ρσ_d;
+                                        }).call(this));
+                                    }
+                                }
+                            };
+                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                __argnames__ : {value: ["result"]}
+                            });
+                            return ρσ_anonfunc;
+                        })();
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["trackFailure", "vtt", "sendResponse"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                trackFailure = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["roll20"] = null;
+                    ρσ_d["fvtt"] = null;
+                    return ρσ_d;
+                }).call(this);
+                if ((settings["vtt-tab"] === "dndbeyond" || typeof settings["vtt-tab"] === "object" && ρσ_equals(settings["vtt-tab"], "dndbeyond"))) {
+                    sendResponse((function(){
+                        var ρσ_d = {};
+                        ρσ_d["success"] = true;
+                        ρσ_d["vtt"] = "dndbeyond";
+                        ρσ_d["error"] = null;
+                        ρσ_d["request"] = request;
+                        return ρσ_d;
+                    }).call(this));
+                }
+                ρσ_interpolate_kwargs.call(this, sendMessageToRoll20, [request, settings["vtt-tab"]].concat([ρσ_desugar_kwargs({failure: makeFailureCB(trackFailure, "roll20", sendResponse)})]));
+                ρσ_interpolate_kwargs.call(this, sendMessageToFVTT, [request, settings["vtt-tab"]].concat([ρσ_desugar_kwargs({failure: makeFailureCB(trackFailure, "fvtt", sendResponse)})]));
+                return true;
             } else if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
                     updateSettings(request.settings);
@@ -6990,6 +7144,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             } else if ((request.action === "reload-me" || typeof request.action === "object" && ρσ_equals(request.action, "reload-me"))) {
                 chrome.tabs.reload(sender.tab.id);
             }
+            return false;
         };
         if (!onMessage.__argnames__) Object.defineProperties(onMessage, {
             __argnames__ : {value: ["request", "sender", "sendResponse"]}
@@ -6997,12 +7152,12 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function executeScripts(tabs, js_files) {
             var file, tab;
-            var ρσ_Iter6 = ρσ_Iterable(tabs);
-            for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                tab = ρσ_Iter6[ρσ_Index6];
-                var ρσ_Iter7 = ρσ_Iterable(js_files);
-                for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                    file = ρσ_Iter7[ρσ_Index7];
+            var ρσ_Iter8 = ρσ_Iterable(tabs);
+            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                tab = ρσ_Iter8[ρσ_Index8];
+                var ρσ_Iter9 = ρσ_Iterable(js_files);
+                for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                    file = ρσ_Iter9[ρσ_Index9];
                     chrome.tabs.executeScript(tab.id, (function(){
                         var ρσ_d = {};
                         ρσ_d["file"] = file;
@@ -7016,7 +7171,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function onTabsUpdated(id, changes, tab) {
-            if (ρσ_in("url", changes) && !urlMatches(changes["url"], "*://*/game")) {
+            if (ρσ_in(id, fvtt_tabs) && ρσ_in("url", changes) && !urlMatches(changes["url"], "*://*/game") || ρσ_in("status", changes) && (changes["status"] === "loading" || typeof changes["status"] === "object" && ρσ_equals(changes["status"], "loading"))) {
                 removeFVTTTab(id);
             }
         };
@@ -7049,9 +7204,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         if (ρσ_equals(getBrowser(), "Chrome")) {
             chrome.browserAction.onClicked.addListener(browserActionClicked);
             manifest = chrome.runtime.getManifest();
-            var ρσ_Iter8 = ρσ_Iterable(manifest.content_scripts);
-            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                script = ρσ_Iter8[ρσ_Index8];
+            var ρσ_Iter10 = ρσ_Iterable(manifest.content_scripts);
+            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                script = ρσ_Iter10[ρσ_Index10];
                 cb = (function() {
                     var ρσ_anonfunc = function (files) {
                         return (function() {

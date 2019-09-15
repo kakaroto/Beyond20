@@ -7705,7 +7705,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     return ρσ_d;
                 }).call(this);
                 console.log("Sending message: ", req);
-                chrome.runtime.sendMessage(req);
+                chrome.runtime.sendMessage(req, beyond20SendMessageFailure);
             }
         };
         Character.prototype.featureDetailsToList = function featureDetailsToList(selector) {
@@ -8658,7 +8658,7 @@ return this.__repr__();
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
             console.log("Sending message: ", req);
-            chrome.runtime.sendMessage(req);
+            chrome.runtime.sendMessage(req, beyond20SendMessageFailure);
         };
         if (!sendRoll.__argnames__) Object.defineProperties(sendRoll, {
             __argnames__ : {value: ["character", "rollType", "fallback", "args"]}
@@ -8939,6 +8939,16 @@ return this.__repr__();
             __argnames__ : {value: ["selector", "character", "name"]}
         });
 
+        function beyond20SendMessageFailure(response) {
+            console.log("Received response : ", response);
+            if (ρσ_exists.n(response.error)) {
+                alert(response.error);
+            }
+        };
+        if (!beyond20SendMessageFailure.__argnames__) Object.defineProperties(beyond20SendMessageFailure, {
+            __argnames__ : {value: ["response"]}
+        });
+
         ρσ_modules.dndbeyond.ability_abbreviations = ability_abbreviations;
         ρσ_modules.dndbeyond.skill_abilities = skill_abilities;
         ρσ_modules.dndbeyond.button_class = button_class;
@@ -8964,6 +8974,7 @@ return this.__repr__();
         ρσ_modules.dndbeyond.removeRollButtons = removeRollButtons;
         ρσ_modules.dndbeyond.recursiveDiceReplace = recursiveDiceReplace;
         ρσ_modules.dndbeyond.injectDiceToRolls = injectDiceToRolls;
+        ρσ_modules.dndbeyond.beyond20SendMessageFailure = beyond20SendMessageFailure;
     })();
 
     (function(){
