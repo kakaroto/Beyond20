@@ -13,6 +13,8 @@ Oh, I misunderstood, you're the ones in need of support! Well, fear not, I am he
 
 If you want to discuss an issue, you can join our [discord server](https://discord.gg/ZAasSVS)
 
+[![Discord](https://discordapp.com/assets/fc0b01fe10a0b8c602fb0106d8189d9b.png){:width="400px"}](https://discord.gg/ZAasSVS)
+
 If you've found a bug or an issue, or if you have a feature or suggestion to make, head over to github's [issue tracker](https://github.com/kakaroto/Beyond20/issues) and submit your bug report or feature request.
 
 ## Known Issues
