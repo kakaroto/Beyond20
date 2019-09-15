@@ -7086,6 +7086,102 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["Survival"] = "WIS";
             return ρσ_d;
         }).call(this);
+        function Spell() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            Spell.prototype.__init__.apply(this, arguments);
+        }
+        Spell.prototype.__init__ = function __init__() {
+            var self = this;
+            var body = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var type = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? __init__.__defaults__.type : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "type")){
+                type = ρσ_kwargs_obj.type;
+            }
+            var title_selector, statblock_selector, description_selector, level, school, materials, material_len, aoe, aoe_len;
+            if ((type === "page" || typeof type === "object" && ρσ_equals(type, "page"))) {
+                title_selector = ".page-title";
+                statblock_selector = ".ddb-statblock";
+                description_selector = ".spell-details .more-info-content";
+            } else if ((type === "tooltip" || typeof type === "object" && ρσ_equals(type, "tooltip"))) {
+                title_selector = ".tooltip-header-text";
+                statblock_selector = ".tooltip-body-statblock";
+                description_selector = ".tooltip-body-description-text";
+            }
+            function get_statblock(label) {
+                return body.find(statblock_selector + "-item-" + label + " " + statblock_selector + "-item-value").text().trim();
+            };
+            if (!get_statblock.__argnames__) Object.defineProperties(get_statblock, {
+                __argnames__ : {value: ["label"]}
+            });
+
+            self.spell_name = body.find(title_selector).text().trim();
+            level = get_statblock("level");
+            school = get_statblock("school");
+            self.casting_time = get_statblock("casting-time");
+            self.range_area = get_statblock("range-area");
+            self.components = get_statblock("components");
+            self.duration = get_statblock("duration");
+            self.description = body.find(description_selector).text().trim();
+            if ((level === "Cantrip" || typeof level === "object" && ρσ_equals(level, "Cantrip"))) {
+                self.level_school = school + " " + level;
+            } else {
+                self.level_school = level + " Level " + school;
+            }
+            if (self.duration.startsWith("Concentration")) {
+                self.concentration = true;
+                self.duration = self.duration.replace("Concentration", "").trim();
+            } else {
+                self.concentration = false;
+            }
+            self.ritual = body.find(statblock_selector + "-item-casting-time .i-ritual").length > 0;
+            if (((ρσ_expr_temp = self.components)[ρσ_expr_temp.length-1] === "*" || typeof (ρσ_expr_temp = self.components)[ρσ_expr_temp.length-1] === "object" && ρσ_equals((ρσ_expr_temp = self.components)[ρσ_expr_temp.length-1], "*"))) {
+                materials = body.find(description_selector + " .components-blurb").text().trim();
+                material_len = len(materials);
+                self.description = self.description.slice(0, -material_len).trim();
+                self.components = self.components.slice(0, -2) + materials.slice(4);
+            }
+            aoe = body.find(statblock_selector + "-item-range-area .aoe-size").text().trim();
+            if ((aoe !== "" && (typeof aoe !== "object" || ρσ_not_equals(aoe, "")))) {
+                aoe_len = len(aoe);
+                self.range_area = self.range_area.slice(0, -aoe_len).trim() + " " + aoe.trim();
+            }
+        };
+        if (!Spell.prototype.__init__.__defaults__) Object.defineProperties(Spell.prototype.__init__, {
+            __defaults__ : {value: {type:"page"}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["body", "type"]}
+        });
+        Spell.__argnames__ = Spell.prototype.__init__.__argnames__;
+        Spell.__handles_kwarg_interpolation__ = Spell.prototype.__init__.__handles_kwarg_interpolation__;
+        Spell.prototype.send = function send(character) {
+            var self = this;
+            sendRoll(character, "spell-card", 0, (function(){
+                var ρσ_d = {};
+                ρσ_d["name"] = self.spell_name;
+                ρσ_d["level-school"] = self.level_school;
+                ρσ_d["range"] = self.range_area;
+                ρσ_d["concentration"] = self.concentration;
+                ρσ_d["duration"] = self.duration;
+                ρσ_d["casting-time"] = self.casting_time;
+                ρσ_d["components"] = self.components;
+                ρσ_d["ritual"] = self.ritual;
+                ρσ_d["description"] = self.description;
+                return ρσ_d;
+            }).call(this));
+        };
+        if (!Spell.prototype.send.__argnames__) Object.defineProperties(Spell.prototype.send, {
+            __argnames__ : {value: ["character"]}
+        });
+        Spell.prototype.__repr__ = function __repr__ () {
+                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        Spell.prototype.__str__ = function __str__ () {
+            return this.__repr__();
+        };
+        Object.defineProperty(Spell.prototype, "__bases__", {value: []});
+
         function CharacterBase() {
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
             CharacterBase.prototype.__init__.apply(this, arguments);
@@ -7580,6 +7676,7 @@ return this.__repr__();
             self._tidbits = {};
             self._saves = {};
             self._skills = {};
+            self._spells = {};
             self._cr = null;
         };
         if (!Monster.prototype.__init__.__defaults__) Object.defineProperties(Monster.prototype.__init__, {
@@ -7770,6 +7867,9 @@ return this.__repr__();
                 (ρσ_expr_temp = self._tidbits)[(typeof label === "number" && label < 0) ? ρσ_expr_temp.length + label : label] = value;
             }
             self.lookForActions(stat_block, add_dice, inject_descriptions);
+            if (add_dice) {
+                self.lookForSpells(stat_block);
+            }
             console.log("Done parsing stat block:", self);
         };
         if (!Monster.prototype.parseStatBlock.__defaults__) Object.defineProperties(Monster.prototype.parseStatBlock, {
@@ -8014,6 +8114,63 @@ return this.__repr__();
         if (!Monster.prototype.lookForActions.__argnames__) Object.defineProperties(Monster.prototype.lookForActions, {
             __argnames__ : {value: ["stat_block", "add_dice", "inject_descriptions"]}
         });
+        Monster.prototype.injectSpellRolls = function injectSpellRolls(element, url) {
+            var self = this;
+            var icon16, roll_icon;
+            icon16 = chrome.extension.getURL("images/icons/icon16.png");
+            roll_icon = $("<img class=\"ct-beyond20-spell-icon\" x-beyond20-spell-url=\"" + url + "\"></img>");
+            $(element).after(roll_icon);
+            $(".ct-beyond20-spell-icon").css("margin-right", "3px");
+            $(".ct-beyond20-spell-icon").css("margin-left", "3px");
+            $(".ct-beyond20-spell-icon").attr("src", icon16);
+            $(".ct-beyond20-spell-icon").off("click");
+            $(".ct-beyond20-spell-icon").on("click", (function() {
+                var ρσ_anonfunc = function (event) {
+                    var spell_url;
+                    spell_url = $(event.currentTarget).attr("x-beyond20-spell-url");
+                    if (ρσ_in(spell_url, self._spells)) {
+                        (ρσ_expr_temp = self._spells)[(typeof spell_url === "number" && spell_url < 0) ? ρσ_expr_temp.length + spell_url : spell_url].send(self);
+                    } else {
+                        console.log("Fetching Spell Tooltip from URL : ", spell_url);
+                        $.get(spell_url, (function() {
+                            var ρσ_anonfunc = function (text) {
+                                var spell_json, spell;
+                                spell_json = JSON.parse(text.slice(1, -1));
+                                spell = new Spell($(spell_json.Tooltip), "tooltip");
+                                spell.send(self);
+                                (ρσ_expr_temp = self._spells)[(typeof spell_url === "number" && spell_url < 0) ? ρσ_expr_temp.length + spell_url : spell_url] = spell;
+                            };
+                            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                __argnames__ : {value: ["text"]}
+                            });
+                            return ρσ_anonfunc;
+                        })());
+                    }
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["event"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!Monster.prototype.injectSpellRolls.__argnames__) Object.defineProperties(Monster.prototype.injectSpellRolls, {
+            __argnames__ : {value: ["element", "url"]}
+        });
+        Monster.prototype.lookForSpells = function lookForSpells(stat_block) {
+            var self = this;
+            var spells, tooltip_href, tooltip_url, spell;
+            spells = stat_block.find(self._base + "__description-blocks a.spell-tooltip");
+            var ρσ_Iter18 = ρσ_Iterable(spells);
+            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
+                spell = ρσ_Iter18[ρσ_Index18];
+                tooltip_href = $(spell).attr("data-tooltip-href");
+                tooltip_url = re.sub("-tooltip.*$", "/tooltip", tooltip_href);
+                self.injectSpellRolls(spell, tooltip_url);
+            }
+        };
+        if (!Monster.prototype.lookForSpells.__argnames__) Object.defineProperties(Monster.prototype.lookForSpells, {
+            __argnames__ : {value: ["stat_block"]}
+        });
         Monster.prototype.getDict = function getDict() {
             var self = this;
             return (function(){
@@ -8054,9 +8211,9 @@ return this.__repr__();
 
         function abbreviationToAbility(abbr) {
             var ability;
-            var ρσ_Iter18 = ρσ_Iterable(ability_abbreviations);
-            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
-                ability = ρσ_Iter18[ρσ_Index18];
+            var ρσ_Iter19 = ρσ_Iterable(ability_abbreviations);
+            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
+                ability = ρσ_Iter19[ρσ_Index19];
                 if ((ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === abbr || typeof ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === "object" && ρσ_equals(ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability], abbr))) {
                     return ability;
                 }
@@ -8070,8 +8227,8 @@ return this.__repr__();
         function propertyListToDict(propList) {
             var properties, label, value, i;
             properties = {};
-            for (var ρσ_Index19 = 0; ρσ_Index19 < propList.length; ρσ_Index19++) {
-                i = ρσ_Index19;
+            for (var ρσ_Index20 = 0; ρσ_Index20 < propList.length; ρσ_Index20++) {
+                i = ρσ_Index20;
                 label = propList.eq(i).find(".ct-property-list__property-label").text().slice(0, -1);
                 value = propList.eq(i).find(".ct-property-list__property-content").text();
                 properties[(typeof label === "number" && label < 0) ? properties.length + label : label] = value;
@@ -8096,8 +8253,8 @@ return this.__repr__();
                 return $(selector).text();
             }
             description = "";
-            for (var ρσ_Index20 = 0; ρσ_Index20 < description_p.length; ρσ_Index20++) {
-                i = ρσ_Index20;
+            for (var ρσ_Index21 = 0; ρσ_Index21 < description_p.length; ρσ_Index21++) {
+                i = ρσ_Index21;
                 if (len(description) > 0) {
                     description += separator;
                 }
@@ -8114,8 +8271,8 @@ return this.__repr__();
         function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
             var items, to_hit, i;
             items = $(items_selector);
-            for (var ρσ_Index21 = 0; ρσ_Index21 < items.length; ρσ_Index21++) {
-                i = ρσ_Index21;
+            for (var ρσ_Index22 = 0; ρσ_Index22 < items.length; ρσ_Index22++) {
+                i = ρσ_Index22;
                 if (ρσ_equals(items.eq(i).find(name_selector).text(), name_to_match)) {
                     to_hit = items.eq(i).find(tohit_selector);
                     if (to_hit.length > 0) {
@@ -8135,9 +8292,9 @@ return this.__repr__();
         function damagesToCrits(damages) {
             var crits, match, damage;
             crits = ρσ_list_decorate([]);
-            var ρσ_Iter22 = ρσ_Iterable(damages);
-            for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
-                damage = ρσ_Iter22[ρσ_Index22];
+            var ρσ_Iter23 = ρσ_Iterable(damages);
+            for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
+                damage = ρσ_Iter23[ρσ_Index23];
                 match = re.search("[0-9]*d[0-9]+(ro<2)?", damage);
                 if ((typeof match !== "undefined" && match !== null)) {
                     crits.append(match.group(0));
@@ -8222,9 +8379,9 @@ return this.__repr__();
                     crits = damagesToCrits(damages, damage_types);
                     crit_damages = ρσ_list_decorate([]);
                     crit_damage_types = ρσ_list_decorate([]);
-                    var ρσ_Iter23 = ρσ_Iterable(enumerate(crits));
-                    for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
-                        ρσ_unpack = ρσ_Iter23[ρσ_Index23];
+                    var ρσ_Iter24 = ρσ_Iterable(enumerate(crits));
+                    for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
+                        ρσ_unpack = ρσ_Iter24[ρσ_Index24];
                         i = ρσ_unpack[0];
                         dmg = ρσ_unpack[1];
                         if ((dmg !== "" && (typeof dmg !== "object" || ρσ_not_equals(dmg, "")))) {
@@ -8234,9 +8391,9 @@ return this.__repr__();
                     }
                     if (brutal > 0) {
                         highest_dice = 0;
-                        var ρσ_Iter24 = ρσ_Iterable(crit_damages);
-                        for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
-                            dmg = ρσ_Iter24[ρσ_Index24];
+                        var ρσ_Iter25 = ρσ_Iterable(crit_damages);
+                        for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
+                            dmg = ρσ_Iter25[ρσ_Index25];
                             match = re.search("[0-9]*d([0-9]+)", dmg);
                             if ((typeof match !== "undefined" && match !== null)) {
                                 sides = int(match.group(1));
@@ -8280,9 +8437,9 @@ return this.__repr__();
                 ρσ_d["whisper"] = whisper;
                 return ρσ_d;
             }).call(this);
-            var ρσ_Iter25 = ρσ_Iterable(args);
-            for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
-                key = ρσ_Iter25[ρσ_Index25];
+            var ρσ_Iter26 = ρσ_Iterable(args);
+            for (var ρσ_Index26 = 0; ρσ_Index26 < ρσ_Iter26.length; ρσ_Index26++) {
+                key = ρσ_Iter26[ρσ_Index26];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
             console.log("Sending message: ", req);
@@ -8410,8 +8567,8 @@ return this.__repr__();
             $(".ct-reset-pane__hitdie-heading").append(button);
             hitdice = $(".ct-reset-pane__hitdie");
             multiclass = hitdice.length > 1;
-            for (var ρσ_Index26 = 0; ρσ_Index26 < hitdice.length; ρσ_Index26++) {
-                i = ρσ_Index26;
+            for (var ρσ_Index27 = 0; ρσ_Index27 < hitdice.length; ρσ_Index27++) {
+                i = ρσ_Index27;
                 cb = (function() {
                     var ρσ_anonfunc = function (rollCallback, index) {
                         return (function() {
@@ -8483,8 +8640,8 @@ return this.__repr__();
             $(".ct-beyond20-roll-display").remove();
             $(".ct-beyond20-custom-icon").remove();
             custom_rolls = $("u.ct-beyond20-custom-roll");
-            for (var ρσ_Index27 = 0; ρσ_Index27 < custom_rolls.length; ρσ_Index27++) {
-                i = ρσ_Index27;
+            for (var ρσ_Index28 = 0; ρσ_Index28 < custom_rolls.length; ρσ_Index28++) {
+                i = ρσ_Index28;
                 custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
             }
         };
@@ -8493,9 +8650,9 @@ return this.__repr__();
             var children, child, text;
             if (node.hasChildNodes()) {
                 children = list(node.childNodes);
-                var ρσ_Iter28 = ρσ_Iterable(children);
-                for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
-                    child = ρσ_Iter28[ρσ_Index28];
+                var ρσ_Iter29 = ρσ_Iterable(children);
+                for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
+                    child = ρσ_Iter29[ρσ_Index29];
                     if ($(child).hasClass("ct-beyond20-roll")) {
                         continue;
                     }
@@ -8535,9 +8692,9 @@ return this.__repr__();
                 return ρσ_anonfunc;
             })();
             items = $(selector);
-            var ρσ_Iter29 = ρσ_Iterable(items);
-            for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
-                item = ρσ_Iter29[ρσ_Index29];
+            var ρσ_Iter30 = ρσ_Iterable(items);
+            for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
+                item = ρσ_Iter30[ρσ_Index30];
                 recursiveDiceReplace(item, replaceCB);
             }
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");
@@ -8581,6 +8738,7 @@ return this.__repr__();
         ρσ_modules.dndbeyond.skill_abilities = skill_abilities;
         ρσ_modules.dndbeyond.button_class = button_class;
         ρσ_modules.dndbeyond.button_class_small = button_class_small;
+        ρσ_modules.dndbeyond.Spell = Spell;
         ρσ_modules.dndbeyond.CharacterBase = CharacterBase;
         ρσ_modules.dndbeyond.Character = Character;
         ρσ_modules.dndbeyond.Monster = Monster;
@@ -8615,8 +8773,8 @@ return this.__repr__();
 
         var injectDiceToRolls = ρσ_modules.dndbeyond.injectDiceToRolls;
         var isRollButtonAdded = ρσ_modules.dndbeyond.isRollButtonAdded;
-        var sendRoll = ρσ_modules.dndbeyond.sendRoll;
         var CharacterBase = ρσ_modules.dndbeyond.CharacterBase;
+        var Spell = ρσ_modules.dndbeyond.Spell;
 
         var E = ρσ_modules.elementmaker.E;
 
@@ -8641,65 +8799,11 @@ return this.__repr__();
         
 
         character = null;
-        function displaySpell() {
-            var spell_name, level, casting_time, range_area, components, duration, school, description, level_school, concentration, ritual, materials, material_len, aoe, aoe_len;
-            function get_statblock(label) {
-                return $(".ddb-statblock-item-" + label + " .ddb-statblock-item-value").text().trim();
-            };
-            if (!get_statblock.__argnames__) Object.defineProperties(get_statblock, {
-                __argnames__ : {value: ["label"]}
-            });
-
-            spell_name = $(".page-title").text().trim();
-            level = get_statblock("level");
-            casting_time = get_statblock("casting-time");
-            range_area = get_statblock("range-area");
-            components = get_statblock("components");
-            duration = get_statblock("duration");
-            school = get_statblock("school");
-            description = $(".spell-details .more-info-content").text().trim();
-            if ((level === "Cantrip" || typeof level === "object" && ρσ_equals(level, "Cantrip"))) {
-                level_school = school + " " + level;
-            } else {
-                level_school = level + " Level " + school;
-            }
-            if (duration.startsWith("Concentration")) {
-                concentration = true;
-                duration = duration.replace("Concentration", "").trim();
-            } else {
-                concentration = false;
-            }
-            ritual = $(".ddb-statblock-item-casting-time .i-ritual").length > 0;
-            if ((components[components.length-1] === "*" || typeof components[components.length-1] === "object" && ρσ_equals(components[components.length-1], "*"))) {
-                materials = $(".more-info-content .components-blurb").text().trim();
-                material_len = len(materials);
-                description = description.slice(0, -material_len).trim();
-                components = components.slice(0, -2) + materials.slice(4);
-            }
-            aoe = $(".ddb-statblock-item-range-area .aoe-size").text().trim();
-            if ((aoe !== "" && (typeof aoe !== "object" || ρσ_not_equals(aoe, "")))) {
-                aoe_len = len(aoe);
-                range_area = range_area.slice(0, -aoe_len).trim() + " " + aoe.trim();
-            }
-            sendRoll(character, "spell-card", 0, (function(){
-                var ρσ_d = {};
-                ρσ_d["name"] = spell_name;
-                ρσ_d["level-school"] = level_school;
-                ρσ_d["range"] = range_area;
-                ρσ_d["concentration"] = concentration;
-                ρσ_d["duration"] = duration;
-                ρσ_d["casting-time"] = casting_time;
-                ρσ_d["components"] = components;
-                ρσ_d["ritual"] = ritual;
-                ρσ_d["description"] = description;
-                return ρσ_d;
-            }).call(this));
-        };
-
         function addDisplayButton() {
-            var icon32, button;
+            var icon32, button, spell;
             icon32 = chrome.extension.getURL("images/icons/icon32.png");
             button = ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.span, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon32, style: "margin-right: 10px;"})]), "Display Spell Card on VTT"].concat([ρσ_desugar_kwargs({class_: "label"})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll button-alt", href: "#"})]));
+            spell = new Spell($("body"));
             $(".page-heading__content").append(button);
             $(".ct-beyond20-roll").css((function(){
                 var ρσ_d = {};
@@ -8709,7 +8813,7 @@ return this.__repr__();
             }).call(this));
             $(".ct-beyond20-roll").on("click", (function() {
                 var ρσ_anonfunc = function (event) {
-                    displaySpell();
+                    spell.send(character);
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                     __argnames__ : {value: ["event"]}

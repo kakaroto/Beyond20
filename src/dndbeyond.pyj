@@ -31,6 +31,63 @@ skill_abilities = {"Acrobatics": "DEX",
                    "Survival": "WIS"}
 
 
+class Spell:
+    def __init__(self, body, type="page"):
+        if type == "page":
+            title_selector = ".page-title"
+            statblock_selector = ".ddb-statblock"
+            description_selector = ".spell-details .more-info-content"
+        elif type == "tooltip":
+            title_selector = ".tooltip-header-text"
+            statblock_selector = ".tooltip-body-statblock"
+            description_selector = ".tooltip-body-description-text"
+
+        def get_statblock(label):
+            return body.find(statblock_selector + "-item-" + label + " " + statblock_selector + "-item-value").text().trim()
+
+        self.spell_name = body.find(title_selector).text().trim()
+        level = get_statblock("level")
+        school = get_statblock("school")
+        self.casting_time = get_statblock("casting-time")
+        self.range_area = get_statblock("range-area")
+        self.components = get_statblock("components")
+        self.duration = get_statblock("duration")
+        self.description = body.find(description_selector).text().trim()
+
+        if level == "Cantrip":
+            self.level_school = school + " " + level
+        else:
+            self.level_school = level + " Level " + school
+        if self.duration.startsWith("Concentration"):
+            self.concentration = True
+            self.duration = self.duration.replace("Concentration", "").trim()
+        else:
+            self.concentration = False
+        self.ritual = (body.find(statblock_selector + "-item-casting-time .i-ritual").length > 0)
+        if self.components[-1] == "*":
+            materials = body.find(description_selector + " .components-blurb").text().trim()
+            material_len = len(materials)
+            self.description = self.description[:-material_len].trim()
+            self.components = self.components[:-2] + materials[4:]
+        aoe = body.find(statblock_selector + "-item-range-area .aoe-size").text().trim()
+        if aoe != "":
+            aoe_len = len(aoe)
+            self.range_area = self.range_area[:-aoe_len].trim() + " " + aoe.trim()
+
+    def send(self, character):
+        sendRoll(character, "spell-card", 0, {
+            "name": self.spell_name,
+            "level-school": self.level_school,
+            "range": self.range_area,
+            "concentration": self.concentration,
+            "duration": self.duration,
+            "casting-time": self.casting_time,
+            "components": self.components,
+            "ritual": self.ritual,
+            "description": self.description
+        })
+
+
 class CharacterBase:
     def __init__(self, _type, global_settings):
         self._name = None
@@ -308,6 +365,7 @@ class Monster(CharacterBase):
         self._tidbits = {}
         self._saves = {}
         self._skills = {}
+        self._spells = {}
         self._cr = None
 
     def parseStatBlock(self, stat_block=None):
@@ -417,6 +475,8 @@ class Monster(CharacterBase):
                 self._cr = value.split(" ")[0]
             self._tidbits[label] = value
         self.lookForActions(stat_block, add_dice, inject_descriptions)
+        if add_dice:
+            self.lookForSpells(stat_block)
         console.log("Done parsing stat block:", self)
 
     def rollHitPoints(self):
@@ -550,6 +610,39 @@ class Monster(CharacterBase):
                         $("#" + id).css({"float": "", "text-align": ""})
                 if inject_descriptions:
                     injectDiceToRolls(action, self, action_name)
+
+    def injectSpellRolls(self, element, url):
+        icon16 = chrome.extension.getURL("images/icons/icon16.png")
+        
+        roll_icon = $('<img class="ct-beyond20-spell-icon" x-beyond20-spell-url="' + url + '"></img>')
+
+        $(element).after(roll_icon)
+
+        $(".ct-beyond20-spell-icon").css("margin-right", "3px")
+        $(".ct-beyond20-spell-icon").css("margin-left", "3px")
+        $(".ct-beyond20-spell-icon").attr("src", icon16)
+        $(".ct-beyond20-spell-icon").off('click')
+        $(".ct-beyond20-spell-icon").on('click', def(event):
+            spell_url = $(event.currentTarget).attr("x-beyond20-spell-url")
+            if spell_url in self._spells:
+                self._spells[spell_url].send(self)
+            else:
+                console.log("Fetching Spell Tooltip from URL : ", spell_url)
+                $.get(spell_url, def(text):
+                    spell_json = JSON.parse(text[1:-1])
+                    spell = Spell($(spell_json.Tooltip), "tooltip")
+                    spell.send(self)
+                    self._spells[spell_url] = spell
+                )
+        )
+
+    def lookForSpells(self, stat_block):
+        spells = stat_block.find(self._base + "__description-blocks a.spell-tooltip")
+        for spell in spells:
+            tooltip_href = $(spell).attr("data-tooltip-href")
+            tooltip_url = re.sub("-tooltip.*$", "/tooltip", tooltip_href)
+            self.injectSpellRolls(spell, tooltip_url)
+
 
     def getDict(self):
         return {"name": self._name,
