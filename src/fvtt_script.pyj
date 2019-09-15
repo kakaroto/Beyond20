@@ -6,6 +6,13 @@ import math
 settings = None
 extension_url = "/modules/beyond20/"
 
+class DAMAGE_FLAGS:
+    REGULAR = 1
+    VERSATILE = 2
+    ADDITIONAL = 4
+    HEALING = 8
+    CRITICAL = 0x10
+
 def getSpeakerByName(name):
     if name is None:
         return ChatMessage.getSpeaker()
@@ -110,12 +117,16 @@ def injectRollsInDescription(description):
     return replaceRolls(description, replaceCB)
 
 v'async'
-def rollToDetails(roll):
+def rollToDetails(roll, is_total=False):
     hit = isCriticalHit(roll)
     fail = isCriticalFail(roll)
     color = 'blue' if hit and fail else ('green' if hit else ('red' if fail else 'black'))
     tooltip = v'await roll.getTooltip()'
-    return "<span class='beyond20-tooltip' style='color: " + color + ";'>" + roll.total + "<span class='dice-roll beyond20-tooltip-content'>" + \
+    if is_total:
+        total = "<span class='beyond20-roll-total dice-total'>" + roll.total + "</span>"
+    else:
+        total = roll.total
+    return "<span class='beyond20-tooltip' style='color: " + color + ";'>" + total + "<span class='dice-roll beyond20-tooltip-content'>" + \
         "<div class='dice-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>"
 
 def rollsToCells(html):
@@ -126,7 +137,7 @@ def rollsToCells(html):
 
 
 v'async'
-def postDescription(request, title, source, attributes, description, rolls=[], buttons={}, open=False):
+def postDescription(request, title, source, attributes, description, attack_rolls=[], roll_info=[], damage_rolls=[], buttons={}, open=False):
     play_sound = False
     html = '<div class="beyond20-message">'
     if description:
@@ -143,27 +154,66 @@ def postDescription(request, title, source, attributes, description, rolls=[], b
     else:
         html = "<div class='beyond20-title'>" + title + "</div>"
 
-    console.log("Rolls : ", rolls)
-    for (roll_name, roll) in rolls:
-        if isinstance(roll, str):
-            roll_html = "<span>" + roll + "</span>"
-        else:
-            if isinstance(roll, list):
-                roll_list = roll
-                roll_html = ""
-                for i, roll in enumerate(roll_list):
-                    if i > 0:
-                        roll_html += " | "
-                    roll_html += v'await rollToDetails(roll)'
-                    play_sound = True
+    #console.log("Rolls : ", attack_rolls, roll_info, damage_rolls)
+
+    ##
+    #if len(damage_rolls) > 0 and len(to_hit) > 0 and not settings["auto-roll-damage"]:
+    #    cb = def():
+    #        postDescription(request, request.name, None, data, request.description? "", rerollDamages(damage_rolls))
+    #    postDescription(request, request.name, None, data, request.description? "", rolls, buttons={"Roll Damages" : cb})
+
+    for (name, value) in roll_info:
+        html += "<div class='beyond20-roll-result'><b>" + name + ": </b><span>" + value + "</span></div>"
+
+    if len(attack_rolls) > 0:
+        roll_html = ""
+        for i, roll in enumerate(attack_rolls):
+            if i > 0:
+                roll_html += " | "
+            roll_html += v'await rollToDetails(roll)'
+            play_sound = True
+        html += "<div class='beyond20-roll-result beyond20-roll-cells'>" + rollsToCells(roll_html) + "</div>"
+
+    add_totals = damage_rolls.filter(def(r): return (r[2] & DAMAGE_FLAGS.CRITICAL) == 0;).length > 1
+    total_damages = {}
+    for (roll_name, roll, flags) in damage_rolls:
+        is_total = not add_totals and (flags & DAMAGE_FLAGS.CRITICAL) == 0
+        roll_html = v'await rollToDetails(roll, is_total)'
+        play_sound = True
+        roll_name = roll_name[0].toUpperCase() + roll_name[1:] + ": "
+        html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>"
+        if add_totals:
+            kind_of_damage = ""
+            if flags & DAMAGE_FLAGS.REGULAR:
+                kind_of_damage = "Critical Damage" if flags & DAMAGE_FLAGS.CRITICAL else "Damage"
+            elif flags & DAMAGE_FLAGS.VERSATILE:
+                kind_of_damage = "Critical Two-Handed Damage" if flags & DAMAGE_FLAGS.CRITICAL else "Two-Handed Damage"
+            elif flags & DAMAGE_FLAGS.HEALING:
+                kind_of_damage = "Healing"
+            elif flags & DAMAGE_FLAGS.ADDITIONAL:
+                # HACK Alert: crappy code
+                regular = "Critical Damage" if flags & DAMAGE_FLAGS.CRITICAL else "Damage"
+                versatile = "Critical Two-Handed Damage" if flags & DAMAGE_FLAGS.CRITICAL else "Two-Handed Damage"
+                if regular in total_damages:
+                    total_damages[regular] += " + " + str(roll.total)
+                if versatile in total_damages:
+                    total_damages[versatile] += " + " + str(roll.total)
+                continue
+            if kind_of_damage in total_damages:
+                total_damages[kind_of_damage] += " + " + str(roll.total)
             else:
-                roll_html = v'await rollToDetails(roll)'
-                play_sound = True
-        if roll_name:
-            roll_name = roll_name[0].toUpperCase() + roll_name[1:] + (": " if roll_html else "")
-            html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>"
-        else:
-            html += "<div class='beyond20-roll-result beyond20-roll-cells'>" + rollsToCells(roll_html) + "</div>"
+                total_damages[kind_of_damage] = str(roll.total)
+
+    if len(total_damages) > 0:
+        html += "<div class='beyond20-roll-result'><b><hr/></b></div>"
+    roll = None
+    for key in total_damages:
+        is_total = roll is None
+        # to satisfy lint
+        is_total
+        roll = new Roll(total_damages[key]).roll()
+        roll_html = v'await rollToDetails(roll, is_total)'
+        html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>"
 
     for button in buttons:
         html += '<button class="beyond20-chat-button">' + button + '</button>'
@@ -211,7 +261,7 @@ def rollD20(request, title, data):
         roll_1 = createRoll(dice, data).roll()
         roll_2 = createRoll(dice, data).roll()
         console.log("Rolls :", roll_1, roll_2)
-        postDescription(request, title, None, {}, None, rolls=[(None, [roll_1, roll_2])])
+        postDescription(request, title, None, {}, None, attack_rolls=[roll_1, roll_2])
         return roll_1
     else:
         adv = v'await queryAdvantage(title)'
@@ -390,7 +440,7 @@ def queryDamageType(title, damage_types):
     
 v'async'
 def buildAttackRolls(request, custom_roll_dice):
-    rolls = []
+    to_hit = []
     damage_rolls = []
     is_critical = False
     if request["to-hit"]?:
@@ -404,13 +454,12 @@ def buildAttackRolls(request, custom_roll_dice):
                 critical_limit = 18
 
         custom = "" if custom_roll_dice == "" else (" + " + custom_roll_dice)
-        to_hit = " + " + request["to-hit"] + custom
+        to_hit_mod = " + " + request["to-hit"] + custom
 
         if request.advantage == RollType.DOUBLE:
-            roll_1 = new Roll("1d20" + to_hit).roll()
-            roll_2 = new Roll("1d20" + to_hit).roll()
-            to_hit_roll = [roll_1, roll_2]
-            is_critical = isCriticalHitD20(to_hit_roll, critical_limit)
+            roll_1 = new Roll("1d20" + to_hit_mod).roll()
+            roll_2 = new Roll("1d20" + to_hit_mod).roll()
+            to_hit = [roll_1, roll_2]
         else:
             if request.advantage == RollType.NORMAL:
                 dice = "1d20"
@@ -421,9 +470,8 @@ def buildAttackRolls(request, custom_roll_dice):
             else:
                 adv = v'await queryAdvantage(request.name)'
                 dice = "1d20" if adv == 0 else ("2d20" + ("kh" if adv == 1 else "kl"))
-            to_hit_roll = new Roll(dice + to_hit).roll()
-            is_critical = isCriticalHitD20([to_hit_roll], critical_limit)
-        rolls.append((None, to_hit_roll))
+            to_hit = [new Roll(dice + to_hit_mod).roll()]
+        is_critical = isCriticalHitD20(to_hit, critical_limit)
 
 
     if request.damages?:
@@ -462,17 +510,19 @@ def buildAttackRolls(request, custom_roll_dice):
             critical_damage_types.insert(0, "Chaotic energy")
 
         has_versatile = len(damage_types) > 1 and damage_types[1] == "Two-Handed"
-        total_damage = ""
-        total_versatile_damage = ""
         for i in range(damages.length):
             roll = new Roll(damages[i]).roll()
-            if (not has_versatile) or i != 1:
-                total_damage += ("" if i == 0 else " + ") + str(roll.total)
-            if has_versatile and i != 0:
-                total_versatile_damage += ("" if i == 1 else " + ") + str(roll.total)
             dmg_type = damage_types[i]
-            suffix = " Damage" if dmg_type not in ["Healing", "Disciple of Life"] else ""
-            damage_rolls.append((dmg_type + suffix, roll))
+            if dmg_type in ["Healing", "Disciple of Life"]:
+                damage_flags = DAMAGE_FLAGS.HEALING
+            elif i == 0:
+                damage_flags = DAMAGE_FLAGS.REGULAR
+            elif i == 1 and has_versatile:
+                damage_flags = DAMAGE_FLAGS.VERSATILE
+            else:
+                damage_flags = DAMAGE_FLAGS.ADDITIONAL
+            suffix = " Damage" if not (damage_flags & DAMAGE_FLAGS.HEALING) else ""
+            damage_rolls.append((dmg_type + suffix, roll, damage_flags))
             
         if request.name == "Chaos Bolt":
             for i, dmg_roll in enumerate(damage_rolls):
@@ -493,29 +543,21 @@ def buildAttackRolls(request, custom_roll_dice):
                     break
 
         if is_critical:
-            total_critical_damage = ""
-            total_critical_versatile_damage = ""
             for i in range(critical_damages.length):
                 roll = new Roll(critical_damages[i]).roll()
-                if (not has_versatile) or i != 1:
-                    total_critical_damage += ("" if i == 0 else " + ") + str(roll.total)
-                if has_versatile and i != 0:
-                    total_critical_versatile_damage += ("" if i == 1 else " + ") + str(roll.total)
                 dmg_type = critical_damage_types[i]
-                suffix = " Critical Damage" if dmg_type not in ["Healing", "Disciple of Life"] else ""
-                damage_rolls.append((dmg_type + suffix, roll))
+                if dmg_type in ["Healing", "Disciple of Life"]:
+                    damage_flags = DAMAGE_FLAGS.HEALING
+                elif i == 0:
+                    damage_flags = DAMAGE_FLAGS.REGULAR
+                elif i == 1 and has_versatile:
+                    damage_flags = DAMAGE_FLAGS.VERSATILE
+                else:
+                    damage_flags = DAMAGE_FLAGS.ADDITIONAL
+                suffix = " Critical Damage" if not (damage_flags & DAMAGE_FLAGS.HEALING) else ""
+                damage_rolls.append((dmg_type + suffix, roll, damage_flags | DAMAGE_FLAGS.CRITICAL))
 
-    if total_damage? and "+" in total_damage:
-        damage_rolls.append(("------", []))
-        damage_rolls.append(("Total Damage", new Roll(total_damage).roll()))
-        if total_versatile_damage != "":
-            damage_rolls.append(("Total Two-Handed Damage", new Roll(total_versatile_damage).roll()))
-        if total_critical_damage?:
-            damage_rolls.append(("Total Critical Damage", new Roll(total_critical_damage).roll()))
-            if total_critical_versatile_damage != "":
-                damage_rolls.append(("Total Critical Two-Handed Damage", new Roll(total_critical_versatile_damage).roll()))
-
-    return [rolls, damage_rolls]
+    return [to_hit, damage_rolls]
 
 def rerollDamages(rolls):
     new_rolls = []
@@ -530,21 +572,17 @@ v'async'
 def rollAttack(request, custom_roll_dice=""):
     nonlocal settings
 
-    [rolls, damage_rolls] = v'await buildAttackRolls(request, custom_roll_dice)'
+    [to_hit, damage_rolls] = v'await buildAttackRolls(request, custom_roll_dice)'
 
     data = {}
     if request.range?:
         data["Range"] = request.range
 
+    roll_info = []
     if request["save-dc"]?:
-        rolls.append(("Save", request["save-ability"] + " DC " + request["save-dc"]))
+        roll_info.append(("Save", request["save-ability"] + " DC " + request["save-dc"]))
 
-    if len(damage_rolls) > 0 and len(rolls) > 0 and not settings["auto-roll-damage"]:
-        cb = def():
-            postDescription(request, request.name, None, data, request.description? "", rerollDamages(damage_rolls))
-        postDescription(request, request.name, None, data, request.description? "", rolls, buttons={"Roll Damages" : cb})
-    else:
-        postDescription(request, request.name, None, data, request.description? "", rolls.concat(damage_rolls))
+    postDescription(request, request.name, None, data, request.description? "", to_hit, roll_info, damage_rolls)
 
 
 
@@ -578,17 +616,17 @@ def rollSpellAttack(request, custom_roll_dice):
 
     spell_card = buildSpellCard(request)
 
-    rolls = []
+    roll_info = []
     if request.range?:
-        rolls.append(("Range", request.range))
+        roll_info.append(("Range", request.range))
 
     if request["cast-at"]?:
-        rolls.append(("Cast at", request["cast-at"] + " Level"))
+        roll_info.append(("Cast at", request["cast-at"] + " Level"))
     components = request.components
     prefix = settings["component-prefix"] if settings["component-prefix"] != "" else None
     if settings["components-display"] == "all":
         if components != "":
-            rolls.append((prefix or "Components", components))
+            roll_info.append((prefix or "Components", components))
     elif settings["components-display"] == "material":
         while components != "":
             if components[0] in ["V", "S"]:
@@ -596,21 +634,15 @@ def rollSpellAttack(request, custom_roll_dice):
                 if components.startsWith(", "):
                     components = components[2:]
             if components[0] == "M":
-                rolls.append((prefix or "Materials", settings["component-prefix"] + components[2:-1]))
+                roll_info.append((prefix or "Materials", settings["component-prefix"] + components[2:-1]))
                 components = ""
 
     if request["save-dc"]?:
-        rolls.append(("Save", request["save-ability"] + " DC " + request["save-dc"]))
+        roll_info.append(("Save", request["save-ability"] + " DC " + request["save-dc"]))
 
     [attack_rolls, damage_rolls] = v'await buildAttackRolls(request, custom_roll_dice)'
-    rolls.extend(attack_rolls)
 
-    if len(damage_rolls) > 0 and len(attack_rolls) > 0 and not settings["auto-roll-damage"]:
-        cb = def():
-            postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rerollDamages(damage_rolls))
-        postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls, buttons={"Roll Damages" : cb})
-    else:
-        postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], rolls.concat(damage_rolls))
+    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], attack_rolls, roll_info, damage_rolls)
 
 def handleRoll(request):
     nonlocal settings
