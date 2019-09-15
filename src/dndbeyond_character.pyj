@@ -2,6 +2,7 @@ from settings import getDefaultSettings, getStoredSettings, RollType
 from utils import isExtensionDisconnected
 from elementmaker import E
 import math
+import re
 from dndbeyond import Character, Monster, buildAttackRoll, sendRoll, \
     ability_abbreviations, findToHit, descriptionToString, propertyListToDict, \
     injectDiceToRolls, addIconButton, addHitDieButtons, addDisplayButton, addRollButton, \
@@ -102,19 +103,27 @@ def rollItem(force_display=False):
                 value = prop_list.eq(i).find(".ct-property-list__property-content")
                 damage = value.find(".ct-damage__value").text()
                 damage_type = properties["Damage Type"] ? ""
-                versatile_damage = value.find(".ct-item-detail__versatile-damage").text()
+                versatile_damage = value.find(".ct-item-detail__versatile-damage").text()[1:-1]
+                if character.hasClassFeature("Fighting Style: Great Weapon Fighting") and \
+                    (properties["Properties"].includes("Versatile") or properties["Properties"].includes("Two-Handed")) and \
+                        damages.length == 0:
+                        if versatile_damage != "":
+                            versatile_damage = re.sub("[0-9]*d[0-9]+", "\\0ro<2", versatile_damage)
+                        else:
+                            damage = re.sub("[0-9]*d[0-9]+", "\\0ro<2", damage)
+
                 if versatile_damage != "":
                     versatile_choice = character.getSetting("versatile-choice", "both")
                     if versatile_choice == "one":
                         damages.append(damage)
                         damage_types.append(damage_type)
                     elif versatile_choice == "two":
-                        damages.append(versatile_damage[1:-1])
+                        damages.append(versatile_damage)
                         damage_types.append(damage_type)
                     else:
                         damages.append(damage)
                         damage_types.append(damage_type)
-                        damages.append(versatile_damage[1:-1])
+                        damages.append(versatile_damage)
                         damage_types.append("Two-Handed")
                 else:
                     damages.append(damage)

@@ -139,6 +139,7 @@ def rollsToCells(html):
 
 v'async'
 def postDescription(request, title, source, attributes, description, attack_rolls=[], roll_info=[], damage_rolls=[], buttons={}, open=False):
+    nonlocal settings
     play_sound = False
     # Handle the case where you don't want to auto-roll damages
     if len(damage_rolls) > 0 and len(attack_rolls) > 0 and not settings["auto-roll-damage"]:
@@ -524,7 +525,8 @@ def buildAttackRolls(request, custom_roll_dice):
 
         has_versatile = len(damage_types) > 1 and damage_types[1] == "Two-Handed"
         for i in range(damages.length):
-            roll = new Roll(damages[i]).roll()
+            dmg = damages[i].replace("ro<2", "r<=2")
+            roll = new Roll(dmg).roll()
             dmg_type = damage_types[i]
             if dmg_type in ["Healing", "Disciple of Life"]:
                 damage_flags = DAMAGE_FLAGS.HEALING
@@ -557,7 +559,8 @@ def buildAttackRolls(request, custom_roll_dice):
 
         if is_critical:
             for i in range(critical_damages.length):
-                roll = new Roll(critical_damages[i]).roll()
+                dmg = critical_damages[i].replace("ro<2", "r<=2")
+                roll = new Roll(dmg).roll()
                 dmg_type = critical_damage_types[i]
                 if dmg_type in ["Healing", "Disciple of Life"]:
                     damage_flags = DAMAGE_FLAGS.HEALING

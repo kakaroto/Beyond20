@@ -5494,7 +5494,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function replaceRolls(text, replaceCB) {
             var dice_regexp;
-            dice_regexp = "(^|[^\\w])(?:(?:(?:(\\d*d\\d+)((?:\\s*[-+]\\s*\\d+)*))|((?:[-+]\\s*\\d+)+)))($|[^\\w])";
+            dice_regexp = "(^|[^\\w])(?:(?:(?:(\\d*d\\d+(?:ro<2)?)((?:\\s*[-+]\\s*\\d+)*))|((?:[-+]\\s*\\d+)+)))($|[^\\w])";
             return re.sub(dice_regexp, (function() {
                 var ρσ_anonfunc = function (m) {
                     return replaceRollsCallback(m, replaceCB);
@@ -8138,7 +8138,7 @@ return this.__repr__();
             var ρσ_Iter22 = ρσ_Iterable(damages);
             for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
                 damage = ρσ_Iter22[ρσ_Index22];
-                match = re.search("[0-9]*d[0-9]+", damage);
+                match = re.search("[0-9]*d[0-9]+(ro<2)?", damage);
                 if ((typeof match !== "undefined" && match !== null)) {
                     crits.append(match.group(0));
                 } else {

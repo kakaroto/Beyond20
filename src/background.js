@@ -5220,7 +5220,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function replaceRolls(text, replaceCB) {
             var dice_regexp;
-            dice_regexp = "(^|[^\\w])(?:(?:(?:(\\d*d\\d+)((?:\\s*[-+]\\s*\\d+)*))|((?:[-+]\\s*\\d+)+)))($|[^\\w])";
+            dice_regexp = "(^|[^\\w])(?:(?:(?:(\\d*d\\d+(?:ro<2)?)((?:\\s*[-+]\\s*\\d+)*))|((?:[-+]\\s*\\d+)+)))($|[^\\w])";
             return re.sub(dice_regexp, (function() {
                 var ρσ_anonfunc = function (m) {
                     return replaceRollsCallback(m, replaceCB);

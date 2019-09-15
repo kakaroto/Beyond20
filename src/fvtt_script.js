@@ -5194,7 +5194,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function replaceRolls(text, replaceCB) {
             var dice_regexp;
-            dice_regexp = "(^|[^\\w])(?:(?:(?:(\\d*d\\d+)((?:\\s*[-+]\\s*\\d+)*))|((?:[-+]\\s*\\d+)+)))($|[^\\w])";
+            dice_regexp = "(^|[^\\w])(?:(?:(?:(\\d*d\\d+(?:ro<2)?)((?:\\s*[-+]\\s*\\d+)*))|((?:[-+]\\s*\\d+)+)))($|[^\\w])";
             return re.sub(dice_regexp, (function() {
                 var ρσ_anonfunc = function (m) {
                     return replaceRollsCallback(m, replaceCB);
@@ -8132,7 +8132,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         async        function buildAttackRolls(request, custom_roll_dice) {
-            var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, roll_1, roll_2, dice, adv, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, has_versatile, roll, dmg_type, damage_flags, suffix, i, ρσ_unpack, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
+            var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, roll_1, roll_2, dice, adv, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, has_versatile, dmg, roll, dmg_type, damage_flags, suffix, i, ρσ_unpack, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
             to_hit = ρσ_list_decorate([]);
             damage_rolls = ρσ_list_decorate([]);
             is_critical = false;
@@ -8212,7 +8212,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 has_versatile = len(damage_types) > 1 && (damage_types[1] === "Two-Handed" || typeof damage_types[1] === "object" && ρσ_equals(damage_types[1], "Two-Handed"));
                 for (var ρσ_Index18 = 0; ρσ_Index18 < damages.length; ρσ_Index18++) {
                     i = ρσ_Index18;
-                    roll = new Roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]).roll();
+                    dmg = damages[(typeof i === "number" && i < 0) ? damages.length + i : i].replace("ro<2", "r<=2");
+                    roll = new Roll(dmg).roll();
                     dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
                     if (ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) {
                         damage_flags = DAMAGE_FLAGS.prototype.HEALING;
@@ -8263,7 +8264,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if (is_critical) {
                     for (var ρσ_Index21 = 0; ρσ_Index21 < critical_damages.length; ρσ_Index21++) {
                         i = ρσ_Index21;
-                        roll = new Roll(critical_damages[(typeof i === "number" && i < 0) ? critical_damages.length + i : i]).roll();
+                        dmg = critical_damages[(typeof i === "number" && i < 0) ? critical_damages.length + i : i].replace("ro<2", "r<=2");
+                        roll = new Roll(dmg).roll();
                         dmg_type = critical_damage_types[(typeof i === "number" && i < 0) ? critical_damage_types.length + i : i];
                         if (ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) {
                             damage_flags = DAMAGE_FLAGS.prototype.HEALING;

@@ -611,7 +611,7 @@ def findToHit(name_to_match, items_selector, name_selector, tohit_selector):
 def damagesToCrits(damages):
     crits = []
     for damage in damages:
-        match = re.search("[0-9]*d[0-9]+", damage)
+        match = re.search("[0-9]*d[0-9]+(ro<2)?", damage)
         if match?:
                 crits.append(match.group(0))
         else:
