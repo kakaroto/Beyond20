@@ -7257,10 +7257,13 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             rollMode = whisperToRollMode(whisper);
             if (ρσ_in(rollMode, ρσ_list_decorate([ "gmroll", "blindroll" ]))) {
+                data["type"] = CHAT_MESSAGE_TYPES.WHISPER;
                 data["whisper"] = ChatMessage.getWhisperIDs("GM");
                 if ((rollMode === "blindroll" || typeof rollMode === "object" && ρσ_equals(rollMode, "blindroll"))) {
                     data["blind"] = true;
                 }
+            } else {
+                data["type"] = CHAT_MESSAGE_TYPES.OOC;
             }
             if (play_sound) {
                 data["sound"] = CONFIG.sounds.dice;
