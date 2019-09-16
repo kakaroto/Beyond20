@@ -7099,15 +7099,19 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "type")){
                 type = ρσ_kwargs_obj.type;
             }
-            var title_selector, statblock_selector, description_selector, level, school, materials, material_len, aoe, aoe_len;
+            var title_selector, statblock_selector, description_selector, casting_time_label, range_area_label, level, school, materials, material_len, aoe, aoe_len;
             if ((type === "page" || typeof type === "object" && ρσ_equals(type, "page"))) {
                 title_selector = ".page-title";
                 statblock_selector = ".ddb-statblock";
                 description_selector = ".spell-details .more-info-content";
+                casting_time_label = "casting-time";
+                range_area_label = "range-area";
             } else if ((type === "tooltip" || typeof type === "object" && ρσ_equals(type, "tooltip"))) {
                 title_selector = ".tooltip-header-text";
                 statblock_selector = ".tooltip-body-statblock";
                 description_selector = ".tooltip-body-description-text";
+                casting_time_label = "castingtime";
+                range_area_label = "range";
             }
             function get_statblock(label) {
                 return body.find(statblock_selector + "-item-" + label + " " + statblock_selector + "-item-value").text().trim();
@@ -7119,8 +7123,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             self.spell_name = body.find(title_selector).text().trim();
             level = get_statblock("level");
             school = get_statblock("school");
-            self.casting_time = get_statblock("casting-time");
-            self.range_area = get_statblock("range-area");
+            self.casting_time = get_statblock(casting_time_label);
+            self.range_area = get_statblock(range_area_label);
             self.components = get_statblock("components");
             self.duration = get_statblock("duration");
             self.description = body.find(description_selector).text().trim();
