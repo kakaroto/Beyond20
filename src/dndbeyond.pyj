@@ -526,16 +526,20 @@ class Monster(CharacterBase):
             hit = description[hit_idx:]
         else:
             return None
-        damage_regexp = " (?:([0-9]+))?(?: *\(?([0-9]*d[0-9]+(?:\s*[-+]\s*[0-9]+)?)\)?)? ([\w ]+?) damage"
+        damage_regexp = "([\w]* )(?:([0-9]+))?(?: *\(?([0-9]*d[0-9]+(?:\s*[-+]\s*[0-9]+)?)\)?)? ([\w ]+?) damage"
         damage_matches = re.finditer(damage_regexp, hit)
         damages = []
         damage_types = []
         for dmg in damage_matches:
-            if dmg.group(2)?:
-                damages.append(dmg.group(2))
+            # Skip any damage that starts wit "DC" because of "DC 13 saving throw or take damage" which could match.
+            # A lookbehind would be a simple solution here but rapydscript doesn't let me.
+            if dmg.group(1) == "DC ":
+                continue
+            if dmg.group(3)?:
+                damages.append(dmg.group(3))
             else:
-                damages.append(dmg.group(1))
-            damage_types.append(dmg.group(3))
+                damages.append(dmg.group(2))
+            damage_types.append(dmg.group(4))
         m = re.search("DC ([0-9]+) (.*?) saving throw", hit)
         if m:
             save = (m.group(2), m.group(1))

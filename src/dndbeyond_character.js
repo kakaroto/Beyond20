@@ -8346,19 +8346,22 @@ return this.__repr__();
             } else {
                 return null;
             }
-            damage_regexp = " (?:([0-9]+))?(?: *\\(?([0-9]*d[0-9]+(?:\\s*[-+]\\s*[0-9]+)?)\\)?)? ([\\w ]+?) damage";
+            damage_regexp = "([\\w]* )(?:([0-9]+))?(?: *\\(?([0-9]*d[0-9]+(?:\\s*[-+]\\s*[0-9]+)?)\\)?)? ([\\w ]+?) damage";
             damage_matches = re.finditer(damage_regexp, hit);
             damages = ρσ_list_decorate([]);
             damage_types = ρσ_list_decorate([]);
             var ρσ_Iter14 = ρσ_Iterable(damage_matches);
             for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
                 dmg = ρσ_Iter14[ρσ_Index14];
-                if (ρσ_exists.n(dmg.group(2))) {
-                    damages.append(dmg.group(2));
-                } else {
-                    damages.append(dmg.group(1));
+                if (ρσ_equals(dmg.group(1), "DC ")) {
+                    continue;
                 }
-                damage_types.append(dmg.group(3));
+                if (ρσ_exists.n(dmg.group(3))) {
+                    damages.append(dmg.group(3));
+                } else {
+                    damages.append(dmg.group(2));
+                }
+                damage_types.append(dmg.group(4));
             }
             m = re.search("DC ([0-9]+) (.*?) saving throw", hit);
             if (m) {
