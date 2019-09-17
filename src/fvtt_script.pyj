@@ -64,17 +64,22 @@ def queryAdvantage(title):
                        )
 
 def postChatMessage(message, character, whisper, play_sound=False):
+    nonlocal CHAT_MESSAGE_TYPES
+    # Prior to 0.3.6, CHAT_MESSAGE_TYPES wasn't defined
+    MESSAGE_TYPES = {"OOC": 1, "WHISPER": 4}
+    if CHAT_MESSAGE_TYPES?:
+        MESSAGE_TYPES = {"OOC": CHAT_MESSAGE_TYPES.OOC, "WHISPER": CHAT_MESSAGE_TYPES.WHISPER}
     data = {"content": message, 
             "user": game.user._id,
             "speaker": getSpeakerByName(character)}
     rollMode = whisperToRollMode(whisper)
     if rollMode in ["gmroll", "blindroll"]:
-        data['type'] = CHAT_MESSAGE_TYPES.WHISPER
+        data['type'] = MESSAGE_TYPES.WHISPER
         data["whisper"] = ChatMessage.getWhisperIDs("GM")
         if rollMode == "blindroll":
             data["blind"] = True
     else:
-        data['type'] = CHAT_MESSAGE_TYPES.OOC
+        data['type'] = MESSAGE_TYPES.OOC
     if play_sound:
         data["sound"] = CONFIG.sounds.dice
     return ChatMessage.create(data)

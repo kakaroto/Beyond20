@@ -7269,7 +7269,21 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "play_sound")){
                 play_sound = ρσ_kwargs_obj.play_sound;
             }
-            var data, rollMode;
+            var MESSAGE_TYPES, data, rollMode;
+            MESSAGE_TYPES = (function(){
+                var ρσ_d = {};
+                ρσ_d["OOC"] = 1;
+                ρσ_d["WHISPER"] = 4;
+                return ρσ_d;
+            }).call(this);
+            if ((typeof CHAT_MESSAGE_TYPES !== "undefined" && CHAT_MESSAGE_TYPES !== null)) {
+                MESSAGE_TYPES = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["OOC"] = CHAT_MESSAGE_TYPES.OOC;
+                    ρσ_d["WHISPER"] = CHAT_MESSAGE_TYPES.WHISPER;
+                    return ρσ_d;
+                }).call(this);
+            }
             data = (function(){
                 var ρσ_d = {};
                 ρσ_d["content"] = message;
@@ -7279,13 +7293,13 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             rollMode = whisperToRollMode(whisper);
             if (ρσ_in(rollMode, ρσ_list_decorate([ "gmroll", "blindroll" ]))) {
-                data["type"] = CHAT_MESSAGE_TYPES.WHISPER;
+                data["type"] = MESSAGE_TYPES.WHISPER;
                 data["whisper"] = ChatMessage.getWhisperIDs("GM");
                 if ((rollMode === "blindroll" || typeof rollMode === "object" && ρσ_equals(rollMode, "blindroll"))) {
                     data["blind"] = true;
                 }
             } else {
-                data["type"] = CHAT_MESSAGE_TYPES.OOC;
+                data["type"] = MESSAGE_TYPES.OOC;
             }
             if (play_sound) {
                 data["sound"] = CONFIG.sounds.dice;
