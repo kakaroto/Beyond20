@@ -1,3 +1,6 @@
 *~
 *.pyj-cached
 web-ext-artifacts
+.vscode
+Gemfile*
+package-lock.json

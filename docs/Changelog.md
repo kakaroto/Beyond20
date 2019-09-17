@@ -6,7 +6,7 @@ v0.6
 * **Feature**: Add a "Display in VTT" button for rollable actions
 * **Feature**: Add support for rerolling 1 and 2 damage dice for Great Weapon Fighting
 * **Feature**: *FVTT*: Play dice sound when rolling dice
-* **Feature**: *FVTT*: Make all rolls as out-of-character messages so they appear with the colored border of the character
+* **Feature**: *FVTT*: Make all rolls as out-of-character messages so they appear with the colored border of the character (v0.3.7+)
 * **Bugfix**: Fix damage detection in monster stat block where for example a "DC 13 saving throw or take half damage" could be mistaken for 13 damage of type "saving throw or take half"
 * **Bugfix**: *FVTT*: Update initiative in combat if rolled more than once
 * **Bugfix**: *FVTT*: Do the proper damage calculations when using the 'Apply Damage' context option on chat messages
