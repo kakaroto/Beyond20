@@ -45,7 +45,8 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Skills
 * Dice formulas in features/action descriptions
 * Ranged and Melee weapon attacks
-* Monsters from the My Enoucnters page directly supported
+* Display spells from tooltip information
+* Monsters from the My Encounters page directly supported
 
 ## Vehicles
 * Ability checks
@@ -77,6 +78,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Half-Orc: Save Attacks
 * Feat: Sharpshooter
 * Feat: Great Weapon Master
+* Fighting Style: Great Weapon Fighting
 
 # Special Spells supported
 * Chromatic Orb: Macro to ask which damage type to use

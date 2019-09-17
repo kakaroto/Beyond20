@@ -1,3 +1,18 @@
+v0.6
+===
+
+* **Feature**: Roll Spells from Monster stat blocks without opening the spell in a separate window
+* **Feature**: Alert when trying to roll while no VTT window is found or configured to receive the rolls
+* **Feature**: Add a "Display in VTT" button for rollable actions
+* **Feature**: Add support for rerolling 1 and 2 damage dice for Great Weapon Fighting
+* **Feature**: *FVTT*: Play dice sound when rolling dice
+* **Feature**: *FVTT*: Make all rolls as out-of-character messages so they appear with the colored border of the character
+* **Bugfix**: Fix damage detection in monster stat block where for example a "DC 13 saving throw or take half damage" could be mistaken for 13 damage of type "saving throw or take half"
+* **Bugfix**: *FVTT*: Update initiative in combat if rolled more than once
+* **Bugfix**: *FVTT*: Do the proper damage calculations when using the 'Apply Damage' context option on chat messages
+* **Bugfix**: *FVTT*: Re-calculate total damages when rolling damage multiple times with the 'Roll Damages' button (Auto-roll disabled)
+* **Bugfix**: *FVTT*: Do not re-roll damages the first time we click on 'Roll Damages' (gives proper dice values and damage types for Chaos Bolt for example)
+
 v0.5
 ===
 

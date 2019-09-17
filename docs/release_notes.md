@@ -1,3 +1,13 @@
+v0.6
+===
+
+Another month, another Beyond20 update! I won't bore you with long release notes this time. This adds a couple of features that were requested on the github [issue tracker](https://github.com/kakaroto/Beyond20/issues) and fixes some bugs as well. I am mostly just responding to requests at this point so if there's something you'd like the extension to do, let me know and I'll work on it.
+
+The main feature is the ability to display spell cards from monster stat blocks directly without having to open the spell page separately. There are other features and bugfixes as well, so I recommend checking out the [Changelog](Changelog) for the full list.
+
+Thanks again and always, for all those who donated as well as to my [Patrons](https://patreon.com/kakaroto) who have paid for the development of this update.
+
+
 v0.5
 ===
 
