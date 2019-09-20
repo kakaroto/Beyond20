@@ -542,6 +542,11 @@ class Monster(CharacterBase):
         m = re.search("DC ([0-9]+) (.*?) saving throw", hit)
         if m:
             save = (m.group(2), m.group(1))
+        else:
+            m = re.search("escape DC ([0-9]+)", hit)
+            if m:
+                save = ("Escape", m.group(1))
+
         if damages.length == 0 and save is None:
             return None
         return (damages, damage_types, save)
