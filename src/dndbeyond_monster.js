@@ -7994,6 +7994,11 @@ return this.__repr__();
             m = re.search("DC ([0-9]+) (.*?) saving throw", hit);
             if (m) {
                 save = [m.group(2), m.group(1)];
+            } else {
+                m = re.search("escape DC ([0-9]+)", hit);
+                if (m) {
+                    save = ["Escape", m.group(1)];
+                }
             }
             if ((damages.length === 0 || typeof damages.length === "object" && ρσ_equals(damages.length, 0)) && save === null) {
                 return null;
@@ -8014,6 +8019,7 @@ return this.__repr__();
                 return ρσ_d;
             }).call(this);
             attackInfo = self.parseAttackInfo(description);
+            console.log("Attack info for ", name, attackInfo);
             if (attackInfo) {
                 ρσ_unpack = attackInfo;
 ρσ_unpack = ρσ_unpack_asarray(3, ρσ_unpack);
@@ -8025,6 +8031,7 @@ return this.__repr__();
                 roll_properties[ρσ_bound_index(((attack_type === "Melee" || typeof attack_type === "object" && ρσ_equals(attack_type, "Melee"))) ? "reach" : "range", roll_properties)] = reach_range;
             }
             hitInfo = self.parseHitInfo(description);
+            console.log("Hit info for ", name, hitInfo);
             if (hitInfo) {
                 damages = hitInfo[0];
                 damage_types = hitInfo[1];
@@ -8064,7 +8071,7 @@ return this.__repr__();
         });
         Monster.prototype.lookForActions = function lookForActions(stat_block, add_dice, inject_descriptions) {
             var self = this;
-            var blocks, makeCB, section_name, actions, firstChild, action_name, description, nextSibling, roll_properties, id, action, block;
+            var blocks, makeCB, section_name, actions, firstChild, action_name, description, nextSibling, roll_properties, id, action, block, handleAction;
             blocks = stat_block.find(self._base + "__description-blocks " + self._base + "__description-block");
             makeCB = (function() {
                 var ρσ_anonfunc = function (props) {
@@ -8123,6 +8130,50 @@ return this.__repr__();
                     }
                 }
             }
+            handleAction = (function() {
+                var ρσ_anonfunc = function (action_name, block, action) {
+                    var description, roll_properties, id;
+                    description = action.text();
+                    if ((action_name[action_name.length-1] === "." || typeof action_name[action_name.length-1] === "object" && ρσ_equals(action_name[action_name.length-1], "."))) {
+                        action_name = action_name.slice(0, -1);
+                    }
+                    if (add_dice) {
+                        roll_properties = self.buildAttackRoll(action_name, description);
+                        if (roll_properties) {
+                            id = ρσ_interpolate_kwargs.call(this, addRollButton, [makeCB(roll_properties), block].concat([ρσ_desugar_kwargs({small: true, prepend: true, image: true, text: action_name})]));
+                            $("#" + id).css((function(){
+                                var ρσ_d = {};
+                                ρσ_d["float"] = "";
+                                ρσ_d["text-align"] = "";
+                                return ρσ_d;
+                            }).call(this));
+                        }
+                    }
+                    if (inject_descriptions) {
+                        injectDiceToRolls(action, self, action_name);
+                    }
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["action_name", "block", "action"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            blocks = stat_block.find(self._base + "__feature");
+            var ρσ_Iter18 = ρσ_Iterable(blocks);
+            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
+                block = ρσ_Iter18[ρσ_Index18];
+                action_name = $(block).find(self._base + "__feature-label").text();
+                action = $(block).find(self._base + "__feature-value");
+                handleAction(action_name, block, action);
+            }
+            blocks = stat_block.find(self._base + "__action-station-block");
+            var ρσ_Iter19 = ρσ_Iterable(blocks);
+            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
+                block = ρσ_Iter19[ρσ_Index19];
+                action_name = $(block).find(self._base + "__action-station-block-heading").text();
+                action = $(block).find(self._base + "__action-station-block-content " + self._base + "__attribute-value");
+                handleAction(action_name, block, action);
+            }
         };
         if (!Monster.prototype.lookForActions.__argnames__) Object.defineProperties(Monster.prototype.lookForActions, {
             __argnames__ : {value: ["stat_block", "add_dice", "inject_descriptions"]}
@@ -8173,9 +8224,9 @@ return this.__repr__();
             var self = this;
             var spells, tooltip_href, tooltip_url, spell;
             spells = stat_block.find(self._base + "__description-blocks a.spell-tooltip");
-            var ρσ_Iter18 = ρσ_Iterable(spells);
-            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
-                spell = ρσ_Iter18[ρσ_Index18];
+            var ρσ_Iter20 = ρσ_Iterable(spells);
+            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
+                spell = ρσ_Iter20[ρσ_Index20];
                 tooltip_href = $(spell).attr("data-tooltip-href");
                 tooltip_url = re.sub("-tooltip.*$", "/tooltip", tooltip_href);
                 self.injectSpellRolls(spell, tooltip_url);
@@ -8224,9 +8275,9 @@ return this.__repr__();
 
         function abbreviationToAbility(abbr) {
             var ability;
-            var ρσ_Iter19 = ρσ_Iterable(ability_abbreviations);
-            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
-                ability = ρσ_Iter19[ρσ_Index19];
+            var ρσ_Iter21 = ρσ_Iterable(ability_abbreviations);
+            for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
+                ability = ρσ_Iter21[ρσ_Index21];
                 if ((ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === abbr || typeof ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === "object" && ρσ_equals(ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability], abbr))) {
                     return ability;
                 }
@@ -8240,8 +8291,8 @@ return this.__repr__();
         function propertyListToDict(propList) {
             var properties, label, value, i;
             properties = {};
-            for (var ρσ_Index20 = 0; ρσ_Index20 < propList.length; ρσ_Index20++) {
-                i = ρσ_Index20;
+            for (var ρσ_Index22 = 0; ρσ_Index22 < propList.length; ρσ_Index22++) {
+                i = ρσ_Index22;
                 label = propList.eq(i).find(".ct-property-list__property-label").text().slice(0, -1);
                 value = propList.eq(i).find(".ct-property-list__property-content").text();
                 properties[(typeof label === "number" && label < 0) ? properties.length + label : label] = value;
@@ -8266,8 +8317,8 @@ return this.__repr__();
                 return $(selector).text();
             }
             description = "";
-            for (var ρσ_Index21 = 0; ρσ_Index21 < description_p.length; ρσ_Index21++) {
-                i = ρσ_Index21;
+            for (var ρσ_Index23 = 0; ρσ_Index23 < description_p.length; ρσ_Index23++) {
+                i = ρσ_Index23;
                 if (len(description) > 0) {
                     description += separator;
                 }
@@ -8284,8 +8335,8 @@ return this.__repr__();
         function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
             var items, to_hit, i;
             items = $(items_selector);
-            for (var ρσ_Index22 = 0; ρσ_Index22 < items.length; ρσ_Index22++) {
-                i = ρσ_Index22;
+            for (var ρσ_Index24 = 0; ρσ_Index24 < items.length; ρσ_Index24++) {
+                i = ρσ_Index24;
                 if (ρσ_equals(items.eq(i).find(name_selector).text(), name_to_match)) {
                     to_hit = items.eq(i).find(tohit_selector);
                     if (to_hit.length > 0) {
@@ -8305,9 +8356,9 @@ return this.__repr__();
         function damagesToCrits(damages) {
             var crits, match, damage;
             crits = ρσ_list_decorate([]);
-            var ρσ_Iter23 = ρσ_Iterable(damages);
-            for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
-                damage = ρσ_Iter23[ρσ_Index23];
+            var ρσ_Iter25 = ρσ_Iterable(damages);
+            for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
+                damage = ρσ_Iter25[ρσ_Index25];
                 match = re.search("[0-9]*d[0-9]+(ro<2)?", damage);
                 if ((typeof match !== "undefined" && match !== null)) {
                     crits.append(match.group(0));
@@ -8392,9 +8443,9 @@ return this.__repr__();
                     crits = damagesToCrits(damages, damage_types);
                     crit_damages = ρσ_list_decorate([]);
                     crit_damage_types = ρσ_list_decorate([]);
-                    var ρσ_Iter24 = ρσ_Iterable(enumerate(crits));
-                    for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
-                        ρσ_unpack = ρσ_Iter24[ρσ_Index24];
+                    var ρσ_Iter26 = ρσ_Iterable(enumerate(crits));
+                    for (var ρσ_Index26 = 0; ρσ_Index26 < ρσ_Iter26.length; ρσ_Index26++) {
+                        ρσ_unpack = ρσ_Iter26[ρσ_Index26];
                         i = ρσ_unpack[0];
                         dmg = ρσ_unpack[1];
                         if ((dmg !== "" && (typeof dmg !== "object" || ρσ_not_equals(dmg, "")))) {
@@ -8404,9 +8455,9 @@ return this.__repr__();
                     }
                     if (brutal > 0) {
                         highest_dice = 0;
-                        var ρσ_Iter25 = ρσ_Iterable(crit_damages);
-                        for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
-                            dmg = ρσ_Iter25[ρσ_Index25];
+                        var ρσ_Iter27 = ρσ_Iterable(crit_damages);
+                        for (var ρσ_Index27 = 0; ρσ_Index27 < ρσ_Iter27.length; ρσ_Index27++) {
+                            dmg = ρσ_Iter27[ρσ_Index27];
                             match = re.search("[0-9]*d([0-9]+)", dmg);
                             if ((typeof match !== "undefined" && match !== null)) {
                                 sides = int(match.group(1));
@@ -8450,9 +8501,9 @@ return this.__repr__();
                 ρσ_d["whisper"] = whisper;
                 return ρσ_d;
             }).call(this);
-            var ρσ_Iter26 = ρσ_Iterable(args);
-            for (var ρσ_Index26 = 0; ρσ_Index26 < ρσ_Iter26.length; ρσ_Index26++) {
-                key = ρσ_Iter26[ρσ_Index26];
+            var ρσ_Iter28 = ρσ_Iterable(args);
+            for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
+                key = ρσ_Iter28[ρσ_Index28];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
             console.log("Sending message: ", req);
@@ -8580,8 +8631,8 @@ return this.__repr__();
             $(".ct-reset-pane__hitdie-heading").append(button);
             hitdice = $(".ct-reset-pane__hitdie");
             multiclass = hitdice.length > 1;
-            for (var ρσ_Index27 = 0; ρσ_Index27 < hitdice.length; ρσ_Index27++) {
-                i = ρσ_Index27;
+            for (var ρσ_Index29 = 0; ρσ_Index29 < hitdice.length; ρσ_Index29++) {
+                i = ρσ_Index29;
                 cb = (function() {
                     var ρσ_anonfunc = function (rollCallback, index) {
                         return (function() {
@@ -8653,8 +8704,8 @@ return this.__repr__();
             $(".ct-beyond20-roll-display").remove();
             $(".ct-beyond20-custom-icon").remove();
             custom_rolls = $("u.ct-beyond20-custom-roll");
-            for (var ρσ_Index28 = 0; ρσ_Index28 < custom_rolls.length; ρσ_Index28++) {
-                i = ρσ_Index28;
+            for (var ρσ_Index30 = 0; ρσ_Index30 < custom_rolls.length; ρσ_Index30++) {
+                i = ρσ_Index30;
                 custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
             }
         };
@@ -8663,9 +8714,9 @@ return this.__repr__();
             var children, child, text;
             if (node.hasChildNodes()) {
                 children = list(node.childNodes);
-                var ρσ_Iter29 = ρσ_Iterable(children);
-                for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
-                    child = ρσ_Iter29[ρσ_Index29];
+                var ρσ_Iter31 = ρσ_Iterable(children);
+                for (var ρσ_Index31 = 0; ρσ_Index31 < ρσ_Iter31.length; ρσ_Index31++) {
+                    child = ρσ_Iter31[ρσ_Index31];
                     if ($(child).hasClass("ct-beyond20-roll")) {
                         continue;
                     }
@@ -8705,9 +8756,9 @@ return this.__repr__();
                 return ρσ_anonfunc;
             })();
             items = $(selector);
-            var ρσ_Iter30 = ρσ_Iterable(items);
-            for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
-                item = ρσ_Iter30[ρσ_Index30];
+            var ρσ_Iter32 = ρσ_Iterable(items);
+            for (var ρσ_Index32 = 0; ρσ_Index32 < ρσ_Iter32.length; ρσ_Index32++) {
+                item = ρσ_Iter32[ρσ_Index32];
                 recursiveDiceReplace(item, replaceCB);
             }
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");
