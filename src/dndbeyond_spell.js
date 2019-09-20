@@ -8070,7 +8070,7 @@ return this.__repr__();
         });
         Monster.prototype.lookForActions = function lookForActions(stat_block, add_dice, inject_descriptions) {
             var self = this;
-            var blocks, makeCB, section_name, actions, firstChild, action_name, description, nextSibling, roll_properties, id, action, block, handleAction;
+            var blocks, makeCB, section_name, actions, firstChild, action_name, description, nextSibling, roll_properties, id, action, block, handleAction, attributes;
             blocks = stat_block.find(self._base + "__description-blocks " + self._base + "__description-block");
             makeCB = (function() {
                 var ρσ_anonfunc = function (props) {
@@ -8132,7 +8132,7 @@ return this.__repr__();
             handleAction = (function() {
                 var ρσ_anonfunc = function (action_name, block, action) {
                     var description, roll_properties, id;
-                    description = action.text();
+                    description = $(action).text();
                     if ((action_name[action_name.length-1] === "." || typeof action_name[action_name.length-1] === "object" && ρσ_equals(action_name[action_name.length-1], "."))) {
                         action_name = action_name.slice(0, -1);
                     }
@@ -8157,18 +8157,30 @@ return this.__repr__();
                 });
                 return ρσ_anonfunc;
             })();
-            blocks = stat_block.find(self._base + "__feature");
+            blocks = stat_block.find(self._base + "__component-block");
             var ρσ_Iter18 = ρσ_Iterable(blocks);
             for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
                 block = ρσ_Iter18[ρσ_Index18];
+                action_name = $(block).find(self._base + "__component-block-heading").text();
+                attributes = $(block).find(self._base + "__component-block-content " + self._base + "__attribute-value");
+                var ρσ_Iter19 = ρσ_Iterable(attributes);
+                for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
+                    action = ρσ_Iter19[ρσ_Index19];
+                    handleAction(action_name, block, action);
+                }
+            }
+            blocks = stat_block.find(self._base + "__feature");
+            var ρσ_Iter20 = ρσ_Iterable(blocks);
+            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
+                block = ρσ_Iter20[ρσ_Index20];
                 action_name = $(block).find(self._base + "__feature-label").text();
                 action = $(block).find(self._base + "__feature-value");
                 handleAction(action_name, block, action);
             }
             blocks = stat_block.find(self._base + "__action-station-block");
-            var ρσ_Iter19 = ρσ_Iterable(blocks);
-            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
-                block = ρσ_Iter19[ρσ_Index19];
+            var ρσ_Iter21 = ρσ_Iterable(blocks);
+            for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
+                block = ρσ_Iter21[ρσ_Index21];
                 action_name = $(block).find(self._base + "__action-station-block-heading").text();
                 action = $(block).find(self._base + "__action-station-block-content " + self._base + "__attribute-value");
                 handleAction(action_name, block, action);
@@ -8223,9 +8235,9 @@ return this.__repr__();
             var self = this;
             var spells, tooltip_href, tooltip_url, spell;
             spells = stat_block.find(self._base + "__description-blocks a.spell-tooltip");
-            var ρσ_Iter20 = ρσ_Iterable(spells);
-            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
-                spell = ρσ_Iter20[ρσ_Index20];
+            var ρσ_Iter22 = ρσ_Iterable(spells);
+            for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
+                spell = ρσ_Iter22[ρσ_Index22];
                 tooltip_href = $(spell).attr("data-tooltip-href");
                 tooltip_url = re.sub("-tooltip.*$", "/tooltip", tooltip_href);
                 self.injectSpellRolls(spell, tooltip_url);
@@ -8274,9 +8286,9 @@ return this.__repr__();
 
         function abbreviationToAbility(abbr) {
             var ability;
-            var ρσ_Iter21 = ρσ_Iterable(ability_abbreviations);
-            for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
-                ability = ρσ_Iter21[ρσ_Index21];
+            var ρσ_Iter23 = ρσ_Iterable(ability_abbreviations);
+            for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
+                ability = ρσ_Iter23[ρσ_Index23];
                 if ((ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === abbr || typeof ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === "object" && ρσ_equals(ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability], abbr))) {
                     return ability;
                 }
@@ -8290,8 +8302,8 @@ return this.__repr__();
         function propertyListToDict(propList) {
             var properties, label, value, i;
             properties = {};
-            for (var ρσ_Index22 = 0; ρσ_Index22 < propList.length; ρσ_Index22++) {
-                i = ρσ_Index22;
+            for (var ρσ_Index24 = 0; ρσ_Index24 < propList.length; ρσ_Index24++) {
+                i = ρσ_Index24;
                 label = propList.eq(i).find(".ct-property-list__property-label").text().slice(0, -1);
                 value = propList.eq(i).find(".ct-property-list__property-content").text();
                 properties[(typeof label === "number" && label < 0) ? properties.length + label : label] = value;
@@ -8316,8 +8328,8 @@ return this.__repr__();
                 return $(selector).text();
             }
             description = "";
-            for (var ρσ_Index23 = 0; ρσ_Index23 < description_p.length; ρσ_Index23++) {
-                i = ρσ_Index23;
+            for (var ρσ_Index25 = 0; ρσ_Index25 < description_p.length; ρσ_Index25++) {
+                i = ρσ_Index25;
                 if (len(description) > 0) {
                     description += separator;
                 }
@@ -8334,8 +8346,8 @@ return this.__repr__();
         function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
             var items, to_hit, i;
             items = $(items_selector);
-            for (var ρσ_Index24 = 0; ρσ_Index24 < items.length; ρσ_Index24++) {
-                i = ρσ_Index24;
+            for (var ρσ_Index26 = 0; ρσ_Index26 < items.length; ρσ_Index26++) {
+                i = ρσ_Index26;
                 if (ρσ_equals(items.eq(i).find(name_selector).text(), name_to_match)) {
                     to_hit = items.eq(i).find(tohit_selector);
                     if (to_hit.length > 0) {
@@ -8355,9 +8367,9 @@ return this.__repr__();
         function damagesToCrits(damages) {
             var crits, match, damage;
             crits = ρσ_list_decorate([]);
-            var ρσ_Iter25 = ρσ_Iterable(damages);
-            for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
-                damage = ρσ_Iter25[ρσ_Index25];
+            var ρσ_Iter27 = ρσ_Iterable(damages);
+            for (var ρσ_Index27 = 0; ρσ_Index27 < ρσ_Iter27.length; ρσ_Index27++) {
+                damage = ρσ_Iter27[ρσ_Index27];
                 match = re.search("[0-9]*d[0-9]+(ro<2)?", damage);
                 if ((typeof match !== "undefined" && match !== null)) {
                     crits.append(match.group(0));
@@ -8442,9 +8454,9 @@ return this.__repr__();
                     crits = damagesToCrits(damages, damage_types);
                     crit_damages = ρσ_list_decorate([]);
                     crit_damage_types = ρσ_list_decorate([]);
-                    var ρσ_Iter26 = ρσ_Iterable(enumerate(crits));
-                    for (var ρσ_Index26 = 0; ρσ_Index26 < ρσ_Iter26.length; ρσ_Index26++) {
-                        ρσ_unpack = ρσ_Iter26[ρσ_Index26];
+                    var ρσ_Iter28 = ρσ_Iterable(enumerate(crits));
+                    for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
+                        ρσ_unpack = ρσ_Iter28[ρσ_Index28];
                         i = ρσ_unpack[0];
                         dmg = ρσ_unpack[1];
                         if ((dmg !== "" && (typeof dmg !== "object" || ρσ_not_equals(dmg, "")))) {
@@ -8454,9 +8466,9 @@ return this.__repr__();
                     }
                     if (brutal > 0) {
                         highest_dice = 0;
-                        var ρσ_Iter27 = ρσ_Iterable(crit_damages);
-                        for (var ρσ_Index27 = 0; ρσ_Index27 < ρσ_Iter27.length; ρσ_Index27++) {
-                            dmg = ρσ_Iter27[ρσ_Index27];
+                        var ρσ_Iter29 = ρσ_Iterable(crit_damages);
+                        for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
+                            dmg = ρσ_Iter29[ρσ_Index29];
                             match = re.search("[0-9]*d([0-9]+)", dmg);
                             if ((typeof match !== "undefined" && match !== null)) {
                                 sides = int(match.group(1));
@@ -8500,9 +8512,9 @@ return this.__repr__();
                 ρσ_d["whisper"] = whisper;
                 return ρσ_d;
             }).call(this);
-            var ρσ_Iter28 = ρσ_Iterable(args);
-            for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
-                key = ρσ_Iter28[ρσ_Index28];
+            var ρσ_Iter30 = ρσ_Iterable(args);
+            for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
+                key = ρσ_Iter30[ρσ_Index30];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
             console.log("Sending message: ", req);
@@ -8630,8 +8642,8 @@ return this.__repr__();
             $(".ct-reset-pane__hitdie-heading").append(button);
             hitdice = $(".ct-reset-pane__hitdie");
             multiclass = hitdice.length > 1;
-            for (var ρσ_Index29 = 0; ρσ_Index29 < hitdice.length; ρσ_Index29++) {
-                i = ρσ_Index29;
+            for (var ρσ_Index31 = 0; ρσ_Index31 < hitdice.length; ρσ_Index31++) {
+                i = ρσ_Index31;
                 cb = (function() {
                     var ρσ_anonfunc = function (rollCallback, index) {
                         return (function() {
@@ -8703,8 +8715,8 @@ return this.__repr__();
             $(".ct-beyond20-roll-display").remove();
             $(".ct-beyond20-custom-icon").remove();
             custom_rolls = $("u.ct-beyond20-custom-roll");
-            for (var ρσ_Index30 = 0; ρσ_Index30 < custom_rolls.length; ρσ_Index30++) {
-                i = ρσ_Index30;
+            for (var ρσ_Index32 = 0; ρσ_Index32 < custom_rolls.length; ρσ_Index32++) {
+                i = ρσ_Index32;
                 custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
             }
         };
@@ -8713,9 +8725,9 @@ return this.__repr__();
             var children, child, text;
             if (node.hasChildNodes()) {
                 children = list(node.childNodes);
-                var ρσ_Iter31 = ρσ_Iterable(children);
-                for (var ρσ_Index31 = 0; ρσ_Index31 < ρσ_Iter31.length; ρσ_Index31++) {
-                    child = ρσ_Iter31[ρσ_Index31];
+                var ρσ_Iter33 = ρσ_Iterable(children);
+                for (var ρσ_Index33 = 0; ρσ_Index33 < ρσ_Iter33.length; ρσ_Index33++) {
+                    child = ρσ_Iter33[ρσ_Index33];
                     if ($(child).hasClass("ct-beyond20-roll")) {
                         continue;
                     }
@@ -8755,9 +8767,9 @@ return this.__repr__();
                 return ρσ_anonfunc;
             })();
             items = $(selector);
-            var ρσ_Iter32 = ρσ_Iterable(items);
-            for (var ρσ_Index32 = 0; ρσ_Index32 < ρσ_Iter32.length; ρσ_Index32++) {
-                item = ρσ_Iter32[ρσ_Index32];
+            var ρσ_Iter34 = ρσ_Iterable(items);
+            for (var ρσ_Index34 = 0; ρσ_Index34 < ρσ_Iter34.length; ρσ_Index34++) {
+                item = ρσ_Iter34[ρσ_Index34];
                 recursiveDiceReplace(item, replaceCB);
             }
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");
