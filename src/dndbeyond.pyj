@@ -557,7 +557,7 @@ class Monster(CharacterBase):
                            "description": description}
 
         attackInfo = self.parseAttackInfo(description)
-        console.log("Attack info for ", name, attackInfo)
+        #console.log("Attack info for ", name, attackInfo)
         if attackInfo:
             attack_type, to_hit, reach_range = attackInfo
             roll_properties["to-hit"] = to_hit
@@ -566,7 +566,7 @@ class Monster(CharacterBase):
 
 
         hitInfo = self.parseHitInfo(description)
-        console.log("Hit info for ", name, hitInfo)
+        #console.log("Hit info for ", name, hitInfo)
         if hitInfo:
             # Can't use '(damages, damage_types, save) = hitInfo' because rapydscript flattens
             # the lists within the list and assigns the strings to each of the 3 vars instead of lists
@@ -647,6 +647,10 @@ class Monster(CharacterBase):
             action_name = $(block).find(self._base + "__component-block-heading").text()
             attributes = $(block).find(self._base + "__component-block-content " + self._base + "__attribute-value")
             for action in attributes:
+                description = $(action).text()
+                # HACK: Skip ship movement to  avoid having a "-5 ft speed per 25 damage taken" inject dice rolls on '-5'
+                if re.search("-\d+ ft. speed", description) is not None:
+                    continue
                 handleAction(action_name, block, action)
 
         blocks = stat_block.find(self._base + "__feature")

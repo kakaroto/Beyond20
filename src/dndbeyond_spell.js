@@ -8018,7 +8018,6 @@ return this.__repr__();
                 return ρσ_d;
             }).call(this);
             attackInfo = self.parseAttackInfo(description);
-            console.log("Attack info for ", name, attackInfo);
             if (attackInfo) {
                 ρσ_unpack = attackInfo;
 ρσ_unpack = ρσ_unpack_asarray(3, ρσ_unpack);
@@ -8030,7 +8029,6 @@ return this.__repr__();
                 roll_properties[ρσ_bound_index(((attack_type === "Melee" || typeof attack_type === "object" && ρσ_equals(attack_type, "Melee"))) ? "reach" : "range", roll_properties)] = reach_range;
             }
             hitInfo = self.parseHitInfo(description);
-            console.log("Hit info for ", name, hitInfo);
             if (hitInfo) {
                 damages = hitInfo[0];
                 damage_types = hitInfo[1];
@@ -8166,6 +8164,10 @@ return this.__repr__();
                 var ρσ_Iter19 = ρσ_Iterable(attributes);
                 for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
                     action = ρσ_Iter19[ρσ_Index19];
+                    description = $(action).text();
+                    if (re.search("-\\d+ ft. speed", description) !== null) {
+                        continue;
+                    }
                     handleAction(action_name, block, action);
                 }
             }
