@@ -522,10 +522,9 @@ class Monster(CharacterBase):
         damages = None
         save = None
         hit_idx = description.indexOf("Hit:")
+        hit = description
         if hit_idx > 0:
             hit = description[hit_idx:]
-        else:
-            return None
         damage_regexp = "([\w]* )(?:([0-9]+))?(?: *\(?([0-9]*d[0-9]+(?:\s*[-+]\s*[0-9]+)?)\)?)? ([\w ]+?) damage"
         damage_matches = re.finditer(damage_regexp, hit)
         damages = []
@@ -543,6 +542,8 @@ class Monster(CharacterBase):
         m = re.search("DC ([0-9]+) (.*?) saving throw", hit)
         if m:
             save = (m.group(2), m.group(1))
+        if damages.length == 0 and save is None:
+            return None
         return (damages, damage_types, save)
 
     def buildAttackRoll(self, name, description):
@@ -551,15 +552,16 @@ class Monster(CharacterBase):
                            "description": description}
 
         attackInfo = self.parseAttackInfo(description)
-        if not attackInfo:
-            return None
-        attack_type, to_hit, reach_range = attackInfo
-        roll_properties["to-hit"] = to_hit
-        roll_properties["attack-type"] = attack_type
-        roll_properties["reach" if attack_type == "Melee" else "range"] = reach_range
+        #console.log("Attack info for ", name, attackInfo)
+        if attackInfo:
+            attack_type, to_hit, reach_range = attackInfo
+            roll_properties["to-hit"] = to_hit
+            roll_properties["attack-type"] = attack_type
+            roll_properties["reach" if attack_type == "Melee" else "range"] = reach_range
 
 
         hitInfo = self.parseHitInfo(description)
+        #console.log("Hit info for ", name, hitInfo)
         if hitInfo:
             # Can't use '(damages, damage_types, save) = hitInfo' because rapydscript flattens
             # the lists within the list and assigns the strings to each of the 3 vars instead of lists
@@ -582,10 +584,13 @@ class Monster(CharacterBase):
                 roll_properties["save-ability"] = save[0]
                 roll_properties["save-dc"] = save[1]
  
-        return roll_properties
+        if attackInfo or hitInfo:
+            return roll_properties
+        else:
+            return None
 
     def lookForActions(self, stat_block, add_dice, inject_descriptions):
-        blocks = stat_block.find(self._base + "__description-block")
+        blocks = stat_block.find(self._base + "__description-blocks " + self._base + "__description-block")
         makeCB = def(props):
             return def():
                 sendRoll(self, "attack", "1d20" + props["to-hit"], props)
@@ -618,6 +623,8 @@ class Monster(CharacterBase):
                         $("#" + id).css({"float": "", "text-align": ""})
                 if inject_descriptions:
                     injectDiceToRolls(action, self, action_name)
+
+
 
     def injectSpellRolls(self, element, url):
         icon16 = chrome.extension.getURL("images/icons/icon16.png")

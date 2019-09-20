@@ -7970,10 +7970,9 @@ return this.__repr__();
             damages = null;
             save = null;
             hit_idx = description.indexOf("Hit:");
+            hit = description;
             if (hit_idx > 0) {
                 hit = description.slice(hit_idx);
-            } else {
-                return null;
             }
             damage_regexp = "([\\w]* )(?:([0-9]+))?(?: *\\(?([0-9]*d[0-9]+(?:\\s*[-+]\\s*[0-9]+)?)\\)?)? ([\\w ]+?) damage";
             damage_matches = re.finditer(damage_regexp, hit);
@@ -7996,6 +7995,9 @@ return this.__repr__();
             if (m) {
                 save = [m.group(2), m.group(1)];
             }
+            if ((damages.length === 0 || typeof damages.length === "object" && ρσ_equals(damages.length, 0)) && save === null) {
+                return null;
+            }
             return [damages, damage_types, save];
         };
         if (!Monster.prototype.parseHitInfo.__argnames__) Object.defineProperties(Monster.prototype.parseHitInfo, {
@@ -8012,17 +8014,16 @@ return this.__repr__();
                 return ρσ_d;
             }).call(this);
             attackInfo = self.parseAttackInfo(description);
-            if (!attackInfo) {
-                return null;
-            }
-            ρσ_unpack = attackInfo;
+            if (attackInfo) {
+                ρσ_unpack = attackInfo;
 ρσ_unpack = ρσ_unpack_asarray(3, ρσ_unpack);
-            attack_type = ρσ_unpack[0];
-            to_hit = ρσ_unpack[1];
-            reach_range = ρσ_unpack[2];
-            roll_properties["to-hit"] = to_hit;
-            roll_properties["attack-type"] = attack_type;
-            roll_properties[ρσ_bound_index(((attack_type === "Melee" || typeof attack_type === "object" && ρσ_equals(attack_type, "Melee"))) ? "reach" : "range", roll_properties)] = reach_range;
+                attack_type = ρσ_unpack[0];
+                to_hit = ρσ_unpack[1];
+                reach_range = ρσ_unpack[2];
+                roll_properties["to-hit"] = to_hit;
+                roll_properties["attack-type"] = attack_type;
+                roll_properties[ρσ_bound_index(((attack_type === "Melee" || typeof attack_type === "object" && ρσ_equals(attack_type, "Melee"))) ? "reach" : "range", roll_properties)] = reach_range;
+            }
             hitInfo = self.parseHitInfo(description);
             if (hitInfo) {
                 damages = hitInfo[0];
@@ -8052,7 +8053,11 @@ return this.__repr__();
                     roll_properties["save-dc"] = save[1];
                 }
             }
-            return roll_properties;
+            if (attackInfo || hitInfo) {
+                return roll_properties;
+            } else {
+                return null;
+            }
         };
         if (!Monster.prototype.buildAttackRoll.__argnames__) Object.defineProperties(Monster.prototype.buildAttackRoll, {
             __argnames__ : {value: ["name", "description"]}
@@ -8060,7 +8065,7 @@ return this.__repr__();
         Monster.prototype.lookForActions = function lookForActions(stat_block, add_dice, inject_descriptions) {
             var self = this;
             var blocks, makeCB, section_name, actions, firstChild, action_name, description, nextSibling, roll_properties, id, action, block;
-            blocks = stat_block.find(self._base + "__description-block");
+            blocks = stat_block.find(self._base + "__description-blocks " + self._base + "__description-block");
             makeCB = (function() {
                 var ρσ_anonfunc = function (props) {
                     return function () {
