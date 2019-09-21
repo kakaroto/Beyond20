@@ -22,7 +22,8 @@ all:  $(PYJ_DEPS:=-cached) $(JS_FILES)
 $(JS_FILES): $(PYJ_DEPS)
 
 build: all
-	rm -f *~ */*~ src/*.pyj-cached
+	rm -f *~ */*~ */*/*~ src/*.pyj-cached
+	rm -rf docs/_site
 	web-ext build
 
 clean:

@@ -4,3 +4,4 @@ web-ext-artifacts
 .vscode
 Gemfile*
 package-lock.json
+manifest_chrome.json
