@@ -1,6 +1,6 @@
 Beyond20 integrates the D&D Beyond Character Sheet seamlessly into [Roll 20](https://roll20.net) as well as [Foundry VTT](http://foundryvtt.com).
 
-![Cast on Roll20](images/cast-on-roll20.png)
+[![Cast on Roll20](images/cast-on-vtt.png)](/install)
 
 A roll button will be automatically added to D&D Beyond's character sheet sidebars (abilities, skill checks, saving throws, weapon attacks, spells, class features, and more) that lets you either roll the dice directly into the VTT chat, or display the spell card, feature or equipment item for others to see.
 
