@@ -8440,7 +8440,7 @@ return this.__repr__();
         });
         Monster.prototype.lookForActions = function lookForActions(stat_block, add_dice, inject_descriptions) {
             var self = this;
-            var blocks, makeCB, section_name, actions, firstChild, action_name, description, nextSibling, roll_properties, id, action, block, handleAction, attributes;
+            var blocks, makeCB, actions, firstChild, action_name, description, nextSibling, roll_properties, id, action, block, handleAction, attributes;
             blocks = stat_block.find(self._base + "__description-blocks " + self._base + "__description-block");
             makeCB = (function() {
                 var ρσ_anonfunc = function (props) {
@@ -8456,7 +8456,6 @@ return this.__repr__();
             var ρσ_Iter16 = ρσ_Iterable(blocks);
             for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
                 block = ρσ_Iter16[ρσ_Index16];
-                section_name = $(block).find(self._base + "__description-block-heading").text();
                 actions = $(block).find(self._base + "__description-block-content p");
                 var ρσ_Iter17 = ρσ_Iterable(actions);
                 for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
@@ -8476,7 +8475,7 @@ return this.__repr__();
                     if ((action_name[action_name.length-1] === "." || typeof action_name[action_name.length-1] === "object" && ρσ_equals(action_name[action_name.length-1], "."))) {
                         action_name = action_name.slice(0, -1);
                     }
-                    if (add_dice && (section_name === "Actions" || typeof section_name === "object" && ρσ_equals(section_name, "Actions"))) {
+                    if (add_dice) {
                         description = "";
                         nextSibling = firstChild;
                         while (nextSibling !== null) {

@@ -600,7 +600,6 @@ class Monster(CharacterBase):
             return def():
                 sendRoll(self, "attack", "1d20" + props["to-hit"], props)
         for block in blocks:
-            section_name = $(block).find(self._base + "__description-block-heading").text()
             actions = $(block).find(self._base + "__description-block-content p")
             for action in actions:
                 console.log("Found action: ", action)
@@ -615,7 +614,7 @@ class Monster(CharacterBase):
                     continue
                 if action_name[-1] == ".":
                     action_name = action_name[:-1]
-                if add_dice and section_name == "Actions":
+                if add_dice:
                     description = ""
                     nextSibling = firstChild
                     while nextSibling is not None:
