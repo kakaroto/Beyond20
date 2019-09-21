@@ -5,6 +5,10 @@
    position: relative;
 }
 
+.beyond20-roll-total {
+    text-decoration: underline;
+}
+
 .beyond20-message details summary, .beyond20-title {
     font-style: italic;
     color: #500;
