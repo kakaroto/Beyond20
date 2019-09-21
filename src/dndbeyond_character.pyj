@@ -436,7 +436,7 @@ def checkAndInjectDiceToRolls(selector, name=""):
 def addRollButtonEx(paneClass, where, small=False, append=False, prepend=False, image=True, text="Beyond 20"):
     callback = def():
         execute(paneClass)
-    addRollButton(callback, where, small, append, prepend, image, text)
+    addRollButton(callback, where, small=small, append=append, prepend=prepend, image=image, text=text)
 
 def addDisplayButtonEx(paneClass, where, text="Display in VTT"):
     callback = def():

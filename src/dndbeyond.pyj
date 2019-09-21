@@ -637,11 +637,12 @@ class Monster(CharacterBase):
                 roll_properties = self.buildAttackRoll(action_name, description)
                 if roll_properties:
                     id = addRollButton(makeCB(roll_properties), block,
-                                        small=True, prepend=True, image=True, text=action_name)
-                    $("#" + id).css({"float": "", "text-align": ""})
+                                        small=True, before=True, image=True, text=action_name)
+                    $("#" + id).css({"float": "", "text-align": "", "margin-top": "15px"})
             if inject_descriptions:
                 injectDiceToRolls(action, self, action_name)
 
+        # Parse Vehicle (boats) weapons
         blocks = stat_block.find(self._base + "__component-block")
         for block in blocks:
             action_name = $(block).find(self._base + "__component-block-heading").text()
@@ -653,15 +654,32 @@ class Monster(CharacterBase):
                     continue
                 handleAction(action_name, block, action)
 
-        blocks = stat_block.find(self._base + "__feature")
+        # Parse Vehicle (boats) weapons (in character extra)
+        blocks = stat_block.find(self._base + "-component")
+        for block in blocks:
+            action_name = $(block).find(self._base + "__section-header").text()
+            actions = $(block).find(self._base + "-component__actions")
+            # We can't parse each action separately because the entire block is interactive.
+            handleAction(action_name, block, actions)
+
+        # Parse Vehicle (infernal machines) features
+        blocks = stat_block.find(self._base + "__feature," + self._base + "__features-feature")
         for block in blocks:
             action_name = $(block).find(self._base + "__feature-label").text()
             action = $(block).find(self._base + "__feature-value")
+            if action_name == "" and action.length == 0:
+                action_name = $(block).find(self._base + "__features-feature-name").text()
+                action = $(block).find(self._base + "__features-feature-description")
             handleAction(action_name, block, action)
-        blocks = stat_block.find(self._base + "__action-station-block")
+
+        # Parse Vehicle (infernal machines) action stations
+        blocks = stat_block.find(self._base + "__action-station-block," + self._base + "-action-station")
         for block in blocks:
             action_name = $(block).find(self._base + "__action-station-block-heading").text()
             action = $(block).find(self._base + "__action-station-block-content " + self._base + "__attribute-value")
+            if action_name == "" and action.length == 0:
+                action_name = $(block).find(self._base + "-action-station__heading").text()
+                action = $(block).find(self._base + "-action-station__action")
             handleAction(action_name, block, action)
 
 
@@ -850,7 +868,7 @@ def isHitDieButtonAdded():
 
 button_class = "ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button"
 button_class_small = button_class + " character-button-small"
-def addRollButton(callback, where, small=False, append=False, prepend=False, image=True, text="Beyond 20"):
+def addRollButton(callback, where, small=False, append=False, prepend=False, before=False, image=True, text="Beyond 20"):
     icon32 = chrome.extension.getURL("images/dice24.png")
     icon16 = chrome.extension.getURL("images/dice16.png")
     id = uuid.uuid4()
@@ -866,6 +884,8 @@ def addRollButton(callback, where, small=False, append=False, prepend=False, ima
         $(where).append(button)
     elif prepend:
         $(where).prepend(button)
+    elif before:
+        $(where).before(button)
     else:
         $(where).after(button)
     $("#" + str(id)).css({"float": "right",
