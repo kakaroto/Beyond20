@@ -2,10 +2,10 @@ v0.6
 ===
 
 * **Feature**: Roll Spells from Monster stat blocks without opening the spell in a separate window
-* **Feature**: Add roll buttons on non-weapon actions of monster stat blocks
+* **Feature**: Add roll buttons on non-weapon actions of monster stat blocks (Legendary actions or a Dragon's Fearful Presence/Breath attack for example)
 * **Feature**: Add support for Vehicle/Ship weapons
 * **Feature**: Add support for Infernal machines from *Baldur's Gate: Descent to Avernus*
-* **Feature**: Add escape DC parsing in monster stat blocks.
+* **Feature**: Add escape DC parsing in monster stat blocks (when grappling).
 * **Feature**: Alert when trying to roll while no VTT window is found or configured to receive the rolls
 * **Feature**: Add a "Display in VTT" button for rollable actions
 * **Feature**: Add support for rerolling 1 and 2 damage dice for Great Weapon Fighting
