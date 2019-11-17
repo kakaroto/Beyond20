@@ -34,27 +34,27 @@
     "content_scripts": [{
 	"matches": [ "*://*.dndbeyond.com/*characters/*" ],
 	"js": [
-	    "src/jquery-3.4.1.min.js", "src/dndbeyond_character.js"
+	    "libs/jquery-3.4.1.min.js", "src/dndbeyond_character.js"
 	]
     },{
 	"matches": [ "*://*.dndbeyond.com/monsters/*" ],
 	"js": [
-	    "src/jquery-3.4.1.min.js", "src/dndbeyond_monster.js"
+	    "libs/jquery-3.4.1.min.js", "src/dndbeyond_monster.js"
 	]
     },{
 	"matches": [ "*://*.dndbeyond.com/vehicles/*" ],
 	"js": [
-	    "src/jquery-3.4.1.min.js", "src/dndbeyond_vehicle.js"
+	    "libs/jquery-3.4.1.min.js", "src/dndbeyond_vehicle.js"
 	]
     },{
 	"matches": [ "*://*.dndbeyond.com/spells/*" ],
 	"js": [
-	    "src/jquery-3.4.1.min.js", "src/dndbeyond_spell.js"
+	    "libs/jquery-3.4.1.min.js", "src/dndbeyond_spell.js"
 	]
     },{
 	"matches": [  "*://*.dndbeyond.com/my-encounters", "*://*.dndbeyond.com/encounters/*" ],
 	"js": [
-	    "src/jquery-3.4.1.min.js", "src/dndbeyond_encounter.js"
+	    "libs/jquery-3.4.1.min.js", "src/dndbeyond_encounter.js"
 	]
     },{
 	"matches": [ "*://app.roll20.net/editor/" ],
