@@ -75,7 +75,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Bard: Jack of All Trades
 * Barbarian: Rage
 * Barbarian: Brutal Critical
-* Half-Orc: Save Attacks
+* Half-Orc: Savage Attacks
 * Feat: Sharpshooter
 * Feat: Great Weapon Master
 * Fighting Style: Great Weapon Fighting
@@ -117,7 +117,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
   * Add Jack of all Trades bonus to raw ability checks (Only Bards >= 2nd level)
   * Apply Sharpshooter Feat for the next roll (Only if Feat is available)
   * Apply Great Weapon Master Feat for the next roll (Only if Feat is available)
-  * Add Brutal Critical and Save Attacks damage to critical hits (Only Barbarians with the feature, or Half-Orcs)
+  * Add Brutal Critical and Savage Attacks damage to critical hits (Only Barbarians with the feature, or Half-Orcs)
   * Add Rage damage and advantage on STR checks (Only Barbarians)
 
 ## Roll20 Character Sheet Templates

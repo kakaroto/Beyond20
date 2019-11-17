@@ -5,3 +5,4 @@ web-ext-artifacts
 Gemfile*
 package-lock.json
 manifest_chrome.json
+docs/run.sh
