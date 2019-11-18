@@ -1,4 +1,5 @@
 import re
+from elementmaker import E
 
 def replaceRollsCallback(match, replaceCB):
     dice = match.group(2)
@@ -73,3 +74,11 @@ def fvttTitle(title):
 
 def urlMatches(url, matching):
     return url.match(matching.replace(/\*/g, "[^]*")) != None
+
+def alertQuickSettings():
+    popup = chrome.extension.getURL("popup.html")
+    img = E.img(src=chrome.extension.getURL("images/icons/icon32.png"), style="margin-right: 3px;")
+    alertify.alert().destroy()
+    dialog = alertify.alert(img.outerHTML + "Beyond 20 Quick Settings",
+            E.iframe(src=popup, style="width: 100%; height: 100%;", frameborder="0", scrolling="no"))
+    dialog.set('padding', False).set('resizable', True).resizeTo("80%", "80%")

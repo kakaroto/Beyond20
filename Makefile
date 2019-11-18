@@ -14,7 +14,7 @@ JS_FILES=src/background.js src/roll20.js src/roll20_script.js \
 PYJ_DEPS=src/utils.pyj src/settings.pyj src/dndbeyond.pyj src/constants.pyj
 
 src/fvtt_script.js: PYJ_GLOBALS='$$,chrome,game,canvas,Roll,ChatMessage,ui,Hooks,Dialog,ENTITY_PERMISSIONS,CONFIG,CHAT_MESSAGE_TYPES'
-src/utils.pyj-cached: PYJ_GLOBALS='$$,chrome,browser,cloneInto'
+src/utils.pyj-cached: PYJ_GLOBALS='$$,chrome,browser,cloneInto,alertify'
 src/constants.pyj-cached: PYJ_FLAGS+=--noqa eol-semicolon
 
 all:  $(PYJ_DEPS:=-cached) $(JS_FILES)

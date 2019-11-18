@@ -1,5 +1,5 @@
 from settings import getDefaultSettings, getStoredSettings, RollType
-from utils import isExtensionDisconnected
+from utils import isExtensionDisconnected, alertQuickSettings
 from elementmaker import E
 import math
 import re
@@ -551,7 +551,7 @@ def injectRollButton(paneClass):
     elif paneClass == "ct-vehicle-pane":
         if isRollButtonAdded() or isCustomRollIconsAdded():
             return
-        character = Monster("Vehicle", ".ct-vehicle-block", global_settings=settings)
+        character = Monster("Extra-Vehicle", ".ct-vehicle-block", global_settings=settings)
         character.parseStatBlock()
     else:
         removeRollButtons()
@@ -615,12 +615,7 @@ def injectSettingsButton():
                     )
     )
     gap.after(button)
-    $(button).on('click', def(event):
-        popup = chrome.extension.getURL("popup.html")
-        alertify.alert().destroy()
-        dialog = alertify.alert("Beyond 20 Quick Settings", E.iframe(src=popup, style="width: 100%; height: 100%;", frameborder="0", scrolling="no"))
-        dialog.set('padding', False).set('resizable', True).resizeTo("80%", "80%")
-    )
+    $(button).on('click', def(event): alertQuickSettings();)
         
 def documentModified(mutations, observer):
     nonlocal character

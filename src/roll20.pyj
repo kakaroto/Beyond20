@@ -1,4 +1,4 @@
-from utils import replaceRolls, injectPageScript, sendCustomEvent
+from utils import replaceRolls, injectPageScript, sendCustomEvent, alertQuickSettings
 from settings import getDefaultSettings, getStoredSettings, WhisperType, RollType
 from constants import ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY
 import re
@@ -487,11 +487,7 @@ def injectSettingsButton():
         img.remove()
     img = E.img(id="beyond20-settings", src=icon, style="margin-left: 5px;")
     btn.after(img)
-    img.onclick = def(event):
-        popup = chrome.extension.getURL("popup.html")
-        alertify.alert().destroy()
-        dialog = alertify.alert("Beyond 20 Quick Settings", E.iframe(src=popup, style="width: 100%; height: 100%;", frameborder="0", scrolling="no"))
-        dialog.set('padding', False).set('resizable', True).resizeTo("80%", "80%")
+    img.onclick = alertQuickSettings
     
 
 def updateSettings(new_settings=None):

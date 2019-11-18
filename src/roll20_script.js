@@ -3725,6 +3725,7 @@ define_str_func = undefined;
 var str = ρσ_str, repr = ρσ_repr;;
     var ρσ_modules = {};
     ρσ_modules.re = {};
+    ρσ_modules.elementmaker = {};
     ρσ_modules.utils = {};
 
     (function(){
@@ -5168,8 +5169,309 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
+        var __name__ = "elementmaker";
+        var html_elements, mathml_elements, svg_elements, html5_tags, E;
+        html_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("a");
+            s.jsset.add("abbr");
+            s.jsset.add("acronym");
+            s.jsset.add("address");
+            s.jsset.add("area");
+            s.jsset.add("article");
+            s.jsset.add("aside");
+            s.jsset.add("audio");
+            s.jsset.add("b");
+            s.jsset.add("big");
+            s.jsset.add("blockquote");
+            s.jsset.add("br");
+            s.jsset.add("button");
+            s.jsset.add("canvas");
+            s.jsset.add("caption");
+            s.jsset.add("center");
+            s.jsset.add("cite");
+            s.jsset.add("code");
+            s.jsset.add("col");
+            s.jsset.add("colgroup");
+            s.jsset.add("command");
+            s.jsset.add("datagrid");
+            s.jsset.add("datalist");
+            s.jsset.add("dd");
+            s.jsset.add("del");
+            s.jsset.add("details");
+            s.jsset.add("dfn");
+            s.jsset.add("dialog");
+            s.jsset.add("dir");
+            s.jsset.add("div");
+            s.jsset.add("dl");
+            s.jsset.add("dt");
+            s.jsset.add("em");
+            s.jsset.add("event-source");
+            s.jsset.add("fieldset");
+            s.jsset.add("figcaption");
+            s.jsset.add("figure");
+            s.jsset.add("footer");
+            s.jsset.add("font");
+            s.jsset.add("form");
+            s.jsset.add("header");
+            s.jsset.add("h1");
+            s.jsset.add("h2");
+            s.jsset.add("h3");
+            s.jsset.add("h4");
+            s.jsset.add("h5");
+            s.jsset.add("h6");
+            s.jsset.add("hr");
+            s.jsset.add("i");
+            s.jsset.add("iframe");
+            s.jsset.add("img");
+            s.jsset.add("input");
+            s.jsset.add("ins");
+            s.jsset.add("keygen");
+            s.jsset.add("kbd");
+            s.jsset.add("label");
+            s.jsset.add("legend");
+            s.jsset.add("li");
+            s.jsset.add("m");
+            s.jsset.add("map");
+            s.jsset.add("menu");
+            s.jsset.add("meter");
+            s.jsset.add("multicol");
+            s.jsset.add("nav");
+            s.jsset.add("nextid");
+            s.jsset.add("ol");
+            s.jsset.add("output");
+            s.jsset.add("optgroup");
+            s.jsset.add("option");
+            s.jsset.add("p");
+            s.jsset.add("pre");
+            s.jsset.add("progress");
+            s.jsset.add("q");
+            s.jsset.add("s");
+            s.jsset.add("samp");
+            s.jsset.add("script");
+            s.jsset.add("section");
+            s.jsset.add("select");
+            s.jsset.add("small");
+            s.jsset.add("sound");
+            s.jsset.add("source");
+            s.jsset.add("spacer");
+            s.jsset.add("span");
+            s.jsset.add("strike");
+            s.jsset.add("strong");
+            s.jsset.add("style");
+            s.jsset.add("sub");
+            s.jsset.add("sup");
+            s.jsset.add("table");
+            s.jsset.add("tbody");
+            s.jsset.add("td");
+            s.jsset.add("textarea");
+            s.jsset.add("time");
+            s.jsset.add("tfoot");
+            s.jsset.add("th");
+            s.jsset.add("thead");
+            s.jsset.add("tr");
+            s.jsset.add("tt");
+            s.jsset.add("u");
+            s.jsset.add("ul");
+            s.jsset.add("var");
+            s.jsset.add("video");
+            return s;
+        })();
+        mathml_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("maction");
+            s.jsset.add("math");
+            s.jsset.add("merror");
+            s.jsset.add("mfrac");
+            s.jsset.add("mi");
+            s.jsset.add("mmultiscripts");
+            s.jsset.add("mn");
+            s.jsset.add("mo");
+            s.jsset.add("mover");
+            s.jsset.add("mpadded");
+            s.jsset.add("mphantom");
+            s.jsset.add("mprescripts");
+            s.jsset.add("mroot");
+            s.jsset.add("mrow");
+            s.jsset.add("mspace");
+            s.jsset.add("msqrt");
+            s.jsset.add("mstyle");
+            s.jsset.add("msub");
+            s.jsset.add("msubsup");
+            s.jsset.add("msup");
+            s.jsset.add("mtable");
+            s.jsset.add("mtd");
+            s.jsset.add("mtext");
+            s.jsset.add("mtr");
+            s.jsset.add("munder");
+            s.jsset.add("munderover");
+            s.jsset.add("none");
+            return s;
+        })();
+        svg_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("a");
+            s.jsset.add("animate");
+            s.jsset.add("animateColor");
+            s.jsset.add("animateMotion");
+            s.jsset.add("animateTransform");
+            s.jsset.add("clipPath");
+            s.jsset.add("circle");
+            s.jsset.add("defs");
+            s.jsset.add("desc");
+            s.jsset.add("ellipse");
+            s.jsset.add("font-face");
+            s.jsset.add("font-face-name");
+            s.jsset.add("font-face-src");
+            s.jsset.add("g");
+            s.jsset.add("glyph");
+            s.jsset.add("hkern");
+            s.jsset.add("linearGradient");
+            s.jsset.add("line");
+            s.jsset.add("marker");
+            s.jsset.add("metadata");
+            s.jsset.add("missing-glyph");
+            s.jsset.add("mpath");
+            s.jsset.add("path");
+            s.jsset.add("polygon");
+            s.jsset.add("polyline");
+            s.jsset.add("radialGradient");
+            s.jsset.add("rect");
+            s.jsset.add("set");
+            s.jsset.add("stop");
+            s.jsset.add("svg");
+            s.jsset.add("switch");
+            s.jsset.add("text");
+            s.jsset.add("title");
+            s.jsset.add("tspan");
+            s.jsset.add("use");
+            return s;
+        })();
+        html5_tags = html_elements.union(mathml_elements).union(svg_elements);
+        function _makeelement() {
+            var tag = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var kwargs = arguments[arguments.length-1];
+            if (kwargs === null || typeof kwargs !== "object" || kwargs [ρσ_kwargs_symbol] !== true) kwargs = {};
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (kwargs !== null && typeof kwargs === "object" && kwargs [ρσ_kwargs_symbol] === true) args.pop();
+            var ans, vattr, val, attr, arg;
+            ans = this.createElement(tag);
+            var ρσ_Iter0 = ρσ_Iterable(kwargs);
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                attr = ρσ_Iter0[ρσ_Index0];
+                vattr = str.replace(str.rstrip(attr, "_"), "_", "-");
+                val = kwargs[(typeof attr === "number" && attr < 0) ? kwargs.length + attr : attr];
+                if (callable(val)) {
+                    if (str.startswith(attr, "on")) {
+                        attr = attr.slice(2);
+                    }
+                    ans.addEventListener(attr, val);
+                } else if (val === true) {
+                    ans.setAttribute(vattr, vattr);
+                } else if (typeof val === "string") {
+                    ans.setAttribute(vattr, val);
+                }
+            }
+            var ρσ_Iter1 = ρσ_Iterable(args);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                arg = ρσ_Iter1[ρσ_Index1];
+                if (typeof arg === "string") {
+                    arg = this.createTextNode(arg);
+                }
+                ans.appendChild(arg);
+            }
+            return ans;
+        };
+        if (!_makeelement.__handles_kwarg_interpolation__) Object.defineProperties(_makeelement, {
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["tag"]}
+        });
+
+        function maker_for_document(document) {
+            var E;
+            E = _makeelement.bind(document);
+            Object.defineProperties(E, (function() {
+                var ρσ_Iter = ρσ_Iterable(html5_tags), ρσ_Result = {}, tag;
+                for (var ρσ_Index = 0; ρσ_Index < ρσ_Iter.length; ρσ_Index++) {
+                    tag = ρσ_Iter[ρσ_Index];
+                    ρσ_Result[tag] = ((function(){
+                        var ρσ_d = {};
+                        ρσ_d["value"] = _makeelement.bind(document, tag);
+                        return ρσ_d;
+                    }).call(this));
+                }
+                return ρσ_Result;
+            })());
+            return E;
+        };
+        if (!maker_for_document.__argnames__) Object.defineProperties(maker_for_document, {
+            __argnames__ : {value: ["document"]}
+        });
+
+        if (typeof document === "undefined") {
+            E = maker_for_document((function(){
+                var ρσ_d = {};
+                ρσ_d["createTextNode"] = (function() {
+                    var ρσ_anonfunc = function (value) {
+                        return value;
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["value"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                ρσ_d["createElement"] = (function() {
+                    var ρσ_anonfunc = function (name) {
+                        return (function(){
+                            var ρσ_d = {};
+                            ρσ_d["name"] = name;
+                            ρσ_d["children"] = ρσ_list_decorate([]);
+                            ρσ_d["attributes"] = {};
+                            ρσ_d["setAttribute"] = (function() {
+                                var ρσ_anonfunc = function (name, val) {
+                                    (ρσ_expr_temp = this.attributes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = val;
+                                };
+                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                    __argnames__ : {value: ["name", "val"]}
+                                });
+                                return ρσ_anonfunc;
+                            })();
+                            ρσ_d["appendChild"] = (function() {
+                                var ρσ_anonfunc = function (child) {
+                                    this.children.push(child);
+                                };
+                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                    __argnames__ : {value: ["child"]}
+                                });
+                                return ρσ_anonfunc;
+                            })();
+                            return ρσ_d;
+                        }).call(this);
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["name"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                return ρσ_d;
+            }).call(this));
+        } else {
+            E = maker_for_document(document);
+        }
+        ρσ_modules.elementmaker.html_elements = html_elements;
+        ρσ_modules.elementmaker.mathml_elements = mathml_elements;
+        ρσ_modules.elementmaker.svg_elements = svg_elements;
+        ρσ_modules.elementmaker.html5_tags = html5_tags;
+        ρσ_modules.elementmaker.E = E;
+        ρσ_modules.elementmaker._makeelement = _makeelement;
+        ρσ_modules.elementmaker.maker_for_document = maker_for_document;
+    })();
+
+    (function(){
         var __name__ = "utils";
         var re = ρσ_modules.re;
+
+        var E = ρσ_modules.elementmaker.E;
 
         function replaceRollsCallback(match, replaceCB) {
             var dice, modifiers, result;
@@ -5316,6 +5618,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["url", "matching"]}
         });
 
+        function alertQuickSettings() {
+            var popup, img, dialog;
+            popup = chrome.extension.getURL("popup.html");
+            img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})]);
+            alertify.alert().destroy();
+            dialog = alertify.alert(img.outerHTML + "Beyond 20 Quick Settings", ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "no"})]));
+            dialog.set("padding", false).set("resizable", true).resizeTo("80%", "80%");
+        };
+
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
@@ -5328,6 +5639,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.isFVTT = isFVTT;
         ρσ_modules.utils.fvttTitle = fvttTitle;
         ρσ_modules.utils.urlMatches = urlMatches;
+        ρσ_modules.utils.alertQuickSettings = alertQuickSettings;
     })();
 
     (function(){

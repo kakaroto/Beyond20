@@ -5475,6 +5475,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "utils";
         var re = ρσ_modules.re;
 
+        var E = ρσ_modules.elementmaker.E;
+
         function replaceRollsCallback(match, replaceCB) {
             var dice, modifiers, result;
             dice = match.group(2);
@@ -5620,6 +5622,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["url", "matching"]}
         });
 
+        function alertQuickSettings() {
+            var popup, img, dialog;
+            popup = chrome.extension.getURL("popup.html");
+            img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})]);
+            alertify.alert().destroy();
+            dialog = alertify.alert(img.outerHTML + "Beyond 20 Quick Settings", ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "no"})]));
+            dialog.set("padding", false).set("resizable", true).resizeTo("80%", "80%");
+        };
+
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
@@ -5632,6 +5643,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.isFVTT = isFVTT;
         ρσ_modules.utils.fvttTitle = fvttTitle;
         ρσ_modules.utils.urlMatches = urlMatches;
+        ρσ_modules.utils.alertQuickSettings = alertQuickSettings;
     })();
 
     (function(){
@@ -7041,6 +7053,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "dndbeyond";
         var ability_abbreviations, skill_abilities, button_class, button_class_small;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
+        var alertQuickSettings = ρσ_modules.utils.alertQuickSettings;
 
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
         var mergeSettings = ρσ_modules.settings.mergeSettings;
@@ -7660,7 +7673,7 @@ return this.__repr__();
                 self._base = ".mon-stat-block";
             } else if (ρσ_equals(self.type(), "Creature")) {
                 self._base = ".ct-creature-block";
-            } else if (ρσ_equals(self.type(), "Vehicle")) {
+            } else if (ρσ_equals(self.type(), "Vehicle") || ρσ_equals(self.type(), "Extra-Vehicle")) {
                 self._base = ".vehicle-stat-block";
             } else {
                 self._base = ".mon-stat-block";
@@ -7698,12 +7711,26 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "stat_block")){
                 stat_block = ρσ_kwargs_obj.stat_block;
             }
-            var add_dice, inject_descriptions, base, link, attributes, label, value, cb, attr, abilities, prefix, makeCB, abbr, score, modifier, ability, tidbits, data, saves, ρσ_unpack, mod, save, skills, name, skill, mon_skill, text, last, a, first, tidbit;
+            var add_dice, inject_descriptions, base, quick_settings, link, attributes, label, value, cb, attr, abilities, prefix, makeCB, abbr, score, modifier, ability, tidbits, data, saves, ρσ_unpack, mod, save, skills, name, skill, mon_skill, text, last, a, first, tidbit;
             add_dice = self.getGlobalSetting("handle-stat-blocks", true);
             inject_descriptions = self.getGlobalSetting("subst-dndbeyond-stat-blocks", true);
             base = self._base;
             if (stat_block === null) {
                 stat_block = $(base);
+            }
+            if (ρσ_not_equals(self.type(), "Creature") && ρσ_not_equals(self.type(), "Extra-Vehicle")) {
+                $(".ct-beyond20-settings-button").remove();
+                quick_settings = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-settings", src: chrome.extension.getURL("images/icons/icon32.png"), style: "vertical-align: top;"})]), ρσ_interpolate_kwargs.call(E, E.span, ["Beyond 20"].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-settings-button-label mon-stat-block__tidbit mon-stat-block__tidbit-label", style: "font-size: 28px; margin: 5px;"})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-settings-button", style: "background-color: rgba(0, 0, 0, 0.1)"})]));
+                stat_block.find(base + "__header").prepend(quick_settings);
+                $(quick_settings).on("click", (function() {
+                    var ρσ_anonfunc = function (event) {
+                        alertQuickSettings();
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["event"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
             }
             self._name = stat_block.find(base + "__name").text().trim();
             link = stat_block.find(base + "__name-link");

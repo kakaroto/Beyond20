@@ -5473,6 +5473,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "utils";
         var re = ρσ_modules.re;
 
+        var E = ρσ_modules.elementmaker.E;
+
         function replaceRollsCallback(match, replaceCB) {
             var dice, modifiers, result;
             dice = match.group(2);
@@ -5618,6 +5620,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["url", "matching"]}
         });
 
+        function alertQuickSettings() {
+            var popup, img, dialog;
+            popup = chrome.extension.getURL("popup.html");
+            img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})]);
+            alertify.alert().destroy();
+            dialog = alertify.alert(img.outerHTML + "Beyond 20 Quick Settings", ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "no"})]));
+            dialog.set("padding", false).set("resizable", true).resizeTo("80%", "80%");
+        };
+
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
@@ -5630,6 +5641,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.isFVTT = isFVTT;
         ρσ_modules.utils.fvttTitle = fvttTitle;
         ρσ_modules.utils.urlMatches = urlMatches;
+        ρσ_modules.utils.alertQuickSettings = alertQuickSettings;
     })();
 
     (function(){

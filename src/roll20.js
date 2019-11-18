@@ -3725,8 +3725,8 @@ define_str_func = undefined;
 var str = ρσ_str, repr = ρσ_repr;;
     var ρσ_modules = {};
     ρσ_modules.re = {};
-    ρσ_modules.utils = {};
     ρσ_modules.elementmaker = {};
+    ρσ_modules.utils = {};
     ρσ_modules.settings = {};
     ρσ_modules.constants = {};
 
@@ -5171,169 +5171,6 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
-        var __name__ = "utils";
-        var re = ρσ_modules.re;
-
-        function replaceRollsCallback(match, replaceCB) {
-            var dice, modifiers, result;
-            dice = match.group(2);
-            modifiers = match.group(3);
-            if (!(typeof dice !== "undefined" && dice !== null)) {
-                dice = "";
-                modifiers = match.group(4);
-            }
-            result = match.group(1);
-            result += replaceCB(dice, modifiers);
-            result += match.group(5);
-            return result;
-        };
-        if (!replaceRollsCallback.__argnames__) Object.defineProperties(replaceRollsCallback, {
-            __argnames__ : {value: ["match", "replaceCB"]}
-        });
-
-        function replaceRolls(text, replaceCB) {
-            var dice_regexp;
-            dice_regexp = "(^|[^\\w])(?:(?:(?:(\\d*d\\d+(?:ro<2)?)((?:\\s*[-+]\\s*\\d+)*))|((?:[-+]\\s*\\d+)+)))($|[^\\w])";
-            return re.sub(dice_regexp, (function() {
-                var ρσ_anonfunc = function (m) {
-                    return replaceRollsCallback(m, replaceCB);
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["m"]}
-                });
-                return ρσ_anonfunc;
-            })(), text);
-        };
-        if (!replaceRolls.__argnames__) Object.defineProperties(replaceRolls, {
-            __argnames__ : {value: ["text", "replaceCB"]}
-        });
-
-        function getBrowser() {
-            if ((typeof chrome !== "undefined" && (typeof typeof chrome !== "object" || ρσ_not_equals(typeof chrome, "undefined")))) {
-                if ((typeof browser !== "undefined" && (typeof typeof browser !== "object" || ρσ_not_equals(typeof browser, "undefined")))) {
-                    return "Firefox";
-                } else {
-                    return "Chrome";
-                }
-            } else {
-                return "Edge";
-            }
-        };
-
-        function isExtensionDisconnected() {
-            try {
-                chrome.extension.getURL("");
-                return false;
-            } catch (ρσ_Exception) {
-                ρσ_last_exception = ρσ_Exception;
-                {
-                    return true;
-                } 
-            }
-        };
-
-        function injectPageScript(url) {
-            var s;
-            s = document.createElement("script");
-            s.src = url;
-            s.charset = "UTF-8";
-            s.onload = function () {
-                this.remove();
-            };
-            (document.head || document.documentElement).appendChild(s);
-        };
-        if (!injectPageScript.__argnames__) Object.defineProperties(injectPageScript, {
-            __argnames__ : {value: ["url"]}
-        });
-
-        function injectCSS(css) {
-            var s;
-            s = document.createElement("style");
-            s.textContent = css;
-            (document.head || document.documentElement).appendChild(s);
-        };
-        if (!injectCSS.__argnames__) Object.defineProperties(injectCSS, {
-            __argnames__ : {value: ["css"]}
-        });
-
-        function sendCustomEvent(name, data) {
-            var event;
-            if (ρσ_equals(getBrowser(), "Firefox")) {
-                data = cloneInto(data, window);
-            }
-            event = new CustomEvent("Beyond20_" + name, (function(){
-                var ρσ_d = {};
-                ρσ_d["detail"] = data;
-                return ρσ_d;
-            }).call(this));
-            document.dispatchEvent(event);
-        };
-        if (!sendCustomEvent.__argnames__) Object.defineProperties(sendCustomEvent, {
-            __argnames__ : {value: ["name", "data"]}
-        });
-
-        function addCustomEventListener(name, callback) {
-            var cb, event;
-            cb = (function() {
-                var ρσ_anonfunc = function (evt) {
-                    callback.apply(this, evt.detail);
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["evt"]}
-                });
-                return ρσ_anonfunc;
-            })();
-            event = ρσ_list_decorate([ "Beyond20_" + name, cb, false ]);
-            document.addEventListener.apply(document, event);
-            return event;
-        };
-        if (!addCustomEventListener.__argnames__) Object.defineProperties(addCustomEventListener, {
-            __argnames__ : {value: ["name", "callback"]}
-        });
-
-        function roll20Title(title) {
-            return title.replace(" | Roll20", "");
-        };
-        if (!roll20Title.__argnames__) Object.defineProperties(roll20Title, {
-            __argnames__ : {value: ["title"]}
-        });
-
-        function isFVTT(title) {
-            return ρσ_in("Foundry Virtual Tabletop", title);
-        };
-        if (!isFVTT.__argnames__) Object.defineProperties(isFVTT, {
-            __argnames__ : {value: ["title"]}
-        });
-
-        function fvttTitle(title) {
-            return title.replace(" • Foundry Virtual Tabletop", "");
-        };
-        if (!fvttTitle.__argnames__) Object.defineProperties(fvttTitle, {
-            __argnames__ : {value: ["title"]}
-        });
-
-        function urlMatches(url, matching) {
-            return ρσ_not_equals(url.match(matching.replace(/\*/g, "[^]*")), null);
-        };
-        if (!urlMatches.__argnames__) Object.defineProperties(urlMatches, {
-            __argnames__ : {value: ["url", "matching"]}
-        });
-
-        ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
-        ρσ_modules.utils.replaceRolls = replaceRolls;
-        ρσ_modules.utils.getBrowser = getBrowser;
-        ρσ_modules.utils.isExtensionDisconnected = isExtensionDisconnected;
-        ρσ_modules.utils.injectPageScript = injectPageScript;
-        ρσ_modules.utils.injectCSS = injectCSS;
-        ρσ_modules.utils.sendCustomEvent = sendCustomEvent;
-        ρσ_modules.utils.addCustomEventListener = addCustomEventListener;
-        ρσ_modules.utils.roll20Title = roll20Title;
-        ρσ_modules.utils.isFVTT = isFVTT;
-        ρσ_modules.utils.fvttTitle = fvttTitle;
-        ρσ_modules.utils.urlMatches = urlMatches;
-    })();
-
-    (function(){
         var __name__ = "elementmaker";
         var html_elements, mathml_elements, svg_elements, html5_tags, E;
         html_elements = (function(){
@@ -5630,6 +5467,181 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.elementmaker.E = E;
         ρσ_modules.elementmaker._makeelement = _makeelement;
         ρσ_modules.elementmaker.maker_for_document = maker_for_document;
+    })();
+
+    (function(){
+        var __name__ = "utils";
+        var re = ρσ_modules.re;
+
+        var E = ρσ_modules.elementmaker.E;
+
+        function replaceRollsCallback(match, replaceCB) {
+            var dice, modifiers, result;
+            dice = match.group(2);
+            modifiers = match.group(3);
+            if (!(typeof dice !== "undefined" && dice !== null)) {
+                dice = "";
+                modifiers = match.group(4);
+            }
+            result = match.group(1);
+            result += replaceCB(dice, modifiers);
+            result += match.group(5);
+            return result;
+        };
+        if (!replaceRollsCallback.__argnames__) Object.defineProperties(replaceRollsCallback, {
+            __argnames__ : {value: ["match", "replaceCB"]}
+        });
+
+        function replaceRolls(text, replaceCB) {
+            var dice_regexp;
+            dice_regexp = "(^|[^\\w])(?:(?:(?:(\\d*d\\d+(?:ro<2)?)((?:\\s*[-+]\\s*\\d+)*))|((?:[-+]\\s*\\d+)+)))($|[^\\w])";
+            return re.sub(dice_regexp, (function() {
+                var ρσ_anonfunc = function (m) {
+                    return replaceRollsCallback(m, replaceCB);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["m"]}
+                });
+                return ρσ_anonfunc;
+            })(), text);
+        };
+        if (!replaceRolls.__argnames__) Object.defineProperties(replaceRolls, {
+            __argnames__ : {value: ["text", "replaceCB"]}
+        });
+
+        function getBrowser() {
+            if ((typeof chrome !== "undefined" && (typeof typeof chrome !== "object" || ρσ_not_equals(typeof chrome, "undefined")))) {
+                if ((typeof browser !== "undefined" && (typeof typeof browser !== "object" || ρσ_not_equals(typeof browser, "undefined")))) {
+                    return "Firefox";
+                } else {
+                    return "Chrome";
+                }
+            } else {
+                return "Edge";
+            }
+        };
+
+        function isExtensionDisconnected() {
+            try {
+                chrome.extension.getURL("");
+                return false;
+            } catch (ρσ_Exception) {
+                ρσ_last_exception = ρσ_Exception;
+                {
+                    return true;
+                } 
+            }
+        };
+
+        function injectPageScript(url) {
+            var s;
+            s = document.createElement("script");
+            s.src = url;
+            s.charset = "UTF-8";
+            s.onload = function () {
+                this.remove();
+            };
+            (document.head || document.documentElement).appendChild(s);
+        };
+        if (!injectPageScript.__argnames__) Object.defineProperties(injectPageScript, {
+            __argnames__ : {value: ["url"]}
+        });
+
+        function injectCSS(css) {
+            var s;
+            s = document.createElement("style");
+            s.textContent = css;
+            (document.head || document.documentElement).appendChild(s);
+        };
+        if (!injectCSS.__argnames__) Object.defineProperties(injectCSS, {
+            __argnames__ : {value: ["css"]}
+        });
+
+        function sendCustomEvent(name, data) {
+            var event;
+            if (ρσ_equals(getBrowser(), "Firefox")) {
+                data = cloneInto(data, window);
+            }
+            event = new CustomEvent("Beyond20_" + name, (function(){
+                var ρσ_d = {};
+                ρσ_d["detail"] = data;
+                return ρσ_d;
+            }).call(this));
+            document.dispatchEvent(event);
+        };
+        if (!sendCustomEvent.__argnames__) Object.defineProperties(sendCustomEvent, {
+            __argnames__ : {value: ["name", "data"]}
+        });
+
+        function addCustomEventListener(name, callback) {
+            var cb, event;
+            cb = (function() {
+                var ρσ_anonfunc = function (evt) {
+                    callback.apply(this, evt.detail);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["evt"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            event = ρσ_list_decorate([ "Beyond20_" + name, cb, false ]);
+            document.addEventListener.apply(document, event);
+            return event;
+        };
+        if (!addCustomEventListener.__argnames__) Object.defineProperties(addCustomEventListener, {
+            __argnames__ : {value: ["name", "callback"]}
+        });
+
+        function roll20Title(title) {
+            return title.replace(" | Roll20", "");
+        };
+        if (!roll20Title.__argnames__) Object.defineProperties(roll20Title, {
+            __argnames__ : {value: ["title"]}
+        });
+
+        function isFVTT(title) {
+            return ρσ_in("Foundry Virtual Tabletop", title);
+        };
+        if (!isFVTT.__argnames__) Object.defineProperties(isFVTT, {
+            __argnames__ : {value: ["title"]}
+        });
+
+        function fvttTitle(title) {
+            return title.replace(" • Foundry Virtual Tabletop", "");
+        };
+        if (!fvttTitle.__argnames__) Object.defineProperties(fvttTitle, {
+            __argnames__ : {value: ["title"]}
+        });
+
+        function urlMatches(url, matching) {
+            return ρσ_not_equals(url.match(matching.replace(/\*/g, "[^]*")), null);
+        };
+        if (!urlMatches.__argnames__) Object.defineProperties(urlMatches, {
+            __argnames__ : {value: ["url", "matching"]}
+        });
+
+        function alertQuickSettings() {
+            var popup, img, dialog;
+            popup = chrome.extension.getURL("popup.html");
+            img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})]);
+            alertify.alert().destroy();
+            dialog = alertify.alert(img.outerHTML + "Beyond 20 Quick Settings", ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "no"})]));
+            dialog.set("padding", false).set("resizable", true).resizeTo("80%", "80%");
+        };
+
+        ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
+        ρσ_modules.utils.replaceRolls = replaceRolls;
+        ρσ_modules.utils.getBrowser = getBrowser;
+        ρσ_modules.utils.isExtensionDisconnected = isExtensionDisconnected;
+        ρσ_modules.utils.injectPageScript = injectPageScript;
+        ρσ_modules.utils.injectCSS = injectCSS;
+        ρσ_modules.utils.sendCustomEvent = sendCustomEvent;
+        ρσ_modules.utils.addCustomEventListener = addCustomEventListener;
+        ρσ_modules.utils.roll20Title = roll20Title;
+        ρσ_modules.utils.isFVTT = isFVTT;
+        ρσ_modules.utils.fvttTitle = fvttTitle;
+        ρσ_modules.utils.urlMatches = urlMatches;
+        ρσ_modules.utils.alertQuickSettings = alertQuickSettings;
     })();
 
     (function(){
@@ -6748,6 +6760,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
         var injectPageScript = ρσ_modules.utils.injectPageScript;
         var sendCustomEvent = ρσ_modules.utils.sendCustomEvent;
+        var alertQuickSettings = ρσ_modules.utils.alertQuickSettings;
 
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
@@ -7627,19 +7640,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({id: "beyond20-settings", src: icon, style: "margin-left: 5px;"})]);
             btn.after(img);
-            img.onclick = (function() {
-                var ρσ_anonfunc = function (event) {
-                    var popup, dialog;
-                    popup = chrome.extension.getURL("popup.html");
-                    alertify.alert().destroy();
-                    dialog = alertify.alert("Beyond 20 Quick Settings", ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "no"})]));
-                    dialog.set("padding", false).set("resizable", true).resizeTo("80%", "80%");
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["event"]}
-                });
-                return ρσ_anonfunc;
-            })();
+            img.onclick = alertQuickSettings;
         };
 
         function updateSettings() {
