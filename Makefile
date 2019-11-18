@@ -1,4 +1,4 @@
-PYJ_GLOBALS='$$,chrome,Marka'
+PYJ_GLOBALS='$$,chrome,Marka,alertify'
 
 %.js: %.pyj
 	rapydscript lint --globals $(PYJ_GLOBALS) $(PYJ_FLAGS) $<

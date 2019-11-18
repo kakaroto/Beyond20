@@ -997,4 +997,7 @@ def injectDiceToRolls(selector, character, name=""):
 def beyond20SendMessageFailure(response):
     console.log("Received response : ", response)
     if response.error?:
-        alert(response.error)
+        alertify.error("<strong>Beyond 20 : </strong>" + response.error)
+
+alertify.set("alert", "title", "Beyond 20")
+alertify.set("notifier", "position", "top-center")

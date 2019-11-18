@@ -8826,13 +8826,15 @@ return this.__repr__();
         function beyond20SendMessageFailure(response) {
             console.log("Received response : ", response);
             if (ρσ_exists.n(response.error)) {
-                alert(response.error);
+                alertify.error("<strong>Beyond 20 : </strong>" + response.error);
             }
         };
         if (!beyond20SendMessageFailure.__argnames__) Object.defineProperties(beyond20SendMessageFailure, {
             __argnames__ : {value: ["response"]}
         });
 
+        alertify.set("alert", "title", "Beyond 20");
+        alertify.set("notifier", "position", "top-center");
         ρσ_modules.dndbeyond.ability_abbreviations = ability_abbreviations;
         ρσ_modules.dndbeyond.skill_abilities = skill_abilities;
         ρσ_modules.dndbeyond.button_class = button_class;

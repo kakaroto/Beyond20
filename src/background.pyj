@@ -115,7 +115,7 @@ def onRollFailure(request, sendResponse):
             found = False
         if found:
             sendResponse({"success": False, "vtt": None, "request": request, \
-                 "error": "Found a FVTT tab that has not been activated. Please click on the Beyond20 icon in the toolbar of that tab in order to give Beyond20 access."})
+                 "error": "Found a Foundry VTT tab that has not been activated. Please click on the Beyond20 icon in the browser's toolbar of that tab in order to give Beyond20 access."})
         else:
             sendResponse({"success": False, "vtt": None, "request": request, \
                  "error": "No VTT found that matches your settings. Open a VTT window, or check that the settings don't restrict access to a specific campaign."})

@@ -49,7 +49,13 @@
 			"matches": [
 				"*://*.dndbeyond.com/*characters/*"
 			],
+			"css": [
+				"libs/css/alertify.css",
+				"libs/css/alertify-themes/default.css",
+				"libs/css/alertify-themes/beyond20.css"
+			],
 			"js": [
+				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"src/dndbeyond_character.js"
 			]
@@ -58,7 +64,13 @@
 			"matches": [
 				"*://*.dndbeyond.com/monsters/*"
 			],
+			"css": [
+				"libs/css/alertify.css",
+				"libs/css/alertify-themes/default.css",
+				"libs/css/alertify-themes/beyond20.css"
+			],
 			"js": [
+				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"src/dndbeyond_monster.js"
 			]
@@ -67,7 +79,13 @@
 			"matches": [
 				"*://*.dndbeyond.com/vehicles/*"
 			],
+			"css": [
+				"libs/css/alertify.css",
+				"libs/css/alertify-themes/default.css",
+				"libs/css/alertify-themes/beyond20.css"
+			],
 			"js": [
+				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"src/dndbeyond_vehicle.js"
 			]
@@ -76,7 +94,13 @@
 			"matches": [
 				"*://*.dndbeyond.com/spells/*"
 			],
+			"css": [
+				"libs/css/alertify.css",
+				"libs/css/alertify-themes/default.css",
+				"libs/css/alertify-themes/beyond20.css"
+			],
 			"js": [
+				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"src/dndbeyond_spell.js"
 			]
@@ -86,7 +110,13 @@
 				"*://*.dndbeyond.com/my-encounters",
 				"*://*.dndbeyond.com/encounters/*"
 			],
+			"css": [
+				"libs/css/alertify.css",
+				"libs/css/alertify-themes/default.css",
+				"libs/css/alertify-themes/beyond20.css"
+			],
 			"js": [
+				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"src/dndbeyond_encounter.js"
 			]
