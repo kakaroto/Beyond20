@@ -6759,6 +6759,8 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         var re = ρσ_modules.re;
 
+        var E = ρσ_modules.elementmaker.E;
+
         print("Beyond20: Roll20 module loaded.");
         chat = document.getElementById("textchat-input");
         txt = chat.getElementsByTagName("textarea")[0];
@@ -7616,6 +7618,30 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request", "custom_roll_dice"]}
         });
 
+        function injectSettingsButton() {
+            var icon, img;
+            icon = chrome.extension.getURL("images/icons/icon32.png");
+            img = document.getElementById("beyond20-settings");
+            if (img) {
+                img.remove();
+            }
+            img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({id: "beyond20-settings", src: icon, style: "margin-left: 5px;"})]);
+            btn.after(img);
+            img.onclick = (function() {
+                var ρσ_anonfunc = function (event) {
+                    var popup, dialog;
+                    popup = chrome.extension.getURL("popup.html");
+                    alertify.alert().destroy();
+                    dialog = alertify.alert("Beyond 20 Quick Settings", ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "no"})]));
+                    dialog.set("padding", false).set("resizable", true).resizeTo("80%", "80%");
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["event"]}
+                });
+                return ρσ_anonfunc;
+            })();
+        };
+
         function updateSettings() {
             var new_settings = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? updateSettings.__defaults__.new_settings : arguments[0];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
@@ -7712,5 +7738,6 @@ var str = ρσ_str, repr = ρσ_repr;;
         }).call(this));
         sendCustomEvent("disconnect");
         injectPageScript(chrome.runtime.getURL("src/roll20_script.js"));
+        injectSettingsButton();
     })();
 })();

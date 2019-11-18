@@ -2,6 +2,7 @@ from utils import replaceRolls, injectPageScript, sendCustomEvent
 from settings import getDefaultSettings, getStoredSettings, WhisperType, RollType
 from constants import ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY
 import re
+from elementmaker import E
 
 print("Beyond20: Roll20 module loaded.")
 
@@ -476,6 +477,23 @@ def rollSpellAttack(request, custom_roll_dice):
     roll = template(request, template_type, properties)
     return roll
 
+
+def injectSettingsButton():
+    nonlocal btn
+    icon = chrome.extension.getURL("images/icons/icon32.png")
+
+    img = document.getElementById("beyond20-settings")
+    if img:
+        img.remove()
+    img = E.img(id="beyond20-settings", src=icon, style="margin-left: 5px;")
+    btn.after(img)
+    img.onclick = def(event):
+        popup = chrome.extension.getURL("popup.html")
+        alertify.alert().destroy()
+        dialog = alertify.alert("Beyond 20 Quick Settings", E.iframe(src=popup, style="width: 100%; height: 100%;", frameborder="0", scrolling="no"))
+        dialog.set('padding', False).set('resizable', True).resizeTo("80%", "80%")
+    
+
 def updateSettings(new_settings=None):
     nonlocal settings
     if new_settings:
@@ -540,3 +558,4 @@ updateSettings()
 chrome.runtime.sendMessage({"action": "activate-icon"})
 sendCustomEvent("disconnect")
 injectPageScript(chrome.runtime.getURL('src/roll20_script.js'))
+injectSettingsButton()
