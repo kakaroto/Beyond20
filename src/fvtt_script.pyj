@@ -750,7 +750,7 @@ def setTitle():
         title = document.getElementsByTagName("title")[0]
         # Make sure the mutation gets triggerred if we reload the extension
         title.textContent = "Foundry Virtual Tabletop"
-        title.textContent = game.world.name + " • Foundry Virtual Tabletop"
+        title.textContent = game.world.title + " • Foundry Virtual Tabletop"
     else:
         # Wait a second for the world to get loaded
         setTimeout(setTitle, 1000)

@@ -8584,7 +8584,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_exists.n(game.world)) {
                 title = document.getElementsByTagName("title")[0];
                 title.textContent = "Foundry Virtual Tabletop";
-                title.textContent = game.world.name + " • Foundry Virtual Tabletop";
+                title.textContent = game.world.title + " • Foundry Virtual Tabletop";
             } else {
                 setTimeout(setTitle, 1e3);
             }
