@@ -142,12 +142,12 @@ options_list = {
                      "hidden": "True",
                      "default": ""},
 
-    "donate": {"short": "Buy me rations for 1 day",
-               "title": "Donate to show your appreciation!",
-               "description": "I know you already appreciate this extension, otherwise you wouldn't be using it!\n" \
-                   "But if you wish to donate to help keep development active or just to say thank you, you can!",
+    "donate": {"short": "Buy rations (1 day) to feed my familiar",
+               "title": "Become a patron of the art of software development!",
+               "description": "If you wish to support my work on Beyond 20 or my other D&D related project, subscribe to my patreon " \
+                   "or donate via paypal!\nI am grateful for your generosity!",
                "type": "link", 
-               "default": "https://paypal.me/KaKaRoTo",
+               "default": "https://beyond20.here-for-more.info/rations",
                "icon": "images/donate.png"}
     }
 

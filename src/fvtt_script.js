@@ -5886,11 +5886,11 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             ρσ_d["donate"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["short"] = "Buy me rations for 1 day";
-                ρσ_d["title"] = "Donate to show your appreciation!";
-                ρσ_d["description"] = "I know you already appreciate this extension, otherwise you wouldn't be using it!\nBut if you wish to donate to help keep development active or just to say thank you, you can!";
+                ρσ_d["short"] = "Buy rations (1 day) to feed my familiar";
+                ρσ_d["title"] = "Become a patron of the art of software development!";
+                ρσ_d["description"] = "If you wish to support my work on Beyond 20 or my other D&D related project, subscribe to my patreon or donate via paypal!\nI am grateful for your generosity!";
                 ρσ_d["type"] = "link";
-                ρσ_d["default"] = "https://paypal.me/KaKaRoTo";
+                ρσ_d["default"] = "https://beyond20.here-for-more.info/rations";
                 ρσ_d["icon"] = "images/donate.png";
                 return ρσ_d;
             }).call(this);
