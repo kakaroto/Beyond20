@@ -583,6 +583,44 @@ def injectRollToSpellAttack():
                 mod = $(event.currentTarget).attr("x-beyond20-modifier")
                 sendRollWithCharacter("custom", "1d20" + mod, {"name": name, "modifier": mod})
             )
+
+def injectSettingsButton():
+    if $(".ct-beyond20-settings").length > 0:
+        return
+    desktop_gap = $(".ct-character-header-desktop__group--gap")
+    tablet_gap = $(".ct-character-header-tablet__group--gap")
+    mobile_gap = $(".ct-character-header-mobile__group--gap")
+
+    if desktop_gap.length > 0:
+        button_type = "desktop"
+        gap = desktop_gap
+        span_text = "Beyond 20"
+        icon = chrome.extension.getURL("images/icons/icon16.png")
+    elif tablet_gap.length > 0:
+        button_type = "tablet"
+        gap = tablet_gap
+        span_text = "Beyond 20"
+        icon = chrome.extension.getURL("images/icons/icon16.png")
+    elif mobile_gap.length > 0:
+        button_type = "mobile"
+        gap = mobile_gap
+        span_text = "&nbsp;&nbsp;"
+        icon = chrome.extension.getURL("images/icons/icon32.png")
+    else:
+        return
+    button = E.div(class_="ct-character-header-" + button_type + "__group ct-character-header-" + button_type + "__group--beyond20",
+                    E.div(class_="ct-character-header-" + button_type + "__button",
+                            E.img(class_="ct-beyond20-settings", src=icon),
+                            E.span(class_="ct-character-header-" + button_type + "__button-label", span_text)
+                    )
+    )
+    gap.after(button)
+    $(button).on('click', def(event):
+        popup = chrome.extension.getURL("popup.html")
+        alertify.alert().destroy()
+        dialog = alertify.alert("Beyond 20 Quick Settings", E.iframe(src=popup, style="width: 100%; height: 100%;", frameborder="0", scrolling="no"))
+        dialog.set('padding', False).set('resizable', True).resizeTo("80%", "80%")
+    )
         
 def documentModified(mutations, observer):
     nonlocal character
@@ -593,12 +631,13 @@ def documentModified(mutations, observer):
 
     character.updateInfo()
     injectRollToSpellAttack()
+    injectSettingsButton()
 
     pane = $(".ct-sidebar__pane-content > div")
     if pane.length > 0:
         for div in range(pane.length):
             paneClass = pane[div].className
-            if paneClass == "ct-sidebar__pane-controls":
+            if paneClass == "ct-sidebar__pane-controls" or paneClass == "ct-beyond20-settings-pane":
                 continue
             print("Beyond20: New side panel is : " + paneClass)
             injectRollButton(paneClass)

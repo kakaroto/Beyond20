@@ -30,7 +30,8 @@
 	"web_accessible_resources": [
 		"images/*",
 		"src/roll20_script.js",
-		"src/fvtt_script.js"
+		"src/fvtt_script.js",
+		"popup.html"
 	],
 	"background": {
 		"persistent": true,
