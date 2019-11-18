@@ -7509,9 +7509,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if ((request.advantage === RollType.prototype.NORMAL || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.NORMAL))) {
                     dice = "1d20";
                 } else if ((request.advantage === RollType.prototype.ADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.ADVANTAGE))) {
-                    dice = "2d20kh";
+                    dice = "2d20kh1";
                 } else if ((request.advantage === RollType.prototype.DISADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DISADVANTAGE))) {
-                    dice = "2d20kl";
+                    dice = "2d20kl1";
                 } else if ((request.advantage === RollType.prototype.DOUBLE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DOUBLE))) {
                     dice = "1d20";
                     roll_1 = self.createRoll(dice, data);
@@ -7520,7 +7520,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     return roll_1;
                 } else {
                     adv = await self.queryAdvantage(title);
-                    dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh" : "kl");
+                    dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh1" : "kl1");
                 }
                 return self.rollDice(request, title, dice, data);
             }
@@ -7855,12 +7855,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                         if ((request.advantage === RollType.prototype.NORMAL || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.NORMAL))) {
                             dice = "1d20";
                         } else if ((request.advantage === RollType.prototype.ADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.ADVANTAGE))) {
-                            dice = "2d20kh";
+                            dice = "2d20kh1";
                         } else if ((request.advantage === RollType.prototype.DISADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DISADVANTAGE))) {
-                            dice = "2d20kl";
+                            dice = "2d20kl1";
                         } else {
                             adv = await self.queryAdvantage(request.name);
-                            dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh" : "kl");
+                            dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh1" : "kl1");
                         }
                         to_hit = ρσ_list_decorate([ new self._roller.roll(dice + to_hit_mod) ]);
                     }
@@ -8266,7 +8266,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 "enumerable": true, 
                 "get": function formula() {
                     var self = this;
-                    return self.amount + "d" + self.faces;
+                    return self.amount + "d" + self.faces + self._modifiers;
                 }, 
                 "set": function () { throw new AttributeError("can't set attribute") }
             }, 
@@ -8283,33 +8283,74 @@ var str = ρσ_str, repr = ρσ_repr;;
             var self = this;
             var amount = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var faces = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
-            var reroll2 = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? __init__.__defaults__.reroll2 : arguments[2];
+            var modifiers = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? __init__.__defaults__.modifiers : arguments[2];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "reroll2")){
-                reroll2 = ρσ_kwargs_obj.reroll2;
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "modifiers")){
+                modifiers = ρσ_kwargs_obj.modifiers;
             }
+            var match_ro, match_dk, dk;
             self.amount = amount;
             self.faces = faces;
-            self._reroll2 = reroll2 || false;
+            self._modifiers = modifiers || "";
+            self._reroll = (function(){
+                var ρσ_d = {};
+                ρσ_d["active"] = false;
+                ρσ_d["value"] = 0;
+                ρσ_d["operator"] = "=";
+                return ρσ_d;
+            }).call(this);
+            self._dk = (function(){
+                var ρσ_d = {};
+                ρσ_d["drop"] = false;
+                ρσ_d["keep"] = false;
+                ρσ_d["high"] = false;
+                ρσ_d["amount"] = 0;
+                return ρσ_d;
+            }).call(this);
+            if ((modifiers !== "" && (typeof modifiers !== "object" || ρσ_not_equals(modifiers, "")))) {
+                match_ro = re.search("ro(=|<|<=|>|>=)([0-9]+)", modifiers);
+                if ((typeof match_ro !== "undefined" && match_ro !== null)) {
+                    self._reroll.active = true;
+                    self._reroll.operator = match_ro.group(1);
+                    self._reroll.value = int(match_ro.group(2));
+                }
+                match_dk = re.search("(dl|dh|kl|kh)([0-9]*)", modifiers);
+                if ((typeof match_dk !== "undefined" && match_dk !== null)) {
+                    dk = match_dk.group(1);
+                    self._dk.amount = int(match_dk.group(2) || 1);
+                    if ((dk === "dl" || typeof dk === "object" && ρσ_equals(dk, "dl"))) {
+                        self._dk.drop = true;
+                        self._dk.high = false;
+                    } else if ((dk === "dh" || typeof dk === "object" && ρσ_equals(dk, "dh"))) {
+                        self._dk.drop = true;
+                        self._dk.high = true;
+                    } else if ((dk === "kl" || typeof dk === "object" && ρσ_equals(dk, "kl"))) {
+                        self._dk.keep = true;
+                        self._dk.high = false;
+                    } else if ((dk === "kh" || typeof dk === "object" && ρσ_equals(dk, "kh"))) {
+                        self._dk.keep = true;
+                        self._dk.high = true;
+                    }
+                }
+            }
             self._rolls = ρσ_list_decorate([]);
         };
         if (!DNDBDice.prototype.__init__.__defaults__) Object.defineProperties(DNDBDice.prototype.__init__, {
-            __defaults__ : {value: {reroll2:false}},
+            __defaults__ : {value: {modifiers:""}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["amount", "faces", "reroll2"]}
+            __argnames__ : {value: ["amount", "faces", "modifiers"]}
         });
         DNDBDice.__argnames__ = DNDBDice.prototype.__init__.__argnames__;
         DNDBDice.__handles_kwarg_interpolation__ = DNDBDice.prototype.__init__.__handles_kwarg_interpolation__;
         DNDBDice.prototype.roll = function roll() {
             var self = this;
-            var die, i;
-            self._total = 0;
+            var die, i, dk_amount, non_discarded, to_dk;
             self._rolls = ρσ_list_decorate([]);
             for (var ρσ_Index0 = 0; ρσ_Index0 < self.amount; ρσ_Index0++) {
                 i = ρσ_Index0;
                 die = Math.floor(Math.random() * self.faces) + 1;
-                if (self._reroll2 && die <= 2) {
+                if (self._reroll.active && ((self._reroll.operator === "=" || typeof self._reroll.operator === "object" && ρσ_equals(self._reroll.operator, "=")) && (die === self._reroll.value || typeof die === "object" && ρσ_equals(die, self._reroll.value)) || (self._reroll.operator === "<=" || typeof self._reroll.operator === "object" && ρσ_equals(self._reroll.operator, "<=")) && die <= self._reroll.value || (self._reroll.operator === "<" || typeof self._reroll.operator === "object" && ρσ_equals(self._reroll.operator, "<")) && die < self._reroll.value || (self._reroll.operator === ">=" || typeof self._reroll.operator === "object" && ρσ_equals(self._reroll.operator, ">=")) && die >= self._reroll.value || (self._reroll.operator === ">" || typeof self._reroll.operator === "object" && ρσ_equals(self._reroll.operator, ">")) && die > self._reroll.value)) {
                     self._rolls.append((function(){
                         var ρσ_d = {};
                         ρσ_d["roll"] = die;
@@ -8318,13 +8359,103 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }).call(this));
                     die = Math.floor(Math.random() * self.faces) + 1;
                 }
-                self._total += die;
                 self._rolls.append((function(){
                     var ρσ_d = {};
                     ρσ_d["roll"] = die;
                     return ρσ_d;
                 }).call(this));
             }
+            dk_amount = self._dk.amount;
+            while ((self._dk.drop || self._dk.keep) && self._dk.amount > 0) {
+                non_discarded = self._rolls.filter((function() {
+                    var ρσ_anonfunc = function (r) {
+                        return !ρσ_exists.e(r.discarded, false) && !ρσ_exists.e(r.keep, false);
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["r"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
+                if ((non_discarded.length === 0 || typeof non_discarded.length === "object" && ρσ_equals(non_discarded.length, 0))) {
+                    break;
+                }
+                if (self._dk.high) {
+                    to_dk = Math.max.apply(Math, non_discarded.map((function() {
+                        var ρσ_anonfunc = function (r) {
+                            return r.roll;
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["r"]}
+                        });
+                        return ρσ_anonfunc;
+                    })()));
+                } else {
+                    to_dk = Math.min.apply(Math, non_discarded.map((function() {
+                        var ρσ_anonfunc = function (r) {
+                            return r.roll;
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["r"]}
+                        });
+                        return ρσ_anonfunc;
+                    })()));
+                }
+                if (self._dk.drop) {
+                    self._rolls = self._rolls.map((function() {
+                        var ρσ_anonfunc = function (r) {
+                            if (to_dk > 0 && !ρσ_exists.e(r.discarded, false) && (r.roll === to_dk || typeof r.roll === "object" && ρσ_equals(r.roll, to_dk))) {
+                                r.discard = true;
+                                to_dk = 0;
+                            }
+                            return r;
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["r"]}
+                        });
+                        return ρσ_anonfunc;
+                    })());
+                } else if (self._dk.keep) {
+                    self._rolls = self._rolls.map((function() {
+                        var ρσ_anonfunc = function (r) {
+                            if (to_dk > 0 && !ρσ_exists.e(r.discarded, false) && !ρσ_exists.e(r.keep, false) && (r.roll === to_dk || typeof r.roll === "object" && ρσ_equals(r.roll, to_dk))) {
+                                r.keep = true;
+                                to_dk = 0;
+                            }
+                            return r;
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["r"]}
+                        });
+                        return ρσ_anonfunc;
+                    })());
+                }
+                self._dk.amount -= 1;
+            }
+            if (self._dk.keep) {
+                self._rolls = self._rolls.map((function() {
+                    var ρσ_anonfunc = function (r) {
+                        if (!ρσ_exists.e(r.keep, false)) {
+                            r.discarded = true;
+                        }
+                        delete r.keep;
+                        return r;
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["r"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
+            }
+            self._dk.amount = dk_amount;
+            self._total = self._rolls.reduce((function() {
+                var ρσ_anonfunc = function (acc, roll) {
+                    return acc + ((ρσ_exists.n(roll.discarded)) ? 0 : roll.roll);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["acc", "roll"]}
+                });
+                return ρσ_anonfunc;
+            })(), 0);
             return self._total;
         };
         DNDBDice.prototype.__repr__ = function __repr__ () {
@@ -8418,7 +8549,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         part = data[ρσ_bound_index(part.slice(1), data)];
                     }
                 }
-                match = re.search("([0-9])*d([0-9]+)(ro<2)?", part);
+                match = re.search("([0-9]*)d([0-9]+)(.*)", part);
                 if ((typeof match !== "undefined" && match !== null)) {
                     part = new DNDBDice(match.group(1), match.group(2), match.group(3));
                     self._parts.append(part);
@@ -8458,7 +8589,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
         DNDBRoll.prototype.getTooltip = function getTooltip() {
             var self = this;
-            var tooltip, first, first_die, die, part;
+            var tooltip, first, first_die, style, die, part;
             tooltip = self.formula + " = ";
             first = true;
             var ρσ_Iter5 = ρσ_Iterable(self._parts);
@@ -8478,11 +8609,11 @@ var str = ρσ_str, repr = ρσ_repr;;
                             tooltip += " + ";
                         }
                         first_die = false;
+                        style = "color: " + (((die.roll === part.faces || typeof die.roll === "object" && ρσ_equals(die.roll, part.faces))) ? "green" : ((die.roll === 1 || typeof die.roll === "object" && ρσ_equals(die.roll, 1))) ? "red" : "black") + ";";
                         if (ρσ_exists.e(die.discarded, false)) {
-                            tooltip += "<span style='text-decoration: line-through;'>" + die.roll + "</span>";
-                        } else {
-                            tooltip += die.roll;
+                            style += "text-decoration: line-through;";
                         }
+                        tooltip += "<span style='" + style + "'>" + die.roll + "</span>";
                     }
                     tooltip += ")";
                 } else {

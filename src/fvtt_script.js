@@ -7505,9 +7505,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if ((request.advantage === RollType.prototype.NORMAL || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.NORMAL))) {
                     dice = "1d20";
                 } else if ((request.advantage === RollType.prototype.ADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.ADVANTAGE))) {
-                    dice = "2d20kh";
+                    dice = "2d20kh1";
                 } else if ((request.advantage === RollType.prototype.DISADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DISADVANTAGE))) {
-                    dice = "2d20kl";
+                    dice = "2d20kl1";
                 } else if ((request.advantage === RollType.prototype.DOUBLE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DOUBLE))) {
                     dice = "1d20";
                     roll_1 = self.createRoll(dice, data);
@@ -7516,7 +7516,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     return roll_1;
                 } else {
                     adv = await self.queryAdvantage(title);
-                    dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh" : "kl");
+                    dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh1" : "kl1");
                 }
                 return self.rollDice(request, title, dice, data);
             }
@@ -7851,12 +7851,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                         if ((request.advantage === RollType.prototype.NORMAL || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.NORMAL))) {
                             dice = "1d20";
                         } else if ((request.advantage === RollType.prototype.ADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.ADVANTAGE))) {
-                            dice = "2d20kh";
+                            dice = "2d20kh1";
                         } else if ((request.advantage === RollType.prototype.DISADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DISADVANTAGE))) {
-                            dice = "2d20kl";
+                            dice = "2d20kl1";
                         } else {
                             adv = await self.queryAdvantage(request.name);
-                            dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh" : "kl");
+                            dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh1" : "kl1");
                         }
                         to_hit = ρσ_list_decorate([ new self._roller.roll(dice + to_hit_mod) ]);
                     }

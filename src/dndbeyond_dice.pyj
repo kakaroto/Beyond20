@@ -36,22 +36,94 @@ class DNDBDisplayer:
         self._error = error
 
 class DNDBDice:
-    def __init__(self, amount, faces, reroll2=False):
+    def __init__(self, amount, faces, modifiers=""):
         self.amount = amount
         self.faces = faces
-        self._reroll2 = reroll2 or False
+        self._modifiers = modifiers or ""
+        self._reroll = {"active": False, "value": 0, "operator": "="}
+        self._dk = {"drop": False, "keep": False, "high": False, "amount": 0}
+        if modifiers != "":
+            match_ro = re.search("ro(=|<|<=|>|>=)([0-9]+)", modifiers)
+            if match_ro?:
+                self._reroll.active = True
+                self._reroll.operator = match_ro.group(1)
+                self._reroll.value = int(match_ro.group(2))
+            match_dk = re.search("(dl|dh|kl|kh)([0-9]*)", modifiers)
+            if match_dk?:
+                dk = match_dk.group(1)
+                self._dk.amount = int(match_dk.group(2) or 1)
+                if dk == "dl":
+                    self._dk.drop = True
+                    self._dk.high = False
+                elif dk == "dh":
+                    self._dk.drop = True
+                    self._dk.high = True
+                elif dk == "kl":
+                    self._dk.keep = True
+                    self._dk.high = False
+                elif dk == "kh":
+                    self._dk.keep = True
+                    self._dk.high = True
+
+
+
         self._rolls = []
 
     def roll(self):
-        self._total = 0
         self._rolls = []
         for i in range(self.amount):
             die = Math.floor(Math.random() * self.faces) + 1
-            if self._reroll2 and die <= 2:
+            # Check for reroll modifier and discard old value and reroll it if necessary
+            if self._reroll.active and \
+                ((self._reroll.operator == "=" and die == self._reroll.value) or \
+                 (self._reroll.operator == "<=" and die <= self._reroll.value) or \
+                 (self._reroll.operator == "<" and die < self._reroll.value) or \
+                 (self._reroll.operator == ">=" and die >= self._reroll.value) or \
+                 (self._reroll.operator == ">" and die > self._reroll.value)):
                 self._rolls.append({"roll": die, "discarded": True})
                 die = Math.floor(Math.random() * self.faces) + 1
-            self._total += die
             self._rolls.append({"roll": die})
+        # Look for drops and keeps
+        dk_amount = self._dk.amount
+        while (self._dk.drop or self._dk.keep) and self._dk.amount > 0:
+            non_discarded = self._rolls.filter(def(r): return not (r.discarded? False) and not (r.keep ? False);)
+            if non_discarded.length == 0:
+                break
+            if self._dk.high:
+                to_dk = Math.max(*non_discarded.map(def (r): return r.roll;))
+            else:
+                to_dk = Math.min(*non_discarded.map(def(r): return r.roll;))
+            if self._dk.drop:
+                self._rolls = self._rolls.map(def(r):
+                    nonlocal to_dk
+                    if to_dk > 0 and not (r.discarded ? False) and r.roll == to_dk:
+                        r.discard = True
+                        to_dk = 0
+                    return r
+                )
+            elif self._dk.keep:
+                self._rolls = self._rolls.map(def(r):
+                    nonlocal to_dk
+                    if to_dk > 0 and not (r.discarded ? False)  and not (r.keep ? False) and r.roll == to_dk:
+                        r.keep = True
+                        to_dk = 0
+                    return r
+                )
+            self._dk.amount -= 1
+        if self._dk.keep:
+            self._rolls = self._rolls.map(def(r):
+                if not (r.keep ? False) :
+                    r.discarded = True
+                del r.keep
+                return r
+            )
+        # Restore drop/keep amount in case of rerolls
+        self._dk.amount = dk_amount
+
+        # Accumulate total based on non discarded rolls
+        self._total = self._rolls.reduce(def(acc, roll):
+            return acc + (0 if roll.discarded ? else roll.roll)
+        ,0)
         return self._total
 
     @property
@@ -59,7 +131,7 @@ class DNDBDice:
         return self._total
     @property
     def formula(self):
-        return self.amount + "d" + self.faces
+        return self.amount + "d" + self.faces + self._modifiers
     @property
     def rolls(self):
         return self._rolls or []
@@ -78,7 +150,7 @@ class DNDBRoll:
                 if data[part[1:]] ?:
                     part = data[part[1:]]
             
-            match = re.search("([0-9])*d([0-9]+)(ro<2)?", part)
+            match = re.search("([0-9]*)d([0-9]+)(.*)", part)
             if match?:
                 part = DNDBDice(match.group(1), match.group(2), match.group(3))
                 self._parts.append(part)
@@ -136,10 +208,10 @@ class DNDBRoll:
                     if not first_die:
                         tooltip += " + "
                     first_die = False
+                    style = "color: " + ('green' if die.roll == part.faces else ('red' if die.roll == 1 else 'black')) + ";"
                     if die.discarded ? False:
-                        tooltip += "<span style='text-decoration: line-through;'>" + die.roll + "</span>"
-                    else:
-                        tooltip += die.roll
+                        style += "text-decoration: line-through;"
+                    tooltip += "<span style='" + style + "'>" + die.roll + "</span>"
                 tooltip += ")"
             else:
                 tooltip += part

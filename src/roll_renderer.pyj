@@ -207,9 +207,9 @@ class Beyond20RollRenderer:
             if request.advantage == RollType.NORMAL:
                 dice = "1d20"
             elif request.advantage == RollType.ADVANTAGE:
-                dice = "2d20kh"
+                dice = "2d20kh1"
             elif request.advantage == RollType.DISADVANTAGE:
-                dice = "2d20kl"
+                dice = "2d20kl1"
             elif request.advantage == RollType.DOUBLE:
                 dice = "1d20"
                 roll_1 = self.createRoll(dice, data)
@@ -218,7 +218,7 @@ class Beyond20RollRenderer:
                 return roll_1
             else:
                 adv = v'await self.queryAdvantage(title)'
-                dice = "1d20" if adv == 0 else ("2d20" + ("kh" if adv == 1 else "kl"))
+                dice = "1d20" if adv == 0 else ("2d20" + ("kh1" if adv == 1 else "kl1"))
 
             return self.rollDice(request, title, dice, data)
         return async_function()
@@ -374,12 +374,12 @@ class Beyond20RollRenderer:
                     if request.advantage == RollType.NORMAL:
                         dice = "1d20"
                     elif request.advantage == RollType.ADVANTAGE:
-                        dice = "2d20kh"
+                        dice = "2d20kh1"
                     elif request.advantage == RollType.DISADVANTAGE:
-                        dice = "2d20kl"
+                        dice = "2d20kl1"
                     else:
                         adv = v'await self.queryAdvantage(request.name)'
-                        dice = "1d20" if adv == 0 else ("2d20" + ("kh" if adv == 1 else "kl"))
+                        dice = "1d20" if adv == 0 else ("2d20" + ("kh1" if adv == 1 else "kl1"))
                     to_hit = [new self._roller.roll(dice + to_hit_mod)]
                 is_critical = self.isCriticalHitD20(to_hit, critical_limit)
 
