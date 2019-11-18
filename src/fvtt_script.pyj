@@ -1,350 +1,163 @@
-from utils import addCustomEventListener, injectCSS, replaceRolls
-from settings import WhisperType, RollType
+from utils import addCustomEventListener, injectCSS
+from settings import WhisperType
 from constants import FVTT_CSS
-import math
+from roll_renderer import Beyond20RollRenderer
 
 settings = None
 extension_url = "/modules/beyond20/"
 
-class DAMAGE_FLAGS:
-    MESSAGE = 0
-    REGULAR = 1
-    VERSATILE = 2
-    ADDITIONAL = 4
-    HEALING = 8
-    CRITICAL = 0x10
+class FVTTDisplayer:
+    def postHTML(self, request, title, html, buttons, play_sound):
+        Hooks.once('renderChatMessage', def(chat_message, data, html):
+                    nonlocal extension_url
+                    icon16 = extension_url + "images/icons/icon16.png"
+                    html.find(".ct-beyond20-custom-icon").attr('src', icon16)
+                    html.find(".ct-beyond20-custom-roll").on('click', def(event):
+                        nonlocal roll_renderer
+                        roll = $(event.currentTarget).find(".beyond20-roll-formula").text()
+                        roll_renderer.rollDice(request, title, roll)
+                    )
+                    html.find(".beyond20-chat-button").on('click', def(event):
+                        button = $(event.currentTarget).text()
+                        buttons[button]()
+                    )
+                )
+        return self._postChatMessage(html, request.character.name, request.whisper, play_sound)
 
-def getSpeakerByName(name):
-    if name is None:
-        return ChatMessage.getSpeaker()
-    low_name = name.toLowerCase()
-    actor = game.actors.entities.find(def(actor): return actor.data.name.toLowerCase() == low_name;)
-    speaker = ChatMessage.getSpeaker({"actor": actor})
-    speaker["alias"] = name
-    return speaker
+    def postRoll(self, request, title, roll):
+        rollMode = self._whisperToRollMode(request.whisper)
+        roll._roll.toMessage({"speaker": self._getSpeakerByName(request.character.name),
+                              "flavor": title,
+                              "rollMode": rollMode})
+        return roll
 
-def whisperToRollMode(whisper):
-    try:
-        return {WhisperType.NO: "roll",
-                WhisperType.YES: "gmroll",
-                WhisperType.QUERY: game.settings.get("core", "rollMode")
-                }[whisper]
-    except:
-        return game.settings.get("core", "rollMode")
-
-v'async'
-def queryAdvantage(title):
-    nonlocal extension_url
-    icon = '<img style="border: 0px;" src="' + extension_url + "images/icons/icon16.png" + '"></img>'
-
-    return new Promise(def(resolve, reject):
-                           adv = 0
-                           new Dialog({"title": title,
-                             "content": "Choose roll mode for : " + title,
-                             "buttons": {"advantage": {"label": "Advantage",
-                                                       "icon": icon,
-                                                       "callback": def():
-                                                           nonlocal adv
-                                                           adv = 1
-                                                       },
-                                         "normal": {"label": "Normal",
-                                                    "icon": icon},
-                                         "disadvantage": {"label": "Disadvantage",
-                                                          "icon": icon,
-                                                          "callback": def():
-                                                              nonlocal adv
-                                                              adv = -1
-                                                          }
-                                         },
-                                       "default": "normal",
-                                       "close": def(html):
-                                           nonlocal adv
-                                           resolve(adv)
-                                       }).render(True)
-                       )
-
-def postChatMessage(message, character, whisper, play_sound=False):
-    nonlocal CHAT_MESSAGE_TYPES
-    # Prior to 0.3.6, CHAT_MESSAGE_TYPES wasn't defined
-    MESSAGE_TYPES = {"OOC": 1, "WHISPER": 4}
-    if CHAT_MESSAGE_TYPES?:
-        MESSAGE_TYPES = {"OOC": CHAT_MESSAGE_TYPES.OOC, "WHISPER": CHAT_MESSAGE_TYPES.WHISPER}
-    data = {"content": message, 
-            "user": game.user._id,
-            "speaker": getSpeakerByName(character)}
-    rollMode = whisperToRollMode(whisper)
-    if rollMode in ["gmroll", "blindroll"]:
-        data['type'] = MESSAGE_TYPES.WHISPER
-        data["whisper"] = ChatMessage.getWhisperIDs("GM")
-        if rollMode == "blindroll":
-            data["blind"] = True
-    else:
-        data['type'] = MESSAGE_TYPES.OOC
-    if play_sound:
-        data["sound"] = CONFIG.sounds.dice
-    return ChatMessage.create(data)
-
-def postRoll(roll, character, title, whisper):
-    rollMode = whisperToRollMode(whisper)
-    roll.toMessage({"speaker": getSpeakerByName(character),
-                    "flavor": title,
-                    "rollMode": rollMode})
-    return roll
-
-def checkRollForCrits(roll, cb):
-    for die in roll.dice:
-        for r in die.rolls:
-            if not (r.discarded ? False):
-                if cb(die.faces, r.roll):
-                    return True
-    return False
-
-def isCriticalHit(roll):
-    return checkRollForCrits(roll, def(faces, value): return value == faces;)
-
-def isCriticalFail(roll):
-    return checkRollForCrits(roll, def(faces, value): return value == 1;)
-
-def isCriticalHitD20(rolls, limit=20):
-    for roll in rolls:
-        if checkRollForCrits(roll, def(faces, value): return faces == 20 and value >= limit;):
-            return True
-    return False
-
-def injectRollsInDescription(description):
-    icon16 = "/modules/beyond20/images/icons/icon16.png"
-    replaceCB = def(dice, modifier):
-        dice_formula = ("1d20" if dice == "" else dice) + modifier
-        # <u> is filtered out in 0.3.2, so using <span> instead
-        return '<span class="ct-beyond20-custom-roll"><strong>' + dice + modifier + '</strong>' + \
-            '<img class="ct-beyond20-custom-icon" src="' + icon16 + \
-            '" style="margin-right: 3px; margin-left: 3px; border: 0px;"></img>' + \
-            '<span class="beyond20-roll-formula" style="display: none;">' + dice_formula + '</span></span>'
-    return replaceRolls(description, replaceCB)
-
-v'async'
-def rollToDetails(roll, is_total=False):
-    hit = isCriticalHit(roll)
-    fail = isCriticalFail(roll)
-    color = 'blue' if hit and fail else ('green' if hit else ('red' if fail else 'black'))
-    tooltip = v'await roll.getTooltip()'
-    if is_total:
-        total = "<span class='beyond20-roll-total dice-total'>" + roll.total + "</span>"
-    else:
-        total = roll.total
-    return "<span class='beyond20-tooltip' style='color: " + color + ";'>" + total + "<span class='dice-roll beyond20-tooltip-content'>" + \
-        "<div class='dice-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>"
-
-def rollsToCells(html):
-    result = ""
-    for roll in html.split(" | "):
-        result += '<div class="beyond20-roll-cell">' + roll + '</div>'
-    return result
-
-
-v'async'
-def postDescription(request, title, source, attributes, description, attack_rolls=[], roll_info=[], damage_rolls=[], buttons={}, open=False):
-    nonlocal settings
-    play_sound = False
-    # Handle the case where you don't want to auto-roll damages
-    if len(damage_rolls) > 0 and len(attack_rolls) > 0 and not settings["auto-roll-damage"]:
-        makeCB = def(request, title, source, attributes, description, damage_rolls):
-            roll_damages_args = {"damages": damage_rolls, "num_rolls": 0}
-            return def():
-                damages = roll_damages_args.damages
-                if roll_damages_args.num_rolls > 0:
-                    damages = rerollDamages(damages)
-                roll_damages_args.num_rolls += 1
-                postDescription(request, title, source, attributes, description, damage_rolls=damages)
-        buttons = {"Roll Damages": makeCB(request, title, source, attributes, description, damage_rolls)}
-        damage_rolls = []
-
-    html = '<div class="beyond20-message">'
-    if description:
-        html += "<details" + (" open" if open else "") + "><summary><a>" + title + "</a></summary>"
-        if source or attributes.length > 0:
-            html += "<table>"
-            if source:
-                html += "<tr><td colspan'2'><i>" + source + "</i></td></tr>"
-            for attr in attributes:
-                html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[attr] + "</td></tr>"
-            html += "</table>"
-        description = injectRollsInDescription(description).replace("\n", "</br>")
-        html += "<div class='beyond20-description'>" + description + "</div></details>"
-    else:
-        html = "<div class='beyond20-title'>" + title + "</div>"
-
-    #console.log("Rolls : ", attack_rolls, roll_info, damage_rolls)
-
-    for (name, value) in roll_info:
-        html += "<div class='beyond20-roll-result'><b>" + name + ": </b><span>" + value + "</span></div>"
-
-    if len(attack_rolls) > 0:
-        roll_html = ""
-        for i, roll in enumerate(attack_rolls):
-            if i > 0:
-                roll_html += " | "
-            roll_html += v'await rollToDetails(roll)'
-            play_sound = True
-        html += "<div class='beyond20-roll-result beyond20-roll-cells'>" + rollsToCells(roll_html) + "</div>"
-
-    add_totals = damage_rolls.filter(def(r): return (r[2] & DAMAGE_FLAGS.CRITICAL) == 0;).length > 1
-    total_damages = {}
-    for (roll_name, roll, flags) in damage_rolls:
-        is_total = not add_totals and (flags & DAMAGE_FLAGS.CRITICAL) == 0
-        if isinstance(roll, str):
-            roll_html = "<span>" + roll + "</span>"
+    def _postChatMessage(self, message, character, whisper, play_sound=False):
+        nonlocal CHAT_MESSAGE_TYPES
+        # Prior to 0.3.6, CHAT_MESSAGE_TYPES wasn't defined
+        MESSAGE_TYPES = {"OOC": 1, "WHISPER": 4}
+        if CHAT_MESSAGE_TYPES?:
+            MESSAGE_TYPES = {"OOC": CHAT_MESSAGE_TYPES.OOC, "WHISPER": CHAT_MESSAGE_TYPES.WHISPER}
+        data = {"content": message, 
+                "user": game.user._id,
+                "speaker": self._getSpeakerByName(character)}
+        rollMode = self._whisperToRollMode(whisper)
+        if rollMode in ["gmroll", "blindroll"]:
+            data['type'] = MESSAGE_TYPES.WHISPER
+            data["whisper"] = ChatMessage.getWhisperIDs("GM")
+            if rollMode == "blindroll":
+                data["blind"] = True
         else:
-            roll_html = v'await rollToDetails(roll, is_total)'
-        play_sound = True
-        roll_name = roll_name[0].toUpperCase() + roll_name[1:] + ": "
-        html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>"
-        if add_totals:
-            kind_of_damage = ""
-            if flags & DAMAGE_FLAGS.REGULAR:
-                kind_of_damage = "Critical Damage" if flags & DAMAGE_FLAGS.CRITICAL else "Damage"
-            elif flags & DAMAGE_FLAGS.VERSATILE:
-                kind_of_damage = "Critical Two-Handed Damage" if flags & DAMAGE_FLAGS.CRITICAL else "Two-Handed Damage"
-            elif flags & DAMAGE_FLAGS.HEALING:
-                kind_of_damage = "Healing"
-            elif flags & DAMAGE_FLAGS.ADDITIONAL:
-                # HACK Alert: crappy code
-                regular = "Critical Damage" if flags & DAMAGE_FLAGS.CRITICAL else "Damage"
-                versatile = "Critical Two-Handed Damage" if flags & DAMAGE_FLAGS.CRITICAL else "Two-Handed Damage"
-                if regular in total_damages:
-                    total_damages[regular] += " + " + str(roll.total)
-                if versatile in total_damages:
-                    total_damages[versatile] += " + " + str(roll.total)
-                continue
-            else:
-                continue
-            if kind_of_damage in total_damages:
-                total_damages[kind_of_damage] += " + " + str(roll.total)
-            else:
-                total_damages[kind_of_damage] = str(roll.total)
+            data['type'] = MESSAGE_TYPES.OOC
+        if play_sound:
+            data["sound"] = CONFIG.sounds.dice
+        return ChatMessage.create(data)
 
-    if len(total_damages) > 0:
-        html += "<div class='beyond20-roll-result'><b><hr/></b></div>"
-    roll = None
-    for key in total_damages:
-        is_total = roll is None
-        # to satisfy lint
-        is_total
-        roll = new Roll(total_damages[key]).roll()
-        roll_html = v'await rollToDetails(roll, is_total)'
-        html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>"
+    def _getSpeakerByName(self, name):
+        if name is None:
+            return ChatMessage.getSpeaker()
+        low_name = name.toLowerCase()
+        actor = game.actors.entities.find(def(actor): return actor.data.name.toLowerCase() == low_name;)
+        speaker = ChatMessage.getSpeaker({"actor": actor})
+        speaker["alias"] = name
+        return speaker
 
-    for button in buttons:
-        html += '<button class="beyond20-chat-button">' + button + '</button>'
-    html += "</div>"
+    def _whisperToRollMode(self, whisper):
+        try:
+            return {WhisperType.NO: "roll",
+                    WhisperType.YES: "gmroll",
+                    WhisperType.QUERY: game.settings.get("core", "rollMode")
+                    }[whisper]
+        except:
+            return game.settings.get("core", "rollMode")
 
-    Hooks.once('renderChatMessage', def(chat_message, data, html):
-                   nonlocal extension_url
-                   icon16 = extension_url + "images/icons/icon16.png"
-                   html.find(".ct-beyond20-custom-icon").attr('src', icon16)
-                   html.find(".ct-beyond20-custom-roll").on('click', def(event):
-                                                                roll = $(event.currentTarget).find(".beyond20-roll-formula").text()
-                                                                rollDice(request, title, roll)
-                                                            )
-                   html.find(".beyond20-chat-button").on('click', def(event):
-                                                             button = $(event.currentTarget).text()
-                                                             buttons[button]()
-                                                         )
-               )
-    return postChatMessage(html, request.character.name, request.whisper, play_sound)
 
-def createRoll(dice, data):
-    new_data = {}
-    parts = [dice]
-    for key in data:
-        if data[key] != "":
-            new_key = key.replace("_", "").toLowerCase()
-            new_data[new_key] = data[key]
-            parts.append(new_key)
-    return new Roll(parts.join(" + @"), new_data)
+class FVTTRoll:
+    def __init__(self, formula, data={}):
+        formula = formula.replace("ro<2", "r<=2")
+        self._roll = new Roll(formula, data).roll()
+        self._fail_limit = None
+        self._critical_limit = None
 
-def rollDice(request, title, dice, data={}):
-    roll = createRoll(dice, data)
-    return postRoll(roll, request.character.name, title, request.whisper)
+    @property
+    def total(self):
+        return self._roll.total
+    @property
+    def formula(self):
+        return self._roll.formula
+    @property
+    def dice(self):
+        return self._roll.dice
 
-v'async'
-def rollD20(request, title, data):
-    if request.advantage == RollType.NORMAL:
-        dice = "1d20"
-    elif request.advantage == RollType.ADVANTAGE:
-        dice = "2d20kh"
-    elif request.advantage == RollType.DISADVANTAGE:
-        dice = "2d20kl"
-    elif request.advantage == RollType.DOUBLE:
-        dice = "1d20"
-        roll_1 = createRoll(dice, data).roll()
-        roll_2 = createRoll(dice, data).roll()
-        console.log("Rolls :", roll_1, roll_2)
-        postDescription(request, title, None, {}, None, attack_rolls=[roll_1, roll_2])
-        return roll_1
-    else:
-        adv = v'await queryAdvantage(title)'
-        dice = "1d20" if adv == 0 else ("2d20" + ("kh" if adv == 1 else "kl"))
+    def getTooltip(self):
+        return self._roll.getTooltip()
 
-    return rollDice(request, title, dice, data)
-    
-def rollSkill(request, custom_roll_dice=""):
-    data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
+    def reroll(self):
+        self._roll = self._roll.reroll()
+        return self
 
-    # Custom skill
-    if request.modifier == "--" and request.character.abilities.length > 0:
-        nonlocal extension_url
-        icon = '<img style="border: 0px;" src="' + extension_url + "images/icons/icon16.png" + '"></img>'
+    def setCriticalLimit(self, limit):
+        self._critical_limit = limit
+    def setFailLimit(self, limit):
+        self._fail_limit = limit
 
-        prof = ""
-        prof_val = ""
-        if request.proficiency == "Proficiency":
-            prof = "proficiency"
-            prof_val = request.character.proficiency
-        elif request.proficiency == "Half Proficiency":
-            prof = "half_proficiency"
-            prof_val += math.floor(request.character.proficiency / 2)
-        elif request.proficiency == "Expertise":
-            prof = "expertise"
-            prof_val += request.character.proficiency * 2
-        formula = "1d20 + @ability " + ((" + @" + prof) if prof != "" else prof) + " + @custom_dice"
-        html = '<form>'
-        html += '<div class="form-group"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>'
-        html += '<div class="form-group"><label>Select Ability</label><select name="ability">'
-        modifiers = {}
-        for ability in request.character.abilities:
-            html += '<option value="' + ability[0] + '">' + ability[0] + '</option>'
-            modifiers[ability[0]] = ability[3]
-        html += "</select></div>"
-        html += '</form>'
-        new Dialog({"title": "Custom Skill",
-                    "content": html,
-                    "buttons": {"ok": {"label": request.skill,
-                                       "icon": icon}},
-                    "default": "ok",
-                    "close": def(html):
-                        ability = html.find('[name="ability"]').val()
-                        mod = modifiers[ability]
-                        data = {"ability": mod, "prof": prof_val, "custom_dice": custom_roll_dice}
-                        rollD20(request, request.skill + "(" + ability + ")", data)
-                    }).render(True)
-    else:
-        rollD20(request, request.skill + "(" + request.modifier + ")", data)
+    def checkRollForCrits(self, roll, cb):
+        for die in roll.dice:
+            for r in die.rolls:
+                if not (r.discarded ? False):
+                    if cb(die.faces, r.roll):
+                        return True
+        return False
 
-def rollAbility(request, custom_roll_dice=""): 
-    data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
-    rollD20(request, request.name + "(" + request.modifier + ")", data)
+    def isCriticalHit(self):
+        return self.checkRollForCrits(self._roll, def(faces, value):
+            limit = faces if self._critical_limit is None else self._critical_limit
+            return value >= limit
+        )
 
-def rollSavingThrow(request, custom_roll_dice=""):
-    data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
-    rollD20(request, request.name + " Save" + "(" + request.modifier + ")", data)
+    def isCriticalFail(self):
+        return self.checkRollForCrits(self._roll, def(faces, value):
+            limit = 1 if self._critical_limit is None else self._fail_limit
+            return value <= limit
+        )
 
+class FVTTRoller:
+    def roll(self, formula, data):
+        return FVTTRoll(formula, data)
+
+    def reroll(self, roll):
+        return roll.reroll()
+
+class FVTTPrompter:
+    def prompt(self, title, html, ok_label="OK", cancel_label="Cancel"):
+        return new Promise(def(resolve, reject):
+            nonlocal extension_url
+            icon = '<img style="border: 0px;" src="' + extension_url + "images/icons/icon16.png" + '"></img>'
+            ok_pressed = False
+            new Dialog({"title": title,
+                        "content": html,
+                        "buttons": {"ok": {"label": ok_label,
+                                            "icon": icon,
+                                            "callback": def():
+                                                nonlocal ok_pressed
+                                                ok_pressed = True
+                                            
+                                        },
+                                    "cancel": {"label": cancel_label}
+                                    },
+                        "default": "ok",
+                        "close": def(html):
+                            resolve(html if ok_pressed else None)
+                        }).render(True)
+        )
+
+roll_renderer = Beyond20RollRenderer(FVTTRoller(), FVTTPrompter(), FVTTDisplayer())
+roll_renderer.setBaseURL(extension_url)
+roll_renderer.setSettings(settings)
 
 def rollInitiative(request, custom_roll_dice=""):
-    nonlocal settings
+    nonlocal settings, roll_renderer
 
-    data = {"initiative": request.initiative, "custom_dice": custom_roll_dice}
-    rollD20(request, "Initiative" + "(" + request.initiative + ")", data).then(def(roll):
+    roll_renderer.handleRollRequest(request).then(def(roll):
         if settings["initiative-tracker"]:
             addInitiativeToCombat(roll)
     )
@@ -370,337 +183,17 @@ def addInitiativeToCombat(roll):
     else:
             ui.notifications.warn("Cannot add initiative to tracker: no token is currently selected")
 
-def rollHitDice(request):
-    rname = "Hit Dice" + (("(" + request.class + ")") if  request.multiclass else "")
-    rollDice(request, rname, request["hit-dice"], {})
 
-def rollDeathSave(request, custom_roll_dice=""):
-    rollD20(request, "Death Saving Throw", {"custom_dice": custom_roll_dice})
-
-def rollItem(request, custom_roll_dice=""):
-    source = request["item-type"].trim().toLowerCase()
-    if source == "tool, common" and request.character.abilities.length > 0:
-        nonlocal extension_url
-        icon = '<img style="border: 0px;" src="' + extension_url + "images/icons/icon16.png" + '"></img>'
-
-        proficiencies = {}
-        proficiencies["None"] = 0
-        proficiencies["Half Proficient"] = math.floor(request.character.proficiency / 2)
-        proficiencies["Proficient"] = request.character.proficiency
-        proficiencies["Expert"] = request.character.proficiency * 2
-        formula = "1d20 + @ability + @proficiency + @custom_dice"
-        html = '<form>'
-        html += '<div class="form-group"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>'
-        html += '<div class="form-group"><label>Select Ability</label><select name="ability">'
-        modifiers = {}
-        for ability in request.character.abilities:
-            html += '<option value="' + ability[0] + '">' + ability[0] + '</option>'
-            modifiers[ability[0]] = ability[3]
-        html += "</select></div>"
-        html += '<div class="form-group"><label>Select Proficiency</label><select name="proficiency">'
-        for prof in proficiencies:
-            html += '<option value="' + prof + '">' + prof + '</option>'
-        html += "</select></div>"
-        html += '</form>'
-        new Dialog({"title": "Using a tool",
-                    "content": html,
-                    "buttons": {"ok": {"label": request.name,
-                                       "icon": icon}},
-                    "default": "ok",
-                    "close": def(html):
-                        ability = html.find('[name="ability"]').val()
-                        mod = modifiers[ability]
-                        proficiency = html.find('[name="proficiency"]').val()
-                        prof_value = proficiencies[proficiency]
-                        data = {"ability": mod, "proficiency": prof_value, "custom_dice": custom_roll_dice}
-                        rollD20(request, request.name + "(" + ability + ")", data)
-                    }).render(True)
-    return rollTrait(request)
-
-def rollTrait(request):
-    if request["source-type"]?:
-        source = request["source-type"]
-        if request.source.length > 0:
-            source += ": " + request.source
-    elif request["item-type"]?:
-        source = request["item-type"]
-    else:
-        source = request.type
-
-    postDescription(request, request.name, source, {}, request.description, open=True)
-
-v'async'
-def queryDamageType(title, damage_types):
-    content = """
-    <div class="form-group">
-      <label>Choose Damage Type :</label>
-      <select id="damage_type" name="damage_type">
-      """
-    for i, option in enumerate(damage_types):
-        selected = " selected" if i == 0 else ""
-        value = damage_types[option]
-        if value:
-            content += '<option value="' + option + '"' + selected + '>' + option + '(' + value + ')' + '</option>'
-        else:
-            content += '<option value="' + option + '"' + selected + '>' + option + '</option>'
-    content += """
-      </select>
-    </div>
-    """
-    return new Promise(def(resolve, reject):
-                            new Dialog({"title": title,
-                                "content": content,
-                                "buttons": {"ok": {"label": "Roll"}},
-                                        "default": "ok",
-                                        "close": def(html):
-                                            resolve(html.find("#damage_type").val())
-                                        }).render(True)
-                        )
-    
-v'async'
-def buildAttackRolls(request, custom_roll_dice):
-    to_hit = []
-    damage_rolls = []
-    is_critical = False
-    if request["to-hit"]?:
-        critical_limit = 20
-        if request["attack-source"] == "item":
-            if request.character.type == "Character" and \
-                    "Improved Critical" in request.character["class-features"]:
-                critical_limit = 19
-            if request.character.type == "Character" and \
-                    "Superior Critical" in request.character["class-features"]:
-                critical_limit = 18
-
-        custom = "" if custom_roll_dice == "" else (" + " + custom_roll_dice)
-        to_hit_mod = " + " + request["to-hit"] + custom
-
-        if request.advantage == RollType.DOUBLE:
-            roll_1 = new Roll("1d20" + to_hit_mod).roll()
-            roll_2 = new Roll("1d20" + to_hit_mod).roll()
-            to_hit = [roll_1, roll_2]
-        else:
-            if request.advantage == RollType.NORMAL:
-                dice = "1d20"
-            elif request.advantage == RollType.ADVANTAGE:
-                dice = "2d20kh"
-            elif request.advantage == RollType.DISADVANTAGE:
-                dice = "2d20kl"
-            else:
-                adv = v'await queryAdvantage(request.name)'
-                dice = "1d20" if adv == 0 else ("2d20" + ("kh" if adv == 1 else "kl"))
-            to_hit = [new Roll(dice + to_hit_mod).roll()]
-        is_critical = isCriticalHitD20(to_hit, critical_limit)
-
-
-    if request.damages?:
-        damages = list(request.damages)
-        damage_types = list(request["damage-types"])
-        critical_damages = list(request["critical-damages"])
-        critical_damage_types = list(request["critical-damage-types"])
-        if request.name == "Chromatic Orb":
-            damage_choices = {}
-            critical_damage_choices = {}
-            for dmgtype in ["Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder"]:
-                idx = damage_types.index(dmgtype)
-                damage_choices[damage_types.pypop(idx)] = damages.pypop(idx)
-                idx = critical_damage_types.index(dmgtype)
-                if idx >= 0:
-                    critical_damage_choices[critical_damage_types.pypop(idx)] = critical_damages.pypop(idx)
-                    
-            chromatic_type = v'await queryDamageType(request.name, damage_choices)'
-            damages.insert(0, damage_choices[chromatic_type])
-            damage_types.insert(0, chromatic_type)
-            if chromatic_type in critical_damage_choices:
-                crit_damage = critical_damage_choices[chromatic_type]
-                critical_damages.insert(0, crit_damage)
-                critical_damage_types.insert(0, chromatic_type)
-        elif request.name == "Chaos Bolt":
-            for dmgtype in ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]:
-                idx = damage_types.index(dmgtype)
-                base_damage = damages.pypop(idx)
-                damage_types.pypop(idx)
-                idx = critical_damage_types.index(dmgtype)
-                crit_damage = critical_damages.pypop(idx)
-                critical_damage_types.pypop(idx)
-            damages.insert(0, base_damage)
-            damage_types.insert(0, "Chaotic energy")
-            critical_damages.insert(0, crit_damage)
-            critical_damage_types.insert(0, "Chaotic energy")
-
-        has_versatile = len(damage_types) > 1 and damage_types[1] == "Two-Handed"
-        for i in range(damages.length):
-            dmg = damages[i].replace("ro<2", "r<=2")
-            roll = new Roll(dmg).roll()
-            dmg_type = damage_types[i]
-            if dmg_type in ["Healing", "Disciple of Life"]:
-                damage_flags = DAMAGE_FLAGS.HEALING
-            elif i == 0:
-                damage_flags = DAMAGE_FLAGS.REGULAR
-            elif i == 1 and has_versatile:
-                damage_flags = DAMAGE_FLAGS.VERSATILE
-            else:
-                damage_flags = DAMAGE_FLAGS.ADDITIONAL
-            suffix = " Damage" if not (damage_flags & DAMAGE_FLAGS.HEALING) else ""
-            damage_rolls.append((dmg_type + suffix, roll, damage_flags))
-
-        if request.name == "Chaos Bolt":
-            for i, dmg_roll in enumerate(damage_rolls):
-                dmg_type, roll, flags = dmg_roll
-                if dmg_type == "Chaotic energy Damage" and roll.dice[0].faces == 8:
-                    chaos_bolt_damages = ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]
-                    damage_choices = {}
-                    for r in roll.dice[0].rolls:
-                        damage_choices[chaos_bolt_damages[r.roll - 1]] = None
-                    console.log("Damage choices : ", damage_choices, damage_choices.length)
-                    if Object.keys(damage_choices).length == 1:
-                        damage_rolls.append(("Chaotic energy leaps from the target to a different creature of your choice within 30 feet of it", "", DAMAGE_FLAGS.MESSAGE))
-                        chaotic_type = Object.keys(damage_choices)[0]
-                    else:
-                        chaotic_type = v'await queryDamageType(request.name, damage_choices)'
-                    damage_rolls[i] = (chaotic_type + " Damage", roll, flags)
-                    critical_damage_types[0] = chaotic_type
-                    break
-
-        if is_critical:
-            for i in range(critical_damages.length):
-                dmg = critical_damages[i].replace("ro<2", "r<=2")
-                roll = new Roll(dmg).roll()
-                dmg_type = critical_damage_types[i]
-                if dmg_type in ["Healing", "Disciple of Life"]:
-                    damage_flags = DAMAGE_FLAGS.HEALING
-                elif i == 0:
-                    damage_flags = DAMAGE_FLAGS.REGULAR
-                elif i == 1 and has_versatile:
-                    damage_flags = DAMAGE_FLAGS.VERSATILE
-                else:
-                    damage_flags = DAMAGE_FLAGS.ADDITIONAL
-                suffix = " Critical Damage" if not (damage_flags & DAMAGE_FLAGS.HEALING) else ""
-                damage_rolls.append((dmg_type + suffix, roll, damage_flags | DAMAGE_FLAGS.CRITICAL))
-
-    return [to_hit, damage_rolls]
-
-def rerollDamages(rolls):
-    new_rolls = []
-    for (roll_name, roll, flags) in rolls:
-        if isinstance(roll, str) or isinstance(roll, list):
-            new_rolls.append((roll_name, roll, flags))
-        else:
-            new_rolls.append((roll_name, roll.reroll(), flags))
-    return new_rolls
-
-v'async'
-def rollAttack(request, custom_roll_dice=""):
-    nonlocal settings
-
-    [to_hit, damage_rolls] = v'await buildAttackRolls(request, custom_roll_dice)'
-
-    data = {}
-    if request.range?:
-        data["Range"] = request.range
-
-    roll_info = []
-    if request["save-dc"]?:
-        roll_info.append(("Save", request["save-ability"] + " DC " + request["save-dc"]))
-
-    postDescription(request, request.name, None, data, request.description? "", to_hit, roll_info, damage_rolls)
-
-
-
-def buildSpellCard(request):
-    data = {"Casting Time": request["casting-time"],
-            "Range": request.range,
-            "Duration": request.duration,
-            "Components": request.components}
-
-    if request["cast-at"]?:
-        source = request["level-school"] + "(Cast at " + request["cast-at"] + " Level)"
-    else:
-        source = request["level-school"]
-                                                    
-    
-    if request.ritual:
-        data["Ritual"] = "Can be cast as a ritual"
-    if request.concentration:
-        data["Concentration"] = "Requires Concentration"
-    description = request.description.replace("At Higher Levels.", "</br><b>At Higher levels.</b>")
-
-    return (source, data, description)
-
-def rollSpellCard(request):
-    spell_card = buildSpellCard(request)
-    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], open=True)
-
-v'async'
-def rollSpellAttack(request, custom_roll_dice):
-    nonlocal settings
-
-    spell_card = buildSpellCard(request)
-
-    roll_info = []
-    if request.range?:
-        roll_info.append(("Range", request.range))
-
-    if request["cast-at"]?:
-        roll_info.append(("Cast at", request["cast-at"] + " Level"))
-    components = request.components
-    prefix = settings["component-prefix"] if settings["component-prefix"] != "" else None
-    if settings["components-display"] == "all":
-        if components != "":
-            roll_info.append((prefix or "Components", components))
-    elif settings["components-display"] == "material":
-        while components != "":
-            if components[0] in ["V", "S"]:
-                components = components[1:]
-                if components.startsWith(", "):
-                    components = components[2:]
-            if components[0] == "M":
-                roll_info.append((prefix or "Materials", settings["component-prefix"] + components[2:-1]))
-                components = ""
-
-    if request["save-dc"]?:
-        roll_info.append(("Save", request["save-ability"] + " DC " + request["save-dc"]))
-
-    [attack_rolls, damage_rolls] = v'await buildAttackRolls(request, custom_roll_dice)'
-
-    postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], attack_rolls, roll_info, damage_rolls)
 
 def handleRoll(request):
-    nonlocal settings
+    nonlocal roll_renderer
 
     console.log("Received roll request ", request)
 
-    custom_roll_dice = ""
-    if request.character.type == "Character":
-        custom_roll_dice = request.character.settings["custom-roll-dice"] ? ""
-    if request.type == "skill":
-        rollSkill(request, custom_roll_dice)
-    elif request.type == "ability":
-        rollAbility(request, custom_roll_dice)
-    elif request.type == "saving-throw":
-        rollSavingThrow(request, custom_roll_dice)
-    elif request.type == "initiative":
-        rollInitiative(request, custom_roll_dice)
-    elif request.type == "hit-dice":
-        rollHitDice(request)
-    elif request.type == "item":
-        rollItem(request, custom_roll_dice)
-    elif request.type in ["feature", "trait", "action"]:
-        rollTrait(request)
-    elif request.type == "death-save":
-        rollDeathSave(request, custom_roll_dice)
-    elif request.type == "attack":
-        rollAttack(request, custom_roll_dice)
-    elif request.type == "spell-card":
-        rollSpellCard(request)
-    elif request.type == "spell-attack":
-        rollSpellAttack(request, custom_roll_dice)
+    if request.type == "initiative":
+        rollInitiative(request)
     else:
-        # 'custom' or anything unexpected
-        mod = request.modifier if request.modifier? else request.roll
-        rname = request.name if request.name? else request.type
-
-        rollDice(request, rname + "(" + mod + ")", mod, {})
+        roll_renderer.handleRollRequest(request)
 
 def updateHP(name, current, total=None):
     console.log("Updating HP for " + name + " : " + current + "/" + total)
@@ -735,9 +228,12 @@ def updateHP(name, current, total=None):
                 token.update(canvas.id, {prefix + ".value": current,
                                          prefix + ".max": total})
 def setSettings(new_settings, url):
-    nonlocal settings, extension_url
+    nonlocal settings, extension_url, roll_renderer
+
     settings = new_settings
     extension_url = url
+    roll_renderer.setBaseURL(extension_url)
+    roll_renderer.setSettings(settings)
 
 def disconnectAllEvents():
     nonlocal registered_events

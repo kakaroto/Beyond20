@@ -20,6 +20,7 @@ src/constants.pyj-cached: PYJ_FLAGS+=--noqa eol-semicolon
 all:  $(PYJ_DEPS:=-cached) $(JS_FILES)
 
 $(JS_FILES): $(PYJ_DEPS)
+src/fvtt_script.js: src/roll_renderer.js
 
 build: all
 	rm -f *~ */*~ */*/*~ src/*.pyj-cached
