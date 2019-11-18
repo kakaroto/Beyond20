@@ -1,5 +1,6 @@
 from utils import replaceRolls, alertQuickSettings
 from settings import getStoredSettings, mergeSettings, character_settings, WhisperType, RollType
+from dndbeyond_dice import dndbeyondDiceRoller
 from elementmaker import E
 import uuid
 import re
@@ -32,7 +33,8 @@ skill_abilities = {"Acrobatics": "DEX",
 
 
 class Spell:
-    def __init__(self, body, type="page"):
+    def __init__(self, body, character, type="page"):
+        self._character = character
         if type == "page":
             title_selector = ".page-title"
             statblock_selector = ".ddb-statblock"
@@ -78,8 +80,8 @@ class Spell:
             aoe_len = len(aoe)
             self.range_area = self.range_area[:-aoe_len].trim() + " " + aoe.trim()
 
-    def send(self, character):
-        sendRoll(character, "spell-card", 0, {
+    def display(self):
+        sendRoll(self._character, "spell-card", 0, {
             "name": self.spell_name,
             "level-school": self.level_school,
             "range": self.range_area,
@@ -114,6 +116,7 @@ class CharacterBase:
 
     def setGlobalSettings(self, new_settings):
         self._global_settings = new_settings
+        dndbeyondDiceRoller.setSettings(new_settings)
 
     def getDict(self):
         return {"name": self._name, "type": self._type}
@@ -233,7 +236,7 @@ class Character(CharacterBase):
 
             req = {"action": "hp-update", "character": self.getDict()}
             console.log("Sending message: ", req)
-            chrome.runtime.sendMessage(req, beyond20SendMessageFailure)
+            chrome.runtime.sendMessage(req, def(resp): beyond20SendMessageFailure(self, resp);)
 
     def featureDetailsToList(self, selector):
         features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading")
@@ -705,13 +708,13 @@ class Monster(CharacterBase):
         $(".ct-beyond20-spell-icon").on('click', def(event):
             spell_url = $(event.currentTarget).attr("x-beyond20-spell-url")
             if spell_url in self._spells:
-                self._spells[spell_url].send(self)
+                self._spells[spell_url].display()
             else:
                 console.log("Fetching Spell Tooltip from URL : ", spell_url)
                 $.get(spell_url, def(text):
                     spell_json = JSON.parse(text[1:-1])
-                    spell = Spell($(spell_json.Tooltip), "tooltip")
-                    spell.send(self)
+                    spell = Spell($(spell_json.Tooltip), self, "tooltip")
+                    spell.display()
                     self._spells[spell_url] = spell
                 )
         )
@@ -863,7 +866,7 @@ def sendRoll(character, rollType, fallback, args):
     for key in args:
         req[key] = args[key]
     console.log("Sending message: ", req)
-    chrome.runtime.sendMessage(req, beyond20SendMessageFailure)
+    chrome.runtime.sendMessage(req, def(resp): beyond20SendMessageFailure(character, resp);)
 
 def isRollButtonAdded():
     return $(".ct-beyond20-roll").length > 0
@@ -1002,11 +1005,13 @@ def injectDiceToRolls(selector, character, name=""):
         sendRoll(character, "custom", roll, {"name": name})
     )
 
-
-def beyond20SendMessageFailure(response):
+def beyond20SendMessageFailure(character, response):
     console.log("Received response : ", response)
     if response.error?:
-        alertify.error("<strong>Beyond 20 : </strong>" + response.error)
+        if response.request.action == "roll":
+            dndbeyondDiceRoller.handleRollError(response.request, response.error)
+        else:
+            alertify.error("<strong>Beyond 20 : </strong>" + response.error)
 
 alertify.set("alert", "title", "Beyond 20")
 alertify.set("notifier", "position", "top-center")

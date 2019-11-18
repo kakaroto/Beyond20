@@ -1,6 +1,5 @@
-from utils import addCustomEventListener, injectCSS
+from utils import addCustomEventListener
 from settings import WhisperType
-from constants import FVTT_CSS
 from roll_renderer import Beyond20RollRenderer
 
 settings = None
@@ -252,7 +251,6 @@ def setTitle():
         setTimeout(setTitle, 1000)
 
 console.log("Beyond20: FVTT Page Script loaded")
-injectCSS(FVTT_CSS)
 registered_events = []
 registered_events.append(addCustomEventListener("Roll", handleRoll))
 registered_events.append(addCustomEventListener("NewSettings", setSettings))

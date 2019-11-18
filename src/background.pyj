@@ -169,7 +169,7 @@ def onMessage(request, sender, sendResponse):
     return False
 
 def injectFVTTScripts(tab):
-    insertCSSs([tab], ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css"])
+    insertCSSs([tab], ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css", "src/beyond20.css"])
     executeScripts([tab], ["libs/alertify.min.js", "libs/jquery-3.4.1.min.js", "src/fvtt.js"])
 
 def insertCSSs(tabs, css_files):

@@ -1,0 +1,263 @@
+
+from roll_renderer import Beyond20RollRenderer
+from settings import getDefaultSettings
+import re
+
+class DNDBDisplayer:
+    def __init__(self):
+        self._error = ""
+
+    def postHTML(self, request, title, html, buttons, play_sound):
+        content = "<div class='beyond20-dice-roller'>" + \
+                "<div class='beyond20-roller-error'><span class='beyond20-tooltip'>Virtual Table Top Not Found" + \
+                    "<span class='beyond20-tooltip-content'>" + self._error + "</span>" + \
+                "</span></div>" + \
+                "<div class='beyond20-dice-roll-result'>" + html + "</div>" + \
+            "</div>"
+        dlg = alertify.alert(title, content)
+        element = $(dlg.elements.content.firstElementChild)
+        icon16 = chrome.runtime.getURL("images/icons/icon16.png")
+        element.find(".ct-beyond20-custom-icon").attr('src', icon16)
+        element.find(".ct-beyond20-custom-roll").on('click', def(event):
+            nonlocal dndbeyondDiceRoller
+            roll = $(event.currentTarget).find(".beyond20-roll-formula").text()
+            dndbeyondDiceRoller.rollDice(request, title, roll)
+        )
+        element.find(".beyond20-chat-button").on('click', def(event):
+            button = $(event.currentTarget).text()
+            buttons[button]()
+        )
+
+    def postRoll(self, request, title, roll):
+        this.postHTML(request, title, roll.toHTML(), {}, False)
+        return roll
+
+    def setError(self, error):
+        self._error = error
+
+class DNDBDice:
+    def __init__(self, amount, faces, reroll2=False):
+        self.amount = amount
+        self.faces = faces
+        self._reroll2 = reroll2 or False
+        self._rolls = []
+
+    def roll(self):
+        self._total = 0
+        self._rolls = []
+        for i in range(self.amount):
+            die = Math.floor(Math.random() * self.faces) + 1
+            if self._reroll2 and die <= 2:
+                self._rolls.append({"roll": die, "discarded": True})
+                die = Math.floor(Math.random() * self.faces) + 1
+            self._total += die
+            self._rolls.append({"roll": die})
+        return self._total
+
+    @property
+    def total(self):
+        return self._total
+    @property
+    def formula(self):
+        return self.amount + "d" + self.faces
+    @property
+    def rolls(self):
+        return self._rolls or []
+
+class DNDBRoll:
+    def __init__(self, formula, data={}):
+        self._formula = formula
+        self._data = data
+        self._fail_limit = None
+        self._critical_limit = None
+        self._parts = []
+        parts = formula.split("+")
+        for part in parts:
+            part = part.trim()
+            if part[0] == "@":
+                if data[part[1:]] ?:
+                    part = data[part[1:]]
+            
+            match = re.search("([0-9])*d([0-9]+)(ro<2)?", part)
+            if match?:
+                part = DNDBDice(match.group(1), match.group(2), match.group(3))
+                self._parts.append(part)
+            else:
+                try:
+                    part = int(part)
+                    self._parts.append(part)
+                except:
+                    pass
+        self.roll()
+
+    @property
+    def total(self):
+        return self._total
+    @property
+    def formula(self):
+        formula = ""
+        first = True
+        for part in self._parts:
+            if not first:
+                formula += " + "
+            first = False
+            if isinstance(part, DNDBDice):
+                formula += part.formula
+            else:
+                formula += part
+        return formula
+    @property
+    def dice(self):
+        dice = []
+        for part in self._parts:
+            if isinstance(part, DNDBDice):
+                dice.append(part)
+        return dice
+
+    def roll(self):
+        self._total = 0
+        for part in self._parts:
+            if isinstance(part, DNDBDice):
+                self._total += part.roll()
+            else:
+                self._total += part
+
+    def getTooltip(self):
+        tooltip = self.formula + " = "
+        first = True
+        for part in self._parts:
+            if not first:
+                tooltip += " + "
+            first = False
+            if isinstance(part, DNDBDice):
+                tooltip += "("
+                first_die = True
+                for die in part.rolls:
+                    if not first_die:
+                        tooltip += " + "
+                    first_die = False
+                    if die.discarded ? False:
+                        tooltip += "<span style='text-decoration: line-through;'>" + die.roll + "</span>"
+                    else:
+                        tooltip += die.roll
+                tooltip += ")"
+            else:
+                tooltip += part
+        return tooltip
+
+    def toHTML(self):
+        hit = self.isCriticalHit()
+        fail = self.isCriticalFail()
+        color = 'blue' if hit and fail else ('green' if hit else ('red' if fail else 'black'))
+        return "<div class='beyond20-roll-result'><span class='beyond20-tooltip' style='color: " + color + ";'>" + self.total + "<span class='dice-roll beyond20-tooltip-content'>" + \
+                "<div class='dice-formula'>" + self.formula + "</div>" + self.getTooltip() + "</span></span></div>"
+
+    def reroll(self):
+        self.roll()
+        return self
+
+    def setCriticalLimit(self, limit):
+        self._critical_limit = limit
+    def setFailLimit(self, limit):
+        self._fail_limit = limit
+
+    def checkRollForCrits(self, cb):
+        for die in self.dice:
+            for r in die.rolls:
+                if not (r.discarded ? False):
+                    if cb(die.faces, r.roll):
+                        return True
+        return False
+
+    def isCriticalHit(self):
+        return self.checkRollForCrits(def(faces, value):
+            limit = faces if self._critical_limit is None else self._critical_limit
+            return value >= limit
+        )
+
+    def isCriticalFail(self):
+        return self.checkRollForCrits(def(faces, value):
+            limit = 1 if self._critical_limit is None else self._fail_limit
+            return value <= limit
+        )
+
+class DNDBRoller:
+    def roll(self, formula, data):
+        return DNDBRoll(formula, data)
+
+    def reroll(self, roll):
+        return roll.reroll()
+
+window.DNDBRoll = DNDBRoll
+window.DNDBDice = DNDBDice
+
+if not alertify.Beyond20Prompt?:
+    factory = def():
+        return {
+            "settings": {
+                "content": undefined,
+                "ok_label": undefined,
+                "cancel_label": undefined,
+                "resolver": undefined,
+            },
+            "main": def (title, content, ok_label, cancel_label, resolver):
+                this.set('title', title)
+                this.set('content', content)
+                this.set('resolver', resolver)
+                this.set('ok_label', ok_label)
+                this.set("cancel_label", cancel_label)
+            ,
+            "setup": def():
+                return {
+                    "buttons": [
+                        {
+                            "text": alertify.defaults.glossary.ok,
+                            "key": 13, #keys.ENTER
+                            "className": alertify.defaults.theme.ok,
+                        },
+                        {
+                            "text": alertify.defaults.glossary.cancel,
+                            "key": 27, #keys.ESC
+                            "invokeOnClose": True,
+                            "className": alertify.defaults.theme.cancel,
+                        }
+                    ],
+                    "focus": {
+                        "element": 0,
+                        "select": True
+                    },
+                    "options": {
+                        "maximizable": False,
+                        "resizable": False
+                    }
+                }
+            ,
+            "build": def ():
+                pass #nothing
+            ,
+            "prepare": def():
+                this.elements.content.innerHTML = this.get('content')
+                this.__internal.buttons[0].element.innerHTML = this.get('ok_label')
+                this.__internal.buttons[1].element.innerHTML = this.get('cancel_label')
+            ,
+            "callback": def (closeEvent):
+                if closeEvent.index == 0:
+                    this.get('resolver').call(this, $(this.elements.content.firstElementChild))
+                else:
+                    this.get('resolver').call(this, None)
+        }
+    alertify.dialog('Beyond20Prompt', factory, False, "prompt")
+
+class DNDBPrompter:
+    def prompt(self, title, html, ok_label="OK", cancel_label="Cancel"):
+        return new Promise(def(resolve, reject):
+            alertify.Beyond20Prompt(title, html, ok_label, cancel_label, resolve)
+        )
+
+
+dndbeyondDiceRoller = Beyond20RollRenderer(DNDBRoller(), DNDBPrompter(), DNDBDisplayer())
+dndbeyondDiceRoller.setBaseURL(chrome.runtime.getURL(""))
+dndbeyondDiceRoller.setSettings(getDefaultSettings())
+dndbeyondDiceRoller.handleRollError = def(request, error):
+    dndbeyondDiceRoller._displayer.setError(error)
+    return dndbeyondDiceRoller.handleRollRequest(request)

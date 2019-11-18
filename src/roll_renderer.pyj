@@ -27,7 +27,7 @@ class Beyond20RollRenderer:
     def queryAdvantage(self, title):
         return new Promise(def(resolve, reject):
             html = '<form>' + \
-                    '<div class="form-group">' + \
+                    '<div class="beyond20-form-row">' + \
                         '<label>Select roll mode : </label>' + \
                         '<select name="rollMode">' + \
                             '<option value="1">Advantage</option>' + \
@@ -241,8 +241,8 @@ class Beyond20RollRenderer:
                 prof_val += request.character.proficiency * 2
             formula = "1d20 + @ability " + ((" + @" + prof) if prof != "" else prof) + " + @custom_dice"
             html = '<form>'
-            html += '<div class="form-group"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>'
-            html += '<div class="form-group"><label>Select Ability</label><select name="ability">'
+            html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>'
+            html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">'
             modifiers = {}
             for ability in request.character.abilities:
                 html += '<option value="' + ability[0] + '">' + ability[0] + '</option>'
@@ -288,14 +288,14 @@ class Beyond20RollRenderer:
             proficiencies["Expert"] = request.character.proficiency * 2
             formula = "1d20 + @ability + @proficiency + @custom_dice"
             html = '<form>'
-            html += '<div class="form-group"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>'
-            html += '<div class="form-group"><label>Select Ability</label><select name="ability">'
+            html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>'
+            html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">'
             modifiers = {}
             for ability in request.character.abilities:
                 html += '<option value="' + ability[0] + '">' + ability[0] + '</option>'
                 modifiers[ability[0]] = ability[3]
             html += "</select></div>"
-            html += '<div class="form-group"><label>Select Proficiency</label><select name="proficiency">'
+            html += '<div class="beyond20-form-row"><label>Select Proficiency</label><select name="proficiency">'
             for prof in proficiencies:
                 html += '<option value="' + prof + '">' + prof + '</option>'
             html += "</select></div>"
@@ -325,7 +325,7 @@ class Beyond20RollRenderer:
 
     def queryDamageType(self, title, damage_types):
         content = """
-        <div class="form-group">
+        <div class="beyond20-form-row">
         <label>Choose Damage Type :</label>
         <select id="damage_type" name="damage_type">
         """

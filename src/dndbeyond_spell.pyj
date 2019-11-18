@@ -10,19 +10,19 @@ class FakeCharacter(CharacterBase):
 character = None
 
 def addDisplayButton():
+    nonlocal character
     icon32 = chrome.extension.getURL("images/icons/icon32.png")
     button = E.a(class_="ct-beyond20-roll button-alt", href="#",
                  E.span(class_="label",
                         E.img(class_="ct-beyond20-icon", src=icon32, style="margin-right: 10px;"),
                         "Display Spell Card on VTT")
                  )
-    spell = Spell($("body"))
+    spell = Spell($("body"), character)
     $(".page-heading__content").append(button)
     $(".ct-beyond20-roll").css({"float": "right",
                                 "display": "inline-block"})
     $(".ct-beyond20-roll").on('click', def(event):
-        nonlocal character
-        spell.send(character)
+        spell.display()
     )
 
 def documentLoaded(settings):
@@ -37,9 +37,25 @@ def documentLoaded(settings):
         if settings['subst-dndbeyond']:
             injectDiceToRolls(".spell-details .more-info-content", character, spell_name)
 
+def updateSettings(new_settings=None):
+    nonlocal character
+
+    if new_settings:
+        if character is not None:
+            character.setGlobalSettings(new_settings)
+    else:
+        getStoredSettings(def(saved_settings):
+            updateSettings(saved_settings)
+            documentLoaded(saved_settings)
+        )
+
+def handleMessage (request, sender, sendResponse):
+    if request.action == "settings":
+        if request.type == "general":
+            updateSettings(request.settings)
+
+chrome.runtime.onMessage.addListener(handleMessage)
 chrome.runtime.sendMessage({"action": "activate-icon"})
-getStoredSettings(def(settings):
-                      documentLoaded(settings)
-                  )
+updateSettings()
 
 

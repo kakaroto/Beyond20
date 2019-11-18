@@ -47,7 +47,8 @@
 			"css": [
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css"
+				"libs/css/alertify-themes/beyond20.css",
+				"src/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
@@ -62,7 +63,8 @@
 			"css": [
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css"
+				"libs/css/alertify-themes/beyond20.css",
+				"src/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
@@ -77,7 +79,8 @@
 			"css": [
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css"
+				"libs/css/alertify-themes/beyond20.css",
+				"src/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
@@ -92,7 +95,8 @@
 			"css": [
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css"
+				"libs/css/alertify-themes/beyond20.css",
+				"src/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
@@ -108,7 +112,8 @@
 			"css": [
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css"
+				"libs/css/alertify-themes/beyond20.css",
+				"src/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",

@@ -3728,7 +3728,6 @@ var str = ρσ_str, repr = ρσ_repr;;
     ρσ_modules.elementmaker = {};
     ρσ_modules.utils = {};
     ρσ_modules.settings = {};
-    ρσ_modules.constants = {};
     ρσ_modules.math = {};
     ρσ_modules.roll_renderer = {};
 
@@ -6725,35 +6724,6 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
-        var __name__ = "constants";
-        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, FVTT_CSS, ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY;
-        ROLL20_URL = "*://app.roll20.net/editor/";
-        FVTT_URL = "*://*/game";
-        DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
-        DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
-        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
-        DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
-        DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
-        CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
-        BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
-        FVTT_CSS = "\n/* This is needed so the tooltip's absolute position is\n * relative to the message's position in the chatlog\n */\n.beyond20-roll-result {\n   position: relative;\n}\n\n.beyond20-roll-total {\n    text-decoration: underline;\n}\n.beyond20-message details summary, .beyond20-title {\n    font-style: italic;\n    color: #500;\n    font-size: 1.2em;\n}\n\n.beyond20-message .beyond20-description, .beyond20-message details table {\n    margin: 2px 0px;\n    border: 1px solid #333;\n    width: 100%;\n    border-spacing: 0;\n    border-collapse: collapse;\n    background-color: #DDD;\n}\n\n\n.beyond20-roll-cells {\n    display: flex;\n    flex-direction: row;\n    flex-wrap: nowrap;\n}\n\n.beyond20-roll-cell {\n    flex: 1 0 auto;\n    margin: 1px;\n \n    text-align: center;\n    border: thin solid black;\n    border-radius: 2px;\n    background-color: lightgray;\n}\n \n\n.beyond20-tooltip .beyond20-tooltip-content {\n    display: none;\n    background-color: #f5f2ec;\n    text-align: left;\n    border-radius: 6px;\n    padding: 5px 10px;\n    margin: 10px;\n    width: 90%;\n    top: -50%;\n    left: 0;\n    border: 2px solid black;\n\n    /* Position the tooltip */\n    position: absolute;\n    z-index: 1;\n}\n\n.beyond20-tooltip:hover .beyond20-tooltip-content {\n    display: block;\n    /* Move the tooltip above the parent element. */\n    transform: translate(0, -100%);\n}\n\n.beyond20-tooltip-content .dice-tooltip {\n    display: block;\n}\n";
-        ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
-        ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125}}";
-        ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
-        ρσ_modules.constants.FVTT_URL = FVTT_URL;
-        ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
-        ρσ_modules.constants.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
-        ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
-        ρσ_modules.constants.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
-        ρσ_modules.constants.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
-        ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
-        ρσ_modules.constants.BUTTON_STYLE_CSS = BUTTON_STYLE_CSS;
-        ρσ_modules.constants.FVTT_CSS = FVTT_CSS;
-        ρσ_modules.constants.ROLL20_WHISPER_QUERY = ROLL20_WHISPER_QUERY;
-        ρσ_modules.constants.ROLL20_ADVANTAGE_QUERY = ROLL20_ADVANTAGE_QUERY;
-    })();
-
-    (function(){
         var __name__ = "math";
         var pi, e;
         pi = Math.PI;
@@ -7188,7 +7158,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             return new Promise((function() {
                 var ρσ_anonfunc = function (resolve, reject) {
                     var html;
-                    html = "<form>" + "<div class=\"form-group\">" + "<label>Select roll mode : </label>" + "<select name=\"rollMode\">" + "<option value=\"1\">Advantage</option>" + "<option value=\"0\">Normal Roll</option>" + "<option value=\"-1\">Disadvantage</option>" + "</select>" + "</div>" + "</form>";
+                    html = "<form>" + "<div class=\"beyond20-form-row\">" + "<label>Select roll mode : </label>" + "<select name=\"rollMode\">" + "<option value=\"1\">Advantage</option>" + "<option value=\"0\">Normal Roll</option>" + "<option value=\"-1\">Disadvantage</option>" + "</select>" + "</div>" + "</form>";
                     self._prompter.prompt(title, html, "Roll").then((function() {
                         var ρσ_anonfunc = function (html) {
                             var rollMode;
@@ -7586,8 +7556,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 formula = "1d20 + @ability " + (((prof !== "" && (typeof prof !== "object" || ρσ_not_equals(prof, "")))) ? " + @" + prof : prof) + " + @custom_dice";
                 html = "<form>";
-                html += "<div class=\"form-group\"><label>Roll Formula</label><input type=\"text\" value=\"" + formula + "\" disabled></div>";
-                html += "<div class=\"form-group\"><label>Select Ability</label><select name=\"ability\">";
+                html += "<div class=\"beyond20-form-row\"><label>Roll Formula</label><input type=\"text\" value=\"" + formula + "\" disabled></div>";
+                html += "<div class=\"beyond20-form-row\"><label>Select Ability</label><select name=\"ability\">";
                 modifiers = {};
                 var ρσ_Iter9 = ρσ_Iterable(request.character.abilities);
                 for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
@@ -7745,8 +7715,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 proficiencies["Expert"] = request.character.proficiency * 2;
                 formula = "1d20 + @ability + @proficiency + @custom_dice";
                 html = "<form>";
-                html += "<div class=\"form-group\"><label>Roll Formula</label><input type=\"text\" value=\"" + formula + "\" disabled></div>";
-                html += "<div class=\"form-group\"><label>Select Ability</label><select name=\"ability\">";
+                html += "<div class=\"beyond20-form-row\"><label>Roll Formula</label><input type=\"text\" value=\"" + formula + "\" disabled></div>";
+                html += "<div class=\"beyond20-form-row\"><label>Select Ability</label><select name=\"ability\">";
                 modifiers = {};
                 var ρσ_Iter10 = ρσ_Iterable(request.character.abilities);
                 for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
@@ -7755,7 +7725,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     modifiers[ρσ_bound_index(ability[0], modifiers)] = ability[3];
                 }
                 html += "</select></div>";
-                html += "<div class=\"form-group\"><label>Select Proficiency</label><select name=\"proficiency\">";
+                html += "<div class=\"beyond20-form-row\"><label>Select Proficiency</label><select name=\"proficiency\">";
                 var ρσ_Iter11 = ρσ_Iterable(proficiencies);
                 for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
                     prof = ρσ_Iter11[ρσ_Index11];
@@ -7815,7 +7785,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         Beyond20RollRenderer.prototype.queryDamageType = function queryDamageType(title, damage_types) {
             var self = this;
             var content, selected, value, ρσ_unpack, i, option;
-            content = "\n        <div class=\"form-group\">\n        <label>Choose Damage Type :</label>\n        <select id=\"damage_type\" name=\"damage_type\">\n        ";
+            content = "\n        <div class=\"beyond20-form-row\">\n        <label>Choose Damage Type :</label>\n        <select id=\"damage_type\" name=\"damage_type\">\n        ";
             var ρσ_Iter12 = ρσ_Iterable(enumerate(damage_types));
             for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
                 ρσ_unpack = ρσ_Iter12[ρσ_Index12];
@@ -8206,11 +8176,8 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         var settings, extension_url, roll_renderer, registered_events;
         var addCustomEventListener = ρσ_modules.utils.addCustomEventListener;
-        var injectCSS = ρσ_modules.utils.injectCSS;
 
         var WhisperType = ρσ_modules.settings.WhisperType;
-
-        var FVTT_CSS = ρσ_modules.constants.FVTT_CSS;
 
         var Beyond20RollRenderer = ρσ_modules.roll_renderer.Beyond20RollRenderer;
 
@@ -8463,12 +8430,12 @@ var str = ρσ_str, repr = ρσ_repr;;
         FVTTRoll.prototype.checkRollForCrits = function checkRollForCrits(roll, cb) {
             var self = this;
             var r, die;
-            var ρσ_Iter20 = ρσ_Iterable(roll.dice);
-            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
-                die = ρσ_Iter20[ρσ_Index20];
-                var ρσ_Iter21 = ρσ_Iterable(die.rolls);
-                for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
-                    r = ρσ_Iter21[ρσ_Index21];
+            var ρσ_Iter0 = ρσ_Iterable(roll.dice);
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                die = ρσ_Iter0[ρσ_Index0];
+                var ρσ_Iter1 = ρσ_Iterable(die.rolls);
+                for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                    r = ρσ_Iter1[ρσ_Index1];
                     if (!ρσ_exists.e(r.discarded, false)) {
                         if (cb(die.faces, r.roll)) {
                             return true;
@@ -8663,9 +8630,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if ((game.combat.scene.id !== canvas.scene.id && (typeof game.combat.scene.id !== "object" || ρσ_not_equals(game.combat.scene.id, canvas.scene.id)))) {
                         ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene");
                     } else {
-                        var ρσ_Iter22 = ρσ_Iterable(canvas.tokens.controlledTokens);
-                        for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
-                            token = ρσ_Iter22[ρσ_Index22];
+                        var ρσ_Iter2 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                        for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                            token = ρσ_Iter2[ρσ_Index2];
                             combatant = game.combat.getCombatantByToken(token.id);
                             if (combatant) {
                                 promise = game.combat.updateCombatant((function(){
@@ -8750,9 +8717,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }).call(this));
                 }
             }
-            var ρσ_Iter23 = ρσ_Iterable(tokens);
-            for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
-                token = ρσ_Iter23[ρσ_Index23];
+            var ρσ_Iter3 = ρσ_Iterable(tokens);
+            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                token = ρσ_Iter3[ρσ_Index3];
                 if (token.actor && token.data.actorLink) {
                     total = (total) ? total : token.actor.data.attributes.hp.max;
                     token.actor.update((function(){
@@ -8800,9 +8767,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter24 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
-                event = ρσ_Iter24[ρσ_Index24];
+            var ρσ_Iter4 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                event = ρσ_Iter4[ρσ_Index4];
                 document.removeEventListener.apply(document, event);
             }
         };
@@ -8819,7 +8786,6 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
 
         console.log("Beyond20: FVTT Page Script loaded");
-        injectCSS(FVTT_CSS);
         registered_events = ρσ_list_decorate([]);
         registered_events.append(addCustomEventListener("Roll", handleRoll));
         registered_events.append(addCustomEventListener("NewSettings", setSettings));
