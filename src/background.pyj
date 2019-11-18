@@ -160,13 +160,22 @@ def onMessage(request, sender, sendResponse):
         else:
             chrome.pageAction.show(tab.id)
         if isFVTT(tab.title):
-            chrome.tabs.executeScript(tab.id, {"file": 'src/fvtt.js'})
+            injectFVTTScripts(tab)
 
     elif request.action == "register-fvtt-tab":
         addFVTTTab(sender.tab)
     elif request.action == "reload-me":
         chrome.tabs.reload(sender.tab.id)
     return False
+
+def injectFVTTScripts(tab):
+    insertCSSs([tab], ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css"])
+    executeScripts([tab], ["libs/alertify.min.js", "libs/jquery-3.4.1.min.js", "src/fvtt.js"])
+
+def insertCSSs(tabs, css_files):
+    for tab in tabs:
+        for file in css_files:
+            chrome.tabs.insertCSS(tab.id, {"file": file})
 
 def executeScripts(tabs, js_files):
     for tab in tabs:
@@ -196,8 +205,11 @@ if getBrowser() == "Chrome":
     chrome.browserAction.onClicked.addListener(browserActionClicked)
     manifest = chrome.runtime.getManifest()
     for script in manifest.content_scripts:
-        cb = def(files):
+        cb = def(js_files, css_files):
             return def(tabs):
-                executeScripts(tabs, files)
-        chrome.tabs.query({ "url": script.matches}, cb(script.js))
+                if js_files:
+                    executeScripts(tabs, js_files)
+                if css_files:
+                    insertCSSs(tabs, css_files)
+        chrome.tabs.query({ "url": script.matches}, cb(script.js, script.css))
 

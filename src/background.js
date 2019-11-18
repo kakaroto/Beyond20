@@ -7145,11 +7145,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     chrome.pageAction.show(tab.id);
                 }
                 if (isFVTT(tab.title)) {
-                    chrome.tabs.executeScript(tab.id, (function(){
-                        var ρσ_d = {};
-                        ρσ_d["file"] = "src/fvtt.js";
-                        return ρσ_d;
-                    }).call(this));
+                    injectFVTTScripts(tab);
                 }
             } else if ((request.action === "register-fvtt-tab" || typeof request.action === "object" && ρσ_equals(request.action, "register-fvtt-tab"))) {
                 addFVTTTab(sender.tab);
@@ -7162,14 +7158,42 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request", "sender", "sendResponse"]}
         });
 
-        function executeScripts(tabs, js_files) {
+        function injectFVTTScripts(tab) {
+            insertCSSs(ρσ_list_decorate([ tab ]), ρσ_list_decorate([ "libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css" ]));
+            executeScripts(ρσ_list_decorate([ tab ]), ρσ_list_decorate([ "libs/alertify.min.js", "libs/jquery-3.4.1.min.js", "src/fvtt.js" ]));
+        };
+        if (!injectFVTTScripts.__argnames__) Object.defineProperties(injectFVTTScripts, {
+            __argnames__ : {value: ["tab"]}
+        });
+
+        function insertCSSs(tabs, css_files) {
             var file, tab;
             var ρσ_Iter8 = ρσ_Iterable(tabs);
             for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
                 tab = ρσ_Iter8[ρσ_Index8];
-                var ρσ_Iter9 = ρσ_Iterable(js_files);
+                var ρσ_Iter9 = ρσ_Iterable(css_files);
                 for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
                     file = ρσ_Iter9[ρσ_Index9];
+                    chrome.tabs.insertCSS(tab.id, (function(){
+                        var ρσ_d = {};
+                        ρσ_d["file"] = file;
+                        return ρσ_d;
+                    }).call(this));
+                }
+            }
+        };
+        if (!insertCSSs.__argnames__) Object.defineProperties(insertCSSs, {
+            __argnames__ : {value: ["tabs", "css_files"]}
+        });
+
+        function executeScripts(tabs, js_files) {
+            var file, tab;
+            var ρσ_Iter10 = ρσ_Iterable(tabs);
+            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                tab = ρσ_Iter10[ρσ_Index10];
+                var ρσ_Iter11 = ρσ_Iterable(js_files);
+                for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                    file = ρσ_Iter11[ρσ_Index11];
                     chrome.tabs.executeScript(tab.id, (function(){
                         var ρσ_d = {};
                         ρσ_d["file"] = file;
@@ -7216,14 +7240,19 @@ var str = ρσ_str, repr = ρσ_repr;;
         if (ρσ_equals(getBrowser(), "Chrome")) {
             chrome.browserAction.onClicked.addListener(browserActionClicked);
             manifest = chrome.runtime.getManifest();
-            var ρσ_Iter10 = ρσ_Iterable(manifest.content_scripts);
-            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
-                script = ρσ_Iter10[ρσ_Index10];
+            var ρσ_Iter12 = ρσ_Iterable(manifest.content_scripts);
+            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                script = ρσ_Iter12[ρσ_Index12];
                 cb = (function() {
-                    var ρσ_anonfunc = function (files) {
+                    var ρσ_anonfunc = function (js_files, css_files) {
                         return (function() {
                             var ρσ_anonfunc = function (tabs) {
-                                executeScripts(tabs, files);
+                                if (js_files) {
+                                    executeScripts(tabs, js_files);
+                                }
+                                if (css_files) {
+                                    insertCSSs(tabs, css_files);
+                                }
                             };
                             if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                                 __argnames__ : {value: ["tabs"]}
@@ -7232,7 +7261,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         })();
                     };
                     if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["files"]}
+                        __argnames__ : {value: ["js_files", "css_files"]}
                     });
                     return ρσ_anonfunc;
                 })();
@@ -7240,7 +7269,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_d = {};
                     ρσ_d["url"] = script.matches;
                     return ρσ_d;
-                }).call(this), cb(script.js));
+                }).call(this), cb(script.js, script.css));
             }
         }
     })();

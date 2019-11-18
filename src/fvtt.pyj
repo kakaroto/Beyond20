@@ -1,5 +1,6 @@
-from utils import sendCustomEvent, injectPageScript
+from utils import sendCustomEvent, injectPageScript, alertQuickSettings
 from settings import getDefaultSettings, getStoredSettings
+from elementmaker import E
 
 print("Beyond20: Foundry VTT module loaded.")
 
@@ -34,7 +35,19 @@ def titleSet(mutations, observer):
     chrome.runtime.sendMessage({"action": "register-fvtt-tab"})
     observer.disconnect()
 
+def injectSettingsButton():
+    $(".beyond20-settings").remove()
+    icon = chrome.extension.getURL("images/icons/icon24.png")
+    button = E.div(class_="beyond20-settings", style="flex-grow: 0;",
+        E.img(class_="beyond20-settings-logo", src=icon, style="margin: 0px 5px; border: 0px;")
+    )
+    $("#chat-controls").append(button)
+    $(button).on('click', def(event): alertQuickSettings();)
+
+
+
 observer = new window.MutationObserver(titleSet)
 observer.observe(document.getElementsByTagName("title")[0], {"childList": True})
 sendCustomEvent("disconnect")
 injectPageScript(chrome.runtime.getURL('src/fvtt_script.js'))
+injectSettingsButton()
