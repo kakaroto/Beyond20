@@ -604,7 +604,7 @@ def injectSettingsButton():
     elif mobile_gap.length > 0:
         button_type = "mobile"
         gap = mobile_gap
-        span_text = "&nbsp;&nbsp;"
+        span_text = "\u00A0\u00A0" # Add 2 non breaking spaces as padding
         icon = chrome.extension.getURL("images/icons/icon32.png")
     else:
         return

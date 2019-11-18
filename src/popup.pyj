@@ -1,7 +1,7 @@
 from elementmaker import E
 from settings import options_list, character_settings, createHTMLOption, createHTMLOptionEx, \
     initializeSettings, saveSettings, setCurrentTab, loadSettings
-from constants import ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL
+from constants import ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_VEHICLE_URL
 from utils import isFVTT, urlMatches
 
 character = None
@@ -102,6 +102,15 @@ def addMonsterOptions():
     option["short"] = "Whisper monster rolls"
     e = createHTMLOptionEx("whisper-type-monsters", option, True)
     $(e).insertAfter($("#whisper-type").parents("li"))
+    options = $(".beyond20-options")
+    options.append(E.li(class_="list-group-item beyond20-option", style="text-align: center; padding: 10px;",
+                        E.h4(" == Stat Block Specific Options =="))
+                )
+
+    e = createHTMLOption("subst-dndbeyond-stat-blocks", False)
+    options.append(e)
+    e = createHTMLOption("handle-stat-blocks", False)
+    options.append(e)
     $('.beyond20-option-input').off('change', save_settings)
     $('.beyond20-option-input').change(save_settings)
     initializeSettings(gotSettings)
@@ -125,7 +134,7 @@ def actOnCurrentTab(tabs):
         initializeSettings(gotSettings)
     elif urlMatches(tabs[0].url, DNDBEYOND_CHARACTER_URL):
         chrome.tabs.sendMessage(tabs[0].id, {"action": "get-character"}, populateCharacter)
-    elif urlMatches(tabs[0].url, DNDBEYOND_MONSTER_URL) or urlMatches(tabs[0].url, DNDBEYOND_ENCOUNTER_URL):
+    elif urlMatches(tabs[0].url, DNDBEYOND_MONSTER_URL) or urlMatches(tabs[0].url, DNDBEYOND_VEHICLE_URL) or urlMatches(tabs[0].url, DNDBEYOND_ENCOUNTER_URL):
         addMonsterOptions()
     else:
         initializeSettings(gotSettings)

@@ -6772,6 +6772,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var DNDBEYOND_CHARACTER_URL = ρσ_modules.constants.DNDBEYOND_CHARACTER_URL;
         var DNDBEYOND_MONSTER_URL = ρσ_modules.constants.DNDBEYOND_MONSTER_URL;
         var DNDBEYOND_ENCOUNTER_URL = ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL;
+        var DNDBEYOND_VEHICLE_URL = ρσ_modules.constants.DNDBEYOND_VEHICLE_URL;
 
         var isFVTT = ρσ_modules.utils.isFVTT;
         var urlMatches = ρσ_modules.utils.urlMatches;
@@ -6925,11 +6926,17 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function addMonsterOptions() {
-            var option, e;
+            var option, e, options;
             option = options_list["whisper-type-monsters"];
             option["short"] = "Whisper monster rolls";
             e = createHTMLOptionEx("whisper-type-monsters", option, true);
             $(e).insertAfter($("#whisper-type").parents("li"));
+            options = $(".beyond20-options");
+            options.append(ρσ_interpolate_kwargs.call(E, E.li, [E.h4(" == Stat Block Specific Options ==")].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option", style: "text-align: center; padding: 10px;"})])));
+            e = createHTMLOption("subst-dndbeyond-stat-blocks", false);
+            options.append(e);
+            e = createHTMLOption("handle-stat-blocks", false);
+            options.append(e);
             $(".beyond20-option-input").off("change", save_settings);
             $(".beyond20-option-input").change(save_settings);
             initializeSettings(gotSettings);
@@ -6962,7 +6969,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["action"] = "get-character";
                     return ρσ_d;
                 }).call(this), populateCharacter);
-            } else if (urlMatches(tabs[0].url, DNDBEYOND_MONSTER_URL) || urlMatches(tabs[0].url, DNDBEYOND_ENCOUNTER_URL)) {
+            } else if (urlMatches(tabs[0].url, DNDBEYOND_MONSTER_URL) || urlMatches(tabs[0].url, DNDBEYOND_VEHICLE_URL) || urlMatches(tabs[0].url, DNDBEYOND_ENCOUNTER_URL)) {
                 addMonsterOptions();
             } else {
                 initializeSettings(gotSettings);
