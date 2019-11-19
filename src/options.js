@@ -6015,6 +6015,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["rogue-assassinate"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Rogue: Assassinate surprise attack (Apply to next roll only)";
+                ρσ_d["description"] = "Roll with advantage and roll critical damage dice";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {

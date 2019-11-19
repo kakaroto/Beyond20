@@ -6016,6 +6016,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["rogue-assassinate"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Rogue: Assassinate surprise attack (Apply to next roll only)";
+                ρσ_d["description"] = "Roll with advantage and roll critical damage dice";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -6959,6 +6967,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 if (ρσ_in("Hexblade’s Curse", response["class-features"])) {
                     e = createHTMLOption("warlock-hexblade-curse", false, character_settings);
+                    options.append(e);
+                }
+                if (ρσ_in("Assassinate", response["class-features"])) {
+                    e = createHTMLOption("rogue-assassinate", false, character_settings);
                     options.append(e);
                 }
                 loadSettings(response.settings, character_settings);

@@ -6016,6 +6016,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["rogue-assassinate"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Rogue: Assassinate surprise attack (Apply to next roll only)";
+                ρσ_d["description"] = "Roll with advantage and roll critical damage dice";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -7539,7 +7547,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function rollSpellAttack(request, custom_roll_dice) {
-            var properties, template_type, dmg_props, damages, damage_types, critical_damages, critical_damage_types, chromatic_type, idx, chromatic_damage, crit_damage, dmgtype, base_damage, components, dmg_template_crit, dmg_template, key, roll;
+            var properties, template_type, dmg_props, d20_roll, damages, damage_types, critical_damages, critical_damage_types, chromatic_type, idx, chromatic_damage, crit_damage, dmgtype, base_damage, components, dmg_template_crit, dmg_template, key, roll;
             properties = (function(){
                 var ρσ_d = {};
                 ρσ_d["charname"] = request.character.name;
@@ -7549,8 +7557,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             template_type = "atkdmg";
             dmg_props = {};
             if (ρσ_exists.n(request["to-hit"])) {
+                d20_roll = "1d20";
+                if (request["critical-limit"]) {
+                    d20_roll = "1d20cs>" + request["critical-limit"];
+                }
                 properties["mod"] = request["to-hit"];
-                properties["r1"] = genRoll("1d20", (function(){
+                properties["r1"] = genRoll(d20_roll, (function(){
                     var ρσ_d = {};
                     ρσ_d[""] = request["to-hit"];
                     ρσ_d["CUSTOM"] = custom_roll_dice;

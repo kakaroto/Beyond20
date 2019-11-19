@@ -396,8 +396,11 @@ def rollSpellAttack(request, custom_roll_dice):
     template_type = "atkdmg"
     dmg_props = {}
     if request["to-hit"]?:
+        d20_roll = "1d20"
+        if request["critical-limit"]:
+            d20_roll = "1d20cs>" + request["critical-limit"]
         properties["mod"] = request["to-hit"]
-        properties["r1"] = genRoll("1d20", {"": request["to-hit"], "CUSTOM": custom_roll_dice})
+        properties["r1"] = genRoll(d20_roll, {"": request["to-hit"], "CUSTOM": custom_roll_dice})
         properties["attack"] = 1
     if request.damages?:
         damages = list(request.damages)

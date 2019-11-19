@@ -228,6 +228,13 @@ def rollItem(force_display=False):
         roll_properties["item-type"] = item_type
         if critical_limit != 20:
             roll_properties["critical-limit"] = critical_limit
+            
+        # Asssassinate: consider all rolls as critical
+        if character.hasClassFeature("Assassinate") and \
+           character.getSetting("rogue-assassinate", False):
+            roll_properties["critical-limit"] = 1
+            roll_properties["advantage"] = RollType.ADVANTAGE
+            character.mergeCharacterSettings({"rogue-assassinate": False})
         sendRollWithCharacter("attack", damages[0], roll_properties)
     else:
         sendRollWithCharacter("item", 0, {"name": item_name,
@@ -270,6 +277,13 @@ def rollAction(paneClass):
                                           damages,
                                           damage_types,
                                           properties["To Hit"] ? None)
+
+        # Asssassinate: consider all rolls as critical
+        if character.hasClassFeature("Assassinate") and \
+           character.getSetting("rogue-assassinate", False):
+            roll_properties["critical-limit"] = 1
+            roll_properties["advantage"] = RollType.ADVANTAGE
+            character.mergeCharacterSettings({"rogue-assassinate": False})
         sendRollWithCharacter("attack", damages[0], roll_properties)
     else:
         sendRollWithCharacter("action", 0, {"name": action_name,
@@ -344,6 +358,7 @@ def rollSpell(force_display=False):
                                           damages,
                                           damage_types,
                                           to_hit)
+
         spell_properties = {"level-school": level,
                             "concentration": concentration,
                             "duration": duration,
@@ -354,6 +369,14 @@ def rollSpell(force_display=False):
             roll_properties[key] = spell_properties[key]
         if castas != "" and not level.startsWith(castas):
             roll_properties["cast-at"] = castas
+            
+        # Asssassinate: consider all rolls as critical
+        if character.hasClassFeature("Assassinate") and \
+           character.getSetting("rogue-assassinate", False):
+            roll_properties["critical-limit"] = 1
+            roll_properties["advantage"] = RollType.ADVANTAGE
+            character.mergeCharacterSettings({"rogue-assassinate": False})
+
         sendRollWithCharacter("spell-attack", damages[0] ? "", roll_properties)
     else:
         roll_properties = {"name": spell_name,
