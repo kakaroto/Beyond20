@@ -5996,7 +5996,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["ranger-dread-ambusher"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Ranger: Dread Ambusher";
-                ρσ_d["description"] = "Add  Dread Ambusher attack 1d8 extra damage";
+                ρσ_d["description"] = "Add Dread Ambusher attack 1d8 extra damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["paladin-legendary-strike"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Paladin: Legendary Strike";
+                ρσ_d["description"] = "Channel Divinity and score critical hits on rolls of 19 and 20";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
                 return ρσ_d;
@@ -7917,6 +7925,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if (ρσ_exists.n(request["to-hit"])) {
                     critical_limit = 20;
                     if ((request["attack-source"] === "item" || typeof request["attack-source"] === "object" && ρσ_equals(request["attack-source"], "item"))) {
+                        if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Channel Divinity: Legendary Strike", request.character["actions"]) && request.character.settings["paladin-legendary-strike"]) {
+                            critical_limit = 19;
+                        }
                         if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Improved Critical", request.character["class-features"])) {
                             critical_limit = 19;
                         }
@@ -8764,9 +8775,9 @@ return this.__repr__();
                     if ((game.combat.scene.id !== canvas.scene.id && (typeof game.combat.scene.id !== "object" || ρσ_not_equals(game.combat.scene.id, canvas.scene.id)))) {
                         ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene");
                     } else {
-                        var ρσ_Iter0 = ρσ_Iterable(canvas.tokens.controlledTokens);
-                        for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                            token = ρσ_Iter0[ρσ_Index0];
+                        var ρσ_Iter22 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                        for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
+                            token = ρσ_Iter22[ρσ_Index22];
                             combatant = game.combat.getCombatantByToken(token.id);
                             if (combatant) {
                                 promise = game.combat.updateCombatant((function(){
@@ -8851,9 +8862,9 @@ return this.__repr__();
                     }).call(this));
                 }
             }
-            var ρσ_Iter1 = ρσ_Iterable(tokens);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                token = ρσ_Iter1[ρσ_Index1];
+            var ρσ_Iter23 = ρσ_Iterable(tokens);
+            for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
+                token = ρσ_Iter23[ρσ_Index23];
                 if (token.actor && token.data.actorLink) {
                     total = (total) ? total : token.actor.data.attributes.hp.max;
                     token.actor.update((function(){
@@ -8901,9 +8912,9 @@ return this.__repr__();
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter2 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                event = ρσ_Iter2[ρσ_Index2];
+            var ρσ_Iter24 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
+                event = ρσ_Iter24[ρσ_Index24];
                 document.removeEventListener.apply(document, event);
             }
         };

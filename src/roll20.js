@@ -5995,7 +5995,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["ranger-dread-ambusher"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Ranger: Dread Ambusher";
-                ρσ_d["description"] = "Add  Dread Ambusher attack 1d8 extra damage";
+                ρσ_d["description"] = "Add Dread Ambusher attack 1d8 extra damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["paladin-legendary-strike"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Paladin: Legendary Strike";
+                ρσ_d["description"] = "Channel Divinity and score critical hits on rolls of 19 and 20";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
                 return ρσ_d;
@@ -7416,6 +7424,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_exists.n(request["to-hit"])) {
                 d20_roll = "1d20";
                 if ((request["attack-source"] === "item" || typeof request["attack-source"] === "object" && ρσ_equals(request["attack-source"], "item"))) {
+                    if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Channel Divinity: Legendary Strike", request.character["actions"]) && request.character.settings["paladin-legendary-strike"]) {
+                        d20_roll = "1d20cs>19";
+                    }
                     if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Improved Critical", request.character["class-features"])) {
                         d20_roll = "1d20cs>19";
                     }

@@ -5995,7 +5995,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["ranger-dread-ambusher"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Ranger: Dread Ambusher";
-                ρσ_d["description"] = "Add  Dread Ambusher attack 1d8 extra damage";
+                ρσ_d["description"] = "Add Dread Ambusher attack 1d8 extra damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["paladin-legendary-strike"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Paladin: Legendary Strike";
+                ρσ_d["description"] = "Channel Divinity and score critical hits on rolls of 19 and 20";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
                 return ρσ_d;
@@ -6935,6 +6943,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 if (ρσ_in("Dread Ambusher", response["class-features"])) {
                     e = createHTMLOption("ranger-dread-ambusher", false, character_settings);
+                    options.append(e);
+                }
+                if (ρσ_in("Channel Divinity: Legendary Strike", response["actions"])) {
+                    e = createHTMLOption("paladin-legendary-strike", false, character_settings);
                     options.append(e);
                 }
                 loadSettings(response.settings, character_settings);

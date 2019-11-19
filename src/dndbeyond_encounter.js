@@ -7930,6 +7930,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if (ρσ_exists.n(request["to-hit"])) {
                     critical_limit = 20;
                     if ((request["attack-source"] === "item" || typeof request["attack-source"] === "object" && ρσ_equals(request["attack-source"], "item"))) {
+                        if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Channel Divinity: Legendary Strike", request.character["actions"]) && request.character.settings["paladin-legendary-strike"]) {
+                            critical_limit = 19;
+                        }
                         if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Improved Critical", request.character["class-features"])) {
                             critical_limit = 19;
                         }

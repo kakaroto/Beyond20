@@ -386,6 +386,10 @@ class Beyond20RollRenderer:
                 critical_limit = 20
                 if request["attack-source"] == "item":
                     if request.character.type == "Character" and \
+                            "Channel Divinity: Legendary Strike" in request.character["actions"] and \
+                                request.character.settings["paladin-legendary-strike"]:
+                        critical_limit = 19
+                    if request.character.type == "Character" and \
                             "Improved Critical" in request.character["class-features"]:
                         critical_limit = 19
                     if request.character.type == "Character" and \

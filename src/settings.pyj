@@ -199,7 +199,11 @@ character_settings = {
                            "type": "bool",
                            "default": False},
     "ranger-dread-ambusher": {"title": "Ranger: Dread Ambusher",
-                           "description": "Add  Dread Ambusher attack 1d8 extra damage",
+                           "description": "Add Dread Ambusher attack 1d8 extra damage",
+                           "type": "bool",
+                           "default": False},
+    "paladin-legendary-strike": {"title": "Paladin: Legendary Strike",
+                           "description": "Channel Divinity and score critical hits on rolls of 19 and 20",
                            "type": "bool",
                            "default": False},
 }

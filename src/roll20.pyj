@@ -316,6 +316,10 @@ def rollAttack(request, custom_roll_dice=""):
         d20_roll = "1d20"
         if request["attack-source"] == "item":
             if request.character.type == "Character" and \
+                    "Channel Divinity: Legendary Strike" in request.character["actions"] and \
+                        request.character.settings["paladin-legendary-strike"]:
+                d20_roll = "1d20cs>19"
+            if request.character.type == "Character" and \
                     "Improved Critical" in request.character["class-features"]:
                 d20_roll = "1d20cs>19"
             if request.character.type == "Character" and \
