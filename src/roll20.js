@@ -6967,6 +6967,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if ((typeof crits !== "undefined" && crits !== null) && len(crits) > 1) {
                     properties["crit2"] = settings["crit-prefix"] + subDamageRolls(str.join(" | ", crits.slice(1)));
                 }
+            } else if ((typeof crits !== "undefined" && crits !== null) && len(crits) > 1) {
+                properties["crit1"] = settings["crit-prefix"] + subDamageRolls(str.join(" | ", crits));
             }
             return properties;
         };

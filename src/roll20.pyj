@@ -101,6 +101,10 @@ def damagesToRollProperties(damages, damage_types, crits, crit_types):
         properties["dmg2type"] = str.join(" | ", damage_types[1:])
         if crits? and len(crits) > 1:
             properties["crit2"] = settings["crit-prefix"] + subDamageRolls(str.join(" | ", crits[1:]))
+    # If there are more than 1 crit but only 1 damage (brutal critical/savage attacks), then show all the crits as part of the first damage
+    elif crits? and len(crits) > 1:
+        properties["crit1"] = settings["crit-prefix"] + subDamageRolls(str.join(" | ", crits))
+
 
     return properties
 
