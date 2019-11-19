@@ -81,8 +81,8 @@ def alertSettings(url, title):
     img = E.img(src=chrome.extension.getURL("images/icons/icon32.png"), style="margin-right: 3px;")
     #alertify.alert().destroy()
     dialog = alertify.alert(img.outerHTML + title,
-            E.iframe(src=popup, style="width: 100%; height: 100%;", frameborder="0", scrolling="no"))
-    dialog.set('padding', False).set('resizable', True).resizeTo("80%", "80%")
+            E.iframe(src=popup, style="width: 100%; height: 100%;", frameborder="0", scrolling="yes"))
+    dialog.set('padding', False).set('resizable', True).set('overflow', False).resizeTo("80%", "80%")
    
 def alertQuickSettings():
     alertSettings("popup.html", "Beyond 20 Quick Settings")
