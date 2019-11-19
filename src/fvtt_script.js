@@ -6009,6 +6009,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["warlock-hexblade-curse"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Warlock: Hexblade's Curse";
+                ρσ_d["description"] = "Apply the Hexblade's Curse extra damage on attack rolls and score critical hits on rolls of 19 and 20";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -7926,6 +7934,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     critical_limit = 20;
                     if ((request["attack-source"] === "item" || typeof request["attack-source"] === "object" && ρσ_equals(request["attack-source"], "item"))) {
                         if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Channel Divinity: Legendary Strike", request.character["actions"]) && request.character.settings["paladin-legendary-strike"]) {
+                            critical_limit = 19;
+                        }
+                        if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Hexblade’s Curse", request.character["class-features"]) && request.character.settings["warlock-hexblade-curse"]) {
                             critical_limit = 19;
                         }
                         if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Improved Critical", request.character["class-features"])) {

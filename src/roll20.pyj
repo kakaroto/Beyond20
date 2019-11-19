@@ -320,6 +320,10 @@ def rollAttack(request, custom_roll_dice=""):
                         request.character.settings["paladin-legendary-strike"]:
                 d20_roll = "1d20cs>19"
             if request.character.type == "Character" and \
+                    "Hexblade’s Curse" in request.character["class-features"] and \
+                        request.character.settings["warlock-hexblade-curse"]:
+                d20_roll = "1d20cs>19"
+            if request.character.type == "Character" and \
                     "Improved Critical" in request.character["class-features"]:
                 d20_roll = "1d20cs>19"
             if request.character.type == "Character" and \

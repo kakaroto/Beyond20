@@ -206,6 +206,10 @@ character_settings = {
                            "description": "Channel Divinity and score critical hits on rolls of 19 and 20",
                            "type": "bool",
                            "default": False},
+    "warlock-hexblade-curse": {"title": "Warlock: Hexblade's Curse",
+                           "description": "Apply the Hexblade's Curse extra damage on attack rolls and score critical hits on rolls of 19 and 20",
+                           "type": "bool",
+                           "default": False},
 }
 
 def getStorage():

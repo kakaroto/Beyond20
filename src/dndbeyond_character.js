@@ -6013,6 +6013,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["warlock-hexblade-curse"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Warlock: Hexblade's Curse";
+                ρσ_d["description"] = "Apply the Hexblade's Curse extra damage on attack rolls and score critical hits on rolls of 19 and 20";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -7930,6 +7938,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     critical_limit = 20;
                     if ((request["attack-source"] === "item" || typeof request["attack-source"] === "object" && ρσ_equals(request["attack-source"], "item"))) {
                         if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Channel Divinity: Legendary Strike", request.character["actions"]) && request.character.settings["paladin-legendary-strike"]) {
+                            critical_limit = 19;
+                        }
+                        if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Hexblade’s Curse", request.character["class-features"]) && request.character.settings["warlock-hexblade-curse"]) {
                             critical_limit = 19;
                         }
                         if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Improved Critical", request.character["class-features"])) {
@@ -11505,6 +11516,10 @@ return this.__repr__();
                         return ρσ_d;
                     }).call(this));
                 }
+                if (damages.length > 0 && character.getSetting("warlock-hexblade-curse", false) && character.hasClassFeature("Hexblade’s Curse") && character._proficiency !== null) {
+                    damages.append(character._proficiency);
+                    damage_types.append("Hexblade's Curse");
+                }
                 brutal = 0;
                 if ((properties["Attack Type"] === "Melee" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Melee"))) {
                     if (character.getSetting("brutal-critical")) {
@@ -11563,6 +11578,10 @@ return this.__repr__();
                 if (ρσ_in("Damage", properties)) {
                     damages = ρσ_list_decorate([ properties["Damage"] ]);
                     damage_types = ρσ_list_decorate([ ρσ_exists.e(properties["Damage Type"], "") ]);
+                    if (character.getSetting("warlock-hexblade-curse", false) && character.hasClassFeature("Hexblade’s Curse") && character._proficiency !== null) {
+                        damages.append(character._proficiency);
+                        damage_types.append("Hexblade's Curse");
+                    }
                 } else {
                     damages = ρσ_list_decorate([]);
                     damage_types = ρσ_list_decorate([]);
@@ -11629,6 +11648,10 @@ return this.__repr__();
                     }
                     damages.append(dmg);
                     damage_types.append(dmgtype);
+                }
+                if (damages.length > 0 && character.getSetting("warlock-hexblade-curse", false) && character.hasClassFeature("Hexblade’s Curse") && character._proficiency !== null) {
+                    damages.append(character._proficiency);
+                    damage_types.append("Hexblade's Curse");
                 }
                 var ρσ_Iter3 = ρσ_Iterable(healing_modifiers);
                 for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {

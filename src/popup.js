@@ -6008,6 +6008,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["warlock-hexblade-curse"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Warlock: Hexblade's Curse";
+                ρσ_d["description"] = "Apply the Hexblade's Curse extra damage on attack rolls and score critical hits on rolls of 19 and 20";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -6947,6 +6955,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 if (ρσ_in("Channel Divinity: Legendary Strike", response["actions"])) {
                     e = createHTMLOption("paladin-legendary-strike", false, character_settings);
+                    options.append(e);
+                }
+                if (ρσ_in("Hexblade’s Curse", response["class-features"])) {
+                    e = createHTMLOption("warlock-hexblade-curse", false, character_settings);
                     options.append(e);
                 }
                 loadSettings(response.settings, character_settings);

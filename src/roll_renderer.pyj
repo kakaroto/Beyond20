@@ -390,6 +390,10 @@ class Beyond20RollRenderer:
                                 request.character.settings["paladin-legendary-strike"]:
                         critical_limit = 19
                     if request.character.type == "Character" and \
+                            "Hexblade’s Curse" in request.character["class-features"] and \
+                                request.character.settings["warlock-hexblade-curse"]:
+                        critical_limit = 19
+                    if request.character.type == "Character" and \
                             "Improved Critical" in request.character["class-features"]:
                         critical_limit = 19
                     if request.character.type == "Character" and \

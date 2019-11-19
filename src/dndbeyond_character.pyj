@@ -185,6 +185,12 @@ def rollItem(force_display=False):
             damages.append("1d8")
             damage_types.append("Ambush")
             character.mergeCharacterSettings({"ranger-dread-ambusher": False})
+        if damages.length > 0 and \
+            character.getSetting("warlock-hexblade-curse", False) and \
+            character.hasClassFeature("Hexblade’s Curse") and \
+            character._proficiency is not None:
+            damages.append(character._proficiency)
+            damage_types.append("Hexblade's Curse")
 
 
 
@@ -233,6 +239,11 @@ def rollAction(paneClass):
         if "Damage" in properties:
             damages = [properties["Damage"]]
             damage_types = [properties["Damage Type"] ? ""]
+            if character.getSetting("warlock-hexblade-curse", False) and \
+                character.hasClassFeature("Hexblade’s Curse") and \
+                character._proficiency is not None:
+                damages.append(character._proficiency)
+                damage_types.append("Hexblade's Curse")
         else:
             damages = []
             damage_types = []
@@ -285,6 +296,12 @@ def rollSpell(force_display=False):
                 dmgtype = ""
             damages.append(dmg)
             damage_types.append(dmgtype)
+        if damages.length > 0 and \
+            character.getSetting("warlock-hexblade-curse", False) and \
+            character.hasClassFeature("Hexblade’s Curse") and \
+            character._proficiency is not None:
+            damages.append(character._proficiency)
+            damage_types.append("Hexblade's Curse")
         for modifier in healing_modifiers:
             dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text()
             if dmg.startsWith("Regain "):
