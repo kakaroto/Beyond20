@@ -5993,6 +5993,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["ranger-dread-ambusher"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Ranger: Dread Ambusher";
+                ρσ_d["description"] = "Add  Dread Ambusher attack 1d8 extra damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {

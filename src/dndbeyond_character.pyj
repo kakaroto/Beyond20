@@ -181,6 +181,10 @@ def rollItem(force_display=False):
                     rite_die = "1d10"
                 damages.append(rite_die)
                 damage_types.append("Crimson Rite")
+        if character.getSetting("ranger-dread-ambusher", False):
+            damages.append("1d8")
+            damage_types.append("Ambush")
+            character.mergeCharacterSettings({"ranger-dread-ambusher": False})
 
 
 

@@ -198,6 +198,10 @@ character_settings = {
                            "description": "Add Crimson Rite damage",
                            "type": "bool",
                            "default": False},
+    "ranger-dread-ambusher": {"title": "Ranger: Dread Ambusher",
+                           "description": "Add  Dread Ambusher attack 1d8 extra damage",
+                           "type": "bool",
+                           "default": False},
 }
 
 def getStorage():
