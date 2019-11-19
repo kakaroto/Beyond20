@@ -383,22 +383,7 @@ class Beyond20RollRenderer:
             damage_rolls = []
             is_critical = False
             if request["to-hit"]?:
-                critical_limit = 20
-                if request["attack-source"] == "item":
-                    if request.character.type == "Character" and \
-                            "Channel Divinity: Legendary Strike" in request.character["actions"] and \
-                                request.character.settings["paladin-legendary-strike"]:
-                        critical_limit = 19
-                    if request.character.type == "Character" and \
-                            "Hexblade’s Curse" in request.character["class-features"] and \
-                                request.character.settings["warlock-hexblade-curse"]:
-                        critical_limit = 19
-                    if request.character.type == "Character" and \
-                            "Improved Critical" in request.character["class-features"]:
-                        critical_limit = 19
-                    if request.character.type == "Character" and \
-                            "Superior Critical" in request.character["class-features"]:
-                        critical_limit = 18
+                critical_limit = request["critical-limit"] ? 20
 
                 custom = "" if custom_roll_dice == "" else (" + " + custom_roll_dice)
                 to_hit_mod = " + " + request["to-hit"] + custom

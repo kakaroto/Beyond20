@@ -5954,7 +5954,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             ρσ_d["sharpshooter"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["title"] = "Sharpshooter: Apply to next Roll";
+                ρσ_d["title"] = "Fighter: Sharpshooter (Apply to next roll only)";
                 ρσ_d["description"] = "Apply Sharpshooter -5 penalty to roll and +10 to damage";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
@@ -5962,7 +5962,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             ρσ_d["great-weapon-master"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["title"] = "Great Weapon Master: Apply to next Roll";
+                ρσ_d["title"] = "Great Weapon Master Feat (Apply to next roll only)";
                 ρσ_d["description"] = "Apply Great Weapon Master -5 penalty to roll and +10 to damage";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
@@ -7431,19 +7431,8 @@ var str = ρσ_str, repr = ρσ_repr;;
             dmg_props = {};
             if (ρσ_exists.n(request["to-hit"])) {
                 d20_roll = "1d20";
-                if ((request["attack-source"] === "item" || typeof request["attack-source"] === "object" && ρσ_equals(request["attack-source"], "item"))) {
-                    if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Channel Divinity: Legendary Strike", request.character["actions"]) && request.character.settings["paladin-legendary-strike"]) {
-                        d20_roll = "1d20cs>19";
-                    }
-                    if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Hexblade’s Curse", request.character["class-features"]) && request.character.settings["warlock-hexblade-curse"]) {
-                        d20_roll = "1d20cs>19";
-                    }
-                    if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Improved Critical", request.character["class-features"])) {
-                        d20_roll = "1d20cs>19";
-                    }
-                    if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Superior Critical", request.character["class-features"])) {
-                        d20_roll = "1d20cs>18";
-                    }
+                if (request["critical-limit"]) {
+                    d20_roll = "1d20cs>" + request["critical-limit"];
                 }
                 properties["mod"] = request["to-hit"];
                 properties["r1"] = genRoll(d20_roll, (function(){

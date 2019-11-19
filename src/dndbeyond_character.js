@@ -5959,7 +5959,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             ρσ_d["sharpshooter"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["title"] = "Sharpshooter: Apply to next Roll";
+                ρσ_d["title"] = "Fighter: Sharpshooter (Apply to next roll only)";
                 ρσ_d["description"] = "Apply Sharpshooter -5 penalty to roll and +10 to damage";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
@@ -5967,7 +5967,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             ρσ_d["great-weapon-master"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["title"] = "Great Weapon Master: Apply to next Roll";
+                ρσ_d["title"] = "Great Weapon Master Feat (Apply to next roll only)";
                 ρσ_d["description"] = "Apply Great Weapon Master -5 penalty to roll and +10 to damage";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
@@ -7935,21 +7935,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damage_rolls = ρσ_list_decorate([]);
                 is_critical = false;
                 if (ρσ_exists.n(request["to-hit"])) {
-                    critical_limit = 20;
-                    if ((request["attack-source"] === "item" || typeof request["attack-source"] === "object" && ρσ_equals(request["attack-source"], "item"))) {
-                        if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Channel Divinity: Legendary Strike", request.character["actions"]) && request.character.settings["paladin-legendary-strike"]) {
-                            critical_limit = 19;
-                        }
-                        if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Hexblade’s Curse", request.character["class-features"]) && request.character.settings["warlock-hexblade-curse"]) {
-                            critical_limit = 19;
-                        }
-                        if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Improved Critical", request.character["class-features"])) {
-                            critical_limit = 19;
-                        }
-                        if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character")) && ρσ_in("Superior Critical", request.character["class-features"])) {
-                            critical_limit = 18;
-                        }
-                    }
+                    critical_limit = ρσ_exists.e(request["critical-limit"], 20);
                     custom = ((custom_roll_dice === "" || typeof custom_roll_dice === "object" && ρσ_equals(custom_roll_dice, ""))) ? "" : " + " + custom_roll_dice;
                     to_hit_mod = " + " + request["to-hit"] + custom;
                     to_hit_mod;
@@ -11400,7 +11386,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
                 force_display = ρσ_kwargs_obj.force_display;
             }
-            var prop_list, properties, item_name, item_type, description, to_hit, damages, damage_types, value, damage, damage_type, versatile_damage, versatile_choice, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damage, sneak_attack, bloodhunter_level, rite_die, brutal, barbarian_level, rage_damage, roll_properties;
+            var prop_list, properties, item_name, item_type, description, to_hit, damages, damage_types, value, damage, damage_type, versatile_damage, versatile_choice, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damage, sneak_attack, bloodhunter_level, rite_die, critical_limit, brutal, barbarian_level, rage_damage, roll_properties;
             prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property");
             properties = propertyListToDict(prop_list);
             print("Properties are : " + str(properties));
@@ -11411,8 +11397,8 @@ return this.__repr__();
                 to_hit = ρσ_exists.e(properties["To Hit"], findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit"));
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                for (var ρσ_Index0 = 0; ρσ_Index0 < prop_list.length; ρσ_Index0++) {
-                    i = ρσ_Index0;
+                for (var ρσ_Index36 = 0; ρσ_Index36 < prop_list.length; ρσ_Index36++) {
+                    i = ρσ_Index36;
                     if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
                         value = prop_list.eq(i).find(".ct-property-list__property-content");
                         damage = value.find(".ct-damage__value").text();
@@ -11444,8 +11430,8 @@ return this.__repr__();
                             damage_types.append(damage_type);
                         }
                         additional_damages = value.find(".ct-item-detail__additional-damage");
-                        for (var ρσ_Index1 = 0; ρσ_Index1 < additional_damages.length; ρσ_Index1++) {
-                            j = ρσ_Index1;
+                        for (var ρσ_Index37 = 0; ρσ_Index37 < additional_damages.length; ρσ_Index37++) {
+                            j = ρσ_Index37;
                             dmg = additional_damages.eq(j).text();
                             dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                             dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
@@ -11520,6 +11506,19 @@ return this.__repr__();
                     damages.append(character._proficiency);
                     damage_types.append("Hexblade's Curse");
                 }
+                critical_limit = 20;
+                if (character.hasAction("Channel Divinity: Legendary Strike") && character.getSetting("paladin-legendary-strike", false)) {
+                    critical_limit = 19;
+                }
+                if (character.hasClassFeature("Hexblade’s Curse") && character.getSetting("warlock-hexblade-curse", false)) {
+                    critical_limit = 19;
+                }
+                if (character.hasClassFeature("Improved Critical")) {
+                    critical_limit = 19;
+                }
+                if (character.hasClassFeature("Superior Critical")) {
+                    critical_limit = 18;
+                }
                 brutal = 0;
                 if ((properties["Attack Type"] === "Melee" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Melee"))) {
                     if (character.getSetting("brutal-critical")) {
@@ -11540,6 +11539,9 @@ return this.__repr__();
                 }
                 roll_properties = buildAttackRoll("item", item_name, description, properties, damages, damage_types, to_hit, brutal);
                 roll_properties["item-type"] = item_type;
+                if ((critical_limit !== 20 && (typeof critical_limit !== "object" || ρσ_not_equals(critical_limit, 20)))) {
+                    roll_properties["critical-limit"] = critical_limit;
+                }
                 sendRollWithCharacter("attack", damages[0], roll_properties);
             } else {
                 sendRollWithCharacter("item", 0, (function(){
@@ -11638,9 +11640,9 @@ return this.__repr__();
             if (force_display === false && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null))))) {
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                var ρσ_Iter2 = ρσ_Iterable(damage_modifiers);
-                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                    modifier = ρσ_Iter2[ρσ_Index2];
+                var ρσ_Iter38 = ρσ_Iterable(damage_modifiers);
+                for (var ρσ_Index38 = 0; ρσ_Index38 < ρσ_Iter38.length; ρσ_Index38++) {
+                    modifier = ρσ_Iter38[ρσ_Index38];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                     if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
@@ -11653,9 +11655,9 @@ return this.__repr__();
                     damages.append(character._proficiency);
                     damage_types.append("Hexblade's Curse");
                 }
-                var ρσ_Iter3 = ρσ_Iterable(healing_modifiers);
-                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                    modifier = ρσ_Iter3[ρσ_Index3];
+                var ρσ_Iter39 = ρσ_Iterable(healing_modifiers);
+                for (var ρσ_Index39 = 0; ρσ_Index39 < ρσ_Iter39.length; ρσ_Index39++) {
+                    modifier = ρσ_Iter39[ρσ_Index39];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     if (dmg.startsWith("Regain ")) {
                         dmg = dmg.slice(7);
@@ -11690,9 +11692,9 @@ return this.__repr__();
                     ρσ_d["ritual"] = ritual;
                     return ρσ_d;
                 }).call(this);
-                var ρσ_Iter4 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                    key = ρσ_Iter4[ρσ_Index4];
+                var ρσ_Iter40 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index40 = 0; ρσ_Index40 < ρσ_Iter40.length; ρσ_Index40++) {
+                    key = ρσ_Iter40[ρσ_Index40];
                     roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
                 }
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
@@ -11841,9 +11843,9 @@ return this.__repr__();
                 text_len = 0;
                 while (ρσ_not_equals(text_len, len(text))) {
                     text_len = len(text);
-                    var ρσ_Iter5 = ρσ_Iterable(character._abilities);
-                    for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                        ability = ρσ_Iter5[ρσ_Index5];
+                    var ρσ_Iter41 = ρσ_Iterable(character._abilities);
+                    for (var ρσ_Index41 = 0; ρσ_Index41 < ρσ_Iter41.length; ρσ_Index41++) {
+                        ability = ρσ_Iter41[ρσ_Index41];
                         mod_string = " + your " + ability[0] + " modifier";
                         if (text.startsWith(mod_string)) {
                             strong.append(mod_string);
@@ -11851,9 +11853,9 @@ return this.__repr__();
                             text = text.substring(len(mod_string));
                         }
                     }
-                    var ρσ_Iter6 = ρσ_Iterable(character._classes);
-                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                        class_name = ρσ_Iter6[ρσ_Index6];
+                    var ρσ_Iter42 = ρσ_Iterable(character._classes);
+                    for (var ρσ_Index42 = 0; ρσ_Index42 < ρσ_Iter42.length; ρσ_Index42++) {
+                        class_name = ρσ_Iter42[ρσ_Index42];
                         mod_string = " + your " + class_name.toLowerCase() + " level";
                         if (text.startsWith(mod_string)) {
                             strong.append(mod_string);
@@ -11889,9 +11891,9 @@ return this.__repr__();
                 return;
             }
             injectDiceToRolls(selector, character, name);
-            var ρσ_Iter7 = ρσ_Iterable($(".ct-beyond20-custom-roll"));
-            for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                custom_roll = ρσ_Iter7[ρσ_Index7];
+            var ρσ_Iter43 = ρσ_Iterable($(".ct-beyond20-custom-roll"));
+            for (var ρσ_Index43 = 0; ρσ_Index43 < ρσ_Iter43.length; ρσ_Index43++) {
+                custom_roll = ρσ_Iter43[ρσ_Index43];
                 findModifiers(character, custom_roll);
             }
         };
@@ -12093,9 +12095,9 @@ return this.__repr__();
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter8 = ρσ_Iterable(groups);
-            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                group = ρσ_Iter8[ρσ_Index8];
+            var ρσ_Iter44 = ρσ_Iterable(groups);
+            for (var ρσ_Index44 = 0; ρσ_Index44 < ρσ_Iter44.length; ρσ_Index44++) {
+                group = ρσ_Iter44[ρσ_Index44];
                 label = $(group).find(".ct-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -12104,9 +12106,9 @@ return this.__repr__();
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter9 = ρσ_Iterable(items);
-                    for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
-                        item = ρσ_Iter9[ρσ_Index9];
+                    var ρσ_Iter45 = ρσ_Iterable(items);
+                    for (var ρσ_Index45 = 0; ρσ_Index45 < ρσ_Iter45.length; ρσ_Index45++) {
+                        item = ρσ_Iter45[ρσ_Index45];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -12188,8 +12190,8 @@ return this.__repr__();
             injectSettingsButton();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index10 = 0; ρσ_Index10 < pane.length; ρσ_Index10++) {
-                    div = ρσ_Index10;
+                for (var ρσ_Index46 = 0; ρσ_Index46 < pane.length; ρσ_Index46++) {
+                    div = ρσ_Index46;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls")) || (paneClass === "ct-beyond20-settings-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-beyond20-settings-pane"))) {
                         continue;

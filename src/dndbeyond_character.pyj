@@ -186,13 +186,23 @@ def rollItem(force_display=False):
             damage_types.append("Ambush")
             character.mergeCharacterSettings({"ranger-dread-ambusher": False})
         if damages.length > 0 and \
-            character.getSetting("warlock-hexblade-curse", False) and \
-            character.hasClassFeature("Hexblade’s Curse") and \
-            character._proficiency is not None:
+           character.getSetting("warlock-hexblade-curse", False) and \
+           character.hasClassFeature("Hexblade’s Curse") and \
+           character._proficiency is not None:
             damages.append(character._proficiency)
             damage_types.append("Hexblade's Curse")
 
-
+        critical_limit = 20
+        if character.hasAction("Channel Divinity: Legendary Strike") and \
+           character.getSetting("paladin-legendary-strike", False):
+            critical_limit = 19
+        if character.hasClassFeature("Hexblade’s Curse") and \
+           character.getSetting("warlock-hexblade-curse", False):
+            critical_limit = 19
+        if character.hasClassFeature("Improved Critical"):
+            critical_limit = 19
+        if character.hasClassFeature("Superior Critical"):
+            critical_limit = 18
 
         brutal = 0
         if properties["Attack Type"] == "Melee":
@@ -216,6 +226,8 @@ def rollItem(force_display=False):
                                           to_hit,
                                           brutal)
         roll_properties["item-type"] = item_type
+        if critical_limit != 20:
+            roll_properties["critical-limit"] = critical_limit
         sendRollWithCharacter("attack", damages[0], roll_properties)
     else:
         sendRollWithCharacter("item", 0, {"name": item_name,

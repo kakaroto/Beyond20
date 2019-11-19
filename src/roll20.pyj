@@ -314,21 +314,8 @@ def rollAttack(request, custom_roll_dice=""):
     dmg_props = {}
     if request["to-hit"]?:
         d20_roll = "1d20"
-        if request["attack-source"] == "item":
-            if request.character.type == "Character" and \
-                    "Channel Divinity: Legendary Strike" in request.character["actions"] and \
-                        request.character.settings["paladin-legendary-strike"]:
-                d20_roll = "1d20cs>19"
-            if request.character.type == "Character" and \
-                    "Hexblade’s Curse" in request.character["class-features"] and \
-                        request.character.settings["warlock-hexblade-curse"]:
-                d20_roll = "1d20cs>19"
-            if request.character.type == "Character" and \
-                    "Improved Critical" in request.character["class-features"]:
-                d20_roll = "1d20cs>19"
-            if request.character.type == "Character" and \
-                    "Superior Critical" in request.character["class-features"]:
-                d20_roll = "1d20cs>18"
+        if request["critical-limit"]:
+            d20_roll = "1d20cs>" + request["critical-limit"]
         properties["mod"] = request["to-hit"]
         properties["r1"] = genRoll(d20_roll, {"": request["to-hit"], "CUSTOM": custom_roll_dice})
         properties["attack"] = 1

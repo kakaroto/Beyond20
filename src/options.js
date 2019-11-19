@@ -5953,7 +5953,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             ρσ_d["sharpshooter"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["title"] = "Sharpshooter: Apply to next Roll";
+                ρσ_d["title"] = "Fighter: Sharpshooter (Apply to next roll only)";
                 ρσ_d["description"] = "Apply Sharpshooter -5 penalty to roll and +10 to damage";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
@@ -5961,7 +5961,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this);
             ρσ_d["great-weapon-master"] = (function(){
                 var ρσ_d = {};
-                ρσ_d["title"] = "Great Weapon Master: Apply to next Roll";
+                ρσ_d["title"] = "Great Weapon Master Feat (Apply to next roll only)";
                 ρσ_d["description"] = "Apply Great Weapon Master -5 penalty to roll and +10 to damage";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
