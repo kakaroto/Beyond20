@@ -160,7 +160,9 @@ class Character(CharacterBase):
                 classes = classes.text().split(" / ")
                 self._classes = {}
                 for class_ in classes:
-                    name, level = class_.split(" ")
+                    parts = class_.split(" ")
+                    name = str.join(" ", parts[:-1])
+                    level = parts[-1]
                     self._classes[name] = level
         if self._level is None:
             level = $(".ct-character-tidbits__xp-level")

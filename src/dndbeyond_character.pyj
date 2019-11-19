@@ -150,10 +150,8 @@ def rollItem(force_display=False):
                 (properties["Attack Type"] == "Ranged" or \
                      (properties["Properties"]? and properties["Properties"].includes("Finesse"))):
             sneak_attack = int(math.ceil(float(character._classes["Rogue"]) / 2)) + "d6"
-            dmg_type = "Sneak Attack"
-            console.log("Sneak attack:", sneak_attack)
             damages.append(sneak_attack)
-            damage_types.append(dmg_type)
+            damage_types.append("Sneak Attack")
         if character.getSetting("sharpshooter", False) and \
                 properties["Attack Type"] == "Ranged" and \
                 properties["Proficient"] == "Yes":
@@ -169,6 +167,21 @@ def rollItem(force_display=False):
             damages.insert(1, " + 10")
             damage_types.insert(1, "Weapon Master")
             character.mergeCharacterSettings({"great-weapon-master": False})
+        if character.getSetting("bloodhunter-crimson-rite", False) and \
+            character.hasClassFeature("Crimson Rite"):
+            bloodhunter_level = character.getClassLevel("Blood Hunter")
+            if bloodhunter_level > 0:
+                if bloodhunter_level <= 4:
+                    rite_die = "1d4"
+                elif bloodhunter_level <= 10:
+                    rite_die = "1d6"
+                elif bloodhunter_level <= 16:
+                    rite_die = "1d8"
+                else:
+                    rite_die = "1d10"
+                damages.append(rite_die)
+                damage_types.append("Crimson Rite")
+
 
 
         brutal = 0

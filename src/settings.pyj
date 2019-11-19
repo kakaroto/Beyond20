@@ -172,7 +172,7 @@ character_settings = {
     "cleric-disciple-life": {"title": "Cleric: Disciple of Life",
                              "description": "Send Disciple of Life healing bonus",
                              "type": "bool",
-                             "default": False},
+                             "default": True},
     "bard-joat": {"title": "Bard: Jack of All Trades",
                   "description": "Add JoaT bonus to raw ability checks",
                   "type": "bool",
@@ -186,7 +186,7 @@ character_settings = {
                             "type": "bool",
                             "default": False},
     "brutal-critical": {"title": "Brutal Critical/Savage Attacks: Roll extra die",
-                            "description": "Roll extra damage die on crit for Brutal Critical and Save Attacks features",
+                            "description": "Roll extra damage die on crit for Brutal Critical and Savage Attacks features",
                             "type": "bool",
                             "default": True},
 
@@ -194,6 +194,10 @@ character_settings = {
                             "description": "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws",
                             "type": "bool",
                             "default": False},
+    "bloodhunter-crimson-rite": {"title": "Bloodhunter: Crimson Rite",
+                           "description": "Add Crimson Rite damage",
+                           "type": "bool",
+                           "default": False},
 }
 
 def getStorage():

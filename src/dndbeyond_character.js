@@ -5946,7 +5946,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["title"] = "Cleric: Disciple of Life";
                 ρσ_d["description"] = "Send Disciple of Life healing bonus";
                 ρσ_d["type"] = "bool";
-                ρσ_d["default"] = false;
+                ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
             ρσ_d["bard-joat"] = (function(){
@@ -5976,7 +5976,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["brutal-critical"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Brutal Critical/Savage Attacks: Roll extra die";
-                ρσ_d["description"] = "Roll extra damage die on crit for Brutal Critical and Save Attacks features";
+                ρσ_d["description"] = "Roll extra damage die on crit for Brutal Critical and Savage Attacks features";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
@@ -5985,6 +5985,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 var ρσ_d = {};
                 ρσ_d["title"] = "Rage: You are raging, ARRGGHHHHHH";
                 ρσ_d["description"] = "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["bloodhunter-crimson-rite"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Bloodhunter: Crimson Rite";
+                ρσ_d["description"] = "Add Crimson Rite damage";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
                 return ρσ_d;
@@ -9588,7 +9596,7 @@ return this.__repr__();
         Character.__handles_kwarg_interpolation__ = Character.prototype.__init__.__handles_kwarg_interpolation__;
         Character.prototype.updateInfo = function updateInfo() {
             var self = this;
-            var classes, ρσ_unpack, name, level, class_, xp, ac, speed, abilities, abbr, modifier, value, ability;
+            var classes, parts, name, level, class_, xp, ac, speed, abilities, abbr, modifier, value, ability;
             self._id = $("#character-sheet-target").attr("data-character-id");
             if (self._settings === null) {
                 self.updateSettings();
@@ -9613,10 +9621,9 @@ return this.__repr__();
                     var ρσ_Iter0 = ρσ_Iterable(classes);
                     for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
                         class_ = ρσ_Iter0[ρσ_Index0];
-                        ρσ_unpack = class_.split(" ");
-ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
-                        name = ρσ_unpack[0];
-                        level = ρσ_unpack[1];
+                        parts = class_.split(" ");
+                        name = str.join(" ", parts.slice(0, -1));
+                        level = parts[parts.length-1];
                         (ρσ_expr_temp = self._classes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = level;
                     }
                 }
@@ -11342,7 +11349,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
                 force_display = ρσ_kwargs_obj.force_display;
             }
-            var prop_list, properties, item_name, item_type, description, to_hit, damages, damage_types, value, damage, damage_type, versatile_damage, versatile_choice, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damage, sneak_attack, brutal, barbarian_level, rage_damage, roll_properties;
+            var prop_list, properties, item_name, item_type, description, to_hit, damages, damage_types, value, damage, damage_type, versatile_damage, versatile_choice, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damage, sneak_attack, bloodhunter_level, rite_die, brutal, barbarian_level, rage_damage, roll_properties;
             prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property");
             properties = propertyListToDict(prop_list);
             print("Properties are : " + str(properties));
@@ -11410,10 +11417,8 @@ return this.__repr__();
                 }
                 if (ρσ_in("Rogue", character._classes) && character.getSetting("rogue-sneak-attack", false) && ((properties["Attack Type"] === "Ranged" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Ranged")) || ρσ_exists.n(properties["Properties"]) && properties["Properties"].includes("Finesse"))) {
                     sneak_attack = int(math.ceil(float(character._classes["Rogue"]) / 2)) + "d6";
-                    dmg_type = "Sneak Attack";
-                    console.log("Sneak attack:", sneak_attack);
                     damages.append(sneak_attack);
-                    damage_types.append(dmg_type);
+                    damage_types.append("Sneak Attack");
                 }
                 if (character.getSetting("sharpshooter", false) && (properties["Attack Type"] === "Ranged" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Ranged")) && (properties["Proficient"] === "Yes" || typeof properties["Proficient"] === "object" && ρσ_equals(properties["Proficient"], "Yes"))) {
                     to_hit += " - 5";
@@ -11434,6 +11439,22 @@ return this.__repr__();
                         ρσ_d["great-weapon-master"] = false;
                         return ρσ_d;
                     }).call(this));
+                }
+                if (character.getSetting("bloodhunter-crimson-rite", false) && character.hasClassFeature("Crimson Rite")) {
+                    bloodhunter_level = character.getClassLevel("Blood Hunter");
+                    if (bloodhunter_level > 0) {
+                        if (bloodhunter_level <= 4) {
+                            rite_die = "1d4";
+                        } else if (bloodhunter_level <= 10) {
+                            rite_die = "1d6";
+                        } else if (bloodhunter_level <= 16) {
+                            rite_die = "1d8";
+                        } else {
+                            rite_die = "1d10";
+                        }
+                        damages.append(rite_die);
+                        damage_types.append("Crimson Rite");
+                    }
                 }
                 brutal = 0;
                 if ((properties["Attack Type"] === "Melee" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Melee"))) {

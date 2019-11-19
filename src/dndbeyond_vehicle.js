@@ -5947,7 +5947,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["title"] = "Cleric: Disciple of Life";
                 ρσ_d["description"] = "Send Disciple of Life healing bonus";
                 ρσ_d["type"] = "bool";
-                ρσ_d["default"] = false;
+                ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
             ρσ_d["bard-joat"] = (function(){
@@ -5977,7 +5977,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["brutal-critical"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Brutal Critical/Savage Attacks: Roll extra die";
-                ρσ_d["description"] = "Roll extra damage die on crit for Brutal Critical and Save Attacks features";
+                ρσ_d["description"] = "Roll extra damage die on crit for Brutal Critical and Savage Attacks features";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
@@ -5986,6 +5986,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 var ρσ_d = {};
                 ρσ_d["title"] = "Rage: You are raging, ARRGGHHHHHH";
                 ρσ_d["description"] = "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["bloodhunter-crimson-rite"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Bloodhunter: Crimson Rite";
+                ρσ_d["description"] = "Add Crimson Rite damage";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
                 return ρσ_d;
@@ -9589,7 +9597,7 @@ return this.__repr__();
         Character.__handles_kwarg_interpolation__ = Character.prototype.__init__.__handles_kwarg_interpolation__;
         Character.prototype.updateInfo = function updateInfo() {
             var self = this;
-            var classes, ρσ_unpack, name, level, class_, xp, ac, speed, abilities, abbr, modifier, value, ability;
+            var classes, parts, name, level, class_, xp, ac, speed, abilities, abbr, modifier, value, ability;
             self._id = $("#character-sheet-target").attr("data-character-id");
             if (self._settings === null) {
                 self.updateSettings();
@@ -9614,10 +9622,9 @@ return this.__repr__();
                     var ρσ_Iter0 = ρσ_Iterable(classes);
                     for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
                         class_ = ρσ_Iter0[ρσ_Index0];
-                        ρσ_unpack = class_.split(" ");
-ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
-                        name = ρσ_unpack[0];
-                        level = ρσ_unpack[1];
+                        parts = class_.split(" ");
+                        name = str.join(" ", parts.slice(0, -1));
+                        level = parts[parts.length-1];
                         (ρσ_expr_temp = self._classes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = level;
                     }
                 }
