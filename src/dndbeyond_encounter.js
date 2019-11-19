@@ -7355,7 +7355,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         }
                         html += "</table>";
                     }
-                    description = self.injectRollsInDescription(description).replace("\n", "</br>");
+                    description = self.injectRollsInDescription(description).replace(/\n/g, "</br>");
                     html += "<div class='beyond20-description'>" + description + "</div></details>";
                 } else {
                     html = "<div class='beyond20-title'>" + title + "</div>";
@@ -10532,20 +10532,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "separator")){
                 separator = ρσ_kwargs_obj.separator;
             }
-            var description_p, description, i;
-            description_p = $(selector).find("p");
-            if ((description_p.length === 0 || typeof description_p.length === "object" && ρσ_equals(description_p.length, 0))) {
-                return $(selector).text();
-            }
-            description = "";
-            for (var ρσ_Index26 = 0; ρσ_Index26 < description_p.length; ρσ_Index26++) {
-                i = ρσ_Index26;
-                if (len(description) > 0) {
-                    description += separator;
-                }
-                description += description_p.eq(i).text();
-            }
-            return description;
+            return $(selector).html().replace(/<\/?[^>]+>/gi, "");
         };
         if (!descriptionToString.__defaults__) Object.defineProperties(descriptionToString, {
             __defaults__ : {value: {separator:"\n"}},
@@ -10556,8 +10543,8 @@ return this.__repr__();
         function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
             var items, to_hit, i;
             items = $(items_selector);
-            for (var ρσ_Index27 = 0; ρσ_Index27 < items.length; ρσ_Index27++) {
-                i = ρσ_Index27;
+            for (var ρσ_Index26 = 0; ρσ_Index26 < items.length; ρσ_Index26++) {
+                i = ρσ_Index26;
                 if (ρσ_equals(items.eq(i).find(name_selector).text(), name_to_match)) {
                     to_hit = items.eq(i).find(tohit_selector);
                     if (to_hit.length > 0) {
@@ -10577,9 +10564,9 @@ return this.__repr__();
         function damagesToCrits(damages) {
             var crits, match, damage;
             crits = ρσ_list_decorate([]);
-            var ρσ_Iter28 = ρσ_Iterable(damages);
-            for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
-                damage = ρσ_Iter28[ρσ_Index28];
+            var ρσ_Iter27 = ρσ_Iterable(damages);
+            for (var ρσ_Index27 = 0; ρσ_Index27 < ρσ_Iter27.length; ρσ_Index27++) {
+                damage = ρσ_Iter27[ρσ_Index27];
                 match = re.search("[0-9]*d[0-9]+(ro<2)?", damage);
                 if ((typeof match !== "undefined" && match !== null)) {
                     crits.append(match.group(0));
@@ -10664,9 +10651,9 @@ return this.__repr__();
                     crits = damagesToCrits(damages, damage_types);
                     crit_damages = ρσ_list_decorate([]);
                     crit_damage_types = ρσ_list_decorate([]);
-                    var ρσ_Iter29 = ρσ_Iterable(enumerate(crits));
-                    for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
-                        ρσ_unpack = ρσ_Iter29[ρσ_Index29];
+                    var ρσ_Iter28 = ρσ_Iterable(enumerate(crits));
+                    for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
+                        ρσ_unpack = ρσ_Iter28[ρσ_Index28];
                         i = ρσ_unpack[0];
                         dmg = ρσ_unpack[1];
                         if ((dmg !== "" && (typeof dmg !== "object" || ρσ_not_equals(dmg, "")))) {
@@ -10676,9 +10663,9 @@ return this.__repr__();
                     }
                     if (brutal > 0) {
                         highest_dice = 0;
-                        var ρσ_Iter30 = ρσ_Iterable(crit_damages);
-                        for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
-                            dmg = ρσ_Iter30[ρσ_Index30];
+                        var ρσ_Iter29 = ρσ_Iterable(crit_damages);
+                        for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
+                            dmg = ρσ_Iter29[ρσ_Index29];
                             match = re.search("[0-9]*d([0-9]+)", dmg);
                             if ((typeof match !== "undefined" && match !== null)) {
                                 sides = int(match.group(1));
@@ -10722,9 +10709,9 @@ return this.__repr__();
                 ρσ_d["whisper"] = whisper;
                 return ρσ_d;
             }).call(this);
-            var ρσ_Iter31 = ρσ_Iterable(args);
-            for (var ρσ_Index31 = 0; ρσ_Index31 < ρσ_Iter31.length; ρσ_Index31++) {
-                key = ρσ_Iter31[ρσ_Index31];
+            var ρσ_Iter30 = ρσ_Iterable(args);
+            for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
+                key = ρσ_Iter30[ρσ_Index30];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
             console.log("Sending message: ", req);
@@ -10866,8 +10853,8 @@ return this.__repr__();
             $(".ct-reset-pane__hitdie-heading").append(button);
             hitdice = $(".ct-reset-pane__hitdie");
             multiclass = hitdice.length > 1;
-            for (var ρσ_Index32 = 0; ρσ_Index32 < hitdice.length; ρσ_Index32++) {
-                i = ρσ_Index32;
+            for (var ρσ_Index31 = 0; ρσ_Index31 < hitdice.length; ρσ_Index31++) {
+                i = ρσ_Index31;
                 cb = (function() {
                     var ρσ_anonfunc = function (rollCallback, index) {
                         return (function() {
@@ -10939,8 +10926,8 @@ return this.__repr__();
             $(".ct-beyond20-roll-display").remove();
             $(".ct-beyond20-custom-icon").remove();
             custom_rolls = $("u.ct-beyond20-custom-roll");
-            for (var ρσ_Index33 = 0; ρσ_Index33 < custom_rolls.length; ρσ_Index33++) {
-                i = ρσ_Index33;
+            for (var ρσ_Index32 = 0; ρσ_Index32 < custom_rolls.length; ρσ_Index32++) {
+                i = ρσ_Index32;
                 custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
             }
         };
@@ -10949,9 +10936,9 @@ return this.__repr__();
             var children, child, text;
             if (node.hasChildNodes()) {
                 children = list(node.childNodes);
-                var ρσ_Iter34 = ρσ_Iterable(children);
-                for (var ρσ_Index34 = 0; ρσ_Index34 < ρσ_Iter34.length; ρσ_Index34++) {
-                    child = ρσ_Iter34[ρσ_Index34];
+                var ρσ_Iter33 = ρσ_Iterable(children);
+                for (var ρσ_Index33 = 0; ρσ_Index33 < ρσ_Iter33.length; ρσ_Index33++) {
+                    child = ρσ_Iter33[ρσ_Index33];
                     if ($(child).hasClass("ct-beyond20-roll")) {
                         continue;
                     }
@@ -10991,9 +10978,9 @@ return this.__repr__();
                 return ρσ_anonfunc;
             })();
             items = $(selector);
-            var ρσ_Iter35 = ρσ_Iterable(items);
-            for (var ρσ_Index35 = 0; ρσ_Index35 < ρσ_Iter35.length; ρσ_Index35++) {
-                item = ρσ_Iter35[ρσ_Index35];
+            var ρσ_Iter34 = ρσ_Iterable(items);
+            for (var ρσ_Index34 = 0; ρσ_Index34 < ρσ_Iter34.length; ρσ_Index34++) {
+                item = ρσ_Iter34[ρσ_Index34];
                 recursiveDiceReplace(item, replaceCB);
             }
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");

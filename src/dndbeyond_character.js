@@ -7354,7 +7354,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         }
                         html += "</table>";
                     }
-                    description = self.injectRollsInDescription(description).replace("\n", "</br>");
+                    description = self.injectRollsInDescription(description).replace(/\n/g, "</br>");
                     html += "<div class='beyond20-description'>" + description + "</div></details>";
                 } else {
                     html = "<div class='beyond20-title'>" + title + "</div>";
@@ -10531,20 +10531,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "separator")){
                 separator = ρσ_kwargs_obj.separator;
             }
-            var description_p, description, i;
-            description_p = $(selector).find("p");
-            if ((description_p.length === 0 || typeof description_p.length === "object" && ρσ_equals(description_p.length, 0))) {
-                return $(selector).text();
-            }
-            description = "";
-            for (var ρσ_Index26 = 0; ρσ_Index26 < description_p.length; ρσ_Index26++) {
-                i = ρσ_Index26;
-                if (len(description) > 0) {
-                    description += separator;
-                }
-                description += description_p.eq(i).text();
-            }
-            return description;
+            return $(selector).html().replace(/<\/?[^>]+>/gi, "");
         };
         if (!descriptionToString.__defaults__) Object.defineProperties(descriptionToString, {
             __defaults__ : {value: {separator:"\n"}},
@@ -10555,8 +10542,8 @@ return this.__repr__();
         function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
             var items, to_hit, i;
             items = $(items_selector);
-            for (var ρσ_Index27 = 0; ρσ_Index27 < items.length; ρσ_Index27++) {
-                i = ρσ_Index27;
+            for (var ρσ_Index26 = 0; ρσ_Index26 < items.length; ρσ_Index26++) {
+                i = ρσ_Index26;
                 if (ρσ_equals(items.eq(i).find(name_selector).text(), name_to_match)) {
                     to_hit = items.eq(i).find(tohit_selector);
                     if (to_hit.length > 0) {
@@ -10576,9 +10563,9 @@ return this.__repr__();
         function damagesToCrits(damages) {
             var crits, match, damage;
             crits = ρσ_list_decorate([]);
-            var ρσ_Iter28 = ρσ_Iterable(damages);
-            for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
-                damage = ρσ_Iter28[ρσ_Index28];
+            var ρσ_Iter27 = ρσ_Iterable(damages);
+            for (var ρσ_Index27 = 0; ρσ_Index27 < ρσ_Iter27.length; ρσ_Index27++) {
+                damage = ρσ_Iter27[ρσ_Index27];
                 match = re.search("[0-9]*d[0-9]+(ro<2)?", damage);
                 if ((typeof match !== "undefined" && match !== null)) {
                     crits.append(match.group(0));
@@ -10663,9 +10650,9 @@ return this.__repr__();
                     crits = damagesToCrits(damages, damage_types);
                     crit_damages = ρσ_list_decorate([]);
                     crit_damage_types = ρσ_list_decorate([]);
-                    var ρσ_Iter29 = ρσ_Iterable(enumerate(crits));
-                    for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
-                        ρσ_unpack = ρσ_Iter29[ρσ_Index29];
+                    var ρσ_Iter28 = ρσ_Iterable(enumerate(crits));
+                    for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
+                        ρσ_unpack = ρσ_Iter28[ρσ_Index28];
                         i = ρσ_unpack[0];
                         dmg = ρσ_unpack[1];
                         if ((dmg !== "" && (typeof dmg !== "object" || ρσ_not_equals(dmg, "")))) {
@@ -10675,9 +10662,9 @@ return this.__repr__();
                     }
                     if (brutal > 0) {
                         highest_dice = 0;
-                        var ρσ_Iter30 = ρσ_Iterable(crit_damages);
-                        for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
-                            dmg = ρσ_Iter30[ρσ_Index30];
+                        var ρσ_Iter29 = ρσ_Iterable(crit_damages);
+                        for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
+                            dmg = ρσ_Iter29[ρσ_Index29];
                             match = re.search("[0-9]*d([0-9]+)", dmg);
                             if ((typeof match !== "undefined" && match !== null)) {
                                 sides = int(match.group(1));
@@ -10721,9 +10708,9 @@ return this.__repr__();
                 ρσ_d["whisper"] = whisper;
                 return ρσ_d;
             }).call(this);
-            var ρσ_Iter31 = ρσ_Iterable(args);
-            for (var ρσ_Index31 = 0; ρσ_Index31 < ρσ_Iter31.length; ρσ_Index31++) {
-                key = ρσ_Iter31[ρσ_Index31];
+            var ρσ_Iter30 = ρσ_Iterable(args);
+            for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
+                key = ρσ_Iter30[ρσ_Index30];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
             console.log("Sending message: ", req);
@@ -10865,8 +10852,8 @@ return this.__repr__();
             $(".ct-reset-pane__hitdie-heading").append(button);
             hitdice = $(".ct-reset-pane__hitdie");
             multiclass = hitdice.length > 1;
-            for (var ρσ_Index32 = 0; ρσ_Index32 < hitdice.length; ρσ_Index32++) {
-                i = ρσ_Index32;
+            for (var ρσ_Index31 = 0; ρσ_Index31 < hitdice.length; ρσ_Index31++) {
+                i = ρσ_Index31;
                 cb = (function() {
                     var ρσ_anonfunc = function (rollCallback, index) {
                         return (function() {
@@ -10938,8 +10925,8 @@ return this.__repr__();
             $(".ct-beyond20-roll-display").remove();
             $(".ct-beyond20-custom-icon").remove();
             custom_rolls = $("u.ct-beyond20-custom-roll");
-            for (var ρσ_Index33 = 0; ρσ_Index33 < custom_rolls.length; ρσ_Index33++) {
-                i = ρσ_Index33;
+            for (var ρσ_Index32 = 0; ρσ_Index32 < custom_rolls.length; ρσ_Index32++) {
+                i = ρσ_Index32;
                 custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
             }
         };
@@ -10948,9 +10935,9 @@ return this.__repr__();
             var children, child, text;
             if (node.hasChildNodes()) {
                 children = list(node.childNodes);
-                var ρσ_Iter34 = ρσ_Iterable(children);
-                for (var ρσ_Index34 = 0; ρσ_Index34 < ρσ_Iter34.length; ρσ_Index34++) {
-                    child = ρσ_Iter34[ρσ_Index34];
+                var ρσ_Iter33 = ρσ_Iterable(children);
+                for (var ρσ_Index33 = 0; ρσ_Index33 < ρσ_Iter33.length; ρσ_Index33++) {
+                    child = ρσ_Iter33[ρσ_Index33];
                     if ($(child).hasClass("ct-beyond20-roll")) {
                         continue;
                     }
@@ -10990,9 +10977,9 @@ return this.__repr__();
                 return ρσ_anonfunc;
             })();
             items = $(selector);
-            var ρσ_Iter35 = ρσ_Iterable(items);
-            for (var ρσ_Index35 = 0; ρσ_Index35 < ρσ_Iter35.length; ρσ_Index35++) {
-                item = ρσ_Iter35[ρσ_Index35];
+            var ρσ_Iter34 = ρσ_Iterable(items);
+            for (var ρσ_Index34 = 0; ρσ_Index34 < ρσ_Iter34.length; ρσ_Index34++) {
+                item = ρσ_Iter34[ρσ_Index34];
                 recursiveDiceReplace(item, replaceCB);
             }
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");
@@ -11227,8 +11214,8 @@ return this.__repr__();
                 to_hit = ρσ_exists.e(properties["To Hit"], findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit"));
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                for (var ρσ_Index0 = 0; ρσ_Index0 < prop_list.length; ρσ_Index0++) {
-                    i = ρσ_Index0;
+                for (var ρσ_Index35 = 0; ρσ_Index35 < prop_list.length; ρσ_Index35++) {
+                    i = ρσ_Index35;
                     if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
                         value = prop_list.eq(i).find(".ct-property-list__property-content");
                         damage = value.find(".ct-damage__value").text();
@@ -11260,8 +11247,8 @@ return this.__repr__();
                             damage_types.append(damage_type);
                         }
                         additional_damages = value.find(".ct-item-detail__additional-damage");
-                        for (var ρσ_Index1 = 0; ρσ_Index1 < additional_damages.length; ρσ_Index1++) {
-                            j = ρσ_Index1;
+                        for (var ρσ_Index36 = 0; ρσ_Index36 < additional_damages.length; ρσ_Index36++) {
+                            j = ρσ_Index36;
                             dmg = additional_damages.eq(j).text();
                             dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                             dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
@@ -11423,9 +11410,9 @@ return this.__repr__();
             if (force_display === false && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null))))) {
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                var ρσ_Iter2 = ρσ_Iterable(damage_modifiers);
-                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                    modifier = ρσ_Iter2[ρσ_Index2];
+                var ρσ_Iter37 = ρσ_Iterable(damage_modifiers);
+                for (var ρσ_Index37 = 0; ρσ_Index37 < ρσ_Iter37.length; ρσ_Index37++) {
+                    modifier = ρσ_Iter37[ρσ_Index37];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                     if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
@@ -11434,9 +11421,9 @@ return this.__repr__();
                     damages.append(dmg);
                     damage_types.append(dmgtype);
                 }
-                var ρσ_Iter3 = ρσ_Iterable(healing_modifiers);
-                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                    modifier = ρσ_Iter3[ρσ_Index3];
+                var ρσ_Iter38 = ρσ_Iterable(healing_modifiers);
+                for (var ρσ_Index38 = 0; ρσ_Index38 < ρσ_Iter38.length; ρσ_Index38++) {
+                    modifier = ρσ_Iter38[ρσ_Index38];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     if (dmg.startsWith("Regain ")) {
                         dmg = dmg.slice(7);
@@ -11471,9 +11458,9 @@ return this.__repr__();
                     ρσ_d["ritual"] = ritual;
                     return ρσ_d;
                 }).call(this);
-                var ρσ_Iter4 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                    key = ρσ_Iter4[ρσ_Index4];
+                var ρσ_Iter39 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index39 = 0; ρσ_Index39 < ρσ_Iter39.length; ρσ_Index39++) {
+                    key = ρσ_Iter39[ρσ_Index39];
                     roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
                 }
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
@@ -11622,9 +11609,9 @@ return this.__repr__();
                 text_len = 0;
                 while (ρσ_not_equals(text_len, len(text))) {
                     text_len = len(text);
-                    var ρσ_Iter5 = ρσ_Iterable(character._abilities);
-                    for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                        ability = ρσ_Iter5[ρσ_Index5];
+                    var ρσ_Iter40 = ρσ_Iterable(character._abilities);
+                    for (var ρσ_Index40 = 0; ρσ_Index40 < ρσ_Iter40.length; ρσ_Index40++) {
+                        ability = ρσ_Iter40[ρσ_Index40];
                         mod_string = " + your " + ability[0] + " modifier";
                         if (text.startsWith(mod_string)) {
                             strong.append(mod_string);
@@ -11632,9 +11619,9 @@ return this.__repr__();
                             text = text.substring(len(mod_string));
                         }
                     }
-                    var ρσ_Iter6 = ρσ_Iterable(character._classes);
-                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                        class_name = ρσ_Iter6[ρσ_Index6];
+                    var ρσ_Iter41 = ρσ_Iterable(character._classes);
+                    for (var ρσ_Index41 = 0; ρσ_Index41 < ρσ_Iter41.length; ρσ_Index41++) {
+                        class_name = ρσ_Iter41[ρσ_Index41];
                         mod_string = " + your " + class_name.toLowerCase() + " level";
                         if (text.startsWith(mod_string)) {
                             strong.append(mod_string);
@@ -11670,9 +11657,9 @@ return this.__repr__();
                 return;
             }
             injectDiceToRolls(selector, character, name);
-            var ρσ_Iter7 = ρσ_Iterable($(".ct-beyond20-custom-roll"));
-            for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                custom_roll = ρσ_Iter7[ρσ_Index7];
+            var ρσ_Iter42 = ρσ_Iterable($(".ct-beyond20-custom-roll"));
+            for (var ρσ_Index42 = 0; ρσ_Index42 < ρσ_Iter42.length; ρσ_Index42++) {
+                custom_roll = ρσ_Iter42[ρσ_Index42];
                 findModifiers(character, custom_roll);
             }
         };
@@ -11874,9 +11861,9 @@ return this.__repr__();
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter8 = ρσ_Iterable(groups);
-            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                group = ρσ_Iter8[ρσ_Index8];
+            var ρσ_Iter43 = ρσ_Iterable(groups);
+            for (var ρσ_Index43 = 0; ρσ_Index43 < ρσ_Iter43.length; ρσ_Index43++) {
+                group = ρσ_Iter43[ρσ_Index43];
                 label = $(group).find(".ct-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -11885,9 +11872,9 @@ return this.__repr__();
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter9 = ρσ_Iterable(items);
-                    for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
-                        item = ρσ_Iter9[ρσ_Index9];
+                    var ρσ_Iter44 = ρσ_Iterable(items);
+                    for (var ρσ_Index44 = 0; ρσ_Index44 < ρσ_Iter44.length; ρσ_Index44++) {
+                        item = ρσ_Iter44[ρσ_Index44];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -11969,8 +11956,8 @@ return this.__repr__();
             injectSettingsButton();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index10 = 0; ρσ_Index10 < pane.length; ρσ_Index10++) {
-                    div = ρσ_Index10;
+                for (var ρσ_Index45 = 0; ρσ_Index45 < pane.length; ρσ_Index45++) {
+                    div = ρσ_Index45;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls")) || (paneClass === "ct-beyond20-settings-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-beyond20-settings-pane"))) {
                         continue;

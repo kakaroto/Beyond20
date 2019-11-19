@@ -115,7 +115,7 @@ class Beyond20RollRenderer:
                     for attr in attributes:
                         html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[attr] + "</td></tr>"
                     html += "</table>"
-                description = self.injectRollsInDescription(description).replace("\n", "</br>")
+                description = self.injectRollsInDescription(description).replace(/\n/g, "</br>")
                 html += "<div class='beyond20-description'>" + description + "</div></details>"
             else:
                 html = "<div class='beyond20-title'>" + title + "</div>"

@@ -762,15 +762,8 @@ def propertyListToDict(propList):
     return properties
 
 def descriptionToString(selector, separator="\n"):
-    description_p = $(selector).find("p")
-    if description_p.length == 0:
-        return $(selector).text()
-    description = ""
-    for i in range(description_p.length):
-        if len(description) > 0:
-            description += separator
-        description += description_p.eq(i).text()
-    return description
+    # strip tags : https://www.sitepoint.com/jquery-strip-html-tags-div/
+    return $(selector).html().replace(/<\/?[^>]+>/gi, '')
 
 def findToHit(name_to_match, items_selector, name_selector, tohit_selector):
     items = $(items_selector)
