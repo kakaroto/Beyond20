@@ -5,3 +5,13 @@
 .alertify-notifier .ajs-message {
     width: 500px;
 }
+/* D&D Beyond mobile/tablet sidepanel uses 60001 as z-index*/
+.alertify .ajs-dimmer {
+  z-index: 70001;
+}
+.alertify .ajs-modal {
+  z-index: 70001;
+} 
+.alertify-notifier {
+  z-index: 70002;
+}
