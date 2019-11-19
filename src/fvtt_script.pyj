@@ -6,7 +6,7 @@ settings = None
 extension_url = "/modules/beyond20/"
 
 class FVTTDisplayer:
-    def postHTML(self, request, title, html, buttons, play_sound):
+    def postHTML(self, request, title, html, buttons, character, whisper, play_sound):
         Hooks.once('renderChatMessage', def(chat_message, data, html):
                     nonlocal extension_url
                     icon16 = extension_url + "images/icons/icon16.png"
@@ -21,7 +21,7 @@ class FVTTDisplayer:
                         buttons[button]()
                     )
                 )
-        return self._postChatMessage(html, request.character.name, request.whisper, play_sound)
+        return self._postChatMessage(html, character, whisper, play_sound)
 
     def _postChatMessage(self, message, character, whisper, play_sound=False):
         nonlocal CHAT_MESSAGE_TYPES

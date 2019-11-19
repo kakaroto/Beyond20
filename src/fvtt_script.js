@@ -5670,6 +5670,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         WhisperType.prototype.NO = 0;
         WhisperType.prototype.YES = 1;
         WhisperType.prototype.QUERY = 2;
+        WhisperType.prototype.HIDE_NAMES = 3;
 
         function RollType() {
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
@@ -5736,6 +5737,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["choices"] = (function(){
                     var ρσ_d = {};
                     ρσ_d[str(WhisperType.prototype.NO)] = "Use general whisper setting";
+                    ρσ_d[str(WhisperType.prototype.HIDE_NAMES)] = "Hide monster and attack name";
                     ρσ_d[str(WhisperType.prototype.YES)] = "Always whisper monster rolls";
                     ρσ_d[str(WhisperType.prototype.QUERY)] = "Ask every time";
                     return ρσ_d;
@@ -7175,6 +7177,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
 
         var RollType = ρσ_modules.settings.RollType;
+        var WhisperType = ρσ_modules.settings.WhisperType;
 
         var math = ρσ_modules.math;
 
@@ -7437,11 +7440,13 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var async_function;
             async_function = async            function () {
-                var play_sound, buttons, makeCB, html, attr, ρσ_unpack, name, value, roll_html, i, roll, add_totals, total_damages, is_total, roll_name, kind_of_damage, regular, versatile, flags, key, button;
+                var play_sound, buttons, makeCB, html, attr, ρσ_unpack, name, value, roll_html, i, roll, add_totals, total_damages, is_total, roll_name, kind_of_damage, regular, versatile, flags, key, button, character;
                 play_sound = false;
                 buttons = {};
-                damage_rolls = damage_rolls;
-                description = description;
+                if ((request.whisper === WhisperType.prototype.HIDE_NAMES || typeof request.whisper === "object" && ρσ_equals(request.whisper, WhisperType.prototype.HIDE_NAMES))) {
+                    description = null;
+                    title = "???";
+                }
                 if (len(damage_rolls) > 0 && len(attack_rolls) > 0 && !self._settings["auto-roll-damage"]) {
                     makeCB = (function() {
                         var ρσ_anonfunc = function (request, title, source, attributes, description, damage_rolls) {
@@ -7588,7 +7593,11 @@ var str = ρσ_str, repr = ρσ_repr;;
                     html += "<button class=\"beyond20-chat-button\">" + button + "</button>";
                 }
                 html += "</div>";
-                self._displayer.postHTML(request, title, html, buttons, play_sound);
+                character = request.character.name;
+                if ((request.whisper === WhisperType.prototype.HIDE_NAMES || typeof request.whisper === "object" && ρσ_equals(request.whisper, WhisperType.prototype.HIDE_NAMES))) {
+                    character = "???";
+                }
+                self._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound);
                 if (attack_rolls.length > 0) {
                     return attack_rolls.find((function() {
                         var ρσ_anonfunc = function (r) {
@@ -8457,7 +8466,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         }
         FVTTDisplayer.prototype.__init__ = function __init__ () {
                     };
-        FVTTDisplayer.prototype.postHTML = function postHTML(request, title, html, buttons, play_sound) {
+        FVTTDisplayer.prototype.postHTML = function postHTML(request, title, html, buttons, character, whisper, play_sound) {
             var self = this;
             Hooks.once("renderChatMessage", (function() {
                 var ρσ_anonfunc = function (chat_message, data, html) {
@@ -8492,10 +8501,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 });
                 return ρσ_anonfunc;
             })());
-            return self._postChatMessage(html, request.character.name, request.whisper, play_sound);
+            return self._postChatMessage(html, character, whisper, play_sound);
         };
         if (!FVTTDisplayer.prototype.postHTML.__argnames__) Object.defineProperties(FVTTDisplayer.prototype.postHTML, {
-            __argnames__ : {value: ["request", "title", "html", "buttons", "play_sound"]}
+            __argnames__ : {value: ["request", "title", "html", "buttons", "character", "whisper", "play_sound"]}
         });
         FVTTDisplayer.prototype._postChatMessage = function _postChatMessage() {
             var self = this;

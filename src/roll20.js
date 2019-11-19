@@ -5669,6 +5669,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         WhisperType.prototype.NO = 0;
         WhisperType.prototype.YES = 1;
         WhisperType.prototype.QUERY = 2;
+        WhisperType.prototype.HIDE_NAMES = 3;
 
         function RollType() {
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
@@ -5735,6 +5736,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["choices"] = (function(){
                     var ρσ_d = {};
                     ρσ_d[str(WhisperType.prototype.NO)] = "Use general whisper setting";
+                    ρσ_d[str(WhisperType.prototype.HIDE_NAMES)] = "Hide monster and attack name";
                     ρσ_d[str(WhisperType.prototype.YES)] = "Always whisper monster rolls";
                     ρσ_d[str(WhisperType.prototype.QUERY)] = "Ask every time";
                     return ρσ_d;
@@ -7079,6 +7081,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return (ρσ_expr_temp = (function(){
                     var ρσ_d = {};
                     ρσ_d[WhisperType.prototype.NO] = "";
+                    ρσ_d[WhisperType.prototype.HIDE_NAMES] = "";
                     ρσ_d[WhisperType.prototype.YES] = "/w gm";
                     ρσ_d[WhisperType.prototype.QUERY] = ROLL20_WHISPER_QUERY;
                     return ρσ_d;
@@ -7095,8 +7098,27 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function template(request, name, properties) {
-            var result, key, renameProp, removeProp;
+            var result, renameProp, removeProp, key;
             result = whisperString(request.whisper);
+            renameProp = (function() {
+                var ρσ_anonfunc = function (old_key, new_key) {
+                    result = result.replace("{{" + old_key + "=", "{{" + new_key + "=");
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["old_key", "new_key"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            removeProp = (function() {
+                var ρσ_anonfunc = function (key) {
+                    result = result.replace("{{" + key + "=" + ((ρσ_in(key, properties)) ? properties[(typeof key === "number" && key < 0) ? properties.length + key : key] : "1") + "}}", "");
+                    result = result.replace("&#123&#123" + key + "=" + ((ρσ_in(key, properties)) ? properties[(typeof key === "number" && key < 0) ? properties.length + key : key] : "1") + "&#125&#125", "");
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["key"]}
+                });
+                return ρσ_anonfunc;
+            })();
             result += " &{template:" + name + "}";
             var ρσ_Iter2 = ρσ_Iterable(properties);
             for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
@@ -7106,27 +7128,14 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (ρσ_exists.n(request.advantage) && !ρσ_in("normal", properties) && ρσ_in(name, ρσ_list_decorate([ "simple", "atk", "atkdmg" ]))) {
                 result += advantageString(request.advantage, properties["r1"]);
             }
+            if ((request.whisper === WhisperType.prototype.HIDE_NAMES || typeof request.whisper === "object" && ρσ_equals(request.whisper, WhisperType.prototype.HIDE_NAMES))) {
+                removeProp("charname");
+                removeProp("rname");
+                removeProp("rnamec");
+                removeProp("description");
+            }
             if ((settings["roll20-template"] === "default" || typeof settings["roll20-template"] === "object" && ρσ_equals(settings["roll20-template"], "default"))) {
                 result = result.replace("&{template:" + name + "}", "&{template:default}");
-                renameProp = (function() {
-                    var ρσ_anonfunc = function (old_key, new_key) {
-                        result = result.replace("{{" + old_key + "=", "{{" + new_key + "=");
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["old_key", "new_key"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                removeProp = (function() {
-                    var ρσ_anonfunc = function (key) {
-                        result = result.replace("{{" + key + "=" + ((ρσ_in(key, properties)) ? properties[(typeof key === "number" && key < 0) ? properties.length + key : key] : "1") + "}}", "");
-                        result = result.replace("&#123&#123" + key + "=" + ((ρσ_in(key, properties)) ? properties[(typeof key === "number" && key < 0) ? properties.length + key : key] : "1") + "&#125&#125", "");
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["key"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
                 renameProp("charname", "Character name");
                 renameProp("rname", "name");
                 if (ρσ_in("{{r2=", result) || ρσ_in("&#123&#123r2=", result)) {

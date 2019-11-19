@@ -122,6 +122,7 @@ def advantageString(advantage, r1):
 def whisperString(whisper):
     try:
         return {WhisperType.NO: "",
+                WhisperType.HIDE_NAMES: "",
                 WhisperType.YES: "/w gm",
                 WhisperType.QUERY: ROLL20_WHISPER_QUERY
                 }[whisper]
@@ -132,6 +133,15 @@ def template(request, name, properties):
     nonlocal settings
             
     result = whisperString(request.whisper)
+    
+    renameProp = def(old_key, new_key):
+        nonlocal result
+        result = result.replace("{{" + old_key + "=", "{{" + new_key + "=")
+    removeProp = def(key):
+        nonlocal result, properties
+        result = result.replace("{{" + key + "=" + (properties[key] if key in properties else "1") + "}}", "")
+        result = result.replace("&#123&#123" + key + "=" + (properties[key] if key in properties else "1") + "&#125&#125", "")
+
     result += " &{template:" + name + "}"
     for key in properties:
         result += " {{" + key + "=" + properties[key] + "}}"
@@ -139,16 +149,15 @@ def template(request, name, properties):
     if request.advantage? and "normal" not in properties and name in ["simple", "atk", "atkdmg"]:
         result += advantageString(request.advantage, properties["r1"])
 
+    if request.whisper == WhisperType.HIDE_NAMES:
+        removeProp("charname")
+        removeProp("rname")
+        removeProp("rnamec")
+        removeProp("description")
+
     if settings["roll20-template"] == "default":
         result = result.replace("&{template:" + name + "}", "&{template:default}")
 
-        renameProp = def(old_key, new_key):
-            nonlocal result
-            result = result.replace("{{" + old_key + "=", "{{" + new_key + "=")
-        removeProp = def(key):
-            nonlocal result, properties
-            result = result.replace("{{" + key + "=" + (properties[key] if key in properties else "1") + "}}", "")
-            result = result.replace("&#123&#123" + key + "=" + (properties[key] if key in properties else "1") + "&#125&#125", "")
 
         renameProp("charname", "Character name")
         renameProp("rname", "name")

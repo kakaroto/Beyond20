@@ -5,6 +5,7 @@ class WhisperType:
     NO = 0
     YES = 1
     QUERY = 2
+    HIDE_NAMES = 3
 
 class RollType:
     NORMAL = 0
@@ -45,6 +46,7 @@ options_list = {
                               "type": "combobox",
                               "default": WhisperType.YES,
                               "choices": {str(WhisperType.NO): "Use general whisper setting",
+                                          str(WhisperType.HIDE_NAMES): "Hide monster and attack name",
                                           str(WhisperType.YES): "Always whisper monster rolls",
                                           str(WhisperType.QUERY): "Ask every time"}},
 

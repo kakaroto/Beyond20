@@ -1,5 +1,5 @@
 from utils import replaceRolls
-from settings import RollType
+from settings import RollType, WhisperType
 import math
 
 class DAMAGE_FLAGS:
@@ -126,10 +126,11 @@ class Beyond20RollRenderer:
         def ():
             play_sound = False
             buttons={}
-            # Redefine these arguments to avoid a 'def-after-use' warning from linter because they get changed
-            nonlocal damage_rolls, description
-            damage_rolls = damage_rolls
-            description = description
+            # these variables get redefined, so they need to be nonlocal to avoid a 'def-after-use' warning from linter
+            nonlocal damage_rolls, description, title
+            if request.whisper == WhisperType.HIDE_NAMES:
+                description = None
+                title = "???"
             # Handle the case where you don't want to auto-roll damages
             if len(damage_rolls) > 0 and len(attack_rolls) > 0 and not self._settings["auto-roll-damage"]:
                 makeCB = def(request, title, source, attributes, description, damage_rolls):
@@ -221,8 +222,10 @@ class Beyond20RollRenderer:
             for button in buttons:
                 html += '<button class="beyond20-chat-button">' + button + '</button>'
             html += "</div>"
-
-            self._displayer.postHTML(request, title, html, buttons, play_sound)
+            character = request.character.name
+            if request.whisper == WhisperType.HIDE_NAMES:
+                character = "???"
+            self._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound)
             if attack_rolls.length > 0:
                 return attack_rolls.find(def (r): return not r.isDiscarded();)
             elif total_damages.length > 0:

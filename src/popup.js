@@ -5669,6 +5669,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         WhisperType.prototype.NO = 0;
         WhisperType.prototype.YES = 1;
         WhisperType.prototype.QUERY = 2;
+        WhisperType.prototype.HIDE_NAMES = 3;
 
         function RollType() {
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
@@ -5735,6 +5736,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["choices"] = (function(){
                     var ρσ_d = {};
                     ρσ_d[str(WhisperType.prototype.NO)] = "Use general whisper setting";
+                    ρσ_d[str(WhisperType.prototype.HIDE_NAMES)] = "Hide monster and attack name";
                     ρσ_d[str(WhisperType.prototype.YES)] = "Always whisper monster rolls";
                     ρσ_d[str(WhisperType.prototype.QUERY)] = "Ask every time";
                     return ρσ_d;

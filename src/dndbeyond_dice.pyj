@@ -1,13 +1,13 @@
 
 from roll_renderer import Beyond20RollRenderer, Beyond20BaseRoll
-from settings import getDefaultSettings
+from settings import getDefaultSettings, WhisperType
 import re
 
 class DNDBDisplayer:
     def __init__(self):
         self._error = None
 
-    def postHTML(self, request, title, html, buttons, play_sound):
+    def postHTML(self, request, title, html, buttons, character, whisper, play_sound):
         content = "<div class='beyond20-dice-roller'>"
         if self._error:
             content += "<div class='beyond20-roller-error'>" + \
@@ -284,4 +284,5 @@ dndbeyondDiceRoller.setBaseURL(chrome.runtime.getURL(""))
 dndbeyondDiceRoller.setSettings(getDefaultSettings())
 dndbeyondDiceRoller.handleRollError = def(request, error):
     dndbeyondDiceRoller._displayer.setError(error)
+    request.whisper = WhisperType.NO
     return dndbeyondDiceRoller.handleRollRequest(request)
