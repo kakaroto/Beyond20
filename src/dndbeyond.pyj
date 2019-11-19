@@ -240,7 +240,7 @@ class Character(CharacterBase):
             console.log("Sending message: ", req)
             chrome.runtime.sendMessage(req, def(resp): beyond20SendMessageFailure(self, resp);)
 
-    def featureDetailsToList(self, selector):
+    def featureDetailsToList(self, selector, name):
         features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading")
         feature_list = []
         for feat in features:
@@ -251,14 +251,14 @@ class Character(CharacterBase):
                 option_name = option.childNodes[0].textContent.trim()
                 feature_list.append(feat_name + ": " + option_name)
                 
-        console.log("Feature list : ", feature_list)
+        console.log(name, feature_list)
         return feature_list
 
     def updateFeatures(self):
         update = False
         class_detail = $(".ct-features .ct-classes-detail")
         if class_detail.length > 0:
-            self._class_features = self.featureDetailsToList(class_detail)
+            self._class_features = self.featureDetailsToList(class_detail, "Class Features")
             list_str = str.join("", self._class_features)
             setting_str = str.join("", self.getSetting("class-features", []))
             if list_str != setting_str:
@@ -269,7 +269,7 @@ class Character(CharacterBase):
             
         race_detail = $(".ct-features .ct-race-detail")
         if race_detail.length > 0:
-            self._racial_traits = self.featureDetailsToList(race_detail)
+            self._racial_traits = self.featureDetailsToList(race_detail, "Racial Traits")
             list_str = str.join("", self._racial_traits)
             setting_str = str.join("", self.getSetting("racial-traits", []))
             if list_str != setting_str:
@@ -280,19 +280,31 @@ class Character(CharacterBase):
 
         feats_detail = $(".ct-features .ct-feats-detail")
         if feats_detail.length > 0:
-            self._feats = self.featureDetailsToList(feats_detail)
-            feats_str = str.join("", self._feats)
-            feats_set_str = str.join("", self.getSetting("feats", []))
-            if feats_str != feats_set_str:
+            self._feats = self.featureDetailsToList(feats_detail, "Feats")
+            list_str = str.join("", self._feats)
+            setting_str = str.join("", self.getSetting("feats", []))
+            if list_str != setting_str:
                 console.log("New Feats")
                 update = True
         elif self.getSetting("feats", None):
             self._feats = list(self.getSetting("feats", None))
 
+        actions_detail = $(".ct-actions-list .ct-actions-list__activatable")
+        if actions_detail.length > 0:
+            self._actions = self.featureDetailsToList(actions_detail, "Actions")
+            list_str = str.join("", self._actions)
+            setting_str = str.join("", self.getSetting("actions", []))
+            if list_str != setting_str:
+                console.log("New Actions")
+                update = True
+        elif self.getSetting("actions", None):
+            self._actions = list(self.getSetting("actions", None))
+
         if update:
             self.mergeCharacterSettings({"class-features": self._class_features,
                                          "racial-traits": self._racial_traits,
-                                         "feats": self._feats})
+                                         "feats": self._feats,
+                                         "actions": self.actions})
             
     def hasClassFeature(self, name):
         return name in self._class_features
@@ -300,6 +312,8 @@ class Character(CharacterBase):
         return name in self._racial_traits
     def hasFeat(self, name):
         return name in self._feats
+    def hasAction(self, name):
+        return name in self._actions
     def getClassLevel(self, name):
         if name in self._classes:
             return self._classes[name]
@@ -346,7 +360,8 @@ class Character(CharacterBase):
                 "settings": settings,
                 "class-features": self._class_features.as_array(),
                 "racial-traits": self._racial_traits.as_array(),
-                "feats": self._feats.as_array()}
+                "feats": self._feats.as_array(),
+                "actions": self._actions.as_array()}
 
 
 class Monster(CharacterBase):

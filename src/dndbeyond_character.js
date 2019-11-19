@@ -6000,7 +6000,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["ranger-dread-ambusher"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Ranger: Dread Ambusher";
-                ρσ_d["description"] = "Add  Dread Ambusher attack 1d8 extra damage";
+                ρσ_d["description"] = "Add Dread Ambusher attack 1d8 extra damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["paladin-legendary-strike"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Paladin: Legendary Strike";
+                ρσ_d["description"] = "Channel Divinity and score critical hits on rolls of 19 and 20";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
                 return ρσ_d;
@@ -9745,7 +9753,7 @@ return this.__repr__();
                 })());
             }
         };
-        Character.prototype.featureDetailsToList = function featureDetailsToList(selector) {
+        Character.prototype.featureDetailsToList = function featureDetailsToList(selector, name) {
             var self = this;
             var features, feature_list, feat_name, options, option_name, option, feat;
             features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading");
@@ -9763,19 +9771,19 @@ return this.__repr__();
                     feature_list.append(feat_name + ": " + option_name);
                 }
             }
-            console.log("Feature list : ", feature_list);
+            console.log(name, feature_list);
             return feature_list;
         };
         if (!Character.prototype.featureDetailsToList.__argnames__) Object.defineProperties(Character.prototype.featureDetailsToList, {
-            __argnames__ : {value: ["selector"]}
+            __argnames__ : {value: ["selector", "name"]}
         });
         Character.prototype.updateFeatures = function updateFeatures() {
             var self = this;
-            var update, class_detail, list_str, setting_str, race_detail, feats_detail, feats_str, feats_set_str;
+            var update, class_detail, list_str, setting_str, race_detail, feats_detail, actions_detail;
             update = false;
             class_detail = $(".ct-features .ct-classes-detail");
             if (class_detail.length > 0) {
-                self._class_features = self.featureDetailsToList(class_detail);
+                self._class_features = self.featureDetailsToList(class_detail, "Class Features");
                 list_str = str.join("", self._class_features);
                 setting_str = str.join("", self.getSetting("class-features", ρσ_list_decorate([])));
                 if ((list_str !== setting_str && (typeof list_str !== "object" || ρσ_not_equals(list_str, setting_str)))) {
@@ -9787,7 +9795,7 @@ return this.__repr__();
             }
             race_detail = $(".ct-features .ct-race-detail");
             if (race_detail.length > 0) {
-                self._racial_traits = self.featureDetailsToList(race_detail);
+                self._racial_traits = self.featureDetailsToList(race_detail, "Racial Traits");
                 list_str = str.join("", self._racial_traits);
                 setting_str = str.join("", self.getSetting("racial-traits", ρσ_list_decorate([])));
                 if ((list_str !== setting_str && (typeof list_str !== "object" || ρσ_not_equals(list_str, setting_str)))) {
@@ -9799,15 +9807,27 @@ return this.__repr__();
             }
             feats_detail = $(".ct-features .ct-feats-detail");
             if (feats_detail.length > 0) {
-                self._feats = self.featureDetailsToList(feats_detail);
-                feats_str = str.join("", self._feats);
-                feats_set_str = str.join("", self.getSetting("feats", ρσ_list_decorate([])));
-                if ((feats_str !== feats_set_str && (typeof feats_str !== "object" || ρσ_not_equals(feats_str, feats_set_str)))) {
+                self._feats = self.featureDetailsToList(feats_detail, "Feats");
+                list_str = str.join("", self._feats);
+                setting_str = str.join("", self.getSetting("feats", ρσ_list_decorate([])));
+                if ((list_str !== setting_str && (typeof list_str !== "object" || ρσ_not_equals(list_str, setting_str)))) {
                     console.log("New Feats");
                     update = true;
                 }
             } else if (self.getSetting("feats", null)) {
                 self._feats = list(self.getSetting("feats", null));
+            }
+            actions_detail = $(".ct-actions-list .ct-actions-list__activatable");
+            if (actions_detail.length > 0) {
+                self._actions = self.featureDetailsToList(actions_detail, "Actions");
+                list_str = str.join("", self._actions);
+                setting_str = str.join("", self.getSetting("actions", ρσ_list_decorate([])));
+                if ((list_str !== setting_str && (typeof list_str !== "object" || ρσ_not_equals(list_str, setting_str)))) {
+                    console.log("New Actions");
+                    update = true;
+                }
+            } else if (self.getSetting("actions", null)) {
+                self._actions = list(self.getSetting("actions", null));
             }
             if (update) {
                 self.mergeCharacterSettings((function(){
@@ -9815,6 +9835,7 @@ return this.__repr__();
                     ρσ_d["class-features"] = self._class_features;
                     ρσ_d["racial-traits"] = self._racial_traits;
                     ρσ_d["feats"] = self._feats;
+                    ρσ_d["actions"] = self.actions;
                     return ρσ_d;
                 }).call(this));
             }
@@ -9838,6 +9859,13 @@ return this.__repr__();
             return ρσ_in(name, self._feats);
         };
         if (!Character.prototype.hasFeat.__argnames__) Object.defineProperties(Character.prototype.hasFeat, {
+            __argnames__ : {value: ["name"]}
+        });
+        Character.prototype.hasAction = function hasAction(name) {
+            var self = this;
+            return ρσ_in(name, self._actions);
+        };
+        if (!Character.prototype.hasAction.__argnames__) Object.defineProperties(Character.prototype.hasAction, {
             __argnames__ : {value: ["name"]}
         });
         Character.prototype.getClassLevel = function getClassLevel(name) {
@@ -9933,6 +9961,7 @@ return this.__repr__();
                 ρσ_d["class-features"] = self._class_features.as_array();
                 ρσ_d["racial-traits"] = self._racial_traits.as_array();
                 ρσ_d["feats"] = self._feats.as_array();
+                ρσ_d["actions"] = self._actions.as_array();
                 return ρσ_d;
             }).call(this);
         };
