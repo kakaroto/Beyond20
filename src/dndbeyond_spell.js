@@ -10722,7 +10722,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "separator")){
                 separator = ρσ_kwargs_obj.separator;
             }
-            return $(selector).html().replace(/<\/?[^>]+>/gi, "");
+            return ($(selector).html() || "").replace(/<\/?[^>]+>/gi, "");
         };
         if (!descriptionToString.__defaults__) Object.defineProperties(descriptionToString, {
             __defaults__ : {value: {separator:"\n"}},
