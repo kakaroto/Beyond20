@@ -7163,7 +7163,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             return new Promise((function() {
                 var ρσ_anonfunc = function (resolve, reject) {
                     var html;
-                    html = "<form>" + "<div class=\"beyond20-form-row\">" + "<label>Select roll mode : </label>" + "<select name=\"rollMode\">" + "<option value=\"1\">Advantage</option>" + "<option value=\"0\">Normal Roll</option>" + "<option value=\"-1\">Disadvantage</option>" + "</select>" + "</div>" + "</form>";
+                    html = "<form>" + "<div class=\"beyond20-form-row\">" + "<label>Select roll mode : </label>" + "<select name=\"rollMode\">" + "<option value=\"2\">Roll Twice</option>" + "<option value=\"0\">Normal Roll</option>" + "<option value=\"1\">Advantage</option>" + "<option value=\"-1\">Disadvantage</option>" + "</select>" + "</div>" + "</form>";
                     self._prompter.prompt(title, html, "Roll").then((function() {
                         var ρσ_anonfunc = function (html) {
                             var rollMode;
@@ -7515,22 +7515,36 @@ var str = ρσ_str, repr = ρσ_repr;;
             var self = this;
             var async_function;
             async_function = async            function () {
-                var dice, roll_1, roll_2, adv;
-                if ((request.advantage === RollType.prototype.NORMAL || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.NORMAL))) {
+                var advantage, adv, dice, roll_1, roll_2;
+                advantage = request.advantage;
+                if ((advantage === RollType.prototype.QUERY || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.QUERY))) {
+                    adv = await self.queryAdvantage(title);
+                    if ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) {
+                        advantage = RollType.prototype.NORMAL;
+                    } else if ((adv === 2 || typeof adv === "object" && ρσ_equals(adv, 2))) {
+                        advantage = RollType.prototype.DOUBLE;
+                    } else if ((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) {
+                        advantage = RollType.prototype.ADVANTAGE;
+                    } else if ((adv === -1 || typeof adv === "object" && ρσ_equals(adv, -1))) {
+                        advantage = RollType.prototype.DISADVANTAGE;
+                    } else {
+                        advantage = RollType.prototype.NORMAL;
+                    }
+                }
+                if ((advantage === RollType.prototype.NORMAL || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.NORMAL))) {
                     dice = "1d20";
-                } else if ((request.advantage === RollType.prototype.ADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.ADVANTAGE))) {
+                } else if ((advantage === RollType.prototype.ADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.ADVANTAGE))) {
                     dice = "2d20kh1";
-                } else if ((request.advantage === RollType.prototype.DISADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DISADVANTAGE))) {
+                } else if ((advantage === RollType.prototype.DISADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.DISADVANTAGE))) {
                     dice = "2d20kl1";
-                } else if ((request.advantage === RollType.prototype.DOUBLE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DOUBLE))) {
+                } else if ((advantage === RollType.prototype.DOUBLE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.DOUBLE))) {
                     dice = "1d20";
                     roll_1 = self.createRoll(dice, data);
                     roll_2 = self.createRoll(dice, data);
                     ρσ_interpolate_kwargs.call(self, self.postDescription, [request, title, null, {}, null].concat([ρσ_desugar_kwargs({attack_rolls: ρσ_list_decorate([ roll_1, roll_2 ])})]));
                     return roll_1;
                 } else {
-                    adv = await self.queryAdvantage(title);
-                    dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh1" : "kl1");
+                    dice = "1d20";
                 }
                 return self.rollDice(request, title, dice, data);
             }
@@ -7841,7 +7855,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var self = this;
             var async_function;
             async_function = async            function () {
-                var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, roll_1, roll_2, dice, adv, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, has_versatile, roll, dmg_type, damage_flags, suffix, i, ρσ_unpack, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
+                var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, advantage, adv, roll_1, roll_2, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, has_versatile, roll, dmg_type, damage_flags, suffix, i, ρσ_unpack, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
                 to_hit = ρσ_list_decorate([]);
                 damage_rolls = ρσ_list_decorate([]);
                 is_critical = false;
@@ -7857,22 +7871,33 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }
                     custom = ((custom_roll_dice === "" || typeof custom_roll_dice === "object" && ρσ_equals(custom_roll_dice, ""))) ? "" : " + " + custom_roll_dice;
                     to_hit_mod = " + " + request["to-hit"] + custom;
-                    if ((request.advantage === RollType.prototype.DOUBLE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DOUBLE))) {
+                    advantage = request.advantage;
+                    if ((advantage === RollType.prototype.QUERY || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.QUERY))) {
+                        adv = await self.queryAdvantage(request.name);
+                        if ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) {
+                            advantage = RollType.prototype.NORMAL;
+                        } else if ((adv === 2 || typeof adv === "object" && ρσ_equals(adv, 2))) {
+                            advantage = RollType.prototype.DOUBLE;
+                        } else if ((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) {
+                            advantage = RollType.prototype.ADVANTAGE;
+                        } else if ((adv === -1 || typeof adv === "object" && ρσ_equals(adv, -1))) {
+                            advantage = RollType.prototype.DISADVANTAGE;
+                        } else {
+                            advantage = RollType.prototype.NORMAL;
+                        }
+                    }
+                    if ((advantage === RollType.prototype.NORMAL || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.NORMAL))) {
+                        to_hit = ρσ_list_decorate([ self._roller.roll("1d20" + to_hit_mod) ]);
+                    } else if ((advantage === RollType.prototype.ADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.ADVANTAGE))) {
+                        to_hit = ρσ_list_decorate([ self._roller.roll("2d20kh1" + to_hit_mod) ]);
+                    } else if ((advantage === RollType.prototype.DISADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.DISADVANTAGE))) {
+                        to_hit = ρσ_list_decorate([ self._roller.roll("2d20kl1" + to_hit_mod) ]);
+                    } else if ((advantage === RollType.prototype.DOUBLE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.DOUBLE))) {
                         roll_1 = self._roller.roll("1d20" + to_hit_mod);
                         roll_2 = self._roller.roll("1d20" + to_hit_mod);
                         to_hit = ρσ_list_decorate([ roll_1, roll_2 ]);
                     } else {
-                        if ((request.advantage === RollType.prototype.NORMAL || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.NORMAL))) {
-                            dice = "1d20";
-                        } else if ((request.advantage === RollType.prototype.ADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.ADVANTAGE))) {
-                            dice = "2d20kh1";
-                        } else if ((request.advantage === RollType.prototype.DISADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DISADVANTAGE))) {
-                            dice = "2d20kl1";
-                        } else {
-                            adv = await self.queryAdvantage(request.name);
-                            dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh1" : "kl1");
-                        }
-                        to_hit = ρσ_list_decorate([ self._roller.roll(dice + to_hit_mod) ]);
+                        to_hit = ρσ_list_decorate([ self._roller.roll("1d20" + to_hit_mod) ]);
                     }
                     is_critical = self.isCriticalHitD20(to_hit, critical_limit);
                 }
@@ -8235,14 +8260,6 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
         if (!DNDBDisplayer.prototype.postHTML.__argnames__) Object.defineProperties(DNDBDisplayer.prototype.postHTML, {
             __argnames__ : {value: ["request", "title", "html", "buttons", "play_sound"]}
-        });
-        DNDBDisplayer.prototype.postRoll = function postRoll(request, title, roll) {
-            var self = this;
-            this.postHTML(request, title, roll.toHTML(title), {}, false);
-            return roll;
-        };
-        if (!DNDBDisplayer.prototype.postRoll.__argnames__) Object.defineProperties(DNDBDisplayer.prototype.postRoll, {
-            __argnames__ : {value: ["request", "title", "roll"]}
         });
         DNDBDisplayer.prototype.setError = function setError(error) {
             var self = this;
@@ -8623,14 +8640,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             tooltip += "</div>";
             return tooltip;
-        };
-        DNDBRoll.prototype.toHTML = function toHTML() {
-            var self = this;
-            var hit, fail, color;
-            hit = self.isCriticalHit();
-            fail = self.isCriticalFail();
-            color = (hit && fail) ? "blue" : (hit) ? "green" : (fail) ? "red" : "black";
-            return "<div class='beyond20-roll-result'><span class='beyond20-tooltip' style='color: " + color + ";'>" + self.total + "<span class='beyond20-tooltip-content'>" + "<div class='beyond20-roll-formula'>" + self.formula + "</div>" + self.getTooltip() + "</span></span></div>";
         };
         DNDBRoll.prototype.reroll = function reroll() {
             var self = this;

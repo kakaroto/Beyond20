@@ -30,8 +30,9 @@ class Beyond20RollRenderer:
                     '<div class="beyond20-form-row">' + \
                         '<label>Select roll mode : </label>' + \
                         '<select name="rollMode">' + \
-                            '<option value="1">Advantage</option>' + \
+                            '<option value="2">Roll Twice</option>' + \
                             '<option value="0">Normal Roll</option>' + \
+                            '<option value="1">Advantage</option>' + \
                             '<option value="-1">Disadvantage</option>' + \
                         '</select>' + \
                     '</div>' + \
@@ -212,22 +213,33 @@ class Beyond20RollRenderer:
     def rollD20(self, request, title, data):
         async_function = v'async'
         def ():
-            if request.advantage == RollType.NORMAL:
+            advantage = request.advantage
+            if advantage == RollType.QUERY:
+                adv = v'await self.queryAdvantage(title)'
+                if adv == 0:
+                    advantage = RollType.NORMAL
+                elif adv == 2:
+                    advantage = RollType.DOUBLE
+                elif adv == 1:
+                    advantage = RollType.ADVANTAGE
+                elif adv == -1:
+                    advantage = RollType.DISADVANTAGE
+                else:
+                    advantage = RollType.NORMAL
+            if advantage == RollType.NORMAL:
                 dice = "1d20"
-            elif request.advantage == RollType.ADVANTAGE:
+            elif advantage == RollType.ADVANTAGE:
                 dice = "2d20kh1"
-            elif request.advantage == RollType.DISADVANTAGE:
+            elif advantage == RollType.DISADVANTAGE:
                 dice = "2d20kl1"
-            elif request.advantage == RollType.DOUBLE:
+            elif advantage == RollType.DOUBLE:
                 dice = "1d20"
                 roll_1 = self.createRoll(dice, data)
                 roll_2 = self.createRoll(dice, data)
                 self.postDescription(request, title, None, {}, None, attack_rolls=[roll_1, roll_2])
                 return roll_1
             else:
-                adv = v'await self.queryAdvantage(title)'
-                dice = "1d20" if adv == 0 else ("2d20" + ("kh1" if adv == 1 else "kl1"))
-
+                dice = "1d20"
             return self.rollDice(request, title, dice, data)
         return async_function()
         
@@ -374,21 +386,31 @@ class Beyond20RollRenderer:
                 custom = "" if custom_roll_dice == "" else (" + " + custom_roll_dice)
                 to_hit_mod = " + " + request["to-hit"] + custom
 
-                if request.advantage == RollType.DOUBLE:
+                advantage = request.advantage
+                if advantage == RollType.QUERY:
+                    adv = v'await self.queryAdvantage(request.name)'
+                    if adv == 0:
+                        advantage = RollType.NORMAL
+                    elif adv == 2:
+                        advantage = RollType.DOUBLE
+                    elif adv == 1:
+                        advantage = RollType.ADVANTAGE
+                    elif adv == -1:
+                        advantage = RollType.DISADVANTAGE
+                    else:
+                        advantage = RollType.NORMAL
+                if advantage == RollType.NORMAL:
+                    to_hit = [self._roller.roll("1d20" + to_hit_mod)]
+                elif advantage == RollType.ADVANTAGE:
+                    to_hit = [self._roller.roll("2d20kh1" + to_hit_mod)]
+                elif advantage == RollType.DISADVANTAGE:
+                    to_hit = [self._roller.roll("2d20kl1" + to_hit_mod)]
+                elif advantage == RollType.DOUBLE:
                     roll_1 = self._roller.roll("1d20" + to_hit_mod)
                     roll_2 = self._roller.roll("1d20" + to_hit_mod)
                     to_hit = [roll_1, roll_2]
                 else:
-                    if request.advantage == RollType.NORMAL:
-                        dice = "1d20"
-                    elif request.advantage == RollType.ADVANTAGE:
-                        dice = "2d20kh1"
-                    elif request.advantage == RollType.DISADVANTAGE:
-                        dice = "2d20kl1"
-                    else:
-                        adv = v'await self.queryAdvantage(request.name)'
-                        dice = "1d20" if adv == 0 else ("2d20" + ("kh1" if adv == 1 else "kl1"))
-                    to_hit = [self._roller.roll(dice + to_hit_mod)]
+                    to_hit = [self._roller.roll("1d20" + to_hit_mod)]
                 is_critical = self.isCriticalHitD20(to_hit, critical_limit)
 
 
