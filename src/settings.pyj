@@ -13,6 +13,13 @@ class RollType:
     ADVANTAGE = 3
     DISADVANTAGE = 4
 
+class CriticalRules:
+    PHB = 0
+    HOMEBREW_MAX = 1
+    HOMEBREW_DOUBLE = 2 # Impossible to achieve with Roll20 and hard with RollRenderer because of brutal and other mods.
+    HOMEBREW_MOD = 3
+    HOMEBREW_REROLL = 4
+
 # keys: [short, title, description, type, default]
 # Types: bool, string, combobox, link, special
 # combobox extra options:
@@ -63,6 +70,15 @@ options_list = {
                                "If using Roll20, it will also change the way the output of 'Advantage on initiative' rolls appear.",
                            "type": "bool",
                            "default": True},
+
+    "critical-homebrew": {"title": "Critical hit rule",
+                  "description": "Determines how the additional critical hit damages are determined",
+                  "type": "combobox",
+                  "default": CriticalRules.PHB,
+                  "choices": {str(CriticalRules.PHB): "Standard PHB Rules (reroll dice)",
+                              str(CriticalRules.HOMEBREW_MAX): "Homebrew: Perfect rolls",
+                              str(CriticalRules.HOMEBREW_MOD): "Homebrew: Add modifiers to rolls",
+                              str(CriticalRules.HOMEBREW_REROLL): "Homebrew: Reroll all damages"}},
 
     "update-hp": {"title": "Update VTT Token HP",
                   "description": "When changing HP in D&D Beyond, update it in the VTT tokens and sheets",

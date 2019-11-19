@@ -5694,6 +5694,25 @@ var str = ρσ_str, repr = ρσ_repr;;
         RollType.prototype.ADVANTAGE = 3;
         RollType.prototype.DISADVANTAGE = 4;
 
+        function CriticalRules() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            CriticalRules.prototype.__init__.apply(this, arguments);
+        }
+        CriticalRules.prototype.__init__ = function __init__ () {
+                    };
+        CriticalRules.prototype.__repr__ = function __repr__ () {
+                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        CriticalRules.prototype.__str__ = function __str__ () {
+            return this.__repr__();
+        };
+        Object.defineProperty(CriticalRules.prototype, "__bases__", {value: []});
+        CriticalRules.prototype.PHB = 0;
+        CriticalRules.prototype.HOMEBREW_MAX = 1;
+        CriticalRules.prototype.HOMEBREW_DOUBLE = 2;
+        CriticalRules.prototype.HOMEBREW_MOD = 3;
+        CriticalRules.prototype.HOMEBREW_REROLL = 4;
+
         options_list = (function(){
             var ρσ_d = {};
             ρσ_d["whisper-type"] = (function(){
@@ -5759,6 +5778,22 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["description"] = "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in the VTT\nIf using Roll20, it will also change the way the output of 'Advantage on initiative' rolls appear.";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["critical-homebrew"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Critical hit rule";
+                ρσ_d["description"] = "Determines how the additional critical hit damages are determined";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = CriticalRules.prototype.PHB;
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d[str(CriticalRules.prototype.PHB)] = "Standard PHB Rules (reroll dice)";
+                    ρσ_d[str(CriticalRules.prototype.HOMEBREW_MAX)] = "Homebrew: Perfect rolls";
+                    ρσ_d[str(CriticalRules.prototype.HOMEBREW_MOD)] = "Homebrew: Add modifiers to rolls";
+                    ρσ_d[str(CriticalRules.prototype.HOMEBREW_REROLL)] = "Homebrew: Reroll all damages";
+                    return ρσ_d;
+                }).call(this);
                 return ρσ_d;
             }).call(this);
             ρσ_d["update-hp"] = (function(){
@@ -6742,6 +6777,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.settings.current_tab = current_tab;
         ρσ_modules.settings.WhisperType = WhisperType;
         ρσ_modules.settings.RollType = RollType;
+        ρσ_modules.settings.CriticalRules = CriticalRules;
         ρσ_modules.settings.getStorage = getStorage;
         ρσ_modules.settings.storageGet = storageGet;
         ρσ_modules.settings.storageSet = storageSet;
@@ -9363,6 +9399,7 @@ return this.__repr__();
         var character_settings = ρσ_modules.settings.character_settings;
         var WhisperType = ρσ_modules.settings.WhisperType;
         var RollType = ρσ_modules.settings.RollType;
+        var CriticalRules = ρσ_modules.settings.CriticalRules;
 
         var dndbeyondDiceRoller = ρσ_modules.dndbeyond_dice.dndbeyondDiceRoller;
 
@@ -10425,7 +10462,7 @@ return this.__repr__();
                 if (len(damages) > 0) {
                     roll_properties["damages"] = damages.as_array();
                     roll_properties["damage-types"] = damage_types.as_array();
-                    crits = damagesToCrits(damages, damage_types);
+                    crits = damagesToCrits(self, damages, damage_types);
                     crit_damages = ρσ_list_decorate([]);
                     crit_damage_types = ρσ_list_decorate([]);
                     var ρσ_Iter16 = ρσ_Iterable(enumerate(crits));
@@ -10739,7 +10776,6 @@ return this.__repr__();
                     to_hit = items.eq(i).find(tohit_selector);
                     if (to_hit.length > 0) {
                         to_hit = to_hit.text();
-                        print("To hit for " + name_to_match + " is : " + to_hit);
                         return to_hit;
                     }
                     break;
@@ -10751,15 +10787,27 @@ return this.__repr__();
             __argnames__ : {value: ["name_to_match", "items_selector", "name_selector", "tohit_selector"]}
         });
 
-        function damagesToCrits(damages) {
-            var crits, match, damage;
+        function damagesToCrits(character, damages) {
+            var crits, rule, match, dice, faces, damage;
             crits = ρσ_list_decorate([]);
+            rule = int(character.getGlobalSetting("critical-homebrew", CriticalRules.prototype.PHB));
+            if ((rule === CriticalRules.prototype.HOMEBREW_REROLL || typeof rule === "object" && ρσ_equals(rule, CriticalRules.prototype.HOMEBREW_REROLL))) {
+                return damages.slice(0);
+            }
             var ρσ_Iter28 = ρσ_Iterable(damages);
             for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
                 damage = ρσ_Iter28[ρσ_Index28];
-                match = re.search("[0-9]*d[0-9]+(ro<2)?", damage);
+                match = re.search("([0-9]*)d([0-9]+)(ro<2)?", damage);
                 if ((typeof match !== "undefined" && match !== null)) {
-                    crits.append(match.group(0));
+                    if ((rule === CriticalRules.prototype.HOMEBREW_MAX || typeof rule === "object" && ρσ_equals(rule, CriticalRules.prototype.HOMEBREW_MAX))) {
+                        dice = int(match.group(1) || 1);
+                        faces = int(match.group(2));
+                        crits.append(str(dice * faces));
+                    } else if ((rule === CriticalRules.prototype.HOMEBREW_MOD || typeof rule === "object" && ρσ_equals(rule, CriticalRules.prototype.HOMEBREW_MOD))) {
+                        crits.append(damage);
+                    } else {
+                        crits.append(match.group(0));
+                    }
                 } else {
                     crits.append("");
                 }
@@ -10767,18 +10815,19 @@ return this.__repr__();
             return crits;
         };
         if (!damagesToCrits.__argnames__) Object.defineProperties(damagesToCrits, {
-            __argnames__ : {value: ["damages"]}
+            __argnames__ : {value: ["character", "damages"]}
         });
 
         function buildAttackRoll() {
-            var attack_source = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var name = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
-            var description = ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[2];
-            var properties = ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[3];
-            var damages = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damages : arguments[4];
-            var damage_types = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage_types : arguments[5];
-            var to_hit = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.to_hit : arguments[6];
-            var brutal = (arguments[7] === undefined || ( 7 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.brutal : arguments[7];
+            var character = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var attack_source = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var name = ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[2];
+            var description = ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[3];
+            var properties = ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[4];
+            var damages = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damages : arguments[5];
+            var damage_types = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.damage_types : arguments[6];
+            var to_hit = (arguments[7] === undefined || ( 7 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.to_hit : arguments[7];
+            var brutal = (arguments[8] === undefined || ( 8 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? buildAttackRoll.__defaults__.brutal : arguments[8];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "damages")){
@@ -10838,7 +10887,7 @@ return this.__repr__();
                 roll_properties["damages"] = damages.as_array();
                 roll_properties["damage-types"] = damage_types.as_array();
                 if (to_hit) {
-                    crits = damagesToCrits(damages, damage_types);
+                    crits = damagesToCrits(character, damages, damage_types);
                     crit_damages = ρσ_list_decorate([]);
                     crit_damage_types = ρσ_list_decorate([]);
                     var ρσ_Iter29 = ρσ_Iterable(enumerate(crits));
@@ -10878,7 +10927,7 @@ return this.__repr__();
         if (!buildAttackRoll.__defaults__) Object.defineProperties(buildAttackRoll, {
             __defaults__ : {value: {damages:ρσ_list_decorate([]), damage_types:ρσ_list_decorate([]), to_hit:null, brutal:0}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["attack_source", "name", "description", "properties", "damages", "damage_types", "to_hit", "brutal"]}
+            __argnames__ : {value: ["character", "attack_source", "name", "description", "properties", "damages", "damage_types", "to_hit", "brutal"]}
         });
 
         function sendRoll(character, rollType, fallback, args) {

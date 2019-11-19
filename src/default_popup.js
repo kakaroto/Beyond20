@@ -5688,6 +5688,25 @@ var str = ρσ_str, repr = ρσ_repr;;
         RollType.prototype.ADVANTAGE = 3;
         RollType.prototype.DISADVANTAGE = 4;
 
+        function CriticalRules() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            CriticalRules.prototype.__init__.apply(this, arguments);
+        }
+        CriticalRules.prototype.__init__ = function __init__ () {
+                    };
+        CriticalRules.prototype.__repr__ = function __repr__ () {
+                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        CriticalRules.prototype.__str__ = function __str__ () {
+            return this.__repr__();
+        };
+        Object.defineProperty(CriticalRules.prototype, "__bases__", {value: []});
+        CriticalRules.prototype.PHB = 0;
+        CriticalRules.prototype.HOMEBREW_MAX = 1;
+        CriticalRules.prototype.HOMEBREW_DOUBLE = 2;
+        CriticalRules.prototype.HOMEBREW_MOD = 3;
+        CriticalRules.prototype.HOMEBREW_REROLL = 4;
+
         options_list = (function(){
             var ρσ_d = {};
             ρσ_d["whisper-type"] = (function(){
@@ -5753,6 +5772,22 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["description"] = "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in the VTT\nIf using Roll20, it will also change the way the output of 'Advantage on initiative' rolls appear.";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["critical-homebrew"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Critical hit rule";
+                ρσ_d["description"] = "Determines how the additional critical hit damages are determined";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = CriticalRules.prototype.PHB;
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d[str(CriticalRules.prototype.PHB)] = "Standard PHB Rules (reroll dice)";
+                    ρσ_d[str(CriticalRules.prototype.HOMEBREW_MAX)] = "Homebrew: Perfect rolls";
+                    ρσ_d[str(CriticalRules.prototype.HOMEBREW_MOD)] = "Homebrew: Add modifiers to rolls";
+                    ρσ_d[str(CriticalRules.prototype.HOMEBREW_REROLL)] = "Homebrew: Reroll all damages";
+                    return ρσ_d;
+                }).call(this);
                 return ρσ_d;
             }).call(this);
             ρσ_d["update-hp"] = (function(){
@@ -6736,6 +6771,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.settings.current_tab = current_tab;
         ρσ_modules.settings.WhisperType = WhisperType;
         ρσ_modules.settings.RollType = RollType;
+        ρσ_modules.settings.CriticalRules = CriticalRules;
         ρσ_modules.settings.getStorage = getStorage;
         ρσ_modules.settings.storageGet = storageGet;
         ρσ_modules.settings.storageSet = storageSet;

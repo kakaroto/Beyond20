@@ -217,7 +217,8 @@ def rollItem(force_display=False):
                 rage_damage = 2 if barbarian_level < 9 else (3 if barbarian_level < 16 else 4)
                 damages.insert(1, str(rage_damage))
                 damage_types.insert(1, "Rage")
-        roll_properties = buildAttackRoll("item",
+        roll_properties = buildAttackRoll(character,
+                                          "item",
                                           item_name,
                                           description,
                                           properties,
@@ -270,7 +271,8 @@ def rollAction(paneClass):
         if len(custom_damage) > 0:
             damages.append(custom_damage)
             damage_types.append("Custom")
-        roll_properties = buildAttackRoll("action",
+        roll_properties = buildAttackRoll(character,
+                                          "action",
                                           action_name,
                                           description,
                                           properties,
@@ -351,7 +353,8 @@ def rollSpell(force_display=False):
             damages.append(custom_damage)
             damage_types.append("Custom")
 
-        roll_properties = buildAttackRoll("spell",
+        roll_properties = buildAttackRoll(character,
+                                          "spell",
                                           spell_name,
                                           description,
                                           properties,

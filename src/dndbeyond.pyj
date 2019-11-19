@@ -1,5 +1,5 @@
 from utils import replaceRolls, alertQuickSettings
-from settings import getStoredSettings, mergeSettings, character_settings, WhisperType, RollType
+from settings import getStoredSettings, mergeSettings, character_settings, WhisperType, RollType, CriticalRules
 from dndbeyond_dice import dndbeyondDiceRoller
 from elementmaker import E
 import uuid
@@ -628,7 +628,7 @@ class Monster(CharacterBase):
             if len(damages) > 0:
                 roll_properties["damages"] = damages.as_array()
                 roll_properties["damage-types"] = damage_types.as_array()
-                crits = damagesToCrits(damages, damage_types)
+                crits = damagesToCrits(self, damages, damage_types)
                 crit_damages = []
                 crit_damage_types = []
                 for i, dmg in enumerate(crits):
@@ -806,22 +806,31 @@ def findToHit(name_to_match, items_selector, name_selector, tohit_selector):
             to_hit = items.eq(i).find(tohit_selector)
             if to_hit.length > 0:
                 to_hit = to_hit.text()
-                print("To hit for " + name_to_match + " is : " + to_hit)
                 return to_hit
             break
     return None
 
-def damagesToCrits(damages):
+def damagesToCrits(character, damages):
     crits = []
+    rule = int(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB))
+    if rule == CriticalRules.HOMEBREW_REROLL:
+        return damages[:]
     for damage in damages:
-        match = re.search("[0-9]*d[0-9]+(ro<2)?", damage)
+        match = re.search("([0-9]*)d([0-9]+)(ro<2)?", damage)
         if match?:
+            if rule == CriticalRules.HOMEBREW_MAX:
+                dice = int(match.group(1) or 1)
+                faces = int(match.group(2))
+                crits.append(str(dice * faces))
+            elif rule == CriticalRules.HOMEBREW_MOD:
+                crits.append(damage)
+            else:
                 crits.append(match.group(0))
         else:
             crits.append("")
     return crits
 
-def buildAttackRoll(attack_source, name, description, properties, damages=[], damage_types=[], to_hit=None, brutal=0):
+def buildAttackRoll(character, attack_source, name, description, properties, damages=[], damage_types=[], to_hit=None, brutal=0):
     roll_properties = {"name": name,
                        "attack-source": attack_source,
                        "description": description}
@@ -857,7 +866,7 @@ def buildAttackRoll(attack_source, name, description, properties, damages=[], da
         roll_properties["damages"] = damages.as_array()
         roll_properties["damage-types"] = damage_types.as_array()
         if to_hit:
-            crits = damagesToCrits(damages, damage_types)
+            crits = damagesToCrits(character, damages, damage_types)
             crit_damages = []
             crit_damage_types = []
             for i, dmg in enumerate(crits):
