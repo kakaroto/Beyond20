@@ -7252,7 +7252,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else {
                     total = roll.total;
                 }
-                return "<span class='beyond20-tooltip' style='color: " + color + ";'>" + total + "<span class='dice-roll beyond20-tooltip-content'>" + "<div class='dice-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>";
+                return "<span class='beyond20-tooltip' style='color: " + color + ";'>" + total + "<span class='dice-roll beyond20-tooltip-content'>" + "<div class='dice-formula beyond20-roll-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>";
             }
             return async_function();
         };
@@ -8195,7 +8195,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         DNDBDisplayer.prototype.postHTML = function postHTML(request, title, html, buttons, play_sound) {
             var self = this;
             var content, dlg, element, icon16;
-            content = "<div class='beyond20-dice-roller'>" + "<div class='beyond20-roller-error'><span class='beyond20-tooltip'>Virtual Table Top Not Found" + "<span class='beyond20-tooltip-content'>" + self._error + "</span>" + "</span></div>" + "<div class='beyond20-dice-roll-result'>" + html + "</div>" + "</div>";
+            content = "<div class='beyond20-dice-roller'>" + "<div class='beyond20-roller-error'><span class='beyond20-tooltip'>Virtual Table Top Not Found" + "<span class='beyond20-tooltip-content'>" + self._error + "</span>" + "</span></div>" + "<div class='beyond20-dice-roller-content'>" + html + "</div>" + "</div>";
             dlg = alertify.alert(title, content);
             element = $(dlg.elements.content.firstElementChild);
             icon16 = chrome.runtime.getURL("images/icons/icon16.png");
@@ -8290,8 +8290,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 modifiers = ρσ_kwargs_obj.modifiers;
             }
             var match_ro, match_dk, dk;
-            self.amount = amount;
-            self.faces = faces;
+            self.amount = int(amount);
+            self.faces = int(faces);
             self._modifiers = modifiers || "";
             self._reroll = (function(){
                 var ρσ_d = {};
@@ -8309,7 +8309,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_d;
             }).call(this);
             if ((modifiers !== "" && (typeof modifiers !== "object" || ρσ_not_equals(modifiers, "")))) {
-                match_ro = re.search("ro(=|<|<=|>|>=)([0-9]+)", modifiers);
+                match_ro = re.search("r(=|<|<=|>|>=)([0-9]+)", modifiers);
                 if ((typeof match_ro !== "undefined" && match_ro !== null)) {
                     self._reroll.active = true;
                     self._reroll.operator = match_ro.group(1);
@@ -8534,6 +8534,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 data = ρσ_kwargs_obj.data;
             }
             var parts, part, match;
+            formula = formula.replace("ro<2", "r<=2");
             self._formula = formula;
             self._data = data;
             self._fail_limit = null;
@@ -8589,37 +8590,28 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
         DNDBRoll.prototype.getTooltip = function getTooltip() {
             var self = this;
-            var tooltip, first, first_die, style, die, part;
-            tooltip = self.formula + " = ";
-            first = true;
+            var tooltip, style, die, part;
+            tooltip = "<div class='beyond20-roll-tooltip'>";
             var ρσ_Iter5 = ρσ_Iterable(self._parts);
             for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
                 part = ρσ_Iter5[ρσ_Index5];
-                if (!first) {
-                    tooltip += " + ";
-                }
-                first = false;
                 if (ρσ_instanceof(part, DNDBDice)) {
-                    tooltip += "(";
-                    first_die = true;
+                    tooltip += "<div class='beyond20-roll-dice'>";
+                    tooltip += "<div class='beyond20-roll-dice-formula'>" + part.formula + "</div>";
+                    tooltip += "<div class='beyond20-roll-dice-rolls'>";
                     var ρσ_Iter6 = ρσ_Iterable(part.rolls);
                     for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
                         die = ρσ_Iter6[ρσ_Index6];
-                        if (!first_die) {
-                            tooltip += " + ";
-                        }
-                        first_die = false;
                         style = "color: " + (((die.roll === part.faces || typeof die.roll === "object" && ρσ_equals(die.roll, part.faces))) ? "green" : ((die.roll === 1 || typeof die.roll === "object" && ρσ_equals(die.roll, 1))) ? "red" : "black") + ";";
                         if (ρσ_exists.e(die.discarded, false)) {
                             style += "text-decoration: line-through;";
                         }
-                        tooltip += "<span style='" + style + "'>" + die.roll + "</span>";
+                        tooltip += "<span class='beyond20-roll-die-result' style='" + style + "'>" + die.roll + "</span>";
                     }
-                    tooltip += ")";
-                } else {
-                    tooltip += part;
+                    tooltip += "</div></div>";
                 }
             }
+            tooltip += "</div>";
             return tooltip;
         };
         DNDBRoll.prototype.toHTML = function toHTML() {
@@ -8628,7 +8620,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             hit = self.isCriticalHit();
             fail = self.isCriticalFail();
             color = (hit && fail) ? "blue" : (hit) ? "green" : (fail) ? "red" : "black";
-            return "<div class='beyond20-roll-result'><span class='beyond20-tooltip' style='color: " + color + ";'>" + self.total + "<span class='dice-roll beyond20-tooltip-content'>" + "<div class='dice-formula'>" + self.formula + "</div>" + self.getTooltip() + "</span></span></div>";
+            return "<div class='beyond20-roll-result'><span class='beyond20-tooltip' style='color: " + color + ";'>" + self.total + "<span class='beyond20-tooltip-content'>" + "<div class='beyond20-roll-formula'>" + self.formula + "</div>" + self.getTooltip() + "</span></span></div>";
         };
         DNDBRoll.prototype.reroll = function reroll() {
             var self = this;
@@ -11235,8 +11227,8 @@ return this.__repr__();
                 to_hit = ρσ_exists.e(properties["To Hit"], findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit"));
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                for (var ρσ_Index9 = 0; ρσ_Index9 < prop_list.length; ρσ_Index9++) {
-                    i = ρσ_Index9;
+                for (var ρσ_Index0 = 0; ρσ_Index0 < prop_list.length; ρσ_Index0++) {
+                    i = ρσ_Index0;
                     if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
                         value = prop_list.eq(i).find(".ct-property-list__property-content");
                         damage = value.find(".ct-damage__value").text();
@@ -11268,8 +11260,8 @@ return this.__repr__();
                             damage_types.append(damage_type);
                         }
                         additional_damages = value.find(".ct-item-detail__additional-damage");
-                        for (var ρσ_Index10 = 0; ρσ_Index10 < additional_damages.length; ρσ_Index10++) {
-                            j = ρσ_Index10;
+                        for (var ρσ_Index1 = 0; ρσ_Index1 < additional_damages.length; ρσ_Index1++) {
+                            j = ρσ_Index1;
                             dmg = additional_damages.eq(j).text();
                             dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                             dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
@@ -11431,9 +11423,9 @@ return this.__repr__();
             if (force_display === false && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null))))) {
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                var ρσ_Iter11 = ρσ_Iterable(damage_modifiers);
-                for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
-                    modifier = ρσ_Iter11[ρσ_Index11];
+                var ρσ_Iter2 = ρσ_Iterable(damage_modifiers);
+                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                    modifier = ρσ_Iter2[ρσ_Index2];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                     if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
@@ -11442,9 +11434,9 @@ return this.__repr__();
                     damages.append(dmg);
                     damage_types.append(dmgtype);
                 }
-                var ρσ_Iter12 = ρσ_Iterable(healing_modifiers);
-                for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
-                    modifier = ρσ_Iter12[ρσ_Index12];
+                var ρσ_Iter3 = ρσ_Iterable(healing_modifiers);
+                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                    modifier = ρσ_Iter3[ρσ_Index3];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     if (dmg.startsWith("Regain ")) {
                         dmg = dmg.slice(7);
@@ -11479,9 +11471,9 @@ return this.__repr__();
                     ρσ_d["ritual"] = ritual;
                     return ρσ_d;
                 }).call(this);
-                var ρσ_Iter13 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
-                    key = ρσ_Iter13[ρσ_Index13];
+                var ρσ_Iter4 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                    key = ρσ_Iter4[ρσ_Index4];
                     roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
                 }
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
@@ -11630,9 +11622,9 @@ return this.__repr__();
                 text_len = 0;
                 while (ρσ_not_equals(text_len, len(text))) {
                     text_len = len(text);
-                    var ρσ_Iter14 = ρσ_Iterable(character._abilities);
-                    for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
-                        ability = ρσ_Iter14[ρσ_Index14];
+                    var ρσ_Iter5 = ρσ_Iterable(character._abilities);
+                    for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                        ability = ρσ_Iter5[ρσ_Index5];
                         mod_string = " + your " + ability[0] + " modifier";
                         if (text.startsWith(mod_string)) {
                             strong.append(mod_string);
@@ -11640,9 +11632,9 @@ return this.__repr__();
                             text = text.substring(len(mod_string));
                         }
                     }
-                    var ρσ_Iter15 = ρσ_Iterable(character._classes);
-                    for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
-                        class_name = ρσ_Iter15[ρσ_Index15];
+                    var ρσ_Iter6 = ρσ_Iterable(character._classes);
+                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                        class_name = ρσ_Iter6[ρσ_Index6];
                         mod_string = " + your " + class_name.toLowerCase() + " level";
                         if (text.startsWith(mod_string)) {
                             strong.append(mod_string);
@@ -11678,9 +11670,9 @@ return this.__repr__();
                 return;
             }
             injectDiceToRolls(selector, character, name);
-            var ρσ_Iter16 = ρσ_Iterable($(".ct-beyond20-custom-roll"));
-            for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
-                custom_roll = ρσ_Iter16[ρσ_Index16];
+            var ρσ_Iter7 = ρσ_Iterable($(".ct-beyond20-custom-roll"));
+            for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                custom_roll = ρσ_Iter7[ρσ_Index7];
                 findModifiers(character, custom_roll);
             }
         };
@@ -11882,9 +11874,9 @@ return this.__repr__();
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter17 = ρσ_Iterable(groups);
-            for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
-                group = ρσ_Iter17[ρσ_Index17];
+            var ρσ_Iter8 = ρσ_Iterable(groups);
+            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                group = ρσ_Iter8[ρσ_Index8];
                 label = $(group).find(".ct-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -11893,9 +11885,9 @@ return this.__repr__();
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter18 = ρσ_Iterable(items);
-                    for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
-                        item = ρσ_Iter18[ρσ_Index18];
+                    var ρσ_Iter9 = ρσ_Iterable(items);
+                    for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                        item = ρσ_Iter9[ρσ_Index9];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -11977,8 +11969,8 @@ return this.__repr__();
             injectSettingsButton();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index19 = 0; ρσ_Index19 < pane.length; ρσ_Index19++) {
-                    div = ρσ_Index19;
+                for (var ρσ_Index10 = 0; ρσ_Index10 < pane.length; ρσ_Index10++) {
+                    div = ρσ_Index10;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls")) || (paneClass === "ct-beyond20-settings-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-beyond20-settings-pane"))) {
                         continue;

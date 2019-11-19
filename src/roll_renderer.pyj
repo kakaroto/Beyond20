@@ -73,7 +73,7 @@ class Beyond20RollRenderer:
             else:
                 total = roll.total
             return "<span class='beyond20-tooltip' style='color: " + color + ";'>" + total + "<span class='dice-roll beyond20-tooltip-content'>" + \
-                "<div class='dice-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>"
+                "<div class='dice-formula beyond20-roll-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>"
         return async_function()
 
     def rollsToCells(self, html):

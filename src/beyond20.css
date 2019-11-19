@@ -7,7 +7,7 @@
    position: relative;
 }
 
-.beyond20-dice-roll-result {
+.beyond20-dice-roller-content {
     background-color: #ddeedd;
     border-radius: 10px;
     padding: 10px;
@@ -16,6 +16,8 @@
 .beyond20-roll-total {
     text-decoration: underline;
 }
+
+
 .beyond20-message details summary, .beyond20-title {
     font-style: italic;
     color: #500;
@@ -32,13 +34,16 @@
 }
 
 
-.beyond20-roll-cells {
+.beyond20-roll-cells,
+.beyond20-roll-dice-rolls,
+.beyond20-dice-roller-content .beyond20-roll-dice {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
 }
 
-.beyond20-roll-cell {
+.beyond20-roll-cell,
+.beyond20-roll-die-result {
     flex: 1 0 auto;
     margin: 1px;
  
@@ -46,6 +51,18 @@
     border: thin solid black;
     border-radius: 2px;
     background-color: lightgray;
+}
+
+.beyond20-dice-roller-content .beyond20-roll-dice-formula {
+    flex-grow: 1;
+}
+.beyond20-dice-roller-content .beyond20-roll-dice-rolls {
+    flex-grow: 4;
+}
+.beyond20-dice-roller-content .beyond20-roll-formula {
+    background-color: #DDD;
+    text-align: center;
+    width: 100%;
 }
  
 

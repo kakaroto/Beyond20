@@ -12,7 +12,7 @@ class DNDBDisplayer:
                 "<div class='beyond20-roller-error'><span class='beyond20-tooltip'>Virtual Table Top Not Found" + \
                     "<span class='beyond20-tooltip-content'>" + self._error + "</span>" + \
                 "</span></div>" + \
-                "<div class='beyond20-dice-roll-result'>" + html + "</div>" + \
+                "<div class='beyond20-dice-roller-content'>" + html + "</div>" + \
             "</div>"
         dlg = alertify.alert(title, content)
         element = $(dlg.elements.content.firstElementChild)
@@ -37,13 +37,13 @@ class DNDBDisplayer:
 
 class DNDBDice:
     def __init__(self, amount, faces, modifiers=""):
-        self.amount = amount
-        self.faces = faces
+        self.amount = int(amount)
+        self.faces = int(faces)
         self._modifiers = modifiers or ""
         self._reroll = {"active": False, "value": 0, "operator": "="}
         self._dk = {"drop": False, "keep": False, "high": False, "amount": 0}
         if modifiers != "":
-            match_ro = re.search("ro(=|<|<=|>|>=)([0-9]+)", modifiers)
+            match_ro = re.search("r(=|<|<=|>|>=)([0-9]+)", modifiers)
             if match_ro?:
                 self._reroll.active = True
                 self._reroll.operator = match_ro.group(1)
@@ -138,6 +138,7 @@ class DNDBDice:
 
 class DNDBRoll:
     def __init__(self, formula, data={}):
+        formula = formula.replace("ro<2", "r<=2")
         self._formula = formula
         self._data = data
         self._fail_limit = None
@@ -195,34 +196,27 @@ class DNDBRoll:
                 self._total += part
 
     def getTooltip(self):
-        tooltip = self.formula + " = "
-        first = True
+        tooltip = "<div class='beyond20-roll-tooltip'>"
         for part in self._parts:
-            if not first:
-                tooltip += " + "
-            first = False
             if isinstance(part, DNDBDice):
-                tooltip += "("
-                first_die = True
+                tooltip += "<div class='beyond20-roll-dice'>"
+                tooltip += "<div class='beyond20-roll-dice-formula'>" + part.formula + "</div>"
+                tooltip += "<div class='beyond20-roll-dice-rolls'>"
                 for die in part.rolls:
-                    if not first_die:
-                        tooltip += " + "
-                    first_die = False
                     style = "color: " + ('green' if die.roll == part.faces else ('red' if die.roll == 1 else 'black')) + ";"
                     if die.discarded ? False:
                         style += "text-decoration: line-through;"
-                    tooltip += "<span style='" + style + "'>" + die.roll + "</span>"
-                tooltip += ")"
-            else:
-                tooltip += part
+                    tooltip += "<span class='beyond20-roll-die-result' style='" + style + "'>" + die.roll + "</span>"
+                tooltip += "</div></div>"
+        tooltip += "</div>"
         return tooltip
 
     def toHTML(self):
         hit = self.isCriticalHit()
         fail = self.isCriticalFail()
         color = 'blue' if hit and fail else ('green' if hit else ('red' if fail else 'black'))
-        return "<div class='beyond20-roll-result'><span class='beyond20-tooltip' style='color: " + color + ";'>" + self.total + "<span class='dice-roll beyond20-tooltip-content'>" + \
-                "<div class='dice-formula'>" + self.formula + "</div>" + self.getTooltip() + "</span></span></div>"
+        return "<div class='beyond20-roll-result'><span class='beyond20-tooltip' style='color: " + color + ";'>" + self.total + "<span class='beyond20-tooltip-content'>" + \
+                "<div class='beyond20-roll-formula'>" + self.formula + "</div>" + self.getTooltip() + "</span></span></div>"
 
     def reroll(self):
         self.roll()

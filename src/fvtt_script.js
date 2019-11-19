@@ -7248,7 +7248,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else {
                     total = roll.total;
                 }
-                return "<span class='beyond20-tooltip' style='color: " + color + ";'>" + total + "<span class='dice-roll beyond20-tooltip-content'>" + "<div class='dice-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>";
+                return "<span class='beyond20-tooltip' style='color: " + color + ";'>" + total + "<span class='dice-roll beyond20-tooltip-content'>" + "<div class='dice-formula beyond20-roll-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>";
             }
             return async_function();
         };
@@ -8430,12 +8430,12 @@ var str = ρσ_str, repr = ρσ_repr;;
         FVTTRoll.prototype.checkRollForCrits = function checkRollForCrits(roll, cb) {
             var self = this;
             var r, die;
-            var ρσ_Iter0 = ρσ_Iterable(roll.dice);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                die = ρσ_Iter0[ρσ_Index0];
-                var ρσ_Iter1 = ρσ_Iterable(die.rolls);
-                for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                    r = ρσ_Iter1[ρσ_Index1];
+            var ρσ_Iter20 = ρσ_Iterable(roll.dice);
+            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
+                die = ρσ_Iter20[ρσ_Index20];
+                var ρσ_Iter21 = ρσ_Iterable(die.rolls);
+                for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
+                    r = ρσ_Iter21[ρσ_Index21];
                     if (!ρσ_exists.e(r.discarded, false)) {
                         if (cb(die.faces, r.roll)) {
                             return true;
@@ -8630,9 +8630,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if ((game.combat.scene.id !== canvas.scene.id && (typeof game.combat.scene.id !== "object" || ρσ_not_equals(game.combat.scene.id, canvas.scene.id)))) {
                         ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene");
                     } else {
-                        var ρσ_Iter2 = ρσ_Iterable(canvas.tokens.controlledTokens);
-                        for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                            token = ρσ_Iter2[ρσ_Index2];
+                        var ρσ_Iter22 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                        for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
+                            token = ρσ_Iter22[ρσ_Index22];
                             combatant = game.combat.getCombatantByToken(token.id);
                             if (combatant) {
                                 promise = game.combat.updateCombatant((function(){
@@ -8717,9 +8717,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }).call(this));
                 }
             }
-            var ρσ_Iter3 = ρσ_Iterable(tokens);
-            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                token = ρσ_Iter3[ρσ_Index3];
+            var ρσ_Iter23 = ρσ_Iterable(tokens);
+            for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
+                token = ρσ_Iter23[ρσ_Index23];
                 if (token.actor && token.data.actorLink) {
                     total = (total) ? total : token.actor.data.attributes.hp.max;
                     token.actor.update((function(){
@@ -8767,9 +8767,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter4 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                event = ρσ_Iter4[ρσ_Index4];
+            var ρσ_Iter24 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
+                event = ρσ_Iter24[ρσ_Index24];
                 document.removeEventListener.apply(document, event);
             }
         };

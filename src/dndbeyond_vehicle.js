@@ -7253,7 +7253,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else {
                     total = roll.total;
                 }
-                return "<span class='beyond20-tooltip' style='color: " + color + ";'>" + total + "<span class='dice-roll beyond20-tooltip-content'>" + "<div class='dice-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>";
+                return "<span class='beyond20-tooltip' style='color: " + color + ";'>" + total + "<span class='dice-roll beyond20-tooltip-content'>" + "<div class='dice-formula beyond20-roll-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>";
             }
             return async_function();
         };
@@ -8196,7 +8196,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         DNDBDisplayer.prototype.postHTML = function postHTML(request, title, html, buttons, play_sound) {
             var self = this;
             var content, dlg, element, icon16;
-            content = "<div class='beyond20-dice-roller'>" + "<div class='beyond20-roller-error'><span class='beyond20-tooltip'>Virtual Table Top Not Found" + "<span class='beyond20-tooltip-content'>" + self._error + "</span>" + "</span></div>" + "<div class='beyond20-dice-roll-result'>" + html + "</div>" + "</div>";
+            content = "<div class='beyond20-dice-roller'>" + "<div class='beyond20-roller-error'><span class='beyond20-tooltip'>Virtual Table Top Not Found" + "<span class='beyond20-tooltip-content'>" + self._error + "</span>" + "</span></div>" + "<div class='beyond20-dice-roller-content'>" + html + "</div>" + "</div>";
             dlg = alertify.alert(title, content);
             element = $(dlg.elements.content.firstElementChild);
             icon16 = chrome.runtime.getURL("images/icons/icon16.png");
@@ -8291,8 +8291,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 modifiers = ρσ_kwargs_obj.modifiers;
             }
             var match_ro, match_dk, dk;
-            self.amount = amount;
-            self.faces = faces;
+            self.amount = int(amount);
+            self.faces = int(faces);
             self._modifiers = modifiers || "";
             self._reroll = (function(){
                 var ρσ_d = {};
@@ -8310,7 +8310,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_d;
             }).call(this);
             if ((modifiers !== "" && (typeof modifiers !== "object" || ρσ_not_equals(modifiers, "")))) {
-                match_ro = re.search("ro(=|<|<=|>|>=)([0-9]+)", modifiers);
+                match_ro = re.search("r(=|<|<=|>|>=)([0-9]+)", modifiers);
                 if ((typeof match_ro !== "undefined" && match_ro !== null)) {
                     self._reroll.active = true;
                     self._reroll.operator = match_ro.group(1);
@@ -8535,6 +8535,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 data = ρσ_kwargs_obj.data;
             }
             var parts, part, match;
+            formula = formula.replace("ro<2", "r<=2");
             self._formula = formula;
             self._data = data;
             self._fail_limit = null;
@@ -8590,37 +8591,28 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
         DNDBRoll.prototype.getTooltip = function getTooltip() {
             var self = this;
-            var tooltip, first, first_die, style, die, part;
-            tooltip = self.formula + " = ";
-            first = true;
+            var tooltip, style, die, part;
+            tooltip = "<div class='beyond20-roll-tooltip'>";
             var ρσ_Iter5 = ρσ_Iterable(self._parts);
             for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
                 part = ρσ_Iter5[ρσ_Index5];
-                if (!first) {
-                    tooltip += " + ";
-                }
-                first = false;
                 if (ρσ_instanceof(part, DNDBDice)) {
-                    tooltip += "(";
-                    first_die = true;
+                    tooltip += "<div class='beyond20-roll-dice'>";
+                    tooltip += "<div class='beyond20-roll-dice-formula'>" + part.formula + "</div>";
+                    tooltip += "<div class='beyond20-roll-dice-rolls'>";
                     var ρσ_Iter6 = ρσ_Iterable(part.rolls);
                     for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
                         die = ρσ_Iter6[ρσ_Index6];
-                        if (!first_die) {
-                            tooltip += " + ";
-                        }
-                        first_die = false;
                         style = "color: " + (((die.roll === part.faces || typeof die.roll === "object" && ρσ_equals(die.roll, part.faces))) ? "green" : ((die.roll === 1 || typeof die.roll === "object" && ρσ_equals(die.roll, 1))) ? "red" : "black") + ";";
                         if (ρσ_exists.e(die.discarded, false)) {
                             style += "text-decoration: line-through;";
                         }
-                        tooltip += "<span style='" + style + "'>" + die.roll + "</span>";
+                        tooltip += "<span class='beyond20-roll-die-result' style='" + style + "'>" + die.roll + "</span>";
                     }
-                    tooltip += ")";
-                } else {
-                    tooltip += part;
+                    tooltip += "</div></div>";
                 }
             }
+            tooltip += "</div>";
             return tooltip;
         };
         DNDBRoll.prototype.toHTML = function toHTML() {
@@ -8629,7 +8621,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             hit = self.isCriticalHit();
             fail = self.isCriticalFail();
             color = (hit && fail) ? "blue" : (hit) ? "green" : (fail) ? "red" : "black";
-            return "<div class='beyond20-roll-result'><span class='beyond20-tooltip' style='color: " + color + ";'>" + self.total + "<span class='dice-roll beyond20-tooltip-content'>" + "<div class='dice-formula'>" + self.formula + "</div>" + self.getTooltip() + "</span></span></div>";
+            return "<div class='beyond20-roll-result'><span class='beyond20-tooltip' style='color: " + color + ";'>" + self.total + "<span class='beyond20-tooltip-content'>" + "<div class='beyond20-roll-formula'>" + self.formula + "</div>" + self.getTooltip() + "</span></span></div>";
         };
         DNDBRoll.prototype.reroll = function reroll() {
             var self = this;
