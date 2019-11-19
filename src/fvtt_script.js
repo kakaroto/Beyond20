@@ -7182,6 +7182,66 @@ var str = ρσ_str, repr = ρσ_repr;;
         if (!Beyond20RollRenderer.prototype.queryAdvantage.__argnames__) Object.defineProperties(Beyond20RollRenderer.prototype.queryAdvantage, {
             __argnames__ : {value: ["title"]}
         });
+        Beyond20RollRenderer.prototype.getToHit = function getToHit() {
+            var self = this;
+            var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var title = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var modifier = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? getToHit.__defaults__.modifier : arguments[2];
+            var data = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? getToHit.__defaults__.data : arguments[3];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "modifier")){
+                modifier = ρσ_kwargs_obj.modifier;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "data")){
+                data = ρσ_kwargs_obj.data;
+            }
+            var async_function;
+            async_function = async            function () {
+                var advantage, adv, roll_1, roll_2;
+                advantage = request.advantage;
+                if ((advantage === RollType.prototype.QUERY || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.QUERY))) {
+                    adv = await self.queryAdvantage(title);
+                    if ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) {
+                        advantage = RollType.prototype.NORMAL;
+                    } else if ((adv === 2 || typeof adv === "object" && ρσ_equals(adv, 2))) {
+                        advantage = RollType.prototype.DOUBLE;
+                    } else if ((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) {
+                        advantage = RollType.prototype.ADVANTAGE;
+                    } else if ((adv === -1 || typeof adv === "object" && ρσ_equals(adv, -1))) {
+                        advantage = RollType.prototype.DISADVANTAGE;
+                    } else {
+                        advantage = RollType.prototype.NORMAL;
+                    }
+                }
+                if ((advantage === RollType.prototype.NORMAL || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.NORMAL))) {
+                    return ρσ_list_decorate([ self.createRoll("1d20" + modifier, data) ]);
+                } else {
+                    roll_1 = self.createRoll("1d20" + modifier, data);
+                    roll_2 = self.createRoll("1d20" + modifier, data);
+                    if ((advantage === RollType.prototype.ADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.ADVANTAGE))) {
+                        if (roll_2.total > roll_1.total) {
+                            roll_1.setDiscarded(true);
+                        } else {
+                            roll_2.setDiscarded(true);
+                        }
+                    } else if ((advantage === RollType.prototype.DISADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.DISADVANTAGE))) {
+                        if (roll_2.total < roll_1.total) {
+                            roll_1.setDiscarded(true);
+                        } else {
+                            roll_2.setDiscarded(true);
+                        }
+                    }
+                    return ρσ_list_decorate([ roll_1, roll_2 ]);
+                }
+            }
+            return async_function();
+        };
+        if (!Beyond20RollRenderer.prototype.getToHit.__defaults__) Object.defineProperties(Beyond20RollRenderer.prototype.getToHit, {
+            __defaults__ : {value: {modifier:"", data:{}}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["request", "title", "modifier", "data"]}
+        });
         Beyond20RollRenderer.prototype.isCriticalHitD20 = function isCriticalHitD20() {
             var self = this;
             var rolls = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
@@ -7196,7 +7256,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
                 roll = ρσ_Iter0[ρσ_Index0];
                 roll.setCriticalLimit(limit);
-                if (roll.isCriticalHit()) {
+                if (!roll.isDiscarded() && roll.isCriticalHit()) {
                     return true;
                 }
             }
@@ -7238,17 +7298,20 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var async_function;
             async_function = async            function () {
-                var hit, fail, color, tooltip, total;
+                var hit, fail, roll_type_class, total, tooltip;
                 hit = roll.isCriticalHit();
                 fail = roll.isCriticalFail();
-                color = (hit && fail) ? "blue" : (hit) ? "green" : (fail) ? "red" : "black";
-                tooltip = await roll.getTooltip();
-                if (is_total) {
-                    total = "<span class='beyond20-roll-total dice-total'>" + roll.total + "</span>";
-                } else {
-                    total = roll.total;
+                roll_type_class = "beyond20-roll-detail-";
+                roll_type_class += (hit && fail) ? "crit-fail" : (hit) ? "crit" : (fail) ? "fail" : "normal";
+                if (roll.isDiscarded()) {
+                    roll_type_class += " beyond20-roll-detail-discarded";
                 }
-                return "<span class='beyond20-tooltip' style='color: " + color + ";'>" + total + "<span class='dice-roll beyond20-tooltip-content'>" + "<div class='dice-formula beyond20-roll-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>";
+                if (is_total) {
+                    roll_type_class += " beyond20-roll-total dice-total";
+                }
+                total = "<span class='" + roll_type_class + "'>" + roll.total + "</span>";
+                tooltip = await roll.getTooltip();
+                return "<span class='beyond20-tooltip'>" + total + "<span class='dice-roll beyond20-tooltip-content'>" + "<div class='dice-formula beyond20-roll-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>";
             }
             return async_function();
         };
@@ -7451,7 +7514,15 @@ var str = ρσ_str, repr = ρσ_repr;;
                 html += "</div>";
                 self._displayer.postHTML(request, title, html, buttons, play_sound);
                 if (attack_rolls.length > 0) {
-                    return attack_rolls[0];
+                    return attack_rolls.find((function() {
+                        var ρσ_anonfunc = function (r) {
+                            return !r.isDiscarded();
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["r"]}
+                        });
+                        return ρσ_anonfunc;
+                    })());
                 } else if (total_damages.length > 0) {
                     return total_damages[0];
                 } else if (damage_rolls.length > 0) {
@@ -7508,42 +7579,15 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
         Beyond20RollRenderer.prototype.rollD20 = function rollD20(request, title, data) {
             var self = this;
-            var async_function;
-            async_function = async            function () {
-                var advantage, adv, dice, roll_1, roll_2;
-                advantage = request.advantage;
-                if ((advantage === RollType.prototype.QUERY || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.QUERY))) {
-                    adv = await self.queryAdvantage(title);
-                    if ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) {
-                        advantage = RollType.prototype.NORMAL;
-                    } else if ((adv === 2 || typeof adv === "object" && ρσ_equals(adv, 2))) {
-                        advantage = RollType.prototype.DOUBLE;
-                    } else if ((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) {
-                        advantage = RollType.prototype.ADVANTAGE;
-                    } else if ((adv === -1 || typeof adv === "object" && ρσ_equals(adv, -1))) {
-                        advantage = RollType.prototype.DISADVANTAGE;
-                    } else {
-                        advantage = RollType.prototype.NORMAL;
-                    }
-                }
-                if ((advantage === RollType.prototype.NORMAL || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.NORMAL))) {
-                    dice = "1d20";
-                } else if ((advantage === RollType.prototype.ADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.ADVANTAGE))) {
-                    dice = "2d20kh1";
-                } else if ((advantage === RollType.prototype.DISADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.DISADVANTAGE))) {
-                    dice = "2d20kl1";
-                } else if ((advantage === RollType.prototype.DOUBLE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.DOUBLE))) {
-                    dice = "1d20";
-                    roll_1 = self.createRoll(dice, data);
-                    roll_2 = self.createRoll(dice, data);
-                    ρσ_interpolate_kwargs.call(self, self.postDescription, [request, title, null, {}, null].concat([ρσ_desugar_kwargs({attack_rolls: ρσ_list_decorate([ roll_1, roll_2 ])})]));
-                    return roll_1;
-                } else {
-                    dice = "1d20";
-                }
-                return self.rollDice(request, title, dice, data);
-            }
-            return async_function();
+            return self.getToHit(request, title, "", data).then((function() {
+                var ρσ_anonfunc = function (attack_rolls) {
+                    return ρσ_interpolate_kwargs.call(self, self.postDescription, [request, title, null, {}, null].concat([ρσ_desugar_kwargs({attack_rolls: attack_rolls})]));
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["attack_rolls"]}
+                });
+                return ρσ_anonfunc;
+            })());
         };
         if (!Beyond20RollRenderer.prototype.rollD20.__argnames__) Object.defineProperties(Beyond20RollRenderer.prototype.rollD20, {
             __argnames__ : {value: ["request", "title", "data"]}
@@ -7850,7 +7894,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var self = this;
             var async_function;
             async_function = async            function () {
-                var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, advantage, adv, roll_1, roll_2, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, has_versatile, roll, dmg_type, damage_flags, suffix, i, ρσ_unpack, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
+                var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, has_versatile, roll, dmg_type, damage_flags, suffix, i, ρσ_unpack, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
                 to_hit = ρσ_list_decorate([]);
                 damage_rolls = ρσ_list_decorate([]);
                 is_critical = false;
@@ -7866,34 +7910,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }
                     custom = ((custom_roll_dice === "" || typeof custom_roll_dice === "object" && ρσ_equals(custom_roll_dice, ""))) ? "" : " + " + custom_roll_dice;
                     to_hit_mod = " + " + request["to-hit"] + custom;
-                    advantage = request.advantage;
-                    if ((advantage === RollType.prototype.QUERY || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.QUERY))) {
-                        adv = await self.queryAdvantage(request.name);
-                        if ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) {
-                            advantage = RollType.prototype.NORMAL;
-                        } else if ((adv === 2 || typeof adv === "object" && ρσ_equals(adv, 2))) {
-                            advantage = RollType.prototype.DOUBLE;
-                        } else if ((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) {
-                            advantage = RollType.prototype.ADVANTAGE;
-                        } else if ((adv === -1 || typeof adv === "object" && ρσ_equals(adv, -1))) {
-                            advantage = RollType.prototype.DISADVANTAGE;
-                        } else {
-                            advantage = RollType.prototype.NORMAL;
-                        }
-                    }
-                    if ((advantage === RollType.prototype.NORMAL || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.NORMAL))) {
-                        to_hit = ρσ_list_decorate([ self._roller.roll("1d20" + to_hit_mod) ]);
-                    } else if ((advantage === RollType.prototype.ADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.ADVANTAGE))) {
-                        to_hit = ρσ_list_decorate([ self._roller.roll("2d20kh1" + to_hit_mod) ]);
-                    } else if ((advantage === RollType.prototype.DISADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.DISADVANTAGE))) {
-                        to_hit = ρσ_list_decorate([ self._roller.roll("2d20kl1" + to_hit_mod) ]);
-                    } else if ((advantage === RollType.prototype.DOUBLE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.DOUBLE))) {
-                        roll_1 = self._roller.roll("1d20" + to_hit_mod);
-                        roll_2 = self._roller.roll("1d20" + to_hit_mod);
-                        to_hit = ρσ_list_decorate([ roll_1, roll_2 ]);
-                    } else {
-                        to_hit = ρσ_list_decorate([ self._roller.roll("1d20" + to_hit_mod) ]);
-                    }
+                    to_hit_mod;
+                    to_hit = await self.getToHit(request, request.name, to_hit_mod);
                     is_critical = self.isCriticalHitD20(to_hit, critical_limit);
                 }
                 if (ρσ_exists.n(request.damages)) {
@@ -8028,7 +8046,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if (ρσ_instanceof(roll, str) || ρσ_instanceof(roll, list)) {
                     new_rolls.append([roll_name, roll, flags]);
                 } else {
-                    new_rolls.append([roll_name, self._roller.reroll(roll), flags]);
+                    new_rolls.append([roll_name, roll.reroll(), flags]);
                 }
             }
             return new_rolls;
@@ -8199,8 +8217,155 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
         Object.defineProperty(Beyond20RollRenderer.prototype, "__bases__", {value: []});
 
+        function Beyond20BaseRoll() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            Beyond20BaseRoll.prototype.__init__.apply(this, arguments);
+        }
+        Object.defineProperties(Beyond20BaseRoll.prototype,  {
+            "formula": {
+                "enumerable": true, 
+                "get": function formula() {
+                    var self = this;
+                    return self._formula;
+                }, 
+                "set": function () { throw new AttributeError("can't set attribute") }
+            }, 
+            "total": {
+                "enumerable": true, 
+                "get": function total() {
+                    var self = this;
+                    throw new Error("NotImplemented");
+                }, 
+                "set": function () { throw new AttributeError("can't set attribute") }
+            }, 
+            "dice": {
+                "enumerable": true, 
+                "get": function dice() {
+                    var self = this;
+                    throw new Error("NotImplemented");
+                }, 
+                "set": function () { throw new AttributeError("can't set attribute") }
+            }, 
+        });
+        Beyond20BaseRoll.prototype.__init__ = function __init__() {
+            var self = this;
+            var formula = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var data = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? __init__.__defaults__.data : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "data")){
+                data = ρσ_kwargs_obj.data;
+            }
+            self._formula = formula;
+            self._data = data;
+            self._fail_limit = null;
+            self._critical_limit = null;
+            self._discarded = false;
+            self._total = 0;
+        };
+        if (!Beyond20BaseRoll.prototype.__init__.__defaults__) Object.defineProperties(Beyond20BaseRoll.prototype.__init__, {
+            __defaults__ : {value: {data:{}}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["formula", "data"]}
+        });
+        Beyond20BaseRoll.__argnames__ = Beyond20BaseRoll.prototype.__init__.__argnames__;
+        Beyond20BaseRoll.__handles_kwarg_interpolation__ = Beyond20BaseRoll.prototype.__init__.__handles_kwarg_interpolation__;
+        Beyond20BaseRoll.prototype.getTooltip = function getTooltip() {
+            var self = this;
+            throw new Error("NotImplemented");
+        };
+        Beyond20BaseRoll.prototype.reroll = function reroll() {
+            var self = this;
+            throw new Error("NotImplemented");
+        };
+        Beyond20BaseRoll.prototype.setDiscarded = function setDiscarded(discarded) {
+            var self = this;
+            self._discarded = discarded;
+        };
+        if (!Beyond20BaseRoll.prototype.setDiscarded.__argnames__) Object.defineProperties(Beyond20BaseRoll.prototype.setDiscarded, {
+            __argnames__ : {value: ["discarded"]}
+        });
+        Beyond20BaseRoll.prototype.isDiscarded = function isDiscarded() {
+            var self = this;
+            return self._discarded;
+        };
+        Beyond20BaseRoll.prototype.setCriticalLimit = function setCriticalLimit(limit) {
+            var self = this;
+            self._critical_limit = limit;
+        };
+        if (!Beyond20BaseRoll.prototype.setCriticalLimit.__argnames__) Object.defineProperties(Beyond20BaseRoll.prototype.setCriticalLimit, {
+            __argnames__ : {value: ["limit"]}
+        });
+        Beyond20BaseRoll.prototype.setFailLimit = function setFailLimit(limit) {
+            var self = this;
+            self._fail_limit = limit;
+        };
+        if (!Beyond20BaseRoll.prototype.setFailLimit.__argnames__) Object.defineProperties(Beyond20BaseRoll.prototype.setFailLimit, {
+            __argnames__ : {value: ["limit"]}
+        });
+        Beyond20BaseRoll.prototype.checkRollForCrits = function checkRollForCrits(cb) {
+            var self = this;
+            var r, die;
+            var ρσ_Iter20 = ρσ_Iterable(self.dice);
+            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
+                die = ρσ_Iter20[ρσ_Index20];
+                var ρσ_Iter21 = ρσ_Iterable(die.rolls);
+                for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
+                    r = ρσ_Iter21[ρσ_Index21];
+                    if (!ρσ_exists.e(r.discarded, false)) {
+                        if (cb(die.faces, r.roll)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        };
+        if (!Beyond20BaseRoll.prototype.checkRollForCrits.__argnames__) Object.defineProperties(Beyond20BaseRoll.prototype.checkRollForCrits, {
+            __argnames__ : {value: ["cb"]}
+        });
+        Beyond20BaseRoll.prototype.isCriticalHit = function isCriticalHit() {
+            var self = this;
+            return self.checkRollForCrits((function() {
+                var ρσ_anonfunc = function (faces, value) {
+                    var limit;
+                    limit = (self._critical_limit === null) ? faces : self._critical_limit;
+                    return value >= limit;
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["faces", "value"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        Beyond20BaseRoll.prototype.isCriticalFail = function isCriticalFail() {
+            var self = this;
+            return self.checkRollForCrits((function() {
+                var ρσ_anonfunc = function (faces, value) {
+                    var limit;
+                    limit = (self._critical_limit === null) ? 1 : self._fail_limit;
+                    return value <= limit;
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["faces", "value"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        Beyond20BaseRoll.prototype.__repr__ = function __repr__ () {
+                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        Beyond20BaseRoll.prototype.__str__ = function __str__ () {
+            return this.__repr__();
+        };
+        Object.defineProperty(Beyond20BaseRoll.prototype, "__bases__", {value: []});
+        
+        
+        
+
         ρσ_modules.roll_renderer.DAMAGE_FLAGS = DAMAGE_FLAGS;
         ρσ_modules.roll_renderer.Beyond20RollRenderer = Beyond20RollRenderer;
+        ρσ_modules.roll_renderer.Beyond20BaseRoll = Beyond20BaseRoll;
     })();
 
     (function(){
@@ -8214,6 +8379,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var WhisperType = ρσ_modules.settings.WhisperType;
 
         var Beyond20RollRenderer = ρσ_modules.roll_renderer.Beyond20RollRenderer;
+        var Beyond20BaseRoll = ρσ_modules.roll_renderer.Beyond20BaseRoll;
 
         settings = null;
         extension_url = "/modules/beyond20/";
@@ -8375,6 +8541,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
             FVTTRoll.prototype.__init__.apply(this, arguments);
         }
+        ρσ_extends(FVTTRoll, Beyond20BaseRoll);
         Object.defineProperties(FVTTRoll.prototype,  {
             "total": {
                 "enumerable": true, 
@@ -8411,6 +8578,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 data = ρσ_kwargs_obj.data;
             }
             formula = formula.replace("ro<2", "r<=2");
+            Beyond20BaseRoll.prototype.__init__.call(self, formula, data);
             self._roll = new Roll(formula, data).roll();
             self._fail_limit = null;
             self._critical_limit = null;
@@ -8431,76 +8599,15 @@ var str = ρσ_str, repr = ρσ_repr;;
             self._roll = self._roll.reroll();
             return self;
         };
-        FVTTRoll.prototype.setCriticalLimit = function setCriticalLimit(limit) {
-            var self = this;
-            self._critical_limit = limit;
-        };
-        if (!FVTTRoll.prototype.setCriticalLimit.__argnames__) Object.defineProperties(FVTTRoll.prototype.setCriticalLimit, {
-            __argnames__ : {value: ["limit"]}
-        });
-        FVTTRoll.prototype.setFailLimit = function setFailLimit(limit) {
-            var self = this;
-            self._fail_limit = limit;
-        };
-        if (!FVTTRoll.prototype.setFailLimit.__argnames__) Object.defineProperties(FVTTRoll.prototype.setFailLimit, {
-            __argnames__ : {value: ["limit"]}
-        });
-        FVTTRoll.prototype.checkRollForCrits = function checkRollForCrits(roll, cb) {
-            var self = this;
-            var r, die;
-            var ρσ_Iter20 = ρσ_Iterable(roll.dice);
-            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
-                die = ρσ_Iter20[ρσ_Index20];
-                var ρσ_Iter21 = ρσ_Iterable(die.rolls);
-                for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
-                    r = ρσ_Iter21[ρσ_Index21];
-                    if (!ρσ_exists.e(r.discarded, false)) {
-                        if (cb(die.faces, r.roll)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        };
-        if (!FVTTRoll.prototype.checkRollForCrits.__argnames__) Object.defineProperties(FVTTRoll.prototype.checkRollForCrits, {
-            __argnames__ : {value: ["roll", "cb"]}
-        });
-        FVTTRoll.prototype.isCriticalHit = function isCriticalHit() {
-            var self = this;
-            return self.checkRollForCrits(self._roll, (function() {
-                var ρσ_anonfunc = function (faces, value) {
-                    var limit;
-                    limit = (self._critical_limit === null) ? faces : self._critical_limit;
-                    return value >= limit;
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["faces", "value"]}
-                });
-                return ρσ_anonfunc;
-            })());
-        };
-        FVTTRoll.prototype.isCriticalFail = function isCriticalFail() {
-            var self = this;
-            return self.checkRollForCrits(self._roll, (function() {
-                var ρσ_anonfunc = function (faces, value) {
-                    var limit;
-                    limit = (self._critical_limit === null) ? 1 : self._fail_limit;
-                    return value <= limit;
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["faces", "value"]}
-                });
-                return ρσ_anonfunc;
-            })());
-        };
         FVTTRoll.prototype.__repr__ = function __repr__ () {
-                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+            if(Beyond20BaseRoll.prototype.__repr__) return Beyond20BaseRoll.prototype.__repr__.call(this);
+            return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
         };
         FVTTRoll.prototype.__str__ = function __str__ () {
-            return this.__repr__();
+            if(Beyond20BaseRoll.prototype.__str__) return Beyond20BaseRoll.prototype.__str__.call(this);
+return this.__repr__();
         };
-        Object.defineProperty(FVTTRoll.prototype, "__bases__", {value: []});
+        Object.defineProperty(FVTTRoll.prototype, "__bases__", {value: [Beyond20BaseRoll]});
         
         
         
@@ -8517,13 +8624,6 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
         if (!FVTTRoller.prototype.roll.__argnames__) Object.defineProperties(FVTTRoller.prototype.roll, {
             __argnames__ : {value: ["formula", "data"]}
-        });
-        FVTTRoller.prototype.reroll = function reroll(roll) {
-            var self = this;
-            return roll.reroll();
-        };
-        if (!FVTTRoller.prototype.reroll.__argnames__) Object.defineProperties(FVTTRoller.prototype.reroll, {
-            __argnames__ : {value: ["roll"]}
         });
         FVTTRoller.prototype.__repr__ = function __repr__ () {
                         return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
@@ -8648,9 +8748,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if ((game.combat.scene.id !== canvas.scene.id && (typeof game.combat.scene.id !== "object" || ρσ_not_equals(game.combat.scene.id, canvas.scene.id)))) {
                         ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene");
                     } else {
-                        var ρσ_Iter22 = ρσ_Iterable(canvas.tokens.controlledTokens);
-                        for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
-                            token = ρσ_Iter22[ρσ_Index22];
+                        var ρσ_Iter0 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                        for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                            token = ρσ_Iter0[ρσ_Index0];
                             combatant = game.combat.getCombatantByToken(token.id);
                             if (combatant) {
                                 promise = game.combat.updateCombatant((function(){
@@ -8735,9 +8835,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     }).call(this));
                 }
             }
-            var ρσ_Iter23 = ρσ_Iterable(tokens);
-            for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
-                token = ρσ_Iter23[ρσ_Index23];
+            var ρσ_Iter1 = ρσ_Iterable(tokens);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                token = ρσ_Iter1[ρσ_Index1];
                 if (token.actor && token.data.actorLink) {
                     total = (total) ? total : token.actor.data.attributes.hp.max;
                     token.actor.update((function(){
@@ -8785,9 +8885,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter24 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
-                event = ρσ_Iter24[ρσ_Index24];
+            var ρσ_Iter2 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                event = ρσ_Iter2[ρσ_Index2];
                 document.removeEventListener.apply(document, event);
             }
         };

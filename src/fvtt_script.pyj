@@ -1,6 +1,6 @@
 from utils import addCustomEventListener
 from settings import WhisperType
-from roll_renderer import Beyond20RollRenderer
+from roll_renderer import Beyond20RollRenderer, Beyond20BaseRoll
 
 settings = None
 extension_url = "/modules/beyond20/"
@@ -63,9 +63,10 @@ class FVTTDisplayer:
             return game.settings.get("core", "rollMode")
 
 
-class FVTTRoll:
+class FVTTRoll(Beyond20BaseRoll):
     def __init__(self, formula, data={}):
         formula = formula.replace("ro<2", "r<=2")
+        Beyond20BaseRoll.__init__(self, formula, data)
         self._roll = new Roll(formula, data).roll()
         self._fail_limit = None
         self._critical_limit = None
@@ -87,37 +88,10 @@ class FVTTRoll:
         self._roll = self._roll.reroll()
         return self
 
-    def setCriticalLimit(self, limit):
-        self._critical_limit = limit
-    def setFailLimit(self, limit):
-        self._fail_limit = limit
-
-    def checkRollForCrits(self, roll, cb):
-        for die in roll.dice:
-            for r in die.rolls:
-                if not (r.discarded ? False):
-                    if cb(die.faces, r.roll):
-                        return True
-        return False
-
-    def isCriticalHit(self):
-        return self.checkRollForCrits(self._roll, def(faces, value):
-            limit = faces if self._critical_limit is None else self._critical_limit
-            return value >= limit
-        )
-
-    def isCriticalFail(self):
-        return self.checkRollForCrits(self._roll, def(faces, value):
-            limit = 1 if self._critical_limit is None else self._fail_limit
-            return value <= limit
-        )
-
 class FVTTRoller:
     def roll(self, formula, data):
         return FVTTRoll(formula, data)
 
-    def reroll(self, roll):
-        return roll.reroll()
 
 class FVTTPrompter:
     def prompt(self, title, html, ok_label="OK", cancel_label="Cancel"):

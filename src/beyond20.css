@@ -64,7 +64,24 @@
     text-align: center;
     width: 100%;
 }
- 
+
+.beyond20-roll-detail-crit {
+    color: green;
+}
+.beyond20-roll-detail-fail {
+    color: red;
+}
+.beyond20-roll-detail-crit-fail {
+    color: blue;
+}
+.beyond20-roll-detail-normal {
+    color: black;
+}
+.beyond20-roll-detail-discarded {
+    color: grey;
+    text-decoration: line-through;
+    opacity: 0.5;
+}
 
 .beyond20-tooltip .beyond20-tooltip-content {
     display: none;

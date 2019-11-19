@@ -1,18 +1,21 @@
 
-from roll_renderer import Beyond20RollRenderer
+from roll_renderer import Beyond20RollRenderer, Beyond20BaseRoll
 from settings import getDefaultSettings
 import re
 
 class DNDBDisplayer:
     def __init__(self):
-        self._error = ""
+        self._error = None
 
     def postHTML(self, request, title, html, buttons, play_sound):
-        content = "<div class='beyond20-dice-roller'>" + \
-                "<div class='beyond20-roller-error'><span class='beyond20-tooltip'>Virtual Table Top Not Found" + \
-                    "<span class='beyond20-tooltip-content'>" + self._error + "</span>" + \
-                "</span></div>" + \
-                "<div class='beyond20-dice-roller-content'>" + html + "</div>" + \
+        content = "<div class='beyond20-dice-roller'>"
+        if self._error:
+            content += "<div class='beyond20-roller-error'>" + \
+                            "<span class='beyond20-tooltip'>Virtual Table Top Not Found" + \
+                                "<span class='beyond20-tooltip-content'>" + self._error + "</span>" + \
+                            "</span>" + \
+                        "</div>"
+        content += "<div class='beyond20-dice-roller-content'>" + html + "</div>" + \
             "</div>"
         dlg = alertify.alert(title, content)
         element = $(dlg.elements.content.firstElementChild)
@@ -132,21 +135,16 @@ class DNDBDice:
     def rolls(self):
         return self._rolls or []
 
-class DNDBRoll:
+class DNDBRoll(Beyond20BaseRoll):
     def __init__(self, formula, data={}):
         formula = formula.replace("ro<2", "r<=2")
-        self._formula = formula
-        self._data = data
-        self._fail_limit = None
-        self._critical_limit = None
+        Beyond20BaseRoll.__init__(self, formula, data)
         self._parts = []
+        for key in data:
+            formula = formula.replace('@' + key, data[key])
         parts = formula.split("+")
         for part in parts:
-            part = part.trim()
-            if part[0] == "@":
-                if data[part[1:]] ?:
-                    part = data[part[1:]]
-            
+            part = part.trim()            
             match = re.search("([0-9]*)d([0-9]+)(.*)", part)
             if match?:
                 part = DNDBDice(match.group(1), match.group(2), match.group(3))
@@ -199,10 +197,12 @@ class DNDBRoll:
                 tooltip += "<div class='beyond20-roll-dice-formula'>" + part.formula + "</div>"
                 tooltip += "<div class='beyond20-roll-dice-rolls'>"
                 for die in part.rolls:
-                    style = "color: " + ('green' if die.roll == part.faces else ('red' if die.roll == 1 else 'black')) + ";"
+                    
+                    result_class = 'beyond20-roll-detail-'
+                    result_class += 'crit' if die.roll == part.faces else ('fail' if die.roll == 1 else 'normal')
                     if die.discarded ? False:
-                        style += "text-decoration: line-through;"
-                    tooltip += "<span class='beyond20-roll-die-result' style='" + style + "'>" + die.roll + "</span>"
+                        result_class += ' beyond20-roll-detail-discarded'
+                    tooltip += "<span class='beyond20-roll-die-result " + result_class + "'>" + die.roll + "</span>"
                 tooltip += "</div></div>"
         tooltip += "</div>"
         return tooltip
@@ -211,40 +211,9 @@ class DNDBRoll:
         self.roll()
         return self
 
-    def setCriticalLimit(self, limit):
-        self._critical_limit = limit
-    def setFailLimit(self, limit):
-        self._fail_limit = limit
-
-    def checkRollForCrits(self, cb):
-        for die in self.dice:
-            for r in die.rolls:
-                if not (r.discarded ? False):
-                    if cb(die.faces, r.roll):
-                        return True
-        return False
-
-    def isCriticalHit(self):
-        return self.checkRollForCrits(def(faces, value):
-            limit = faces if self._critical_limit is None else self._critical_limit
-            return value >= limit
-        )
-
-    def isCriticalFail(self):
-        return self.checkRollForCrits(def(faces, value):
-            limit = 1 if self._critical_limit is None else self._fail_limit
-            return value <= limit
-        )
-
 class DNDBRoller:
     def roll(self, formula, data):
         return DNDBRoll(formula, data)
-
-    def reroll(self, roll):
-        return roll.reroll()
-
-window.DNDBRoll = DNDBRoll
-window.DNDBDice = DNDBDice
 
 if not alertify.Beyond20Prompt?:
     factory = def():

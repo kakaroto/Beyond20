@@ -44,10 +44,45 @@ class Beyond20RollRenderer:
             )
         )
 
+    def getToHit(self, request, title, modifier="", data={}):
+        async_function = v'async'
+        def ():
+            advantage = request.advantage
+            if advantage == RollType.QUERY:
+                adv = v'await self.queryAdvantage(title)'
+                if adv == 0:
+                    advantage = RollType.NORMAL
+                elif adv == 2:
+                    advantage = RollType.DOUBLE
+                elif adv == 1:
+                    advantage = RollType.ADVANTAGE
+                elif adv == -1:
+                    advantage = RollType.DISADVANTAGE
+                else:
+                    advantage = RollType.NORMAL
+            if advantage == RollType.NORMAL:
+                return [self.createRoll("1d20" + modifier, data)]
+            else:
+                roll_1 = self.createRoll("1d20" + modifier, data)
+                roll_2 = self.createRoll("1d20" + modifier, data)
+
+                if advantage == RollType.ADVANTAGE:
+                    if roll_2.total > roll_1.total:
+                        roll_1.setDiscarded(True)
+                    else:
+                        roll_2.setDiscarded(True)
+                elif advantage == RollType.DISADVANTAGE:
+                    if roll_2.total < roll_1.total:
+                        roll_1.setDiscarded(True)
+                    else:
+                        roll_2.setDiscarded(True)
+                return [roll_1, roll_2]
+        return async_function()
+
     def isCriticalHitD20(self, rolls, limit=20):
         for roll in rolls:
             roll.setCriticalLimit(limit)
-            if roll.isCriticalHit():
+            if not roll.isDiscarded() and roll.isCriticalHit():
                 return True
         return False
 
@@ -67,13 +102,15 @@ class Beyond20RollRenderer:
         def ():
             hit = roll.isCriticalHit()
             fail = roll.isCriticalFail()
-            color = 'blue' if hit and fail else ('green' if hit else ('red' if fail else 'black'))
-            tooltip = v'await roll.getTooltip()'
+            roll_type_class = 'beyond20-roll-detail-'
+            roll_type_class += 'crit-fail' if hit and fail else ('crit' if hit else ('fail' if fail else 'normal'))
+            if roll.isDiscarded():
+                roll_type_class += ' beyond20-roll-detail-discarded'
             if is_total:
-                total = "<span class='beyond20-roll-total dice-total'>" + roll.total + "</span>"
-            else:
-                total = roll.total
-            return "<span class='beyond20-tooltip' style='color: " + color + ";'>" + total + "<span class='dice-roll beyond20-tooltip-content'>" + \
+                roll_type_class += ' beyond20-roll-total dice-total'
+            total = "<span class='" + roll_type_class + "'>" + roll.total + "</span>"
+            tooltip = v'await roll.getTooltip()'
+            return "<span class='beyond20-tooltip'>" + total + "<span class='dice-roll beyond20-tooltip-content'>" + \
                 "<div class='dice-formula beyond20-roll-formula'>" + roll.formula + "</div>" + tooltip + "</span></span>"
         return async_function()
 
@@ -187,7 +224,7 @@ class Beyond20RollRenderer:
 
             self._displayer.postHTML(request, title, html, buttons, play_sound)
             if attack_rolls.length > 0:
-                return attack_rolls[0]
+                return attack_rolls.find(def (r): return not r.isDiscarded();)
             elif total_damages.length > 0:
                 return total_damages[0]
             elif damage_rolls.length > 0:
@@ -211,37 +248,9 @@ class Beyond20RollRenderer:
         return self.postDescription(request, title, None, {}, None, attack_rolls=[roll])
 
     def rollD20(self, request, title, data):
-        async_function = v'async'
-        def ():
-            advantage = request.advantage
-            if advantage == RollType.QUERY:
-                adv = v'await self.queryAdvantage(title)'
-                if adv == 0:
-                    advantage = RollType.NORMAL
-                elif adv == 2:
-                    advantage = RollType.DOUBLE
-                elif adv == 1:
-                    advantage = RollType.ADVANTAGE
-                elif adv == -1:
-                    advantage = RollType.DISADVANTAGE
-                else:
-                    advantage = RollType.NORMAL
-            if advantage == RollType.NORMAL:
-                dice = "1d20"
-            elif advantage == RollType.ADVANTAGE:
-                dice = "2d20kh1"
-            elif advantage == RollType.DISADVANTAGE:
-                dice = "2d20kl1"
-            elif advantage == RollType.DOUBLE:
-                dice = "1d20"
-                roll_1 = self.createRoll(dice, data)
-                roll_2 = self.createRoll(dice, data)
-                self.postDescription(request, title, None, {}, None, attack_rolls=[roll_1, roll_2])
-                return roll_1
-            else:
-                dice = "1d20"
-            return self.rollDice(request, title, dice, data)
-        return async_function()
+        return self.getToHit(request, title, "", data).then(def (attack_rolls):
+            return self.postDescription(request, title, None, {}, None, attack_rolls=attack_rolls)
+        )
         
     def rollSkill(self, request, custom_roll_dice=""):
         data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
@@ -385,32 +394,9 @@ class Beyond20RollRenderer:
 
                 custom = "" if custom_roll_dice == "" else (" + " + custom_roll_dice)
                 to_hit_mod = " + " + request["to-hit"] + custom
-
-                advantage = request.advantage
-                if advantage == RollType.QUERY:
-                    adv = v'await self.queryAdvantage(request.name)'
-                    if adv == 0:
-                        advantage = RollType.NORMAL
-                    elif adv == 2:
-                        advantage = RollType.DOUBLE
-                    elif adv == 1:
-                        advantage = RollType.ADVANTAGE
-                    elif adv == -1:
-                        advantage = RollType.DISADVANTAGE
-                    else:
-                        advantage = RollType.NORMAL
-                if advantage == RollType.NORMAL:
-                    to_hit = [self._roller.roll("1d20" + to_hit_mod)]
-                elif advantage == RollType.ADVANTAGE:
-                    to_hit = [self._roller.roll("2d20kh1" + to_hit_mod)]
-                elif advantage == RollType.DISADVANTAGE:
-                    to_hit = [self._roller.roll("2d20kl1" + to_hit_mod)]
-                elif advantage == RollType.DOUBLE:
-                    roll_1 = self._roller.roll("1d20" + to_hit_mod)
-                    roll_2 = self._roller.roll("1d20" + to_hit_mod)
-                    to_hit = [roll_1, roll_2]
-                else:
-                    to_hit = [self._roller.roll("1d20" + to_hit_mod)]
+                # for lint
+                to_hit_mod
+                to_hit = v'await self.getToHit(request, request.name, to_hit_mod)'
                 is_critical = self.isCriticalHitD20(to_hit, critical_limit)
 
 
@@ -506,7 +492,7 @@ class Beyond20RollRenderer:
             if isinstance(roll, str) or isinstance(roll, list):
                 new_rolls.append((roll_name, roll, flags))
             else:
-                new_rolls.append((roll_name, self._roller.reroll(roll), flags))
+                new_rolls.append((roll_name, roll.reroll(), flags))
         return new_rolls
 
     def rollAttack(self, request, custom_roll_dice=""):
@@ -619,3 +605,57 @@ class Beyond20RollRenderer:
 
             return self.rollDice(request, rname + "(" + mod + ")", mod, {})
 
+
+class Beyond20BaseRoll:
+    def __init__(self, formula, data={}):
+        self._formula = formula
+        self._data = data
+        self._fail_limit = None
+        self._critical_limit = None
+        self._discarded = False
+        self._total = 0
+
+    @property
+    def formula(self):
+        return self._formula
+    @property
+    def total(self):
+        raise Error("NotImplemented")
+    @property
+    def dice(self):
+        raise Error("NotImplemented")
+
+    def getTooltip(self):
+        raise Error("NotImplemented")
+
+    def reroll(self):
+        raise Error("NotImplemented")
+
+    def setDiscarded(self, discarded):
+        self._discarded = discarded
+    def isDiscarded(self):
+        return self._discarded
+
+    def setCriticalLimit(self, limit):
+        self._critical_limit = limit
+    def setFailLimit(self, limit):
+        self._fail_limit = limit
+    def checkRollForCrits(self, cb):
+        for die in self.dice:
+            for r in die.rolls:
+                if not (r.discarded ? False):
+                    if cb(die.faces, r.roll):
+                        return True
+        return False
+
+    def isCriticalHit(self):
+        return self.checkRollForCrits(def(faces, value):
+            limit = faces if self._critical_limit is None else self._critical_limit
+            return value >= limit
+        )
+
+    def isCriticalFail(self):
+        return self.checkRollForCrits(def(faces, value):
+            limit = 1 if self._critical_limit is None else self._fail_limit
+            return value <= limit
+        )
