@@ -10405,7 +10405,7 @@ return this.__repr__();
         });
         Monster.prototype.lookForActions = function lookForActions(stat_block, add_dice, inject_descriptions) {
             var self = this;
-            var blocks, makeCB, actions, firstChild, action_name, description, nextSibling, roll_properties, id, action, block, handleAction, attributes;
+            var blocks, makeCB, actions, firstChild, action_name, description, roll_properties, id, action, block, handleAction, attributes;
             blocks = stat_block.find(self._base + "__description-blocks " + self._base + "__description-block");
             makeCB = (function() {
                 var ρσ_anonfunc = function (props) {
@@ -10427,10 +10427,8 @@ return this.__repr__();
                     action = ρσ_Iter18[ρσ_Index18];
                     console.log("Found action: ", action);
                     firstChild = action.firstElementChild;
-                    if (firstChild && (firstChild.tagName === "EM" || typeof firstChild.tagName === "object" && ρσ_equals(firstChild.tagName, "EM"))) {
-                        action_name = $(firstChild).find("strong").text().trim();
-                    } else if (firstChild && (firstChild.tagName === "STRONG" || typeof firstChild.tagName === "object" && ρσ_equals(firstChild.tagName, "STRONG"))) {
-                        action_name = $(firstChild).find("em").text().trim();
+                    if (firstChild && ((firstChild.tagName === "EM" || typeof firstChild.tagName === "object" && ρσ_equals(firstChild.tagName, "EM")) || (firstChild.tagName === "STRONG" || typeof firstChild.tagName === "object" && ρσ_equals(firstChild.tagName, "STRONG")))) {
+                        action_name = $(firstChild).find(":first-child").text().trim();
                     } else {
                         if (inject_descriptions) {
                             injectDiceToRolls(action, self, self._name);
@@ -10441,12 +10439,7 @@ return this.__repr__();
                         action_name = action_name.slice(0, -1);
                     }
                     if (add_dice) {
-                        description = "";
-                        nextSibling = firstChild;
-                        while (nextSibling !== null) {
-                            description += nextSibling.textContent;
-                            nextSibling = nextSibling.nextSibling;
-                        }
+                        description = descriptionToString(action);
                         roll_properties = self.buildAttackRoll(action_name, description);
                         if (roll_properties) {
                             id = ρσ_interpolate_kwargs.call(this, addRollButton, [makeCB(roll_properties), action].concat([ρσ_desugar_kwargs({small: true, prepend: true, image: true, text: action_name})]));

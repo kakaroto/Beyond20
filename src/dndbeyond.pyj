@@ -639,10 +639,8 @@ class Monster(CharacterBase):
             for action in actions:
                 console.log("Found action: ", action)
                 firstChild = action.firstElementChild
-                if firstChild and firstChild.tagName == "EM":
-                    action_name = $(firstChild).find("strong").text().trim()
-                elif firstChild and firstChild.tagName == "STRONG":
-                    action_name = $(firstChild).find("em").text().trim()
+                if firstChild and (firstChild.tagName == "EM" or firstChild.tagName == "STRONG"):
+                    action_name = $(firstChild).find(":first-child").text().trim()
                 else:
                     if inject_descriptions:
                         injectDiceToRolls(action, self, self._name)
@@ -650,11 +648,7 @@ class Monster(CharacterBase):
                 if action_name[-1] == ".":
                     action_name = action_name[:-1]
                 if add_dice:
-                    description = ""
-                    nextSibling = firstChild
-                    while nextSibling is not None:
-                        description += nextSibling.textContent
-                        nextSibling = nextSibling.nextSibling
+                    description = descriptionToString(action)
                     roll_properties = self.buildAttackRoll(action_name, description)
                     if roll_properties:
                         id = addRollButton(makeCB(roll_properties), action,
