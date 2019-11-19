@@ -23,13 +23,6 @@ class FVTTDisplayer:
                 )
         return self._postChatMessage(html, request.character.name, request.whisper, play_sound)
 
-    def postRoll(self, request, title, roll):
-        rollMode = self._whisperToRollMode(request.whisper)
-        roll._roll.toMessage({"speaker": self._getSpeakerByName(request.character.name),
-                              "flavor": title,
-                              "rollMode": rollMode})
-        return roll
-
     def _postChatMessage(self, message, character, whisper, play_sound=False):
         nonlocal CHAT_MESSAGE_TYPES
         # Prior to 0.3.6, CHAT_MESSAGE_TYPES wasn't defined

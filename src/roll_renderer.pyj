@@ -176,7 +176,7 @@ class Beyond20RollRenderer:
                 is_total = roll is None
                 # to satisfy lint
                 is_total
-                roll = new self._roller.roll(total_damages[key])
+                roll = self._roller.roll(total_damages[key])
                 roll_html = v'await self.rollToDetails(roll, is_total)'
                 html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>"
 
@@ -184,7 +184,15 @@ class Beyond20RollRenderer:
                 html += '<button class="beyond20-chat-button">' + button + '</button>'
             html += "</div>"
 
-            return self._displayer.postHTML(request, title, html, buttons, play_sound)
+            self._displayer.postHTML(request, title, html, buttons, play_sound)
+            if attack_rolls.length > 0:
+                return attack_rolls[0]
+            elif total_damages.length > 0:
+                return total_damages[0]
+            elif damage_rolls.length > 0:
+                return damage_rolls[0]
+            else:
+                return None
         return async_function()
 
     def createRoll(self, dice, data):
@@ -195,11 +203,11 @@ class Beyond20RollRenderer:
                 new_key = key.replace("_", "").toLowerCase()
                 new_data[new_key] = data[key]
                 parts.append(new_key)
-        return new self._roller.roll(parts.join(" + @"), new_data)
+        return self._roller.roll(parts.join(" + @"), new_data)
 
     def rollDice(self, request, title, dice, data={}):
         roll = self.createRoll(dice, data)
-        return self._displayer.postRoll(request, title, roll)
+        return self.postDescription(request, title, None, {}, None, attack_rolls=[roll])
 
     def rollD20(self, request, title, data):
         async_function = v'async'
@@ -367,8 +375,8 @@ class Beyond20RollRenderer:
                 to_hit_mod = " + " + request["to-hit"] + custom
 
                 if request.advantage == RollType.DOUBLE:
-                    roll_1 = new self._roller.roll("1d20" + to_hit_mod)
-                    roll_2 = new self._roller.roll("1d20" + to_hit_mod)
+                    roll_1 = self._roller.roll("1d20" + to_hit_mod)
+                    roll_2 = self._roller.roll("1d20" + to_hit_mod)
                     to_hit = [roll_1, roll_2]
                 else:
                     if request.advantage == RollType.NORMAL:
@@ -380,7 +388,7 @@ class Beyond20RollRenderer:
                     else:
                         adv = v'await self.queryAdvantage(request.name)'
                         dice = "1d20" if adv == 0 else ("2d20" + ("kh1" if adv == 1 else "kl1"))
-                    to_hit = [new self._roller.roll(dice + to_hit_mod)]
+                    to_hit = [self._roller.roll(dice + to_hit_mod)]
                 is_critical = self.isCriticalHitD20(to_hit, critical_limit)
 
 
@@ -421,7 +429,7 @@ class Beyond20RollRenderer:
 
                 has_versatile = len(damage_types) > 1 and damage_types[1] == "Two-Handed"
                 for i in range(damages.length):
-                    roll = new self._roller.roll(damages[i])
+                    roll = self._roller.roll(damages[i])
                     dmg_type = damage_types[i]
                     if dmg_type in ["Healing", "Disciple of Life"]:
                         damage_flags = DAMAGE_FLAGS.HEALING
@@ -454,7 +462,7 @@ class Beyond20RollRenderer:
 
                 if is_critical:
                     for i in range(critical_damages.length):
-                        roll = new self._roller.roll(critical_damages[i])
+                        roll = self._roller.roll(critical_damages[i])
                         dmg_type = critical_damage_types[i]
                         if dmg_type in ["Healing", "Disciple of Life"]:
                             damage_flags = DAMAGE_FLAGS.HEALING
@@ -492,7 +500,7 @@ class Beyond20RollRenderer:
             if request["save-dc"]?:
                 roll_info.append(("Save", request["save-ability"] + " DC " + request["save-dc"]))
 
-            self.postDescription(request, request.name, None, data, request.description? "", to_hit, roll_info, damage_rolls)
+            return self.postDescription(request, request.name, None, data, request.description? "", to_hit, roll_info, damage_rolls)
         return async_function()
 
 
@@ -519,7 +527,7 @@ class Beyond20RollRenderer:
 
     def rollSpellCard(self, request):
         spell_card = self.buildSpellCard(request)
-        self.postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], open=True)
+        return self.postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], open=True)
 
     def rollSpellAttack(self, request, custom_roll_dice):
         async_function = v'async'
@@ -552,8 +560,8 @@ class Beyond20RollRenderer:
 
             [attack_rolls, damage_rolls] = v'await self.buildAttackRolls(request, custom_roll_dice)'
 
-            self.postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], attack_rolls, roll_info, damage_rolls)
-        async_function()
+            return self.postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], attack_rolls, roll_info, damage_rolls)
+        return async_function()
 
     def handleRollRequest(self, request):
         custom_roll_dice = ""

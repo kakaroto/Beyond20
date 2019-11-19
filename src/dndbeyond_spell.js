@@ -7443,7 +7443,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     key = ρσ_Iter6[ρσ_Index6];
                     is_total = roll === null;
                     is_total;
-                    roll = new self._roller.roll(total_damages[(typeof key === "number" && key < 0) ? total_damages.length + key : key]);
+                    roll = self._roller.roll(total_damages[(typeof key === "number" && key < 0) ? total_damages.length + key : key]);
                     roll_html = await self.rollToDetails(roll, is_total);
                     html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
                 }
@@ -7453,7 +7453,16 @@ var str = ρσ_str, repr = ρσ_repr;;
                     html += "<button class=\"beyond20-chat-button\">" + button + "</button>";
                 }
                 html += "</div>";
-                return self._displayer.postHTML(request, title, html, buttons, play_sound);
+                self._displayer.postHTML(request, title, html, buttons, play_sound);
+                if (attack_rolls.length > 0) {
+                    return attack_rolls[0];
+                } else if (total_damages.length > 0) {
+                    return total_damages[0];
+                } else if (damage_rolls.length > 0) {
+                    return damage_rolls[0];
+                } else {
+                    return null;
+                }
             }
             return async_function();
         };
@@ -7476,7 +7485,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     parts.append(new_key);
                 }
             }
-            return new self._roller.roll(parts.join(" + @"), new_data);
+            return self._roller.roll(parts.join(" + @"), new_data);
         };
         if (!Beyond20RollRenderer.prototype.createRoll.__argnames__) Object.defineProperties(Beyond20RollRenderer.prototype.createRoll, {
             __argnames__ : {value: ["dice", "data"]}
@@ -7494,7 +7503,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var roll;
             roll = self.createRoll(dice, data);
-            return self._displayer.postRoll(request, title, roll);
+            return ρσ_interpolate_kwargs.call(self, self.postDescription, [request, title, null, {}, null].concat([ρσ_desugar_kwargs({attack_rolls: ρσ_list_decorate([ roll ])})]));
         };
         if (!Beyond20RollRenderer.prototype.rollDice.__defaults__) Object.defineProperties(Beyond20RollRenderer.prototype.rollDice, {
             __defaults__ : {value: {data:{}}},
@@ -7848,8 +7857,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                     custom = ((custom_roll_dice === "" || typeof custom_roll_dice === "object" && ρσ_equals(custom_roll_dice, ""))) ? "" : " + " + custom_roll_dice;
                     to_hit_mod = " + " + request["to-hit"] + custom;
                     if ((request.advantage === RollType.prototype.DOUBLE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DOUBLE))) {
-                        roll_1 = new self._roller.roll("1d20" + to_hit_mod);
-                        roll_2 = new self._roller.roll("1d20" + to_hit_mod);
+                        roll_1 = self._roller.roll("1d20" + to_hit_mod);
+                        roll_2 = self._roller.roll("1d20" + to_hit_mod);
                         to_hit = ρσ_list_decorate([ roll_1, roll_2 ]);
                     } else {
                         if ((request.advantage === RollType.prototype.NORMAL || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.NORMAL))) {
@@ -7862,7 +7871,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                             adv = await self.queryAdvantage(request.name);
                             dice = ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) ? "1d20" : "2d20" + (((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) ? "kh1" : "kl1");
                         }
-                        to_hit = ρσ_list_decorate([ new self._roller.roll(dice + to_hit_mod) ]);
+                        to_hit = ρσ_list_decorate([ self._roller.roll(dice + to_hit_mod) ]);
                     }
                     is_critical = self.isCriticalHitD20(to_hit, critical_limit);
                 }
@@ -7911,7 +7920,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     has_versatile = len(damage_types) > 1 && (damage_types[1] === "Two-Handed" || typeof damage_types[1] === "object" && ρσ_equals(damage_types[1], "Two-Handed"));
                     for (var ρσ_Index15 = 0; ρσ_Index15 < damages.length; ρσ_Index15++) {
                         i = ρσ_Index15;
-                        roll = new self._roller.roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]);
+                        roll = self._roller.roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]);
                         dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
                         if (ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) {
                             damage_flags = DAMAGE_FLAGS.prototype.HEALING;
@@ -7962,7 +7971,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if (is_critical) {
                         for (var ρσ_Index18 = 0; ρσ_Index18 < critical_damages.length; ρσ_Index18++) {
                             i = ρσ_Index18;
-                            roll = new self._roller.roll(critical_damages[(typeof i === "number" && i < 0) ? critical_damages.length + i : i]);
+                            roll = self._roller.roll(critical_damages[(typeof i === "number" && i < 0) ? critical_damages.length + i : i]);
                             dmg_type = critical_damage_types[(typeof i === "number" && i < 0) ? critical_damage_types.length + i : i];
                             if (ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) {
                                 damage_flags = DAMAGE_FLAGS.prototype.HEALING;
@@ -8030,7 +8039,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if (ρσ_exists.n(request["save-dc"])) {
                     roll_info.append(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
                 }
-                self.postDescription(request, request.name, null, data, ρσ_exists.e(request.description, ""), to_hit, roll_info, damage_rolls);
+                return self.postDescription(request, request.name, null, data, ρσ_exists.e(request.description, ""), to_hit, roll_info, damage_rolls);
             }
             return async_function();
         };
@@ -8071,7 +8080,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var self = this;
             var spell_card;
             spell_card = self.buildSpellCard(request);
-            ρσ_interpolate_kwargs.call(self, self.postDescription, [request, request.name, spell_card[0], spell_card[1], spell_card[2]].concat([ρσ_desugar_kwargs({open: true})]));
+            return ρσ_interpolate_kwargs.call(self, self.postDescription, [request, request.name, spell_card[0], spell_card[1], spell_card[2]].concat([ρσ_desugar_kwargs({open: true})]));
         };
         if (!Beyond20RollRenderer.prototype.rollSpellCard.__argnames__) Object.defineProperties(Beyond20RollRenderer.prototype.rollSpellCard, {
             __argnames__ : {value: ["request"]}
@@ -8116,9 +8125,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
                 attack_rolls = ρσ_unpack[0];
                 damage_rolls = ρσ_unpack[1];
-                self.postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], attack_rolls, roll_info, damage_rolls);
+                return self.postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], attack_rolls, roll_info, damage_rolls);
             }
-            async_function();
+            return async_function();
         };
         if (!Beyond20RollRenderer.prototype.rollSpellAttack.__argnames__) Object.defineProperties(Beyond20RollRenderer.prototype.rollSpellAttack, {
             __argnames__ : {value: ["request", "custom_roll_dice"]}
@@ -8228,7 +8237,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
         DNDBDisplayer.prototype.postRoll = function postRoll(request, title, roll) {
             var self = this;
-            this.postHTML(request, title, roll.toHTML(), {}, false);
+            this.postHTML(request, title, roll.toHTML(title), {}, false);
             return roll;
         };
         if (!DNDBDisplayer.prototype.postRoll.__argnames__) Object.defineProperties(DNDBDisplayer.prototype.postRoll, {

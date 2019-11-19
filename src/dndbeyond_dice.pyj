@@ -28,10 +28,6 @@ class DNDBDisplayer:
             buttons[button]()
         )
 
-    def postRoll(self, request, title, roll):
-        this.postHTML(request, title, roll.toHTML(), {}, False)
-        return roll
-
     def setError(self, error):
         self._error = error
 
@@ -210,13 +206,6 @@ class DNDBRoll:
                 tooltip += "</div></div>"
         tooltip += "</div>"
         return tooltip
-
-    def toHTML(self):
-        hit = self.isCriticalHit()
-        fail = self.isCriticalFail()
-        color = 'blue' if hit and fail else ('green' if hit else ('red' if fail else 'black'))
-        return "<div class='beyond20-roll-result'><span class='beyond20-tooltip' style='color: " + color + ";'>" + self.total + "<span class='beyond20-tooltip-content'>" + \
-                "<div class='beyond20-roll-formula'>" + self.formula + "</div>" + self.getTooltip() + "</span></span></div>"
 
     def reroll(self):
         self.roll()
