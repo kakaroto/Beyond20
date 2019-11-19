@@ -1,6 +1,7 @@
 from settings import getStoredSettings
 from dndbeyond import injectDiceToRolls, isRollButtonAdded, CharacterBase, Spell
 from elementmaker import E
+from utils import alertFullSettings
 
 print("Beyond20: D&D Beyond Spell module loaded.")
 
@@ -53,6 +54,8 @@ def handleMessage (request, sender, sendResponse):
     if request.action == "settings":
         if request.type == "general":
             updateSettings(request.settings)
+    elif request.action == "open-options":
+        alertFullSettings()
 
 chrome.runtime.onMessage.addListener(handleMessage)
 chrome.runtime.sendMessage({"action": "activate-icon"})

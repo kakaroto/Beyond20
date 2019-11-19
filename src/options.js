@@ -5619,13 +5619,23 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["url", "matching"]}
         });
 
-        function alertQuickSettings() {
+        function alertSettings(url, title) {
             var popup, img, dialog;
-            popup = chrome.extension.getURL("popup.html");
+            popup = chrome.extension.getURL(url);
             img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})]);
-            alertify.alert().destroy();
-            dialog = alertify.alert(img.outerHTML + "Beyond 20 Quick Settings", ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "no"})]));
+            dialog = alertify.alert(img.outerHTML + title, ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "no"})]));
             dialog.set("padding", false).set("resizable", true).resizeTo("80%", "80%");
+        };
+        if (!alertSettings.__argnames__) Object.defineProperties(alertSettings, {
+            __argnames__ : {value: ["url", "title"]}
+        });
+
+        function alertQuickSettings() {
+            alertSettings("popup.html", "Beyond 20 Quick Settings");
+        };
+
+        function alertFullSettings() {
+            alertSettings("options.html", "Beyond 20 Settings");
         };
 
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
@@ -5640,7 +5650,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.isFVTT = isFVTT;
         ρσ_modules.utils.fvttTitle = fvttTitle;
         ρσ_modules.utils.urlMatches = urlMatches;
+        ρσ_modules.utils.alertSettings = alertSettings;
         ρσ_modules.utils.alertQuickSettings = alertQuickSettings;
+        ρσ_modules.utils.alertFullSettings = alertFullSettings;
     })();
 
     (function(){

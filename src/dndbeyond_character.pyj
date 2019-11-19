@@ -1,5 +1,5 @@
 from settings import getDefaultSettings, getStoredSettings, RollType
-from utils import isExtensionDisconnected, alertQuickSettings
+from utils import isExtensionDisconnected, alertQuickSettings, alertFullSettings
 from elementmaker import E
 import math
 import re
@@ -458,7 +458,7 @@ def displayPanel(paneClass):
     elif paneClass in ["ct-action-pane", "ct-custom-action-pane"]:
         displayAction(paneClass)
     else:
-        alert("Not recognizing the currently open sidebar")
+        alertify.alert("Not recognizing the currently open sidebar")
 
 def findModifiers(character, custom_roll):
     sibling = custom_roll.nextSibling
@@ -737,6 +737,8 @@ def handleMessage (request, sender, sendResponse):
     elif request.action == "get-character":
         character.updateInfo()
         sendResponse(character.getDict())
+    elif request.action == "open-options":
+        alertFullSettings()
 
 settings = getDefaultSettings()
 character = Character(settings)

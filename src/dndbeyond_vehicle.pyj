@@ -1,6 +1,6 @@
 from settings import getDefaultSettings, getStoredSettings
 from dndbeyond import Monster, isRollButtonAdded
-from utils import injectCSS
+from utils import injectCSS, alertFullSettings
 from constants import BUTTON_STYLE_CSS
 
 print("Beyond20: D&D Beyond Vehicle module loaded.")
@@ -39,6 +39,8 @@ def handleMessage (request, sender, sendResponse):
     if request.action == "settings":
         if request.type == "general":
             updateSettings(request.settings)
+    elif request.action == "open-options":
+        alertFullSettings()
 
 injectCSS(BUTTON_STYLE_CSS)
 chrome.runtime.onMessage.addListener(handleMessage)

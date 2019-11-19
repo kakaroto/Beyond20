@@ -5620,13 +5620,23 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["url", "matching"]}
         });
 
-        function alertQuickSettings() {
+        function alertSettings(url, title) {
             var popup, img, dialog;
-            popup = chrome.extension.getURL("popup.html");
+            popup = chrome.extension.getURL(url);
             img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})]);
-            alertify.alert().destroy();
-            dialog = alertify.alert(img.outerHTML + "Beyond 20 Quick Settings", ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "no"})]));
+            dialog = alertify.alert(img.outerHTML + title, ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "no"})]));
             dialog.set("padding", false).set("resizable", true).resizeTo("80%", "80%");
+        };
+        if (!alertSettings.__argnames__) Object.defineProperties(alertSettings, {
+            __argnames__ : {value: ["url", "title"]}
+        });
+
+        function alertQuickSettings() {
+            alertSettings("popup.html", "Beyond 20 Quick Settings");
+        };
+
+        function alertFullSettings() {
+            alertSettings("options.html", "Beyond 20 Settings");
         };
 
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
@@ -5641,7 +5651,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.isFVTT = isFVTT;
         ρσ_modules.utils.fvttTitle = fvttTitle;
         ρσ_modules.utils.urlMatches = urlMatches;
+        ρσ_modules.utils.alertSettings = alertSettings;
         ρσ_modules.utils.alertQuickSettings = alertQuickSettings;
+        ρσ_modules.utils.alertFullSettings = alertFullSettings;
     })();
 
     (function(){
@@ -6878,7 +6890,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             $(".beyond20-options").append(ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4("More Options")].concat([ρσ_desugar_kwargs({id: "openOptions", class_: "list-content", href: "#"})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option"})])));
             img = $("#donate").find("img");
             img.attr("src", img.attr("src").replace("donate.png", "donate32.png"));
-            $("#openOptions").bind("click", (function() {
+            $("#openOptions").on("click", (function() {
                 var ρσ_anonfunc = function (ev) {
                     chrome.runtime.openOptionsPage();
                 };
@@ -6888,6 +6900,26 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_anonfunc;
             })());
         };
+
+        function canAlertify(tab_id) {
+            $("#openOptions").off("click").on("click", (function() {
+                var ρσ_anonfunc = function (ev) {
+                    chrome.tabs.sendMessage(tab_id, (function(){
+                        var ρσ_d = {};
+                        ρσ_d["action"] = "open-options";
+                        return ρσ_d;
+                    }).call(this));
+                    window.close();
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["ev"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!canAlertify.__argnames__) Object.defineProperties(canAlertify, {
+            __argnames__ : {value: ["tab_id"]}
+        });
 
         function save_settings() {
             saveSettings((function() {
@@ -7065,10 +7097,13 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["action"] = "get-character";
                     return ρσ_d;
                 }).call(this), populateCharacter);
+                canAlertify(tabs[0].id);
             } else if (urlMatches(tabs[0].url, DNDBEYOND_MONSTER_URL) || urlMatches(tabs[0].url, DNDBEYOND_VEHICLE_URL) || urlMatches(tabs[0].url, DNDBEYOND_ENCOUNTER_URL)) {
                 addMonsterOptions();
+                canAlertify(tabs[0].id);
             } else {
                 initializeSettings(gotSettings);
+                canAlertify(tabs[0].id);
             }
         };
         if (!actOnCurrentTab.__argnames__) Object.defineProperties(actOnCurrentTab, {

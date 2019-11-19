@@ -1,7 +1,7 @@
 from settings import getDefaultSettings, getStoredSettings
 from dndbeyond import Monster, removeRollButtons
 from constants import BUTTON_STYLE_CSS
-from utils import isExtensionDisconnected, injectCSS
+from utils import isExtensionDisconnected, injectCSS, alertFullSettings
 
 print("Beyond20: D&D Beyond Encounter module loaded.")
 
@@ -48,6 +48,8 @@ def handleMessage (request, sender, sendResponse):
     if request.action == "settings":
         if request.type == "general":
             updateSettings(request.settings)
+    elif request.action == "open-options":
+        alertFullSettings()
 
 updateSettings()
 injectCSS(BUTTON_STYLE_CSS)

@@ -31,7 +31,8 @@
 		"images/*",
 		"src/roll20_script.js",
 		"src/fvtt_script.js",
-		"popup.html"
+		"popup.html",
+		"options.html"
 	],
 	"background": {
 		"persistent": true,
