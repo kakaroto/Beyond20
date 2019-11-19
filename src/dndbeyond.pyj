@@ -433,6 +433,21 @@ class Monster(CharacterBase):
             self._abilities.append([abbreviationToAbility(abbr), abbr, score, modifier].as_array())
             if add_dice:
                 addIconButton(makeCB(abbr), ability, prepend=True)
+                if abbr == "DEX":
+                    attributes = stat_block.find(base + "__attributes")
+                    if attributes.length > 0:
+                        attributes = attributes.eq(0)
+                        initiative = E.div(class_=base[1:] + "__attribute",
+                                        E.span(class_=base[1:] + "__attribute-label", "Roll Initiative!"),
+                                        E.span(class_=base[1:] + "__attribute-data",
+                                            E.span(class_=base[1:] + "__attribute-data-value", "  " + modifier)
+                                        )
+                                    )
+                        attributes.append(initiative)
+                        cb = def():
+                                self.rollInitiative()
+                        addIconButton(cb, $(initiative).find(base + "__attribute-data"))
+
         
         tidbits = stat_block.find(base + "__tidbits " + base + "__tidbit")
         for tidbit in tidbits:
@@ -508,6 +523,14 @@ class Monster(CharacterBase):
                                                               "modifier": modifier,
                                                               "ability-score": score} )
                 break
+
+    def rollInitiative(self):
+        for ability in self._abilities:
+            if ability[1] == "DEX":
+                modifier = ability[3]
+                sendRoll(self, "initiative", "1d20" + modifier, {"initiative": modifier})
+                break
+
 
     def rollSavingThrow(self, abbr):
         mod = self._saves[abbr]
