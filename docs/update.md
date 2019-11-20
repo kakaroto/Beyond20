@@ -19,9 +19,10 @@ If you find an issue that isn't in the list, I'd appreciate you letting me know 
 
 # Release Notes
 
-The [#ThankYouPatrons](https://patreon.com/kakaroto) release!
 
-This release is dedicated to my generous patrons who are making this possible by supporting my projects. Today (November 19th) is the [#ThankYouPatrons day](https://www.thankyoupatrons.com) organized by Patreon. As I asked recently my patrons which projects they would like me to focus on, I was surprised to see Beyond 20 at the top of the poll results, so I've worked day and night to making this release possible for today in order to celeberate all those who have generously given me their support.
+The #ThankYouPatrons release!
+
+This release is dedicated to my generous [patrons](https://patreon.com/kakaroto) who are making this possible by supporting my projects. Today (November 19th) is the [#ThankYouPatrons event](https://www.thankyoupatrons.com) organized by Patreon. As I asked recently my patrons which projects they would like me to focus on, I was surprised to see Beyond 20 at the top of the poll results, so I've worked day and night to making this release possible for today in order to celeberate all those who have generously given me their support.
 
 As a way of thanking them for their support, I've made this a big release with some major improvements and new features. The most important of which is the addition of a new Dice Roller for anyone using D&D Beyond without a Virtual TableTop (or using one that isn't supported by Beyond20).
 
