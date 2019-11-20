@@ -138,6 +138,7 @@ class Character(CharacterBase):
         self._class_features = []
         self._racial_traits = []
         self._feats = []
+        self._actions = []
 
     def updateInfo(self):
         self._id = $("#character-sheet-target").attr("data-character-id")

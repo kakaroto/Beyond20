@@ -9685,6 +9685,7 @@ return this.__repr__();
             self._class_features = ρσ_list_decorate([]);
             self._racial_traits = ρσ_list_decorate([]);
             self._feats = ρσ_list_decorate([]);
+            self._actions = ρσ_list_decorate([]);
         };
         if (!Character.prototype.__init__.__argnames__) Object.defineProperties(Character.prototype.__init__, {
             __argnames__ : {value: ["global_settings"]}
