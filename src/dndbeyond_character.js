@@ -9428,6 +9428,7 @@ return this.__repr__();
         var ability_abbreviations, skill_abilities, button_class, button_class_small;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
         var alertQuickSettings = ρσ_modules.utils.alertQuickSettings;
+        var getBrowser = ρσ_modules.utils.getBrowser;
 
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
         var mergeSettings = ρσ_modules.settings.mergeSettings;
@@ -10123,7 +10124,7 @@ return this.__repr__();
             if (stat_block === null) {
                 stat_block = $(base);
             }
-            if (ρσ_not_equals(self.type(), "Creature") && ρσ_not_equals(self.type(), "Extra-Vehicle")) {
+            if (ρσ_not_equals(self.type(), "Creature") && ρσ_not_equals(self.type(), "Extra-Vehicle") && ρσ_not_equals(getBrowser(), "Firefox")) {
                 $(".ct-beyond20-settings-button").remove();
                 quick_settings = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-settings", src: chrome.extension.getURL("images/icons/icon32.png"), style: "vertical-align: top;"})]), ρσ_interpolate_kwargs.call(E, E.span, ["Beyond 20"].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-settings-button-label mon-stat-block__tidbit mon-stat-block__tidbit-label", style: "font-size: 28px; margin: 5px;"})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-settings-button", style: "background-color: rgba(0, 0, 0, 0.1)"})]));
                 stat_block.find(base + "__header").prepend(quick_settings);
@@ -11340,6 +11341,7 @@ return this.__repr__();
         var isExtensionDisconnected = ρσ_modules.utils.isExtensionDisconnected;
         var alertQuickSettings = ρσ_modules.utils.alertQuickSettings;
         var alertFullSettings = ρσ_modules.utils.alertFullSettings;
+        var getBrowser = ρσ_modules.utils.getBrowser;
 
         var E = ρσ_modules.elementmaker.E;
 
@@ -12261,6 +12263,9 @@ return this.__repr__();
         function injectSettingsButton() {
             var desktop_gap, tablet_gap, mobile_gap, button_type, gap, span_text, icon, button;
             if ($(".ct-beyond20-settings").length > 0) {
+                return;
+            }
+            if (ρσ_equals(getBrowser(), "Firefox")) {
                 return;
             }
             desktop_gap = $(".ct-character-header-desktop__group--gap");

@@ -1,4 +1,4 @@
-from utils import replaceRolls, alertQuickSettings
+from utils import replaceRolls, alertQuickSettings, getBrowser
 from settings import getStoredSettings, mergeSettings, character_settings, WhisperType, RollType, CriticalRules
 from dndbeyond_dice import dndbeyondDiceRoller
 from elementmaker import E
@@ -398,7 +398,7 @@ class Monster(CharacterBase):
         base = self._base
         if stat_block is None:
             stat_block = $(base)
-        if self.type() != "Creature" and self.type() != "Extra-Vehicle":
+        if self.type() != "Creature" and self.type() != "Extra-Vehicle" and getBrowser() != "Firefox":
             $(".ct-beyond20-settings-button").remove()
             quick_settings = E.div(class_="ct-beyond20-settings-button", style="background-color: rgba(0, 0, 0, 0.1)",
                                     E.img(class_="ct-beyond20-settings", src=chrome.extension.getURL("images/icons/icon32.png"), style="vertical-align: top;"),
