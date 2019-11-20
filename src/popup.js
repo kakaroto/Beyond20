@@ -7109,14 +7109,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["action"] = "get-character";
                     return ρσ_d;
                 }).call(this), populateCharacter);
-                canAlertify(tabs[0].id);
             } else if (urlMatches(tabs[0].url, DNDBEYOND_MONSTER_URL) || urlMatches(tabs[0].url, DNDBEYOND_VEHICLE_URL) || urlMatches(tabs[0].url, DNDBEYOND_ENCOUNTER_URL)) {
                 addMonsterOptions();
-                canAlertify(tabs[0].id);
             } else {
                 initializeSettings(gotSettings);
-                canAlertify(tabs[0].id);
             }
+            canAlertify(tabs[0].id);
         };
         if (!actOnCurrentTab.__argnames__) Object.defineProperties(actOnCurrentTab, {
             __argnames__ : {value: ["tabs"]}

@@ -6832,6 +6832,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var sendCustomEvent = ρσ_modules.utils.sendCustomEvent;
         var injectPageScript = ρσ_modules.utils.injectPageScript;
         var alertQuickSettings = ρσ_modules.utils.alertQuickSettings;
+        var alertFullSettings = ρσ_modules.utils.alertFullSettings;
 
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
@@ -6874,6 +6875,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
                     updateSettings(request.settings);
                 }
+            } else if ((request.action === "open-options" || typeof request.action === "object" && ρσ_equals(request.action, "open-options"))) {
+                alertFullSettings();
             } else if ((request.action === "hp-update" || typeof request.action === "object" && ρσ_equals(request.action, "hp-update"))) {
                 if (settings["update-hp"]) {
                     sendCustomEvent("UpdateHP", [request.character.name, request.character.hp, request.character["max-hp"]]);

@@ -1,4 +1,4 @@
-from utils import sendCustomEvent, injectPageScript, alertQuickSettings
+from utils import sendCustomEvent, injectPageScript, alertQuickSettings, alertFullSettings
 from settings import getDefaultSettings, getStoredSettings
 from elementmaker import E
 
@@ -23,6 +23,8 @@ def handleMessage (request, sender, sendResponse):
     if request.action == "settings":
         if request.type == "general":
             updateSettings(request.settings)
+    elif request.action == "open-options":
+        alertFullSettings()
     elif request.action == "hp-update":
         if settings["update-hp"]:
             sendCustomEvent("UpdateHP", (request.character.name, request.character.hp, request.character["max-hp"]))
