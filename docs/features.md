@@ -1,6 +1,7 @@
 # Virtual Tabletops supported
 * [Roll 20](https://roll20.net)
 * [Foundry VTT](http://foundryvtt.com)
+* D&D Beyond Dice Roller
 
 # Feature list
 
@@ -40,6 +41,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 
 ## Monsters and Character creatures
 * Hit points
+* Initiative roll
 * Ability checks
 * Saving throws
 * Skills
@@ -70,6 +72,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 
 ## Special Class Features/Racial Traits/Feats supported
 * Rogue: Sneak Attack
+* Rogue: Assassinate
 * Life domain Cleric: Disciple of Life
 * Champion Fighter: Improved Critical and Superior Critical
 * Bard: Jack of All Trades
@@ -79,6 +82,10 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Feat: Sharpshooter
 * Feat: Great Weapon Master
 * Fighting Style: Great Weapon Fighting
+* Bloodhunter: Crimson Rite
+* Ranger: Dread Ambusher
+* Paladin: Legendary Strike (UA)
+* Warlock: Hexblade's Curse
 
 # Special Spells supported
 * Chromatic Orb: Macro to ask which damage type to use
@@ -87,6 +94,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 ## Configurable options
 * Whisper rolls (yes, no, query the user)
 * Whisper rolls for monster pages
+* Incognito rolls for monster pages
 * Roll types (normal, roll twice, query the user, roll with advantage, roll with disadvantage)
 * Auto roll damage and crit
 * Add initiative to the tracker (requires token to be selected)
@@ -99,6 +107,11 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Add dice formulas roller icon to D&D Beyond stat blocks
 * Add roll buttons to monster, creature and vehicle stat blocks
 * Prefix to add to critical hit damage
+* Critical hit additional damage rules
+  * Standard PHB rule (reroll dice)
+  * Homebrew Rule: Perfect rolls
+  * Homebrew Rule: Add modifiers to rolls
+  * Homebrew Rule: Reroll all the damages
 * Components to display during a spell attack
   * All components (V, S, M)
   * Only material components if needed
@@ -130,9 +143,3 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Chrome support
 * Firefox support
 * Friendly developer :)
-
-# TODO
-
-These are items that are not yet supported but which I plan on adding support for at some point in the future.
-
-{% include_relative TODO.md %}

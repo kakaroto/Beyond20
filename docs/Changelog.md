@@ -1,3 +1,33 @@
+v0.7
+===
+
+* **Feature**: Add a Dice Roller within D&D Beyond for players not using Roll20 or FVTT
+* **Feature**: Add option for alternate critical damage calculations based on common homebrew rules
+* **Feature**: Add an 'incognito' monster whisper mode where rolls are displayed but monster name and action names are hidden
+* **Feature**: Add a 'Roll Initiative' button to monster/vehicle stat blocks (rolls dexterity but allows adding to tracker)
+* **Feature**: Add a "Roll Twice" option when querying the user for advantage.
+* **Feature**: *Chrome*: Add a Beyond 20 button to D&D Beyond and VTT pages for easy access to quick settings
+* **Feature**: Open the 'More Options' link as dialogs within the page instead of opening the browser's extension page
+* **Feature**: Add support for Bloodhunter's Crimson Rite feature
+* **Feature**: Add support for Ranger's Dread Ambusher feature
+* **Feature**: Add support for Paladin's Legendary Strike (UA) feature
+* **Feature**: Add support for Warlock's Hexblade's Curse feature
+* **Feature**: Add support for Rogue's Assassinate feature
+* **Feature**: *FVTT & Dice Roller*: Standardize appearance of chat messages when using simple rolls
+* **Feature**: *FVTT & Dice Roller*: When rolling with advantage/disadvantage, display both rolls instead of only the result
+* **Bugfix**: *Roll20*: Fix Brutal Critical/Savage Attacks brutal damage not being rolled on some critical rolls
+* **Bugfix**: *Roll20*: It seems Beyond 20 now works in Roll20's popped out chat window
+* **Bugfix**: *FVTT*: Show the world's title instead of its name in the browser's tab title
+* **Bugfix**: *FVTT*: Critical hits of 18 or 19 (due to Improved or Superior Critical features) now appear green as expected
+* **Bugfix**: Make parser for monster actions in stat blocks less rigid so it can find action names in some homebrew monsters
+* **Bugfix**: Fix item/feature or spell descriptions not being properly displayed when they contain lists
+* **Misc**: Use non-intrusive notification when opening a character sheet and no VTT window is found
+* **Misc**: Add monster specific options to a monster page's quick settings menu
+* **Misc**: Fix typos of "Save Attacks" instead of "Savage Attacks"
+* **Misc**: Using the new in-page quick settings dialog, setting a custom dice formula and dismissing the dialog will now accept the change
+* **Misc**: Updated donate link to redirect to beyond20.here-for-more.info/rations instead of paypal.me/kakaroto
+* **Misc**: *FVTT*: Major refactor of how message rendering is done internally to allow for the dice roller to work
+
 v0.6
 ===
 

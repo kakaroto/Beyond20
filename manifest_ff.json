@@ -1,6 +1,6 @@
 {
 	"name": "Beyond 20",
-	"version": "0.6",
+	"version": "0.7",
 	"manifest_version": 2,
 	"description": "Integrates the D&D Beyond Character Sheets with Roll20 and Foundry VTT.",
 	"permissions": [
@@ -36,7 +36,9 @@
 	"web_accessible_resources": [
 		"images/*",
 		"src/roll20_script.js",
-		"src/fvtt_script.js"
+		"src/fvtt_script.js",
+		"popup.html",
+		"options.html"
 	],
 	"background": {
 		"persistent": true,
@@ -52,7 +54,8 @@
 			"css": [
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css"
+				"libs/css/alertify-themes/beyond20.css",
+				"src/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
@@ -67,7 +70,8 @@
 			"css": [
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css"
+				"libs/css/alertify-themes/beyond20.css",
+				"src/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
@@ -82,7 +86,8 @@
 			"css": [
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css"
+				"libs/css/alertify-themes/beyond20.css",
+				"src/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
@@ -97,7 +102,8 @@
 			"css": [
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css"
+				"libs/css/alertify-themes/beyond20.css",
+				"src/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
@@ -113,7 +119,8 @@
 			"css": [
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css"
+				"libs/css/alertify-themes/beyond20.css",
+				"src/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
@@ -125,7 +132,13 @@
 			"matches": [
 				"*://app.roll20.net/editor/"
 			],
+			"css": [
+				"libs/css/alertify.css",
+				"libs/css/alertify-themes/default.css",
+				"libs/css/alertify-themes/beyond20.css"
+			],
 			"js": [
+				"libs/alertify.min.js",
 				"src/roll20.js"
 			]
 		},
@@ -133,7 +146,13 @@
 			"matches": [
 				"*://*/game"
 			],
+			"css": [
+				"libs/css/alertify.css",
+				"libs/css/alertify-themes/default.css",
+				"libs/css/alertify-themes/beyond20.css"
+			],
 			"js": [
+				"libs/alertify.min.js",
 				"src/fvtt_test.js"
 			]
 		}
