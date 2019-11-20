@@ -6626,13 +6626,13 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function createVTTTabSetting(name, short) {
-            var vtt, campaign, dropdown_options;
+            var dropdown_options, vtt, campaign;
+            dropdown_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller" ]);
             if (short) {
                 vtt = (isFVTT(current_tab.title)) ? "Foundry VTT" : "Roll20";
                 campaign = ((vtt === "Foundry VTT" || typeof vtt === "object" && ρσ_equals(vtt, "Foundry VTT"))) ? "World" : "Campaign";
-                dropdown_options = ρσ_list_decorate([ "All VTT Tabs", "Only " + vtt + " Tabs", "This " + campaign, "This Specific Tab" ]);
-            } else {
-                dropdown_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs" ]);
+                dropdown_options.append("This " + campaign);
+                dropdown_options.append("This Specific Tab");
             }
             return createRoll20TabCombobox(name, short, dropdown_options);
         };
@@ -6641,7 +6641,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function setVTTTabSetting(name, settings) {
-            var val, combobox, vtt, vtt_name, ρσ_unpack, id, title, campaign, short, current_vtt, current_vtt_name, current_campaign, current_title, current_id, new_options, dropdown_options, option;
+            var val, combobox, vtt, choice, vtt_name, ρσ_unpack, id, title, campaign, short, current_vtt, current_campaign, current_title, current_id, new_options, dropdown_options, option;
             val = settings[(typeof name === "number" && name < 0) ? settings.length + name : name];
             combobox = $("#beyond20-option-vtt-tab");
             if ((combobox.length === 0 || typeof combobox.length === "object" && ρσ_equals(combobox.length, 0))) {
@@ -6651,8 +6651,13 @@ var str = ρσ_str, repr = ρσ_repr;;
                 $("#" + name).text("All VTT Tabs");
             } else if (val.title === null) {
                 vtt = ρσ_exists.e(val.vtt, "roll20");
-                vtt_name = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Roll 20" : "Foundry VTT";
-                $("#" + name).text("Only " + vtt_name + " Tabs");
+                if ((vtt === "dndbeyond" || typeof vtt === "object" && ρσ_equals(vtt, "dndbeyond"))) {
+                    choice = "D&D Beyond Dice Roller";
+                } else {
+                    vtt_name = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Roll 20" : "Foundry VTT";
+                    choice = "Only " + vtt_name + " Tabs";
+                }
+                $("#" + name).text(choice);
             } else {
                 ρσ_unpack = [val.id, val.title, ρσ_exists.e(val.vtt, "roll20")];
                 id = ρσ_unpack[0];
@@ -6664,7 +6669,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if (short) {
                     console.log("Set roll20 tab, is SHORT ", val);
                     current_vtt = (isFVTT(current_tab.title)) ? "fvtt" : "roll20";
-                    current_vtt_name = ((current_vtt === "fvtt" || typeof current_vtt === "object" && ρσ_equals(current_vtt, "fvtt"))) ? "Foundry VTT" : "Roll20";
                     current_campaign = ((current_vtt === "roll20" || typeof current_vtt === "object" && ρσ_equals(current_vtt, "roll20"))) ? "Campaign" : "World";
                     current_title = ((current_vtt === "roll20" || typeof current_vtt === "object" && ρσ_equals(current_vtt, "roll20"))) ? roll20Title(current_tab.title) : fvttTitle(current_tab.title);
                     current_id = current_tab.id;
@@ -6674,7 +6678,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     } else if ((id === current_id || typeof id === "object" && ρσ_equals(id, current_id)) && (title === current_title || typeof title === "object" && ρσ_equals(title, current_title)) && (current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
                         $("#" + name).text("This Specific Tab");
                     } else {
-                        new_options = ρσ_list_decorate([ "All VTT Tabs", "Only " + current_vtt_name + " Tabs", "This " + current_campaign, "This Specific Tab" ]);
+                        new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller", "This " + current_campaign, "This Specific Tab" ]);
                         if ((current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
                             new_options.append("Another tab or " + campaign.toLowerCase() + "(No change)");
                         } else {
@@ -6684,7 +6688,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else {
                     console.log("Set vtt tab, is LONG ", val);
                     console.log("vtt-tab settings are : ", id, title, vtt);
-                    new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", campaign + ": " + title ]);
+                    new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller", campaign + ": " + title ]);
                     if ((id !== 0 && (typeof id !== "object" || ρσ_not_equals(id, 0)))) {
                         new_options.append("Tab #" + id + " (" + title + ")");
                     }
@@ -6743,6 +6747,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["id"] = 0;
                     ρσ_d["title"] = null;
                     ρσ_d["vtt"] = "fvtt";
+                    return ρσ_d;
+                }).call(this);
+            } else if ((value === "D&D Beyond Dice Roller" || typeof value === "object" && ρσ_equals(value, "D&D Beyond Dice Roller"))) {
+                ret = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["id"] = 0;
+                    ρσ_d["title"] = null;
+                    ρσ_d["vtt"] = "dndbeyond";
                     return ρσ_d;
                 }).call(this);
             } else if (value.startsWith("Campaign: ") || value.startsWith("World: ")) {

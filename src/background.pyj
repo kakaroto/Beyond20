@@ -138,12 +138,13 @@ def onMessage(request, sender, sendResponse):
                         for key in trackFailure:
                             if not trackFailure[key]:
                                 vtts.append(key)
-                        sendResponse({"success": True, "vtt": vtts, "error": None})
+                        sendResponse({"success": True, "vtt": vtts, "error": None, "request": request})
         trackFailure = {"roll20": None, "fvtt": None}
-        if settings["vtt-tab"] == "dndbeyond":
-            sendResponse({"success": True, "vtt": "dndbeyond", "error": None, "request": request})
-        sendMessageToRoll20(request, settings["vtt-tab"], failure=makeFailureCB(trackFailure, "roll20", sendResponse))
-        sendMessageToFVTT(request, settings["vtt-tab"], failure=makeFailureCB(trackFailure, "fvtt", sendResponse))
+        if settings["vtt-tab"]?.vtt? and settings["vtt-tab"].vtt == "dndbeyond":
+            sendResponse({"success": False, "vtt": "dndbeyond", "error": None, "request": request})
+        else:
+            sendMessageToRoll20(request, settings["vtt-tab"], failure=makeFailureCB(trackFailure, "roll20", sendResponse))
+            sendMessageToFVTT(request, settings["vtt-tab"], failure=makeFailureCB(trackFailure, "fvtt", sendResponse))
         return True
     elif request.action == "settings":
         if request.type == "general":

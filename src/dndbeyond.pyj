@@ -1043,11 +1043,10 @@ def injectDiceToRolls(selector, character, name=""):
 
 def beyond20SendMessageFailure(character, response):
     console.log("Received response : ", response)
-    if response.error?:
-        if response.request.action == "roll":
-            dndbeyondDiceRoller.handleRollError(response.request, response.error)
-        else:
-            alertify.error("<strong>Beyond 20 : </strong>" + response.error)
+    if response.request.action == "roll" and (response.vtt == "dndbeyond" or response.error?):
+        dndbeyondDiceRoller.handleRollError(response.request, response.error)
+    elif response.error?:
+        alertify.error("<strong>Beyond 20 : </strong>" + response.error)
 
 alertify.set("alert", "title", "Beyond 20")
 alertify.set("notifier", "position", "top-center")

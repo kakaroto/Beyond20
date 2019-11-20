@@ -495,17 +495,15 @@ def createRoll20TabCombobox(name, short, dropdown_options):
 
 def createVTTTabSetting(name, short):
     nonlocal current_tab
+    dropdown_options = ["All VTT Tabs",
+                        "Only Roll20 Tabs",
+                        "Only Foundry VTT Tabs",
+                        "D&D Beyond Dice Roller"]
     if short:
         vtt = "Foundry VTT" if isFVTT(current_tab.title) else "Roll20"
         campaign = "World" if vtt == "Foundry VTT" else "Campaign"
-        dropdown_options = [ "All VTT Tabs",
-                             "Only " + vtt + " Tabs",
-                             "This " + campaign,
-                             "This Specific Tab"]
-    else:
-        dropdown_options = ["All VTT Tabs",
-                            "Only Roll20 Tabs",
-                            "Only Foundry VTT Tabs"]
+        dropdown_options.append("This " + campaign)
+        dropdown_options.append("This Specific Tab")
 
     return createRoll20TabCombobox(name, short, dropdown_options)
 
@@ -520,8 +518,12 @@ def setVTTTabSetting(name, settings):
         $("#" + name).text("All VTT Tabs")
     elif val.title is None:
         vtt = val.vtt ? "roll20"
-        vtt_name = "Roll 20" if vtt == "roll20" else "Foundry VTT"
-        $("#" + name).text("Only " + vtt_name + " Tabs")
+        if vtt == "dndbeyond":
+            choice = "D&D Beyond Dice Roller"
+        else:
+            vtt_name = "Roll 20" if vtt == "roll20" else "Foundry VTT"
+            choice = "Only " + vtt_name + " Tabs"
+        $("#" + name).text(choice)
     else:
         id, title, vtt = (val.id, val.title, val.vtt ? "roll20")
         vtt_name = "Roll 20" if vtt == "roll20" else "Foundry VTT"
@@ -530,7 +532,6 @@ def setVTTTabSetting(name, settings):
         if short:
             console.log("Set roll20 tab, is SHORT ", val)
             current_vtt = "fvtt" if isFVTT(current_tab.title) else "roll20"
-            current_vtt_name = "Foundry VTT" if current_vtt == "fvtt" else "Roll20"
             current_campaign = "Campaign" if current_vtt == "roll20" else "World"
             current_title = roll20Title(current_tab.title) if current_vtt == "roll20" else fvttTitle(current_tab.title)
             current_id = current_tab.id
@@ -541,7 +542,9 @@ def setVTTTabSetting(name, settings):
                 $("#" + name).text("This Specific Tab")
             else:
                 new_options = [ "All VTT Tabs",
-                                "Only " + current_vtt_name + " Tabs",
+                                "Only Roll20 Tabs",
+                                "Only Foundry VTT Tabs",
+                                "D&D Beyond Dice Roller",
                                 "This " + current_campaign,
                                 "This Specific Tab"]
                 if current_vtt == vtt:
@@ -554,6 +557,7 @@ def setVTTTabSetting(name, settings):
             new_options = ["All VTT Tabs",
                            "Only Roll20 Tabs",
                            "Only Foundry VTT Tabs",
+                           "D&D Beyond Dice Roller",
                            campaign + ": " + title]
             if id != 0:
                 new_options.append("Tab #" + id + " (" + title +")")
@@ -590,6 +594,8 @@ def getVTTTabSetting(name):
         ret = {"id": 0, "title": None, "vtt": "roll20"}
     elif value == "Only Foundry VTT Tabs":
         ret = {"id": 0, "title": None, "vtt": "fvtt"}
+    elif value == "D&D Beyond Dice Roller":
+        ret = {"id": 0, "title": None, "vtt": "dndbeyond"}
     elif value.startsWith("Campaign: ") or value.startsWith("World: "):
         ret = {"id": 0, "title": saved_title, "vtt": saved_vtt}
     else:
