@@ -562,7 +562,10 @@ def handleMessage (request, sender, sendResponse):
                               "mod": mod,
                               "r1": subRolls(request.roll),
                               "normal": 1})
-        postChatMessage(roll, request.character.name)
+        character_name = request.character.name
+        if request.whisper == WhisperType.HIDE_NAMES:
+            character_name = "???"
+        postChatMessage(roll, character_name)
 
 chrome.runtime.onMessage.addListener(handleMessage)
 updateSettings()

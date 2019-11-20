@@ -7783,7 +7783,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var custom_roll_dice, roll, mod, rname;
+            var custom_roll_dice, roll, mod, rname, character_name;
             print("Got message : ", request);
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
@@ -7837,7 +7837,11 @@ var str = ρσ_str, repr = ρσ_repr;;
                         return ρσ_d;
                     }).call(this));
                 }
-                postChatMessage(roll, request.character.name);
+                character_name = request.character.name;
+                if ((request.whisper === WhisperType.prototype.HIDE_NAMES || typeof request.whisper === "object" && ρσ_equals(request.whisper, WhisperType.prototype.HIDE_NAMES))) {
+                    character_name = "???";
+                }
+                postChatMessage(roll, character_name);
             }
         };
         if (!handleMessage.__argnames__) Object.defineProperties(handleMessage, {
