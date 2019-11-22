@@ -1,13 +1,22 @@
+
 /* This is needed so the tooltip's absolute position is
  * relative to the message's position in the chatlog
  */
-.beyond20-roll-result {
+.beyond20-roll-result,
+.beyond20-roller-error {
    position: relative;
+}
+
+.beyond20-dice-roller-content {
+    background-color: #ddeedd;
+    border-radius: 10px;
+    padding: 10px;
 }
 
 .beyond20-roll-total {
     text-decoration: underline;
 }
+
 
 .beyond20-message details summary, .beyond20-title {
     font-style: italic;
@@ -25,13 +34,16 @@
 }
 
 
-.beyond20-roll-cells {
+.beyond20-roll-cells,
+.beyond20-roll-dice-rolls,
+.beyond20-dice-roller-content .beyond20-roll-dice {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
 }
 
-.beyond20-roll-cell {
+.beyond20-roll-cell,
+.beyond20-roll-die-result {
     flex: 1 0 auto;
     margin: 1px;
  
@@ -40,7 +52,36 @@
     border-radius: 2px;
     background-color: lightgray;
 }
- 
+
+.beyond20-dice-roller-content .beyond20-roll-dice-formula {
+    flex-grow: 1;
+}
+.beyond20-dice-roller-content .beyond20-roll-dice-rolls {
+    flex-grow: 4;
+}
+.beyond20-dice-roller-content .beyond20-roll-formula {
+    background-color: #DDD;
+    text-align: center;
+    width: 100%;
+}
+
+.beyond20-roll-detail-crit {
+    color: green;
+}
+.beyond20-roll-detail-fail {
+    color: red;
+}
+.beyond20-roll-detail-crit-fail {
+    color: blue;
+}
+.beyond20-roll-detail-normal {
+    color: black;
+}
+.beyond20-roll-detail-discarded {
+    color: grey;
+    text-decoration: line-through;
+    opacity: 0.5;
+}
 
 .beyond20-tooltip .beyond20-tooltip-content {
     display: none;
@@ -67,4 +108,14 @@
 
 .beyond20-tooltip-content .dice-tooltip {
     display: block;
+}
+
+.beyond20-form-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 3px 0;
+}
+.beyond20-form-row > * {
+    flex: 2;
 }

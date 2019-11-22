@@ -2,13 +2,13 @@
     "name": "beyond20",
     "title": "Beyond20 companion module",
     "description": "This module allows the Beyond20 rolls to display properly in the main FVTT window and for other players who do not have Beyond20 installed",
-    "version": "0.4",
+    "version": "0.5",
     "author": "KaKaRoTo",
     "systems": ["dnd5e"],
     "scripts": ["./beyond20.js"],
     "styles": ["./beyond20.css"],
     "packs": [],
     "url": "https://github.com/kakaroto/Beyond20",
-    "manifest": "https://raw.githubusercontent.com/kakaroto/Beyond20/master/FVTT-module/beyond20/module.json",
-    "download": "https://raw.githubusercontent.com/kakaroto/Beyond20/master/FVTT-module/beyond20.zip"
+    "manifest": "https://raw.githubusercontent.com/kakaroto/Beyond20/0.3.x/FVTT-module/beyond20/module.json",
+    "download": "https://raw.githubusercontent.com/kakaroto/Beyond20/0.3.x/FVTT-module/beyond20.zip"
 }
