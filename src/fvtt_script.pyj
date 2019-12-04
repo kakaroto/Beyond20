@@ -9,6 +9,12 @@ class FVTTDisplayer:
     def postHTML(self, request, title, html, buttons, character, whisper, play_sound):
         Hooks.once('renderChatMessage', def(chat_message, data, html):
                     nonlocal extension_url
+
+                    if data.find ? and not html.find ?:
+                        temp = html
+                        html = data
+                        data = temp
+
                     icon16 = extension_url + "images/icons/icon16.png"
                     html.find(".ct-beyond20-custom-icon").attr('src', icon16)
                     html.find(".ct-beyond20-custom-roll").on('click', def(event):

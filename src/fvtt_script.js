@@ -8502,7 +8502,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             var self = this;
             Hooks.once("renderChatMessage", (function() {
                 var ρσ_anonfunc = function (chat_message, data, html) {
-                    var icon16;
+                    var temp, icon16;
+                    if (ρσ_exists.n(data.find) && !ρσ_exists.n(html.find)) {
+                        temp = html;
+                        html = data;
+                        data = temp;
+                    }
                     icon16 = extension_url + "images/icons/icon16.png";
                     html.find(".ct-beyond20-custom-icon").attr("src", icon16);
                     html.find(".ct-beyond20-custom-roll").on("click", (function() {
