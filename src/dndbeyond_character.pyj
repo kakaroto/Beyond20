@@ -104,9 +104,9 @@ def rollItem(force_display=False):
                 damage = value.find(".ct-damage__value").text()
                 damage_type = properties["Damage Type"] ? ""
                 versatile_damage = value.find(".ct-item-detail__versatile-damage").text()[1:-1]
-                if character.hasClassFeature("Fighting Style: Great Weapon Fighting") and \
-                    (properties["Properties"].includes("Versatile") or properties["Properties"].includes("Two-Handed")) and \
-                        damages.length == 0:
+                if damages.length == 0 and character.hasClassFeature("Fighting Style: Great Weapon Fighting") and \
+                    properties["Attack Type"] == "Melee" and \
+                    (properties["Properties"].includes("Versatile") or properties["Properties"].includes("Two-Handed")) :
                         if versatile_damage != "":
                             versatile_damage = re.sub("[0-9]*d[0-9]+", "\\0ro<2", versatile_damage)
                         else:
