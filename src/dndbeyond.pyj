@@ -452,19 +452,23 @@ class Monster(CharacterBase):
             if add_dice:
                 addIconButton(makeCB(abbr), ability, prepend=True)
                 if abbr == "DEX":
+                    roll_initiative = stat_block.find(base + "__beyond20-roll-initiative")
                     attributes = stat_block.find(base + "__attributes")
                     if attributes.length > 0:
                         attributes = attributes.eq(0)
-                        initiative = E.div(class_=base[1:] + "__attribute",
-                                        E.span(class_=base[1:] + "__attribute-label", "Roll Initiative!"),
-                                        E.span(class_=base[1:] + "__attribute-data",
-                                            E.span(class_=base[1:] + "__attribute-data-value", "  " + modifier)
-                                        )
-                                    )
+                        if roll_initiative.length == 0:
+                            initiative = $(E.div(class_=base[1:] + "__attribute " + base[1:] + "__beyond20-roll-initiative",
+                                            E.span(class_=base[1:] + "__attribute-label", "Roll Initiative!"),
+                                            E.span(class_=base[1:] + "__attribute-data",
+                                                E.span(class_=base[1:] + "__attribute-data-value", "  " + modifier)
+                                            )
+                                        ))
+                        else:
+                            initiative = roll_initiative.eq(0)
                         attributes.append(initiative)
                         cb = def():
                                 self.rollInitiative()
-                        addIconButton(cb, $(initiative).find(base + "__attribute-data"))
+                        addIconButton(cb, initiative.find(base + "__attribute-data"))
 
         
         tidbits = stat_block.find(base + "__tidbits " + base + "__tidbit")

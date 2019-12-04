@@ -10118,7 +10118,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "stat_block")){
                 stat_block = ρσ_kwargs_obj.stat_block;
             }
-            var add_dice, inject_descriptions, base, quick_settings, link, attributes, label, value, cb, attr, abilities, prefix, makeCB, abbr, score, modifier, initiative, ability, tidbits, data, saves, ρσ_unpack, mod, save, skills, name, skill, mon_skill, text, last, a, first, tidbit;
+            var add_dice, inject_descriptions, base, quick_settings, link, attributes, label, value, cb, attr, abilities, prefix, makeCB, abbr, score, modifier, roll_initiative, initiative, ability, tidbits, data, saves, ρσ_unpack, mod, save, skills, name, skill, mon_skill, text, last, a, first, tidbit;
             add_dice = self.getGlobalSetting("handle-stat-blocks", true);
             inject_descriptions = self.getGlobalSetting("subst-dndbeyond-stat-blocks", true);
             base = self._base;
@@ -10201,15 +10201,20 @@ return this.__repr__();
                 if (add_dice) {
                     ρσ_interpolate_kwargs.call(this, addIconButton, [makeCB(abbr), ability].concat([ρσ_desugar_kwargs({prepend: true})]));
                     if ((abbr === "DEX" || typeof abbr === "object" && ρσ_equals(abbr, "DEX"))) {
+                        roll_initiative = stat_block.find(base + "__beyond20-roll-initiative");
                         attributes = stat_block.find(base + "__attributes");
                         if (attributes.length > 0) {
                             attributes = attributes.eq(0);
-                            initiative = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.span, ["Roll Initiative!"].concat([ρσ_desugar_kwargs({class_: base.slice(1) + "__attribute-label"})])), ρσ_interpolate_kwargs.call(E, E.span, [ρσ_interpolate_kwargs.call(E, E.span, ["  " + modifier].concat([ρσ_desugar_kwargs({class_: base.slice(1) + "__attribute-data-value"})]))].concat([ρσ_desugar_kwargs({class_: base.slice(1) + "__attribute-data"})]))].concat([ρσ_desugar_kwargs({class_: base.slice(1) + "__attribute"})]));
+                            if ((roll_initiative.length === 0 || typeof roll_initiative.length === "object" && ρσ_equals(roll_initiative.length, 0))) {
+                                initiative = $(ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.span, ["Roll Initiative!"].concat([ρσ_desugar_kwargs({class_: base.slice(1) + "__attribute-label"})])), ρσ_interpolate_kwargs.call(E, E.span, [ρσ_interpolate_kwargs.call(E, E.span, ["  " + modifier].concat([ρσ_desugar_kwargs({class_: base.slice(1) + "__attribute-data-value"})]))].concat([ρσ_desugar_kwargs({class_: base.slice(1) + "__attribute-data"})]))].concat([ρσ_desugar_kwargs({class_: base.slice(1) + "__attribute " + base.slice(1) + "__beyond20-roll-initiative"})])));
+                            } else {
+                                initiative = roll_initiative.eq(0);
+                            }
                             attributes.append(initiative);
                             cb = function () {
                                 self.rollInitiative();
                             };
-                            addIconButton(cb, $(initiative).find(base + "__attribute-data"));
+                            addIconButton(cb, initiative.find(base + "__attribute-data"));
                         }
                     }
                 }
