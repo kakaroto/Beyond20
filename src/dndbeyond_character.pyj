@@ -329,12 +329,21 @@ def rollSpell(force_display=False):
                 dmgtype = ""
             damages.append(dmg)
             damage_types.append(dmgtype)
+
+        # Handle special spells
+        if spell_name == "Absorb Elements":
+            damages = [damages[0]]
+            damage_types = ["Triggering Type"]
+
+        # Hex blade's curse only applies if there are damages
         if damages.length > 0 and \
             character.getSetting("warlock-hexblade-curse", False) and \
             character.hasClassFeature("Hexblade’s Curse") and \
             character._proficiency is not None:
             damages.append(character._proficiency)
             damage_types.append("Hexblade's Curse")
+
+        # We can then add healing types
         for modifier in healing_modifiers:
             dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text()
             if dmg.startsWith("Regain "):
@@ -344,6 +353,7 @@ def rollSpell(force_display=False):
             damages.append(dmg)
             damage_types.append("Healing")
 
+        # Handle Disciple of life
         if healing_modifiers.length > 0 and \
                 character.hasClassFeature("Disciple of Life") and \
                 character.getSetting("cleric-disciple-life", False):
