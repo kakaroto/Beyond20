@@ -800,7 +800,7 @@ def propertyListToDict(propList):
         properties[label] = value
     return properties
 
-def descriptionToString(selector, separator="\n"):
+def descriptionToString(selector):
     # strip tags : https://www.sitepoint.com/jquery-strip-html-tags-div/
     return ($(selector).html() or "").replace(/<\/?[^>]+>/gi, '')
 

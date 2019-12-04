@@ -10802,20 +10802,11 @@ return this.__repr__();
             __argnames__ : {value: ["propList"]}
         });
 
-        function descriptionToString() {
-            var selector = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var separator = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? descriptionToString.__defaults__.separator : arguments[1];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "separator")){
-                separator = ρσ_kwargs_obj.separator;
-            }
+        function descriptionToString(selector) {
             return ($(selector).html() || "").replace(/<\/?[^>]+>/gi, "");
         };
-        if (!descriptionToString.__defaults__) Object.defineProperties(descriptionToString, {
-            __defaults__ : {value: {separator:"\n"}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["selector", "separator"]}
+        if (!descriptionToString.__argnames__) Object.defineProperties(descriptionToString, {
+            __argnames__ : {value: ["selector"]}
         });
 
         function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
