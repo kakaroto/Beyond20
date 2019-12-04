@@ -11747,7 +11747,7 @@ return this.__repr__();
             var properties, spell_name, description, damage_modifiers, healing_modifiers, castas, level, concentration, ritual, duration, to_hit, damages, damage_types, dmg, dmgtype, modifier, spell_level, custom_damage, roll_properties, spell_properties, key;
             properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"));
             print("Properties are : " + str(properties));
-            spell_name = $(".ct-sidebar__heading .ct-spell-name").text();
+            spell_name = $(".ct-sidebar__heading .ct-spell-name")[0].firstChild.textContent;
             description = descriptionToString(".ct-spell-pane .ct-spell-detail__description");
             damage_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage");
             healing_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp");
@@ -12152,7 +12152,7 @@ return this.__repr__();
                 }
                 checkAndInjectDiceToRolls(".ct-action-detail__description", action_name);
             } else if ((paneClass === "ct-spell-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-spell-pane"))) {
-                spell_name = $(".ct-sidebar__heading .ct-spell-name").text();
+                spell_name = $(".ct-sidebar__heading .ct-spell-name")[0].firstChild.textContent;
                 spell_level = $(".ct-spell-caster__casting-level-current").text();
                 if (isRollButtonAdded() && (spell_name === lastSpellName || typeof spell_name === "object" && ρσ_equals(spell_name, lastSpellName)) && (spell_level === lastSpellLevel || typeof spell_level === "object" && ρσ_equals(spell_level, lastSpellLevel))) {
                     return;

@@ -300,7 +300,7 @@ def rollSpell(force_display=False):
     nonlocal character
     properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
     print("Properties are : " + str(properties))
-    spell_name = $(".ct-sidebar__heading .ct-spell-name").text()
+    spell_name = $(".ct-sidebar__heading .ct-spell-name")[0].firstChild.textContent
     description = descriptionToString(".ct-spell-pane .ct-spell-detail__description")
     damage_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage")
     healing_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp")
@@ -576,7 +576,7 @@ def injectRollButton(paneClass):
     elif paneClass == "ct-spell-pane":
         nonlocal lastSpellName
         nonlocal lastSpellLevel
-        spell_name = $(".ct-sidebar__heading .ct-spell-name").text()
+        spell_name = $(".ct-sidebar__heading .ct-spell-name")[0].firstChild.textContent
         spell_level = $(".ct-spell-caster__casting-level-current").text()
         if isRollButtonAdded() and spell_name == lastSpellName and spell_level == lastSpellLevel:
             return
