@@ -445,6 +445,9 @@ class Beyond20RollRenderer:
                         damage_flags = DAMAGE_FLAGS.ADDITIONAL
                     suffix = " Damage" if not (damage_flags & DAMAGE_FLAGS.HEALING) else ""
                     damage_rolls.append((dmg_type + suffix, roll, damage_flags))
+                    # Handle life transference
+                    if request.name == "Life Transference" and dmg_type == "Necrotic":
+                        damage_rolls.append(("Healing", roll, DAMAGE_FLAGS.HEALING))
 
                 if request.name == "Chaos Bolt":
                     for i, dmg_roll in enumerate(damage_rolls):

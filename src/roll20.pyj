@@ -444,7 +444,9 @@ def rollSpellAttack(request, custom_roll_dice):
             damage_types.insert(0, "Chaotic energy")
             critical_damages.insert(0, crit_damage)
             critical_damage_types.insert(0, "Chaotic energy")
-
+        elif request.name == "Life Transference":
+            damages.append("Equal to Necrotic damage")
+            damage_types.append("Healing")
         dmg_props = damagesToRollProperties(damages, damage_types, critical_damages, critical_damage_types)
     if request.range?:
         properties["range"] = request.range

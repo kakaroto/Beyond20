@@ -350,8 +350,9 @@ def rollSpell(force_display=False):
                 dmg = dmg[7:]
             if dmg.endsWith(" Hit Points"):
                 dmg = dmg[:-11]
-            damages.append(dmg)
-            damage_types.append("Healing")
+            if len(dmg) > 0:
+                damages.append(dmg)
+                damage_types.append("Healing")
 
         # Handle Disciple of life
         if healing_modifiers.length > 0 and \

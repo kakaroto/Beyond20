@@ -8086,6 +8086,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                         }
                         suffix = (!(damage_flags & DAMAGE_FLAGS.prototype.HEALING)) ? " Damage" : "";
                         damage_rolls.append([dmg_type + suffix, roll, damage_flags]);
+                        if ((request.name === "Life Transference" || typeof request.name === "object" && ρσ_equals(request.name, "Life Transference")) && (dmg_type === "Necrotic" || typeof dmg_type === "object" && ρσ_equals(dmg_type, "Necrotic"))) {
+                            damage_rolls.append(["Healing", roll, DAMAGE_FLAGS.prototype.HEALING]);
+                        }
                     }
                     if ((request.name === "Chaos Bolt" || typeof request.name === "object" && ρσ_equals(request.name, "Chaos Bolt"))) {
                         var ρσ_Iter16 = ρσ_Iterable(enumerate(damage_rolls));

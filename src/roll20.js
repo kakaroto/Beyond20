@@ -7689,6 +7689,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     damage_types.insert(0, "Chaotic energy");
                     critical_damages.insert(0, crit_damage);
                     critical_damage_types.insert(0, "Chaotic energy");
+                } else if ((request.name === "Life Transference" || typeof request.name === "object" && ρσ_equals(request.name, "Life Transference"))) {
+                    damages.append("Equal to Necrotic damage");
+                    damage_types.append("Healing");
                 }
                 dmg_props = damagesToRollProperties(damages, damage_types, critical_damages, critical_damage_types);
             }
