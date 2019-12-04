@@ -105,6 +105,9 @@ def populateCharacter(response):
         if "Channel Divinity: Legendary Strike" in response["actions"]:
             e = createHTMLOption("paladin-legendary-strike", False, character_settings)
             options.append(e)
+        if "Improved Divine Smite" in response["class-features"]:
+            e = createHTMLOption("paladin-improved-divine-smite", False, character_settings)
+            options.append(e)
         if "Hexblade’s Curse" in response["class-features"]:
             e = createHTMLOption("warlock-hexblade-curse", False, character_settings)
             options.append(e)

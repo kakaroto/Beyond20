@@ -185,6 +185,11 @@ def rollItem(force_display=False):
             damages.append("1d8")
             damage_types.append("Ambush")
             character.mergeCharacterSettings({"ranger-dread-ambusher": False})
+        if properties["Attack Type"] == "Melee" and \
+           character.hasClassFeature("Improved Divine Smite") and \
+           character.getSetting("paladin-improved-divine-smite", True):
+            damages.append("1d8")
+            damage_types.append("Radiant")
         if damages.length > 0 and \
            character.getSetting("warlock-hexblade-curse", False) and \
            character.hasClassFeature("Hexblade’s Curse") and \

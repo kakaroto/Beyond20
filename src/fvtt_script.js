@@ -6058,6 +6058,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["paladin-improved-divine-smite"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Paladin: Improved Divine Smite";
+                ρσ_d["description"] = "Roll an extra 1d8 radiant damage whenever you hit with a melee weapon";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["warlock-hexblade-curse"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Warlock: Hexblade's Curse";

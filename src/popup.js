@@ -6057,6 +6057,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["paladin-improved-divine-smite"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Paladin: Improved Divine Smite";
+                ρσ_d["description"] = "Roll an extra 1d8 radiant damage whenever you hit with a melee weapon";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["warlock-hexblade-curse"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Warlock: Hexblade's Curse";
@@ -7045,6 +7053,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 if (ρσ_in("Channel Divinity: Legendary Strike", response["actions"])) {
                     e = createHTMLOption("paladin-legendary-strike", false, character_settings);
+                    options.append(e);
+                }
+                if (ρσ_in("Improved Divine Smite", response["class-features"])) {
+                    e = createHTMLOption("paladin-improved-divine-smite", false, character_settings);
                     options.append(e);
                 }
                 if (ρσ_in("Hexblade’s Curse", response["class-features"])) {
