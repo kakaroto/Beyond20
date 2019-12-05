@@ -9973,7 +9973,7 @@ return this.__repr__();
                     ρσ_d["class-features"] = self._class_features;
                     ρσ_d["racial-traits"] = self._racial_traits;
                     ρσ_d["feats"] = self._feats;
-                    ρσ_d["actions"] = self.actions;
+                    ρσ_d["actions"] = self._actions;
                     return ρσ_d;
                 }).call(this));
             }

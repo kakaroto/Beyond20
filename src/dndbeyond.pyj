@@ -305,7 +305,7 @@ class Character(CharacterBase):
             self.mergeCharacterSettings({"class-features": self._class_features,
                                          "racial-traits": self._racial_traits,
                                          "feats": self._feats,
-                                         "actions": self.actions})
+                                         "actions": self._actions})
             
     def hasClassFeature(self, name):
         return name in self._class_features
