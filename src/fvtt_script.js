@@ -5625,7 +5625,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             var popup, img, dialog;
             popup = chrome.extension.getURL(url);
             img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})]);
-            dialog = alertify.alert(img.outerHTML + title, ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "yes"})]));
+            if (!ρσ_exists.n(alertify.Beyond20Settings)) {
+                alertify.dialog("Beyond20Settings", function () {
+                    return {};
+                }, false, "alert");
+            }
+            dialog = alertify.Beyond20Settings(img.outerHTML + title, ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "yes"})]));
             dialog.set("padding", false).set("resizable", true).set("overflow", false).resizeTo("80%", "80%");
         };
         if (!alertSettings.__argnames__) Object.defineProperties(alertSettings, {
@@ -8900,9 +8905,9 @@ return this.__repr__();
                     if ((game.combat.scene.id !== canvas.scene.id && (typeof game.combat.scene.id !== "object" || ρσ_not_equals(game.combat.scene.id, canvas.scene.id)))) {
                         ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene");
                     } else {
-                        var ρσ_Iter23 = ρσ_Iterable(canvas.tokens.controlledTokens);
-                        for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
-                            token = ρσ_Iter23[ρσ_Index23];
+                        var ρσ_Iter0 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                        for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                            token = ρσ_Iter0[ρσ_Index0];
                             combatant = game.combat.getCombatantByToken(token.id);
                             if (combatant) {
                                 promise = game.combat.updateCombatant((function(){
@@ -8987,9 +8992,9 @@ return this.__repr__();
                     }).call(this));
                 }
             }
-            var ρσ_Iter24 = ρσ_Iterable(tokens);
-            for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
-                token = ρσ_Iter24[ρσ_Index24];
+            var ρσ_Iter1 = ρσ_Iterable(tokens);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                token = ρσ_Iter1[ρσ_Index1];
                 if (token.actor && token.data.actorLink) {
                     total = (total) ? total : token.actor.data.attributes.hp.max;
                     token.actor.update((function(){
@@ -9037,9 +9042,9 @@ return this.__repr__();
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter25 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
-                event = ρσ_Iter25[ρσ_Index25];
+            var ρσ_Iter2 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                event = ρσ_Iter2[ρσ_Index2];
                 document.removeEventListener.apply(document, event);
             }
         };

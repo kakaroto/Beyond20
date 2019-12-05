@@ -5629,7 +5629,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             var popup, img, dialog;
             popup = chrome.extension.getURL(url);
             img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})]);
-            dialog = alertify.alert(img.outerHTML + title, ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "yes"})]));
+            if (!ρσ_exists.n(alertify.Beyond20Settings)) {
+                alertify.dialog("Beyond20Settings", function () {
+                    return {};
+                }, false, "alert");
+            }
+            dialog = alertify.Beyond20Settings(img.outerHTML + title, ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "yes"})]));
             dialog.set("padding", false).set("resizable", true).set("overflow", false).resizeTo("80%", "80%");
         };
         if (!alertSettings.__argnames__) Object.defineProperties(alertSettings, {
@@ -8548,7 +8553,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 content += "<div class='beyond20-roller-error'>" + "<span class='beyond20-tooltip'>Virtual Table Top Not Found" + "<span class='beyond20-tooltip-content'>" + self._error + "</span>" + "</span>" + "</div>";
             }
             content += "<div class='beyond20-dice-roller-content'>" + html + "</div>" + "</div>";
-            dlg = alertify.alert(title, content);
+            dlg = alertify.Beyond20Roll(title, content);
             element = $(dlg.elements.content.firstElementChild);
             icon16 = chrome.runtime.getURL("images/icons/icon16.png");
             element.find(".ct-beyond20-custom-icon").attr("src", icon16);
@@ -8996,6 +9001,49 @@ return this.__repr__();
         };
         Object.defineProperty(DNDBRoller.prototype, "__bases__", {value: []});
 
+        function DNDBPrompter() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            DNDBPrompter.prototype.__init__.apply(this, arguments);
+        }
+        DNDBPrompter.prototype.__init__ = function __init__ () {
+                    };
+        DNDBPrompter.prototype.prompt = function prompt() {
+            var self = this;
+            var title = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var html = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var ok_label = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? prompt.__defaults__.ok_label : arguments[2];
+            var cancel_label = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? prompt.__defaults__.cancel_label : arguments[3];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "ok_label")){
+                ok_label = ρσ_kwargs_obj.ok_label;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cancel_label")){
+                cancel_label = ρσ_kwargs_obj.cancel_label;
+            }
+            return new Promise((function() {
+                var ρσ_anonfunc = function (resolve, reject) {
+                    alertify.Beyond20Prompt(title, html, ok_label, cancel_label, resolve);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["resolve", "reject"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!DNDBPrompter.prototype.prompt.__defaults__) Object.defineProperties(DNDBPrompter.prototype.prompt, {
+            __defaults__ : {value: {ok_label:"OK", cancel_label:"Cancel"}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["title", "html", "ok_label", "cancel_label"]}
+        });
+        DNDBPrompter.prototype.__repr__ = function __repr__ () {
+                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        DNDBPrompter.prototype.__str__ = function __str__ () {
+            return this.__repr__();
+        };
+        Object.defineProperty(DNDBPrompter.prototype, "__bases__", {value: []});
+
         if (!ρσ_exists.n(alertify.Beyond20Prompt)) {
             factory = function () {
                 return (function(){
@@ -9078,49 +9126,11 @@ return this.__repr__();
             };
             alertify.dialog("Beyond20Prompt", factory, false, "prompt");
         }
-        function DNDBPrompter() {
-            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
-            DNDBPrompter.prototype.__init__.apply(this, arguments);
+        if (!ρσ_exists.n(alertify.Beyond20Roll)) {
+            alertify.dialog("Beyond20Roll", function () {
+                return {};
+            }, false, "alert");
         }
-        DNDBPrompter.prototype.__init__ = function __init__ () {
-                    };
-        DNDBPrompter.prototype.prompt = function prompt() {
-            var self = this;
-            var title = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var html = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
-            var ok_label = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? prompt.__defaults__.ok_label : arguments[2];
-            var cancel_label = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? prompt.__defaults__.cancel_label : arguments[3];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "ok_label")){
-                ok_label = ρσ_kwargs_obj.ok_label;
-            }
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cancel_label")){
-                cancel_label = ρσ_kwargs_obj.cancel_label;
-            }
-            return new Promise((function() {
-                var ρσ_anonfunc = function (resolve, reject) {
-                    alertify.Beyond20Prompt(title, html, ok_label, cancel_label, resolve);
-                };
-                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["resolve", "reject"]}
-                });
-                return ρσ_anonfunc;
-            })());
-        };
-        if (!DNDBPrompter.prototype.prompt.__defaults__) Object.defineProperties(DNDBPrompter.prototype.prompt, {
-            __defaults__ : {value: {ok_label:"OK", cancel_label:"Cancel"}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["title", "html", "ok_label", "cancel_label"]}
-        });
-        DNDBPrompter.prototype.__repr__ = function __repr__ () {
-                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
-        };
-        DNDBPrompter.prototype.__str__ = function __str__ () {
-            return this.__repr__();
-        };
-        Object.defineProperty(DNDBPrompter.prototype, "__bases__", {value: []});
-
         dndbeyondDiceRoller = new Beyond20RollRenderer(new DNDBRoller, new DNDBPrompter, new DNDBDisplayer);
         dndbeyondDiceRoller.setBaseURL(chrome.runtime.getURL(""));
         dndbeyondDiceRoller.setSettings(getDefaultSettings());

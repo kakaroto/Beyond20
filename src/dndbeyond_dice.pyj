@@ -17,7 +17,7 @@ class DNDBDisplayer:
                         "</div>"
         content += "<div class='beyond20-dice-roller-content'>" + html + "</div>" + \
             "</div>"
-        dlg = alertify.alert(title, content)
+        dlg = alertify.Beyond20Roll(title, content)
         element = $(dlg.elements.content.firstElementChild)
         icon16 = chrome.runtime.getURL("images/icons/icon16.png")
         element.find(".ct-beyond20-custom-icon").attr('src', icon16)
@@ -215,6 +215,12 @@ class DNDBRoller:
     def roll(self, formula, data):
         return DNDBRoll(formula, data)
 
+class DNDBPrompter:
+    def prompt(self, title, html, ok_label="OK", cancel_label="Cancel"):
+        return new Promise(def(resolve, reject):
+            alertify.Beyond20Prompt(title, html, ok_label, cancel_label, resolve)
+        )
+        
 if not alertify.Beyond20Prompt?:
     factory = def():
         return {
@@ -272,11 +278,9 @@ if not alertify.Beyond20Prompt?:
         }
     alertify.dialog('Beyond20Prompt', factory, False, "prompt")
 
-class DNDBPrompter:
-    def prompt(self, title, html, ok_label="OK", cancel_label="Cancel"):
-        return new Promise(def(resolve, reject):
-            alertify.Beyond20Prompt(title, html, ok_label, cancel_label, resolve)
-        )
+
+if not alertify.Beyond20Roll ?:
+    alertify.dialog('Beyond20Roll', def(): return {};, False, "alert")
 
 
 dndbeyondDiceRoller = Beyond20RollRenderer(DNDBRoller(), DNDBPrompter(), DNDBDisplayer())

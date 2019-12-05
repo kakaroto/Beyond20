@@ -79,8 +79,9 @@ def alertSettings(url, title):
 
     popup = chrome.extension.getURL(url)
     img = E.img(src=chrome.extension.getURL("images/icons/icon32.png"), style="margin-right: 3px;")
-    #alertify.alert().destroy()
-    dialog = alertify.alert(img.outerHTML + title,
+    if not alertify.Beyond20Settings ?:
+        alertify.dialog('Beyond20Settings', def(): return {};, False, "alert")
+    dialog = alertify.Beyond20Settings(img.outerHTML + title,
             E.iframe(src=popup, style="width: 100%; height: 100%;", frameborder="0", scrolling="yes"))
     dialog.set('padding', False).set('resizable', True).set('overflow', False).resizeTo("80%", "80%")
    

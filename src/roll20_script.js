@@ -5622,7 +5622,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             var popup, img, dialog;
             popup = chrome.extension.getURL(url);
             img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})]);
-            dialog = alertify.alert(img.outerHTML + title, ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "yes"})]));
+            if (!ρσ_exists.n(alertify.Beyond20Settings)) {
+                alertify.dialog("Beyond20Settings", function () {
+                    return {};
+                }, false, "alert");
+            }
+            dialog = alertify.Beyond20Settings(img.outerHTML + title, ρσ_interpolate_kwargs.call(E, E.iframe, [ρσ_desugar_kwargs({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "yes"})]));
             dialog.set("padding", false).set("resizable", true).set("overflow", false).resizeTo("80%", "80%");
         };
         if (!alertSettings.__argnames__) Object.defineProperties(alertSettings, {
