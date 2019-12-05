@@ -24,25 +24,39 @@ class Beyond20RollRenderer:
     def setSettings(self, settings):
         self._settings = settings
 
-    def queryAdvantage(self, title):
+    def queryGeneric(self, title, question, choices, select_id="generic-query", order=None):
+        html = '<form>' + \
+                '<div class="beyond20-form-row">' + \
+                    '<label>' + question + '</label>' + \
+                    '<select id="' + select_id + '" name="' + select_id + '">'
+        if order is None:
+            order = choices
+        for i, option in enumerate(order):
+            selected = " selected" if i == 0 else ""
+            value = choices[option]
+            if value:
+                html += '<option value="' + option + '"' + selected + '>' + value + '</option>'
+            else:
+                html += '<option value="' + option + '"' + selected + '>' + option + '</option>'
+        html += """
+                </select>
+            </div>
+        </div>
+        """
         return new Promise(def(resolve, reject):
-            html = '<form>' + \
-                    '<div class="beyond20-form-row">' + \
-                        '<label>Select roll mode : </label>' + \
-                        '<select name="rollMode">' + \
-                            '<option value="2">Roll Twice</option>' + \
-                            '<option value="0">Normal Roll</option>' + \
-                            '<option value="1">Advantage</option>' + \
-                            '<option value="-1">Disadvantage</option>' + \
-                        '</select>' + \
-                    '</div>' + \
-                '</form>'
             self._prompter.prompt(title, html, "Roll").then(def(html):
                 if html:
-                    rollMode = html.find('[name="rollMode"]').val()
-                    resolve(int(rollMode))
+                    resolve(html.find("#" + select_id).val())
             )
         )
+        
+    def queryAdvantage(self, title):
+        choices = {"2": "Roll Twice",
+                   "0": "Normal Roll",
+                   "1": "Advantage",
+                   "-1": "Disadvantage"
+                   }
+        return self.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order=["2", "0", "1", "-1"]).then(def(val): return int(val);)
 
     def getToHit(self, request, title, modifier="", data={}):
         async_function = v'async'
@@ -356,28 +370,14 @@ class Beyond20RollRenderer:
         return self.postDescription(request, request.name, source, {}, request.description, open=True)
 
     def queryDamageType(self, title, damage_types):
-        content = """
-        <div class="beyond20-form-row">
-        <label>Choose Damage Type :</label>
-        <select id="damage_type" name="damage_type">
-        """
-        for i, option in enumerate(damage_types):
-            selected = " selected" if i == 0 else ""
+        choices = {}
+        for option in damage_types:
             value = damage_types[option]
             if value:
-                content += '<option value="' + option + '"' + selected + '>' + option + '(' + value + ')' + '</option>'
+                choices[option] = option + " (" + value + ")"
             else:
-                content += '<option value="' + option + '"' + selected + '>' + option + '</option>'
-        content += """
-        </select>
-        </div>
-        """
-        return new Promise(def(resolve, reject):
-            self._prompter.prompt(title, content, "Roll").then(def(html):
-                if html:
-                    resolve(html.find("#damage_type").val())
-            )
-        )
+                choices[option] = option
+        return self.queryGeneric(title, "Choose Damage Type :", choices, "damage-type")
 
     def buildAttackRolls(self, request, custom_roll_dice):
         async_function = v'async'
