@@ -1,6 +1,6 @@
 from utils import replaceRolls, injectPageScript, sendCustomEvent, alertQuickSettings, alertFullSettings, getBrowser
 from settings import getDefaultSettings, getStoredSettings, WhisperType, RollType
-from constants import ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY
+from constants import ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY, ROLL20_TOLL_THE_DEAD_QUERY
 import re
 from elementmaker import E
 
@@ -447,6 +447,8 @@ def rollSpellAttack(request, custom_roll_dice):
         elif request.name == "Life Transference":
             damages.append("Equal to Necrotic damage")
             damage_types.append("Healing")
+        elif request.name == "Toll the Dead":
+            damages[0] = ROLL20_TOLL_THE_DEAD_QUERY.replace("d8", damages[0]).replace("d12", damages[0].replace("d8", "d12"))
         dmg_props = damagesToRollProperties(damages, damage_types, critical_damages, critical_damage_types)
     if request.range?:
         properties["range"] = request.range

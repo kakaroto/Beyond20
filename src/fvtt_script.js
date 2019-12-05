@@ -8043,7 +8043,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var self = this;
             var async_function;
             async_function = async            function () {
-                var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, has_versatile, roll, dmg_type, damage_flags, suffix, i, ρσ_unpack, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
+                var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, ttd_dice, has_versatile, roll, dmg_type, damage_flags, suffix, i, ρσ_unpack, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
                 to_hit = ρσ_list_decorate([]);
                 damage_rolls = ρσ_list_decorate([]);
                 is_critical = false;
@@ -8096,6 +8096,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                         damage_types.insert(0, "Chaotic energy");
                         critical_damages.insert(0, crit_damage);
                         critical_damage_types.insert(0, "Chaotic energy");
+                    } else if ((request.name === "Toll the Dead" || typeof request.name === "object" && ρσ_equals(request.name, "Toll the Dead"))) {
+                        ttd_dice = await self.queryGeneric(request.name, "Is the target missing any of its hit points?", {"d12": "Yes", "d8": "No"}, "ttd_dice", ["d12", "d8"]);
+                        damages[0] = damages[0].replace("d8", ttd_dice);
                     }
                     has_versatile = len(damage_types) > 1 && (damage_types[1] === "Two-Handed" || typeof damage_types[1] === "object" && ρσ_equals(damage_types[1], "Two-Handed"));
                     for (var ρσ_Index16 = 0; ρσ_Index16 < damages.length; ρσ_Index16++) {
@@ -8897,9 +8900,9 @@ return this.__repr__();
                     if ((game.combat.scene.id !== canvas.scene.id && (typeof game.combat.scene.id !== "object" || ρσ_not_equals(game.combat.scene.id, canvas.scene.id)))) {
                         ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene");
                     } else {
-                        var ρσ_Iter0 = ρσ_Iterable(canvas.tokens.controlledTokens);
-                        for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                            token = ρσ_Iter0[ρσ_Index0];
+                        var ρσ_Iter23 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                        for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
+                            token = ρσ_Iter23[ρσ_Index23];
                             combatant = game.combat.getCombatantByToken(token.id);
                             if (combatant) {
                                 promise = game.combat.updateCombatant((function(){
@@ -8984,9 +8987,9 @@ return this.__repr__();
                     }).call(this));
                 }
             }
-            var ρσ_Iter1 = ρσ_Iterable(tokens);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                token = ρσ_Iter1[ρσ_Index1];
+            var ρσ_Iter24 = ρσ_Iterable(tokens);
+            for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
+                token = ρσ_Iter24[ρσ_Index24];
                 if (token.actor && token.data.actorLink) {
                     total = (total) ? total : token.actor.data.attributes.hp.max;
                     token.actor.update((function(){
@@ -9034,9 +9037,9 @@ return this.__repr__();
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter2 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                event = ρσ_Iter2[ρσ_Index2];
+            var ρσ_Iter25 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
+                event = ρσ_Iter25[ρσ_Index25];
                 document.removeEventListener.apply(document, event);
             }
         };

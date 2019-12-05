@@ -8048,7 +8048,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var self = this;
             var async_function;
             async_function = async            function () {
-                var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, has_versatile, roll, dmg_type, damage_flags, suffix, i, ρσ_unpack, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
+                var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, ttd_dice, has_versatile, roll, dmg_type, damage_flags, suffix, i, ρσ_unpack, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
                 to_hit = ρσ_list_decorate([]);
                 damage_rolls = ρσ_list_decorate([]);
                 is_critical = false;
@@ -8101,6 +8101,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                         damage_types.insert(0, "Chaotic energy");
                         critical_damages.insert(0, crit_damage);
                         critical_damage_types.insert(0, "Chaotic energy");
+                    } else if ((request.name === "Toll the Dead" || typeof request.name === "object" && ρσ_equals(request.name, "Toll the Dead"))) {
+                        ttd_dice = await self.queryGeneric(request.name, "Is the target missing any of its hit points?", {"d12": "Yes", "d8": "No"}, "ttd_dice", ["d12", "d8"]);
+                        damages[0] = damages[0].replace("d8", ttd_dice);
                     }
                     has_versatile = len(damage_types) > 1 && (damage_types[1] === "Two-Handed" || typeof damage_types[1] === "object" && ρσ_equals(damage_types[1], "Two-Handed"));
                     for (var ρσ_Index16 = 0; ρσ_Index16 < damages.length; ρσ_Index16++) {
@@ -11371,7 +11374,7 @@ return this.__repr__();
 
     (function(){
         var __name__ = "constants";
-        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY;
+        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY, ROLL20_TOLL_THE_DEAD_QUERY;
         ROLL20_URL = "*://app.roll20.net/editor/";
         FVTT_URL = "*://*/game";
         DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
@@ -11383,6 +11386,7 @@ return this.__repr__();
         BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
         ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
         ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125}}";
+        ROLL20_TOLL_THE_DEAD_QUERY = "?{Is the target missing any of its hit points?|Yes,d12|No,d8}";
         ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
         ρσ_modules.constants.FVTT_URL = FVTT_URL;
         ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
@@ -11394,6 +11398,7 @@ return this.__repr__();
         ρσ_modules.constants.BUTTON_STYLE_CSS = BUTTON_STYLE_CSS;
         ρσ_modules.constants.ROLL20_WHISPER_QUERY = ROLL20_WHISPER_QUERY;
         ρσ_modules.constants.ROLL20_ADVANTAGE_QUERY = ROLL20_ADVANTAGE_QUERY;
+        ρσ_modules.constants.ROLL20_TOLL_THE_DEAD_QUERY = ROLL20_TOLL_THE_DEAD_QUERY;
     })();
 
     (function(){

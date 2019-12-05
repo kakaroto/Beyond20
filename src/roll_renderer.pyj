@@ -430,6 +430,9 @@ class Beyond20RollRenderer:
                     damage_types.insert(0, "Chaotic energy")
                     critical_damages.insert(0, crit_damage)
                     critical_damage_types.insert(0, "Chaotic energy")
+                elif request.name == "Toll the Dead":
+                    ttd_dice = v'await self.queryGeneric(request.name, "Is the target missing any of its hit points?", {"d12": "Yes", "d8": "No"}, "ttd_dice", ["d12", "d8"])'
+                    damages[0] = damages[0].replace("d8", ttd_dice)
 
                 has_versatile = len(damage_types) > 1 and damage_types[1] == "Two-Handed"
                 for i in range(damages.length):
