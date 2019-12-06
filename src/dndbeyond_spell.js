@@ -9970,7 +9970,6 @@ return this.__repr__();
             }
             self._conditions = conditions;
             self._exhaustion = exhaustion_level;
-            console.log("Updating conditions to : ", conditions, exhaustion_level);
             if (ρσ_exists.n(self._settings) && (!isListEqual(self._conditions, self.getSetting("conditions", ρσ_list_decorate([]))) || ρσ_not_equals(self._exhaustion, self.getSetting("exhaustion-level", 0)))) {
                 sendUpdate = function () {
                     var req;
@@ -10022,7 +10021,6 @@ return this.__repr__();
                     feature_list.append(feat_name + ": " + option_name);
                 }
             }
-            console.log(name, feature_list);
             return feature_list;
         };
         if (!Character.prototype.featureDetailsToList.__argnames__) Object.defineProperties(Character.prototype.featureDetailsToList, {
@@ -10518,7 +10516,6 @@ return this.__repr__();
             if (add_dice) {
                 self.lookForSpells(stat_block);
             }
-            console.log("Done parsing stat block:", self);
         };
         if (!Monster.prototype.parseStatBlock.__defaults__) Object.defineProperties(Monster.prototype.parseStatBlock, {
             __defaults__ : {value: {stat_block:null}},
@@ -10749,7 +10746,6 @@ return this.__repr__();
                 var ρσ_Iter19 = ρσ_Iterable(actions);
                 for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
                     action = ρσ_Iter19[ρσ_Index19];
-                    console.log("Found action: ", action);
                     firstChild = action.firstElementChild;
                     if (firstChild && ((firstChild.tagName === "EM" || typeof firstChild.tagName === "object" && ρσ_equals(firstChild.tagName, "EM")) || (firstChild.tagName === "STRONG" || typeof firstChild.tagName === "object" && ρσ_equals(firstChild.tagName, "STRONG")))) {
                         action_name = $(firstChild).find(":first-child").text().trim();
@@ -10878,7 +10874,6 @@ return this.__repr__();
                     if (ρσ_in(spell_url, self._spells)) {
                         (ρσ_expr_temp = self._spells)[(typeof spell_url === "number" && spell_url < 0) ? ρσ_expr_temp.length + spell_url : spell_url].display();
                     } else {
-                        console.log("Fetching Spell Tooltip from URL : ", spell_url);
                         $.get(spell_url, (function() {
                             var ρσ_anonfunc = function (text) {
                                 var spell_json, spell;

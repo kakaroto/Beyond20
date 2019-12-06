@@ -259,7 +259,7 @@ class Character(CharacterBase):
             exhaustion_level = self.getSetting("exhaustion-level", 0)
         self._conditions = conditions
         self._exhaustion = exhaustion_level
-        console.log("Updating conditions to : ", conditions, exhaustion_level)
+        #console.log("Updating conditions to : ", conditions, exhaustion_level)
         if self._settings ? and \
             (not isListEqual(self._conditions, self.getSetting("conditions", [])) or \
                 self._exhaustion != self.getSetting("exhaustion-level", 0)):
@@ -281,7 +281,7 @@ class Character(CharacterBase):
                 option_name = option.childNodes[0].textContent.trim()
                 feature_list.append(feat_name + ": " + option_name)
                 
-        console.log(name, feature_list)
+        #console.log(name, feature_list)
         return feature_list
 
     def updateFeatures(self):
@@ -564,7 +564,7 @@ class Monster(CharacterBase):
         self.lookForActions(stat_block, add_dice, inject_descriptions)
         if add_dice:
             self.lookForSpells(stat_block)
-        console.log("Done parsing stat block:", self)
+        #console.log("Done parsing stat block:", self)
 
     def rollHitPoints(self):
         sendRoll(self, "custom", self._hp_formula, {"name": "Hit Points",
@@ -693,7 +693,7 @@ class Monster(CharacterBase):
         for block in blocks:
             actions = $(block).find(self._base + "__description-block-content p")
             for action in actions:
-                console.log("Found action: ", action)
+                #console.log("Found action: ", action)
                 firstChild = action.firstElementChild
                 if firstChild and (firstChild.tagName == "EM" or firstChild.tagName == "STRONG"):
                     action_name = $(firstChild).find(":first-child").text().trim()
@@ -783,7 +783,7 @@ class Monster(CharacterBase):
             if spell_url in self._spells:
                 self._spells[spell_url].display()
             else:
-                console.log("Fetching Spell Tooltip from URL : ", spell_url)
+                #console.log("Fetching Spell Tooltip from URL : ", spell_url)
                 $.get(spell_url, def(text):
                     spell_json = JSON.parse(text[1:-1])
                     spell = Spell($(spell_json.Tooltip), self, "tooltip")

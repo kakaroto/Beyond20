@@ -8,7 +8,7 @@ from dndbeyond import Character, Monster, buildAttackRoll, sendRoll, \
     injectDiceToRolls, addIconButton, addHitDieButtons, addDisplayButton, addRollButton, \
     isHitDieButtonAdded, isRollButtonAdded, isCustomRollIconsAdded, removeRollButtons
 
-print("Beyond20: D&D Beyond module loaded.")
+console.log("Beyond20: D&D Beyond module loaded.")
 
 def sendRollWithCharacter(rollType, fallback, args):
     nonlocal character
@@ -24,7 +24,7 @@ def rollSkillCheck(paneClass):
     ability = $("." + paneClass + "__header-ability").text()
     modifier = $("." + paneClass + "__header-modifier").text()
     proficiency = $("." + paneClass + "__header-icon .ct-tooltip").attr("data-original-title")
-    print("Skill " + skill_name + "(" + ability + ") : " + modifier)
+    #console.log("Skill " + skill_name + "(" + ability + ") : " + modifier)
     roll_properties = {"skill": skill_name,
                        "ability": ability,
                        "modifier": modifier,
@@ -66,7 +66,7 @@ def rollInitiative():
     if initiative == "":
         initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text()
         advantage = $(".ct-combat-mobile__advantage").length > 0
-    print("Initiative " + ("with" if advantage else "without") + " advantage : " + initiative)
+    #console.log("Initiative " + ("with" if advantage else "without") + " advantage : " + initiative)
     roll_properties = {"initiative": initiative}
     if advantage:
         roll_properties["advantage"] = RollType.ADVANTAGE
@@ -74,7 +74,7 @@ def rollInitiative():
 
         
 def rollHitDie(multiclass, index):
-    print("Rolling hit die index " + index)
+    #console.log("Rolling hit die index " + index)
     hitdie = $(".ct-reset-pane__hitdie").eq(index)
     class_name = hitdie.find(".ct-reset-pane__hitdie-heading-class").text()
     text = hitdie.find(".ct-reset-pane__hitdie-heading").text()
@@ -88,7 +88,7 @@ def rollItem(force_display=False):
 
     prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property")
     properties = propertyListToDict(prop_list)
-    print("Properties are : " + str(properties))
+    #console.log("Properties are : " + str(properties))
     item_name = $(".ct-item-pane .ct-item-name").text()
     item_type = $(".ct-item-detail__intro").text()
     description = descriptionToString(".ct-item-detail__description")
@@ -255,7 +255,7 @@ def rollItem(force_display=False):
 def rollAction(paneClass):
     nonlocal character
     properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"))
-    print("Properties are : " + str(properties))
+    #console.log("Properties are : " + str(properties))
     action_name = $(".ct-sidebar__heading").text()
     action_parent = $(".ct-sidebar__header-parent").text()
     description = descriptionToString(".ct-action-detail__description")
@@ -304,7 +304,7 @@ def rollAction(paneClass):
 def rollSpell(force_display=False):
     nonlocal character
     properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
-    print("Properties are : " + str(properties))
+    #console.log("Properties are : " + str(properties))
     spell_name = $(".ct-sidebar__heading .ct-spell-name")[0].firstChild.textContent
     description = descriptionToString(".ct-spell-pane .ct-spell-detail__description")
     damage_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage")
@@ -448,7 +448,7 @@ def displayAction(paneClass):
                                         "description" : description})
 
 def execute(paneClass):
-    print("Beyond20: Executing panel : " + paneClass)
+    console.log("Beyond20: Executing panel : " + paneClass)
     if paneClass in ["ct-skill-pane", "ct-custom-skill-pane"]:
         rollSkillCheck(paneClass)
     elif paneClass == "ct-ability-pane":
@@ -467,7 +467,7 @@ def execute(paneClass):
         displayPanel(paneClass)
 
 def displayPanel(paneClass):
-    print("Beyond20: Displaying panel : " + paneClass)
+    console.log("Beyond20: Displaying panel : " + paneClass)
     if paneClass == "ct-item-pane":
         displayItem()
     elif paneClass == "ct-spell-pane":
@@ -683,7 +683,6 @@ def injectRollToSpellAttack():
                 img = E.img(class_="ct-beyond20-spell-attack-icon ct-beyond20-spell-attack",
                             x_beyond20_name=name, x_beyond20_modifier=modifier, src=icon16)
                 item.append(img)
-                console.log(item)
             $(".ct-beyond20-spell-attack-icon").css("margin-left", "3px")
             $(".ct-beyond20-spell-attack").on('click', def(event):
                 name = $(event.currentTarget).attr("x-beyond20-name")
@@ -726,7 +725,7 @@ def injectSettingsButton():
     )
     gap.after(button)
     $(button).on('click', def(event): alertQuickSettings();)
-        
+
 def documentModified(mutations, observer):
     nonlocal character
 
@@ -744,7 +743,7 @@ def documentModified(mutations, observer):
             paneClass = pane[div].className
             if paneClass == "ct-sidebar__pane-controls" or paneClass == "ct-beyond20-settings-pane":
                 continue
-            print("Beyond20: New side panel is : " + paneClass)
+            console.log("Beyond20: New side panel is : " + paneClass)
             injectRollButton(paneClass)
 
 def updateSettings(new_settings=None):
@@ -764,7 +763,7 @@ def updateSettings(new_settings=None):
 def handleMessage (request, sender, sendResponse):
     nonlocal settings
     nonlocal character
-    print("Got message : " + str(request))
+    console.log("Got message : " + str(request))
     if request.action == "settings":
         if request.type == "general":
             updateSettings(request.settings)
