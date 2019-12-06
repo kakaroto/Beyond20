@@ -5840,6 +5840,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["display-conditions"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Display Condition updates to VTT";
+                ρσ_d["description"] = "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using FVTT with the Combat-Utility-Belt module, will also update status icons appropriately.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["template"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["type"] = "migrate";
@@ -10208,7 +10216,7 @@ return this.__repr__();
                 ρσ_d["hp"] = self._hp;
                 ρσ_d["max-hp"] = self._max_hp;
                 ρσ_d["exhaustion"] = self._exhaustion;
-                ρσ_d["conditons"] = self._conditions.as_array();
+                ρσ_d["conditions"] = self._conditions.as_array();
                 ρσ_d["settings"] = settings;
                 ρσ_d["class-features"] = self._class_features.as_array();
                 ρσ_d["racial-traits"] = self._racial_traits.as_array();

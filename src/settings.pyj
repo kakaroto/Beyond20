@@ -92,6 +92,12 @@ options_list = {
                   "description": "When changing HP in D&D Beyond, update it in the VTT tokens and sheets",
                   "type": "bool",
                   "default": True},
+                 
+    "display-conditions": {"title": "Display Condition updates to VTT",
+                  "description": "When updating character conditions in D&D Beyond, display a message in the VTT chat.\n" \
+                    "If using FVTT with the Combat-Utility-Belt module, will also update status icons appropriately.",
+                  "type": "bool",
+                  "default": True},
 
     "template": {"type": "migrate",
                  "default": "roll20-template"},

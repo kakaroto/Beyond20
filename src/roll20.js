@@ -5835,6 +5835,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["display-conditions"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Display Condition updates to VTT";
+                ρσ_d["description"] = "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using FVTT with the Combat-Utility-Belt module, will also update status icons appropriately.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["template"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["type"] = "migrate";
@@ -7840,7 +7848,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var custom_roll_dice, roll, mod, rname, character_name;
+            var character_name, conditions, message, custom_roll_dice, roll, mod, rname;
             print("Got message : ", request);
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
@@ -7851,6 +7859,21 @@ var str = ρσ_str, repr = ρσ_repr;;
             } else if ((request.action === "hp-update" || typeof request.action === "object" && ρσ_equals(request.action, "hp-update"))) {
                 if (settings["update-hp"]) {
                     sendCustomEvent("UpdateHP", [request.character.name, request.character.hp, request.character["max-hp"]]);
+                }
+            } else if ((request.action === "conditions-update" || typeof request.action === "object" && ρσ_equals(request.action, "conditions-update"))) {
+                if (settings["display-conditions"]) {
+                    character_name = request.character.name;
+                    if ((request.character.exhaustion === 0 || typeof request.character.exhaustion === "object" && ρσ_equals(request.character.exhaustion, 0))) {
+                        conditions = request.character.conditions;
+                    } else {
+                        conditions = request.character.conditions.concat(ρσ_list_decorate([ "Exhausted (Level " + request.character.exhaustion + ")" ]));
+                    }
+                    if ((conditions.length === 0 || typeof conditions.length === "object" && ρσ_equals(conditions.length, 0))) {
+                        message = "/emas " + character_name + " has no active condition.";
+                    } else {
+                        message = "/emas " + character_name + " is : " + conditions.join(", ");
+                    }
+                    postChatMessage(message, character_name);
                 }
             } else if ((request.action === "roll" || typeof request.action === "object" && ρσ_equals(request.action, "roll"))) {
                 if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character"))) {

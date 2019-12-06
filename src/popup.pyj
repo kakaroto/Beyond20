@@ -152,6 +152,8 @@ def actOnCurrentTab(tabs):
         if vtt == "Roll20":
             e = createHTMLOption("roll20-template", False)
             options.append(e)
+        e = createHTMLOption("display-conditions", False)
+        options.append(e)
         e = options_list["vtt-tab"].createHTMLElement("vtt-tab", True)
         options.append(e)
         initializeSettings(gotSettings)

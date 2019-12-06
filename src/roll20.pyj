@@ -547,6 +547,18 @@ def handleMessage (request, sender, sendResponse):
     elif request.action == "hp-update":
         if settings["update-hp"]:
             sendCustomEvent("UpdateHP", (request.character.name, request.character.hp, request.character["max-hp"]))
+    elif request.action == "conditions-update":
+        if settings["display-conditions"]:
+            character_name = request.character.name
+            if request.character.exhaustion == 0:
+                conditions = request.character.conditions
+            else:
+                conditions = request.character.conditions.concat(["Exhausted (Level " + request.character.exhaustion + ")"])
+            if conditions.length == 0:
+                message = "/emas " + character_name + " has no active condition"
+            else:
+                message = "/emas " + character_name + " is : " + conditions.join(", ")
+            postChatMessage(message, character_name)
     elif request.action == "roll":
         if request.character.type == "Character":
             custom_roll_dice = request.character.settings["custom-roll-dice"] ? ""

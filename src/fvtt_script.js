@@ -5836,6 +5836,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["display-conditions"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Display Condition updates to VTT";
+                ρσ_d["description"] = "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using FVTT with the Combat-Utility-Belt module, will also update status icons appropriately.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["template"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["type"] = "migrate";

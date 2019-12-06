@@ -389,7 +389,7 @@ class Character(CharacterBase):
                 "hp": self._hp,
                 "max-hp": self._max_hp,
                 "exhaustion": self._exhaustion,
-                "conditons": self._conditions.as_array(),
+                "conditions": self._conditions.as_array(),
                 "settings": settings,
                 "class-features": self._class_features.as_array(),
                 "racial-traits": self._racial_traits.as_array(),
