@@ -270,13 +270,13 @@ def getDefaultSettings(_list=options_list):
     settings = {}
     for option in _list:
         settings[option] = _list[option].default
-    console.log("Default settings :", settings)
+    #console.log("Default settings :", settings)
     return settings
 
 def getStoredSettings(cb, key="settings", _list=options_list):
     settings = getDefaultSettings(_list)
     gotSettings = def(stored_settings):
-        print("Beyond20: Stored settings (" + key + "):", stored_settings)
+        #print("Beyond20: Stored settings (" + key + "):", stored_settings)
         migrated_keys = []
         for opt in settings:
             if _list[opt].type == "migrate":

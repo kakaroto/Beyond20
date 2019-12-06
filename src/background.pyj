@@ -125,7 +125,7 @@ def onMessage(request, sender, sendResponse):
     nonlocal settings
 
     console.log("Received message: ", request)
-    if request.action in ["roll", "hp-update"]:
+    if request.action in ["roll", "hp-update", "conditions-update"]:
         makeFailureCB = def(trackFailure, vtt, sendResponse):
             return def(result):
                 trackFailure[vtt] = result

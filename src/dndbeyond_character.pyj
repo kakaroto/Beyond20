@@ -639,13 +639,27 @@ def injectRollButton(paneClass):
     elif paneClass == "ct-creature-pane":
         if isRollButtonAdded() or isCustomRollIconsAdded():
             return
-        character = Monster("Creature", global_settings=settings)
-        character.parseStatBlock()
+        creature = Monster("Creature", global_settings=settings)
+        creature.parseStatBlock()
     elif paneClass == "ct-vehicle-pane":
         if isRollButtonAdded() or isCustomRollIconsAdded():
             return
-        character = Monster("Extra-Vehicle", ".ct-vehicle-block", global_settings=settings)
-        character.parseStatBlock()
+        monster = Monster("Extra-Vehicle", ".ct-vehicle-block", global_settings=settings)
+        monster.parseStatBlock()
+    elif paneClass == "ct-condition-manage-pane":
+        nonlocal character
+
+        j_conditions = $(".ct-condition-manage-pane .ct-toggle-field--enabled").closest(".ct-condition-manage-pane__condition")
+        exhaustion_level = $(".ct-condition-manage-pane__condition--special .ct-number-bar__option--active").text()
+        conditions = []
+        for cond in j_conditions:
+            conditions.append(cond.textContent)
+        if exhaustion_level == "":
+            exhaustion_level = 0
+        else:
+            exhaustion_level = parseInt(exhaustion_level)
+
+        character.updateConditions(conditions, exhaustion_level)
     else:
         removeRollButtons()
 

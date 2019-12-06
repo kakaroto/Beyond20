@@ -5642,6 +5642,16 @@ var str = ρσ_str, repr = ρσ_repr;;
             alertSettings("options.html", "Beyond 20 Settings");
         };
 
+        function isListEqual(list1, list2) {
+            var list1_str, list2_str;
+            list1_str = str.join("", list1);
+            list2_str = str.join("", list2);
+            return (list1_str === list2_str || typeof list1_str === "object" && ρσ_equals(list1_str, list2_str));
+        };
+        if (!isListEqual.__argnames__) Object.defineProperties(isListEqual, {
+            __argnames__ : {value: ["list1", "list2"]}
+        });
+
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
@@ -5657,6 +5667,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.alertSettings = alertSettings;
         ρσ_modules.utils.alertQuickSettings = alertQuickSettings;
         ρσ_modules.utils.alertFullSettings = alertFullSettings;
+        ρσ_modules.utils.isListEqual = isListEqual;
     })();
 
     (function(){

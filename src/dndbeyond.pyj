@@ -1,4 +1,4 @@
-from utils import replaceRolls, alertQuickSettings, getBrowser
+from utils import replaceRolls, alertQuickSettings, getBrowser, isListEqual
 from settings import getStoredSettings, mergeSettings, character_settings, WhisperType, RollType, CriticalRules
 from dndbeyond_dice import dndbeyondDiceRoller
 from elementmaker import E
@@ -140,6 +140,8 @@ class Character(CharacterBase):
         self._feats = []
         self._actions = []
         self._to_hit_cache = {}
+        self._conditions = []
+        self._exhaustion = 0
 
     def updateInfo(self):
         self._id = $("#character-sheet-target").attr("data-character-id")
@@ -184,7 +186,7 @@ class Character(CharacterBase):
             for item in items:
                 item_name = item.textContent
                 to_hit = findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit")
-                console.log("Caching to hit for ", item_name, " : ", to_hit)
+                #console.log("Caching to hit for ", item_name, " : ", to_hit)
                 self._to_hit_cache[item_name] = to_hit
 
         # Values that could change/get overriden dynamically
@@ -250,6 +252,24 @@ class Character(CharacterBase):
             console.log("Sending message: ", req)
             chrome.runtime.sendMessage(req, def(resp): beyond20SendMessageFailure(self, resp);)
 
+    def updateConditions(self, conditions=None, exhaustion_level=None):
+        if conditions is None:
+            conditions = self.getSetting("conditions", [])
+        if exhaustion_level is None:
+            exhaustion_level = self.getSetting("exhaustion-level", 0)
+        self._conditions = conditions
+        self._exhaustion = exhaustion_level
+        console.log("Updating conditions to : ", conditions, exhaustion_level)
+        if self._settings ? and \
+            (not isListEqual(self._conditions, self.getSetting("conditions", [])) or \
+                self._exhaustion != self.getSetting("exhaustion-level", 0)):
+            self.mergeCharacterSettings({"conditions": self._conditions,
+                                         "exhaustion-level": self._exhaustion})
+
+            req = {"action": "conditions-update", "character": self.getDict()}
+            console.log("Sending message: ", req)
+            chrome.runtime.sendMessage(req, def(resp): beyond20SendMessageFailure(self, resp);)
+
     def featureDetailsToList(self, selector, name):
         features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading")
         feature_list = []
@@ -269,9 +289,7 @@ class Character(CharacterBase):
         class_detail = $(".ct-features .ct-classes-detail")
         if class_detail.length > 0:
             self._class_features = self.featureDetailsToList(class_detail, "Class Features")
-            list_str = str.join("", self._class_features)
-            setting_str = str.join("", self.getSetting("class-features", []))
-            if list_str != setting_str:
+            if not isListEqual(self._class_features, self.getSetting("class-features", [])):
                 console.log("New class feature")
                 update = True
         elif self.getSetting("class-features", None):
@@ -280,9 +298,7 @@ class Character(CharacterBase):
         race_detail = $(".ct-features .ct-race-detail")
         if race_detail.length > 0:
             self._racial_traits = self.featureDetailsToList(race_detail, "Racial Traits")
-            list_str = str.join("", self._racial_traits)
-            setting_str = str.join("", self.getSetting("racial-traits", []))
-            if list_str != setting_str:
+            if not isListEqual(self._racial_traits, self.getSetting("racial-traits", [])):
                 console.log("New race feature")
                 update = True
         elif self.getSetting("racial-traits", None):
@@ -291,9 +307,7 @@ class Character(CharacterBase):
         feats_detail = $(".ct-features .ct-feats-detail")
         if feats_detail.length > 0:
             self._feats = self.featureDetailsToList(feats_detail, "Feats")
-            list_str = str.join("", self._feats)
-            setting_str = str.join("", self.getSetting("feats", []))
-            if list_str != setting_str:
+            if not isListEqual(self._feats, self.getSetting("feats", [])):
                 console.log("New Feats")
                 update = True
         elif self.getSetting("feats", None):
@@ -302,15 +316,13 @@ class Character(CharacterBase):
         actions_detail = $(".ct-actions-list .ct-actions-list__activatable")
         if actions_detail.length > 0:
             self._actions = self.featureDetailsToList(actions_detail, "Actions")
-            list_str = str.join("", self._actions)
-            setting_str = str.join("", self.getSetting("actions", []))
-            if list_str != setting_str:
+            if not isListEqual(self._actions, self.getSetting("actions", [])):
                 console.log("New Actions")
                 update = True
         elif self.getSetting("actions", None):
             self._actions = list(self.getSetting("actions", None))
 
-        if update:
+        if self._settings? and update:
             self.mergeCharacterSettings({"class-features": self._class_features,
                                          "racial-traits": self._racial_traits,
                                          "feats": self._feats,
@@ -354,6 +366,7 @@ class Character(CharacterBase):
                 self.updateSettings(saved_settings)
                 self.updateHP()
                 self.updateFeatures()
+                self.updateConditions()
             , "character-" + self._id, character_settings)
 
     def getDict(self):
@@ -361,7 +374,7 @@ class Character(CharacterBase):
         # Make a copy of the settings but without the features since they are
         # already in the dict
         for key in self._settings:
-            if key not in ["class-features", "racial-traits", "feats"]:
+            if key not in ["class-features", "racial-traits", "feats", "actions", "conditions", "exhaustion-level"]:
                 settings[key] = self._settings[key]
         return {"name": self._name,
                 "id": self._id,
@@ -375,6 +388,8 @@ class Character(CharacterBase):
                 "speed": self._speed,
                 "hp": self._hp,
                 "max-hp": self._max_hp,
+                "exhaustion": self._exhaustion,
+                "conditons": self._conditions.as_array(),
                 "settings": settings,
                 "class-features": self._class_features.as_array(),
                 "racial-traits": self._racial_traits.as_array(),
@@ -1064,6 +1079,8 @@ def injectDiceToRolls(selector, character, name=""):
     )
 
 def beyond20SendMessageFailure(character, response):
+    if not response ?:
+        return
     console.log("Received response : ", response)
     if response.request.action == "roll" and (response.vtt == "dndbeyond" or response.error?):
         dndbeyondDiceRoller.handleRollError(response.request, response.error)

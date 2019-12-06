@@ -5643,6 +5643,16 @@ var str = ρσ_str, repr = ρσ_repr;;
             alertSettings("options.html", "Beyond 20 Settings");
         };
 
+        function isListEqual(list1, list2) {
+            var list1_str, list2_str;
+            list1_str = str.join("", list1);
+            list2_str = str.join("", list2);
+            return (list1_str === list2_str || typeof list1_str === "object" && ρσ_equals(list1_str, list2_str));
+        };
+        if (!isListEqual.__argnames__) Object.defineProperties(isListEqual, {
+            __argnames__ : {value: ["list1", "list2"]}
+        });
+
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
@@ -5658,6 +5668,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.alertSettings = alertSettings;
         ρσ_modules.utils.alertQuickSettings = alertQuickSettings;
         ρσ_modules.utils.alertFullSettings = alertFullSettings;
+        ρσ_modules.utils.isListEqual = isListEqual;
     })();
 
     (function(){
@@ -6177,7 +6188,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                 option = ρσ_Iter0[ρσ_Index0];
                 settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].default;
             }
-            console.log("Default settings :", settings);
             return settings;
         };
         if (!getDefaultSettings.__defaults__) Object.defineProperties(getDefaultSettings, {
@@ -6203,7 +6213,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             gotSettings = (function() {
                 var ρσ_anonfunc = function (stored_settings) {
                     var migrated_keys, opt;
-                    print("Beyond20: Stored settings (" + key + "):", stored_settings);
                     migrated_keys = ρσ_list_decorate([]);
                     var ρσ_Iter1 = ρσ_Iterable(settings);
                     for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {

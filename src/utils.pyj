@@ -89,3 +89,8 @@ def alertQuickSettings():
     alertSettings("popup.html", "Beyond 20 Quick Settings")
 def alertFullSettings():
     alertSettings("options.html", "Beyond 20 Settings")
+
+def isListEqual(list1, list2):
+    list1_str = str.join("", list1)
+    list2_str = str.join("", list2)
+    return list1_str == list2_str

@@ -5649,6 +5649,16 @@ var str = ρσ_str, repr = ρσ_repr;;
             alertSettings("options.html", "Beyond 20 Settings");
         };
 
+        function isListEqual(list1, list2) {
+            var list1_str, list2_str;
+            list1_str = str.join("", list1);
+            list2_str = str.join("", list2);
+            return (list1_str === list2_str || typeof list1_str === "object" && ρσ_equals(list1_str, list2_str));
+        };
+        if (!isListEqual.__argnames__) Object.defineProperties(isListEqual, {
+            __argnames__ : {value: ["list1", "list2"]}
+        });
+
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
         ρσ_modules.utils.getBrowser = getBrowser;
@@ -5664,6 +5674,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.alertSettings = alertSettings;
         ρσ_modules.utils.alertQuickSettings = alertQuickSettings;
         ρσ_modules.utils.alertFullSettings = alertFullSettings;
+        ρσ_modules.utils.isListEqual = isListEqual;
     })();
 
     (function(){
@@ -6183,7 +6194,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                 option = ρσ_Iter0[ρσ_Index0];
                 settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].default;
             }
-            console.log("Default settings :", settings);
             return settings;
         };
         if (!getDefaultSettings.__defaults__) Object.defineProperties(getDefaultSettings, {
@@ -6209,7 +6219,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             gotSettings = (function() {
                 var ρσ_anonfunc = function (stored_settings) {
                     var migrated_keys, opt;
-                    print("Beyond20: Stored settings (" + key + "):", stored_settings);
                     migrated_keys = ρσ_list_decorate([]);
                     var ρσ_Iter1 = ρσ_Iterable(settings);
                     for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
@@ -9512,6 +9521,7 @@ return this.__repr__();
         var replaceRolls = ρσ_modules.utils.replaceRolls;
         var alertQuickSettings = ρσ_modules.utils.alertQuickSettings;
         var getBrowser = ρσ_modules.utils.getBrowser;
+        var isListEqual = ρσ_modules.utils.isListEqual;
 
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
         var mergeSettings = ρσ_modules.settings.mergeSettings;
@@ -9770,6 +9780,8 @@ return this.__repr__();
             self._feats = ρσ_list_decorate([]);
             self._actions = ρσ_list_decorate([]);
             self._to_hit_cache = {};
+            self._conditions = ρσ_list_decorate([]);
+            self._exhaustion = 0;
         };
         if (!Character.prototype.__init__.__argnames__) Object.defineProperties(Character.prototype.__init__, {
             __argnames__ : {value: ["global_settings"]}
@@ -9835,7 +9847,6 @@ return this.__repr__();
                     item = ρσ_Iter1[ρσ_Index1];
                     item_name = item.textContent;
                     to_hit = findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit");
-                    console.log("Caching to hit for ", item_name, " : ", to_hit);
                     (ρσ_expr_temp = self._to_hit_cache)[(typeof item_name === "number" && item_name < 0) ? ρσ_expr_temp.length + item_name : item_name] = to_hit;
                 }
             }
@@ -9930,6 +9941,58 @@ return this.__repr__();
                 })());
             }
         };
+        Character.prototype.updateConditions = function updateConditions() {
+            var self = this;
+            var conditions = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? updateConditions.__defaults__.conditions : arguments[0];
+            var exhaustion_level = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? updateConditions.__defaults__.exhaustion_level : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "conditions")){
+                conditions = ρσ_kwargs_obj.conditions;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "exhaustion_level")){
+                exhaustion_level = ρσ_kwargs_obj.exhaustion_level;
+            }
+            var req;
+            if (conditions === null) {
+                conditions = self.getSetting("conditions", ρσ_list_decorate([]));
+            }
+            if (exhaustion_level === null) {
+                exhaustion_level = self.getSetting("exhaustion-level", 0);
+            }
+            self._conditions = conditions;
+            self._exhaustion = exhaustion_level;
+            console.log("Updating conditions to : ", conditions, exhaustion_level);
+            if (ρσ_exists.n(self._settings) && (!isListEqual(self._conditions, self.getSetting("conditions", ρσ_list_decorate([]))) || ρσ_not_equals(self._exhaustion, self.getSetting("exhaustion-level", 0)))) {
+                self.mergeCharacterSettings((function(){
+                    var ρσ_d = {};
+                    ρσ_d["conditions"] = self._conditions;
+                    ρσ_d["exhaustion-level"] = self._exhaustion;
+                    return ρσ_d;
+                }).call(this));
+                req = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["action"] = "conditions-update";
+                    ρσ_d["character"] = self.getDict();
+                    return ρσ_d;
+                }).call(this);
+                console.log("Sending message: ", req);
+                chrome.runtime.sendMessage(req, (function() {
+                    var ρσ_anonfunc = function (resp) {
+                        beyond20SendMessageFailure(self, resp);
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["resp"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
+            }
+        };
+        if (!Character.prototype.updateConditions.__defaults__) Object.defineProperties(Character.prototype.updateConditions, {
+            __defaults__ : {value: {conditions:null, exhaustion_level:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["conditions", "exhaustion_level"]}
+        });
         Character.prototype.featureDetailsToList = function featureDetailsToList(selector, name) {
             var self = this;
             var features, feature_list, feat_name, options, option_name, option, feat;
@@ -9956,14 +10019,12 @@ return this.__repr__();
         });
         Character.prototype.updateFeatures = function updateFeatures() {
             var self = this;
-            var update, class_detail, list_str, setting_str, race_detail, feats_detail, actions_detail;
+            var update, class_detail, race_detail, feats_detail, actions_detail;
             update = false;
             class_detail = $(".ct-features .ct-classes-detail");
             if (class_detail.length > 0) {
                 self._class_features = self.featureDetailsToList(class_detail, "Class Features");
-                list_str = str.join("", self._class_features);
-                setting_str = str.join("", self.getSetting("class-features", ρσ_list_decorate([])));
-                if ((list_str !== setting_str && (typeof list_str !== "object" || ρσ_not_equals(list_str, setting_str)))) {
+                if (!isListEqual(self._class_features, self.getSetting("class-features", ρσ_list_decorate([])))) {
                     console.log("New class feature");
                     update = true;
                 }
@@ -9973,9 +10034,7 @@ return this.__repr__();
             race_detail = $(".ct-features .ct-race-detail");
             if (race_detail.length > 0) {
                 self._racial_traits = self.featureDetailsToList(race_detail, "Racial Traits");
-                list_str = str.join("", self._racial_traits);
-                setting_str = str.join("", self.getSetting("racial-traits", ρσ_list_decorate([])));
-                if ((list_str !== setting_str && (typeof list_str !== "object" || ρσ_not_equals(list_str, setting_str)))) {
+                if (!isListEqual(self._racial_traits, self.getSetting("racial-traits", ρσ_list_decorate([])))) {
                     console.log("New race feature");
                     update = true;
                 }
@@ -9985,9 +10044,7 @@ return this.__repr__();
             feats_detail = $(".ct-features .ct-feats-detail");
             if (feats_detail.length > 0) {
                 self._feats = self.featureDetailsToList(feats_detail, "Feats");
-                list_str = str.join("", self._feats);
-                setting_str = str.join("", self.getSetting("feats", ρσ_list_decorate([])));
-                if ((list_str !== setting_str && (typeof list_str !== "object" || ρσ_not_equals(list_str, setting_str)))) {
+                if (!isListEqual(self._feats, self.getSetting("feats", ρσ_list_decorate([])))) {
                     console.log("New Feats");
                     update = true;
                 }
@@ -9997,16 +10054,14 @@ return this.__repr__();
             actions_detail = $(".ct-actions-list .ct-actions-list__activatable");
             if (actions_detail.length > 0) {
                 self._actions = self.featureDetailsToList(actions_detail, "Actions");
-                list_str = str.join("", self._actions);
-                setting_str = str.join("", self.getSetting("actions", ρσ_list_decorate([])));
-                if ((list_str !== setting_str && (typeof list_str !== "object" || ρσ_not_equals(list_str, setting_str)))) {
+                if (!isListEqual(self._actions, self.getSetting("actions", ρσ_list_decorate([])))) {
                     console.log("New Actions");
                     update = true;
                 }
             } else if (self.getSetting("actions", null)) {
                 self._actions = list(self.getSetting("actions", null));
             }
-            if (update) {
+            if (ρσ_exists.n(self._settings) && update) {
                 self.mergeCharacterSettings((function(){
                     var ρσ_d = {};
                     ρσ_d["class-features"] = self._class_features;
@@ -10113,6 +10168,7 @@ return this.__repr__();
                         self.updateSettings(saved_settings);
                         self.updateHP();
                         self.updateFeatures();
+                        self.updateConditions();
                     };
                     if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                         __argnames__ : {value: ["saved_settings"]}
@@ -10133,7 +10189,7 @@ return this.__repr__();
             var ρσ_Iter6 = ρσ_Iterable(self._settings);
             for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
                 key = ρσ_Iter6[ρσ_Index6];
-                if (!ρσ_in(key, ρσ_list_decorate([ "class-features", "racial-traits", "feats" ]))) {
+                if (!ρσ_in(key, ρσ_list_decorate([ "class-features", "racial-traits", "feats", "actions", "conditions", "exhaustion-level" ]))) {
                     settings[(typeof key === "number" && key < 0) ? settings.length + key : key] = (ρσ_expr_temp = self._settings)[(typeof key === "number" && key < 0) ? ρσ_expr_temp.length + key : key];
                 }
             }
@@ -10151,6 +10207,8 @@ return this.__repr__();
                 ρσ_d["speed"] = self._speed;
                 ρσ_d["hp"] = self._hp;
                 ρσ_d["max-hp"] = self._max_hp;
+                ρσ_d["exhaustion"] = self._exhaustion;
+                ρσ_d["conditons"] = self._conditions.as_array();
                 ρσ_d["settings"] = settings;
                 ρσ_d["class-features"] = self._class_features.as_array();
                 ρσ_d["racial-traits"] = self._racial_traits.as_array();
@@ -11395,6 +11453,9 @@ return this.__repr__();
         });
 
         function beyond20SendMessageFailure(character, response) {
+            if (!(typeof response !== "undefined" && response !== null)) {
+                return;
+            }
             console.log("Received response : ", response);
             if ((response.request.action === "roll" || typeof response.request.action === "object" && ρσ_equals(response.request.action, "roll")) && ((response.vtt === "dndbeyond" || typeof response.vtt === "object" && ρσ_equals(response.vtt, "dndbeyond")) || ρσ_exists.n(response.error))) {
                 dndbeyondDiceRoller.handleRollError(response.request, response.error);
@@ -12217,7 +12278,7 @@ return this.__repr__();
         lastSpellName = "";
         lastSpellLevel = "";
         function injectRollButton(paneClass) {
-            var name, item_name, properties, action_name, action_parent, spell_name, spell_level, damages, healings, to_hit, hitdice, cb, character;
+            var name, item_name, properties, action_name, action_parent, spell_name, spell_level, damages, healings, to_hit, hitdice, cb, creature, monster, j_conditions, exhaustion_level, conditions, cond;
             if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-custom-skill-pane", "ct-skill-pane", "ct-ability-pane", "ct-ability-saving-throws-pane", "ct-initiative-pane" ]))) {
                 if (isRollButtonAdded()) {
                     return;
@@ -12328,14 +12389,29 @@ return this.__repr__();
                 if (isRollButtonAdded() || isCustomRollIconsAdded()) {
                     return;
                 }
-                character = ρσ_interpolate_kwargs_constructor.call(Object.create(Monster.prototype), false, Monster, ["Creature"].concat([ρσ_desugar_kwargs({global_settings: settings})]));
-                character.parseStatBlock();
+                creature = ρσ_interpolate_kwargs_constructor.call(Object.create(Monster.prototype), false, Monster, ["Creature"].concat([ρσ_desugar_kwargs({global_settings: settings})]));
+                creature.parseStatBlock();
             } else if ((paneClass === "ct-vehicle-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-vehicle-pane"))) {
                 if (isRollButtonAdded() || isCustomRollIconsAdded()) {
                     return;
                 }
-                character = ρσ_interpolate_kwargs_constructor.call(Object.create(Monster.prototype), false, Monster, ["Extra-Vehicle", ".ct-vehicle-block"].concat([ρσ_desugar_kwargs({global_settings: settings})]));
-                character.parseStatBlock();
+                monster = ρσ_interpolate_kwargs_constructor.call(Object.create(Monster.prototype), false, Monster, ["Extra-Vehicle", ".ct-vehicle-block"].concat([ρσ_desugar_kwargs({global_settings: settings})]));
+                monster.parseStatBlock();
+            } else if ((paneClass === "ct-condition-manage-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-condition-manage-pane"))) {
+                j_conditions = $(".ct-condition-manage-pane .ct-toggle-field--enabled").closest(".ct-condition-manage-pane__condition");
+                exhaustion_level = $(".ct-condition-manage-pane__condition--special .ct-number-bar__option--active").text();
+                conditions = ρσ_list_decorate([]);
+                var ρσ_Iter8 = ρσ_Iterable(j_conditions);
+                for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                    cond = ρσ_Iter8[ρσ_Index8];
+                    conditions.append(cond.textContent);
+                }
+                if ((exhaustion_level === "" || typeof exhaustion_level === "object" && ρσ_equals(exhaustion_level, ""))) {
+                    exhaustion_level = 0;
+                } else {
+                    exhaustion_level = parseInt(exhaustion_level);
+                }
+                character.updateConditions(conditions, exhaustion_level);
             } else {
                 removeRollButtons();
             }
@@ -12347,9 +12423,9 @@ return this.__repr__();
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter8 = ρσ_Iterable(groups);
-            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                group = ρσ_Iter8[ρσ_Index8];
+            var ρσ_Iter9 = ρσ_Iterable(groups);
+            for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                group = ρσ_Iter9[ρσ_Index9];
                 label = $(group).find(".ct-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -12358,9 +12434,9 @@ return this.__repr__();
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter9 = ρσ_Iterable(items);
-                    for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
-                        item = ρσ_Iter9[ρσ_Index9];
+                    var ρσ_Iter10 = ρσ_Iterable(items);
+                    for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                        item = ρσ_Iter10[ρσ_Index10];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -12445,8 +12521,8 @@ return this.__repr__();
             injectSettingsButton();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index10 = 0; ρσ_Index10 < pane.length; ρσ_Index10++) {
-                    div = ρσ_Index10;
+                for (var ρσ_Index11 = 0; ρσ_Index11 < pane.length; ρσ_Index11++) {
+                    div = ρσ_Index11;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls")) || (paneClass === "ct-beyond20-settings-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-beyond20-settings-pane"))) {
                         continue;
