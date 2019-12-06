@@ -254,7 +254,7 @@ class Character(CharacterBase):
 
     def updateConditions(self, conditions=None, exhaustion_level=None):
         if conditions is None:
-            conditions = self.getSetting("conditions", [])
+            conditions = list(self.getSetting("conditions", []))
         if exhaustion_level is None:
             exhaustion_level = self.getSetting("exhaustion-level", 0)
         self._conditions = conditions
@@ -263,12 +263,12 @@ class Character(CharacterBase):
         if self._settings ? and \
             (not isListEqual(self._conditions, self.getSetting("conditions", [])) or \
                 self._exhaustion != self.getSetting("exhaustion-level", 0)):
+            sendUpdate = def():
+                req = {"action": "conditions-update", "character": self.getDict()}
+                console.log("Sending message: ", req)
+                chrome.runtime.sendMessage(req, def(resp): beyond20SendMessageFailure(self, resp);)
             self.mergeCharacterSettings({"conditions": self._conditions,
-                                         "exhaustion-level": self._exhaustion})
-
-            req = {"action": "conditions-update", "character": self.getDict()}
-            console.log("Sending message: ", req)
-            chrome.runtime.sendMessage(req, def(resp): beyond20SendMessageFailure(self, resp);)
+                                         "exhaustion-level": self._exhaustion}, sendUpdate)
 
     def featureDetailsToList(self, selector, name):
         features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading")
@@ -350,12 +350,14 @@ class Character(CharacterBase):
             return self._to_hit_cache[item_name]
         return None
 
-    def mergeCharacterSettings(self, data):
+    def mergeCharacterSettings(self, data, callback=None):
         cb = def(settings):
             chrome.runtime.sendMessage({"action": "settings",
                                         "type": "character",
                                         "id": self._id,
                                         "settings": settings})
+            if callback:
+                callback(settings)
         mergeSettings(data, cb, "character-" + self._id, character_settings)
 
     def updateSettings(self, new_settings=None):

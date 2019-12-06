@@ -156,6 +156,8 @@ def actOnCurrentTab(tabs):
         options.append(e)
         e = options_list["vtt-tab"].createHTMLElement("vtt-tab", True)
         options.append(e)
+        $('.beyond20-option-input').off('change', save_settings)
+        $('.beyond20-option-input').change(save_settings)
         initializeSettings(gotSettings)
     elif urlMatches(tabs[0].url, DNDBEYOND_CHARACTER_URL):
         chrome.tabs.sendMessage(tabs[0].id, {"action": "get-character"}, populateCharacter)

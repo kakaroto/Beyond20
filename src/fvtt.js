@@ -5837,7 +5837,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["display-conditions"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Display Condition updates to VTT";
-                ρσ_d["description"] = "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using FVTT with the Combat-Utility-Belt module, will also update status icons appropriately.";
+                ρσ_d["description"] = "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using FVTT with the Beyond20 module, it will also update the token's status icons appropriately.";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
@@ -6917,6 +6917,11 @@ var str = ρσ_str, repr = ρσ_repr;;
             } else if ((request.action === "hp-update" || typeof request.action === "object" && ρσ_equals(request.action, "hp-update"))) {
                 if (settings["update-hp"]) {
                     sendCustomEvent("UpdateHP", [request.character.name, request.character.hp, request.character["max-hp"]]);
+                }
+            } else if ((request.action === "conditions-update" || typeof request.action === "object" && ρσ_equals(request.action, "conditions-update"))) {
+                if (settings["display-conditions"]) {
+                    sendCustomEvent("UpdateConditions", [request, request.character.name, request.character.conditions, 
+                    request.character.exhaustion]);
                 }
             } else if ((request.action === "roll" || typeof request.action === "object" && ρσ_equals(request.action, "roll"))) {
                 sendCustomEvent("Roll", [request, 0]);

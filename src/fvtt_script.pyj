@@ -30,11 +30,14 @@ class FVTTDisplayer:
         return self._postChatMessage(html, character, whisper, play_sound)
 
     def _postChatMessage(self, message, character, whisper, play_sound=False):
-        nonlocal CHAT_MESSAGE_TYPES
-        # Prior to 0.3.6, CHAT_MESSAGE_TYPES wasn't defined
-        MESSAGE_TYPES = {"OOC": 1, "WHISPER": 4}
-        if CHAT_MESSAGE_TYPES?:
+        nonlocal CHAT_MESSAGE_TYPES, CONST
+        if CONST.CHAT_MESSAGE_TYPES?:
+            MESSAGE_TYPES = {"OOC": CONST.CHAT_MESSAGE_TYPES.OOC, "WHISPER": CONST.CHAT_MESSAGE_TYPES.WHISPER}
+        elif CHAT_MESSAGE_TYPES?:
             MESSAGE_TYPES = {"OOC": CHAT_MESSAGE_TYPES.OOC, "WHISPER": CHAT_MESSAGE_TYPES.WHISPER}
+        else:
+            # Prior to 0.3.6, CHAT_MESSAGE_TYPES wasn't defined
+            MESSAGE_TYPES = {"OOC": 1, "WHISPER": 4}
         data = {"content": message, 
                 "user": game.user._id,
                 "speaker": self._getSpeakerByName(character)}
@@ -199,6 +202,63 @@ def updateHP(name, current, total=None):
             if prefix:
                 token.update(canvas.id, {prefix + ".value": current,
                                          prefix + ".max": total})
+
+                                         
+def updateConditions(request, name, conditions, exhaustion):
+    nonlocal roll_renderer, CONST, CONFIG
+    console.log("Updating Conditions for " + name + " : ", conditions, " - exhaustion level : ", exhaustion)
+    display_conditions = conditions
+    if exhaustion > 0:
+        display_conditions = conditions.concat(["Exhausted (Level " + exhaustion + ")"])
+    if display_conditions.length == 0:
+        message = name + " has no active condition"
+    else:
+        message = name + " is : " + display_conditions.join(", ")
+    MESSAGE_TYPES = CONST.CHAT_MESSAGE_TYPES
+    ChatMessage.create({"content": message, 
+        "user": game.user._id,
+        "speaker": roll_renderer._displayer._getSpeakerByName(name),
+        "type": MESSAGE_TYPES.EMOTE
+    })
+
+    # Check for the beyond20 module, if it's there, we can use its status effects.
+    module = game.modules.find(def(m): return m.id == "beyond20";)
+    if module ? and isNewerVersion(module.data.version, "0.6"):
+        # Update status effects
+        name = name.toLowerCase()
+
+        tokens = canvas.tokens.objects.children.filter(def(t): return t.data.name.toLowerCase() == name;)
+
+        for token in tokens:
+            effects = token.data.effects
+            new_effects = []
+
+            new_conditions = conditions.map(def (c): return c.toLowerCase() + ".svg";)
+            defeated = False
+            if exhaustion > 0:
+                if exhaustion == 6:
+                    defeated = True
+                else:
+                    new_conditions.push("exhaustion" + exhaustion + ".svg")
+
+            # Remove status effects that have disappeared
+            for effect in effects:
+                if not effect.startsWith("modules/beyond20/conditions/"):
+                    new_effects.push(effect)
+                else:
+                    effect_name = effect[34:]
+                    if effect_name in new_conditions:
+                        new_effects.push(effect)
+                        new_conditions = new_conditions.filter(def(c): return c != effect_name;)
+            console.log("From ", effects, "to ", new_effects, " still need to add ", new_conditions)
+            new_effects = new_effects.concat(new_conditions.map(def(c): return "modules/beyond20/conditions/" + c;))
+            data = {"effects": new_effects}
+            if defeated:
+                data["overlayEffect"] = "icons/svg/skull.svg"
+            token.update(canvas.id, data)
+
+
+
 def setSettings(new_settings, url):
     nonlocal settings, extension_url, roll_renderer
 
@@ -228,5 +288,6 @@ registered_events = []
 registered_events.append(addCustomEventListener("Roll", handleRoll))
 registered_events.append(addCustomEventListener("NewSettings", setSettings))
 registered_events.append(addCustomEventListener("UpdateHP", updateHP))
+registered_events.append(addCustomEventListener("UpdateConditions", updateConditions))
 registered_events.append(addCustomEventListener("disconnect", disconnectAllEvents))
 setTitle()

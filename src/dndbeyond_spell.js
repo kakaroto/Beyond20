@@ -5843,7 +5843,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["display-conditions"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Display Condition updates to VTT";
-                ρσ_d["description"] = "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using FVTT with the Combat-Utility-Belt module, will also update status icons appropriately.";
+                ρσ_d["description"] = "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using FVTT with the Beyond20 module, it will also update the token's status icons appropriately.";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
@@ -9961,9 +9961,9 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "exhaustion_level")){
                 exhaustion_level = ρσ_kwargs_obj.exhaustion_level;
             }
-            var req;
+            var sendUpdate;
             if (conditions === null) {
-                conditions = self.getSetting("conditions", ρσ_list_decorate([]));
+                conditions = list(self.getSetting("conditions", ρσ_list_decorate([])));
             }
             if (exhaustion_level === null) {
                 exhaustion_level = self.getSetting("exhaustion-level", 0);
@@ -9972,28 +9972,31 @@ return this.__repr__();
             self._exhaustion = exhaustion_level;
             console.log("Updating conditions to : ", conditions, exhaustion_level);
             if (ρσ_exists.n(self._settings) && (!isListEqual(self._conditions, self.getSetting("conditions", ρσ_list_decorate([]))) || ρσ_not_equals(self._exhaustion, self.getSetting("exhaustion-level", 0)))) {
+                sendUpdate = function () {
+                    var req;
+                    req = (function(){
+                        var ρσ_d = {};
+                        ρσ_d["action"] = "conditions-update";
+                        ρσ_d["character"] = self.getDict();
+                        return ρσ_d;
+                    }).call(this);
+                    console.log("Sending message: ", req);
+                    chrome.runtime.sendMessage(req, (function() {
+                        var ρσ_anonfunc = function (resp) {
+                            beyond20SendMessageFailure(self, resp);
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["resp"]}
+                        });
+                        return ρσ_anonfunc;
+                    })());
+                };
                 self.mergeCharacterSettings((function(){
                     var ρσ_d = {};
                     ρσ_d["conditions"] = self._conditions;
                     ρσ_d["exhaustion-level"] = self._exhaustion;
                     return ρσ_d;
-                }).call(this));
-                req = (function(){
-                    var ρσ_d = {};
-                    ρσ_d["action"] = "conditions-update";
-                    ρσ_d["character"] = self.getDict();
-                    return ρσ_d;
-                }).call(this);
-                console.log("Sending message: ", req);
-                chrome.runtime.sendMessage(req, (function() {
-                    var ρσ_anonfunc = function (resp) {
-                        beyond20SendMessageFailure(self, resp);
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["resp"]}
-                    });
-                    return ρσ_anonfunc;
-                })());
+                }).call(this), sendUpdate);
             }
         };
         if (!Character.prototype.updateConditions.__defaults__) Object.defineProperties(Character.prototype.updateConditions, {
@@ -10136,8 +10139,15 @@ return this.__repr__();
         if (!Character.prototype._getToHitCache.__argnames__) Object.defineProperties(Character.prototype._getToHitCache, {
             __argnames__ : {value: ["item_name"]}
         });
-        Character.prototype.mergeCharacterSettings = function mergeCharacterSettings(data) {
+        Character.prototype.mergeCharacterSettings = function mergeCharacterSettings() {
             var self = this;
+            var data = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var callback = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? mergeCharacterSettings.__defaults__.callback : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "callback")){
+                callback = ρσ_kwargs_obj.callback;
+            }
             var cb;
             cb = (function() {
                 var ρσ_anonfunc = function (settings) {
@@ -10149,6 +10159,9 @@ return this.__repr__();
                         ρσ_d["settings"] = settings;
                         return ρσ_d;
                     }).call(this));
+                    if (callback) {
+                        callback(settings);
+                    }
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                     __argnames__ : {value: ["settings"]}
@@ -10157,8 +10170,10 @@ return this.__repr__();
             })();
             mergeSettings(data, cb, "character-" + self._id, character_settings);
         };
-        if (!Character.prototype.mergeCharacterSettings.__argnames__) Object.defineProperties(Character.prototype.mergeCharacterSettings, {
-            __argnames__ : {value: ["data"]}
+        if (!Character.prototype.mergeCharacterSettings.__defaults__) Object.defineProperties(Character.prototype.mergeCharacterSettings, {
+            __defaults__ : {value: {callback:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["data", "callback"]}
         });
         Character.prototype.updateSettings = function updateSettings() {
             var self = this;

@@ -5839,7 +5839,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["display-conditions"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Display Condition updates to VTT";
-                ρσ_d["description"] = "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using FVTT with the Combat-Utility-Belt module, will also update status icons appropriately.";
+                ρσ_d["description"] = "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using FVTT with the Beyond20 module, it will also update the token's status icons appropriately.";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
@@ -8642,17 +8642,25 @@ var str = ρσ_str, repr = ρσ_repr;;
                 play_sound = ρσ_kwargs_obj.play_sound;
             }
             var MESSAGE_TYPES, data, rollMode;
-            MESSAGE_TYPES = (function(){
-                var ρσ_d = {};
-                ρσ_d["OOC"] = 1;
-                ρσ_d["WHISPER"] = 4;
-                return ρσ_d;
-            }).call(this);
-            if ((typeof CHAT_MESSAGE_TYPES !== "undefined" && CHAT_MESSAGE_TYPES !== null)) {
+            if (ρσ_exists.n(CONST.CHAT_MESSAGE_TYPES)) {
+                MESSAGE_TYPES = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["OOC"] = CONST.CHAT_MESSAGE_TYPES.OOC;
+                    ρσ_d["WHISPER"] = CONST.CHAT_MESSAGE_TYPES.WHISPER;
+                    return ρσ_d;
+                }).call(this);
+            } else if ((typeof CHAT_MESSAGE_TYPES !== "undefined" && CHAT_MESSAGE_TYPES !== null)) {
                 MESSAGE_TYPES = (function(){
                     var ρσ_d = {};
                     ρσ_d["OOC"] = CHAT_MESSAGE_TYPES.OOC;
                     ρσ_d["WHISPER"] = CHAT_MESSAGE_TYPES.WHISPER;
+                    return ρσ_d;
+                }).call(this);
+            } else {
+                MESSAGE_TYPES = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["OOC"] = 1;
+                    ρσ_d["WHISPER"] = 4;
                     return ρσ_d;
                 }).call(this);
             }
@@ -9074,6 +9082,116 @@ return this.__repr__();
             __argnames__ : {value: ["name", "current", "total"]}
         });
 
+        function updateConditions(request, name, conditions, exhaustion) {
+            var display_conditions, message, MESSAGE_TYPES, module, tokens, effects, new_effects, new_conditions, defeated, effect_name, effect, data, token;
+            console.log("Updating Conditions for " + name + " : ", conditions, " - exhaustion level : ", exhaustion);
+            display_conditions = conditions;
+            if (exhaustion > 0) {
+                display_conditions = conditions.concat(ρσ_list_decorate([ "Exhausted (Level " + exhaustion + ")" ]));
+            }
+            if ((display_conditions.length === 0 || typeof display_conditions.length === "object" && ρσ_equals(display_conditions.length, 0))) {
+                message = name + " has no active condition";
+            } else {
+                message = name + " is : " + display_conditions.join(", ");
+            }
+            MESSAGE_TYPES = CONST.CHAT_MESSAGE_TYPES;
+            ChatMessage.create((function(){
+                var ρσ_d = {};
+                ρσ_d["content"] = message;
+                ρσ_d["user"] = game.user._id;
+                ρσ_d["speaker"] = roll_renderer._displayer._getSpeakerByName(name);
+                ρσ_d["type"] = MESSAGE_TYPES.EMOTE;
+                return ρσ_d;
+            }).call(this));
+            module = game.modules.find((function() {
+                var ρσ_anonfunc = function (m) {
+                    return (m.id === "beyond20" || typeof m.id === "object" && ρσ_equals(m.id, "beyond20"));
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["m"]}
+                });
+                return ρσ_anonfunc;
+            })());
+            if ((typeof module !== "undefined" && module !== null) && isNewerVersion(module.data.version, "0.6")) {
+                name = name.toLowerCase();
+                tokens = canvas.tokens.objects.children.filter((function() {
+                    var ρσ_anonfunc = function (t) {
+                        return ρσ_equals(t.data.name.toLowerCase(), name);
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["t"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
+                var ρσ_Iter2 = ρσ_Iterable(tokens);
+                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                    token = ρσ_Iter2[ρσ_Index2];
+                    effects = token.data.effects;
+                    new_effects = ρσ_list_decorate([]);
+                    new_conditions = conditions.map((function() {
+                        var ρσ_anonfunc = function (c) {
+                            return c.toLowerCase() + ".svg";
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["c"]}
+                        });
+                        return ρσ_anonfunc;
+                    })());
+                    defeated = false;
+                    if (exhaustion > 0) {
+                        if ((exhaustion === 6 || typeof exhaustion === "object" && ρσ_equals(exhaustion, 6))) {
+                            defeated = true;
+                        } else {
+                            new_conditions.push("exhaustion" + exhaustion + ".svg");
+                        }
+                    }
+                    var ρσ_Iter3 = ρσ_Iterable(effects);
+                    for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                        effect = ρσ_Iter3[ρσ_Index3];
+                        if (!effect.startsWith("modules/beyond20/conditions/")) {
+                            new_effects.push(effect);
+                        } else {
+                            effect_name = effect.slice(34);
+                            if (ρσ_in(effect_name, new_conditions)) {
+                                new_effects.push(effect);
+                                new_conditions = new_conditions.filter((function() {
+                                    var ρσ_anonfunc = function (c) {
+                                        return (c !== effect_name && (typeof c !== "object" || ρσ_not_equals(c, effect_name)));
+                                    };
+                                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                        __argnames__ : {value: ["c"]}
+                                    });
+                                    return ρσ_anonfunc;
+                                })());
+                            }
+                        }
+                    }
+                    console.log("From ", effects, "to ", new_effects, " still need to add ", new_conditions);
+                    new_effects = new_effects.concat(new_conditions.map((function() {
+                        var ρσ_anonfunc = function (c) {
+                            return "modules/beyond20/conditions/" + c;
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["c"]}
+                        });
+                        return ρσ_anonfunc;
+                    })()));
+                    data = (function(){
+                        var ρσ_d = {};
+                        ρσ_d["effects"] = new_effects;
+                        return ρσ_d;
+                    }).call(this);
+                    if (defeated) {
+                        data["overlayEffect"] = "icons/svg/skull.svg";
+                    }
+                    token.update(canvas.id, data);
+                }
+            }
+        };
+        if (!updateConditions.__argnames__) Object.defineProperties(updateConditions, {
+            __argnames__ : {value: ["request", "name", "conditions", "exhaustion"]}
+        });
+
         function setSettings(new_settings, url) {
             settings = new_settings;
             extension_url = url;
@@ -9086,9 +9204,9 @@ return this.__repr__();
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter2 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                event = ρσ_Iter2[ρσ_Index2];
+            var ρσ_Iter4 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                event = ρσ_Iter4[ρσ_Index4];
                 document.removeEventListener.apply(document, event);
             }
         };
@@ -9109,6 +9227,7 @@ return this.__repr__();
         registered_events.append(addCustomEventListener("Roll", handleRoll));
         registered_events.append(addCustomEventListener("NewSettings", setSettings));
         registered_events.append(addCustomEventListener("UpdateHP", updateHP));
+        registered_events.append(addCustomEventListener("UpdateConditions", updateConditions));
         registered_events.append(addCustomEventListener("disconnect", disconnectAllEvents));
         setTitle();
     })();

@@ -28,6 +28,9 @@ def handleMessage (request, sender, sendResponse):
     elif request.action == "hp-update":
         if settings["update-hp"]:
             sendCustomEvent("UpdateHP", (request.character.name, request.character.hp, request.character["max-hp"]))
+    elif request.action == "conditions-update":
+        if settings["display-conditions"]:
+            sendCustomEvent("UpdateConditions", (request, request.character.name, request.character.conditions, request.character.exhaustion))
     elif request.action == "roll":
         sendCustomEvent("Roll", (request, 0))
 

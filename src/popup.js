@@ -5838,7 +5838,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["display-conditions"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Display Condition updates to VTT";
-                ρσ_d["description"] = "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using FVTT with the Combat-Utility-Belt module, will also update status icons appropriately.";
+                ρσ_d["description"] = "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using FVTT with the Beyond20 module, it will also update the token's status icons appropriately.";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
@@ -7146,6 +7146,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 options.append(e);
                 e = options_list["vtt-tab"].createHTMLElement("vtt-tab", true);
                 options.append(e);
+                $(".beyond20-option-input").off("change", save_settings);
+                $(".beyond20-option-input").change(save_settings);
                 initializeSettings(gotSettings);
             } else if (urlMatches(tabs[0].url, DNDBEYOND_CHARACTER_URL)) {
                 chrome.tabs.sendMessage(tabs[0].id, (function(){
