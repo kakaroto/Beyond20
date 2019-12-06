@@ -96,6 +96,11 @@ def rollItem(force_display=False):
         to_hit = properties["To Hit"] ? \
             findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit")
 
+        if to_hit ?:
+            character._cacheToHit(item_name, to_hit)
+        else:
+            to_hit = character._getToHitCache(item_name)
+
         damages = []
         damage_types = []
         for i in range(prop_list.length):

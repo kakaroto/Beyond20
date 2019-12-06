@@ -139,6 +139,7 @@ class Character(CharacterBase):
         self._racial_traits = []
         self._feats = []
         self._actions = []
+        self._to_hit_cache = {}
 
     def updateInfo(self):
         self._id = $("#character-sheet-target").attr("data-character-id")
@@ -178,6 +179,14 @@ class Character(CharacterBase):
                 self._proficiency = $(".ct-combat-mobile__extra--proficiency .ct-combat-mobile__extra-value").text()
                 if self._proficiency == "":
                     self._proficiency = None
+        if Object.keys(self._to_hit_cache).length == 0:
+            items = $(".ct-combat-attack--item .ct-item-name")
+            for item in items:
+                item_name = item.textContent
+                to_hit = findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit")
+                console.log("Caching to hit for ", item_name, " : ", to_hit)
+                self._to_hit_cache[item_name] = to_hit
+
         # Values that could change/get overriden dynamically
         ac = $(".ct-armor-class-box__value").text()
         if ac == "":
@@ -320,6 +329,14 @@ class Character(CharacterBase):
             return self._classes[name]
         else:
             return 0
+
+    def _cacheToHit(self, item_name, to_hit):
+        self._to_hit_cache[item_name] = to_hit
+
+    def _getToHitCache(self, item_name):
+        if self._to_hit_cache[item_name] ?:
+            return self._to_hit_cache[item_name]
+        return None
 
     def mergeCharacterSettings(self, data):
         cb = def(settings):

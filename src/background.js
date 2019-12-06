@@ -6952,9 +6952,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if (failure) {
                         failure((tabs.length === 0 || typeof tabs.length === "object" && ρσ_equals(tabs.length, 0)));
                     }
-                    var ρσ_Iter11 = ρσ_Iterable(tabs);
-                    for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
-                        tab = ρσ_Iter11[ρσ_Index11];
+                    var ρσ_Iter0 = ρσ_Iterable(tabs);
+                    for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                        tab = ρσ_Iter0[ρσ_Index0];
                         chrome.tabs.sendMessage(tab.id, request);
                     }
                 };
@@ -6973,9 +6973,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         function filterVTTTab(request, limit, tabs, titleCB) {
             var found, tab;
             found = false;
-            var ρσ_Iter12 = ρσ_Iterable(tabs);
-            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
-                tab = ρσ_Iter12[ρσ_Index12];
+            var ρσ_Iter1 = ρσ_Iterable(tabs);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                tab = ρσ_Iter1[ρσ_Index1];
                 if (((limit.id === 0 || typeof limit.id === "object" && ρσ_equals(limit.id, 0)) || (tab.id === limit.id || typeof tab.id === "object" && ρσ_equals(tab.id, limit.id))) && ((limit.title === null || typeof limit.title === "object" && ρσ_equals(limit.title, null)) || ρσ_equals(titleCB(tab.title), limit.title))) {
                     chrome.tabs.sendMessage(tab.id, request);
                     found = true;
@@ -6988,9 +6988,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["vtt-tab"] = limit;
                     return ρσ_d;
                 }).call(this));
-                var ρσ_Iter13 = ρσ_Iterable(tabs);
-                for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
-                    tab = ρσ_Iter13[ρσ_Index13];
+                var ρσ_Iter2 = ρσ_Iterable(tabs);
+                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                    tab = ρσ_Iter2[ρσ_Index2];
                     if (ρσ_equals(titleCB(tab.title), limit.title)) {
                         chrome.tabs.sendMessage(tab.id, request);
                         found = true;
@@ -7075,9 +7075,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if (failure) {
                     failure((fvtt_tabs.length === 0 || typeof fvtt_tabs.length === "object" && ρσ_equals(fvtt_tabs.length, 0)));
                 }
-                var ρσ_Iter14 = ρσ_Iterable(fvtt_tabs);
-                for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
-                    tab = ρσ_Iter14[ρσ_Index14];
+                var ρσ_Iter3 = ρσ_Iterable(fvtt_tabs);
+                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                    tab = ρσ_Iter3[ρσ_Index3];
                     chrome.tabs.sendMessage(tab.id, request);
                 }
             }
@@ -7101,9 +7101,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function addFVTTTab(tab) {
             var t;
-            var ρσ_Iter15 = ρσ_Iterable(fvtt_tabs);
-            for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
-                t = ρσ_Iter15[ρσ_Index15];
+            var ρσ_Iter4 = ρσ_Iterable(fvtt_tabs);
+            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                t = ρσ_Iter4[ρσ_Index4];
                 if ((t.id === tab.id || typeof t.id === "object" && ρσ_equals(t.id, tab.id))) {
                     return;
                 }
@@ -7117,9 +7117,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function removeFVTTTab(id) {
             var t;
-            var ρσ_Iter16 = ρσ_Iterable(fvtt_tabs);
-            for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
-                t = ρσ_Iter16[ρσ_Index16];
+            var ρσ_Iter5 = ρσ_Iterable(fvtt_tabs);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                t = ρσ_Iter5[ρσ_Index5];
                 if ((t.id === id || typeof t.id === "object" && ρσ_equals(t.id, id))) {
                     fvtt_tabs.remove(t);
                     console.log("Removed ", id, " from fvtt tabs.");
@@ -7141,9 +7141,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 var ρσ_anonfunc = function (tabs) {
                     var found, tab;
                     found = false;
-                    var ρσ_Iter17 = ρσ_Iterable(tabs);
-                    for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
-                        tab = ρσ_Iter17[ρσ_Index17];
+                    var ρσ_Iter6 = ρσ_Iterable(tabs);
+                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                        tab = ρσ_Iter6[ρσ_Index6];
                         if (isFVTT(tab.title)) {
                             found = true;
                             break;
@@ -7199,9 +7199,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                                         onRollFailure(request, sendResponse);
                                     } else {
                                         vtts = ρσ_list_decorate([]);
-                                        var ρσ_Iter18 = ρσ_Iterable(trackFailure);
-                                        for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
-                                            key = ρσ_Iter18[ρσ_Index18];
+                                        var ρσ_Iter7 = ρσ_Iterable(trackFailure);
+                                        for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                                            key = ρσ_Iter7[ρσ_Index7];
                                             if (!trackFailure[(typeof key === "number" && key < 0) ? trackFailure.length + key : key]) {
                                                 vtts.append(key);
                                             }
@@ -7291,12 +7291,12 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function insertCSSs(tabs, css_files) {
             var file, tab;
-            var ρσ_Iter19 = ρσ_Iterable(tabs);
-            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
-                tab = ρσ_Iter19[ρσ_Index19];
-                var ρσ_Iter20 = ρσ_Iterable(css_files);
-                for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
-                    file = ρσ_Iter20[ρσ_Index20];
+            var ρσ_Iter8 = ρσ_Iterable(tabs);
+            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                tab = ρσ_Iter8[ρσ_Index8];
+                var ρσ_Iter9 = ρσ_Iterable(css_files);
+                for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                    file = ρσ_Iter9[ρσ_Index9];
                     chrome.tabs.insertCSS(tab.id, (function(){
                         var ρσ_d = {};
                         ρσ_d["file"] = file;
@@ -7311,12 +7311,12 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function executeScripts(tabs, js_files) {
             var file, tab;
-            var ρσ_Iter21 = ρσ_Iterable(tabs);
-            for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
-                tab = ρσ_Iter21[ρσ_Index21];
-                var ρσ_Iter22 = ρσ_Iterable(js_files);
-                for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
-                    file = ρσ_Iter22[ρσ_Index22];
+            var ρσ_Iter10 = ρσ_Iterable(tabs);
+            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                tab = ρσ_Iter10[ρσ_Index10];
+                var ρσ_Iter11 = ρσ_Iterable(js_files);
+                for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                    file = ρσ_Iter11[ρσ_Index11];
                     chrome.tabs.executeScript(tab.id, (function(){
                         var ρσ_d = {};
                         ρσ_d["file"] = file;
@@ -7363,9 +7363,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         if (ρσ_equals(getBrowser(), "Chrome")) {
             chrome.browserAction.onClicked.addListener(browserActionClicked);
             manifest = chrome.runtime.getManifest();
-            var ρσ_Iter23 = ρσ_Iterable(manifest.content_scripts);
-            for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
-                script = ρσ_Iter23[ρσ_Index23];
+            var ρσ_Iter12 = ρσ_Iterable(manifest.content_scripts);
+            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                script = ρσ_Iter12[ρσ_Index12];
                 cb = (function() {
                     var ρσ_anonfunc = function (js_files, css_files) {
                         return (function() {
