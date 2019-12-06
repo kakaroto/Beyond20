@@ -5800,6 +5800,15 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }).call(this);
                 return ρσ_d;
             }).call(this);
+            ρσ_d["quick-rolls"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["short"] = "Add Quick Roll areas";
+                ρσ_d["title"] = "Add Quick Rolls areas to main page";
+                ρσ_d["description"] = "Listen to clicks in specific areas of the abilities, skills, actions and spells to quickly roll them.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["auto-roll-damage"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Auto roll Damage and Crit";
@@ -11521,7 +11530,7 @@ return this.__repr__();
         var __name__ = "__main__";
 
 
-        var lastItemName, lastSpellName, lastSpellLevel, settings, character, observer;
+        var lastItemName, lastSpellName, lastSpellLevel, quick_roll, quick_roll_timeout, settings, character, observer;
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
         var RollType = ρσ_modules.settings.RollType;
@@ -12521,25 +12530,259 @@ return this.__repr__();
             })());
         };
 
+        quick_roll = false;
+        quick_roll_timeout = 0;
+        function deactivateTooltipListeners(el) {
+            return el.off("mouseenter").off("mouseleave").off("click");
+        };
+        if (!deactivateTooltipListeners.__argnames__) Object.defineProperties(deactivateTooltipListeners, {
+            __argnames__ : {value: ["el"]}
+        });
+
+        function activateTooltipListeners(el, tooltip, callback) {
+            el.on("mouseenter", (function() {
+                var ρσ_anonfunc = function (e) {
+                    var target, position;
+                    target = $(e.currentTarget);
+                    position = target.offset();
+                    position.left += target.width() / 2 - tooltip.width() / 2;
+                    position.top -= tooltip.height() + 5;
+                    tooltip.css(position);
+                    tooltip.show();
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["e"]}
+                });
+                return ρσ_anonfunc;
+            })()).on("mouseleave", (function() {
+                var ρσ_anonfunc = function (e) {
+                    tooltip.hide();
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["e"]}
+                });
+                return ρσ_anonfunc;
+            })()).on("click", (function() {
+                var ρσ_anonfunc = function (e) {
+                    callback(el);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["e"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!activateTooltipListeners.__argnames__) Object.defineProperties(activateTooltipListeners, {
+            __argnames__ : {value: ["el", "tooltip", "callback"]}
+        });
+
+        function deactivateQuickRolls() {
+            var abilities, saving_throws, skills, actions, spells;
+            abilities = $(".ct-ability-summary .ct-ability-summary__secondary");
+            saving_throws = $(".ct-saving-throws-summary__ability .ct-saving-throws-summary__ability-modifier");
+            skills = $(".ct-skills .ct-skills__col--modifier");
+            actions = $(".ct-combat-attack .ct-combat-attack__icon");
+            spells = $(".ct-spells-spell .ct-spells-spell__action");
+            deactivateTooltipListeners(abilities);
+            deactivateTooltipListeners(saving_throws);
+            deactivateTooltipListeners(skills);
+            deactivateTooltipListeners(actions);
+            deactivateTooltipListeners(spells);
+            return [abilities, saving_throws, skills, actions, spells];
+        };
+
+        function activateQuickRolls() {
+            var beyond20_tooltip, img, div, ρσ_unpack, abilities, saving_throws, skills, actions, spells, quickRollAbility, ability, quickRollSave, save, quickRollSkill, skill, quickRollAction, action, quickRollSpell, spell;
+            if (quick_roll) {
+                return;
+            }
+            beyond20_tooltip = $(".beyond20-quick-roll-tooltip");
+            if ((beyond20_tooltip.length === 0 || typeof beyond20_tooltip.length === "object" && ρσ_equals(beyond20_tooltip.length, 0))) {
+                img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "beyond20-quick-roll-icon", src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 5px;margin-left: 5px;padding: 5px 10px;"})]);
+                div = ρσ_interpolate_kwargs.call(E, E.div, [img].concat([ρσ_desugar_kwargs({class_: "beyond20-quick-roll-tooltip"})]));
+                beyond20_tooltip = $(div);
+                beyond20_tooltip.css((function(){
+                    var ρσ_d = {};
+                    ρσ_d["position"] = "fixed";
+                    ρσ_d["background"] = "url(\"https://www.dndbeyond.com/Content/Skins/Waterdeep/images/character-sheet/content-frames/inspiration.svg\") 50% center no-repeat transparent";
+                    ρσ_d["background-size"] = "contain";
+                    return ρσ_d;
+                }).call(this));
+                beyond20_tooltip.hide();
+                $("body").append(beyond20_tooltip);
+            }
+            ρσ_unpack = deactivateQuickRolls();
+ρσ_unpack = ρσ_unpack_asarray(5, ρσ_unpack);
+            abilities = ρσ_unpack[0];
+            saving_throws = ρσ_unpack[1];
+            skills = ρσ_unpack[2];
+            actions = ρσ_unpack[3];
+            spells = ρσ_unpack[4];
+            if (!settings["quick-rolls"]) {
+                return;
+            }
+            var ρσ_Iter11 = ρσ_Iterable(abilities);
+            for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                ability = ρσ_Iter11[ρσ_Index11];
+                quickRollAbility = (function() {
+                    var ρσ_anonfunc = function (el) {
+                        var name, pane_name;
+                        name = el.closest(".ct-ability-summary").find(".ct-ability-summary__heading .ct-ability-summary__label").text();
+                        pane_name = $(".ct-ability-pane .ct-sidebar__heading").text().split(" ")[0];
+                        if ((name === pane_name || typeof name === "object" && ρσ_equals(name, pane_name))) {
+                            execute("ct-ability-pane");
+                        } else {
+                            quick_roll = true;
+                        }
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["el"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                activateTooltipListeners($(ability), beyond20_tooltip, quickRollAbility);
+            }
+            var ρσ_Iter12 = ρσ_Iterable(saving_throws);
+            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                save = ρσ_Iter12[ρσ_Index12];
+                quickRollSave = (function() {
+                    var ρσ_anonfunc = function (el) {
+                        var name, pane_name;
+                        name = el.closest(".ct-saving-throws-summary__ability").find(".ct-saving-throws-summary__ability-name").text().slice(0, 3).toLowerCase();
+                        pane_name = $(".ct-ability-saving-throws-pane .ct-sidebar__heading").text().slice(0, 3).toLowerCase();
+                        if ((name === pane_name || typeof name === "object" && ρσ_equals(name, pane_name))) {
+                            execute("ct-ability-saving-throws-pane");
+                        } else {
+                            quick_roll = true;
+                        }
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["el"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                activateTooltipListeners($(save), beyond20_tooltip, quickRollSave);
+            }
+            var ρσ_Iter13 = ρσ_Iterable(skills);
+            for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
+                skill = ρσ_Iter13[ρσ_Index13];
+                quickRollSkill = (function() {
+                    var ρσ_anonfunc = function (el) {
+                        var name, pane, paneClass, pane_name;
+                        name = el.closest(".ct-skills__item").find(".ct-skills__col--skill").text();
+                        var ρσ_Iter14 = ρσ_Iterable(ρσ_list_decorate([ "ct-skill-pane", "ct-custom-skill-pane" ]));
+                        for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
+                            paneClass = ρσ_Iter14[ρσ_Index14];
+                            pane = $("." + paneClass);
+                            if (pane.length > 0) {
+                                break;
+                            }
+                        }
+                        pane_name = pane.find(".ct-sidebar__heading ." + paneClass + "__header-name").text();
+                        if ((name === pane_name || typeof name === "object" && ρσ_equals(name, pane_name))) {
+                            execute(paneClass);
+                        } else {
+                            quick_roll = true;
+                        }
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["el"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                activateTooltipListeners($(skill), beyond20_tooltip, quickRollSkill);
+            }
+            var ρσ_Iter15 = ρσ_Iterable(actions);
+            for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
+                action = ρσ_Iter15[ρσ_Index15];
+                quickRollAction = (function() {
+                    var ρσ_anonfunc = function (el) {
+                        var name, pane, paneClass, pane_name;
+                        name = el.closest(".ct-combat-attack").find(".ct-combat-attack__name .ct-combat-attack__label").text();
+                        var ρσ_Iter16 = ρσ_Iterable(ρσ_list_decorate([ "ct-item-pane", "ct-action-pane", "ct-custom-action-pane", "ct-spell-pane" ]));
+                        for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
+                            paneClass = ρσ_Iter16[ρσ_Index16];
+                            pane = $("." + paneClass);
+                            if (pane.length > 0) {
+                                break;
+                            }
+                        }
+                        pane_name = pane.find(".ct-sidebar__heading").text();
+                        if ((name === pane_name || typeof name === "object" && ρσ_equals(name, pane_name))) {
+                            execute(paneClass);
+                        } else {
+                            quick_roll = true;
+                        }
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["el"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                activateTooltipListeners($(action), beyond20_tooltip, quickRollAction);
+            }
+            var ρσ_Iter17 = ρσ_Iterable(spells);
+            for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
+                spell = ρσ_Iter17[ρσ_Index17];
+                quickRollSpell = (function() {
+                    var ρσ_anonfunc = function (el) {
+                        var name, pane_name;
+                        name = el.closest(".ct-spells-spell").find(".ct-spell-name").text();
+                        pane_name = $(".ct-spell-pane .ct-sidebar__heading .ct-spell-name").text();
+                        if ((name === pane_name || typeof name === "object" && ρσ_equals(name, pane_name))) {
+                            execute("ct-spell-pane");
+                        } else {
+                            quick_roll = true;
+                        }
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["el"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                activateTooltipListeners($(spell), beyond20_tooltip, quickRollSpell);
+            }
+        };
+
+        function executeQuickRoll(paneClass) {
+            quick_roll_timeout = 0;
+            console.log("EXECUTING QUICK ROLL!");
+            execute(paneClass);
+            quick_roll = false;
+        };
+        if (!executeQuickRoll.__argnames__) Object.defineProperties(executeQuickRoll, {
+            __argnames__ : {value: ["paneClass"]}
+        });
+
         function documentModified(mutations, observer) {
             var pane, paneClass, div;
             if (isExtensionDisconnected()) {
+                deactivateQuickRolls();
                 observer.disconnect();
                 return;
             }
             character.updateInfo();
             injectRollToSpellAttack();
             injectSettingsButton();
+            activateQuickRolls();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index11 = 0; ρσ_Index11 < pane.length; ρσ_Index11++) {
-                    div = ρσ_Index11;
+                for (var ρσ_Index18 = 0; ρσ_Index18 < pane.length; ρσ_Index18++) {
+                    div = ρσ_Index18;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls")) || (paneClass === "ct-beyond20-settings-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-beyond20-settings-pane"))) {
                         continue;
                     }
                     console.log("Beyond20: New side panel is : " + paneClass);
                     injectRollButton(paneClass);
+                    if (quick_roll) {
+                        if (quick_roll_timeout > 0) {
+                            clearTimeout(quick_roll_timeout);
+                        }
+                        quick_roll_timeout = setTimeout(function () {
+                            executeQuickRoll(paneClass);
+                        }, 50);
+                    }
                 }
             }
         };

@@ -5800,6 +5800,15 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }).call(this);
                 return ρσ_d;
             }).call(this);
+            ρσ_d["quick-rolls"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["short"] = "Add Quick Roll areas";
+                ρσ_d["title"] = "Add Quick Rolls areas to main page";
+                ρσ_d["description"] = "Listen to clicks in specific areas of the abilities, skills, actions and spells to quickly roll them.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["auto-roll-damage"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Auto roll Damage and Crit";

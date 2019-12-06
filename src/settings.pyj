@@ -67,6 +67,12 @@ options_list = {
                               str(RollType.SUPER_ADVANTAGE): "Roll with Super Advantage",
                               str(RollType.SUPER_DISADVANTAGE): "Roll with Super Disadvantage",}},
 
+    "quick-rolls": {"short": "Add Quick Roll areas",
+                    "title": "Add Quick Rolls areas to main page",
+                       "description": "Listen to clicks in specific areas of the abilities, skills, actions and spells to quickly roll them.",
+                       "type": "bool",
+                       "default": True},
+
     "auto-roll-damage": {"title": "Auto roll Damage and Crit",
                        "description": "Always roll damage and critical hit dice when doing an attack",
                        "type": "bool",
