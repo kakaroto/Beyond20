@@ -5705,6 +5705,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         RollType.prototype.QUERY = 2;
         RollType.prototype.ADVANTAGE = 3;
         RollType.prototype.DISADVANTAGE = 4;
+        RollType.prototype.THRICE = 5;
+        RollType.prototype.SUPER_ADVANTAGE = 6;
+        RollType.prototype.SUPER_DISADVANTAGE = 7;
 
         function CriticalRules() {
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
@@ -5773,6 +5776,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d[str(RollType.prototype.QUERY)] = "Ask every time";
                     ρσ_d[str(RollType.prototype.ADVANTAGE)] = "Roll with Advantage";
                     ρσ_d[str(RollType.prototype.DISADVANTAGE)] = "Roll with Disadvantage";
+                    ρσ_d[str(RollType.prototype.THRICE)] = "Always roll thrice (limited support on Roll20)";
+                    ρσ_d[str(RollType.prototype.SUPER_ADVANTAGE)] = "Roll with Super Advantage";
+                    ρσ_d[str(RollType.prototype.SUPER_DISADVANTAGE)] = "Roll with Super Disadvantage";
                     return ρσ_d;
                 }).call(this);
                 return ρσ_d;

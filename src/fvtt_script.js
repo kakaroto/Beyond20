@@ -5707,6 +5707,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         RollType.prototype.QUERY = 2;
         RollType.prototype.ADVANTAGE = 3;
         RollType.prototype.DISADVANTAGE = 4;
+        RollType.prototype.THRICE = 5;
+        RollType.prototype.SUPER_ADVANTAGE = 6;
+        RollType.prototype.SUPER_DISADVANTAGE = 7;
 
         function CriticalRules() {
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
@@ -5775,6 +5778,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d[str(RollType.prototype.QUERY)] = "Ask every time";
                     ρσ_d[str(RollType.prototype.ADVANTAGE)] = "Roll with Advantage";
                     ρσ_d[str(RollType.prototype.DISADVANTAGE)] = "Roll with Disadvantage";
+                    ρσ_d[str(RollType.prototype.THRICE)] = "Always roll thrice (limited support on Roll20)";
+                    ρσ_d[str(RollType.prototype.SUPER_ADVANTAGE)] = "Roll with Super Advantage";
+                    ρσ_d[str(RollType.prototype.SUPER_DISADVANTAGE)] = "Roll with Super Disadvantage";
                     return ρσ_d;
                 }).call(this);
                 return ρσ_d;
@@ -7330,16 +7336,20 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
         Beyond20RollRenderer.prototype.queryAdvantage = function queryAdvantage(title) {
             var self = this;
-            var choices;
+            var choices, order;
             choices = (function(){
                 var ρσ_d = {};
-                ρσ_d["2"] = "Roll Twice";
-                ρσ_d["0"] = "Normal Roll";
-                ρσ_d["1"] = "Advantage";
-                ρσ_d["-1"] = "Disadvantage";
+                ρσ_d[RollType.prototype.NORMAL] = "Normal Roll";
+                ρσ_d[RollType.prototype.DOUBLE] = "Roll Twice";
+                ρσ_d[RollType.prototype.ADVANTAGE] = "Advantage";
+                ρσ_d[RollType.prototype.DISADVANTAGE] = "Disadvantage";
+                ρσ_d[RollType.prototype.THRICE] = "Roll Thrice";
+                ρσ_d[RollType.prototype.SUPER_ADVANTAGE] = "Super Advantage";
+                ρσ_d[RollType.prototype.SUPER_DISADVANTAGE] = "Super Disadvantage";
                 return ρσ_d;
             }).call(this);
-            return ρσ_interpolate_kwargs.call(self, self.queryGeneric, [title, "Select roll mode : ", choices, "roll-mode"].concat([ρσ_desugar_kwargs({order: ρσ_list_decorate([ "2", "0", "1", "-1" ])})])).then((function() {
+            order = ρσ_list_decorate([ RollType.prototype.DOUBLE, RollType.prototype.NORMAL, RollType.prototype.ADVANTAGE, RollType.prototype.DISADVANTAGE, RollType.prototype.THRICE, RollType.prototype.SUPER_ADVANTAGE, RollType.prototype.SUPER_DISADVANTAGE ]);
+            return self.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order).then((function() {
                 var ρσ_anonfunc = function (val) {
                     return int(val);
                 };
@@ -7368,41 +7378,58 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var async_function;
             async_function = async            function () {
-                var advantage, adv, roll_1, roll_2;
+                var advantage, roll_1, roll_2, roll_3;
                 advantage = request.advantage;
                 if ((advantage === RollType.prototype.QUERY || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.QUERY))) {
-                    adv = await self.queryAdvantage(title);
-                    if ((adv === 0 || typeof adv === "object" && ρσ_equals(adv, 0))) {
-                        advantage = RollType.prototype.NORMAL;
-                    } else if ((adv === 2 || typeof adv === "object" && ρσ_equals(adv, 2))) {
-                        advantage = RollType.prototype.DOUBLE;
-                    } else if ((adv === 1 || typeof adv === "object" && ρσ_equals(adv, 1))) {
-                        advantage = RollType.prototype.ADVANTAGE;
-                    } else if ((adv === -1 || typeof adv === "object" && ρσ_equals(adv, -1))) {
-                        advantage = RollType.prototype.DISADVANTAGE;
-                    } else {
-                        advantage = RollType.prototype.NORMAL;
-                    }
+                    advantage = await self.queryAdvantage(title);
                 }
                 if ((advantage === RollType.prototype.NORMAL || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.NORMAL))) {
                     return ρσ_list_decorate([ self.createRoll("1d20" + modifier, data) ]);
-                } else {
+                } else if (ρσ_list_decorate([ RollType.prototype.DOUBLE, RollType.prototype.ADVANTAGE, RollType.prototype.DISADVANTAGE ]).includes(advantage)) {
                     roll_1 = self.createRoll("1d20" + modifier, data);
                     roll_2 = self.createRoll("1d20" + modifier, data);
                     if ((advantage === RollType.prototype.ADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.ADVANTAGE))) {
-                        if (roll_2.total > roll_1.total) {
-                            roll_1.setDiscarded(true);
-                        } else {
+                        if (roll_1.total >= roll_2.total) {
                             roll_2.setDiscarded(true);
+                        } else {
+                            roll_1.setDiscarded(true);
                         }
                     } else if ((advantage === RollType.prototype.DISADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.DISADVANTAGE))) {
-                        if (roll_2.total < roll_1.total) {
-                            roll_1.setDiscarded(true);
-                        } else {
+                        if (roll_1.total <= roll_2.total) {
                             roll_2.setDiscarded(true);
+                        } else {
+                            roll_1.setDiscarded(true);
                         }
                     }
                     return ρσ_list_decorate([ roll_1, roll_2 ]);
+                } else if (ρσ_list_decorate([ RollType.prototype.THRICE, RollType.prototype.SUPER_ADVANTAGE, RollType.prototype.SUPER_DISADVANTAGE ]).includes(advantage)) {
+                    roll_1 = self.createRoll("1d20" + modifier, data);
+                    roll_2 = self.createRoll("1d20" + modifier, data);
+                    roll_3 = self.createRoll("1d20" + modifier, data);
+                    if ((advantage === RollType.prototype.SUPER_ADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.SUPER_ADVANTAGE))) {
+                        if (roll_1.total >= roll_2.total && roll_1.total >= roll_3.total) {
+                            roll_2.setDiscarded(true);
+                            roll_3.setDiscarded(true);
+                        } else if (roll_2.total >= roll_3.total) {
+                            roll_1.setDiscarded(true);
+                            roll_3.setDiscarded(true);
+                        } else {
+                            roll_1.setDiscarded(true);
+                            roll_2.setDiscarded(true);
+                        }
+                    } else if ((advantage === RollType.prototype.SUPER_DISADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.SUPER_DISADVANTAGE))) {
+                        if (roll_1.total <= roll_2.total && roll_1.total <= roll_3.total) {
+                            roll_2.setDiscarded(true);
+                            roll_3.setDiscarded(true);
+                        } else if (roll_2.total <= roll_3.total) {
+                            roll_1.setDiscarded(true);
+                            roll_3.setDiscarded(true);
+                        } else {
+                            roll_1.setDiscarded(true);
+                            roll_2.setDiscarded(true);
+                        }
+                    }
+                    return ρσ_list_decorate([ roll_1, roll_2, roll_3 ]);
                 }
             }
             return async_function();

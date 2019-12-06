@@ -13,6 +13,9 @@ class RollType:
     QUERY = 2
     ADVANTAGE = 3
     DISADVANTAGE = 4
+    THRICE = 5
+    SUPER_ADVANTAGE = 6
+    SUPER_DISADVANTAGE = 7
 
 class CriticalRules:
     PHB = 0
@@ -59,7 +62,10 @@ options_list = {
                               str(RollType.DOUBLE): "Always roll twice",
                               str(RollType.QUERY): "Ask every time",
                               str(RollType.ADVANTAGE): "Roll with Advantage",
-                              str(RollType.DISADVANTAGE): "Roll with Disadvantage"}},
+                              str(RollType.DISADVANTAGE): "Roll with Disadvantage",
+                              str(RollType.THRICE): "Always roll thrice (limited support on Roll20)",
+                              str(RollType.SUPER_ADVANTAGE): "Roll with Super Advantage",
+                              str(RollType.SUPER_DISADVANTAGE): "Roll with Super Disadvantage",}},
 
     "auto-roll-damage": {"title": "Auto roll Damage and Crit",
                        "description": "Always roll damage and critical hit dice when doing an attack",

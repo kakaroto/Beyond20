@@ -5706,6 +5706,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         RollType.prototype.QUERY = 2;
         RollType.prototype.ADVANTAGE = 3;
         RollType.prototype.DISADVANTAGE = 4;
+        RollType.prototype.THRICE = 5;
+        RollType.prototype.SUPER_ADVANTAGE = 6;
+        RollType.prototype.SUPER_DISADVANTAGE = 7;
 
         function CriticalRules() {
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
@@ -5774,6 +5777,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d[str(RollType.prototype.QUERY)] = "Ask every time";
                     ρσ_d[str(RollType.prototype.ADVANTAGE)] = "Roll with Advantage";
                     ρσ_d[str(RollType.prototype.DISADVANTAGE)] = "Roll with Disadvantage";
+                    ρσ_d[str(RollType.prototype.THRICE)] = "Always roll thrice (limited support on Roll20)";
+                    ρσ_d[str(RollType.prototype.SUPER_ADVANTAGE)] = "Roll with Super Advantage";
+                    ρσ_d[str(RollType.prototype.SUPER_DISADVANTAGE)] = "Roll with Super Disadvantage";
                     return ρσ_d;
                 }).call(this);
                 return ρσ_d;
@@ -6850,7 +6856,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
         BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
         ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
-        ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125}}";
+        ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Super Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2kh}&#125&#125|Super Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2kl}&#125&#125}}";
         ROLL20_TOLL_THE_DEAD_QUERY = "?{Is the target missing any of its hit points?|Yes,d12|No,d8}";
         ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
         ρσ_modules.constants.FVTT_URL = FVTT_URL;
@@ -7102,9 +7108,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_d = {};
                     ρσ_d[RollType.prototype.NORMAL] = " {{normal=1}}";
                     ρσ_d[RollType.prototype.DOUBLE] = " {{always=1}} {{r2=" + r1 + "}}";
-                    ρσ_d[RollType.prototype.QUERY] = ρσ_interpolate_kwargs.call(str, str.format, [ROLL20_ADVANTAGE_QUERY].concat([ρσ_desugar_kwargs({r2: r1})]));
+                    ρσ_d[RollType.prototype.THRICE] = " {{always=1}} {{r2=" + r1 + "}} {{r3=" + r1 + "}}";
+                    ρσ_d[RollType.prototype.QUERY] = ρσ_interpolate_kwargs.call(str, str.format, [ROLL20_ADVANTAGE_QUERY].concat([ρσ_desugar_kwargs({r2: r1, r2kh: r1.replace("1d20", "2d20kh1"), r2kl: r1.replace("1d20", "2d20kl1")})]));
                     ρσ_d[RollType.prototype.ADVANTAGE] = " {{advantage=1}} {{r2=" + r1 + "}}";
                     ρσ_d[RollType.prototype.DISADVANTAGE] = " {{disadvantage=1}} {{r2=" + r1 + "}}";
+                    ρσ_d[RollType.prototype.SUPER_ADVANTAGE] = " {{advantage=1}} {{r2=" + r1.replace("1d20", "2d20kh1") + "}}";
+                    ρσ_d[RollType.prototype.SUPER_DISADVANTAGE] = " {{disadvantage=1}} {{r2=" + r1.replace("1d20", "2d20kl1") + "}}";
                     return ρσ_d;
                 }).call(this))[(typeof advantage === "number" && advantage < 0) ? ρσ_expr_temp.length + advantage : advantage];
             } catch (ρσ_Exception) {
@@ -7183,8 +7192,11 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if (ρσ_in("{{r2=", result) || ρσ_in("&#123&#123r2=", result)) {
                     renameProp("r1", "Regular Roll");
                     renameProp("r2", "Roll with [Dis]Advantage");
+                    renameProp("r3", "Roll with Super [Dis]Advantage");
                     result = result.replace("&#123&#123r2=", "&#123&#123Roll with Advantage=");
                     result = result.replace("&#123&#123r2=", "&#123&#123Roll with Disadvantage=");
+                    result = result.replace("&#123&#123r2=", "&#123&#123Roll with Super Advantage=");
+                    result = result.replace("&#123&#123r2=", "&#123&#123Roll with Super Disadvantage=");
                 } else {
                     renameProp("r1", "Dice Roll");
                 }
@@ -7218,6 +7230,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 removeProp("advantage");
                 removeProp("disadvantage");
                 removeProp("query");
+            } else {
+                properties["r3"] = properties["r1"];
+                removeProp("r3");
+                ρσ_delitem(properties, "r3");
             }
             return result;
         };
@@ -7367,7 +7383,18 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_d;
             }).call(this);
             if (settings["initiative-tracker"]) {
-                dice = ((request.advantage === RollType.prototype.ADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.ADVANTAGE))) ? "2d20kh1" : "1d20";
+                if ((request.advantage === RollType.prototype.ADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.ADVANTAGE))) {
+                    dice = "2d20kh1";
+                } else if ((request.advantage === RollType.prototype.SUPER_ADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.SUPER_ADVANTAGE))) {
+                    dice = "3d20kh1";
+                }
+                if ((request.advantage === RollType.prototype.DISADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DISADVANTAGE))) {
+                    dice = "2d20kl1";
+                } else if ((request.advantage === RollType.prototype.SUPER_DISADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.SUPER_DISADVANTAGE))) {
+                    dice = "3d20kl1";
+                } else {
+                    dice = "1d20";
+                }
                 roll_properties["r1"] = genRoll(dice, (function(){
                     var ρσ_d = {};
                     ρσ_d["INIT"] = request.initiative;

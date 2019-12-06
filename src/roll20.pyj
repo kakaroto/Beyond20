@@ -112,9 +112,12 @@ def advantageString(advantage, r1):
     try:
         return {RollType.NORMAL: " {{normal=1}}",
                 RollType.DOUBLE: " {{always=1}} {{r2=" + r1 + "}}",
-                RollType.QUERY: str.format(ROLL20_ADVANTAGE_QUERY, r2=r1),
+                RollType.THRICE: " {{always=1}} {{r2=" + r1 + "}} {{r3=" + r1 + "}}",
+                RollType.QUERY: str.format(ROLL20_ADVANTAGE_QUERY, r2=r1, r2kh=r1.replace("1d20", "2d20kh1"), r2kl=r1.replace("1d20", "2d20kl1")),
                 RollType.ADVANTAGE: " {{advantage=1}} {{r2=" + r1 + "}}",
                 RollType.DISADVANTAGE: " {{disadvantage=1}} {{r2=" + r1 + "}}",
+                RollType.SUPER_ADVANTAGE: " {{advantage=1}} {{r2=" + r1.replace("1d20", "2d20kh1") + "}}",
+                RollType.SUPER_DISADVANTAGE: " {{disadvantage=1}} {{r2=" + r1.replace("1d20", "2d20kl1") + "}}",
                 }[advantage]
     except:
         return " {{normal=1}}"
@@ -164,8 +167,11 @@ def template(request, name, properties):
         if "{{r2=" in result or "&#123&#123r2=" in result:
             renameProp("r1", "Regular Roll")
             renameProp("r2", "Roll with [Dis]Advantage")
+            renameProp("r3", "Roll with Super [Dis]Advantage")
             result = result.replace("&#123&#123r2=", "&#123&#123Roll with Advantage=")
             result = result.replace("&#123&#123r2=", "&#123&#123Roll with Disadvantage=")
+            result = result.replace("&#123&#123r2=", "&#123&#123Roll with Super Advantage=")
+            result = result.replace("&#123&#123r2=", "&#123&#123Roll with Super Disadvantage=")
         else:
             renameProp("r1", "Dice Roll")
         renameProp("mod", "Modifier")
@@ -197,6 +203,10 @@ def template(request, name, properties):
         removeProp("advantage")
         removeProp("disadvantage")
         removeProp("query")
+    else:
+        properties["r3"] = properties["r1"]
+        removeProp("r3")
+        del properties["r3"]
 
     return result
 
@@ -255,7 +265,16 @@ def rollInitiative(request, custom_roll_dice=""):
                        "rname" : "Initiative",
                        "mod": request.initiative}
     if settings["initiative-tracker"]:
-        dice = "2d20kh1" if request.advantage == RollType.ADVANTAGE else "1d20"
+        if request.advantage == RollType.ADVANTAGE:
+            dice = "2d20kh1"
+        elif request.advantage == RollType.SUPER_ADVANTAGE:
+            dice = "3d20kh1"
+        if request.advantage == RollType.DISADVANTAGE:
+            dice = "2d20kl1"
+        elif request.advantage == RollType.SUPER_DISADVANTAGE:
+            dice = "3d20kl1"
+        else:
+            dice = "1d20"
         roll_properties["r1"] = genRoll(dice, {"INIT": request.initiative, "CUSTOM": custom_roll_dice, "": "&{tracker}"})
         roll_properties["normal"] = 1
     else:
