@@ -69,3 +69,5 @@ The donation icon is a public domain contribution by Fission Strategy, US, downl
 The 'up' arrow (docs/images/up-arrow.png) used in the screenshots page is a public domain image shared by OCAL on [clker.com](http://www.clker.com/clipart-16838.html)
 
 The options page was copied in part from the `D&D Beyond Toolbox` extension available [here](https://github.com/mouse0270/Beyonds-Toolbox/). The html and css files are licensed under the MIT license which is provided in the LICENSE.MIT file
+
+The condition icons (FVTT-module/beyond20/conditions) are from https://game-icons.net/ and licensed under a Creative Common CC-BY 3.0 License. The license for those icons is available at https://creativecommons.org/licenses/by/3.0/
