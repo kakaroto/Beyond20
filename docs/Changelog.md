@@ -1,3 +1,30 @@
+v0.8
+===
+
+* **Feature**: Add Quick Rolls feature to quickly roll skills, attacks, spells from the main page directly
+* **Feature**: Add support for Super Advantage and Super Disadvantage rolls
+* **Feature**: Track Character Condition changes and display them in the VTT
+* **Feature**: Add roll type option of always rolling three twice instead of twice (For Elven Accuracy Feat; limited support on Roll20)
+* **Feature**: Cache the To-Hit value of weapons attacks so they can be rolled from the Equipment page
+* **Feature**: Add support for the Paladin's Improved Divine Smite extra radiant damage
+* **Feature**: Add support for special spell: Absorb Elements (Doesn't duplicate all the damage types)
+* **Feature**: Add support for special spell: Life Transference (Shows healing amount on FVTT, clarifies the value on Roll20)
+* **Feature**: Add support for special spell: Toll the Dead (Queries if the target is missing hit points)
+* **Feature**: *Roll20*: When rolling initiative with 'add to tracker' enabled and 'roll twice' (or thrice), queries the user for advantage mode
+* **Feature**: *FVTT*: Map Character Conditions to status effects (Requires Beyond20 FVTT module version 0.7+)
+* **Bugfix**: *Roll20*: Fix the 'incognito' whisper mode where the monster name was leaked with the 'Speaking As' feature
+* **Bugfix**: Fix inability to roll when opening the character sheet for the first time with a mobile or tablet layout
+* **Bugfix**: Fix duplication of the "Roll initiative" lines in stat blocks when switching monsters in the My Encounters page
+* **Bugfix**: Fix the spell name for concentration or ritual spells since the recent change to D&D Beyond content
+* **Bugfix**: Fix Great Weapong Fighting dice reroll being mistakenly applied on some two-handed non-melee weapons
+* **Bugfix**: Fix the spell level/school display missing spaces introduced in the recent code refactor of v0.7
+* **Bugfix**: Fix character action list not being properly cached which may lead to loss of character options on mobile
+* **Bugfix**: Fix parsing of stat block attacks for Clay Gladiator and Scout which had typos in the official D&D Beyond pages
+* **Bugfix**: Fix Spell Attack roll which show displayed the modifier instead of rolling the 1d20
+* **Bugfix**: *FVTT*: Fix dice roll formulas in descriptions not being clickable in FVTT 0.4.x
+* **Bugfix**: *Dice Roller*: Fix display bug on rolls after opening the quick settings dialog
+* **Bugfix**: Fix full settings window opening donate link inside the iframe instead of a new tab
+
 v0.7
 ===
 

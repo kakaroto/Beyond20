@@ -11,7 +11,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Ability checks
 * Saving throws
 * Skill checks
-  * Custom skills (if no ability is specified, a macro will ask the player in the VTT)
+  * Custom skills (if no ability is specified, the player is queried in the VTT)
 * Initiative rolls
   * Rolls with Advantage if the character has the feat
   * Adds the initiative to the tracker
@@ -35,6 +35,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
   * Dice formulas are detected in items, spells, actions or custom actions, class features, racial traits or Feats
   * The dice formula is clickable in the D&D beyond side panel, as well as in the VTT chat text
   * The clickable dice can be disabled to not show in the D&D Beyond page or in the VTT text, separately
+* Condition tracking
 * Creatures stat blocks
 * Vehicles stat blocks
 * Tools
@@ -85,17 +86,23 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Bloodhunter: Crimson Rite
 * Ranger: Dread Ambusher
 * Paladin: Legendary Strike (UA)
+* Paladin: Improved Divine Smite
 * Warlock: Hexblade's Curse
+* Fear: Elven Accuracy  (Via super advantage option)
 
 # Special Spells supported
 * Chromatic Orb: Macro to ask which damage type to use
 * Chaos Bolt: Damage type set to 'chaotic energy' instead of rolling for each damage (Roll20) or query damage type depending on roll result.
+* Absorb Elements: Damage type is set to 'Absorbed type' instead of rolling each
+* Toll the Dead: Queries the player if the enemy is missing hit points
+* Life Transference: Healing is shown equal to the necrotic damage
+
 
 ## Configurable options
 * Whisper rolls (yes, no, query the user)
 * Whisper rolls for monster pages
 * Incognito rolls for monster pages
-* Roll types (normal, roll twice, query the user, roll with advantage, roll with disadvantage)
+* Roll types (normal, roll twice, roll thrice, query the user, roll with advantage, roll with disadvantage, roll with super advantage, roll with super disadvantage)
 * Auto roll damage and crit
 * Add initiative to the tracker (requires token to be selected)
 * Automatically update HP in the VTT sheets and tokens
@@ -135,7 +142,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 
 ## Roll20 Character Sheet Templates
 * D&D 5e By Roll20
-  * This is the official character sheet template I use and develop for and the one I recommend
+  * This is the official character sheet template I used and developed for and the one I recommend
 * Fallback option for all other templates
 
 
