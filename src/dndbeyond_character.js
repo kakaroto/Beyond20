@@ -12475,7 +12475,7 @@ return this.__repr__();
                             sendRollWithCharacter("custom", "1d20" + mod, (function(){
                                 var ρσ_d = {};
                                 ρσ_d["name"] = name;
-                                ρσ_d["modifier"] = mod;
+                                ρσ_d["modifier"] = "1d20" + mod;
                                 return ρσ_d;
                             }).call(this));
                         };

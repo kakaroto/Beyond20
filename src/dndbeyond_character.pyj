@@ -687,7 +687,7 @@ def injectRollToSpellAttack():
             $(".ct-beyond20-spell-attack").on('click', def(event):
                 name = $(event.currentTarget).attr("x-beyond20-name")
                 mod = $(event.currentTarget).attr("x-beyond20-modifier")
-                sendRollWithCharacter("custom", "1d20" + mod, {"name": name, "modifier": mod})
+                sendRollWithCharacter("custom", "1d20" + mod, {"name": name, "modifier": "1d20" + mod})
             )
 
 def injectSettingsButton():
