@@ -6936,6 +6936,20 @@ var str = ρσ_str, repr = ρσ_repr;;
             $("#save").bind("click", save_settings);
             $(".beyond20-option-input").change(save_settings);
             $(".beyond20-options").on("markaChanged", save_settings);
+            $(document).on("click", "a", (function() {
+                var ρσ_anonfunc = function (ev) {
+                    var href;
+                    href = this.getAttribute("href");
+                    if (len(href) > 0 && (href !== "#" && (typeof href !== "object" || ρσ_not_equals(href, "#")))) {
+                        window.open(this.href);
+                    }
+                    return false;
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["ev"]}
+                });
+                return ρσ_anonfunc;
+            })());
         };
 
         setupHTML();

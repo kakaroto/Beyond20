@@ -31,6 +31,11 @@ def setupHTML():
     $('#save').bind('click', save_settings)
     $('.beyond20-option-input').change(save_settings)
     $(".beyond20-options").on("markaChanged", save_settings)
-
+    $(document).on('click', 'a', def(ev):
+        href = this.getAttribute('href')
+        if len(href) > 0 and href != "#":
+            window.open(this.href)
+        return False
+    )
 
 setupHTML()

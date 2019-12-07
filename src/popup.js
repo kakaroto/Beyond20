@@ -7019,11 +7019,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var href;
                     href = this.getAttribute("href");
                     if (len(href) > 0 && (href !== "#" && (typeof href !== "object" || ρσ_not_equals(href, "#")))) {
-                        chrome.tabs.create((function(){
-                            var ρσ_d = {};
-                            ρσ_d["url"] = this.href;
-                            return ρσ_d;
-                        }).call(this));
+                        window.open(this.href);
                     }
                     return false;
                 };

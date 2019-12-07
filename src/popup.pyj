@@ -52,7 +52,7 @@ def setupHTML():
     $(document).on('click', 'a', def(ev):
         href = this.getAttribute('href')
         if len(href) > 0 and href != "#":
-            chrome.tabs.create({"url": this.href})
+            window.open(this.href)
         return False
     )
     $("ul").addClass("disabled")
