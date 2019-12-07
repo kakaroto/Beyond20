@@ -1,10 +1,15 @@
 from utils import replaceRolls, injectPageScript, sendCustomEvent, alertQuickSettings, alertFullSettings, getBrowser
 from settings import getDefaultSettings, getStoredSettings, WhisperType, RollType
-from constants import ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY, ROLL20_TOLL_THE_DEAD_QUERY
 import re
 from elementmaker import E
 
 print("Beyond20: Roll20 module loaded.")
+
+ROLL20_WHISPER_QUERY="?{Whisper?|Public Roll,|Whisper Roll,/w gm }"
+ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Super Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2kh}&#125&#125|Super Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2kl}&#125&#125}}"
+ROLL20_INITIATIVE_ADVANTAGE_QUERY="?{Roll Initiative with advantage?|Normal Roll,1d20|Advantage,2d20kh1|Disadvantage,2d20kl1|Super Advantage,3d20kh1|Super Disadvantage,3d20kl1}"
+ROLL20_TOLL_THE_DEAD_QUERY="?{Is the target missing any of its hit points?|Yes,d12|No,d8}"
+
 
 chat = document.getElementById("textchat-input")
 txt = chat.getElementsByTagName("textarea")[0]
@@ -269,10 +274,12 @@ def rollInitiative(request, custom_roll_dice=""):
             dice = "2d20kh1"
         elif request.advantage == RollType.SUPER_ADVANTAGE:
             dice = "3d20kh1"
-        if request.advantage == RollType.DISADVANTAGE:
+        elif request.advantage == RollType.DISADVANTAGE:
             dice = "2d20kl1"
         elif request.advantage == RollType.SUPER_DISADVANTAGE:
             dice = "3d20kl1"
+        elif request.advantage == RollType.DOUBLE or request.advantage == RollType.THRICE or request.advantage == RollType.QUERY:
+            dice = ROLL20_INITIATIVE_ADVANTAGE_QUERY
         else:
             dice = "1d20"
         roll_properties["r1"] = genRoll(dice, {"INIT": request.initiative, "CUSTOM": custom_roll_dice, "": "&{tracker}"})

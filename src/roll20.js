@@ -3728,7 +3728,6 @@ var str = ρσ_str, repr = ρσ_repr;;
     ρσ_modules.elementmaker = {};
     ρσ_modules.utils = {};
     ρσ_modules.settings = {};
-    ρσ_modules.constants = {};
 
     (function(){
         var __name__ = "re";
@@ -6870,40 +6869,11 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
-        var __name__ = "constants";
-        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY, ROLL20_TOLL_THE_DEAD_QUERY;
-        ROLL20_URL = "*://app.roll20.net/editor/";
-        FVTT_URL = "*://*/game";
-        DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
-        DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
-        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
-        DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
-        DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
-        CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
-        BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
-        ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
-        ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Super Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2kh}&#125&#125|Super Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2kl}&#125&#125}}";
-        ROLL20_TOLL_THE_DEAD_QUERY = "?{Is the target missing any of its hit points?|Yes,d12|No,d8}";
-        ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
-        ρσ_modules.constants.FVTT_URL = FVTT_URL;
-        ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
-        ρσ_modules.constants.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
-        ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
-        ρσ_modules.constants.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
-        ρσ_modules.constants.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
-        ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
-        ρσ_modules.constants.BUTTON_STYLE_CSS = BUTTON_STYLE_CSS;
-        ρσ_modules.constants.ROLL20_WHISPER_QUERY = ROLL20_WHISPER_QUERY;
-        ρσ_modules.constants.ROLL20_ADVANTAGE_QUERY = ROLL20_ADVANTAGE_QUERY;
-        ρσ_modules.constants.ROLL20_TOLL_THE_DEAD_QUERY = ROLL20_TOLL_THE_DEAD_QUERY;
-    })();
-
-    (function(){
 
         var __name__ = "__main__";
 
 
-        var chat, txt, btn, speakingas, settings;
+        var ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY, ROLL20_INITIATIVE_ADVANTAGE_QUERY, ROLL20_TOLL_THE_DEAD_QUERY, chat, txt, btn, speakingas, settings;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
         var injectPageScript = ρσ_modules.utils.injectPageScript;
         var sendCustomEvent = ρσ_modules.utils.sendCustomEvent;
@@ -6916,15 +6886,15 @@ var str = ρσ_str, repr = ρσ_repr;;
         var WhisperType = ρσ_modules.settings.WhisperType;
         var RollType = ρσ_modules.settings.RollType;
 
-        var ROLL20_WHISPER_QUERY = ρσ_modules.constants.ROLL20_WHISPER_QUERY;
-        var ROLL20_ADVANTAGE_QUERY = ρσ_modules.constants.ROLL20_ADVANTAGE_QUERY;
-        var ROLL20_TOLL_THE_DEAD_QUERY = ρσ_modules.constants.ROLL20_TOLL_THE_DEAD_QUERY;
-
         var re = ρσ_modules.re;
 
         var E = ρσ_modules.elementmaker.E;
 
         print("Beyond20: Roll20 module loaded.");
+        ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }";
+        ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Super Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2kh}&#125&#125|Super Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2kl}&#125&#125}}";
+        ROLL20_INITIATIVE_ADVANTAGE_QUERY = "?{Roll Initiative with advantage?|Normal Roll,1d20|Advantage,2d20kh1|Disadvantage,2d20kl1|Super Advantage,3d20kh1|Super Disadvantage,3d20kl1}";
+        ROLL20_TOLL_THE_DEAD_QUERY = "?{Is the target missing any of its hit points?|Yes,d12|No,d8}";
         chat = document.getElementById("textchat-input");
         txt = chat.getElementsByTagName("textarea")[0];
         btn = chat.getElementsByTagName("button")[0];
@@ -7413,11 +7383,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                     dice = "2d20kh1";
                 } else if ((request.advantage === RollType.prototype.SUPER_ADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.SUPER_ADVANTAGE))) {
                     dice = "3d20kh1";
-                }
-                if ((request.advantage === RollType.prototype.DISADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DISADVANTAGE))) {
+                } else if ((request.advantage === RollType.prototype.DISADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DISADVANTAGE))) {
                     dice = "2d20kl1";
                 } else if ((request.advantage === RollType.prototype.SUPER_DISADVANTAGE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.SUPER_DISADVANTAGE))) {
                     dice = "3d20kl1";
+                } else if ((request.advantage === RollType.prototype.DOUBLE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.DOUBLE)) || (request.advantage === RollType.prototype.THRICE || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.THRICE)) || (request.advantage === RollType.prototype.QUERY || typeof request.advantage === "object" && ρσ_equals(request.advantage, RollType.prototype.QUERY))) {
+                    dice = ROLL20_INITIATIVE_ADVANTAGE_QUERY;
                 } else {
                     dice = "1d20";
                 }
