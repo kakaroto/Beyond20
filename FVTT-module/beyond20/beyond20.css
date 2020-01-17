@@ -119,3 +119,11 @@
 .beyond20-form-row > * {
     flex: 2;
 }
+
+/* Since 0.4.4, the roll type has a fixed width of 200px which
+ * means it gets squished into two lines when we add the beyond20
+ * icon next to it, as a GM.
+ */
+#chat-controls div.roll-type-select select {
+    width: calc(100% - 38px);
+}
