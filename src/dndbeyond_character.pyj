@@ -89,17 +89,18 @@ def rollItem(force_display=False):
     prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property")
     properties = propertyListToDict(prop_list)
     #console.log("Properties are : " + str(properties))
-    item_name = $(".ct-item-pane .ct-item-name").text()
+    item_name = $(".ct-item-pane .ct-item-name")[0].firstChild.textContent
     item_type = $(".ct-item-detail__intro").text()
     description = descriptionToString(".ct-item-detail__description")
     if force_display is False and "Damage" in properties:
+        item_full_name = $(".ct-item-pane .ct-item-name").text()
         to_hit = properties["To Hit"] ? \
-            findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit")
+            findToHit(item_full_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit")
 
         if to_hit ?:
-            character._cacheToHit(item_name, to_hit)
+            character._cacheToHit(item_full_name, to_hit)
         else:
-            to_hit = character._getToHitCache(item_name)
+            to_hit = character._getToHitCache(item_full_name)
 
         damages = []
         damage_types = []
@@ -305,6 +306,7 @@ def rollSpell(force_display=False):
     nonlocal character
     properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
     #console.log("Properties are : " + str(properties))
+    spell_full_name = $(".ct-sidebar__heading .ct-spell-name").text()
     spell_name = $(".ct-sidebar__heading .ct-spell-name")[0].firstChild.textContent
     description = descriptionToString(".ct-spell-pane .ct-spell-detail__description")
     damage_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage")
@@ -320,9 +322,9 @@ def rollSpell(force_display=False):
     else:
         concentration = False
     to_hit = properties["To Hit"] ? \
-        findToHit(spell_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit")
+        findToHit(spell_full_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit")
     if not to_hit:
-        to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit")
+        to_hit = findToHit(spell_full_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit")
 
     if force_display is False and (damage_modifiers.length > 0 or healing_modifiers.length > 0 or to_hit != None):
         damages = []
@@ -593,10 +595,11 @@ def injectRollButton(paneClass):
         nonlocal lastSpellName
         nonlocal lastSpellLevel
         spell_name = $(".ct-sidebar__heading .ct-spell-name")[0].firstChild.textContent
+        spell_full_name = $(".ct-sidebar__heading .ct-spell-name").text()
         spell_level = $(".ct-spell-caster__casting-level-current").text()
-        if isRollButtonAdded() and spell_name == lastSpellName and spell_level == lastSpellLevel:
+        if isRollButtonAdded() and spell_full_name == lastSpellName and spell_level == lastSpellLevel:
             return
-        lastSpellName = spell_name
+        lastSpellName = spell_full_name
         lastSpellLevel = spell_level
         removeRollButtons()
         checkAndInjectDiceToRolls(".ct-spell-pane .ct-spell-detail__description", spell_name)
@@ -605,9 +608,9 @@ def injectRollButton(paneClass):
         healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp")
         properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
         to_hit = properties["To Hit"] ? \
-            findToHit(spell_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit")
+            findToHit(spell_full_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit")
         if not to_hit:
-            to_hit = findToHit(spell_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit")
+            to_hit = findToHit(spell_full_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit")
 
         if damages.length > 0 or healings.length > 0 or to_hit != None:
             addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on VTT", small=True)
