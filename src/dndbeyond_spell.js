@@ -10313,6 +10313,7 @@ return this.__repr__();
             if (base) {
                 self._base = base;
             }
+            self._stat_block = $(self._base);
             self._id = null;
             self._name = null;
             self._meta = null;
@@ -10320,6 +10321,8 @@ return this.__repr__();
             self._ac = null;
             self._hp = null;
             self._hp_formula = null;
+            self._max_hp = 0;
+            self._temp_hp = 0;
             self._speed = null;
             self._abilities = ρσ_list_decorate([]);
             self._tidbits = {};
@@ -10350,6 +10353,7 @@ return this.__repr__();
             if (stat_block === null) {
                 stat_block = $(base);
             }
+            self._stat_block = stat_block;
             if (ρσ_not_equals(self.type(), "Creature") && ρσ_not_equals(self.type(), "Extra-Vehicle") && ρσ_not_equals(getBrowser(), "Firefox")) {
                 $(".ct-beyond20-settings-button").remove();
                 quick_settings = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-settings", src: chrome.extension.getURL("images/icons/icon32.png"), style: "vertical-align: top;"})]), ρσ_interpolate_kwargs.call(E, E.span, ["Beyond 20"].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-settings-button-label mon-stat-block__tidbit mon-stat-block__tidbit-label", style: "font-size: 28px; margin: 5px;"})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-settings-button", style: "background-color: rgba(0, 0, 0, 0.1)"})]));
@@ -10947,6 +10951,47 @@ return this.__repr__();
         if (!Monster.prototype.lookForSpells.__argnames__) Object.defineProperties(Monster.prototype.lookForSpells, {
             __argnames__ : {value: ["stat_block"]}
         });
+        Monster.prototype.updateInfo = function updateInfo() {
+            var self = this;
+            var hp, max_hp, temp_hp, groups, label, item, req;
+            self._name = self._stat_block.find(self._base + "__name").text().trim();
+            hp = max_hp = temp_hp = null;
+            groups = $(".ct-creature-pane .ct-collapsible__content .ct-creature-pane__adjuster-group");
+            var ρσ_Iter26 = ρσ_Iterable(groups);
+            for (var ρσ_Index26 = 0; ρσ_Index26 < ρσ_Iter26.length; ρσ_Index26++) {
+                item = ρσ_Iter26[ρσ_Index26];
+                label = $(item).find(".ct-creature-pane__adjuster-group-label").text();
+                if ((label === "Current HP" || typeof label === "object" && ρσ_equals(label, "Current HP"))) {
+                    hp = int($(item).find(".ct-creature-pane__adjuster-group-value").text());
+                } else if ((label === "Max HP" || typeof label === "object" && ρσ_equals(label, "Max HP"))) {
+                    max_hp = int($(item).find(".ct-creature-pane__adjuster-group-value").text());
+                } else if ((label === "Temp HP" || typeof label === "object" && ρσ_equals(label, "Temp HP"))) {
+                    temp_hp = int($(item).find(".ct-creature-pane__adjuster-group-value input").val());
+                }
+            }
+            if (hp !== null && max_hp !== null && ((self._hp !== hp && (typeof self._hp !== "object" || ρσ_not_equals(self._hp, hp))) || (self._max_hp !== max_hp && (typeof self._max_hp !== "object" || ρσ_not_equals(self._max_hp, max_hp))) || (self._temp_hp !== temp_hp && (typeof self._temp_hp !== "object" || ρσ_not_equals(self._temp_hp, temp_hp))))) {
+                self._hp = hp;
+                self._max_hp = max_hp;
+                self._temp_hp = temp_hp;
+                print("Monster HP updated to : (" + hp + "+" + temp_hp + ")/" + max_hp);
+                req = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["action"] = "hp-update";
+                    ρσ_d["character"] = self.getDict();
+                    return ρσ_d;
+                }).call(this);
+                console.log("Sending message: ", req);
+                chrome.runtime.sendMessage(req, (function() {
+                    var ρσ_anonfunc = function (resp) {
+                        beyond20SendMessageFailure(self, resp);
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["resp"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
+            }
+        };
         Monster.prototype.getDict = function getDict() {
             var self = this;
             return (function(){
@@ -10957,6 +11002,8 @@ return this.__repr__();
                 ρσ_d["ac"] = self._ac;
                 ρσ_d["hp"] = self._hp;
                 ρσ_d["hp-formula"] = self._hp_formula;
+                ρσ_d["max-hp"] = self._max_hp;
+                ρσ_d["temp-hp"] = self._temp_hp;
                 ρσ_d["speed"] = self._speed;
                 ρσ_d["abilities"] = self._abilities.as_array();
                 ρσ_d["saves"] = self._saves;
@@ -10987,9 +11034,9 @@ return this.__repr__();
 
         function abbreviationToAbility(abbr) {
             var ability;
-            var ρσ_Iter26 = ρσ_Iterable(ability_abbreviations);
-            for (var ρσ_Index26 = 0; ρσ_Index26 < ρσ_Iter26.length; ρσ_Index26++) {
-                ability = ρσ_Iter26[ρσ_Index26];
+            var ρσ_Iter27 = ρσ_Iterable(ability_abbreviations);
+            for (var ρσ_Index27 = 0; ρσ_Index27 < ρσ_Iter27.length; ρσ_Index27++) {
+                ability = ρσ_Iter27[ρσ_Index27];
                 if ((ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === abbr || typeof ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability] === "object" && ρσ_equals(ability_abbreviations[(typeof ability === "number" && ability < 0) ? ability_abbreviations.length + ability : ability], abbr))) {
                     return ability;
                 }
@@ -11003,8 +11050,8 @@ return this.__repr__();
         function propertyListToDict(propList) {
             var properties, label, value, i;
             properties = {};
-            for (var ρσ_Index27 = 0; ρσ_Index27 < propList.length; ρσ_Index27++) {
-                i = ρσ_Index27;
+            for (var ρσ_Index28 = 0; ρσ_Index28 < propList.length; ρσ_Index28++) {
+                i = ρσ_Index28;
                 label = propList.eq(i).find(".ct-property-list__property-label").text().slice(0, -1);
                 value = propList.eq(i).find(".ct-property-list__property-content").text();
                 properties[(typeof label === "number" && label < 0) ? properties.length + label : label] = value;
@@ -11025,8 +11072,8 @@ return this.__repr__();
         function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
             var items, to_hit, i;
             items = $(items_selector);
-            for (var ρσ_Index28 = 0; ρσ_Index28 < items.length; ρσ_Index28++) {
-                i = ρσ_Index28;
+            for (var ρσ_Index29 = 0; ρσ_Index29 < items.length; ρσ_Index29++) {
+                i = ρσ_Index29;
                 if (ρσ_equals(items.eq(i).find(name_selector).text(), name_to_match)) {
                     to_hit = items.eq(i).find(tohit_selector);
                     if (to_hit.length > 0) {
@@ -11049,9 +11096,9 @@ return this.__repr__();
             if ((rule === CriticalRules.prototype.HOMEBREW_REROLL || typeof rule === "object" && ρσ_equals(rule, CriticalRules.prototype.HOMEBREW_REROLL))) {
                 return damages.slice(0);
             }
-            var ρσ_Iter29 = ρσ_Iterable(damages);
-            for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
-                damage = ρσ_Iter29[ρσ_Index29];
+            var ρσ_Iter30 = ρσ_Iterable(damages);
+            for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
+                damage = ρσ_Iter30[ρσ_Index30];
                 match = re.search("([0-9]*)d([0-9]+)(ro<2)?", damage);
                 if ((typeof match !== "undefined" && match !== null)) {
                     if ((rule === CriticalRules.prototype.HOMEBREW_MAX || typeof rule === "object" && ρσ_equals(rule, CriticalRules.prototype.HOMEBREW_MAX))) {
@@ -11145,9 +11192,9 @@ return this.__repr__();
                     crits = damagesToCrits(character, damages, damage_types);
                     crit_damages = ρσ_list_decorate([]);
                     crit_damage_types = ρσ_list_decorate([]);
-                    var ρσ_Iter30 = ρσ_Iterable(enumerate(crits));
-                    for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
-                        ρσ_unpack = ρσ_Iter30[ρσ_Index30];
+                    var ρσ_Iter31 = ρσ_Iterable(enumerate(crits));
+                    for (var ρσ_Index31 = 0; ρσ_Index31 < ρσ_Iter31.length; ρσ_Index31++) {
+                        ρσ_unpack = ρσ_Iter31[ρσ_Index31];
                         i = ρσ_unpack[0];
                         dmg = ρσ_unpack[1];
                         if ((dmg !== "" && (typeof dmg !== "object" || ρσ_not_equals(dmg, "")))) {
@@ -11157,9 +11204,9 @@ return this.__repr__();
                     }
                     if (brutal > 0) {
                         highest_dice = 0;
-                        var ρσ_Iter31 = ρσ_Iterable(crit_damages);
-                        for (var ρσ_Index31 = 0; ρσ_Index31 < ρσ_Iter31.length; ρσ_Index31++) {
-                            dmg = ρσ_Iter31[ρσ_Index31];
+                        var ρσ_Iter32 = ρσ_Iterable(crit_damages);
+                        for (var ρσ_Index32 = 0; ρσ_Index32 < ρσ_Iter32.length; ρσ_Index32++) {
+                            dmg = ρσ_Iter32[ρσ_Index32];
                             match = re.search("[0-9]*d([0-9]+)", dmg);
                             if ((typeof match !== "undefined" && match !== null)) {
                                 sides = int(match.group(1));
@@ -11203,9 +11250,9 @@ return this.__repr__();
                 ρσ_d["whisper"] = whisper;
                 return ρσ_d;
             }).call(this);
-            var ρσ_Iter32 = ρσ_Iterable(args);
-            for (var ρσ_Index32 = 0; ρσ_Index32 < ρσ_Iter32.length; ρσ_Index32++) {
-                key = ρσ_Iter32[ρσ_Index32];
+            var ρσ_Iter33 = ρσ_Iterable(args);
+            for (var ρσ_Index33 = 0; ρσ_Index33 < ρσ_Iter33.length; ρσ_Index33++) {
+                key = ρσ_Iter33[ρσ_Index33];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
             }
             console.log("Sending message: ", req);
@@ -11347,8 +11394,8 @@ return this.__repr__();
             $(".ct-reset-pane__hitdie-heading").append(button);
             hitdice = $(".ct-reset-pane__hitdie");
             multiclass = hitdice.length > 1;
-            for (var ρσ_Index33 = 0; ρσ_Index33 < hitdice.length; ρσ_Index33++) {
-                i = ρσ_Index33;
+            for (var ρσ_Index34 = 0; ρσ_Index34 < hitdice.length; ρσ_Index34++) {
+                i = ρσ_Index34;
                 cb = (function() {
                     var ρσ_anonfunc = function (rollCallback, index) {
                         return (function() {
@@ -11420,8 +11467,8 @@ return this.__repr__();
             $(".ct-beyond20-roll-display").remove();
             $(".ct-beyond20-custom-icon").remove();
             custom_rolls = $("u.ct-beyond20-custom-roll");
-            for (var ρσ_Index34 = 0; ρσ_Index34 < custom_rolls.length; ρσ_Index34++) {
-                i = ρσ_Index34;
+            for (var ρσ_Index35 = 0; ρσ_Index35 < custom_rolls.length; ρσ_Index35++) {
+                i = ρσ_Index35;
                 custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
             }
         };
@@ -11430,9 +11477,9 @@ return this.__repr__();
             var children, child, text;
             if (node.hasChildNodes()) {
                 children = list(node.childNodes);
-                var ρσ_Iter35 = ρσ_Iterable(children);
-                for (var ρσ_Index35 = 0; ρσ_Index35 < ρσ_Iter35.length; ρσ_Index35++) {
-                    child = ρσ_Iter35[ρσ_Index35];
+                var ρσ_Iter36 = ρσ_Iterable(children);
+                for (var ρσ_Index36 = 0; ρσ_Index36 < ρσ_Iter36.length; ρσ_Index36++) {
+                    child = ρσ_Iter36[ρσ_Index36];
                     if ($(child).hasClass("ct-beyond20-roll")) {
                         continue;
                     }
@@ -11472,9 +11519,9 @@ return this.__repr__();
                 return ρσ_anonfunc;
             })();
             items = $(selector);
-            var ρσ_Iter36 = ρσ_Iterable(items);
-            for (var ρσ_Index36 = 0; ρσ_Index36 < ρσ_Iter36.length; ρσ_Index36++) {
-                item = ρσ_Iter36[ρσ_Index36];
+            var ρσ_Iter37 = ρσ_Iterable(items);
+            for (var ρσ_Index37 = 0; ρσ_Index37 < ρσ_Iter37.length; ρσ_Index37++) {
+                item = ρσ_Iter37[ρσ_Index37];
                 recursiveDiceReplace(item, replaceCB);
             }
             $(".ct-beyond20-custom-icon").css("margin-right", "3px");

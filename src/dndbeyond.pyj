@@ -435,6 +435,7 @@ class Monster(CharacterBase):
             self._base = ".mon-stat-block"
         if base:
             self._base = base
+        self._stat_block = $(self._base)
         self._id = None
         self._name = None
         self._meta = None
@@ -442,6 +443,8 @@ class Monster(CharacterBase):
         self._ac = None
         self._hp = None
         self._hp_formula = None
+        self._max_hp = 0
+        self._temp_hp = 0
         self._speed = None
         self._abilities = []
         self._tidbits = {}
@@ -456,6 +459,7 @@ class Monster(CharacterBase):
         base = self._base
         if stat_block is None:
             stat_block = $(base)
+        self._stat_block = stat_block
         if self.type() != "Creature" and self.type() != "Extra-Vehicle" and getBrowser() != "Firefox":
             $(".ct-beyond20-settings-button").remove()
             quick_settings = E.div(class_="ct-beyond20-settings-button", style="background-color: rgba(0, 0, 0, 0.1)",
@@ -822,6 +826,28 @@ class Monster(CharacterBase):
             tooltip_url = re.sub("-tooltip.*$", "/tooltip", tooltip_href)
             self.injectSpellRolls(spell, tooltip_url)
 
+    def updateInfo(self):
+        # Creature name could change/be customized in between calls
+        self._name = self._stat_block.find(self._base + "__name").text().trim()
+        hp = max_hp = temp_hp = None
+        groups = $(".ct-creature-pane .ct-collapsible__content .ct-creature-pane__adjuster-group")
+        for item in groups:
+            label = $(item).find(".ct-creature-pane__adjuster-group-label").text() 
+            if label == "Current HP":
+                hp = int($(item).find(".ct-creature-pane__adjuster-group-value").text())
+            elif label == "Max HP":
+                max_hp = int($(item).find(".ct-creature-pane__adjuster-group-value").text())
+            elif label == "Temp HP":
+                temp_hp = int($(item).find(".ct-creature-pane__adjuster-group-value input").val())
+        if hp is not None and max_hp is not None and (self._hp != hp or self._max_hp != max_hp or self._temp_hp != temp_hp):
+            self._hp = hp
+            self._max_hp = max_hp
+            self._temp_hp = temp_hp
+            print("Monster HP updated to : (" + hp + "+" + temp_hp + ")/" + max_hp)
+
+            req = {"action": "hp-update", "character": self.getDict()}
+            console.log("Sending message: ", req)
+            chrome.runtime.sendMessage(req, def(resp): beyond20SendMessageFailure(self, resp);)
 
     def getDict(self):
         return {"name": self._name,
@@ -830,6 +856,8 @@ class Monster(CharacterBase):
                 "ac": self._ac,
                 "hp": self._hp,
                 "hp-formula": self._hp_formula,
+                "max-hp": self._max_hp,
+                "temp-hp": self._temp_hp,
                 "speed": self._speed,
                 "abilities": self._abilities.as_array(),
                 "saves": self._saves,

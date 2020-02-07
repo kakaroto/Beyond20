@@ -640,10 +640,14 @@ def injectRollButton(paneClass):
         else:
             removeRollButtons()
     elif paneClass == "ct-creature-pane":
+        nonlocal creature
         if isRollButtonAdded() or isCustomRollIconsAdded():
+            if creature:
+                creature.updateInfo()
             return
         creature = Monster("Creature", global_settings=settings)
         creature.parseStatBlock()
+        creature.updateInfo()
     elif paneClass == "ct-vehicle-pane":
         if isRollButtonAdded() or isCustomRollIconsAdded():
             return
@@ -919,6 +923,7 @@ def handleMessage (request, sender, sendResponse):
 
 settings = getDefaultSettings()
 character = Character(settings)
+creature = None
 updateSettings()
 chrome.runtime.onMessage.addListener(handleMessage)
 observer = new window.MutationObserver(documentModified)
