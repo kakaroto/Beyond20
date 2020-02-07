@@ -6925,7 +6925,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                 alertFullSettings();
             } else if ((request.action === "hp-update" || typeof request.action === "object" && ρσ_equals(request.action, "hp-update"))) {
                 if (settings["update-hp"]) {
-                    sendCustomEvent("UpdateHP", [request.character.name, request.character.hp, request.character["max-hp"]]);
+                    sendCustomEvent("UpdateHP", [request.character.name, request.character.hp, request.character["max-hp"], 
+                    request.character["temp-hp"]]);
                 }
             } else if ((request.action === "conditions-update" || typeof request.action === "object" && ρσ_equals(request.action, "conditions-update"))) {
                 if (settings["display-conditions"]) {

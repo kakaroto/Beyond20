@@ -9013,17 +9013,9 @@ return this.__repr__();
             __argnames__ : {value: ["request"]}
         });
 
-        function updateHP() {
-            var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var current = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
-            var total = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? updateHP.__defaults__.total : arguments[2];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "total")){
-                total = ρσ_kwargs_obj.total;
-            }
-            var tokens, actor, token;
-            console.log("Updating HP for " + name + " : " + current + "/" + total);
+        function updateHP(name, current, total, temp) {
+            var tokens, data, actor, token;
+            console.log("Updating HP for " + name + " : (" + current + "+" + temp + ")/" + total);
             name = name.toLowerCase();
             tokens = canvas.tokens.objects.children.filter((function() {
                 var ρσ_anonfunc = function (t) {
@@ -9034,6 +9026,13 @@ return this.__repr__();
                 });
                 return ρσ_anonfunc;
             })());
+            data = (function(){
+                var ρσ_d = {};
+                ρσ_d["data.attributes.hp.value"] = current;
+                ρσ_d["data.attributes.hp.temp"] = temp;
+                ρσ_d["data.attributes.hp.max"] = total;
+                return ρσ_d;
+            }).call(this);
             if (ρσ_equals(len(tokens), 0)) {
                 actor = game.actors.entities.find((function() {
                     var ρσ_anonfunc = function (a) {
@@ -9045,32 +9044,19 @@ return this.__repr__();
                     return ρσ_anonfunc;
                 })());
                 if ((typeof actor !== "undefined" && actor !== null)) {
-                    actor.update((function(){
-                        var ρσ_d = {};
-                        ρσ_d["data.attributes.hp.value"] = current;
-                        ρσ_d["data.attributes.hp.max"] = total;
-                        return ρσ_d;
-                    }).call(this));
+                    actor.update(data);
                 }
             }
             var ρσ_Iter1 = ρσ_Iterable(tokens);
             for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
                 token = ρσ_Iter1[ρσ_Index1];
                 if (token.actor) {
-                    total = (total) ? total : token.actor.data.attributes.hp.max;
-                    token.actor.update((function(){
-                        var ρσ_d = {};
-                        ρσ_d["data.attributes.hp.value"] = current;
-                        ρσ_d["data.attributes.hp.max"] = total;
-                        return ρσ_d;
-                    }).call(this));
+                    token.actor.update(data);
                 }
             }
         };
-        if (!updateHP.__defaults__) Object.defineProperties(updateHP, {
-            __defaults__ : {value: {total:null}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["name", "current", "total"]}
+        if (!updateHP.__argnames__) Object.defineProperties(updateHP, {
+            __argnames__ : {value: ["name", "current", "total", "temp"]}
         });
 
         function updateConditions(request, name, conditions, exhaustion) {

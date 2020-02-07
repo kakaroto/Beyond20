@@ -1,25 +1,26 @@
 from utils import addCustomEventListener
 
-def updateHP(name, current, total=None):
-    console.log("Updating HP for " + name + " : " + current + "/" + total)
+def updateHP(name, current, total, temp):
+    console.log("Updating HP for " + name + " : (" + current + "+" + temp + ")/" + total)
     name = name.toLowerCase()
 
-    findCharacter = def(c):
-        return c.attributes.name.toLowerCase() == name
-
-    character = window.Campaign.characters.find(findCharacter)
+    character = window.Campaign.characters.find(def(c): return c.attributes.name.toLowerCase() == name;)
     if character?:
         console.log("Found character : ", character)
-        findHP = def(a):
-           return a.attributes.name == "hp"
-        hp = character.attribs.find(findHP)
+
+        hp = character.attribs.find(def(a): return a.attributes.name == "hp";)
         if hp?:
             console.log("Found attribute : ", hp)
             hp.set("current", str(current))
-            if total?:
-                hp.set("max", total)
+            hp.set("max", str(total))
             hp.save()
             character.updateTokensByName("hp", hp.id)
+        temp_hp = character.attribs.find(def(a): return a.attributes.name == "hp_temp";)
+        if temp_hp?:
+            console.log("Found attribute : ", temp_hp)
+            if temp_hp.attributes.current != str(temp):
+                temp_hp.set("current", str(temp))
+                temp_hp.save()
 
 def disconnectAllEvents():
     nonlocal registered_events

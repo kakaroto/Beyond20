@@ -27,7 +27,7 @@ def handleMessage (request, sender, sendResponse):
         alertFullSettings()
     elif request.action == "hp-update":
         if settings["update-hp"]:
-            sendCustomEvent("UpdateHP", (request.character.name, request.character.hp, request.character["max-hp"]))
+            sendCustomEvent("UpdateHP", (request.character.name, request.character.hp, request.character["max-hp"], request.character["temp-hp"]))
     elif request.action == "conditions-update":
         if settings["display-conditions"]:
             sendCustomEvent("UpdateConditions", (request, request.character.name, request.character.conditions, request.character.exhaustion))

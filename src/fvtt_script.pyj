@@ -170,25 +170,21 @@ def handleRoll(request):
     else:
         roll_renderer.handleRollRequest(request)
 
-def updateHP(name, current, total=None):
-    console.log("Updating HP for " + name + " : " + current + "/" + total)
+def updateHP(name, current, total, temp):
+    console.log("Updating HP for " + name + " : (" + current + "+" + temp + ")/" + total)
     name = name.toLowerCase()
 
     tokens = canvas.tokens.objects.children.filter(def(t): return t.name.toLowerCase() == name;)
 
+    data = {"data.attributes.hp.value": current, "data.attributes.hp.temp": temp, "data.attributes.hp.max": total}
     if len(tokens) == 0:
-        actor = game.actors.entities.find(def(a):
-                                                 return a.owner and a.name.toLowerCase() == name
-                                             )
+        actor = game.actors.entities.find(def(a): return a.owner and a.name.toLowerCase() == name;)
         if actor?:
-            actor.update({"data.attributes.hp.value" : current,
-                          "data.attributes.hp.max" : total})
+            actor.update(data)
 
     for token in tokens:
         if token.actor:
-            total = total if total else token.actor.data.attributes.hp.max
-            token.actor.update({"data.attributes.hp.value" : current,
-                                "data.attributes.hp.max" : total})
+            token.actor.update(data)
 
                                          
 def updateConditions(request, name, conditions, exhaustion):

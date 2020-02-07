@@ -5678,19 +5678,11 @@ var str = ρσ_str, repr = ρσ_repr;;
         var registered_events;
         var addCustomEventListener = ρσ_modules.utils.addCustomEventListener;
 
-        function updateHP() {
-            var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var current = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
-            var total = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? updateHP.__defaults__.total : arguments[2];
-            var ρσ_kwargs_obj = arguments[arguments.length-1];
-            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
-            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "total")){
-                total = ρσ_kwargs_obj.total;
-            }
-            var findCharacter, character, findHP, hp;
-            console.log("Updating HP for " + name + " : " + current + "/" + total);
+        function updateHP(name, current, total, temp) {
+            var character, hp, temp_hp;
+            console.log("Updating HP for " + name + " : (" + current + "+" + temp + ")/" + total);
             name = name.toLowerCase();
-            findCharacter = (function() {
+            character = window.Campaign.characters.find((function() {
                 var ρσ_anonfunc = function (c) {
                     return ρσ_equals(c.attributes.name.toLowerCase(), name);
                 };
@@ -5698,11 +5690,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                     __argnames__ : {value: ["c"]}
                 });
                 return ρσ_anonfunc;
-            })();
-            character = window.Campaign.characters.find(findCharacter);
+            })());
             if ((typeof character !== "undefined" && character !== null)) {
                 console.log("Found character : ", character);
-                findHP = (function() {
+                hp = character.attribs.find((function() {
                     var ρσ_anonfunc = function (a) {
                         return (a.attributes.name === "hp" || typeof a.attributes.name === "object" && ρσ_equals(a.attributes.name, "hp"));
                     };
@@ -5710,23 +5701,34 @@ var str = ρσ_str, repr = ρσ_repr;;
                         __argnames__ : {value: ["a"]}
                     });
                     return ρσ_anonfunc;
-                })();
-                hp = character.attribs.find(findHP);
+                })());
                 if ((typeof hp !== "undefined" && hp !== null)) {
                     console.log("Found attribute : ", hp);
                     hp.set("current", str(current));
-                    if ((typeof total !== "undefined" && total !== null)) {
-                        hp.set("max", total);
-                    }
+                    hp.set("max", str(total));
                     hp.save();
                     character.updateTokensByName("hp", hp.id);
                 }
+                temp_hp = character.attribs.find((function() {
+                    var ρσ_anonfunc = function (a) {
+                        return (a.attributes.name === "hp_temp" || typeof a.attributes.name === "object" && ρσ_equals(a.attributes.name, "hp_temp"));
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["a"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
+                if ((typeof temp_hp !== "undefined" && temp_hp !== null)) {
+                    console.log("Found attribute : ", temp_hp);
+                    if (ρσ_not_equals(temp_hp.attributes.current, str(temp))) {
+                        temp_hp.set("current", str(temp));
+                        temp_hp.save();
+                    }
+                }
             }
         };
-        if (!updateHP.__defaults__) Object.defineProperties(updateHP, {
-            __defaults__ : {value: {total:null}},
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["name", "current", "total"]}
+        if (!updateHP.__argnames__) Object.defineProperties(updateHP, {
+            __argnames__ : {value: ["name", "current", "total", "temp"]}
         });
 
         function disconnectAllEvents() {
