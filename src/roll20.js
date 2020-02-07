@@ -7828,7 +7828,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function handleMessage(request, sender, sendResponse) {
-            var character_name, conditions, message, custom_roll_dice, roll, mod, rname;
+            var character_name, conditions, is_gm, em_command, message, custom_roll_dice, roll, mod, rname;
             print("Got message : ", request);
             if ((request.action === "settings" || typeof request.action === "object" && ρσ_equals(request.action, "settings"))) {
                 if ((request.type === "general" || typeof request.type === "object" && ρσ_equals(request.type, "general"))) {
@@ -7848,10 +7848,12 @@ var str = ρσ_str, repr = ρσ_repr;;
                     } else {
                         conditions = request.character.conditions.concat(ρσ_list_decorate([ "Exhausted (Level " + request.character.exhaustion + ")" ]));
                     }
+                    is_gm = ρσ_in("The player link for this campaign is", $("#textchat .message.system").text());
+                    em_command = (is_gm) ? "/emas " : "/em ";
                     if ((conditions.length === 0 || typeof conditions.length === "object" && ρσ_equals(conditions.length, 0))) {
-                        message = "/emas " + character_name + " has no active condition";
+                        message = em_command + character_name + " has no active condition";
                     } else {
-                        message = "/emas " + character_name + " is : " + conditions.join(", ");
+                        message = em_command + character_name + " is : " + conditions.join(", ");
                     }
                     postChatMessage(message, character_name);
                 }

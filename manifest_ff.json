@@ -153,6 +153,7 @@
 			],
 			"js": [
 				"libs/alertify.min.js",
+				"libs/jquery-3.4.1.min.js",
 				"src/fvtt_test.js"
 			]
 		}

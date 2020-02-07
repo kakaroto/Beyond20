@@ -561,10 +561,14 @@ def handleMessage (request, sender, sendResponse):
                 conditions = request.character.conditions
             else:
                 conditions = request.character.conditions.concat(["Exhausted (Level " + request.character.exhaustion + ")"])
+            
+            # We can't use window.is_gm because it's not available to the content script
+            is_gm = "The player link for this campaign is" in $("#textchat .message.system").text()
+            em_command = "/emas " if is_gm else "/em "
             if conditions.length == 0:
-                message = "/emas " + character_name + " has no active condition"
+                message = em_command + character_name + " has no active condition"
             else:
-                message = "/emas " + character_name + " is : " + conditions.join(", ")
+                message = em_command + character_name + " is : " + conditions.join(", ")
             postChatMessage(message, character_name)
     elif request.action == "roll":
         if request.character.type == "Character":
