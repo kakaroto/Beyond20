@@ -174,34 +174,21 @@ def updateHP(name, current, total=None):
     console.log("Updating HP for " + name + " : " + current + "/" + total)
     name = name.toLowerCase()
 
-    tokens = canvas.tokens.objects.children.filter(def(t): return t.data.name.toLowerCase() == name;)
+    tokens = canvas.tokens.objects.children.filter(def(t): return t.name.toLowerCase() == name;)
 
     if len(tokens) == 0:
         actor = game.actors.entities.find(def(a):
-                                                 return a.permission == ENTITY_PERMISSIONS.OWNER and \
-                                                     a.data.name.toLowerCase() == name
+                                                 return a.owner and a.name.toLowerCase() == name
                                              )
         if actor?:
             actor.update({"data.attributes.hp.value" : current,
                           "data.attributes.hp.max" : total})
 
     for token in tokens:
-        if token.actor and token.data.actorLink:
+        if token.actor:
             total = total if total else token.actor.data.attributes.hp.max
             token.actor.update({"data.attributes.hp.value" : current,
                                 "data.attributes.hp.max" : total})
-        else:
-            if token.data.bar1.attribute == "attributes.hp":
-                prefix = "bar1"
-                total = total if total else token.data.bar1.max
-            elif token.data.bar2.attribute == "attributes.hp":
-                prefix = "bar2"
-                total = total if total else token.data.bar2.max
-            else:
-                prefix = None
-            if prefix:
-                token.update(canvas.id, {prefix + ".value": current,
-                                         prefix + ".max": total})
 
                                          
 def updateConditions(request, name, conditions, exhaustion):
