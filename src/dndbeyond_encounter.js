@@ -11603,7 +11603,7 @@ return this.__repr__();
                 observer.disconnect();
                 return;
             }
-            monster = $(".encounter-details-monster-summary-info-panel");
+            monster = $(".encounter-details-monster-summary-info-panel,.monster-details-modal__body");
             monster_name = monster.find(".mon-stat-block__name").text();
             console.log("Doc modified, new mon : ", monster_name, " !=?", last_monster_name);
             if ((monster_name === last_monster_name || typeof monster_name === "object" && ρσ_equals(monster_name, last_monster_name))) {

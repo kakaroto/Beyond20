@@ -7,11 +7,11 @@
 }
 /* D&D Beyond mobile/tablet sidepanel uses 60001 as z-index*/
 .alertify .ajs-dimmer {
-  z-index: 70001;
+  z-index: 100001;
 }
 .alertify .ajs-modal {
-  z-index: 70001;
+  z-index: 100002;
 } 
 .alertify-notifier {
-  z-index: 70002;
+  z-index: 100003;
 }
