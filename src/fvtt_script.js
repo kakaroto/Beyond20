@@ -8174,7 +8174,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         i = ρσ_Index16;
                         roll = self._roller.roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]);
                         dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
-                        if (ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) {
+                        if (ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life", "Temp HP" ]))) {
                             damage_flags = DAMAGE_FLAGS.prototype.HEALING;
                         } else if ((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) {
                             damage_flags = DAMAGE_FLAGS.prototype.REGULAR;
@@ -8228,7 +8228,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                             i = ρσ_Index19;
                             roll = self._roller.roll(critical_damages[(typeof i === "number" && i < 0) ? critical_damages.length + i : i]);
                             dmg_type = critical_damage_types[(typeof i === "number" && i < 0) ? critical_damage_types.length + i : i];
-                            if (ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) {
+                            if (ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life", "Temp HP" ]))) {
                                 damage_flags = DAMAGE_FLAGS.prototype.HEALING;
                             } else if ((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) {
                                 damage_flags = DAMAGE_FLAGS.prototype.REGULAR;
@@ -8977,9 +8977,9 @@ return this.__repr__();
                     if ((game.combat.scene.id !== canvas.scene.id && (typeof game.combat.scene.id !== "object" || ρσ_not_equals(game.combat.scene.id, canvas.scene.id)))) {
                         ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene");
                     } else {
-                        var ρσ_Iter0 = ρσ_Iterable(canvas.tokens.controlledTokens);
-                        for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                            token = ρσ_Iter0[ρσ_Index0];
+                        var ρσ_Iter23 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                        for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
+                            token = ρσ_Iter23[ρσ_Index23];
                             combatant = game.combat.getCombatantByToken(token.id);
                             if (combatant) {
                                 promise = game.combat.updateCombatant((function(){
@@ -9058,9 +9058,9 @@ return this.__repr__();
                     actor.update(data);
                 }
             }
-            var ρσ_Iter1 = ρσ_Iterable(tokens);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                token = ρσ_Iter1[ρσ_Index1];
+            var ρσ_Iter24 = ρσ_Iterable(tokens);
+            for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
+                token = ρσ_Iter24[ρσ_Index24];
                 if (token.actor) {
                     token.actor.update(data);
                 }
@@ -9111,9 +9111,9 @@ return this.__repr__();
                     });
                     return ρσ_anonfunc;
                 })());
-                var ρσ_Iter2 = ρσ_Iterable(tokens);
-                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                    token = ρσ_Iter2[ρσ_Index2];
+                var ρσ_Iter25 = ρσ_Iterable(tokens);
+                for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
+                    token = ρσ_Iter25[ρσ_Index25];
                     effects = token.data.effects;
                     new_effects = ρσ_list_decorate([]);
                     new_conditions = conditions.map((function() {
@@ -9133,9 +9133,9 @@ return this.__repr__();
                             new_conditions.push("exhaustion" + exhaustion + ".svg");
                         }
                     }
-                    var ρσ_Iter3 = ρσ_Iterable(effects);
-                    for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                        effect = ρσ_Iter3[ρσ_Index3];
+                    var ρσ_Iter26 = ρσ_Iterable(effects);
+                    for (var ρσ_Index26 = 0; ρσ_Index26 < ρσ_Iter26.length; ρσ_Index26++) {
+                        effect = ρσ_Iter26[ρσ_Index26];
                         if (!effect.startsWith("modules/beyond20/conditions/")) {
                             new_effects.push(effect);
                         } else {
@@ -9192,9 +9192,9 @@ return this.__repr__();
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter4 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                event = ρσ_Iter4[ρσ_Index4];
+            var ρσ_Iter27 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index27 = 0; ρσ_Index27 < ρσ_Iter27.length; ρσ_Index27++) {
+                event = ρσ_Iter27[ρσ_Index27];
                 document.removeEventListener.apply(document, event);
             }
         };

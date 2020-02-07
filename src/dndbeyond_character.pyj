@@ -311,6 +311,7 @@ def rollSpell(force_display=False):
     description = descriptionToString(".ct-spell-pane .ct-spell-detail__description")
     damage_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage")
     healing_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp")
+    temp_hp_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--temp")
     castas = $(".ct-spell-caster__casting-level-current").text()
     level = $(".ct-spell-pane .ct-spell-detail__level-school-item").toArray().map(def (i): return i.textContent;).join(" ")
     concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration").length > 0
@@ -326,7 +327,7 @@ def rollSpell(force_display=False):
     if not to_hit:
         to_hit = findToHit(spell_full_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit")
 
-    if force_display is False and (damage_modifiers.length > 0 or healing_modifiers.length > 0 or to_hit != None):
+    if force_display is False and (damage_modifiers.length > 0 or healing_modifiers.length > 0 or temp_hp_modifiers.length > 0 or to_hit != None):
         damages = []
         damage_types = []
         for modifier in damage_modifiers:
@@ -360,6 +361,17 @@ def rollSpell(force_display=False):
             if len(dmg) > 0:
                 damages.append(dmg)
                 damage_types.append("Healing")
+
+        # We can then add temp healing types
+        for modifier in temp_hp_modifiers:
+            dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text()
+            if dmg.startsWith("Regain "):
+                dmg = dmg[7:]
+            if dmg.endsWith(" Temp Hit Points"):
+                dmg = dmg[:-16]
+            if len(dmg) > 0:
+                damages.append(dmg)
+                damage_types.append("Temp HP")
 
         # Handle Disciple of life
         if healing_modifiers.length > 0 and \
@@ -604,8 +616,8 @@ def injectRollButton(paneClass):
         removeRollButtons()
         checkAndInjectDiceToRolls(".ct-spell-pane .ct-spell-detail__description", spell_name)
 
-        damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage")
-        healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp")
+        damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier")
+        healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier")
         properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
         to_hit = properties["To Hit"] ? \
             findToHit(spell_full_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit")

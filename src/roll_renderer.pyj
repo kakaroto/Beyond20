@@ -458,7 +458,7 @@ class Beyond20RollRenderer:
                 for i in range(damages.length):
                     roll = self._roller.roll(damages[i])
                     dmg_type = damage_types[i]
-                    if dmg_type in ["Healing", "Disciple of Life"]:
+                    if dmg_type in ["Healing", "Disciple of Life", "Temp HP"]:
                         damage_flags = DAMAGE_FLAGS.HEALING
                     elif i == 0:
                         damage_flags = DAMAGE_FLAGS.REGULAR
@@ -494,7 +494,7 @@ class Beyond20RollRenderer:
                     for i in range(critical_damages.length):
                         roll = self._roller.roll(critical_damages[i])
                         dmg_type = critical_damage_types[i]
-                        if dmg_type in ["Healing", "Disciple of Life"]:
+                        if dmg_type in ["Healing", "Disciple of Life", "Temp HP"]:
                             damage_flags = DAMAGE_FLAGS.HEALING
                         elif i == 0:
                             damage_flags = DAMAGE_FLAGS.REGULAR

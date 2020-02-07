@@ -8178,7 +8178,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         i = ρσ_Index16;
                         roll = self._roller.roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]);
                         dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
-                        if (ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) {
+                        if (ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life", "Temp HP" ]))) {
                             damage_flags = DAMAGE_FLAGS.prototype.HEALING;
                         } else if ((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) {
                             damage_flags = DAMAGE_FLAGS.prototype.REGULAR;
@@ -8232,7 +8232,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                             i = ρσ_Index19;
                             roll = self._roller.roll(critical_damages[(typeof i === "number" && i < 0) ? critical_damages.length + i : i]);
                             dmg_type = critical_damage_types[(typeof i === "number" && i < 0) ? critical_damage_types.length + i : i];
-                            if (ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life" ]))) {
+                            if (ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life", "Temp HP" ]))) {
                                 damage_flags = DAMAGE_FLAGS.prototype.HEALING;
                             } else if ((i === 0 || typeof i === "object" && ρσ_equals(i, 0))) {
                                 damage_flags = DAMAGE_FLAGS.prototype.REGULAR;
