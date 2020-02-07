@@ -221,6 +221,7 @@ class DNDBPrompter:
             alertify.Beyond20Prompt(title, html, ok_label, cancel_label, resolve)
         )
         
+alertify.defaults.transition = "zoom"
 if not alertify.Beyond20Prompt?:
     factory = def():
         return {

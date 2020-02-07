@@ -9109,6 +9109,7 @@ return this.__repr__();
         };
         Object.defineProperty(DNDBPrompter.prototype, "__bases__", {value: []});
 
+        alertify.defaults.transition = "zoom";
         if (!ρσ_exists.n(alertify.Beyond20Prompt)) {
             factory = function () {
                 return (function(){

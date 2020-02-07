@@ -9108,6 +9108,7 @@ return this.__repr__();
         };
         Object.defineProperty(DNDBPrompter.prototype, "__bases__", {value: []});
 
+        alertify.defaults.transition = "zoom";
         if (!ρσ_exists.n(alertify.Beyond20Prompt)) {
             factory = function () {
                 return (function(){
@@ -11775,8 +11776,8 @@ return this.__repr__();
                 }
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                for (var ρσ_Index38 = 0; ρσ_Index38 < prop_list.length; ρσ_Index38++) {
-                    i = ρσ_Index38;
+                for (var ρσ_Index8 = 0; ρσ_Index8 < prop_list.length; ρσ_Index8++) {
+                    i = ρσ_Index8;
                     if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
                         value = prop_list.eq(i).find(".ct-property-list__property-content");
                         damage = value.find(".ct-damage__value").text();
@@ -11808,8 +11809,8 @@ return this.__repr__();
                             damage_types.append(damage_type);
                         }
                         additional_damages = value.find(".ct-item-detail__additional-damage");
-                        for (var ρσ_Index39 = 0; ρσ_Index39 < additional_damages.length; ρσ_Index39++) {
-                            j = ρσ_Index39;
+                        for (var ρσ_Index9 = 0; ρσ_Index9 < additional_damages.length; ρσ_Index9++) {
+                            j = ρσ_Index9;
                             dmg = additional_damages.eq(j).text();
                             dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                             dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
@@ -12047,9 +12048,9 @@ return this.__repr__();
             if (force_display === false && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null))))) {
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                var ρσ_Iter40 = ρσ_Iterable(damage_modifiers);
-                for (var ρσ_Index40 = 0; ρσ_Index40 < ρσ_Iter40.length; ρσ_Index40++) {
-                    modifier = ρσ_Iter40[ρσ_Index40];
+                var ρσ_Iter10 = ρσ_Iterable(damage_modifiers);
+                for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                    modifier = ρσ_Iter10[ρσ_Index10];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                     if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
@@ -12066,9 +12067,9 @@ return this.__repr__();
                     damages.append(character._proficiency);
                     damage_types.append("Hexblade's Curse");
                 }
-                var ρσ_Iter41 = ρσ_Iterable(healing_modifiers);
-                for (var ρσ_Index41 = 0; ρσ_Index41 < ρσ_Iter41.length; ρσ_Index41++) {
-                    modifier = ρσ_Iter41[ρσ_Index41];
+                var ρσ_Iter11 = ρσ_Iterable(healing_modifiers);
+                for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                    modifier = ρσ_Iter11[ρσ_Index11];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     if (dmg.startsWith("Regain ")) {
                         dmg = dmg.slice(7);
@@ -12105,9 +12106,9 @@ return this.__repr__();
                     ρσ_d["ritual"] = ritual;
                     return ρσ_d;
                 }).call(this);
-                var ρσ_Iter42 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index42 = 0; ρσ_Index42 < ρσ_Iter42.length; ρσ_Index42++) {
-                    key = ρσ_Iter42[ρσ_Index42];
+                var ρσ_Iter12 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                    key = ρσ_Iter12[ρσ_Index12];
                     roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
                 }
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
@@ -12265,9 +12266,9 @@ return this.__repr__();
                 text_len = 0;
                 while (ρσ_not_equals(text_len, len(text))) {
                     text_len = len(text);
-                    var ρσ_Iter43 = ρσ_Iterable(character._abilities);
-                    for (var ρσ_Index43 = 0; ρσ_Index43 < ρσ_Iter43.length; ρσ_Index43++) {
-                        ability = ρσ_Iter43[ρσ_Index43];
+                    var ρσ_Iter13 = ρσ_Iterable(character._abilities);
+                    for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
+                        ability = ρσ_Iter13[ρσ_Index13];
                         mod_string = " + your " + ability[0] + " modifier";
                         if (text.startsWith(mod_string)) {
                             strong.append(mod_string);
@@ -12275,9 +12276,9 @@ return this.__repr__();
                             text = text.substring(len(mod_string));
                         }
                     }
-                    var ρσ_Iter44 = ρσ_Iterable(character._classes);
-                    for (var ρσ_Index44 = 0; ρσ_Index44 < ρσ_Iter44.length; ρσ_Index44++) {
-                        class_name = ρσ_Iter44[ρσ_Index44];
+                    var ρσ_Iter14 = ρσ_Iterable(character._classes);
+                    for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
+                        class_name = ρσ_Iter14[ρσ_Index14];
                         mod_string = " + your " + class_name.toLowerCase() + " level";
                         if (text.startsWith(mod_string)) {
                             strong.append(mod_string);
@@ -12313,9 +12314,9 @@ return this.__repr__();
                 return;
             }
             injectDiceToRolls(selector, character, name);
-            var ρσ_Iter45 = ρσ_Iterable($(".ct-beyond20-custom-roll"));
-            for (var ρσ_Index45 = 0; ρσ_Index45 < ρσ_Iter45.length; ρσ_Index45++) {
-                custom_roll = ρσ_Iter45[ρσ_Index45];
+            var ρσ_Iter15 = ρσ_Iterable($(".ct-beyond20-custom-roll"));
+            for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
+                custom_roll = ρσ_Iter15[ρσ_Index15];
                 findModifiers(character, custom_roll);
             }
         };
@@ -12515,9 +12516,9 @@ return this.__repr__();
                 j_conditions = $(".ct-condition-manage-pane .ct-toggle-field--enabled").closest(".ct-condition-manage-pane__condition");
                 exhaustion_level = $(".ct-condition-manage-pane__condition--special .ct-number-bar__option--active").text();
                 conditions = ρσ_list_decorate([]);
-                var ρσ_Iter46 = ρσ_Iterable(j_conditions);
-                for (var ρσ_Index46 = 0; ρσ_Index46 < ρσ_Iter46.length; ρσ_Index46++) {
-                    cond = ρσ_Iter46[ρσ_Index46];
+                var ρσ_Iter16 = ρσ_Iterable(j_conditions);
+                for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
+                    cond = ρσ_Iter16[ρσ_Index16];
                     conditions.append(cond.textContent);
                 }
                 if ((exhaustion_level === "" || typeof exhaustion_level === "object" && ρσ_equals(exhaustion_level, ""))) {
@@ -12537,9 +12538,9 @@ return this.__repr__();
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter47 = ρσ_Iterable(groups);
-            for (var ρσ_Index47 = 0; ρσ_Index47 < ρσ_Iter47.length; ρσ_Index47++) {
-                group = ρσ_Iter47[ρσ_Index47];
+            var ρσ_Iter17 = ρσ_Iterable(groups);
+            for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
+                group = ρσ_Iter17[ρσ_Index17];
                 label = $(group).find(".ct-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -12548,9 +12549,9 @@ return this.__repr__();
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter48 = ρσ_Iterable(items);
-                    for (var ρσ_Index48 = 0; ρσ_Index48 < ρσ_Iter48.length; ρσ_Index48++) {
-                        item = ρσ_Iter48[ρσ_Index48];
+                    var ρσ_Iter18 = ρσ_Iterable(items);
+                    for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
+                        item = ρσ_Iter18[ρσ_Index18];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -12714,9 +12715,9 @@ return this.__repr__();
             if (!settings["quick-rolls"]) {
                 return;
             }
-            var ρσ_Iter49 = ρσ_Iterable(abilities);
-            for (var ρσ_Index49 = 0; ρσ_Index49 < ρσ_Iter49.length; ρσ_Index49++) {
-                ability = ρσ_Iter49[ρσ_Index49];
+            var ρσ_Iter19 = ρσ_Iterable(abilities);
+            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
+                ability = ρσ_Iter19[ρσ_Index19];
                 quickRollAbility = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -12735,9 +12736,9 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(ability), beyond20_tooltip, quickRollAbility);
             }
-            var ρσ_Iter50 = ρσ_Iterable(saving_throws);
-            for (var ρσ_Index50 = 0; ρσ_Index50 < ρσ_Iter50.length; ρσ_Index50++) {
-                save = ρσ_Iter50[ρσ_Index50];
+            var ρσ_Iter20 = ρσ_Iterable(saving_throws);
+            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
+                save = ρσ_Iter20[ρσ_Index20];
                 quickRollSave = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -12756,16 +12757,16 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(save), beyond20_tooltip, quickRollSave);
             }
-            var ρσ_Iter51 = ρσ_Iterable(skills);
-            for (var ρσ_Index51 = 0; ρσ_Index51 < ρσ_Iter51.length; ρσ_Index51++) {
-                skill = ρσ_Iter51[ρσ_Index51];
+            var ρσ_Iter21 = ρσ_Iterable(skills);
+            for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
+                skill = ρσ_Iter21[ρσ_Index21];
                 quickRollSkill = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane, paneClass, pane_name;
                         name = el.closest(".ct-skills__item").find(".ct-skills__col--skill").text();
-                        var ρσ_Iter52 = ρσ_Iterable(ρσ_list_decorate([ "ct-skill-pane", "ct-custom-skill-pane" ]));
-                        for (var ρσ_Index52 = 0; ρσ_Index52 < ρσ_Iter52.length; ρσ_Index52++) {
-                            paneClass = ρσ_Iter52[ρσ_Index52];
+                        var ρσ_Iter22 = ρσ_Iterable(ρσ_list_decorate([ "ct-skill-pane", "ct-custom-skill-pane" ]));
+                        for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
+                            paneClass = ρσ_Iter22[ρσ_Index22];
                             pane = $("." + paneClass);
                             if (pane.length > 0) {
                                 break;
@@ -12785,16 +12786,16 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(skill), beyond20_tooltip, quickRollSkill);
             }
-            var ρσ_Iter53 = ρσ_Iterable(actions);
-            for (var ρσ_Index53 = 0; ρσ_Index53 < ρσ_Iter53.length; ρσ_Index53++) {
-                action = ρσ_Iter53[ρσ_Index53];
+            var ρσ_Iter23 = ρσ_Iterable(actions);
+            for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
+                action = ρσ_Iter23[ρσ_Index23];
                 quickRollAction = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane, paneClass, pane_name;
                         name = el.closest(".ct-combat-attack").find(".ct-combat-attack__name .ct-combat-attack__label").text();
-                        var ρσ_Iter54 = ρσ_Iterable(ρσ_list_decorate([ "ct-item-pane", "ct-action-pane", "ct-custom-action-pane", "ct-spell-pane" ]));
-                        for (var ρσ_Index54 = 0; ρσ_Index54 < ρσ_Iter54.length; ρσ_Index54++) {
-                            paneClass = ρσ_Iter54[ρσ_Index54];
+                        var ρσ_Iter24 = ρσ_Iterable(ρσ_list_decorate([ "ct-item-pane", "ct-action-pane", "ct-custom-action-pane", "ct-spell-pane" ]));
+                        for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
+                            paneClass = ρσ_Iter24[ρσ_Index24];
                             pane = $("." + paneClass);
                             if (pane.length > 0) {
                                 break;
@@ -12814,9 +12815,9 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(action), beyond20_tooltip, quickRollAction);
             }
-            var ρσ_Iter55 = ρσ_Iterable(spells);
-            for (var ρσ_Index55 = 0; ρσ_Index55 < ρσ_Iter55.length; ρσ_Index55++) {
-                spell = ρσ_Iter55[ρσ_Index55];
+            var ρσ_Iter25 = ρσ_Iterable(spells);
+            for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
+                spell = ρσ_Iter25[ρσ_Index25];
                 quickRollSpell = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -12860,8 +12861,8 @@ return this.__repr__();
             activateQuickRolls();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index56 = 0; ρσ_Index56 < pane.length; ρσ_Index56++) {
-                    div = ρσ_Index56;
+                for (var ρσ_Index26 = 0; ρσ_Index26 < pane.length; ρσ_Index26++) {
+                    div = ρσ_Index26;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls")) || (paneClass === "ct-beyond20-settings-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-beyond20-settings-pane"))) {
                         continue;
