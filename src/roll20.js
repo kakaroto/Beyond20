@@ -5835,6 +5835,16 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }).call(this);
                 return ρσ_d;
             }).call(this);
+            ρσ_d["weapon-force-critical"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Force all attacks as Critical Hits";
+                ρσ_d["description"] = "Forces all attacks to be considered as critical hits. Useful for melee attacks against paralyzed enemies or using adamantine weapons against objects";
+                ρσ_d["short"] = "Force Critical Hits";
+                ρσ_d["short_description"] = "Useful for melee attacks against paralyzed enemies or using adamantine weapons against objects";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["update-hp"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Update VTT Token HP";
@@ -6362,11 +6372,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "short")){
                 short = ρσ_kwargs_obj.short;
             }
-            var description_p, title, e, make_li, dropdown_options, p;
+            var description, description_p, title, e, make_li, dropdown_options, p;
             if ((option.hidden === true || typeof option.hidden === "object" && ρσ_equals(option.hidden, true)) || short && !ρσ_exists.n(option.short) || !ρσ_exists.n(option.title)) {
                 return null;
             }
-            description_p = (short) ? ρσ_list_decorate([]) : list(map(E.p, option.description.split("\n")));
+            description = (short) ? option.short_description : option.description;
+            description_p = (description) ? list(map(E.p, description.split("\n"))) : ρσ_list_decorate([]);
             title = (short) ? option.short : option.title;
             if ((option.type === "bool" || typeof option.type === "object" && ρσ_equals(option.type, "bool"))) {
                 e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [E.h4(title)].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.input, [ρσ_desugar_kwargs({id: name, class_: "beyond20-option-input", name: name, type_: "checkbox"})]), ρσ_interpolate_kwargs.call(E, E.label, [ρσ_desugar_kwargs({for_: name, class_: "label-default"})])].concat([ρσ_desugar_kwargs({class_: "material-switch pull-right"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-bool"})]));

@@ -989,6 +989,8 @@ def sendRoll(character, rollType, fallback, args):
     # Default advantage/whisper would get overriden if they are part of provided args
     req = {"action": "roll", "character": character.getDict(), "type": rollType, "roll": fallback,
            "advantage": advantage, "whisper": whisper}
+    if character.getGlobalSetting("weapon-force-critical", False):
+        req["critical-limit"] = 1
     for key in args:
         req[key] = args[key]
     console.log("Sending message: ", req)

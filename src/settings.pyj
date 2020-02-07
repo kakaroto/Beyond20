@@ -94,6 +94,13 @@ options_list = {
                               str(CriticalRules.HOMEBREW_MOD): "Homebrew: Add modifiers to rolls",
                               str(CriticalRules.HOMEBREW_REROLL): "Homebrew: Reroll all damages"}},
 
+    "weapon-force-critical": {"title": "Force all attacks as Critical Hits",
+                            "description": "Forces all attacks to be considered as critical hits. Useful for melee attacks against paralyzed enemies or using adamantine weapons against objects",
+                            "short": "Force Critical Hits",
+                            "short_description": "Useful for melee attacks against paralyzed enemies or using adamantine weapons against objects",                            
+                            "type": "bool",
+                            "default": False},
+
     "update-hp": {"title": "Update VTT Token HP",
                   "description": "When changing HP in D&D Beyond, update it in the VTT tokens and sheets",
                   "type": "bool",
@@ -253,7 +260,7 @@ character_settings = {
     "rogue-assassinate": {"title": "Rogue: Assassinate surprise attack (Apply to next roll only)",
                            "description": "Roll with advantage and roll critical damage dice",
                            "type": "bool",
-                           "default": False},
+                           "default": False}
 }
 
 def getStorage():
@@ -333,7 +340,8 @@ def createHTMLOptionEx(name, option, short=False):
             (short and not option.short?) or \
             (not option.title?):
         return None
-    description_p = [] if short else list(map(E.p, option.description.split("\n")))
+    description = option.short_description if short else option.description
+    description_p = list(map(E.p, description.split("\n"))) if description else []
     title = option.short if short else option.title
     if option.type == "bool":
         e = E.li(class_="list-group-item beyond20-option beyond20-option-bool",
