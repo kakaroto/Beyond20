@@ -5830,7 +5830,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_d = {};
                     ρσ_d[str(CriticalRules.prototype.PHB)] = "Standard PHB Rules (reroll dice)";
                     ρσ_d[str(CriticalRules.prototype.HOMEBREW_MAX)] = "Homebrew: Perfect rolls";
-                    ρσ_d[str(CriticalRules.prototype.HOMEBREW_MOD)] = "Homebrew: Add modifiers to rolls";
                     ρσ_d[str(CriticalRules.prototype.HOMEBREW_REROLL)] = "Homebrew: Reroll all damages";
                     return ρσ_d;
                 }).call(this);

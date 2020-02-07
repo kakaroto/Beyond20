@@ -5835,7 +5835,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var ρσ_d = {};
                     ρσ_d[str(CriticalRules.prototype.PHB)] = "Standard PHB Rules (reroll dice)";
                     ρσ_d[str(CriticalRules.prototype.HOMEBREW_MAX)] = "Homebrew: Perfect rolls";
-                    ρσ_d[str(CriticalRules.prototype.HOMEBREW_MOD)] = "Homebrew: Add modifiers to rolls";
                     ρσ_d[str(CriticalRules.prototype.HOMEBREW_REROLL)] = "Homebrew: Reroll all damages";
                     return ρσ_d;
                 }).call(this);
@@ -11103,29 +11102,33 @@ return this.__repr__();
         });
 
         function damagesToCrits(character, damages) {
-            var crits, rule, match, dice, faces, damage;
+            var crits, rule, dice, damage;
             crits = ρσ_list_decorate([]);
             rule = int(character.getGlobalSetting("critical-homebrew", CriticalRules.prototype.PHB));
-            if ((rule === CriticalRules.prototype.HOMEBREW_REROLL || typeof rule === "object" && ρσ_equals(rule, CriticalRules.prototype.HOMEBREW_REROLL))) {
+            if ((rule === CriticalRules.prototype.HOMEBREW_REROLL || typeof rule === "object" && ρσ_equals(rule, CriticalRules.prototype.HOMEBREW_REROLL)) || (rule === CriticalRules.prototype.HOMEBREW_MOD || typeof rule === "object" && ρσ_equals(rule, CriticalRules.prototype.HOMEBREW_MOD))) {
                 return damages.slice(0);
             }
             var ρσ_Iter30 = ρσ_Iterable(damages);
             for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
                 damage = ρσ_Iter30[ρσ_Index30];
-                match = re.search("([0-9]*)d([0-9]+)(ro<2)?", damage);
-                if ((typeof match !== "undefined" && match !== null)) {
-                    if ((rule === CriticalRules.prototype.HOMEBREW_MAX || typeof rule === "object" && ρσ_equals(rule, CriticalRules.prototype.HOMEBREW_MAX))) {
-                        dice = int(match.group(1) || 1);
-                        faces = int(match.group(2));
-                        crits.append(str(dice * faces));
-                    } else if ((rule === CriticalRules.prototype.HOMEBREW_MOD || typeof rule === "object" && ρσ_equals(rule, CriticalRules.prototype.HOMEBREW_MOD))) {
-                        crits.append(damage);
-                    } else {
-                        crits.append(match.group(0));
-                    }
-                } else {
-                    crits.append("");
-                }
+                dice = re.findall("([0-9]*)d([0-9]+)(ro<2)?", damage).map((function() {
+                    var ρσ_anonfunc = function (dice) {
+                        var match, faces;
+                        match = re.search("([0-9]*)d([0-9]+)(ro<2)?", dice);
+                        if ((rule === CriticalRules.prototype.HOMEBREW_MAX || typeof rule === "object" && ρσ_equals(rule, CriticalRules.prototype.HOMEBREW_MAX))) {
+                            dice = int(match.group(1) || 1);
+                            faces = int(match.group(2));
+                            return str(dice * faces);
+                        } else {
+                            return match.group(0);
+                        }
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["dice"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
+                crits.append(dice.join(" + "));
             }
             return crits;
         };

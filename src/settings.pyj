@@ -91,7 +91,6 @@ options_list = {
                   "default": CriticalRules.PHB,
                   "choices": {str(CriticalRules.PHB): "Standard PHB Rules (reroll dice)",
                               str(CriticalRules.HOMEBREW_MAX): "Homebrew: Perfect rolls",
-                              str(CriticalRules.HOMEBREW_MOD): "Homebrew: Add modifiers to rolls",
                               str(CriticalRules.HOMEBREW_REROLL): "Homebrew: Reroll all damages"}},
 
     "weapon-force-critical": {"title": "Force all attacks as Critical Hits",
