@@ -9792,6 +9792,7 @@ return this.__repr__();
             self._proficiency = null;
             self._hp = 0;
             self._max_hp = 0;
+            self._temp_hp = 0;
             self._class_features = ρσ_list_decorate([]);
             self._racial_traits = ρσ_list_decorate([]);
             self._feats = ρσ_list_decorate([]);
@@ -9911,35 +9912,58 @@ return this.__repr__();
         };
         Character.prototype.updateHP = function updateHP() {
             var self = this;
-            var hp, max_hp, hp_items, label, number, item, mobile_hp, req;
-            hp = max_hp = null;
-            hp_items = $(".ct-health-summary__hp-group--primary .ct-health-summary__hp-item");
-            var ρσ_Iter3 = ρσ_Iterable(hp_items);
-            for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                item = ρσ_Iter3[ρσ_Index3];
-                label = $(item).find(".ct-health-summary__hp-item-label").text();
-                if ((label === "Current" || typeof label === "object" && ρσ_equals(label, "Current"))) {
-                    number = $(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number");
-                    if (number.length > 0) {
-                        hp = int(number.text());
+            var health_pane, hp, max_hp, temp_hp, hp_items, label, number, item, temp_item, mobile_hp, has_temp, req;
+            health_pane = $(".ct-health-manager");
+            if (health_pane.length > 0) {
+                hp = int(health_pane.find(".ct-health-manager__health-item--cur .ct-health-manager__health-item-value").text());
+                max_hp = int(health_pane.find(".ct-health-manager__health-item--max .ct-health-manager__health-item-value .ct-health-manager__health-max-current").text());
+                temp_hp = int(health_pane.find(".ct-health-manager__health-item--temp .ct-health-manager__health-item-value input").val());
+            } else {
+                hp = max_hp = temp_hp = null;
+                hp_items = $(".ct-health-summary__hp-group--primary .ct-health-summary__hp-item");
+                var ρσ_Iter3 = ρσ_Iterable(hp_items);
+                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                    item = ρσ_Iter3[ρσ_Index3];
+                    label = $(item).find(".ct-health-summary__hp-item-label").text();
+                    if ((label === "Current" || typeof label === "object" && ρσ_equals(label, "Current"))) {
+                        number = $(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number");
+                        if (number.length > 0) {
+                            hp = int(number.text());
+                        }
+                    } else if ((label === "Max" || typeof label === "object" && ρσ_equals(label, "Max"))) {
+                        max_hp = int($(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number").text());
                     }
-                } else if ((label === "Max" || typeof label === "object" && ρσ_equals(label, "Max"))) {
-                    max_hp = int($(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number").text());
+                }
+                temp_item = $(".ct-health-summary__hp-group--temp .ct-health-summary__hp-item--temp .ct-health-summary__hp-item-content");
+                if (temp_item.length > 0) {
+                    number = temp_item.find(".ct-health-summary__hp-number").text();
+                    temp_hp = ((number !== "" && (typeof number !== "object" || ρσ_not_equals(number, "")))) ? int(number) : 0;
+                } else {
+                    temp_hp = self._temp_hp;
+                }
+                mobile_hp = $(".ct-status-summary-mobile__hp-current");
+                if (mobile_hp.length > 0) {
+                    hp = int(mobile_hp.text());
+                    max_hp = int($(".ct-status-summary-mobile__hp-max").text());
+                    has_temp = $(".ct-status-summary-mobile__hp.ct-status-summary-mobile__hp--has-temp");
+                    if (has_temp.length > 0) {
+                        temp_hp = self._temp_hp;
+                    } else {
+                        temp_hp = 0;
+                    }
+                    hp = hp - temp_hp;
+                }
+                if ($(".ct-status-summary-mobile__deathsaves-group").length > 0 || $(".ct-health-summary__deathsaves").length > 0) {
+                    hp = 0;
+                    temp_hp = 0;
+                    max_hp = self._max_hp;
                 }
             }
-            mobile_hp = $(".ct-status-summary-mobile__hp-current");
-            if (mobile_hp.length > 0) {
-                hp = int(mobile_hp.text());
-                max_hp = int($(".ct-status-summary-mobile__hp-max").text());
-            }
-            if ($(".ct-status-summary-mobile__deathsaves-group").length > 0 || $(".ct-health-summary__deathsaves").length > 0) {
-                hp = 0;
-                max_hp = self._max_hp;
-            }
-            if (hp !== null && max_hp !== null && ((self._hp !== hp && (typeof self._hp !== "object" || ρσ_not_equals(self._hp, hp))) || (self._max_hp !== max_hp && (typeof self._max_hp !== "object" || ρσ_not_equals(self._max_hp, max_hp))))) {
+            if (hp !== null && max_hp !== null && ((self._hp !== hp && (typeof self._hp !== "object" || ρσ_not_equals(self._hp, hp))) || (self._max_hp !== max_hp && (typeof self._max_hp !== "object" || ρσ_not_equals(self._max_hp, max_hp))) || (self._temp_hp !== temp_hp && (typeof self._temp_hp !== "object" || ρσ_not_equals(self._temp_hp, temp_hp))))) {
                 self._hp = hp;
                 self._max_hp = max_hp;
-                print("HP updated to : " + hp + "/" + max_hp);
+                self._temp_hp = temp_hp;
+                print("HP updated to : (" + hp + "+" + temp_hp + ")/" + max_hp);
                 req = (function(){
                     var ρσ_d = {};
                     ρσ_d["action"] = "hp-update";
@@ -10237,6 +10261,7 @@ return this.__repr__();
                 ρσ_d["speed"] = self._speed;
                 ρσ_d["hp"] = self._hp;
                 ρσ_d["max-hp"] = self._max_hp;
+                ρσ_d["temp-hp"] = self._temp_hp;
                 ρσ_d["exhaustion"] = self._exhaustion;
                 ρσ_d["conditions"] = self._conditions.as_array();
                 ρσ_d["settings"] = settings;
