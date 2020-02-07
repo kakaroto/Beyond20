@@ -10194,6 +10194,7 @@ return this.__repr__();
             var cb;
             cb = (function() {
                 var ρσ_anonfunc = function (settings) {
+                    self.updateSettings(settings);
                     chrome.runtime.sendMessage((function(){
                         var ρσ_d = {};
                         ρσ_d["action"] = "settings";

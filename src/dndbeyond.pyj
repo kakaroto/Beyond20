@@ -374,6 +374,7 @@ class Character(CharacterBase):
 
     def mergeCharacterSettings(self, data, callback=None):
         cb = def(settings):
+            self.updateSettings(settings)
             chrome.runtime.sendMessage({"action": "settings",
                                         "type": "character",
                                         "id": self._id,
