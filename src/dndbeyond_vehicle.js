@@ -10798,8 +10798,8 @@ return this.__repr__();
                 for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
                     action = ρσ_Iter19[ρσ_Index19];
                     firstChild = action.firstElementChild;
-                    if (firstChild && ((firstChild.tagName === "EM" || typeof firstChild.tagName === "object" && ρσ_equals(firstChild.tagName, "EM")) || (firstChild.tagName === "STRONG" || typeof firstChild.tagName === "object" && ρσ_equals(firstChild.tagName, "STRONG")))) {
-                        action_name = $(firstChild).find(":first-child").text().trim();
+                    if (firstChild) {
+                        action_name = $(firstChild).find("> :first-child").text().trim();
                     } else {
                         if (inject_descriptions) {
                             injectDiceToRolls(action, self, self._name);
