@@ -6134,6 +6134,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["fighter-giant-might"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Fighter: Giant Might";
+                ρσ_d["description"] = "Activate Giant Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -11102,7 +11110,7 @@ return this.__repr__();
         });
 
         function damagesToCrits(character, damages) {
-            var crits, rule, dice, damage;
+            var crits, rule, damage_parts, damage;
             crits = ρσ_list_decorate([]);
             rule = int(character.getGlobalSetting("critical-homebrew", CriticalRules.prototype.PHB));
             if ((rule === CriticalRules.prototype.HOMEBREW_REROLL || typeof rule === "object" && ρσ_equals(rule, CriticalRules.prototype.HOMEBREW_REROLL)) || (rule === CriticalRules.prototype.HOMEBREW_MOD || typeof rule === "object" && ρσ_equals(rule, CriticalRules.prototype.HOMEBREW_MOD))) {
@@ -11111,10 +11119,10 @@ return this.__repr__();
             var ρσ_Iter30 = ρσ_Iterable(damages);
             for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
                 damage = ρσ_Iter30[ρσ_Index30];
-                dice = re.findall("([0-9]*)d([0-9]+)(ro<2)?", damage).map((function() {
-                    var ρσ_anonfunc = function (dice) {
-                        var match, faces;
-                        match = re.search("([0-9]*)d([0-9]+)(ro<2)?", dice);
+                damage_parts = re.findall("([0-9]*)d([0-9]+)(ro<2)?", damage).map((function() {
+                    var ρσ_anonfunc = function (formula) {
+                        var match, dice, faces;
+                        match = re.search("([0-9]*)d([0-9]+)(ro<2)?", formula);
                         if ((rule === CriticalRules.prototype.HOMEBREW_MAX || typeof rule === "object" && ρσ_equals(rule, CriticalRules.prototype.HOMEBREW_MAX))) {
                             dice = int(match.group(1) || 1);
                             faces = int(match.group(2));
@@ -11124,11 +11132,12 @@ return this.__repr__();
                         }
                     };
                     if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["dice"]}
+                        __argnames__ : {value: ["formula"]}
                     });
                     return ρσ_anonfunc;
                 })());
-                crits.append(dice.join(" + "));
+                console.log("Damage to crits : ", damage, damage_parts);
+                crits.append(damage_parts.join(" + "));
             }
             return crits;
         };

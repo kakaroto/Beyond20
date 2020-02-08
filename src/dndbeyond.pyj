@@ -909,8 +909,8 @@ def damagesToCrits(character, damages):
     if rule == CriticalRules.HOMEBREW_REROLL or rule == CriticalRules.HOMEBREW_MOD:
         return damages[:]
     for damage in damages:
-        dice = re.findall("([0-9]*)d([0-9]+)(ro<2)?", damage).map(def (dice):
-            match = re.search("([0-9]*)d([0-9]+)(ro<2)?", dice)
+        damage_parts = re.findall("([0-9]*)d([0-9]+)(ro<2)?", damage).map(def (formula):
+            match = re.search("([0-9]*)d([0-9]+)(ro<2)?", formula)
             if rule == CriticalRules.HOMEBREW_MAX:
                 dice = int(match.group(1) or 1)
                 faces = int(match.group(2))
@@ -918,7 +918,8 @@ def damagesToCrits(character, damages):
             else:
                 return match.group(0)
         )
-        crits.append(dice.join(" + "))
+        console.log("Damage to crits : ", damage, damage_parts)
+        crits.append(damage_parts.join(" + "))
     return crits
 
 def buildAttackRoll(character, attack_source, name, description, properties, damages=[], damage_types=[], to_hit=None, brutal=0):

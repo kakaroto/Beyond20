@@ -29,7 +29,9 @@ def rollSkillCheck(paneClass):
                        "ability": ability,
                        "modifier": modifier,
                        "proficiency": proficiency}
-    if ability == "STR" and character.hasClassFeature("Rage") and character.getSetting("barbarian-rage", False):
+    if ability == "STR" and \
+        ((character.hasClassFeature("Rage") and character.getSetting("barbarian-rage", False)) or \
+         (character.hasClassFeature("Giant Might") and character.getSetting("fighter-giant-might", False))):
         roll_properties["advantage"] = RollType.ADVANTAGE
     sendRollWithCharacter("skill", "1d20" + modifier, roll_properties)
 
@@ -50,7 +52,9 @@ def rollAbilityOrSavingThrow(paneClass, rollType):
                        "ability": ability,
                        "modifier": modifier}
 
-    if ability == "STR" and character.hasClassFeature("Rage") and character.getSetting("barbarian-rage", False):
+    if ability == "STR" and \
+        ((character.hasClassFeature("Rage") and character.getSetting("barbarian-rage", False)) or \
+         (character.hasClassFeature("Giant Might") and character.getSetting("fighter-giant-might", False))):
         roll_properties["advantage"] = RollType.ADVANTAGE
     sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties)
 
@@ -202,6 +206,9 @@ def rollItem(force_display=False):
            character._proficiency is not None:
             damages.append(character._proficiency)
             damage_types.append("Hexblade's Curse")
+        if character.hasClassFeature("Giant Might") and character.getSetting("fighter-giant-might", False):
+            damages.append("1d6")
+            damage_types.append("Giant Might")
 
         critical_limit = 20
         if character.hasAction("Channel Divinity: Legendary Strike") and \
@@ -309,6 +316,9 @@ def rollAction(paneClass):
                 rage_damage = 2 if barbarian_level < 9 else (3 if barbarian_level < 16 else 4)
                 damages.insert(1, str(rage_damage))
                 damage_types.insert(1, "Rage")
+            if character.hasClassFeature("Giant Might") and character.getSetting("fighter-giant-might", False):
+                damages.append("1d6")
+                damage_types.append("Giant Might")
 
         roll_properties = buildAttackRoll(character,
                                           "action",

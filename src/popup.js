@@ -6129,6 +6129,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["fighter-giant-might"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Fighter: Giant Might";
+                ρσ_d["description"] = "Activate Giant Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -7104,6 +7112,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 if (ρσ_in("Assassinate", response["class-features"])) {
                     e = createHTMLOption("rogue-assassinate", false, character_settings);
+                    options.append(e);
+                }
+                if (ρσ_in("Giant Might", response["class-features"])) {
+                    e = createHTMLOption("fighter-giant-might", false, character_settings);
                     options.append(e);
                 }
                 loadSettings(response.settings, character_settings);

@@ -259,6 +259,10 @@ character_settings = {
     "rogue-assassinate": {"title": "Rogue: Assassinate surprise attack (Apply to next roll only)",
                            "description": "Roll with advantage and roll critical damage dice",
                            "type": "bool",
+                           "default": False},
+    "fighter-giant-might": {"title": "Fighter: Giant Might",
+                           "description": "Activate Giant Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
+                           "type": "bool",
                            "default": False}
 }
 
