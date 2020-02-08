@@ -11780,8 +11780,8 @@ return this.__repr__();
                 }
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                for (var ρσ_Index38 = 0; ρσ_Index38 < prop_list.length; ρσ_Index38++) {
-                    i = ρσ_Index38;
+                for (var ρσ_Index0 = 0; ρσ_Index0 < prop_list.length; ρσ_Index0++) {
+                    i = ρσ_Index0;
                     if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
                         value = prop_list.eq(i).find(".ct-property-list__property-content");
                         damage = value.find(".ct-damage__value").text();
@@ -11813,8 +11813,8 @@ return this.__repr__();
                             damage_types.append(damage_type);
                         }
                         additional_damages = value.find(".ct-item-detail__additional-damage");
-                        for (var ρσ_Index39 = 0; ρσ_Index39 < additional_damages.length; ρσ_Index39++) {
-                            j = ρσ_Index39;
+                        for (var ρσ_Index1 = 0; ρσ_Index1 < additional_damages.length; ρσ_Index1++) {
+                            j = ρσ_Index1;
                             dmg = additional_damages.eq(j).text();
                             dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                             dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
@@ -11956,7 +11956,7 @@ return this.__repr__();
         });
 
         function rollAction(paneClass) {
-            var properties, action_name, action_parent, description, fighter_level, superiority_die, damages, damage_types, custom_damage, roll_properties;
+            var properties, action_name, action_parent, description, fighter_level, superiority_die, damages, damage_types, custom_damage, brutal, critical_limit, barbarian_level, rage_damage, roll_properties;
             properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"));
             action_name = $(".ct-sidebar__heading").text();
             action_parent = $(".ct-sidebar__header-parent").text();
@@ -11988,7 +11988,41 @@ return this.__repr__();
                     damages.append(custom_damage);
                     damage_types.append("Custom");
                 }
-                roll_properties = buildAttackRoll(character, "action", action_name, description, properties, damages, damage_types, ρσ_exists.e(properties["To Hit"], null));
+                brutal = 0;
+                critical_limit = 20;
+                if ((action_name === "Polearm Master - Bonus Attack" || typeof action_name === "object" && ρσ_equals(action_name, "Polearm Master - Bonus Attack"))) {
+                    if (character.hasAction("Channel Divinity: Legendary Strike") && character.getSetting("paladin-legendary-strike", false)) {
+                        critical_limit = 19;
+                    }
+                    if (character.hasClassFeature("Hexblade’s Curse") && character.getSetting("warlock-hexblade-curse", false)) {
+                        critical_limit = 19;
+                    }
+                    if (character.hasClassFeature("Improved Critical")) {
+                        critical_limit = 19;
+                    }
+                    if (character.hasClassFeature("Superior Critical")) {
+                        critical_limit = 18;
+                    }
+                    if (character.getSetting("brutal-critical")) {
+                        if (character.hasClassFeature("Brutal Critical")) {
+                            barbarian_level = character.getClassLevel("Barbarian");
+                            brutal += 1 + math.floor((barbarian_level - 9) / 4);
+                        }
+                        if (character.hasRacialTrait("Savage Attacks")) {
+                            brutal += 1;
+                        }
+                    }
+                    if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) {
+                        barbarian_level = character.getClassLevel("Barbarian");
+                        rage_damage = (barbarian_level < 9) ? 2 : (barbarian_level < 16) ? 3 : 4;
+                        damages.insert(1, str(rage_damage));
+                        damage_types.insert(1, "Rage");
+                    }
+                }
+                roll_properties = buildAttackRoll(character, "action", action_name, description, properties, damages, damage_types, ρσ_exists.e(properties["To Hit"], null), brutal);
+                if ((critical_limit !== 20 && (typeof critical_limit !== "object" || ρσ_not_equals(critical_limit, 20)))) {
+                    roll_properties["critical-limit"] = critical_limit;
+                }
                 if (character.hasClassFeature("Assassinate") && character.getSetting("rogue-assassinate", false)) {
                     roll_properties["critical-limit"] = 1;
                     roll_properties["advantage"] = RollType.prototype.ADVANTAGE;
@@ -12053,9 +12087,9 @@ return this.__repr__();
             if (force_display === false && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || temp_hp_modifiers.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null))))) {
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                var ρσ_Iter40 = ρσ_Iterable(damage_modifiers);
-                for (var ρσ_Index40 = 0; ρσ_Index40 < ρσ_Iter40.length; ρσ_Index40++) {
-                    modifier = ρσ_Iter40[ρσ_Index40];
+                var ρσ_Iter2 = ρσ_Iterable(damage_modifiers);
+                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                    modifier = ρσ_Iter2[ρσ_Index2];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                     if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
@@ -12072,9 +12106,9 @@ return this.__repr__();
                     damages.append(character._proficiency);
                     damage_types.append("Hexblade's Curse");
                 }
-                var ρσ_Iter41 = ρσ_Iterable(healing_modifiers);
-                for (var ρσ_Index41 = 0; ρσ_Index41 < ρσ_Iter41.length; ρσ_Index41++) {
-                    modifier = ρσ_Iter41[ρσ_Index41];
+                var ρσ_Iter3 = ρσ_Iterable(healing_modifiers);
+                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                    modifier = ρσ_Iter3[ρσ_Index3];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     if (dmg.startsWith("Regain ")) {
                         dmg = dmg.slice(7);
@@ -12087,9 +12121,9 @@ return this.__repr__();
                         damage_types.append("Healing");
                     }
                 }
-                var ρσ_Iter42 = ρσ_Iterable(temp_hp_modifiers);
-                for (var ρσ_Index42 = 0; ρσ_Index42 < ρσ_Iter42.length; ρσ_Index42++) {
-                    modifier = ρσ_Iter42[ρσ_Index42];
+                var ρσ_Iter4 = ρσ_Iterable(temp_hp_modifiers);
+                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                    modifier = ρσ_Iter4[ρσ_Index4];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     if (dmg.startsWith("Regain ")) {
                         dmg = dmg.slice(7);
@@ -12126,9 +12160,9 @@ return this.__repr__();
                     ρσ_d["ritual"] = ritual;
                     return ρσ_d;
                 }).call(this);
-                var ρσ_Iter43 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index43 = 0; ρσ_Index43 < ρσ_Iter43.length; ρσ_Index43++) {
-                    key = ρσ_Iter43[ρσ_Index43];
+                var ρσ_Iter5 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                    key = ρσ_Iter5[ρσ_Index5];
                     roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
                 }
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
@@ -12286,9 +12320,9 @@ return this.__repr__();
                 text_len = 0;
                 while (ρσ_not_equals(text_len, len(text))) {
                     text_len = len(text);
-                    var ρσ_Iter44 = ρσ_Iterable(character._abilities);
-                    for (var ρσ_Index44 = 0; ρσ_Index44 < ρσ_Iter44.length; ρσ_Index44++) {
-                        ability = ρσ_Iter44[ρσ_Index44];
+                    var ρσ_Iter6 = ρσ_Iterable(character._abilities);
+                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                        ability = ρσ_Iter6[ρσ_Index6];
                         mod_string = " + your " + ability[0] + " modifier";
                         if (text.startsWith(mod_string)) {
                             strong.append(mod_string);
@@ -12296,9 +12330,9 @@ return this.__repr__();
                             text = text.substring(len(mod_string));
                         }
                     }
-                    var ρσ_Iter45 = ρσ_Iterable(character._classes);
-                    for (var ρσ_Index45 = 0; ρσ_Index45 < ρσ_Iter45.length; ρσ_Index45++) {
-                        class_name = ρσ_Iter45[ρσ_Index45];
+                    var ρσ_Iter7 = ρσ_Iterable(character._classes);
+                    for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                        class_name = ρσ_Iter7[ρσ_Index7];
                         mod_string = " + your " + class_name.toLowerCase() + " level";
                         if (text.startsWith(mod_string)) {
                             strong.append(mod_string);
@@ -12334,9 +12368,9 @@ return this.__repr__();
                 return;
             }
             injectDiceToRolls(selector, character, name);
-            var ρσ_Iter46 = ρσ_Iterable($(".ct-beyond20-custom-roll"));
-            for (var ρσ_Index46 = 0; ρσ_Index46 < ρσ_Iter46.length; ρσ_Index46++) {
-                custom_roll = ρσ_Iter46[ρσ_Index46];
+            var ρσ_Iter8 = ρσ_Iterable($(".ct-beyond20-custom-roll"));
+            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                custom_roll = ρσ_Iter8[ρσ_Index8];
                 findModifiers(character, custom_roll);
             }
         };
@@ -12536,9 +12570,9 @@ return this.__repr__();
                 j_conditions = $(".ct-condition-manage-pane .ct-toggle-field--enabled").closest(".ct-condition-manage-pane__condition");
                 exhaustion_level = $(".ct-condition-manage-pane__condition--special .ct-number-bar__option--active").text();
                 conditions = ρσ_list_decorate([]);
-                var ρσ_Iter47 = ρσ_Iterable(j_conditions);
-                for (var ρσ_Index47 = 0; ρσ_Index47 < ρσ_Iter47.length; ρσ_Index47++) {
-                    cond = ρσ_Iter47[ρσ_Index47];
+                var ρσ_Iter9 = ρσ_Iterable(j_conditions);
+                for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                    cond = ρσ_Iter9[ρσ_Index9];
                     conditions.append(cond.textContent);
                 }
                 if ((exhaustion_level === "" || typeof exhaustion_level === "object" && ρσ_equals(exhaustion_level, ""))) {
@@ -12558,9 +12592,9 @@ return this.__repr__();
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter48 = ρσ_Iterable(groups);
-            for (var ρσ_Index48 = 0; ρσ_Index48 < ρσ_Iter48.length; ρσ_Index48++) {
-                group = ρσ_Iter48[ρσ_Index48];
+            var ρσ_Iter10 = ρσ_Iterable(groups);
+            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                group = ρσ_Iter10[ρσ_Index10];
                 label = $(group).find(".ct-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -12569,9 +12603,9 @@ return this.__repr__();
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter49 = ρσ_Iterable(items);
-                    for (var ρσ_Index49 = 0; ρσ_Index49 < ρσ_Iter49.length; ρσ_Index49++) {
-                        item = ρσ_Iter49[ρσ_Index49];
+                    var ρσ_Iter11 = ρσ_Iterable(items);
+                    for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                        item = ρσ_Iter11[ρσ_Index11];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -12735,9 +12769,9 @@ return this.__repr__();
             if (!settings["quick-rolls"]) {
                 return;
             }
-            var ρσ_Iter50 = ρσ_Iterable(abilities);
-            for (var ρσ_Index50 = 0; ρσ_Index50 < ρσ_Iter50.length; ρσ_Index50++) {
-                ability = ρσ_Iter50[ρσ_Index50];
+            var ρσ_Iter12 = ρσ_Iterable(abilities);
+            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                ability = ρσ_Iter12[ρσ_Index12];
                 quickRollAbility = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -12756,9 +12790,9 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(ability), beyond20_tooltip, quickRollAbility);
             }
-            var ρσ_Iter51 = ρσ_Iterable(saving_throws);
-            for (var ρσ_Index51 = 0; ρσ_Index51 < ρσ_Iter51.length; ρσ_Index51++) {
-                save = ρσ_Iter51[ρσ_Index51];
+            var ρσ_Iter13 = ρσ_Iterable(saving_throws);
+            for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
+                save = ρσ_Iter13[ρσ_Index13];
                 quickRollSave = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -12777,16 +12811,16 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(save), beyond20_tooltip, quickRollSave);
             }
-            var ρσ_Iter52 = ρσ_Iterable(skills);
-            for (var ρσ_Index52 = 0; ρσ_Index52 < ρσ_Iter52.length; ρσ_Index52++) {
-                skill = ρσ_Iter52[ρσ_Index52];
+            var ρσ_Iter14 = ρσ_Iterable(skills);
+            for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
+                skill = ρσ_Iter14[ρσ_Index14];
                 quickRollSkill = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane, paneClass, pane_name;
                         name = el.closest(".ct-skills__item").find(".ct-skills__col--skill").text();
-                        var ρσ_Iter53 = ρσ_Iterable(ρσ_list_decorate([ "ct-skill-pane", "ct-custom-skill-pane" ]));
-                        for (var ρσ_Index53 = 0; ρσ_Index53 < ρσ_Iter53.length; ρσ_Index53++) {
-                            paneClass = ρσ_Iter53[ρσ_Index53];
+                        var ρσ_Iter15 = ρσ_Iterable(ρσ_list_decorate([ "ct-skill-pane", "ct-custom-skill-pane" ]));
+                        for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
+                            paneClass = ρσ_Iter15[ρσ_Index15];
                             pane = $("." + paneClass);
                             if (pane.length > 0) {
                                 break;
@@ -12806,16 +12840,16 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(skill), beyond20_tooltip, quickRollSkill);
             }
-            var ρσ_Iter54 = ρσ_Iterable(actions);
-            for (var ρσ_Index54 = 0; ρσ_Index54 < ρσ_Iter54.length; ρσ_Index54++) {
-                action = ρσ_Iter54[ρσ_Index54];
+            var ρσ_Iter16 = ρσ_Iterable(actions);
+            for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
+                action = ρσ_Iter16[ρσ_Index16];
                 quickRollAction = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane, paneClass, pane_name;
                         name = el.closest(".ct-combat-attack").find(".ct-combat-attack__name .ct-combat-attack__label").text();
-                        var ρσ_Iter55 = ρσ_Iterable(ρσ_list_decorate([ "ct-item-pane", "ct-action-pane", "ct-custom-action-pane", "ct-spell-pane" ]));
-                        for (var ρσ_Index55 = 0; ρσ_Index55 < ρσ_Iter55.length; ρσ_Index55++) {
-                            paneClass = ρσ_Iter55[ρσ_Index55];
+                        var ρσ_Iter17 = ρσ_Iterable(ρσ_list_decorate([ "ct-item-pane", "ct-action-pane", "ct-custom-action-pane", "ct-spell-pane" ]));
+                        for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
+                            paneClass = ρσ_Iter17[ρσ_Index17];
                             pane = $("." + paneClass);
                             if (pane.length > 0) {
                                 break;
@@ -12835,9 +12869,9 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(action), beyond20_tooltip, quickRollAction);
             }
-            var ρσ_Iter56 = ρσ_Iterable(spells);
-            for (var ρσ_Index56 = 0; ρσ_Index56 < ρσ_Iter56.length; ρσ_Index56++) {
-                spell = ρσ_Iter56[ρσ_Index56];
+            var ρσ_Iter18 = ρσ_Iterable(spells);
+            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
+                spell = ρσ_Iter18[ρσ_Index18];
                 quickRollSpell = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -12881,8 +12915,8 @@ return this.__repr__();
             activateQuickRolls();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index57 = 0; ρσ_Index57 < pane.length; ρσ_Index57++) {
-                    div = ρσ_Index57;
+                for (var ρσ_Index19 = 0; ρσ_Index19 < pane.length; ρσ_Index19++) {
+                    div = ρσ_Index19;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls")) || (paneClass === "ct-beyond20-settings-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-beyond20-settings-pane"))) {
                         continue;
