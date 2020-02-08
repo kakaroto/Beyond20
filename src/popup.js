@@ -6137,6 +6137,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["artificer-arcane-firearm"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Artificer: Use Arcane Firearm";
+                ρσ_d["description"] = "Use an Arcane Firearm for your Artificer spells. Deals extra 1d8 damage.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -7116,6 +7124,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 if (ρσ_in("Giant Might", response["class-features"])) {
                     e = createHTMLOption("fighter-giant-might", false, character_settings);
+                    options.append(e);
+                }
+                if (ρσ_in("Arcane Firearm", response["class-features"])) {
+                    e = createHTMLOption("artificer-arcane-firearm", false, character_settings);
                     options.append(e);
                 }
                 loadSettings(response.settings, character_settings);

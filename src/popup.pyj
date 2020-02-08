@@ -117,6 +117,9 @@ def populateCharacter(response):
         if "Giant Might" in response["class-features"]:
             e = createHTMLOption("fighter-giant-might", False, character_settings)
             options.append(e)
+        if "Arcane Firearm" in response["class-features"]:
+            e = createHTMLOption("artificer-arcane-firearm", False, character_settings)
+            options.append(e)
 
         loadSettings(response.settings, character_settings)
     $('.beyond20-option-input').off('change', save_settings)

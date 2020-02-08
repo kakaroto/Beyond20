@@ -348,6 +348,7 @@ def rollSpell(force_display=False):
     nonlocal character
     properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
     #console.log("Properties are : " + str(properties))
+    spell_source = $(".ct-sidebar__header-parent").text()
     spell_full_name = $(".ct-sidebar__heading .ct-spell-name").text()
     spell_name = $(".ct-sidebar__heading .ct-spell-name")[0].firstChild.textContent
     description = descriptionToString(".ct-spell-pane .ct-spell-detail__description")
@@ -392,6 +393,13 @@ def rollSpell(force_display=False):
             character._proficiency is not None:
             damages.append(character._proficiency)
             damage_types.append("Hexblade's Curse")
+            
+        if damages.length > 0 and \
+            character.hasClassFeature("Arcane Firearm") and \
+            character.getSetting("artificer-arcane-firearm", False) and \
+            spell_source == "Artificer":
+            damages.append("1d8")
+            damage_types.append("Arcane Firearm")
 
         # We can then add healing types
         for modifier in healing_modifiers:

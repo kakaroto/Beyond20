@@ -263,6 +263,10 @@ character_settings = {
     "fighter-giant-might": {"title": "Fighter: Giant Might",
                            "description": "Activate Giant Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
                            "type": "bool",
+                           "default": False},
+    "artificer-arcane-firearm": {"title": "Artificer: Use Arcane Firearm",
+                           "description": "Use an Arcane Firearm for your Artificer spells. Deals extra 1d8 damage.",
+                           "type": "bool",
                            "default": False}
 }
 

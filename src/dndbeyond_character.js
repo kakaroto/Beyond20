@@ -6142,6 +6142,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["artificer-arcane-firearm"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Artificer: Use Arcane Firearm";
+                ρσ_d["description"] = "Use an Arcane Firearm for your Artificer spells. Deals extra 1d8 damage.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -12070,8 +12078,9 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
                 force_display = ρσ_kwargs_obj.force_display;
             }
-            var properties, spell_full_name, spell_name, description, damage_modifiers, healing_modifiers, temp_hp_modifiers, castas, level, concentration, ritual, duration, to_hit, damages, damage_types, dmg, dmgtype, modifier, spell_level, custom_damage, roll_properties, spell_properties, key;
+            var properties, spell_source, spell_full_name, spell_name, description, damage_modifiers, healing_modifiers, temp_hp_modifiers, castas, level, concentration, ritual, duration, to_hit, damages, damage_types, dmg, dmgtype, modifier, spell_level, custom_damage, roll_properties, spell_properties, key;
             properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"));
+            spell_source = $(".ct-sidebar__header-parent").text();
             spell_full_name = $(".ct-sidebar__heading .ct-spell-name").text();
             spell_name = $(".ct-sidebar__heading .ct-spell-name")[0].firstChild.textContent;
             description = descriptionToString(".ct-spell-pane .ct-spell-detail__description");
@@ -12122,6 +12131,10 @@ return this.__repr__();
                 if (damages.length > 0 && character.getSetting("warlock-hexblade-curse", false) && character.hasClassFeature("Hexblade’s Curse") && character._proficiency !== null) {
                     damages.append(character._proficiency);
                     damage_types.append("Hexblade's Curse");
+                }
+                if (damages.length > 0 && character.hasClassFeature("Arcane Firearm") && character.getSetting("artificer-arcane-firearm", false) && (spell_source === "Artificer" || typeof spell_source === "object" && ρσ_equals(spell_source, "Artificer"))) {
+                    damages.append("1d8");
+                    damage_types.append("Arcane Firearm");
                 }
                 var ρσ_Iter3 = ρσ_Iterable(healing_modifiers);
                 for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
