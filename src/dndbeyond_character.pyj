@@ -151,10 +151,11 @@ def rollItem(force_display=False):
                         damage_types.append(dmg_type)
                 break
 
-        custom_damage = character.getSetting("custom-damage-dice", "")
-        if len(custom_damage) > 0:
-            damages.append(custom_damage)
-            damage_types.append("Custom")
+        custom_damages = character.getSetting("custom-damage-dice", "")
+        if len(custom_damages) > 0:
+            for custom_damage in custom_damages.split(","):
+                damages.append(custom_damage.trim())
+                damage_types.append("Custom")
         if "Rogue" in character._classes and \
                 character.getSetting("rogue-sneak-attack", False) and \
                 (properties["Attack Type"] == "Ranged" or \
@@ -285,10 +286,12 @@ def rollAction(paneClass):
         else:
             damages = []
             damage_types = []
-        custom_damage = character.getSetting("custom-damage-dice", "")
-        if len(custom_damage) > 0:
-            damages.append(custom_damage)
-            damage_types.append("Custom")
+
+        custom_damages = character.getSetting("custom-damage-dice", "")
+        if len(custom_damages) > 0:
+            for custom_damage in custom_damages.split(","):
+                damages.append(custom_damage.trim())
+                damage_types.append("Custom")
 
         brutal = 0
         critical_limit = 20
@@ -433,10 +436,11 @@ def rollSpell(force_display=False):
             damages.append(str(2 + int(spell_level)))
             damage_types.append("Disciple of Life")
 
-        custom_damage = character.getSetting("custom-damage-dice", "")
-        if len(custom_damage) > 0 and len(damages) > 0:
-            damages.append(custom_damage)
-            damage_types.append("Custom")
+        custom_damages = character.getSetting("custom-damage-dice", "")
+        if len(custom_damages) > 0:
+            for custom_damage in custom_damages.split(","):
+                damages.append(custom_damage.trim())
+                damage_types.append("Custom")
 
         roll_properties = buildAttackRoll(character,
                                           "spell",
