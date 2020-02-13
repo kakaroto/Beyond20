@@ -207,9 +207,17 @@ def rollItem(force_display=False):
            character._proficiency is not None:
             damages.append(character._proficiency)
             damage_types.append("Hexblade's Curse")
+        # Fighter's Giant Might
         if character.hasClassFeature("Giant Might") and character.getSetting("fighter-giant-might", False):
             damages.append("1d6")
             damage_types.append("Giant Might")
+        # Cleric's Divine Strike
+        if properties["Attack Type"] == "Melee" and \
+            character.hasClassFeature("Divine Strike") and \
+            character.getSetting("cleric-divine-strike", True):
+            cleric_level = character.getClassLevel("Cleric")
+            damages.append("1d8" if cleric_level < 14 else "2d8")
+            damage_types.append("Divine Strike")
 
         critical_limit = 20
         if character.hasAction("Channel Divinity: Legendary Strike") and \

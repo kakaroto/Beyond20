@@ -6145,9 +6145,17 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["artificer-arcane-firearm"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Artificer: Use Arcane Firearm";
-                ρσ_d["description"] = "Use an Arcane Firearm for your Artificer spells. Deals extra 1d8 damage.";
+                ρσ_d["description"] = "Use an Arcane Firearm for your Artificer spells. Deals extra 1d8 damage";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["cleric-divine-strike"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Cleric: Divine Strike";
+                ρσ_d["description"] = "Deal an extra 1d8 (2d8 at level 14) damage to melee weapon attacks";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
             return ρσ_d;
@@ -11781,7 +11789,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
                 force_display = ρσ_kwargs_obj.force_display;
             }
-            var prop_list, properties, item_name, item_type, description, item_full_name, to_hit, damages, damage_types, value, damage, damage_type, versatile_damage, versatile_choice, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damages, custom_damage, sneak_attack, bloodhunter_level, rite_die, critical_limit, brutal, barbarian_level, rage_damage, roll_properties;
+            var prop_list, properties, item_name, item_type, description, item_full_name, to_hit, damages, damage_types, value, damage, damage_type, versatile_damage, versatile_choice, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damages, custom_damage, sneak_attack, bloodhunter_level, rite_die, cleric_level, critical_limit, brutal, barbarian_level, rage_damage, roll_properties;
             prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property");
             properties = propertyListToDict(prop_list);
             item_name = $(".ct-item-pane .ct-item-name")[0].firstChild.textContent;
@@ -11917,6 +11925,11 @@ return this.__repr__();
                 if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)) {
                     damages.append("1d6");
                     damage_types.append("Giant Might");
+                }
+                if ((properties["Attack Type"] === "Melee" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Melee")) && character.hasClassFeature("Divine Strike") && character.getSetting("cleric-divine-strike", true)) {
+                    cleric_level = character.getClassLevel("Cleric");
+                    damages.append((cleric_level < 14) ? "1d8" : "2d8");
+                    damage_types.append("Divine Strike");
                 }
                 critical_limit = 20;
                 if (character.hasAction("Channel Divinity: Legendary Strike") && character.getSetting("paladin-legendary-strike", false)) {

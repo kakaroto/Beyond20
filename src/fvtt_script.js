@@ -6141,9 +6141,17 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["artificer-arcane-firearm"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Artificer: Use Arcane Firearm";
-                ρσ_d["description"] = "Use an Arcane Firearm for your Artificer spells. Deals extra 1d8 damage.";
+                ρσ_d["description"] = "Use an Arcane Firearm for your Artificer spells. Deals extra 1d8 damage";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["cleric-divine-strike"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Cleric: Divine Strike";
+                ρσ_d["description"] = "Deal an extra 1d8 (2d8 at level 14) damage to melee weapon attacks";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
             return ρσ_d;

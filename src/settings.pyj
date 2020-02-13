@@ -265,9 +265,13 @@ character_settings = {
                            "type": "bool",
                            "default": False},
     "artificer-arcane-firearm": {"title": "Artificer: Use Arcane Firearm",
-                           "description": "Use an Arcane Firearm for your Artificer spells. Deals extra 1d8 damage.",
+                           "description": "Use an Arcane Firearm for your Artificer spells. Deals extra 1d8 damage",
                            "type": "bool",
-                           "default": False}
+                           "default": False},
+    "cleric-divine-strike": {"title": "Cleric: Divine Strike",
+                           "description": "Deal an extra 1d8 (2d8 at level 14) damage to melee weapon attacks",
+                           "type": "bool",
+                           "default": True}
 }
 
 def getStorage():
