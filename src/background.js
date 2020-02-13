@@ -7328,6 +7328,11 @@ var str = ρσ_str, repr = ρσ_repr;;
                 addFVTTTab(sender.tab);
             } else if ((request.action === "reload-me" || typeof request.action === "object" && ρσ_equals(request.action, "reload-me"))) {
                 chrome.tabs.reload(sender.tab.id);
+            } else if ((request.action === "get-current-tab" || typeof request.action === "object" && ρσ_equals(request.action, "get-current-tab"))) {
+                sendResponse(sender.tab);
+            } else if ((request.action === "forward" || typeof request.action === "object" && ρσ_equals(request.action, "forward"))) {
+                chrome.tabs.sendMessage(request.tab, request.message, sendResponse);
+                return true;
             }
             return false;
         };

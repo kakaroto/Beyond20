@@ -1,4 +1,4 @@
-from utils import replaceRolls, alertQuickSettings, getBrowser, isListEqual
+from utils import replaceRolls, alertQuickSettings, isListEqual
 from settings import getStoredSettings, mergeSettings, character_settings, WhisperType, RollType, CriticalRules
 from dndbeyond_dice import dndbeyondDiceRoller
 from elementmaker import E
@@ -461,7 +461,7 @@ class Monster(CharacterBase):
         if stat_block is None:
             stat_block = $(base)
         self._stat_block = stat_block
-        if self.type() != "Creature" and self.type() != "Extra-Vehicle" and getBrowser() != "Firefox":
+        if self.type() != "Creature" and self.type() != "Extra-Vehicle":
             $(".ct-beyond20-settings-button").remove()
             quick_settings = E.div(class_="ct-beyond20-settings-button", style="background-color: rgba(0, 0, 0, 0.1)",
                                     E.img(class_="ct-beyond20-settings", src=chrome.extension.getURL("images/icons/icon32.png"), style="vertical-align: top;"),

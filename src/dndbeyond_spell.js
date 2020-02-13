@@ -9572,7 +9572,6 @@ return this.__repr__();
         var ability_abbreviations, skill_abilities, button_class, button_class_small;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
         var alertQuickSettings = ρσ_modules.utils.alertQuickSettings;
-        var getBrowser = ρσ_modules.utils.getBrowser;
         var isListEqual = ρσ_modules.utils.isListEqual;
 
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
@@ -10390,7 +10389,7 @@ return this.__repr__();
                 stat_block = $(base);
             }
             self._stat_block = stat_block;
-            if (ρσ_not_equals(self.type(), "Creature") && ρσ_not_equals(self.type(), "Extra-Vehicle") && ρσ_not_equals(getBrowser(), "Firefox")) {
+            if (ρσ_not_equals(self.type(), "Creature") && ρσ_not_equals(self.type(), "Extra-Vehicle")) {
                 $(".ct-beyond20-settings-button").remove();
                 quick_settings = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-settings", src: chrome.extension.getURL("images/icons/icon32.png"), style: "vertical-align: top;"})]), ρσ_interpolate_kwargs.call(E, E.span, ["Beyond 20"].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-settings-button-label mon-stat-block__tidbit mon-stat-block__tidbit-label", style: "font-size: 28px; margin: 5px;"})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-settings-button", style: "background-color: rgba(0, 0, 0, 0.1)"})]));
                 stat_block.find(base + "__header").prepend(quick_settings);

@@ -6952,6 +6952,23 @@ var str = ρσ_str, repr = ρσ_repr;;
         var isFVTT = ρσ_modules.utils.isFVTT;
         var urlMatches = ρσ_modules.utils.urlMatches;
 
+        function sendMessageToTab(tab_id, message, callback) {
+            if (chrome.tabs) {
+                chrome.tabs.sendMessage(tab_id, message, callback);
+            } else {
+                chrome.runtime.sendMessage((function(){
+                    var ρσ_d = {};
+                    ρσ_d["action"] = "forward";
+                    ρσ_d["tab"] = tab_id;
+                    ρσ_d["message"] = message;
+                    return ρσ_d;
+                }).call(this), callback);
+            }
+        };
+        if (!sendMessageToTab.__argnames__) Object.defineProperties(sendMessageToTab, {
+            __argnames__ : {value: ["tab_id", "message", "callback"]}
+        });
+
         character = null;
         settings = null;
         function gotSettings(stored_settings) {
@@ -6991,7 +7008,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         function canAlertify(tab_id) {
             $("#openOptions").off("click").on("click", (function() {
                 var ρσ_anonfunc = function (ev) {
-                    chrome.tabs.sendMessage(tab_id, (function(){
+                    sendMessageToTab(tab_id, (function(){
                         var ρσ_d = {};
                         ρσ_d["action"] = "open-options";
                         return ρσ_d;
@@ -7176,11 +7193,11 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["tab", "url"]}
         });
 
-        function actOnCurrentTab(tabs) {
+        function actOnCurrentTab(tab) {
             var vtt, options, e;
-            setCurrentTab(tabs[0]);
-            if (urlMatches(tabs[0].url, ROLL20_URL) || isFVTT(tabs[0].title)) {
-                vtt = (isFVTT(tabs[0].title)) ? "Foundry VTT" : "Roll20";
+            setCurrentTab(tab);
+            if (urlMatches(tab.url, ROLL20_URL) || isFVTT(tab.title)) {
+                vtt = (isFVTT(tab.title)) ? "Foundry VTT" : "Roll20";
                 options = $(".beyond20-options");
                 options.append(ρσ_interpolate_kwargs.call(E, E.li, [E.h4(" == " + vtt + " Tab Specific Options ==")].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option", style: "text-align: center; margin: 10px;"})])));
                 if ((vtt === "Roll20" || typeof vtt === "object" && ρσ_equals(vtt, "Roll20"))) {
@@ -7194,29 +7211,45 @@ var str = ρσ_str, repr = ρσ_repr;;
                 $(".beyond20-option-input").off("change", save_settings);
                 $(".beyond20-option-input").change(save_settings);
                 initializeSettings(gotSettings);
-            } else if (urlMatches(tabs[0].url, DNDBEYOND_CHARACTER_URL)) {
-                chrome.tabs.sendMessage(tabs[0].id, (function(){
+            } else if (urlMatches(tab.url, DNDBEYOND_CHARACTER_URL)) {
+                sendMessageToTab(tab.id, (function(){
                     var ρσ_d = {};
                     ρσ_d["action"] = "get-character";
                     return ρσ_d;
                 }).call(this), populateCharacter);
-            } else if (urlMatches(tabs[0].url, DNDBEYOND_MONSTER_URL) || urlMatches(tabs[0].url, DNDBEYOND_VEHICLE_URL) || urlMatches(tabs[0].url, DNDBEYOND_ENCOUNTER_URL)) {
+            } else if (urlMatches(tab.url, DNDBEYOND_MONSTER_URL) || urlMatches(tab.url, DNDBEYOND_VEHICLE_URL) || urlMatches(tab.url, DNDBEYOND_ENCOUNTER_URL)) {
                 addMonsterOptions();
             } else {
                 initializeSettings(gotSettings);
             }
-            canAlertify(tabs[0].id);
+            canAlertify(tab.id);
         };
         if (!actOnCurrentTab.__argnames__) Object.defineProperties(actOnCurrentTab, {
-            __argnames__ : {value: ["tabs"]}
+            __argnames__ : {value: ["tab"]}
         });
 
         setupHTML();
-        chrome.tabs.query((function(){
-            var ρσ_d = {};
-            ρσ_d["active"] = true;
-            ρσ_d["currentWindow"] = true;
-            return ρσ_d;
-        }).call(this), actOnCurrentTab);
+        if (ρσ_exists.n(chrome.tabs)) {
+            chrome.tabs.query((function(){
+                var ρσ_d = {};
+                ρσ_d["active"] = true;
+                ρσ_d["currentWindow"] = true;
+                return ρσ_d;
+            }).call(this), (function() {
+                var ρσ_anonfunc = function (tabs) {
+                    actOnCurrentTab(tabs[0]);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["tabs"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        } else {
+            chrome.runtime.sendMessage((function(){
+                var ρσ_d = {};
+                ρσ_d["action"] = "get-current-tab";
+                return ρσ_d;
+            }).call(this), actOnCurrentTab);
+        }
     })();
 })();

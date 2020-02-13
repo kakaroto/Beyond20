@@ -21,16 +21,19 @@ def setupHTML():
     $(document).on('click', 'a', def(ev):
         href = this.getAttribute('href')
         if len(href) > 0 and href != "#":
-            chrome.tabs.create({"url": this.href})
+            window.open(this.href)
         return False
     )
 
-def actOnCurrentTab(tabs):
-    if isFVTT(tabs[0].title):
+def actOnCurrentTab(tab):
+    if isFVTT(tab.title):
         # If FVTT, then inject the actual popup, instead of the default one.
-        chrome.runtime.sendMessage({"action": "activate-icon", "tab": tabs[0]})
+        chrome.runtime.sendMessage({"action": "activate-icon", "tab": tab})
         injectPageScript("src/popup.js")
     else:
         setupHTML()
 
-chrome.tabs.query({"active": True, "currentWindow": True}, actOnCurrentTab)
+if chrome.tabs?:
+    chrome.tabs.query({"active": True, "currentWindow": True}, def(tabs): actOnCurrentTab(tabs[0]);)
+else:
+    chrome.runtime.sendMessage({"action": "get-current-tab"}, actOnCurrentTab)

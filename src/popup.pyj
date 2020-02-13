@@ -4,6 +4,12 @@ from settings import options_list, character_settings, createHTMLOption, createH
 from constants import ROLL20_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_VEHICLE_URL
 from utils import isFVTT, urlMatches
 
+def sendMessageToTab(tab_id, message, callback):
+    if chrome.tabs:
+        chrome.tabs.sendMessage(tab_id, message, callback)
+    else:
+        chrome.runtime.sendMessage({"action": "forward", "tab": tab_id, "message": message}, callback)
+
 character = None
 settings = None
 def gotSettings(stored_settings):
@@ -31,7 +37,7 @@ def createOptionList():
     )
 def canAlertify(tab_id):
     $("#openOptions").off('click').on('click', def (ev):
-        chrome.tabs.sendMessage(tab_id, {"action": "open-options"})
+        sendMessageToTab(tab_id, {"action": "open-options"})
         window.close()
     )
 
@@ -150,10 +156,10 @@ def addMonsterOptions():
 def tabMatches(tab, url):
     return tab.url.match(url.replace(/\*/g, "[^]*")) != None
 
-def actOnCurrentTab(tabs):
-    setCurrentTab(tabs[0])
-    if urlMatches(tabs[0].url, ROLL20_URL) or isFVTT(tabs[0].title):
-        vtt = "Foundry VTT" if isFVTT(tabs[0].title) else "Roll20"
+def actOnCurrentTab(tab):
+    setCurrentTab(tab)
+    if urlMatches(tab.url, ROLL20_URL) or isFVTT(tab.title):
+        vtt = "Foundry VTT" if isFVTT(tab.title) else "Roll20"
         options = $(".beyond20-options")
         options.append(E.li(class_="list-group-item beyond20-option", style="text-align: center; margin: 10px;",
                                            E.h4(" == " + vtt + " Tab Specific Options ==")
@@ -168,14 +174,17 @@ def actOnCurrentTab(tabs):
         $('.beyond20-option-input').off('change', save_settings)
         $('.beyond20-option-input').change(save_settings)
         initializeSettings(gotSettings)
-    elif urlMatches(tabs[0].url, DNDBEYOND_CHARACTER_URL):
-        chrome.tabs.sendMessage(tabs[0].id, {"action": "get-character"}, populateCharacter)
-    elif urlMatches(tabs[0].url, DNDBEYOND_MONSTER_URL) or urlMatches(tabs[0].url, DNDBEYOND_VEHICLE_URL) or urlMatches(tabs[0].url, DNDBEYOND_ENCOUNTER_URL):
+    elif urlMatches(tab.url, DNDBEYOND_CHARACTER_URL):
+        sendMessageToTab(tab.id, {"action": "get-character"}, populateCharacter)
+    elif urlMatches(tab.url, DNDBEYOND_MONSTER_URL) or urlMatches(tab.url, DNDBEYOND_VEHICLE_URL) or urlMatches(tab.url, DNDBEYOND_ENCOUNTER_URL):
         addMonsterOptions()
     else:
         initializeSettings(gotSettings)
-    canAlertify(tabs[0].id)
+    canAlertify(tab.id)
 
 
 setupHTML()
-chrome.tabs.query({"active": True, "currentWindow": True}, actOnCurrentTab)
+if chrome.tabs?:
+    chrome.tabs.query({"active": True, "currentWindow": True}, def(tabs): actOnCurrentTab(tabs[0]);)
+else:
+    chrome.runtime.sendMessage({"action": "get-current-tab"}, actOnCurrentTab)

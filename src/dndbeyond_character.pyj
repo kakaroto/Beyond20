@@ -1,5 +1,5 @@
 from settings import getDefaultSettings, getStoredSettings, RollType
-from utils import isExtensionDisconnected, alertQuickSettings, alertFullSettings, getBrowser
+from utils import isExtensionDisconnected, alertQuickSettings, alertFullSettings
 from elementmaker import E
 import math
 import re
@@ -795,9 +795,6 @@ def injectRollToSpellAttack():
 
 def injectSettingsButton():
     if $(".ct-beyond20-settings").length > 0:
-        return
-    # This doesn't work on FF for some reason
-    if getBrowser() == "Firefox":
         return
     desktop_gap = $(".ct-character-header-desktop__group--gap")
     tablet_gap = $(".ct-character-header-tablet__group--gap")

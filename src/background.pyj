@@ -167,6 +167,11 @@ def onMessage(request, sender, sendResponse):
         addFVTTTab(sender.tab)
     elif request.action == "reload-me":
         chrome.tabs.reload(sender.tab.id)
+    elif request.action == "get-current-tab":
+        sendResponse(sender.tab)
+    elif request.action == "forward":
+        chrome.tabs.sendMessage(request.tab, request.message, sendResponse)
+        return True
     return False
 
 def injectFVTTScripts(tab):

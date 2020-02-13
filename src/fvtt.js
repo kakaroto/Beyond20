@@ -6912,7 +6912,6 @@ var str = ρσ_str, repr = ρσ_repr;;
         var injectPageScript = ρσ_modules.utils.injectPageScript;
         var alertQuickSettings = ρσ_modules.utils.alertQuickSettings;
         var alertFullSettings = ρσ_modules.utils.alertFullSettings;
-        var getBrowser = ρσ_modules.utils.getBrowser;
 
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
@@ -6983,6 +6982,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["action"] = "register-fvtt-tab";
                 return ρσ_d;
             }).call(this));
+            injectSettingsButton();
             observer.disconnect();
         };
         if (!titleSet.__argnames__) Object.defineProperties(titleSet, {
@@ -6992,20 +6992,18 @@ var str = ρσ_str, repr = ρσ_repr;;
         function injectSettingsButton() {
             var icon, button;
             $(".beyond20-settings").remove();
-            if (ρσ_not_equals(getBrowser(), "Firefox")) {
-                icon = chrome.extension.getURL("images/icons/icon24.png");
-                button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "beyond20-settings-logo", src: icon, style: "margin: 0px 5px; border: 0px;"})])].concat([ρσ_desugar_kwargs({class_: "beyond20-settings", style: "flex-grow: 0;"})]));
-                $("#chat-controls").append(button);
-                $(button).on("click", (function() {
-                    var ρσ_anonfunc = function (event) {
-                        alertQuickSettings();
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["event"]}
-                    });
-                    return ρσ_anonfunc;
-                })());
-            }
+            icon = chrome.extension.getURL("images/icons/icon24.png");
+            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "beyond20-settings-logo", src: icon, style: "margin: 0px 5px; border: 0px;"})])].concat([ρσ_desugar_kwargs({class_: "beyond20-settings", style: "flex-grow: 0;"})]));
+            $("#chat-controls").append(button);
+            $(button).on("click", (function() {
+                var ρσ_anonfunc = function (event) {
+                    alertQuickSettings();
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["event"]}
+                });
+                return ρσ_anonfunc;
+            })());
         };
 
         observer = new window.MutationObserver(titleSet);
@@ -7016,8 +7014,5 @@ var str = ρσ_str, repr = ρσ_repr;;
         }).call(this));
         sendCustomEvent("disconnect");
         injectPageScript(chrome.runtime.getURL("src/fvtt_script.js"));
-        if (ρσ_not_equals(getBrowser(), "Firefox")) {
-            injectSettingsButton();
-        }
     })();
 })();

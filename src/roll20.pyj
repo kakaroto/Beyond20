@@ -1,4 +1,4 @@
-from utils import replaceRolls, injectPageScript, sendCustomEvent, alertQuickSettings, alertFullSettings, getBrowser
+from utils import replaceRolls, injectPageScript, sendCustomEvent, alertQuickSettings, alertFullSettings
 from settings import getDefaultSettings, getStoredSettings, WhisperType, RollType
 import re
 from elementmaker import E
@@ -522,15 +522,14 @@ def rollSpellAttack(request, custom_roll_dice):
 def injectSettingsButton():
     nonlocal btn
     
-    if getBrowser() != "Firefox":
-        icon = chrome.extension.getURL("images/icons/icon32.png")
+    icon = chrome.extension.getURL("images/icons/icon32.png")
 
-        img = document.getElementById("beyond20-settings")
-        if img:
-            img.remove()
-        img = E.img(id="beyond20-settings", src=icon, style="margin-left: 5px;")
-        btn.after(img)
-        img.onclick = alertQuickSettings
+    img = document.getElementById("beyond20-settings")
+    if img:
+        img.remove()
+    img = E.img(id="beyond20-settings", src=icon, style="margin-left: 5px;")
+    btn.after(img)
+    img.onclick = alertQuickSettings
     
 
 def updateSettings(new_settings=None):

@@ -6913,7 +6913,6 @@ var str = ρσ_str, repr = ρσ_repr;;
         var sendCustomEvent = ρσ_modules.utils.sendCustomEvent;
         var alertQuickSettings = ρσ_modules.utils.alertQuickSettings;
         var alertFullSettings = ρσ_modules.utils.alertFullSettings;
-        var getBrowser = ρσ_modules.utils.getBrowser;
 
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
@@ -7822,16 +7821,14 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function injectSettingsButton() {
             var icon, img;
-            if (ρσ_not_equals(getBrowser(), "Firefox")) {
-                icon = chrome.extension.getURL("images/icons/icon32.png");
-                img = document.getElementById("beyond20-settings");
-                if (img) {
-                    img.remove();
-                }
-                img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({id: "beyond20-settings", src: icon, style: "margin-left: 5px;"})]);
-                btn.after(img);
-                img.onclick = alertQuickSettings;
+            icon = chrome.extension.getURL("images/icons/icon32.png");
+            img = document.getElementById("beyond20-settings");
+            if (img) {
+                img.remove();
             }
+            img = ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({id: "beyond20-settings", src: icon, style: "margin-left: 5px;"})]);
+            btn.after(img);
+            img.onclick = alertQuickSettings;
         };
 
         function updateSettings() {

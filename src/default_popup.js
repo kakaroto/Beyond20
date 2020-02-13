@@ -6939,11 +6939,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     var href;
                     href = this.getAttribute("href");
                     if (len(href) > 0 && (href !== "#" && (typeof href !== "object" || ρσ_not_equals(href, "#")))) {
-                        chrome.tabs.create((function(){
-                            var ρσ_d = {};
-                            ρσ_d["url"] = this.href;
-                            return ρσ_d;
-                        }).call(this));
+                        window.open(this.href);
                     }
                     return false;
                 };
@@ -6954,12 +6950,12 @@ var str = ρσ_str, repr = ρσ_repr;;
             })());
         };
 
-        function actOnCurrentTab(tabs) {
-            if (isFVTT(tabs[0].title)) {
+        function actOnCurrentTab(tab) {
+            if (isFVTT(tab.title)) {
                 chrome.runtime.sendMessage((function(){
                     var ρσ_d = {};
                     ρσ_d["action"] = "activate-icon";
-                    ρσ_d["tab"] = tabs[0];
+                    ρσ_d["tab"] = tab;
                     return ρσ_d;
                 }).call(this));
                 injectPageScript("src/popup.js");
@@ -6968,14 +6964,30 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
         };
         if (!actOnCurrentTab.__argnames__) Object.defineProperties(actOnCurrentTab, {
-            __argnames__ : {value: ["tabs"]}
+            __argnames__ : {value: ["tab"]}
         });
 
-        chrome.tabs.query((function(){
-            var ρσ_d = {};
-            ρσ_d["active"] = true;
-            ρσ_d["currentWindow"] = true;
-            return ρσ_d;
-        }).call(this), actOnCurrentTab);
+        if (ρσ_exists.n(chrome.tabs)) {
+            chrome.tabs.query((function(){
+                var ρσ_d = {};
+                ρσ_d["active"] = true;
+                ρσ_d["currentWindow"] = true;
+                return ρσ_d;
+            }).call(this), (function() {
+                var ρσ_anonfunc = function (tabs) {
+                    actOnCurrentTab(tabs[0]);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["tabs"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        } else {
+            chrome.runtime.sendMessage((function(){
+                var ρσ_d = {};
+                ρσ_d["action"] = "get-current-tab";
+                return ρσ_d;
+            }).call(this), actOnCurrentTab);
+        }
     })();
 })();
