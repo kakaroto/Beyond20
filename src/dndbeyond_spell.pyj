@@ -19,7 +19,7 @@ def addDisplayButton():
                         "Display Spell Card on VTT")
                  )
     spell = Spell($("body"), character)
-    $(".page-heading__content").append(button)
+    $(".page-heading__content").after(button)
     $(".ct-beyond20-roll").css({"float": "right",
                                 "display": "inline-block"})
     $(".ct-beyond20-roll").on('click', def(event):
