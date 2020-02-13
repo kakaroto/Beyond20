@@ -6153,6 +6153,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["bard-psychic-blades"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Bard: Psychic Blades";
+                ρσ_d["description"] = "Use your Bardic Inspiration to deal extra psychic damage (Apply to next roll only)";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -7157,6 +7165,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 if (ρσ_in("Divine Strike", response["class-features"])) {
                     e = createHTMLOption("cleric-divine-strike", false, character_settings);
+                    options.append(e);
+                }
+                if (ρσ_in("Psychic Blades", response["class-features"])) {
+                    e = createHTMLOption("bard-psychic-blades", false, character_settings);
                     options.append(e);
                 }
                 loadSettings(response.settings, character_settings);

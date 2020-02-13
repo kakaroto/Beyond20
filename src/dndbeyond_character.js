@@ -6158,6 +6158,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["bard-psychic-blades"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Bard: Psychic Blades";
+                ρσ_d["description"] = "Use your Bardic Inspiration to deal extra psychic damage (Apply to next roll only)";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -11787,7 +11795,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
                 force_display = ρσ_kwargs_obj.force_display;
             }
-            var prop_list, properties, item_name, item_type, description, item_full_name, to_hit, damages, damage_types, value, damage, damage_type, versatile_damage, versatile_choice, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damages, custom_damage, sneak_attack, bloodhunter_level, rite_die, cleric_level, critical_limit, brutal, barbarian_level, rage_damage, roll_properties;
+            var prop_list, properties, item_name, item_type, description, item_full_name, to_hit, damages, damage_types, value, damage, damage_type, versatile_damage, versatile_choice, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damages, custom_damage, sneak_attack, bloodhunter_level, rite_die, cleric_level, bard_level, critical_limit, brutal, barbarian_level, rage_damage, roll_properties;
             prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property");
             properties = propertyListToDict(prop_list);
             item_name = $(".ct-item-pane .ct-item-name")[0].firstChild.textContent;
@@ -11928,6 +11936,16 @@ return this.__repr__();
                     cleric_level = character.getClassLevel("Cleric");
                     damages.append((cleric_level < 14) ? "1d8" : "2d8");
                     damage_types.append("Divine Strike");
+                }
+                if (character.hasClassFeature("Psychic Blades") && character.getSetting("bard-psychic-blades", false)) {
+                    bard_level = character.getClassLevel("Bard");
+                    damages.append((bard_level < 5) ? "2d6" : (bard_level < 10) ? "3d6" : (bard_level < 15) ? "5d6" : "8d6");
+                    damage_types.append("Psychic");
+                    character.mergeCharacterSettings((function(){
+                        var ρσ_d = {};
+                        ρσ_d["bard-psychic-blades"] = false;
+                        return ρσ_d;
+                    }).call(this));
                 }
                 critical_limit = 20;
                 if (character.hasAction("Channel Divinity: Legendary Strike") && character.getSetting("paladin-legendary-strike", false)) {

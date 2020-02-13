@@ -218,6 +218,13 @@ def rollItem(force_display=False):
             cleric_level = character.getClassLevel("Cleric")
             damages.append("1d8" if cleric_level < 14 else "2d8")
             damage_types.append("Divine Strike")
+        # Bard's Psychic blades
+        if character.hasClassFeature("Psychic Blades") and \
+            character.getSetting("bard-psychic-blades", False):
+            bard_level = character.getClassLevel("Bard")
+            damages.append("2d6" if bard_level < 5 else ("3d6" if bard_level < 10 else ("5d6" if bard_level < 15 else "8d6")))
+            damage_types.append("Psychic")
+            character.mergeCharacterSettings({"bard-psychic-blades": False})
 
         critical_limit = 20
         if character.hasAction("Channel Divinity: Legendary Strike") and \

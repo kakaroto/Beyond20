@@ -271,7 +271,11 @@ character_settings = {
     "cleric-divine-strike": {"title": "Cleric: Divine Strike",
                            "description": "Deal an extra 1d8 (2d8 at level 14) damage to melee weapon attacks",
                            "type": "bool",
-                           "default": True}
+                           "default": True},
+    "bard-psychic-blades": {"title": "Bard: Psychic Blades",
+                           "description": "Use your Bardic Inspiration to deal extra psychic damage (Apply to next roll only)",
+                           "type": "bool",
+                           "default": False}
 }
 
 def getStorage():

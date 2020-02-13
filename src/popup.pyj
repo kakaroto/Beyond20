@@ -129,6 +129,9 @@ def populateCharacter(response):
         if "Divine Strike" in response["class-features"]:
             e = createHTMLOption("cleric-divine-strike", False, character_settings)
             options.append(e)
+        if "Psychic Blades" in response["class-features"]:
+            e = createHTMLOption("bard-psychic-blades", False, character_settings)
+            options.append(e)
 
         loadSettings(response.settings, character_settings)
     $('.beyond20-option-input').off('change', save_settings)
