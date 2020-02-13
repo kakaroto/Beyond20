@@ -268,12 +268,20 @@ def rollAction(paneClass):
     action_name = $(".ct-sidebar__heading").text()
     action_parent = $(".ct-sidebar__header-parent").text()
     description = descriptionToString(".ct-action-detail__description")
+
     if action_name == "Superiority Dice" or action_parent == "Maneuvers":
         fighter_level = character.getClassLevel("Fighter")
         superiority_die = "1d8" if fighter_level < 10 else ("1d10" if fighter_level < 18 else "1d12")
         sendRollWithCharacter("custom", superiority_die, {"name": action_name,
                                                           "description": description,
                                                           "modifier": superiority_die})
+                                                          
+    elif action_name == "Bardic Inspiration" or action_parent == "Blade Flourish":
+        bard_level = character.getClassLevel("Bard")
+        inspiration_die = "1d6" if bard_level < 5 else ("1d8" if bard_level < 10 else ("1d10" if bard_level < 15 else "1d12"))
+        sendRollWithCharacter("custom", inspiration_die, {"name": action_name,
+                                                          "description": description,
+                                                          "modifier": inspiration_die})
     elif "Damage" in properties or properties["To Hit"]? or properties["Attack/Save"]?:
         if "Damage" in properties:
             damages = [properties["Damage"]]
@@ -664,7 +672,8 @@ def injectRollButton(paneClass):
         action_name = $(".ct-sidebar__heading").text()
         action_parent = $(".ct-sidebar__header-parent").text()
         if (action_name == "Superiority Dice" or action_parent == "Maneuvers") or \
-           ("Damage" in properties or properties["To Hit"]? or properties["Attack/Save"]?):
+            (action_name == "Bardic Inspiration" or action_parent == "Blade Flourish") or \
+            ("Damage" in properties or properties["To Hit"]? or properties["Attack/Save"]?):
             addRollButtonEx(paneClass, ".ct-sidebar__heading", small=True)
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll")
         else:
