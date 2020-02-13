@@ -403,6 +403,19 @@ def rollSpell(force_display=False):
             spell_source == "Artificer":
             damages.append("1d8")
             damage_types.append("Arcane Firearm")
+        
+        # Check for Draconic Sorcerer's Elemental Affinity
+        elementalAffinity = None
+        for feature in character._class_features:
+            match = feature.match("Elemental Affinity \\((.*)\\)")
+            if match:
+                elementalAffinity = match[1]
+                break
+        if elementalAffinity and elementalAffinity in damage_types:
+            for ability in character._abilities:
+                if ability[1] == "CHA" and ability[3] != "" and ability[3] != "0":
+                    damages.append(ability[3])
+                    damage_types.append(elementalAffinity + " (Elemental Affinity)")
 
         # We can then add healing types
         for modifier in healing_modifiers:

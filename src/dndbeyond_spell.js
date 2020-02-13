@@ -9923,7 +9923,7 @@ return this.__repr__();
             for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
                 ability = ρσ_Iter2[ρσ_Index2];
                 name = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__label").text();
-                abbr = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text();
+                abbr = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text().toUpperCase();
                 modifier = $(ability).find(".ct-ability-summary__primary .ct-signed-number").text();
                 value = $(ability).find(".ct-ability-summary__secondary").text();
                 if ((modifier === "" || typeof modifier === "object" && ρσ_equals(modifier, ""))) {
@@ -10451,7 +10451,7 @@ return this.__repr__();
             var ρσ_Iter8 = ρσ_Iterable(abilities);
             for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
                 ability = ρσ_Iter8[ρσ_Index8];
-                abbr = $(ability).find(prefix + "heading").text();
+                abbr = $(ability).find(prefix + "heading").text().toUpperCase();
                 score = $(ability).find(prefix + "score").text();
                 modifier = $(ability).find(prefix + "modifier").text().slice(1, -1);
                 self._abilities.append(ρσ_list_decorate([ abbreviationToAbility(abbr), abbr, score, modifier ]).as_array());

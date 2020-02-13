@@ -211,7 +211,7 @@ class Character(CharacterBase):
             self._abilities = []
         for ability in abilities:
             name = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__label").text()
-            abbr = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text()
+            abbr = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text().toUpperCase()
             modifier = $(ability).find(".ct-ability-summary__primary .ct-signed-number").text()
             value = $(ability).find(".ct-ability-summary__secondary").text()
             if modifier == "":
@@ -507,7 +507,7 @@ class Monster(CharacterBase):
             return def():
                 self.rollAbilityCheck(a)
         for ability in abilities:
-            abbr = $(ability).find(prefix + "heading").text()
+            abbr = $(ability).find(prefix + "heading").text().toUpperCase()
             score = $(ability).find(prefix + "score").text()
             modifier = $(ability).find(prefix + "modifier").text()[1:-1]
             self._abilities.append([abbreviationToAbility(abbr), abbr, score, modifier].as_array())
