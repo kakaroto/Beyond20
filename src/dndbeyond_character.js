@@ -12786,14 +12786,24 @@ return this.__repr__();
         });
 
         function activateTooltipListeners(el, tooltip, callback) {
+            var setPosition;
+            setPosition = (function() {
+                var ρσ_anonfunc = function (e) {
+                    tooltip.css((function(){
+                        var ρσ_d = {};
+                        ρσ_d["left"] = e.pageX - tooltip.width() / 2;
+                        ρσ_d["top"] = e.pageY - tooltip.height() - 5;
+                        return ρσ_d;
+                    }).call(this));
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["e"]}
+                });
+                return ρσ_anonfunc;
+            })();
             el.on("mouseenter", (function() {
                 var ρσ_anonfunc = function (e) {
-                    var target, position;
-                    target = $(e.currentTarget);
-                    position = target.offset();
-                    position.left += target.width() / 2 - tooltip.width() / 2;
-                    position.top -= tooltip.height() + 5;
-                    tooltip.css(position);
+                    setPosition(e);
                     tooltip.show();
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
@@ -12803,6 +12813,14 @@ return this.__repr__();
             })()).on("mouseleave", (function() {
                 var ρσ_anonfunc = function (e) {
                     tooltip.hide();
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["e"]}
+                });
+                return ρσ_anonfunc;
+            })()).on("mousemove", (function() {
+                var ρσ_anonfunc = function (e) {
+                    setPosition(e);
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                     __argnames__ : {value: ["e"]}

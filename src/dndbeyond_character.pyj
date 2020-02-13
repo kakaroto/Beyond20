@@ -840,15 +840,15 @@ def deactivateTooltipListeners(el):
     return el.off('mouseenter').off('mouseleave').off('click')
 
 def activateTooltipListeners(el, tooltip, callback):
+    setPosition = def(e):
+        tooltip.css({"left": e.pageX - tooltip.width() / 2, "top": e.pageY - tooltip.height() - 5})
     el.on('mouseenter', def(e):
-        target = $(e.currentTarget)
-        position = target.offset()
-        position.left += target.width() / 2 - tooltip.width() / 2
-        position.top -= tooltip.height() + 5
-        tooltip.css(position)
+        setPosition(e)
         tooltip.show()
     ).on('mouseleave', def(e):
         tooltip.hide()
+    ).on('mousemove', def(e):
+        setPosition(e)
     ).on('click', def(e):
         callback(el)
     )
