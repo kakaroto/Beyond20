@@ -721,6 +721,32 @@ def injectRollButton(paneClass):
         else:
             addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on VTT", image=False)
 
+        if spell_name == "Animate Objects":
+            makeCB = def(size, to_hit, dmg):
+                props = buildAttackRoll(character,
+                                          "action",
+                                          spell_name + "(" + size + ")",
+                                          size + " animated object",
+                                          {},
+                                          [dmg],
+                                          ["Bludgeoning"], to_hit)
+                return def():
+                    sendRollWithCharacter("attack", "1d20" + to_hit, props)
+            rows = $(".ct-spell-detail__description table tbody tr")
+            for row in rows:
+                size = $(row).find("td").eq(0)
+                desc = $(row).find("td").eq(5)
+                
+                m = re.search("(\+[0-9]+) to hit, ([0-9]*d[0-9]+(?:\s*[-+]\s*[0-9]+)) damage", desc.text())
+                if m:
+                    to_hit = m.group(1)
+                    dmg = m.group(2)
+                    console.log("Match for ", size, " : ", to_hit, dmg)
+                    
+                    id = addRollButton(makeCB(size.text(), to_hit, dmg), size,
+                                        small=True, append=True, image=False, text="Attack")
+                    $("#" + id).css({"float": "", "text-align": ""})
+
         $(".ct-spell-caster__casting-action > button").on('click', def(event):
             execute(paneClass)
         )

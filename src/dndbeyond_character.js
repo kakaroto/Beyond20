@@ -12543,7 +12543,7 @@ return this.__repr__();
         lastSpellName = "";
         lastSpellLevel = "";
         function injectRollButton(paneClass) {
-            var name, item_name, properties, action_name, action_parent, spell_name, spell_full_name, spell_level, damages, healings, to_hit, hitdice, cb, monster, j_conditions, exhaustion_level, conditions, cond;
+            var name, item_name, properties, action_name, action_parent, spell_name, spell_full_name, spell_level, damages, healings, to_hit, makeCB, rows, size, desc, m, dmg, id, row, hitdice, cb, monster, j_conditions, exhaustion_level, conditions, cond;
             if (ρσ_in(paneClass, ρσ_list_decorate([ "ct-custom-skill-pane", "ct-skill-pane", "ct-ability-pane", "ct-ability-saving-throws-pane", "ct-initiative-pane" ]))) {
                 if (isRollButtonAdded()) {
                     return;
@@ -12615,6 +12615,41 @@ return this.__repr__();
                 } else {
                     ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({text: "Cast on VTT", image: false})]));
                 }
+                if ((spell_name === "Animate Objects" || typeof spell_name === "object" && ρσ_equals(spell_name, "Animate Objects"))) {
+                    makeCB = (function() {
+                        var ρσ_anonfunc = function (size, to_hit, dmg) {
+                            var props;
+                            props = buildAttackRoll(character, "action", spell_name + "(" + size + ")", size + " animated object", {}, ρσ_list_decorate([ dmg ]), ρσ_list_decorate([ "Bludgeoning" ]), to_hit);
+                            return function () {
+                                sendRollWithCharacter("attack", "1d20" + to_hit, props);
+                            };
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["size", "to_hit", "dmg"]}
+                        });
+                        return ρσ_anonfunc;
+                    })();
+                    rows = $(".ct-spell-detail__description table tbody tr");
+                    var ρσ_Iter14 = ρσ_Iterable(rows);
+                    for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
+                        row = ρσ_Iter14[ρσ_Index14];
+                        size = $(row).find("td").eq(0);
+                        desc = $(row).find("td").eq(5);
+                        m = re.search("(\\+[0-9]+) to hit, ([0-9]*d[0-9]+(?:\\s*[-+]\\s*[0-9]+)) damage", desc.text());
+                        if (m) {
+                            to_hit = m.group(1);
+                            dmg = m.group(2);
+                            console.log("Match for ", size, " : ", to_hit, dmg);
+                            id = ρσ_interpolate_kwargs.call(this, addRollButton, [makeCB(size.text(), to_hit, dmg), size].concat([ρσ_desugar_kwargs({small: true, append: true, image: false, text: "Attack"})]));
+                            $("#" + id).css((function(){
+                                var ρσ_d = {};
+                                ρσ_d["float"] = "";
+                                ρσ_d["text-align"] = "";
+                                return ρσ_d;
+                            }).call(this));
+                        }
+                    }
+                }
                 $(".ct-spell-caster__casting-action > button").on("click", (function() {
                     var ρσ_anonfunc = function (event) {
                         execute(paneClass);
@@ -12671,9 +12706,9 @@ return this.__repr__();
                 j_conditions = $(".ct-condition-manage-pane .ct-toggle-field--enabled").closest(".ct-condition-manage-pane__condition");
                 exhaustion_level = $(".ct-condition-manage-pane__condition--special .ct-number-bar__option--active").text();
                 conditions = ρσ_list_decorate([]);
-                var ρσ_Iter14 = ρσ_Iterable(j_conditions);
-                for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
-                    cond = ρσ_Iter14[ρσ_Index14];
+                var ρσ_Iter15 = ρσ_Iterable(j_conditions);
+                for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
+                    cond = ρσ_Iter15[ρσ_Index15];
                     conditions.append(cond.textContent);
                 }
                 if ((exhaustion_level === "" || typeof exhaustion_level === "object" && ρσ_equals(exhaustion_level, ""))) {
@@ -12693,9 +12728,9 @@ return this.__repr__();
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter15 = ρσ_Iterable(groups);
-            for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
-                group = ρσ_Iter15[ρσ_Index15];
+            var ρσ_Iter16 = ρσ_Iterable(groups);
+            for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
+                group = ρσ_Iter16[ρσ_Index16];
                 label = $(group).find(".ct-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -12704,9 +12739,9 @@ return this.__repr__();
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter16 = ρσ_Iterable(items);
-                    for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
-                        item = ρσ_Iter16[ρσ_Index16];
+                    var ρσ_Iter17 = ρσ_Iterable(items);
+                    for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
+                        item = ρσ_Iter17[ρσ_Index17];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -12885,9 +12920,9 @@ return this.__repr__();
             if (!settings["quick-rolls"]) {
                 return;
             }
-            var ρσ_Iter17 = ρσ_Iterable(abilities);
-            for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
-                ability = ρσ_Iter17[ρσ_Index17];
+            var ρσ_Iter18 = ρσ_Iterable(abilities);
+            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
+                ability = ρσ_Iter18[ρσ_Index18];
                 quickRollAbility = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -12906,9 +12941,9 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(ability), beyond20_tooltip, quickRollAbility);
             }
-            var ρσ_Iter18 = ρσ_Iterable(saving_throws);
-            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
-                save = ρσ_Iter18[ρσ_Index18];
+            var ρσ_Iter19 = ρσ_Iterable(saving_throws);
+            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
+                save = ρσ_Iter19[ρσ_Index19];
                 quickRollSave = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -12927,16 +12962,16 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(save), beyond20_tooltip, quickRollSave);
             }
-            var ρσ_Iter19 = ρσ_Iterable(skills);
-            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
-                skill = ρσ_Iter19[ρσ_Index19];
+            var ρσ_Iter20 = ρσ_Iterable(skills);
+            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
+                skill = ρσ_Iter20[ρσ_Index20];
                 quickRollSkill = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane, paneClass, pane_name;
                         name = el.closest(".ct-skills__item").find(".ct-skills__col--skill").text();
-                        var ρσ_Iter20 = ρσ_Iterable(ρσ_list_decorate([ "ct-skill-pane", "ct-custom-skill-pane" ]));
-                        for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
-                            paneClass = ρσ_Iter20[ρσ_Index20];
+                        var ρσ_Iter21 = ρσ_Iterable(ρσ_list_decorate([ "ct-skill-pane", "ct-custom-skill-pane" ]));
+                        for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
+                            paneClass = ρσ_Iter21[ρσ_Index21];
                             pane = $("." + paneClass);
                             if (pane.length > 0) {
                                 break;
@@ -12956,16 +12991,16 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(skill), beyond20_tooltip, quickRollSkill);
             }
-            var ρσ_Iter21 = ρσ_Iterable(actions);
-            for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
-                action = ρσ_Iter21[ρσ_Index21];
+            var ρσ_Iter22 = ρσ_Iterable(actions);
+            for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
+                action = ρσ_Iter22[ρσ_Index22];
                 quickRollAction = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane, paneClass, pane_name;
                         name = el.closest(".ct-combat-attack").find(".ct-combat-attack__name .ct-combat-attack__label").text();
-                        var ρσ_Iter22 = ρσ_Iterable(ρσ_list_decorate([ "ct-item-pane", "ct-action-pane", "ct-custom-action-pane", "ct-spell-pane" ]));
-                        for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
-                            paneClass = ρσ_Iter22[ρσ_Index22];
+                        var ρσ_Iter23 = ρσ_Iterable(ρσ_list_decorate([ "ct-item-pane", "ct-action-pane", "ct-custom-action-pane", "ct-spell-pane" ]));
+                        for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
+                            paneClass = ρσ_Iter23[ρσ_Index23];
                             pane = $("." + paneClass);
                             if (pane.length > 0) {
                                 break;
@@ -12985,9 +13020,9 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(action), beyond20_tooltip, quickRollAction);
             }
-            var ρσ_Iter23 = ρσ_Iterable(spells);
-            for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
-                spell = ρσ_Iter23[ρσ_Index23];
+            var ρσ_Iter24 = ρσ_Iterable(spells);
+            for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
+                spell = ρσ_Iter24[ρσ_Index24];
                 quickRollSpell = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -13031,8 +13066,8 @@ return this.__repr__();
             activateQuickRolls();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index24 = 0; ρσ_Index24 < pane.length; ρσ_Index24++) {
-                    div = ρσ_Index24;
+                for (var ρσ_Index25 = 0; ρσ_Index25 < pane.length; ρσ_Index25++) {
+                    div = ρσ_Index25;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls")) || (paneClass === "ct-beyond20-settings-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-beyond20-settings-pane"))) {
                         continue;
