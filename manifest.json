@@ -124,6 +124,23 @@
 		},
 		{
 			"matches": [
+				"*://*.dndbeyond.com/equipment/*",
+				"*://*.dndbeyond.com/magic-items/*"
+			],
+			"css": [
+				"libs/css/alertify.css",
+				"libs/css/alertify-themes/default.css",
+				"libs/css/alertify-themes/beyond20.css",
+				"src/beyond20.css"
+			],
+			"js": [
+				"libs/alertify.min.js",
+				"libs/jquery-3.4.1.min.js",
+				"src/dndbeyond_items.js"
+			]
+		},
+		{
+			"matches": [
 				"*://app.roll20.net/editor/"
 			],
 			"css": [
