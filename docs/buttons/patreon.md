@@ -1,2 +1,0 @@
-
-[![Become a Patron](https://c5.patreon.com/external/logo/become_a_patron_button.png){:width="200px"}](https://www.patreon.com/bePatron?u=21010321&redirect_uri=https%3A%2F%2Fbeyond20.here-for-more.info%2Fthankyou)

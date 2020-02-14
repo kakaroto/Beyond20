@@ -18,10 +18,12 @@ All user notes when making a donation are included as anonymous testimonials. If
 
 If you find Beyond20 useful to you and it helps you in your games, please consider supporting me, either on [Patreon](https://patreon.com/kakaroto), [Github](https://github.com/sponsors/kakaroto) or [Ko-fi](https://ko-fi.com/kakaroto).
 
-{% include_relative buttons/patreon.md %}
+<div style="inline">
+{% include_relative buttons/patreon.html %} &nbsp;&nbsp;
 
-{% include_relative buttons/github.html %}
+{% include_relative buttons/github.html %} &nbsp;&nbsp;
 
 {% include_relative buttons/kofi.html %}
+</div>
 
 Thank you!

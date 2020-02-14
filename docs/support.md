@@ -12,9 +12,11 @@
 
 Oh, you want to help support the development of this extension (and more), how nice! You can do so by either contributing in some way (telling your friends about it, reporting bug reports, suggesting awesome features or contributing to the code) or, like many others who have helped make this project a possibility, you can support me on [Patreon](https://patreon.com/kakaroto), [Github](https://github.com/sponsors/kakaroto).
 
-{% include_relative buttons/patreon.md %}
+<div>
+{% include_relative buttons/patreon.html %} &nbsp;&nbsp; or &nbsp;&nbsp;
 
 {% include_relative buttons/github.html %}
+</div>
 
 If however, you do not want to use Patreon or Github Sponsors or don't want to pledge on them for any reason, but still want to support this project financially, you can do so by buying me a ration on [Ko-Fi](https://ko-fi.com/kakaroto) using [PayPal](https://paypal.me/KaKaRoTo) or a credit card (no signup necessary).
 
