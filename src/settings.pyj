@@ -204,7 +204,7 @@ character_settings = {
                            "type": "string",
                            "default": ""},
     "custom-damage-dice": {"title": "Custom Damage dice formula bonus",
-                           "description": "Add custom dice to damage rolls (Magic Weapon, Elemental Weapon, etc..)",
+                           "description": "Add custom dice to damage rolls (Magic Weapon, Elemental Weapon, Green-flame Blade, etc..). Use a comma to separate multiple independent rolls.",
                            "type": "string",
                            "default": ""},
     "rogue-sneak-attack": {"title": "Rogue: Sneak Attack",

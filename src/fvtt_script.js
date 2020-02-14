@@ -6021,7 +6021,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["custom-damage-dice"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Custom Damage dice formula bonus";
-                ρσ_d["description"] = "Add custom dice to damage rolls (Magic Weapon, Elemental Weapon, etc..)";
+                ρσ_d["description"] = "Add custom dice to damage rolls (Magic Weapon, Elemental Weapon, Green-flame Blade, etc..). Use a comma to separate multiple independent rolls.";
                 ρσ_d["type"] = "string";
                 ρσ_d["default"] = "";
                 return ρσ_d;
