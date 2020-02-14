@@ -9578,7 +9578,7 @@ return this.__repr__();
 
     (function(){
         var __name__ = "dndbeyond";
-        var ability_abbreviations, skill_abilities, button_class, button_class_small;
+        var ability_abbreviations, skill_abilities, last_character_used, button_class, button_class_small, key_modifiers, checkKeyModifiers;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
         var alertQuickSettings = ρσ_modules.utils.alertQuickSettings;
         var isListEqual = ρσ_modules.utils.isListEqual;
@@ -9795,6 +9795,7 @@ return this.__repr__();
             var self = this;
             self._global_settings = new_settings;
             dndbeyondDiceRoller.setSettings(new_settings);
+            updateRollTypeButtonClasses(self);
         };
         if (!CharacterBase.prototype.setGlobalSettings.__argnames__) Object.defineProperties(CharacterBase.prototype.setGlobalSettings, {
             __argnames__ : {value: ["new_settings"]}
@@ -10844,7 +10845,7 @@ return this.__repr__();
                         description = descriptionToString(action);
                         roll_properties = self.buildAttackRoll(action_name, description);
                         if (roll_properties) {
-                            id = ρσ_interpolate_kwargs.call(this, addRollButton, [makeCB(roll_properties), action].concat([ρσ_desugar_kwargs({small: true, prepend: true, image: true, text: action_name})]));
+                            id = ρσ_interpolate_kwargs.call(this, addRollButton, [self, makeCB(roll_properties), action].concat([ρσ_desugar_kwargs({small: true, prepend: true, image: true, text: action_name})]));
                             $("#" + id).css((function(){
                                 var ρσ_d = {};
                                 ρσ_d["float"] = "";
@@ -10868,7 +10869,7 @@ return this.__repr__();
                     if (add_dice) {
                         roll_properties = self.buildAttackRoll(action_name, description);
                         if (roll_properties) {
-                            id = ρσ_interpolate_kwargs.call(this, addRollButton, [makeCB(roll_properties), block].concat([ρσ_desugar_kwargs({small: true, before: true, image: true, text: action_name})]));
+                            id = ρσ_interpolate_kwargs.call(this, addRollButton, [self, makeCB(roll_properties), block].concat([ρσ_desugar_kwargs({small: true, before: true, image: true, text: action_name})]));
                             $("#" + id).css((function(){
                                 var ρσ_d = {};
                                 ρσ_d["float"] = "";
@@ -11289,6 +11290,13 @@ return this.__repr__();
                 whisper = whisper_monster;
             }
             advantage = int(character.getGlobalSetting("roll-type", RollType.prototype.NORMAL));
+            if (key_modifiers.shift) {
+                advantage = RollType.prototype.ADVANTAGE;
+            } else if (key_modifiers.ctrl) {
+                advantage = RollType.prototype.DISADVANTAGE;
+            } else if (key_modifiers.alt) {
+                advantage = RollType.prototype.NORMAL;
+            }
             req = (function(){
                 var ρσ_d = {};
                 ρσ_d["action"] = "roll";
@@ -11334,17 +11342,68 @@ return this.__repr__();
             return $(".ct-beyond20-roll-hitdie").length > 0;
         };
 
-        button_class = "ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button";
+        function getRollTypeButtonClass(character) {
+            var advantage;
+            if ((typeof character !== "undefined" && character !== null)) {
+                advantage = int(character.getGlobalSetting("roll-type", RollType.prototype.NORMAL));
+            }
+            if (key_modifiers.shift) {
+                advantage = RollType.prototype.ADVANTAGE;
+            } else if (key_modifiers.ctrl) {
+                advantage = RollType.prototype.DISADVANTAGE;
+            } else if (key_modifiers.alt) {
+                advantage = RollType.prototype.NORMAL;
+            }
+            if ((advantage === RollType.prototype.DOUBLE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.DOUBLE))) {
+                return "beyond20-roll-type-double";
+            }
+            if ((advantage === RollType.prototype.QUERY || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.QUERY))) {
+                return "beyond20-roll-type-query";
+            }
+            if ((advantage === RollType.prototype.THRICE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.THRICE))) {
+                return "beyond20-roll-type-thrice";
+            }
+            if ((advantage === RollType.prototype.ADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.ADVANTAGE))) {
+                return "beyond20-roll-type-advantage";
+            }
+            if ((advantage === RollType.prototype.DISADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.DISADVANTAGE))) {
+                return "beyond20-roll-type-disadvantage";
+            }
+            if ((advantage === RollType.prototype.SUPER_ADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.SUPER_ADVANTAGE))) {
+                return "beyond20-roll-type-super-advantage";
+            }
+            if ((advantage === RollType.prototype.SUPER_DISADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.SUPER_DISADVANTAGE))) {
+                return "beyond20-roll-type-super-disadvantage";
+            }
+            return "";
+        };
+        if (!getRollTypeButtonClass.__argnames__) Object.defineProperties(getRollTypeButtonClass, {
+            __argnames__ : {value: ["character"]}
+        });
+
+        last_character_used = null;
+        function updateRollTypeButtonClasses(character) {
+            var button_roll_type_classes, rolltype_class;
+            button_roll_type_classes = "beyond20-roll-type-double beyond20-roll-type-query beyond20-roll-type-thrice beyond20-roll-type-advantage beyond20-roll-type-disadvantage beyond20-roll-type-super-advantage beyond20-roll-type-super-disadvantage";
+            rolltype_class = getRollTypeButtonClass(character || last_character_used);
+            $(".ct-beyond20-roll .ct-beyond20-roll-button,.beyond20-quick-roll-tooltip").removeClass(button_roll_type_classes).addClass(rolltype_class);
+        };
+        if (!updateRollTypeButtonClasses.__argnames__) Object.defineProperties(updateRollTypeButtonClasses, {
+            __argnames__ : {value: ["character"]}
+        });
+
+        button_class = "ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button";
         button_class_small = button_class + " character-button-small";
         function addRollButton() {
-            var callback = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var where = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
-            var small = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.small : arguments[2];
-            var append = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.append : arguments[3];
-            var prepend = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.prepend : arguments[4];
-            var before = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.before : arguments[5];
-            var image = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.image : arguments[6];
-            var text = (arguments[7] === undefined || ( 7 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.text : arguments[7];
+            var character = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var callback = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var where = ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[2];
+            var small = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.small : arguments[3];
+            var append = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.append : arguments[4];
+            var prepend = (arguments[5] === undefined || ( 5 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.prepend : arguments[5];
+            var before = (arguments[6] === undefined || ( 6 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.before : arguments[6];
+            var image = (arguments[7] === undefined || ( 7 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.image : arguments[7];
+            var text = (arguments[8] === undefined || ( 8 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addRollButton.__defaults__.text : arguments[8];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "small")){
@@ -11365,11 +11424,13 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "text")){
                 text = ρσ_kwargs_obj.text;
             }
-            var icon32, icon16, id, button;
+            var icon32, icon16, id, rolltype_class, button;
+            last_character_used = character;
             icon32 = chrome.extension.getURL("images/dice24.png");
             icon16 = chrome.extension.getURL("images/dice16.png");
             id = uuid.uuid4();
-            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.button, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: (image) ? (small) ? icon16 : icon32 : "", style: (image) ? "margin-right: 6px;" : ""})]), ρσ_interpolate_kwargs.call(E, E.span, [text].concat([ρσ_desugar_kwargs({class_: "ct-button__content"})]))].concat([ρσ_desugar_kwargs({class_: (small) ? button_class_small : button_class})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll", id: str(id)})]));
+            rolltype_class = " " + getRollTypeButtonClass(character);
+            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.button, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: (image) ? (small) ? icon16 : icon32 : "", style: (image) ? "margin-right: 6px;" : ""})]), ρσ_interpolate_kwargs.call(E, E.span, [text].concat([ρσ_desugar_kwargs({class_: "ct-button__content"})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll-button " + ((small) ? button_class_small : button_class) + rolltype_class})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll", id: str(id)})]));
             if (append) {
                 $(where).append(button);
             } else if (prepend) {
@@ -11400,7 +11461,7 @@ return this.__repr__();
         if (!addRollButton.__defaults__) Object.defineProperties(addRollButton, {
             __defaults__ : {value: {small:false, append:false, prepend:false, before:false, image:true, text:"Beyond 20"}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["callback", "where", "small", "append", "prepend", "before", "image", "text"]}
+            __argnames__ : {value: ["character", "callback", "where", "small", "append", "prepend", "before", "image", "text"]}
         });
 
         function addDisplayButton() {
@@ -11413,7 +11474,7 @@ return this.__repr__();
                 text = ρσ_kwargs_obj.text;
             }
             var button;
-            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.button, [ρσ_interpolate_kwargs.call(E, E.span, [text].concat([ρσ_desugar_kwargs({class_: "ct-button__content"})]))].concat([ρσ_desugar_kwargs({class_: button_class_small.replace("filled", "outline")})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll-display"})]));
+            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.button, [ρσ_interpolate_kwargs.call(E, E.span, [text].concat([ρσ_desugar_kwargs({class_: "ct-button__content"})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-dislay-button " + button_class_small.replace("filled", "outline")})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll-display"})]));
             $(where).append(button);
             $(".ct-beyond20-roll-button").css((function(){
                 var ρσ_d = {};
@@ -11441,7 +11502,7 @@ return this.__repr__();
         function addHitDieButtons(rollCallback) {
             var icon16, button, hitdice, multiclass, cb, i;
             icon16 = chrome.extension.getURL("images/icons/icon16.png");
-            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon16, style: "margin-right: 6px;"})]), ρσ_interpolate_kwargs.call(E, E.button, [ρσ_interpolate_kwargs.call(E, E.span, ["Roll Hit Die"].concat([ρσ_desugar_kwargs({class_: "ct-button__content"})]))].concat([ρσ_desugar_kwargs({class_: button_class_small})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll-hitdie", style: "float: right;"})]));
+            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon16, style: "margin-right: 6px;"})]), ρσ_interpolate_kwargs.call(E, E.button, [ρσ_interpolate_kwargs.call(E, E.span, ["Roll Hit Die"].concat([ρσ_desugar_kwargs({class_: "ct-button__content"})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll-button " + button_class_small})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll-hitdie", style: "float: right;"})]));
             print("Adding Hit Dice buttons");
             $(".ct-reset-pane__hitdie-heading").append(button);
             hitdice = $(".ct-reset-pane__hitdie");
@@ -11620,10 +11681,57 @@ return this.__repr__();
 
         alertify.set("alert", "title", "Beyond 20");
         alertify.set("notifier", "position", "top-center");
+        key_modifiers = (function(){
+            var ρσ_d = {};
+            ρσ_d["alt"] = false;
+            ρσ_d["ctrl"] = false;
+            ρσ_d["shift"] = false;
+            return ρσ_d;
+        }).call(this);
+        checkKeyModifiers = (function() {
+            var ρσ_anonfunc = function (event) {
+                var needsUpdate;
+                if (event.originalEvent.repeat) {
+                    return;
+                }
+                needsUpdate = Object.values(key_modifiers).some((function() {
+                    var ρσ_anonfunc = function (v) {
+                        return v;
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["v"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
+                key_modifiers.ctrl = event.ctrlKey;
+                key_modifiers.shift = event.shiftKey;
+                key_modifiers.alt = event.altKey;
+                needsUpdate = needsUpdate || Object.values(key_modifiers).some((function() {
+                    var ρσ_anonfunc = function (v) {
+                        return v;
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["v"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
+                if (needsUpdate) {
+                    updateRollTypeButtonClasses();
+                }
+            };
+            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                __argnames__ : {value: ["event"]}
+            });
+            return ρσ_anonfunc;
+        })();
+        $(document).keydown(checkKeyModifiers).keyup(checkKeyModifiers);
         ρσ_modules.dndbeyond.ability_abbreviations = ability_abbreviations;
         ρσ_modules.dndbeyond.skill_abilities = skill_abilities;
+        ρσ_modules.dndbeyond.last_character_used = last_character_used;
         ρσ_modules.dndbeyond.button_class = button_class;
         ρσ_modules.dndbeyond.button_class_small = button_class_small;
+        ρσ_modules.dndbeyond.key_modifiers = key_modifiers;
+        ρσ_modules.dndbeyond.checkKeyModifiers = checkKeyModifiers;
         ρσ_modules.dndbeyond.Spell = Spell;
         ρσ_modules.dndbeyond.CharacterBase = CharacterBase;
         ρσ_modules.dndbeyond.Character = Character;
@@ -11639,6 +11747,8 @@ return this.__repr__();
         ρσ_modules.dndbeyond.isRollButtonAdded = isRollButtonAdded;
         ρσ_modules.dndbeyond.isCustomRollIconsAdded = isCustomRollIconsAdded;
         ρσ_modules.dndbeyond.isHitDieButtonAdded = isHitDieButtonAdded;
+        ρσ_modules.dndbeyond.getRollTypeButtonClass = getRollTypeButtonClass;
+        ρσ_modules.dndbeyond.updateRollTypeButtonClasses = updateRollTypeButtonClasses;
         ρσ_modules.dndbeyond.addRollButton = addRollButton;
         ρσ_modules.dndbeyond.addDisplayButton = addDisplayButton;
         ρσ_modules.dndbeyond.addHitDieButtons = addHitDieButtons;
@@ -11651,7 +11761,7 @@ return this.__repr__();
 
     (function(){
         var __name__ = "constants";
-        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS;
+        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
         ROLL20_URL = "*://app.roll20.net/editor/";
         FVTT_URL = "*://*/game";
         DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
@@ -11661,6 +11771,7 @@ return this.__repr__();
         DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
         CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
         BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
+        ROLLTYPE_STYLE_CSS = "\n\n.ct-beyond20-roll .ct-beyond20-roll-button {\n    position: relative;\n    margin-top: 7px;\n}\n\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-double:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-double:after {\n    content: \"2\";\n    position: absolute;\n    padding: 2px;\n    background-color: blue;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-query:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-query:after {\n    content: \"?\";\n    position: absolute;\n    padding: 2px;\n    background-color: grey;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-thrice:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-thrice:after {\n    content: \"3\";\n    position: absolute;\n    padding: 2px;\n    background-color: blue;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-advantage:after {\n    content: \"+\";\n    position: absolute;\n    padding: 2px;\n    background-color: green;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-disadvantage:after {\n    content: \"-\";\n    position: absolute;\n    padding: 2px;\n    background-color: red;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-advantage:after {\n    content: \"+ +\";\n    position: absolute;\n    padding: 2px;\n    background-color: green;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-disadvantage:after {\n    content: \"- -\";\n    position: absolute;\n    padding: 2px;\n    background-color: red;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n";
         ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
         ρσ_modules.constants.FVTT_URL = FVTT_URL;
         ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
@@ -11670,6 +11781,7 @@ return this.__repr__();
         ρσ_modules.constants.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
         ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
         ρσ_modules.constants.BUTTON_STYLE_CSS = BUTTON_STYLE_CSS;
+        ρσ_modules.constants.ROLLTYPE_STYLE_CSS = ROLLTYPE_STYLE_CSS;
     })();
 
     (function(){
@@ -11688,6 +11800,7 @@ return this.__repr__();
         var alertFullSettings = ρσ_modules.utils.alertFullSettings;
 
         var BUTTON_STYLE_CSS = ρσ_modules.constants.BUTTON_STYLE_CSS;
+        var ROLLTYPE_STYLE_CSS = ρσ_modules.constants.ROLLTYPE_STYLE_CSS;
 
         print("Beyond20: D&D Beyond Vehicle module loaded.");
         settings = getDefaultSettings();
@@ -11753,6 +11866,7 @@ return this.__repr__();
         });
 
         injectCSS(BUTTON_STYLE_CSS);
+        injectCSS(ROLLTYPE_STYLE_CSS);
         chrome.runtime.onMessage.addListener(handleMessage);
         chrome.runtime.sendMessage((function(){
             var ρσ_d = {};

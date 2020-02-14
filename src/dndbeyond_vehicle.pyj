@@ -1,7 +1,7 @@
 from settings import getDefaultSettings, getStoredSettings
 from dndbeyond import Monster, isRollButtonAdded
 from utils import injectCSS, alertFullSettings
-from constants import BUTTON_STYLE_CSS
+from constants import BUTTON_STYLE_CSS,ROLLTYPE_STYLE_CSS
 
 print("Beyond20: D&D Beyond Vehicle module loaded.")
 
@@ -43,6 +43,7 @@ def handleMessage (request, sender, sendResponse):
         alertFullSettings()
 
 injectCSS(BUTTON_STYLE_CSS)
+injectCSS(ROLLTYPE_STYLE_CSS)
 chrome.runtime.onMessage.addListener(handleMessage)
 chrome.runtime.sendMessage({"action": "activate-icon"})
 updateSettings()

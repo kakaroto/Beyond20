@@ -1,12 +1,13 @@
 from settings import getDefaultSettings, getStoredSettings, RollType
-from utils import isExtensionDisconnected, alertQuickSettings, alertFullSettings
+from utils import isExtensionDisconnected, alertQuickSettings, alertFullSettings, injectCSS
 from elementmaker import E
 import math
 import re
 from dndbeyond import Character, Monster, buildAttackRoll, sendRoll, \
     ability_abbreviations, findToHit, descriptionToString, propertyListToDict, \
     injectDiceToRolls, addIconButton, addHitDieButtons, addDisplayButton, addRollButton, \
-    isHitDieButtonAdded, isRollButtonAdded, isCustomRollIconsAdded, removeRollButtons
+    isHitDieButtonAdded, isRollButtonAdded, isCustomRollIconsAdded, removeRollButtons, getRollTypeButtonClass
+from constants import ROLLTYPE_STYLE_CSS
 
 console.log("Beyond20: D&D Beyond module loaded.")
 
@@ -631,9 +632,10 @@ def checkAndInjectDiceToRolls(selector, name=""):
         findModifiers(character, custom_roll)
 
 def addRollButtonEx(paneClass, where, small=False, append=False, prepend=False, image=True, text="Beyond 20"):
+    nonlocal character
     callback = def():
         execute(paneClass)
-    addRollButton(callback, where, small=small, append=append, prepend=prepend, image=image, text=text)
+    addRollButton(character, callback, where, small=small, append=append, prepend=prepend, image=image, text=text)
 
 def addDisplayButtonEx(paneClass, where, text="Display in VTT"):
     callback = def():
@@ -722,6 +724,7 @@ def injectRollButton(paneClass):
             addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on VTT", image=False)
 
         if spell_name == "Animate Objects":
+            nonlocal character
             makeCB = def(size, to_hit, dmg):
                 props = buildAttackRoll(character,
                                           "action",
@@ -743,7 +746,7 @@ def injectRollButton(paneClass):
                     dmg = m.group(2)
                     console.log("Match for ", size, " : ", to_hit, dmg)
                     
-                    id = addRollButton(makeCB(size.text(), to_hit, dmg), size,
+                    id = addRollButton(character, makeCB(size.text(), to_hit, dmg), size,
                                         small=True, append=True, image=False, text="Attack")
                     $("#" + id).css({"float": "", "text-align": ""})
 
@@ -893,14 +896,14 @@ def deactivateQuickRolls():
     return (abilities, saving_throws, skills, actions, spells)
 
 def activateQuickRolls():
-    nonlocal settings, quick_roll
+    nonlocal settings, quick_roll, character
     if quick_roll:
         # quick rolling, don't mess up our tooltip
         return
     beyond20_tooltip = $(".beyond20-quick-roll-tooltip")
     if beyond20_tooltip.length == 0:
         img = E.img(class_="beyond20-quick-roll-icon", src=chrome.extension.getURL("images/icons/icon32.png"), style="margin-right: 5px;margin-left: 5px;padding: 5px 10px;")
-        div = E.div(class_="beyond20-quick-roll-tooltip", img)
+        div = E.div(class_="beyond20-quick-roll-tooltip " + getRollTypeButtonClass(character), img)
         beyond20_tooltip = $(div)
         beyond20_tooltip.css({"position": "absolute",
                                 "background": 'url("https://www.dndbeyond.com/Content/Skins/Waterdeep/images/character-sheet/content-frames/inspiration.svg") 50% center no-repeat transparent',
@@ -1047,6 +1050,7 @@ def handleMessage (request, sender, sendResponse):
     elif request.action == "open-options":
         alertFullSettings()
 
+injectCSS(ROLLTYPE_STYLE_CSS)
 settings = getDefaultSettings()
 character = Character(settings)
 creature = None

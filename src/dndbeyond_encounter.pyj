@@ -1,6 +1,6 @@
 from settings import getDefaultSettings, getStoredSettings
 from dndbeyond import Monster, removeRollButtons
-from constants import BUTTON_STYLE_CSS
+from constants import BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS
 from utils import isExtensionDisconnected, injectCSS, alertFullSettings
 
 print("Beyond20: D&D Beyond Encounter module loaded.")
@@ -53,6 +53,7 @@ def handleMessage (request, sender, sendResponse):
 
 updateSettings()
 injectCSS(BUTTON_STYLE_CSS)
+injectCSS(ROLLTYPE_STYLE_CSS)
 chrome.runtime.onMessage.addListener(handleMessage)
 observer = new window.MutationObserver(documentModified)
 observer.observe(document, {"subtree": True, "childList": True})

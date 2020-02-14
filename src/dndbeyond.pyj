@@ -117,6 +117,7 @@ class CharacterBase:
     def setGlobalSettings(self, new_settings):
         self._global_settings = new_settings
         dndbeyondDiceRoller.setSettings(new_settings)
+        updateRollTypeButtonClasses(self)
 
     def getDict(self):
         return {"name": self._name, "type": self._type}
@@ -737,7 +738,7 @@ class Monster(CharacterBase):
                     description = descriptionToString(action)
                     roll_properties = self.buildAttackRoll(action_name, description)
                     if roll_properties:
-                        id = addRollButton(makeCB(roll_properties), action,
+                        id = addRollButton(self, makeCB(roll_properties), action,
                                            small=True, prepend=True, image=True, text=action_name)
                         $("#" + id).css({"float": "", "text-align": ""})
                 if inject_descriptions:
@@ -750,7 +751,7 @@ class Monster(CharacterBase):
             if add_dice:
                 roll_properties = self.buildAttackRoll(action_name, description)
                 if roll_properties:
-                    id = addRollButton(makeCB(roll_properties), block,
+                    id = addRollButton(self, makeCB(roll_properties), block,
                                         small=True, before=True, image=True, text=action_name)
                     $("#" + id).css({"float": "", "text-align": "", "margin-top": "15px"})
             if inject_descriptions:
@@ -982,11 +983,19 @@ def buildAttackRoll(character, attack_source, name, description, properties, dam
     return roll_properties
 
 def sendRoll(character, rollType, fallback, args):
+    nonlocal key_modifiers
+
     whisper = int(character.getGlobalSetting("whisper-type", WhisperType.NO))
     whisper_monster = int(character.getGlobalSetting("whisper-type-monsters", WhisperType.YES))
     if character.type() == "Monster" and whisper_monster != WhisperType.NO:
         whisper = whisper_monster
     advantage = int(character.getGlobalSetting("roll-type", RollType.NORMAL))
+    if key_modifiers.shift:
+        advantage = RollType.ADVANTAGE
+    elif key_modifiers.ctrl:
+        advantage = RollType.DISADVANTAGE
+    elif key_modifiers.alt:
+        advantage = RollType.NORMAL
 
     # Default advantage/whisper would get overriden if they are part of provided args
     req = {"action": "roll", "character": character.getDict(), "type": rollType, "roll": fallback,
@@ -1007,14 +1016,53 @@ def isCustomRollIconsAdded():
 def isHitDieButtonAdded():
     return $(".ct-beyond20-roll-hitdie").length > 0
 
-button_class = "ct-beyond20-roll-button ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button"
+def getRollTypeButtonClass(character):
+    if character?:
+        advantage = int(character.getGlobalSetting("roll-type", RollType.NORMAL))
+    if key_modifiers.shift:
+        advantage = RollType.ADVANTAGE
+    elif key_modifiers.ctrl:
+        advantage = RollType.DISADVANTAGE
+    elif key_modifiers.alt:
+        advantage = RollType.NORMAL
+    if advantage == RollType.DOUBLE:
+        return "beyond20-roll-type-double"
+    if advantage == RollType.QUERY:
+        return "beyond20-roll-type-query"
+    if advantage == RollType.THRICE:
+        return "beyond20-roll-type-thrice"
+    if advantage == RollType.ADVANTAGE:
+        return "beyond20-roll-type-advantage"
+    if advantage == RollType.DISADVANTAGE:
+        return "beyond20-roll-type-disadvantage"
+    if advantage == RollType.SUPER_ADVANTAGE:
+        return "beyond20-roll-type-super-advantage"
+    if advantage == RollType.SUPER_DISADVANTAGE:
+        return "beyond20-roll-type-super-disadvantage"
+    return ""
+
+last_character_used = None
+def updateRollTypeButtonClasses(character):
+    nonlocal last_character_used
+    button_roll_type_classes="beyond20-roll-type-double beyond20-roll-type-query beyond20-roll-type-thrice beyond20-roll-type-advantage beyond20-roll-type-disadvantage beyond20-roll-type-super-advantage beyond20-roll-type-super-disadvantage"
+    rolltype_class = getRollTypeButtonClass(character or last_character_used)
+    $(".ct-beyond20-roll .ct-beyond20-roll-button,.beyond20-quick-roll-tooltip").removeClass(button_roll_type_classes).addClass(rolltype_class)
+
+
+button_class = "ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button"
 button_class_small = button_class + " character-button-small"
-def addRollButton(callback, where, small=False, append=False, prepend=False, before=False, image=True, text="Beyond 20"):
+def addRollButton(character, callback, where, small=False, append=False, prepend=False, before=False, image=True, text="Beyond 20"):
+    nonlocal last_character_used
+    last_character_used = character
+
     icon32 = chrome.extension.getURL("images/dice24.png")
     icon16 = chrome.extension.getURL("images/dice16.png")
     id = uuid.uuid4()
+
+    rolltype_class = " " + getRollTypeButtonClass(character)
+
     button = E.div(class_="ct-beyond20-roll", id=str(id),
-                    E.button(class_=(button_class_small if small else button_class),
+                    E.button(class_="ct-beyond20-roll-button " + (button_class_small if small else button_class) + rolltype_class,
                              E.img(class_="ct-beyond20-icon", src=((icon16 if small else icon32) if image else ""),
                                    style=("margin-right: 6px;" if image else "")),
                              E.span(class_="ct-button__content", text)
@@ -1039,7 +1087,7 @@ def addRollButton(callback, where, small=False, append=False, prepend=False, bef
 
 def addDisplayButton(callback, where, text="Display in VTT"):
     button = E.div(class_="ct-beyond20-roll-display",
-                   E.button(class_=button_class_small.replace("filled", "outline"),
+                   E.button(class_="ct-beyond20-dislay-button " + button_class_small.replace("filled", "outline"),
                             E.span(class_="ct-button__content", text)
                             )
                    )
@@ -1055,7 +1103,7 @@ def addHitDieButtons(rollCallback):
     icon16 = chrome.extension.getURL("images/icons/icon16.png")
     button = E.div(class_="ct-beyond20-roll-hitdie", style="float: right;",
                     E.img(class_="ct-beyond20-icon", src=icon16, style="margin-right: 6px;"),
-                    E.button(class_= button_class_small,
+                    E.button(class_="ct-beyond20-roll-button " + button_class_small,
                              E.span(class_="ct-button__content", "Roll Hit Die")
                              )
                     )
@@ -1146,3 +1194,16 @@ def beyond20SendMessageFailure(character, response):
 
 alertify.set("alert", "title", "Beyond 20")
 alertify.set("notifier", "position", "top-center")
+
+key_modifiers = {"alt": False, "ctrl": False, "shift": False}
+checkKeyModifiers = def(event):
+    if event.originalEvent.repeat:
+        return
+    needsUpdate = Object.values(key_modifiers).some(def (v): return v;)
+    key_modifiers.ctrl = event.ctrlKey
+    key_modifiers.shift = event.shiftKey
+    key_modifiers.alt = event.altKey
+    needsUpdate = needsUpdate or Object.values(key_modifiers).some(def (v): return v;)
+    if needsUpdate:
+        updateRollTypeButtonClasses()
+$(document).keydown(checkKeyModifiers).keyup(checkKeyModifiers)
