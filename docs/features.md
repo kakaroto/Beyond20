@@ -35,6 +35,8 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
   * Dice formulas are detected in items, spells, actions or custom actions, class features, racial traits or Feats
   * The dice formula is clickable in the D&D beyond side panel, as well as in the VTT chat text
   * The clickable dice can be disabled to not show in the D&D Beyond page or in the VTT text, separately
+* Roll Superiority Dice
+* Roll Bardic Inspiration Dice
 * Condition tracking
 * Creatures stat blocks
 * Vehicles stat blocks
@@ -72,23 +74,31 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Character traits
 
 ## Special Class Features/Racial Traits/Feats supported
-* Rogue: Sneak Attack
-* Rogue: Assassinate
-* Life domain Cleric: Disciple of Life
-* Champion Fighter: Improved Critical and Superior Critical
-* Bard: Jack of All Trades
-* Barbarian: Rage
-* Barbarian: Brutal Critical
-* Half-Orc: Savage Attacks
 * Feat: Sharpshooter
 * Feat: Great Weapon Master
-* Fighting Style: Great Weapon Fighting
+* Feat: Elven Accuracy (Via super advantage option)
+* Feat: Polearm Master
+* Artificer: Arcane Firearm
+* Barbarian: Rage
+* Barbarian: Brutal Critical
+* Bard: Blade Flourish
+* Bard: Psychic Blades
+* Bard: Jack of All Trades
 * Bloodhunter: Crimson Rite
-* Ranger: Dread Ambusher
+* Cleric: Disciple of Life (Life domain)
+* Cleric: Divine Strike
+* Fighter: Maneuvers
+* Fighter: Improved Critical and Superior Critical (Champion)
+* Fighter: Rune Knight's Giant Might (UA)
+* Fighting Style: Great Weapon Fighting
 * Paladin: Legendary Strike (UA)
 * Paladin: Improved Divine Smite
+* Ranger: Dread Ambusher
+* Rogue: Sneak Attack
+* Rogue: Assassinate
+* Sorcerer: Elemental Affinity
 * Warlock: Hexblade's Curse
-* Fear: Elven Accuracy  (Via super advantage option)
+* Half-Orc: Savage Attacks
 
 # Special Spells supported
 * Chromatic Orb: Macro to ask which damage type to use
@@ -105,7 +115,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Roll types (normal, roll twice, roll thrice, query the user, roll with advantage, roll with disadvantage, roll with super advantage, roll with super disadvantage)
 * Auto roll damage and crit
 * Add initiative to the tracker (requires token to be selected)
-* Automatically update HP in the VTT sheets and tokens
+* Automatically update HP and Temp HP in the VTT sheets and tokens
 * Roll20 Character Sheet Template to use
   * D&D 5E By Roll20
   * Other Templates

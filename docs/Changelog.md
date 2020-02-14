@@ -1,3 +1,39 @@
+v0.9
+===
+
+* **Feature**: Add indicator on roll buttons to identify the roll type (advantage, disadvantage, roll twice, etc...)
+* **Feature**: Add synchronization of Temporary HP to tokens and character sheets in Roll20 and FVTT
+* **Feature**: Add support for HP and Temp HP synchornization for character sheet creatures from the Extra section
+* **Feature**: Add a "Display to VTT" button on Equipment and Magic Items pages of D&D Beyond
+* **Feature**: Support rolling with Advantage when clicking with the Shift button pressed
+* **Feature**: Support rolling with Disadvantage when clicking with the Ctrl button pressed
+* **Feature**: Support rolling normally (with no advantage/disadvantage/double rolls) when clicking with the Alt button pressed
+* **Feature**: *Firefox*: Add buttons to access Quick Settings menu from Firefox (added for Chrome in v0.7 but finally got it working for Firefox)
+* **Feature**: Add option to force an auto-crit on all attacks (against paralyzed enemies for example)
+* **Feature**: Add the ability to roll multiple separate custom damage dice, by separating them with a comma (for use with Green-flame Blade for example)
+* **Feature**: Add support for spells that add Temp HP instead of healing (such as False Life)
+* **Feature**: Add support for Polearm Master Feat, which considers the bonus action as melee
+* **Feature**: Add support for Fighter's UA Rune Knight's Giant Might class feature
+* **Feature**: Add support for Artificer's Arcane Firearm class feature
+* **Feature**: Add support for Draconic Sorcerer's Elemental Affinity class feature
+* **Feature**: Add support for rolling the Bardic Inspiration dice, and Blade Flourishes for the College of Swords
+* **Feature**: Add support for Cleri's Divine Strike class feature
+* **Feature**: Add support for Whispers Bard's Psychic Blades class feature
+* **Feature**: Add Attack buttons to roll the to-hit with damage on the various object sizes in the Animate Objects spell description
+* **Bugfix**: Fix custom/concentration/ritual Spells and custom weapons which to-hit value was not being parsed properly due to a DNDB website change
+* **Bugfix**: Fix quick roll tooltip from being at the wrong position when the page was not scrolled to the top
+* **Bugfix**: Fix character settings not being saved properly. Caused double output of conditions on Firefox
+* **Bugfix**: Support parsing of monster statblocks from the new My Encounters popup window for monsters
+* **Bugfix**: More lax statblock parsing, which fixes the actions from monster 'Orcus' not being parsed properly
+* **Bugfix**: Reroll all the dice in a critical hit if a custom dice formula had additive dice formulas
+* **Bugfix**: Fix "Display to VTT" button position for Spell pages
+* **Bugfix**: *Roll20*: Use /me instead of /emas for condition mapping if user is not a GM as /emas is a GM-exclusive command
+* **Bugfix**: *FVTT*: Fix HP syncing for actors when the scene doesn't have a token of the character sheet on it
+* **Misc**: Make the Quick Rolls tooltip move with the mouse, as some people were confused by its position, not understanding it was a tooltip
+* **Misc**: Make the D&D Beyond Dice roller animation less flashy and quicker to appear
+* **Misc**: Added the 'sponsor' button on the github page, and registered for the Github Sponsors program
+
+
 v0.8
 ===
 
