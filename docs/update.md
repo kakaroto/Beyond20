@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v0.7
+Congratulations! Beyond20 was just updated to the latest version : v0.9
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added. In that case, please considering [showing your appreciation](rations)?
 
