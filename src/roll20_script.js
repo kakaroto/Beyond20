@@ -5723,6 +5723,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if (ρσ_not_equals(temp_hp.attributes.current, str(temp))) {
                         temp_hp.set("current", str(temp));
                         temp_hp.save();
+                        character.updateTokensByName("hp_temp", temp_hp.id);
                     }
                 }
             }

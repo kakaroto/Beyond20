@@ -21,6 +21,7 @@ def updateHP(name, current, total, temp):
             if temp_hp.attributes.current != str(temp):
                 temp_hp.set("current", str(temp))
                 temp_hp.save()
+                character.updateTokensByName("hp_temp", temp_hp.id)
 
 def disconnectAllEvents():
     nonlocal registered_events
