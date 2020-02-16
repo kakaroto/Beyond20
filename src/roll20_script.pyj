@@ -19,7 +19,9 @@ def updateHP(name, current, total, temp):
         if temp_hp?:
             console.log("Found attribute : ", temp_hp)
             if temp_hp.attributes.current != str(temp):
-                temp_hp.set("current", str(temp))
+                value = str(temp) if temp != 0 else ""
+                temp_hp.set("current", value)
+                temp_hp.set("max", value)
                 temp_hp.save()
                 character.updateTokensByName("hp_temp", temp_hp.id)
 

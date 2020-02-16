@@ -5679,7 +5679,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var addCustomEventListener = ρσ_modules.utils.addCustomEventListener;
 
         function updateHP(name, current, total, temp) {
-            var character, hp, temp_hp;
+            var character, hp, temp_hp, value;
             console.log("Updating HP for " + name + " : (" + current + "+" + temp + ")/" + total);
             name = name.toLowerCase();
             character = window.Campaign.characters.find((function() {
@@ -5721,7 +5721,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if ((typeof temp_hp !== "undefined" && temp_hp !== null)) {
                     console.log("Found attribute : ", temp_hp);
                     if (ρσ_not_equals(temp_hp.attributes.current, str(temp))) {
-                        temp_hp.set("current", str(temp));
+                        value = ((temp !== 0 && (typeof temp !== "object" || ρσ_not_equals(temp, 0)))) ? str(temp) : "";
+                        temp_hp.set("current", value);
+                        temp_hp.set("max", value);
                         temp_hp.save();
                         character.updateTokensByName("hp_temp", temp_hp.id);
                     }
