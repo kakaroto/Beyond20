@@ -147,7 +147,8 @@ def addInitiativeToCombat(roll):
                 for token in canvas.tokens.controlledTokens:
                     combatant = game.combat.getCombatantByToken(token.id)
                     if combatant:
-                        promise = game.combat.updateCombatant({"id": combatant.id, "initiative": roll.total})
+                        idField = "_id" if combatant._id else "id"
+                        promise = game.combat.updateCombatant({idField: combatant[idField], "initiative": roll.total})
                     else:
                         promise = game.combat.createCombatant({"tokenId": token.id, "hidden": token.data.hidden, "initiative": roll.total})
                     # to avoid a 'defined but not used' 
