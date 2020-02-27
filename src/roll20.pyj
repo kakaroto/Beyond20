@@ -69,7 +69,7 @@ def subRolls(text, damage_only=False, overrideCB=None):
                 return dice + modifier
             dice_formula = ("1d20" if dice == "" else dice) + modifier
             return genRoll(dice_formula)
-    
+
     return replaceRolls(text, replaceCB)
 
 def subDescriptionRolls(request, description):
@@ -139,9 +139,9 @@ def whisperString(whisper):
 
 def template(request, name, properties):
     nonlocal settings
-            
+
     result = whisperString(request.whisper)
-    
+
     renameProp = def(old_key, new_key):
         nonlocal result
         result = result.replace("{{" + old_key + "=", "{{" + new_key + "=")
@@ -396,7 +396,7 @@ def rollSpellCard(request):
         properties["level"] = request["level-school"] + "(Cast at " + request["cast-at"] + " Level)"
     else:
         properties["level"] = request["level-school"]
-                                                    
+
     components = request.components
     while components != "":
         if components[0] == "V":
@@ -415,7 +415,7 @@ def rollSpellCard(request):
         properties["ritual"] = 1
     if request.concentration:
         properties["concentration"] = 1
-    description = request.description            
+    description = request.description
     higher = description.indexOf("At Higher Levels.")
     if higher > 0:
         properties["description"] = subDescriptionRolls(request, description[:higher-1])
@@ -521,7 +521,7 @@ def rollSpellAttack(request, custom_roll_dice):
 
 def injectSettingsButton():
     nonlocal btn
-    
+
     icon = chrome.extension.getURL("images/icons/icon32.png")
 
     img = document.getElementById("beyond20-settings")
@@ -530,7 +530,7 @@ def injectSettingsButton():
     img = E.img(id="beyond20-settings", src=icon, style="margin-left: 5px;")
     btn.after(img)
     img.onclick = alertQuickSettings
-    
+
 
 def updateSettings(new_settings=None):
     nonlocal settings
@@ -560,7 +560,7 @@ def handleMessage (request, sender, sendResponse):
                 conditions = request.character.conditions
             else:
                 conditions = request.character.conditions.concat(["Exhausted (Level " + request.character.exhaustion + ")"])
-            
+
             # We can't use window.is_gm because it's not available to the content script
             is_gm = "The player link for this campaign is" in $("#textchat .message.system").text()
             em_command = "/emas " if is_gm else "/em "
