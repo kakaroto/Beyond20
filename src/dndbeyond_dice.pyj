@@ -151,7 +151,7 @@ class DNDBRoll(Beyond20BaseRoll):
                 self._parts.append(part)
             else:
                 try:
-                    part = int(part)
+                    part = float(part)
                     self._parts.append(part)
                 except:
                     pass
@@ -188,6 +188,7 @@ class DNDBRoll(Beyond20BaseRoll):
                 self._total += part.roll()
             else:
                 self._total += part
+        self._total = Math.round(self._total * 100) / 100
 
     def getTooltip(self):
         tooltip = "<div class='beyond20-roll-tooltip'>"

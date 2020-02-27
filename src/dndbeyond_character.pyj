@@ -66,12 +66,26 @@ def rollSavingThrow():
     rollAbilityOrSavingThrow("ct-ability-saving-throws-pane", "saving-throw")
 
 def rollInitiative():
+    nonlocal character
     initiative = $(".ct-initiative-box__value").text()
     advantage = $(".ct-initiative-box__advantage").length > 0
     if initiative == "":
         initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text()
         advantage = $(".ct-combat-mobile__advantage").length > 0
     #console.log("Initiative " + ("with" if advantage else "without") + " advantage : " + initiative)
+
+    if character.getGlobalSetting("initiative-tiebreaker", False):
+       # Set the tiebreaker to the dexterity score but default to 0 in case abilities arrary is empty
+       tiebreaker = character._abilities.reduce(def(acc, abi):
+           return acc + (int(abi[2]) if abi[1] == 'DEX' else 0)
+       , 0)
+
+       # Add tiebreaker as a decimal
+       initiative = float(initiative) + float(tiebreaker) / 100
+
+       # Render initiative as a string that begins with '+' or '-'
+       initiative = '+' + str(initiative) if initiative >= 0 else str(initiative)
+
     roll_properties = {"initiative": initiative}
     if advantage:
         roll_properties["advantage"] = RollType.ADVANTAGE

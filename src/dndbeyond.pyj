@@ -613,9 +613,19 @@ class Monster(CharacterBase):
         for ability in self._abilities:
             if ability[1] == "DEX":
                 modifier = ability[3]
-                sendRoll(self, "initiative", "1d20" + modifier, {"initiative": modifier})
-                break
 
+                initiative = modifier
+                if self.getGlobalSetting("initiative-tiebreaker", False):
+                    tiebreaker = ability[2]
+
+                    # Add tiebreaker as a decimal
+                    initiative = float(initiative) + float(tiebreaker) / 100
+
+                    # Render initiative as a string that begins with '+' or '-'
+                    initiative = '+' + str(initiative) if initiative >= 0 else str(initiative)
+
+                sendRoll(self, "initiative", "1d20" + initiative, {"initiative": initiative})
+                break
 
     def rollSavingThrow(self, abbr):
         mod = self._saves[abbr]

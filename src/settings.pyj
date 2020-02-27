@@ -85,6 +85,11 @@ options_list = {
                            "type": "bool",
                            "default": True},
 
+    "initiative-tiebreaker": {"title": "Add tiebreaker to initiative rolls",
+                           "description": "Adds the dexterity score as a decimal to initiative rolls to break any initiative ties.",
+                           "type": "bool",
+                           "default": False},
+
     "critical-homebrew": {"title": "Critical hit rule",
                   "description": "Determines how the additional critical hit damages are determined",
                   "type": "combobox",
