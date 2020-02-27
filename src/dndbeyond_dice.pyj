@@ -144,7 +144,7 @@ class DNDBRoll(Beyond20BaseRoll):
             formula = formula.replace('@' + key, data[key])
         parts = formula.split("+")
         for part in parts:
-            part = part.trim()            
+            part = part.trim()
             match = re.search("([0-9]*)d([0-9]+)(.*)", part)
             if match?:
                 part = DNDBDice(match.group(1), match.group(2), match.group(3))
@@ -197,7 +197,7 @@ class DNDBRoll(Beyond20BaseRoll):
                 tooltip += "<div class='beyond20-roll-dice-formula'>" + part.formula + "</div>"
                 tooltip += "<div class='beyond20-roll-dice-rolls'>"
                 for die in part.rolls:
-                    
+
                     result_class = 'beyond20-roll-detail-'
                     result_class += 'crit' if die.roll == part.faces else ('fail' if die.roll == 1 else 'normal')
                     if die.discarded ? False:
@@ -220,7 +220,7 @@ class DNDBPrompter:
         return new Promise(def(resolve, reject):
             alertify.Beyond20Prompt(title, html, ok_label, cancel_label, resolve)
         )
-        
+
 alertify.defaults.transition = "zoom"
 if not alertify.Beyond20Prompt?:
     factory = def():

@@ -233,7 +233,7 @@ class Character(CharacterBase):
             hp = max_hp = temp_hp = None
             hp_items = $(".ct-health-summary__hp-group--primary .ct-health-summary__hp-item")
             for item in hp_items:
-                label = $(item).find(".ct-health-summary__hp-item-label").text() 
+                label = $(item).find(".ct-health-summary__hp-item-label").text()
                 if label == "Current":
                     # Make sure it's not an input being modified
                     number = $(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number")
@@ -303,7 +303,7 @@ class Character(CharacterBase):
             for option in options:
                 option_name = option.childNodes[0].textContent.trim()
                 feature_list.append(feat_name + ": " + option_name)
-                
+
         #console.log(name, feature_list)
         return feature_list
 
@@ -317,7 +317,7 @@ class Character(CharacterBase):
                 update = True
         elif self.getSetting("class-features", None):
             self._class_features = list(self.getSetting("class-features", None))
-            
+
         race_detail = $(".ct-features .ct-race-detail")
         if race_detail.length > 0:
             self._racial_traits = self.featureDetailsToList(race_detail, "Racial Traits")
@@ -350,7 +350,7 @@ class Character(CharacterBase):
                                          "racial-traits": self._racial_traits,
                                          "feats": self._feats,
                                          "actions": self._actions})
-            
+
     def hasClassFeature(self, name):
         return name in self._class_features
     def hasRacialTrait(self, name):
@@ -533,7 +533,7 @@ class Monster(CharacterBase):
                                 self.rollInitiative()
                         addIconButton(cb, initiative.find(base + "__attribute-data"))
 
-        
+
         tidbits = stat_block.find(base + "__tidbits " + base + "__tidbit")
         for tidbit in tidbits:
             label = $(tidbit).find(base + "__tidbit-label").text()
@@ -586,7 +586,7 @@ class Monster(CharacterBase):
                         data.append(skill + " " + self._skills[skill])
                         if add_dice:
                             addIconButton(makeCB(skill), data, append=True)
-                        
+
             elif label == "Challenge":
                 self._cr = value.split(" ")[0]
             self._tidbits[label] = value
@@ -708,7 +708,7 @@ class Monster(CharacterBase):
             if save:
                 roll_properties["save-ability"] = save[0]
                 roll_properties["save-dc"] = save[1]
- 
+
         if attackInfo or hitInfo:
             return roll_properties
         else:
@@ -800,7 +800,7 @@ class Monster(CharacterBase):
 
     def injectSpellRolls(self, element, url):
         icon16 = chrome.extension.getURL("images/icons/icon16.png")
-        
+
         roll_icon = $('<img class="ct-beyond20-spell-icon" x-beyond20-spell-url="' + url + '"></img>')
 
         $(element).after(roll_icon)
@@ -836,7 +836,7 @@ class Monster(CharacterBase):
         hp = max_hp = temp_hp = None
         groups = $(".ct-creature-pane .ct-collapsible__content .ct-creature-pane__adjuster-group")
         for item in groups:
-            label = $(item).find(".ct-creature-pane__adjuster-group-label").text() 
+            label = $(item).find(".ct-creature-pane__adjuster-group-label").text()
             if label == "Current HP":
                 hp = int($(item).find(".ct-creature-pane__adjuster-group-value").text())
             elif label == "Max HP":

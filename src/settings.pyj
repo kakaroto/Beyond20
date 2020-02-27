@@ -1,4 +1,4 @@
-from elementmaker import E 
+from elementmaker import E
 from utils import roll20Title, fvttTitle, isFVTT
 
 class WhisperType:
@@ -96,7 +96,7 @@ options_list = {
     "weapon-force-critical": {"title": "Force all attacks as Critical Hits",
                             "description": "Forces all attacks to be considered as critical hits. Useful for melee attacks against paralyzed enemies or using adamantine weapons against objects",
                             "short": "Force Critical Hits",
-                            "short_description": "Useful for melee attacks against paralyzed enemies or using adamantine weapons against objects",                            
+                            "short_description": "Useful for melee attacks against paralyzed enemies or using adamantine weapons against objects",
                             "type": "bool",
                             "default": False},
 
@@ -104,7 +104,7 @@ options_list = {
                   "description": "When changing HP in D&D Beyond, update it in the VTT tokens and sheets",
                   "type": "bool",
                   "default": True},
-                 
+
     "display-conditions": {"title": "Display Condition updates to VTT",
                   "description": "When updating character conditions in D&D Beyond, display a message in the VTT chat.\n" \
                     "If using FVTT with the Beyond20 module, it will also update the token's status icons appropriately.",
@@ -157,7 +157,7 @@ options_list = {
                            "type": "combobox",
                            "default": "all",
                            "choices": {"all": "All components", "material": "Only material components", "none": "Do not display anything"}},
-    
+
     "component-prefix": {"title": "Component Prefix",
                          "description": "Prefix to the components display of a spell attack.\nIf displaying material components only, you may want to set it to 'Materials used :' for example",
                          "type": "string",
@@ -167,7 +167,7 @@ options_list = {
     "roll20-tab": {"type": "migrate",
                    "default": "vtt-tab"},
 
-    "vtt-tab": {"title": "Select the VTT tab or Game to send rolls to", 
+    "vtt-tab": {"title": "Select the VTT tab or Game to send rolls to",
                    "description": "Select the tab to send rolls to or the specific Game.\nYou can select the Game or tab from the extension's popup menu in the VTT tab itself.\nAfter a specific tab is selected and that tab is closed, it will revert to sending rolls to the same Game.",
                    "type": "special",
                    "default": None}, # callbacks will be added after the functions are defined
@@ -188,7 +188,7 @@ options_list = {
                "title": "Become a patron of the art of software development!",
                "description": "If you wish to support my work on Beyond 20 or my other D&D related project, subscribe to my patreon " \
                    "or donate via paypal!\nI am grateful for your generosity!",
-               "type": "link", 
+               "type": "link",
                "default": "https://beyond20.here-for-more.info/rations",
                "icon": "images/donate.png"}
     }
@@ -326,9 +326,9 @@ def getStoredSettings(cb, key="settings", _list=options_list):
         if migrated_keys.length > 0:
             print("Beyond20: Migrated some keys:", stored_settings)
             storageSet(key, stored_settings)
-            
+
         cb(stored_settings)
-               
+
     storageGet(key, settings, gotSettings)
 
 def setSettings(settings, cb=None, key="settings"):
@@ -400,7 +400,7 @@ def createHTMLOptionEx(name, option, short=False):
     elif option.type == "link":
         e = E.li(class_="list-group-item beyond20-option beyond20-option-link",
                  E.label(class_="list-content", id=name,
-                     E.a(href=option.default, 
+                     E.a(href=option.default,
                          E.h4(title)),
                      *description_p,
                      E.a(href=option.default,
@@ -630,7 +630,7 @@ def getVTTTabSetting(name):
     if value == "All VTT Tabs":
         ret = None
     elif value in ["This Campaign", "This World", "This Specific Tab"]:
-        vtt = "fvtt" if isFVTT(current_tab.title) else "roll20" 
+        vtt = "fvtt" if isFVTT(current_tab.title) else "roll20"
         title = fvttTitle(current_tab.title) if vtt == "fvtt" else roll20Title(current_tab.title)
         ret = {"id": (0 if value in ["This Campaign", "This World"] else current_tab.id),
                "title": title,
@@ -647,7 +647,7 @@ def getVTTTabSetting(name):
         # "Another tab or campaign (No change)", "A Roll20 game", "A FVTT game", "Tab #"
         ret = {"id": saved_id, "title": saved_title, "vtt": saved_vtt}
     console.log("Get " + vtt + " tab: ", ret)
-    return ret    
+    return ret
 
 def setCurrentTab(tab):
     nonlocal current_tab
@@ -657,4 +657,3 @@ current_tab = None
 options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting
 options_list["vtt-tab"]["set"] = setVTTTabSetting
 options_list["vtt-tab"]["get"] = getVTTTabSetting
-

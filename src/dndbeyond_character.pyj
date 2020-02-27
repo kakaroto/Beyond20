@@ -77,7 +77,7 @@ def rollInitiative():
         roll_properties["advantage"] = RollType.ADVANTAGE
     sendRollWithCharacter("initiative", "1d20" + initiative, roll_properties)
 
-        
+
 def rollHitDie(multiclass, index):
     #console.log("Rolling hit die index " + index)
     hitdie = $(".ct-reset-pane__hitdie").eq(index)
@@ -264,7 +264,7 @@ def rollItem(force_display=False):
         roll_properties["item-type"] = item_type
         if critical_limit != 20:
             roll_properties["critical-limit"] = critical_limit
-            
+
         # Asssassinate: consider all rolls as critical
         if character.hasClassFeature("Assassinate") and \
            character.getSetting("rogue-assassinate", False):
@@ -275,7 +275,7 @@ def rollItem(force_display=False):
     else:
         sendRollWithCharacter("item", 0, {"name": item_name,
                              "description" : description,
-                             "item-type": item_type})        
+                             "item-type": item_type})
 
 def rollAction(paneClass):
     nonlocal character
@@ -291,7 +291,7 @@ def rollAction(paneClass):
         sendRollWithCharacter("custom", superiority_die, {"name": action_name,
                                                           "description": description,
                                                           "modifier": superiority_die})
-                                                          
+
     elif action_name == "Bardic Inspiration" or action_parent == "Blade Flourish":
         bard_level = character.getClassLevel("Bard")
         inspiration_die = "1d6" if bard_level < 5 else ("1d8" if bard_level < 10 else ("1d10" if bard_level < 15 else "1d12"))
@@ -319,7 +319,7 @@ def rollAction(paneClass):
 
         brutal = 0
         critical_limit = 20
-        # Polearm master bonus attack using the other end of the polearm is considered a melee attack. 
+        # Polearm master bonus attack using the other end of the polearm is considered a melee attack.
         if action_name == "Polearm Master - Bonus Attack":
             if character.hasAction("Channel Divinity: Legendary Strike") and \
                 character.getSetting("paladin-legendary-strike", False):
@@ -370,7 +370,7 @@ def rollAction(paneClass):
     else:
         sendRollWithCharacter("action", 0, {"name": action_name,
                                             "description" : description})
-        
+
 def rollSpell(force_display=False):
     nonlocal character
     properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
@@ -420,14 +420,14 @@ def rollSpell(force_display=False):
             character._proficiency is not None:
             damages.append(character._proficiency)
             damage_types.append("Hexblade's Curse")
-            
+
         if damages.length > 0 and \
             character.hasClassFeature("Arcane Firearm") and \
             character.getSetting("artificer-arcane-firearm", False) and \
             spell_source == "Artificer":
             damages.append("1d8")
             damage_types.append("Arcane Firearm")
-        
+
         # Check for Draconic Sorcerer's Elemental Affinity
         elementalAffinity = None
         for feature in character._class_features:
@@ -498,7 +498,7 @@ def rollSpell(force_display=False):
             roll_properties[key] = spell_properties[key]
         if castas != "" and not level.startsWith(castas):
             roll_properties["cast-at"] = castas
-            
+
         # Asssassinate: consider all rolls as critical
         if character.hasClassFeature("Assassinate") and \
            character.getSetting("rogue-assassinate", False):
@@ -545,7 +545,7 @@ def displayTrait():
     description = $(".ct-trait-pane__input").text()
     sendRollWithCharacter("trait", 0, {"name": trait,
                             "description": description})
-                            
+
 def displayAction(paneClass):
     action_name = $(".ct-sidebar__heading").text()
     description = descriptionToString(".ct-action-detail__description")
@@ -609,7 +609,7 @@ def findModifiers(character, custom_roll):
                     strong.append(mod_string)
                     roll_formula += " + " + character._classes[class_name]
                     text = text.substring(len(mod_string))
-            
+
             mod_string = " + your proficiency bonus"
             if text.startsWith(mod_string):
                 strong.append(mod_string)
@@ -618,7 +618,7 @@ def findModifiers(character, custom_roll):
 
         sibling.textContent = text
         img.attr("x-beyond20-roll", roll_formula)
-            
+
 
 def checkAndInjectDiceToRolls(selector, name=""):
     nonlocal settings
@@ -684,7 +684,7 @@ def injectRollButton(paneClass):
     elif paneClass in ["ct-action-pane", "ct-custom-action-pane"]:
         if isRollButtonAdded():
             return
-            
+
         properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"))
         action_name = $(".ct-sidebar__heading").text()
         action_parent = $(".ct-sidebar__header-parent").text()
@@ -739,13 +739,13 @@ def injectRollButton(paneClass):
             for row in rows:
                 size = $(row).find("td").eq(0)
                 desc = $(row).find("td").eq(5)
-                
+
                 m = re.search("(\+[0-9]+) to hit, ([0-9]*d[0-9]+(?:\s*[-+]\s*[0-9]+)) damage", desc.text())
                 if m:
                     to_hit = m.group(1)
                     dmg = m.group(2)
                     console.log("Match for ", size, " : ", to_hit, dmg)
-                    
+
                     id = addRollButton(character, makeCB(size.text(), to_hit, dmg), size,
                                         small=True, append=True, image=False, text="Attack")
                     $("#" + id).css({"float": "", "text-align": ""})
@@ -910,7 +910,7 @@ def activateQuickRolls():
                                 "background-size": "contain"})
         beyond20_tooltip.hide()
         $("body").append(beyond20_tooltip)
-    
+
     abilities, saving_throws, skills, actions, spells = deactivateQuickRolls()
 
     if not settings["quick-rolls"]:
@@ -1059,4 +1059,3 @@ chrome.runtime.onMessage.addListener(handleMessage)
 observer = new window.MutationObserver(documentModified)
 observer.observe(document, {"subtree": True, "childList": True})
 chrome.runtime.sendMessage({"action": "activate-icon"})
-
