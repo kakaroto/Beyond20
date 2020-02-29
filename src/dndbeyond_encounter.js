@@ -11761,12 +11761,14 @@ return this.__repr__();
 
     (function(){
         var __name__ = "constants";
-        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
+        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTERS_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_COMBAT_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
         ROLL20_URL = "*://app.roll20.net/editor/";
         FVTT_URL = "*://*/game";
         DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
         DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
+        DNDBEYOND_ENCOUNTERS_URL = "*://*.dndbeyond.com/my-encounters";
         DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
+        DNDBEYOND_COMBAT_URL = "*://*.dndbeyond.com/combat-tracker/*";
         DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
         DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
         CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
@@ -11776,7 +11778,9 @@ return this.__repr__();
         ρσ_modules.constants.FVTT_URL = FVTT_URL;
         ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
         ρσ_modules.constants.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
+        ρσ_modules.constants.DNDBEYOND_ENCOUNTERS_URL = DNDBEYOND_ENCOUNTERS_URL;
         ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
+        ρσ_modules.constants.DNDBEYOND_COMBAT_URL = DNDBEYOND_COMBAT_URL;
         ρσ_modules.constants.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
         ρσ_modules.constants.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
         ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
@@ -11814,7 +11818,7 @@ return this.__repr__();
                 observer.disconnect();
                 return;
             }
-            monster = $(".encounter-details-monster-summary-info-panel,.monster-details-modal__body");
+            monster = $(".encounter-details-monster-summary-info-panel,.encounter-details__content-section--monster-stat-block,.combat-tracker-page__content-section--monster-stat-block,.monster-details-modal__body");
             monster_name = monster.find(".mon-stat-block__name").text();
             console.log("Doc modified, new mon : ", monster_name, " !=?", last_monster_name);
             if ((monster_name === last_monster_name || typeof monster_name === "object" && ρσ_equals(monster_name, last_monster_name))) {

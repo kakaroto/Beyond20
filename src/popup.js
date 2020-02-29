@@ -6913,12 +6913,14 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "constants";
-        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
+        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTERS_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_COMBAT_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
         ROLL20_URL = "*://app.roll20.net/editor/";
         FVTT_URL = "*://*/game";
         DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
         DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
+        DNDBEYOND_ENCOUNTERS_URL = "*://*.dndbeyond.com/my-encounters";
         DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
+        DNDBEYOND_COMBAT_URL = "*://*.dndbeyond.com/combat-tracker/*";
         DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
         DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
         CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
@@ -6928,7 +6930,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.constants.FVTT_URL = FVTT_URL;
         ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
         ρσ_modules.constants.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
+        ρσ_modules.constants.DNDBEYOND_ENCOUNTERS_URL = DNDBEYOND_ENCOUNTERS_URL;
         ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
+        ρσ_modules.constants.DNDBEYOND_COMBAT_URL = DNDBEYOND_COMBAT_URL;
         ρσ_modules.constants.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
         ρσ_modules.constants.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
         ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
@@ -6957,6 +6961,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         var DNDBEYOND_CHARACTER_URL = ρσ_modules.constants.DNDBEYOND_CHARACTER_URL;
         var DNDBEYOND_MONSTER_URL = ρσ_modules.constants.DNDBEYOND_MONSTER_URL;
         var DNDBEYOND_ENCOUNTER_URL = ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL;
+        var DNDBEYOND_ENCOUNTERS_URL = ρσ_modules.constants.DNDBEYOND_ENCOUNTERS_URL;
+        var DNDBEYOND_COMBAT_URL = ρσ_modules.constants.DNDBEYOND_COMBAT_URL;
         var DNDBEYOND_VEHICLE_URL = ρσ_modules.constants.DNDBEYOND_VEHICLE_URL;
 
         var isFVTT = ρσ_modules.utils.isFVTT;
@@ -7231,7 +7237,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["action"] = "get-character";
                     return ρσ_d;
                 }).call(this), populateCharacter);
-            } else if (urlMatches(tab.url, DNDBEYOND_MONSTER_URL) || urlMatches(tab.url, DNDBEYOND_VEHICLE_URL) || urlMatches(tab.url, DNDBEYOND_ENCOUNTER_URL)) {
+            } else if (urlMatches(tab.url, DNDBEYOND_MONSTER_URL) || urlMatches(tab.url, DNDBEYOND_VEHICLE_URL) || urlMatches(tab.url, DNDBEYOND_ENCOUNTERS_URL) || urlMatches(tab.url, DNDBEYOND_ENCOUNTER_URL) || urlMatches(tab.url, DNDBEYOND_COMBAT_URL)) {
                 addMonsterOptions();
             } else {
                 initializeSettings(gotSettings);

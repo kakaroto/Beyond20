@@ -108,7 +108,8 @@
 		{
 			"matches": [
 				"*://*.dndbeyond.com/my-encounters",
-				"*://*.dndbeyond.com/encounters/*"
+				"*://*.dndbeyond.com/encounters/*",
+				"*://*.dndbeyond.com/combat-tracker/*"
 			],
 			"css": [
 				"libs/css/alertify.css",
