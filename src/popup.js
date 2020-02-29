@@ -5820,6 +5820,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["initiative-tiebreaker"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Add tiebreaker to initiative rolls";
+                ρσ_d["description"] = "Adds the dexterity score as a decimal to initiative rolls to break any initiative ties.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["critical-homebrew"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Critical hit rule";

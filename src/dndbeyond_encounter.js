@@ -5826,6 +5826,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["initiative-tiebreaker"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Add tiebreaker to initiative rolls";
+                ρσ_d["description"] = "Adds the dexterity score as a decimal to initiative rolls to break any initiative ties.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["critical-homebrew"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Critical hit rule";
@@ -8999,7 +9007,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     self._parts.append(part);
                 } else {
                     try {
-                        part = int(part);
+                        part = float(part);
                         self._parts.append(part);
                     } catch (ρσ_Exception) {
                         ρσ_last_exception = ρσ_Exception;
@@ -9030,6 +9038,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     self._total += part;
                 }
             }
+            self._total = Math.round(self._total * 100) / 100;
         };
         DNDBRoll.prototype.getTooltip = function getTooltip() {
             var self = this;
@@ -10644,15 +10653,21 @@ return this.__repr__();
         });
         Monster.prototype.rollInitiative = function rollInitiative() {
             var self = this;
-            var modifier, ability;
+            var modifier, initiative, tiebreaker, ability;
             var ρσ_Iter15 = ρσ_Iterable(self._abilities);
             for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
                 ability = ρσ_Iter15[ρσ_Index15];
                 if ((ability[1] === "DEX" || typeof ability[1] === "object" && ρσ_equals(ability[1], "DEX"))) {
                     modifier = ability[3];
-                    sendRoll(self, "initiative", "1d20" + modifier, (function(){
+                    initiative = modifier;
+                    if (self.getGlobalSetting("initiative-tiebreaker", false)) {
+                        tiebreaker = ability[2];
+                        initiative = float(initiative) + float(tiebreaker) / 100;
+                        initiative = (initiative >= 0) ? "+" + str(initiative) : str(initiative);
+                    }
+                    sendRoll(self, "initiative", "1d20" + initiative, (function(){
                         var ρσ_d = {};
-                        ρσ_d["initiative"] = modifier;
+                        ρσ_d["initiative"] = initiative;
                         return ρσ_d;
                     }).call(this));
                     break;
