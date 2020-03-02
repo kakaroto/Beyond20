@@ -1,3 +1,3 @@
 * Roll20: Updates to the Temp HP will only change the value in the character sheets, not in a token's bar (Fixed on [github](https://github.com/kakaroto/Beyond20))
 * FVTT: If using FVTT 0.4.4 and newer, updating the initiative value of a combatant that is already in the encounter will fail (Fixed on [github](https://github.com/kakaroto/Beyond20))
-* Firefox: Character condition changes are not posted to the chat on firefox
+* Firefox: Character condition changes are not posted to the chat on firefox (Fixed on [github](https://github.com/kakaroto/Beyond20))
