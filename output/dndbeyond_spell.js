@@ -2558,7 +2558,8 @@ function all(iterable) {
 if (!all.__argnames__) Object.defineProperties(all, {
     __argnames__ : {value: ["iterable"]}
 });
-var define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+var decimal_sep, define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+decimal_sep = 1.1.toLocaleString()[1];
 function ρσ_repr_js_builtin(x, as_array) {
     var ans, b, keys, key;
     ans = [];
@@ -2935,7 +2936,7 @@ define_str_func("format", function () {
                     value = value.toExponential(prec - 1);
                 }
                 value = value.replace(/0+$/g, "");
-                if (value[value.length-1] === ".") {
+                if (value[value.length-1] === decimal_sep) {
                     value = value.slice(0, -1);
                 }
                 if (ftype === "G") {
@@ -3734,7 +3735,6 @@ var str = ρσ_str, repr = ρσ_repr;;
     ρσ_modules.encodings = {};
     ρσ_modules.uuid = {};
     ρσ_modules.dndbeyond = {};
-    ρσ_modules.constants = {};
 
     (function(){
         var __name__ = "elementmaker";
@@ -3750,7 +3750,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("aside");
             s.jsset.add("audio");
             s.jsset.add("b");
+            s.jsset.add("base");
             s.jsset.add("big");
+            s.jsset.add("body");
             s.jsset.add("blockquote");
             s.jsset.add("br");
             s.jsset.add("button");
@@ -3789,6 +3791,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("h5");
             s.jsset.add("h6");
             s.jsset.add("hr");
+            s.jsset.add("head");
             s.jsset.add("i");
             s.jsset.add("iframe");
             s.jsset.add("img");
@@ -4733,9 +4736,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                             }
                             pos = close + 1;
                             continue;
-                        }
-                        if (extension === "<") {
-                            throw new SyntaxError("Look behind assertions are not supported in JavaScript");
                         }
                         if (extension === "(") {
                             throw new SyntaxError("Group existence assertions are not supported in JavaScript");
@@ -5824,6 +5824,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["description"] = "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in the VTT\nIf using Roll20, it will also change the way the output of 'Advantage on initiative' rolls appear.";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["initiative-tiebreaker"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Add tiebreaker to initiative rolls";
+                ρσ_d["description"] = "Adds the dexterity score as a decimal to initiative rolls to break any initiative ties.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
             ρσ_d["critical-homebrew"] = (function(){
@@ -8999,7 +9007,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     self._parts.append(part);
                 } else {
                     try {
-                        part = int(part);
+                        part = float(part);
                         self._parts.append(part);
                     } catch (ρσ_Exception) {
                         ρσ_last_exception = ρσ_Exception;
@@ -9030,6 +9038,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     self._total += part;
                 }
             }
+            self._total = Math.round(self._total * 100) / 100;
         };
         DNDBRoll.prototype.getTooltip = function getTooltip() {
             var self = this;
@@ -10644,15 +10653,21 @@ return this.__repr__();
         });
         Monster.prototype.rollInitiative = function rollInitiative() {
             var self = this;
-            var modifier, ability;
+            var modifier, initiative, tiebreaker, ability;
             var ρσ_Iter15 = ρσ_Iterable(self._abilities);
             for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
                 ability = ρσ_Iter15[ρσ_Index15];
                 if ((ability[1] === "DEX" || typeof ability[1] === "object" && ρσ_equals(ability[1], "DEX"))) {
                     modifier = ability[3];
-                    sendRoll(self, "initiative", "1d20" + modifier, (function(){
+                    initiative = modifier;
+                    if (self.getGlobalSetting("initiative-tiebreaker", false)) {
+                        tiebreaker = ability[2];
+                        initiative = float(initiative) + float(tiebreaker) / 100;
+                        initiative = (initiative >= 0) ? "+" + str(initiative) : str(initiative);
+                    }
+                    sendRoll(self, "initiative", "1d20" + initiative, (function(){
                         var ρσ_d = {};
-                        ρσ_d["initiative"] = modifier;
+                        ρσ_d["initiative"] = initiative;
                         return ρσ_d;
                     }).call(this));
                     break;
@@ -11760,57 +11775,69 @@ return this.__repr__();
     })();
 
     (function(){
-        var __name__ = "constants";
-        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTERS_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_COMBAT_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
-        ROLL20_URL = "*://app.roll20.net/editor/";
-        FVTT_URL = "*://*/game";
-        DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
-        DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
-        DNDBEYOND_ENCOUNTERS_URL = "*://*.dndbeyond.com/my-encounters";
-        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
-        DNDBEYOND_COMBAT_URL = "*://*.dndbeyond.com/combat-tracker/*";
-        DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
-        DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
-        CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
-        BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
-        ROLLTYPE_STYLE_CSS = "\n\n.ct-beyond20-roll .ct-beyond20-roll-button {\n    position: relative;\n    margin-top: 7px;\n}\n\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-double:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-double:after {\n    content: \"2\";\n    position: absolute;\n    padding: 2px;\n    background-color: blue;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-query:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-query:after {\n    content: \"?\";\n    position: absolute;\n    padding: 2px;\n    background-color: grey;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-thrice:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-thrice:after {\n    content: \"3\";\n    position: absolute;\n    padding: 2px;\n    background-color: blue;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-advantage:after {\n    content: \"+\";\n    position: absolute;\n    padding: 2px;\n    background-color: green;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-disadvantage:after {\n    content: \"-\";\n    position: absolute;\n    padding: 2px;\n    background-color: red;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-advantage:after {\n    content: \"+ +\";\n    position: absolute;\n    padding: 2px;\n    background-color: green;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-disadvantage:after {\n    content: \"- -\";\n    position: absolute;\n    padding: 2px;\n    background-color: red;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n";
-        ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
-        ρσ_modules.constants.FVTT_URL = FVTT_URL;
-        ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
-        ρσ_modules.constants.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
-        ρσ_modules.constants.DNDBEYOND_ENCOUNTERS_URL = DNDBEYOND_ENCOUNTERS_URL;
-        ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
-        ρσ_modules.constants.DNDBEYOND_COMBAT_URL = DNDBEYOND_COMBAT_URL;
-        ρσ_modules.constants.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
-        ρσ_modules.constants.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
-        ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
-        ρσ_modules.constants.BUTTON_STYLE_CSS = BUTTON_STYLE_CSS;
-        ρσ_modules.constants.ROLLTYPE_STYLE_CSS = ROLLTYPE_STYLE_CSS;
-    })();
-
-    (function(){
 
         var __name__ = "__main__";
 
 
-        var settings, character;
-        var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
+        var character;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
 
-        var Monster = ρσ_modules.dndbeyond.Monster;
+        var injectDiceToRolls = ρσ_modules.dndbeyond.injectDiceToRolls;
         var isRollButtonAdded = ρσ_modules.dndbeyond.isRollButtonAdded;
+        var CharacterBase = ρσ_modules.dndbeyond.CharacterBase;
+        var Spell = ρσ_modules.dndbeyond.Spell;
 
-        var injectCSS = ρσ_modules.utils.injectCSS;
+        var E = ρσ_modules.elementmaker.E;
+
         var alertFullSettings = ρσ_modules.utils.alertFullSettings;
 
-        var BUTTON_STYLE_CSS = ρσ_modules.constants.BUTTON_STYLE_CSS;
-        var ROLLTYPE_STYLE_CSS = ρσ_modules.constants.ROLLTYPE_STYLE_CSS;
+        print("Beyond20: D&D Beyond Spell module loaded.");
+        function FakeCharacter() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            FakeCharacter.prototype.__init__.apply(this, arguments);
+        }
+        ρσ_extends(FakeCharacter, CharacterBase);
+        FakeCharacter.prototype.__init__ = function __init__ () {
+            CharacterBase.prototype.__init__ && CharacterBase.prototype.__init__.apply(this, arguments);
+        };
+        FakeCharacter.prototype.__repr__ = function __repr__ () {
+            if(CharacterBase.prototype.__repr__) return CharacterBase.prototype.__repr__.call(this);
+            return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        FakeCharacter.prototype.__str__ = function __str__ () {
+            if(CharacterBase.prototype.__str__) return CharacterBase.prototype.__str__.call(this);
+return this.__repr__();
+        };
+        Object.defineProperty(FakeCharacter.prototype, "__bases__", {value: [CharacterBase]});
+        
 
-        print("Beyond20: D&D Beyond Vehicle module loaded.");
-        settings = getDefaultSettings();
         character = null;
+        function addDisplayButton() {
+            var icon32, button, spell;
+            icon32 = chrome.extension.getURL("images/icons/icon32.png");
+            button = ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.span, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "ct-beyond20-icon", src: icon32, style: "margin-right: 10px;"})]), "Display Spell Card on VTT"].concat([ρσ_desugar_kwargs({class_: "label"})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll button-alt", href: "#"})]));
+            spell = new Spell($("body"), character);
+            $(".page-heading__content").after(button);
+            $(".ct-beyond20-roll").css((function(){
+                var ρσ_d = {};
+                ρσ_d["float"] = "right";
+                ρσ_d["display"] = "inline-block";
+                return ρσ_d;
+            }).call(this));
+            $(".ct-beyond20-roll").on("click", (function() {
+                var ρσ_anonfunc = function (event) {
+                    spell.display();
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["event"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+
         function documentLoaded(settings) {
-            character = ρσ_interpolate_kwargs_constructor.call(Object.create(Monster.prototype), false, Monster, ["Vehicle"].concat([ρσ_desugar_kwargs({global_settings: settings})]));
+            var spell_name;
+            character = ρσ_interpolate_kwargs_constructor.call(Object.create(FakeCharacter.prototype), false, FakeCharacter, ["spell"].concat([ρσ_desugar_kwargs({global_settings: settings})]));
             if (isRollButtonAdded()) {
                 chrome.runtime.sendMessage((function(){
                     var ρσ_d = {};
@@ -11818,7 +11845,11 @@ return this.__repr__();
                     return ρσ_d;
                 }).call(this));
             } else {
-                character.parseStatBlock();
+                addDisplayButton();
+                spell_name = $(".page-title").text().trim();
+                if (settings["subst-dndbeyond"]) {
+                    injectDiceToRolls(".spell-details .more-info-content", character, spell_name);
+                }
             }
         };
         if (!documentLoaded.__argnames__) Object.defineProperties(documentLoaded, {
@@ -11833,15 +11864,14 @@ return this.__repr__();
                 new_settings = ρσ_kwargs_obj.new_settings;
             }
             if (new_settings) {
-                settings = new_settings;
                 if (character !== null) {
-                    character.setGlobalSettings(settings);
+                    character.setGlobalSettings(new_settings);
                 }
             } else {
                 getStoredSettings((function() {
                     var ρσ_anonfunc = function (saved_settings) {
                         updateSettings(saved_settings);
-                        documentLoaded(settings);
+                        documentLoaded(saved_settings);
                     };
                     if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                         __argnames__ : {value: ["saved_settings"]}
@@ -11869,8 +11899,6 @@ return this.__repr__();
             __argnames__ : {value: ["request", "sender", "sendResponse"]}
         });
 
-        injectCSS(BUTTON_STYLE_CSS);
-        injectCSS(ROLLTYPE_STYLE_CSS);
         chrome.runtime.onMessage.addListener(handleMessage);
         chrome.runtime.sendMessage((function(){
             var ρσ_d = {};

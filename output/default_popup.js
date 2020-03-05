@@ -2558,7 +2558,8 @@ function all(iterable) {
 if (!all.__argnames__) Object.defineProperties(all, {
     __argnames__ : {value: ["iterable"]}
 });
-var define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+var decimal_sep, define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+decimal_sep = 1.1.toLocaleString()[1];
 function ρσ_repr_js_builtin(x, as_array) {
     var ans, b, keys, key;
     ans = [];
@@ -2935,7 +2936,7 @@ define_str_func("format", function () {
                     value = value.toExponential(prec - 1);
                 }
                 value = value.replace(/0+$/g, "");
-                if (value[value.length-1] === ".") {
+                if (value[value.length-1] === decimal_sep) {
                     value = value.slice(0, -1);
                 }
                 if (ftype === "G") {
@@ -3724,9 +3725,312 @@ define_str_func("zfill", (function() {
 define_str_func = undefined;
 var str = ρσ_str, repr = ρσ_repr;;
     var ρσ_modules = {};
-    ρσ_modules.re = {};
     ρσ_modules.elementmaker = {};
+    ρσ_modules.re = {};
     ρσ_modules.utils = {};
+    ρσ_modules.settings = {};
+
+    (function(){
+        var __name__ = "elementmaker";
+        var html_elements, mathml_elements, svg_elements, html5_tags, E;
+        html_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("a");
+            s.jsset.add("abbr");
+            s.jsset.add("acronym");
+            s.jsset.add("address");
+            s.jsset.add("area");
+            s.jsset.add("article");
+            s.jsset.add("aside");
+            s.jsset.add("audio");
+            s.jsset.add("b");
+            s.jsset.add("base");
+            s.jsset.add("big");
+            s.jsset.add("body");
+            s.jsset.add("blockquote");
+            s.jsset.add("br");
+            s.jsset.add("button");
+            s.jsset.add("canvas");
+            s.jsset.add("caption");
+            s.jsset.add("center");
+            s.jsset.add("cite");
+            s.jsset.add("code");
+            s.jsset.add("col");
+            s.jsset.add("colgroup");
+            s.jsset.add("command");
+            s.jsset.add("datagrid");
+            s.jsset.add("datalist");
+            s.jsset.add("dd");
+            s.jsset.add("del");
+            s.jsset.add("details");
+            s.jsset.add("dfn");
+            s.jsset.add("dialog");
+            s.jsset.add("dir");
+            s.jsset.add("div");
+            s.jsset.add("dl");
+            s.jsset.add("dt");
+            s.jsset.add("em");
+            s.jsset.add("event-source");
+            s.jsset.add("fieldset");
+            s.jsset.add("figcaption");
+            s.jsset.add("figure");
+            s.jsset.add("footer");
+            s.jsset.add("font");
+            s.jsset.add("form");
+            s.jsset.add("header");
+            s.jsset.add("h1");
+            s.jsset.add("h2");
+            s.jsset.add("h3");
+            s.jsset.add("h4");
+            s.jsset.add("h5");
+            s.jsset.add("h6");
+            s.jsset.add("hr");
+            s.jsset.add("head");
+            s.jsset.add("i");
+            s.jsset.add("iframe");
+            s.jsset.add("img");
+            s.jsset.add("input");
+            s.jsset.add("ins");
+            s.jsset.add("keygen");
+            s.jsset.add("kbd");
+            s.jsset.add("label");
+            s.jsset.add("legend");
+            s.jsset.add("li");
+            s.jsset.add("m");
+            s.jsset.add("map");
+            s.jsset.add("menu");
+            s.jsset.add("meter");
+            s.jsset.add("multicol");
+            s.jsset.add("nav");
+            s.jsset.add("nextid");
+            s.jsset.add("ol");
+            s.jsset.add("output");
+            s.jsset.add("optgroup");
+            s.jsset.add("option");
+            s.jsset.add("p");
+            s.jsset.add("pre");
+            s.jsset.add("progress");
+            s.jsset.add("q");
+            s.jsset.add("s");
+            s.jsset.add("samp");
+            s.jsset.add("script");
+            s.jsset.add("section");
+            s.jsset.add("select");
+            s.jsset.add("small");
+            s.jsset.add("sound");
+            s.jsset.add("source");
+            s.jsset.add("spacer");
+            s.jsset.add("span");
+            s.jsset.add("strike");
+            s.jsset.add("strong");
+            s.jsset.add("style");
+            s.jsset.add("sub");
+            s.jsset.add("sup");
+            s.jsset.add("table");
+            s.jsset.add("tbody");
+            s.jsset.add("td");
+            s.jsset.add("textarea");
+            s.jsset.add("time");
+            s.jsset.add("tfoot");
+            s.jsset.add("th");
+            s.jsset.add("thead");
+            s.jsset.add("tr");
+            s.jsset.add("tt");
+            s.jsset.add("u");
+            s.jsset.add("ul");
+            s.jsset.add("var");
+            s.jsset.add("video");
+            return s;
+        })();
+        mathml_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("maction");
+            s.jsset.add("math");
+            s.jsset.add("merror");
+            s.jsset.add("mfrac");
+            s.jsset.add("mi");
+            s.jsset.add("mmultiscripts");
+            s.jsset.add("mn");
+            s.jsset.add("mo");
+            s.jsset.add("mover");
+            s.jsset.add("mpadded");
+            s.jsset.add("mphantom");
+            s.jsset.add("mprescripts");
+            s.jsset.add("mroot");
+            s.jsset.add("mrow");
+            s.jsset.add("mspace");
+            s.jsset.add("msqrt");
+            s.jsset.add("mstyle");
+            s.jsset.add("msub");
+            s.jsset.add("msubsup");
+            s.jsset.add("msup");
+            s.jsset.add("mtable");
+            s.jsset.add("mtd");
+            s.jsset.add("mtext");
+            s.jsset.add("mtr");
+            s.jsset.add("munder");
+            s.jsset.add("munderover");
+            s.jsset.add("none");
+            return s;
+        })();
+        svg_elements = (function(){
+            var s = ρσ_set();
+            s.jsset.add("a");
+            s.jsset.add("animate");
+            s.jsset.add("animateColor");
+            s.jsset.add("animateMotion");
+            s.jsset.add("animateTransform");
+            s.jsset.add("clipPath");
+            s.jsset.add("circle");
+            s.jsset.add("defs");
+            s.jsset.add("desc");
+            s.jsset.add("ellipse");
+            s.jsset.add("font-face");
+            s.jsset.add("font-face-name");
+            s.jsset.add("font-face-src");
+            s.jsset.add("g");
+            s.jsset.add("glyph");
+            s.jsset.add("hkern");
+            s.jsset.add("linearGradient");
+            s.jsset.add("line");
+            s.jsset.add("marker");
+            s.jsset.add("metadata");
+            s.jsset.add("missing-glyph");
+            s.jsset.add("mpath");
+            s.jsset.add("path");
+            s.jsset.add("polygon");
+            s.jsset.add("polyline");
+            s.jsset.add("radialGradient");
+            s.jsset.add("rect");
+            s.jsset.add("set");
+            s.jsset.add("stop");
+            s.jsset.add("svg");
+            s.jsset.add("switch");
+            s.jsset.add("text");
+            s.jsset.add("title");
+            s.jsset.add("tspan");
+            s.jsset.add("use");
+            return s;
+        })();
+        html5_tags = html_elements.union(mathml_elements).union(svg_elements);
+        function _makeelement() {
+            var tag = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var kwargs = arguments[arguments.length-1];
+            if (kwargs === null || typeof kwargs !== "object" || kwargs [ρσ_kwargs_symbol] !== true) kwargs = {};
+            var args = Array.prototype.slice.call(arguments, 1);
+            if (kwargs !== null && typeof kwargs === "object" && kwargs [ρσ_kwargs_symbol] === true) args.pop();
+            var ans, vattr, val, attr, arg;
+            ans = this.createElement(tag);
+            var ρσ_Iter0 = ρσ_Iterable(kwargs);
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                attr = ρσ_Iter0[ρσ_Index0];
+                vattr = str.replace(str.rstrip(attr, "_"), "_", "-");
+                val = kwargs[(typeof attr === "number" && attr < 0) ? kwargs.length + attr : attr];
+                if (callable(val)) {
+                    if (str.startswith(attr, "on")) {
+                        attr = attr.slice(2);
+                    }
+                    ans.addEventListener(attr, val);
+                } else if (val === true) {
+                    ans.setAttribute(vattr, vattr);
+                } else if (typeof val === "string") {
+                    ans.setAttribute(vattr, val);
+                }
+            }
+            var ρσ_Iter1 = ρσ_Iterable(args);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                arg = ρσ_Iter1[ρσ_Index1];
+                if (typeof arg === "string") {
+                    arg = this.createTextNode(arg);
+                }
+                ans.appendChild(arg);
+            }
+            return ans;
+        };
+        if (!_makeelement.__handles_kwarg_interpolation__) Object.defineProperties(_makeelement, {
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["tag"]}
+        });
+
+        function maker_for_document(document) {
+            var E;
+            E = _makeelement.bind(document);
+            Object.defineProperties(E, (function() {
+                var ρσ_Iter = ρσ_Iterable(html5_tags), ρσ_Result = {}, tag;
+                for (var ρσ_Index = 0; ρσ_Index < ρσ_Iter.length; ρσ_Index++) {
+                    tag = ρσ_Iter[ρσ_Index];
+                    ρσ_Result[tag] = ((function(){
+                        var ρσ_d = {};
+                        ρσ_d["value"] = _makeelement.bind(document, tag);
+                        return ρσ_d;
+                    }).call(this));
+                }
+                return ρσ_Result;
+            })());
+            return E;
+        };
+        if (!maker_for_document.__argnames__) Object.defineProperties(maker_for_document, {
+            __argnames__ : {value: ["document"]}
+        });
+
+        if (typeof document === "undefined") {
+            E = maker_for_document((function(){
+                var ρσ_d = {};
+                ρσ_d["createTextNode"] = (function() {
+                    var ρσ_anonfunc = function (value) {
+                        return value;
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["value"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                ρσ_d["createElement"] = (function() {
+                    var ρσ_anonfunc = function (name) {
+                        return (function(){
+                            var ρσ_d = {};
+                            ρσ_d["name"] = name;
+                            ρσ_d["children"] = ρσ_list_decorate([]);
+                            ρσ_d["attributes"] = {};
+                            ρσ_d["setAttribute"] = (function() {
+                                var ρσ_anonfunc = function (name, val) {
+                                    (ρσ_expr_temp = this.attributes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = val;
+                                };
+                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                    __argnames__ : {value: ["name", "val"]}
+                                });
+                                return ρσ_anonfunc;
+                            })();
+                            ρσ_d["appendChild"] = (function() {
+                                var ρσ_anonfunc = function (child) {
+                                    this.children.push(child);
+                                };
+                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                                    __argnames__ : {value: ["child"]}
+                                });
+                                return ρσ_anonfunc;
+                            })();
+                            return ρσ_d;
+                        }).call(this);
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["name"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                return ρσ_d;
+            }).call(this));
+        } else {
+            E = maker_for_document(document);
+        }
+        ρσ_modules.elementmaker.html_elements = html_elements;
+        ρσ_modules.elementmaker.mathml_elements = mathml_elements;
+        ρσ_modules.elementmaker.svg_elements = svg_elements;
+        ρσ_modules.elementmaker.html5_tags = html5_tags;
+        ρσ_modules.elementmaker.E = E;
+        ρσ_modules.elementmaker._makeelement = _makeelement;
+        ρσ_modules.elementmaker.maker_for_document = maker_for_document;
+    })();
 
     (function(){
         var __name__ = "re";
@@ -4426,9 +4730,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                             }
                             pos = close + 1;
                             continue;
-                        }
-                        if (extension === "<") {
-                            throw new SyntaxError("Look behind assertions are not supported in JavaScript");
                         }
                         if (extension === "(") {
                             throw new SyntaxError("Group existence assertions are not supported in JavaScript");
@@ -5169,305 +5470,6 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
-        var __name__ = "elementmaker";
-        var html_elements, mathml_elements, svg_elements, html5_tags, E;
-        html_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("a");
-            s.jsset.add("abbr");
-            s.jsset.add("acronym");
-            s.jsset.add("address");
-            s.jsset.add("area");
-            s.jsset.add("article");
-            s.jsset.add("aside");
-            s.jsset.add("audio");
-            s.jsset.add("b");
-            s.jsset.add("big");
-            s.jsset.add("blockquote");
-            s.jsset.add("br");
-            s.jsset.add("button");
-            s.jsset.add("canvas");
-            s.jsset.add("caption");
-            s.jsset.add("center");
-            s.jsset.add("cite");
-            s.jsset.add("code");
-            s.jsset.add("col");
-            s.jsset.add("colgroup");
-            s.jsset.add("command");
-            s.jsset.add("datagrid");
-            s.jsset.add("datalist");
-            s.jsset.add("dd");
-            s.jsset.add("del");
-            s.jsset.add("details");
-            s.jsset.add("dfn");
-            s.jsset.add("dialog");
-            s.jsset.add("dir");
-            s.jsset.add("div");
-            s.jsset.add("dl");
-            s.jsset.add("dt");
-            s.jsset.add("em");
-            s.jsset.add("event-source");
-            s.jsset.add("fieldset");
-            s.jsset.add("figcaption");
-            s.jsset.add("figure");
-            s.jsset.add("footer");
-            s.jsset.add("font");
-            s.jsset.add("form");
-            s.jsset.add("header");
-            s.jsset.add("h1");
-            s.jsset.add("h2");
-            s.jsset.add("h3");
-            s.jsset.add("h4");
-            s.jsset.add("h5");
-            s.jsset.add("h6");
-            s.jsset.add("hr");
-            s.jsset.add("i");
-            s.jsset.add("iframe");
-            s.jsset.add("img");
-            s.jsset.add("input");
-            s.jsset.add("ins");
-            s.jsset.add("keygen");
-            s.jsset.add("kbd");
-            s.jsset.add("label");
-            s.jsset.add("legend");
-            s.jsset.add("li");
-            s.jsset.add("m");
-            s.jsset.add("map");
-            s.jsset.add("menu");
-            s.jsset.add("meter");
-            s.jsset.add("multicol");
-            s.jsset.add("nav");
-            s.jsset.add("nextid");
-            s.jsset.add("ol");
-            s.jsset.add("output");
-            s.jsset.add("optgroup");
-            s.jsset.add("option");
-            s.jsset.add("p");
-            s.jsset.add("pre");
-            s.jsset.add("progress");
-            s.jsset.add("q");
-            s.jsset.add("s");
-            s.jsset.add("samp");
-            s.jsset.add("script");
-            s.jsset.add("section");
-            s.jsset.add("select");
-            s.jsset.add("small");
-            s.jsset.add("sound");
-            s.jsset.add("source");
-            s.jsset.add("spacer");
-            s.jsset.add("span");
-            s.jsset.add("strike");
-            s.jsset.add("strong");
-            s.jsset.add("style");
-            s.jsset.add("sub");
-            s.jsset.add("sup");
-            s.jsset.add("table");
-            s.jsset.add("tbody");
-            s.jsset.add("td");
-            s.jsset.add("textarea");
-            s.jsset.add("time");
-            s.jsset.add("tfoot");
-            s.jsset.add("th");
-            s.jsset.add("thead");
-            s.jsset.add("tr");
-            s.jsset.add("tt");
-            s.jsset.add("u");
-            s.jsset.add("ul");
-            s.jsset.add("var");
-            s.jsset.add("video");
-            return s;
-        })();
-        mathml_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("maction");
-            s.jsset.add("math");
-            s.jsset.add("merror");
-            s.jsset.add("mfrac");
-            s.jsset.add("mi");
-            s.jsset.add("mmultiscripts");
-            s.jsset.add("mn");
-            s.jsset.add("mo");
-            s.jsset.add("mover");
-            s.jsset.add("mpadded");
-            s.jsset.add("mphantom");
-            s.jsset.add("mprescripts");
-            s.jsset.add("mroot");
-            s.jsset.add("mrow");
-            s.jsset.add("mspace");
-            s.jsset.add("msqrt");
-            s.jsset.add("mstyle");
-            s.jsset.add("msub");
-            s.jsset.add("msubsup");
-            s.jsset.add("msup");
-            s.jsset.add("mtable");
-            s.jsset.add("mtd");
-            s.jsset.add("mtext");
-            s.jsset.add("mtr");
-            s.jsset.add("munder");
-            s.jsset.add("munderover");
-            s.jsset.add("none");
-            return s;
-        })();
-        svg_elements = (function(){
-            var s = ρσ_set();
-            s.jsset.add("a");
-            s.jsset.add("animate");
-            s.jsset.add("animateColor");
-            s.jsset.add("animateMotion");
-            s.jsset.add("animateTransform");
-            s.jsset.add("clipPath");
-            s.jsset.add("circle");
-            s.jsset.add("defs");
-            s.jsset.add("desc");
-            s.jsset.add("ellipse");
-            s.jsset.add("font-face");
-            s.jsset.add("font-face-name");
-            s.jsset.add("font-face-src");
-            s.jsset.add("g");
-            s.jsset.add("glyph");
-            s.jsset.add("hkern");
-            s.jsset.add("linearGradient");
-            s.jsset.add("line");
-            s.jsset.add("marker");
-            s.jsset.add("metadata");
-            s.jsset.add("missing-glyph");
-            s.jsset.add("mpath");
-            s.jsset.add("path");
-            s.jsset.add("polygon");
-            s.jsset.add("polyline");
-            s.jsset.add("radialGradient");
-            s.jsset.add("rect");
-            s.jsset.add("set");
-            s.jsset.add("stop");
-            s.jsset.add("svg");
-            s.jsset.add("switch");
-            s.jsset.add("text");
-            s.jsset.add("title");
-            s.jsset.add("tspan");
-            s.jsset.add("use");
-            return s;
-        })();
-        html5_tags = html_elements.union(mathml_elements).union(svg_elements);
-        function _makeelement() {
-            var tag = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var kwargs = arguments[arguments.length-1];
-            if (kwargs === null || typeof kwargs !== "object" || kwargs [ρσ_kwargs_symbol] !== true) kwargs = {};
-            var args = Array.prototype.slice.call(arguments, 1);
-            if (kwargs !== null && typeof kwargs === "object" && kwargs [ρσ_kwargs_symbol] === true) args.pop();
-            var ans, vattr, val, attr, arg;
-            ans = this.createElement(tag);
-            var ρσ_Iter0 = ρσ_Iterable(kwargs);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                attr = ρσ_Iter0[ρσ_Index0];
-                vattr = str.replace(str.rstrip(attr, "_"), "_", "-");
-                val = kwargs[(typeof attr === "number" && attr < 0) ? kwargs.length + attr : attr];
-                if (callable(val)) {
-                    if (str.startswith(attr, "on")) {
-                        attr = attr.slice(2);
-                    }
-                    ans.addEventListener(attr, val);
-                } else if (val === true) {
-                    ans.setAttribute(vattr, vattr);
-                } else if (typeof val === "string") {
-                    ans.setAttribute(vattr, val);
-                }
-            }
-            var ρσ_Iter1 = ρσ_Iterable(args);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                arg = ρσ_Iter1[ρσ_Index1];
-                if (typeof arg === "string") {
-                    arg = this.createTextNode(arg);
-                }
-                ans.appendChild(arg);
-            }
-            return ans;
-        };
-        if (!_makeelement.__handles_kwarg_interpolation__) Object.defineProperties(_makeelement, {
-            __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["tag"]}
-        });
-
-        function maker_for_document(document) {
-            var E;
-            E = _makeelement.bind(document);
-            Object.defineProperties(E, (function() {
-                var ρσ_Iter = ρσ_Iterable(html5_tags), ρσ_Result = {}, tag;
-                for (var ρσ_Index = 0; ρσ_Index < ρσ_Iter.length; ρσ_Index++) {
-                    tag = ρσ_Iter[ρσ_Index];
-                    ρσ_Result[tag] = ((function(){
-                        var ρσ_d = {};
-                        ρσ_d["value"] = _makeelement.bind(document, tag);
-                        return ρσ_d;
-                    }).call(this));
-                }
-                return ρσ_Result;
-            })());
-            return E;
-        };
-        if (!maker_for_document.__argnames__) Object.defineProperties(maker_for_document, {
-            __argnames__ : {value: ["document"]}
-        });
-
-        if (typeof document === "undefined") {
-            E = maker_for_document((function(){
-                var ρσ_d = {};
-                ρσ_d["createTextNode"] = (function() {
-                    var ρσ_anonfunc = function (value) {
-                        return value;
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["value"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                ρσ_d["createElement"] = (function() {
-                    var ρσ_anonfunc = function (name) {
-                        return (function(){
-                            var ρσ_d = {};
-                            ρσ_d["name"] = name;
-                            ρσ_d["children"] = ρσ_list_decorate([]);
-                            ρσ_d["attributes"] = {};
-                            ρσ_d["setAttribute"] = (function() {
-                                var ρσ_anonfunc = function (name, val) {
-                                    (ρσ_expr_temp = this.attributes)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = val;
-                                };
-                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                    __argnames__ : {value: ["name", "val"]}
-                                });
-                                return ρσ_anonfunc;
-                            })();
-                            ρσ_d["appendChild"] = (function() {
-                                var ρσ_anonfunc = function (child) {
-                                    this.children.push(child);
-                                };
-                                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                                    __argnames__ : {value: ["child"]}
-                                });
-                                return ρσ_anonfunc;
-                            })();
-                            return ρσ_d;
-                        }).call(this);
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["name"]}
-                    });
-                    return ρσ_anonfunc;
-                })();
-                return ρσ_d;
-            }).call(this));
-        } else {
-            E = maker_for_document(document);
-        }
-        ρσ_modules.elementmaker.html_elements = html_elements;
-        ρσ_modules.elementmaker.mathml_elements = mathml_elements;
-        ρσ_modules.elementmaker.svg_elements = svg_elements;
-        ρσ_modules.elementmaker.html5_tags = html5_tags;
-        ρσ_modules.elementmaker.E = E;
-        ρσ_modules.elementmaker._makeelement = _makeelement;
-        ρσ_modules.elementmaker.maker_for_document = maker_for_document;
-    })();
-
-    (function(){
         var __name__ = "utils";
         var re = ρσ_modules.re;
 
@@ -5671,80 +5673,1338 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
+        var __name__ = "settings";
+        var options_list, character_settings, current_tab;
+        var E = ρσ_modules.elementmaker.E;
+
+        var roll20Title = ρσ_modules.utils.roll20Title;
+        var fvttTitle = ρσ_modules.utils.fvttTitle;
+        var isFVTT = ρσ_modules.utils.isFVTT;
+
+        function WhisperType() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            WhisperType.prototype.__init__.apply(this, arguments);
+        }
+        WhisperType.prototype.__init__ = function __init__ () {
+                    };
+        WhisperType.prototype.__repr__ = function __repr__ () {
+                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        WhisperType.prototype.__str__ = function __str__ () {
+            return this.__repr__();
+        };
+        Object.defineProperty(WhisperType.prototype, "__bases__", {value: []});
+        WhisperType.prototype.NO = 0;
+        WhisperType.prototype.YES = 1;
+        WhisperType.prototype.QUERY = 2;
+        WhisperType.prototype.HIDE_NAMES = 3;
+
+        function RollType() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            RollType.prototype.__init__.apply(this, arguments);
+        }
+        RollType.prototype.__init__ = function __init__ () {
+                    };
+        RollType.prototype.__repr__ = function __repr__ () {
+                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        RollType.prototype.__str__ = function __str__ () {
+            return this.__repr__();
+        };
+        Object.defineProperty(RollType.prototype, "__bases__", {value: []});
+        RollType.prototype.NORMAL = 0;
+        RollType.prototype.DOUBLE = 1;
+        RollType.prototype.QUERY = 2;
+        RollType.prototype.ADVANTAGE = 3;
+        RollType.prototype.DISADVANTAGE = 4;
+        RollType.prototype.THRICE = 5;
+        RollType.prototype.SUPER_ADVANTAGE = 6;
+        RollType.prototype.SUPER_DISADVANTAGE = 7;
+
+        function CriticalRules() {
+            if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
+            CriticalRules.prototype.__init__.apply(this, arguments);
+        }
+        CriticalRules.prototype.__init__ = function __init__ () {
+                    };
+        CriticalRules.prototype.__repr__ = function __repr__ () {
+                        return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
+        };
+        CriticalRules.prototype.__str__ = function __str__ () {
+            return this.__repr__();
+        };
+        Object.defineProperty(CriticalRules.prototype, "__bases__", {value: []});
+        CriticalRules.prototype.PHB = 0;
+        CriticalRules.prototype.HOMEBREW_MAX = 1;
+        CriticalRules.prototype.HOMEBREW_DOUBLE = 2;
+        CriticalRules.prototype.HOMEBREW_MOD = 3;
+        CriticalRules.prototype.HOMEBREW_REROLL = 4;
+
+        options_list = (function(){
+            var ρσ_d = {};
+            ρσ_d["whisper-type"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["short"] = "Whisper rolls";
+                ρσ_d["title"] = "Whisper rolls to the DM";
+                ρσ_d["description"] = "Determines if the rolls will be whispered to the DM.\nIn the case of Foundry VTT, the 'ask every time' option will use the setting in the chat box.";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = WhisperType.prototype.NO;
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d[str(WhisperType.prototype.NO)] = "Never whisper";
+                    ρσ_d[str(WhisperType.prototype.YES)] = "Always whisper";
+                    ρσ_d[str(WhisperType.prototype.QUERY)] = "Ask every time";
+                    return ρσ_d;
+                }).call(this);
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["whisper-type-monsters"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Whisper monster rolls to the DM";
+                ρσ_d["description"] = "Overrides the global whisper setting from monster stat blocks";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = WhisperType.prototype.YES;
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d[str(WhisperType.prototype.NO)] = "Use general whisper setting";
+                    ρσ_d[str(WhisperType.prototype.HIDE_NAMES)] = "Hide monster and attack name";
+                    ρσ_d[str(WhisperType.prototype.YES)] = "Always whisper monster rolls";
+                    ρσ_d[str(WhisperType.prototype.QUERY)] = "Ask every time";
+                    return ρσ_d;
+                }).call(this);
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["roll-type"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["short"] = "Type of Roll";
+                ρσ_d["title"] = "Type of Roll (Advantange/Disadvantage)";
+                ρσ_d["description"] = "Determines if rolls should be with advantage, disadvantage, double rolls or user queries";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = RollType.prototype.NORMAL;
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d[str(RollType.prototype.NORMAL)] = "Normal Roll";
+                    ρσ_d[str(RollType.prototype.DOUBLE)] = "Always roll twice";
+                    ρσ_d[str(RollType.prototype.QUERY)] = "Ask every time";
+                    ρσ_d[str(RollType.prototype.ADVANTAGE)] = "Roll with Advantage";
+                    ρσ_d[str(RollType.prototype.DISADVANTAGE)] = "Roll with Disadvantage";
+                    ρσ_d[str(RollType.prototype.THRICE)] = "Always roll thrice (limited support on Roll20)";
+                    ρσ_d[str(RollType.prototype.SUPER_ADVANTAGE)] = "Roll with Super Advantage";
+                    ρσ_d[str(RollType.prototype.SUPER_DISADVANTAGE)] = "Roll with Super Disadvantage";
+                    return ρσ_d;
+                }).call(this);
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["quick-rolls"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["short"] = "Add Quick Roll areas";
+                ρσ_d["title"] = "Add Quick Rolls areas to main page";
+                ρσ_d["description"] = "Listen to clicks in specific areas of the abilities, skills, actions and spells to quickly roll them.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["auto-roll-damage"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Auto roll Damage and Crit";
+                ρσ_d["description"] = "Always roll damage and critical hit dice when doing an attack";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["initiative-tracker"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Add initiative roll to the Turn Tracker";
+                ρσ_d["description"] = "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in the VTT\nIf using Roll20, it will also change the way the output of 'Advantage on initiative' rolls appear.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["initiative-tiebreaker"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Add tiebreaker to initiative rolls";
+                ρσ_d["description"] = "Adds the dexterity score as a decimal to initiative rolls to break any initiative ties.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["critical-homebrew"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Critical hit rule";
+                ρσ_d["description"] = "Determines how the additional critical hit damages are determined";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = CriticalRules.prototype.PHB;
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d[str(CriticalRules.prototype.PHB)] = "Standard PHB Rules (reroll dice)";
+                    ρσ_d[str(CriticalRules.prototype.HOMEBREW_MAX)] = "Homebrew: Perfect rolls";
+                    ρσ_d[str(CriticalRules.prototype.HOMEBREW_REROLL)] = "Homebrew: Reroll all damages";
+                    return ρσ_d;
+                }).call(this);
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["weapon-force-critical"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Force all attacks as Critical Hits";
+                ρσ_d["description"] = "Forces all attacks to be considered as critical hits. Useful for melee attacks against paralyzed enemies or using adamantine weapons against objects";
+                ρσ_d["short"] = "Force Critical Hits";
+                ρσ_d["short_description"] = "Useful for melee attacks against paralyzed enemies or using adamantine weapons against objects";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["update-hp"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Update VTT Token HP";
+                ρσ_d["description"] = "When changing HP in D&D Beyond, update it in the VTT tokens and sheets";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["display-conditions"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Display Condition updates to VTT";
+                ρσ_d["description"] = "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using FVTT with the Beyond20 module, it will also update the token's status icons appropriately.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["template"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["type"] = "migrate";
+                ρσ_d["default"] = "roll20-template";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["roll20-template"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Roll20 Character Sheet Setting";
+                ρσ_d["description"] = "Select the Character Sheet Template that you use in Roll20\nIf the templates do not match, you will not see anything printed in the Roll20 chat.";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = "roll20";
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["roll20"] = "D&D 5E By Roll20";
+                    ρσ_d["default"] = "Other templates";
+                    return ρσ_d;
+                }).call(this);
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["subst-roll20"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["type"] = "migrate";
+                ρσ_d["default"] = "subst-vtt";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["subst-vtt"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Replace Dices formulas in the VTT";
+                ρσ_d["description"] = "In Roll20 or Foundry VTT, if a spell card or an item or a feat has a dice formula in its description,\nenabling this will make the formula clickable to generate the roll in chat.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["subst-dndbeyond"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Replace Dices formulas in D&D Beyond (Spells & Character Sheet)";
+                ρσ_d["description"] = "In the D&D Beyond Spell page or Character sheet side panel, if a spell, item, feat or action has a dice formula in its description,\nenabling this will add a dice icon next to the formula to allow you to roll it.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["subst-dndbeyond-stat-blocks"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Replace Dices formulas in D&D Beyond (Stat blocks)";
+                ρσ_d["description"] = "In D&D Beyond, if a dice formula is found in the stat block of a creature, monster, vehicle,\nenabling this will add a dice icon next to the formula to allow you to roll it.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["handle-stat-blocks"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Add roll buttons to stat blocks";
+                ρσ_d["description"] = "In D&D Beyond, adds roll buttons for abilities/saving throws/skills/actions to the stat block of a creature, monster or vehicle.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["crit-prefix"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Critical Hit Prefix";
+                ρσ_d["description"] = "Prefix to add to the Critical Hit dice result.\nIt might be less confusing to explicitely show the crit damage";
+                ρσ_d["type"] = "string";
+                ρσ_d["default"] = "Crit: ";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["components-display"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Components to display in spell attacks";
+                ρσ_d["description"] = "When doing a spell attack, what components to show alongside the spell roll.";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = "all";
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["all"] = "All components";
+                    ρσ_d["material"] = "Only material components";
+                    ρσ_d["none"] = "Do not display anything";
+                    return ρσ_d;
+                }).call(this);
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["component-prefix"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Component Prefix";
+                ρσ_d["description"] = "Prefix to the components display of a spell attack.\nIf displaying material components only, you may want to set it to 'Materials used :' for example";
+                ρσ_d["type"] = "string";
+                ρσ_d["default"] = "Components: ";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["roll20-tab"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["type"] = "migrate";
+                ρσ_d["default"] = "vtt-tab";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["vtt-tab"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Select the VTT tab or Game to send rolls to";
+                ρσ_d["description"] = "Select the tab to send rolls to or the specific Game.\nYou can select the Game or tab from the extension's popup menu in the VTT tab itself.\nAfter a specific tab is selected and that tab is closed, it will revert to sending rolls to the same Game.";
+                ρσ_d["type"] = "special";
+                ρσ_d["default"] = null;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["show-changelog"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Show Changelog when installing a new version";
+                ρσ_d["description"] = "When a new version is released and the extension has been updated,\nopen the changelog in a new window";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["last-version"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["description"] = "Last version that was installed. Used to check if an update just happened";
+                ρσ_d["type"] = "string";
+                ρσ_d["hidden"] = "True";
+                ρσ_d["default"] = "";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["donate"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["short"] = "Buy rations (1 day) to feed my familiar";
+                ρσ_d["title"] = "Become a patron of the art of software development!";
+                ρσ_d["description"] = "If you wish to support my work on Beyond 20 or my other D&D related project, subscribe to my patreon or donate via paypal!\nI am grateful for your generosity!";
+                ρσ_d["type"] = "link";
+                ρσ_d["default"] = "https://beyond20.here-for-more.info/rations";
+                ρσ_d["icon"] = "images/donate.png";
+                return ρσ_d;
+            }).call(this);
+            return ρσ_d;
+        }).call(this);
+        character_settings = (function(){
+            var ρσ_d = {};
+            ρσ_d["versatile-choice"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Versatile weapon choice";
+                ρσ_d["description"] = "How to roll damage for Versatile weapons";
+                ρσ_d["type"] = "combobox";
+                ρσ_d["default"] = "both";
+                ρσ_d["choices"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["both"] = "Roll both damages separately";
+                    ρσ_d["one"] = "Use weapon One-handed";
+                    ρσ_d["two"] = "Use weapon Two-handed";
+                    return ρσ_d;
+                }).call(this);
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["custom-roll-dice"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Custom Roll dice formula bonus";
+                ρσ_d["description"] = "Add custom formula to d20 rolls (Bless, Guidance, Bane, Magic Weapon, etc..)";
+                ρσ_d["type"] = "string";
+                ρσ_d["default"] = "";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["custom-damage-dice"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Custom Damage dice formula bonus";
+                ρσ_d["description"] = "Add custom dice to damage rolls (Magic Weapon, Elemental Weapon, Green-flame Blade, etc..). Use a comma to separate multiple independent rolls.";
+                ρσ_d["type"] = "string";
+                ρσ_d["default"] = "";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["rogue-sneak-attack"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Rogue: Sneak Attack";
+                ρσ_d["description"] = "Send Sneak Attack damage with each attack roll";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["cleric-disciple-life"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Cleric: Disciple of Life";
+                ρσ_d["description"] = "Send Disciple of Life healing bonus";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["bard-joat"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Bard: Jack of All Trades";
+                ρσ_d["description"] = "Add JoaT bonus to raw ability checks";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["sharpshooter"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Fighter: Sharpshooter (Apply to next roll only)";
+                ρσ_d["description"] = "Apply Sharpshooter -5 penalty to roll and +10 to damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["great-weapon-master"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Great Weapon Master Feat (Apply to next roll only)";
+                ρσ_d["description"] = "Apply Great Weapon Master -5 penalty to roll and +10 to damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["brutal-critical"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Brutal Critical/Savage Attacks: Roll extra die";
+                ρσ_d["description"] = "Roll extra damage die on crit for Brutal Critical and Savage Attacks features";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["barbarian-rage"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Rage: You are raging, ARRGGHHHHHH";
+                ρσ_d["description"] = "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["bloodhunter-crimson-rite"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Bloodhunter: Crimson Rite";
+                ρσ_d["description"] = "Add Crimson Rite damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["ranger-dread-ambusher"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Ranger: Dread Ambusher";
+                ρσ_d["description"] = "Add Dread Ambusher attack 1d8 extra damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["paladin-legendary-strike"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Paladin: Legendary Strike";
+                ρσ_d["description"] = "Channel Divinity and score critical hits on rolls of 19 and 20";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["paladin-improved-divine-smite"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Paladin: Improved Divine Smite";
+                ρσ_d["description"] = "Roll an extra 1d8 radiant damage whenever you hit with a melee weapon";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["warlock-hexblade-curse"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Warlock: Hexblade's Curse";
+                ρσ_d["description"] = "Apply the Hexblade's Curse extra damage on attack rolls and score critical hits on rolls of 19 and 20";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["rogue-assassinate"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Rogue: Assassinate surprise attack (Apply to next roll only)";
+                ρσ_d["description"] = "Roll with advantage and roll critical damage dice";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["fighter-giant-might"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Fighter: Giant Might";
+                ρσ_d["description"] = "Activate Giant Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["artificer-arcane-firearm"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Artificer: Use Arcane Firearm";
+                ρσ_d["description"] = "Use an Arcane Firearm for your Artificer spells. Deals extra 1d8 damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["cleric-divine-strike"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Cleric: Divine Strike";
+                ρσ_d["description"] = "Deal an extra 1d8 (2d8 at level 14) damage to melee weapon attacks";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["bard-psychic-blades"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Bard: Psychic Blades";
+                ρσ_d["description"] = "Use your Bardic Inspiration to deal extra psychic damage (Apply to next roll only)";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            return ρσ_d;
+        }).call(this);
+        function getStorage() {
+            return chrome.storage.sync;
+        };
+
+        function storageGet(name, default_value, cb) {
+            getStorage().get((function(){
+                var ρσ_d = {};
+                ρσ_d[name] = default_value;
+                return ρσ_d;
+            }).call(this), (function() {
+                var ρσ_anonfunc = function (items) {
+                    cb(items[(typeof name === "number" && name < 0) ? items.length + name : name]);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["items"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!storageGet.__argnames__) Object.defineProperties(storageGet, {
+            __argnames__ : {value: ["name", "default_value", "cb"]}
+        });
+
+        function storageSet() {
+            var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var value = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var cb = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? storageSet.__defaults__.cb : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
+                cb = ρσ_kwargs_obj.cb;
+            }
+            getStorage().set((function(){
+                var ρσ_d = {};
+                ρσ_d[name] = value;
+                return ρσ_d;
+            }).call(this), function () {
+                if (chrome.runtime.lastError) {
+                    console.log("Chrome Runtime Error", chrome.runtime.lastError.message);
+                } else if (cb) {
+                    cb(value);
+                }
+            });
+        };
+        if (!storageSet.__defaults__) Object.defineProperties(storageSet, {
+            __defaults__ : {value: {cb:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["name", "value", "cb"]}
+        });
+
+        function storageRemove() {
+            var names = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var cb = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? storageRemove.__defaults__.cb : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
+                cb = ρσ_kwargs_obj.cb;
+            }
+            getStorage().remove(names, function () {
+                if (cb) {
+                    cb(names);
+                }
+            });
+        };
+        if (!storageRemove.__defaults__) Object.defineProperties(storageRemove, {
+            __defaults__ : {value: {cb:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["names", "cb"]}
+        });
+
+        function getDefaultSettings() {
+            var _list = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? getDefaultSettings.__defaults__._list : arguments[0];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
+            var settings, option;
+            settings = {};
+            var ρσ_Iter0 = ρσ_Iterable(_list);
+            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                option = ρσ_Iter0[ρσ_Index0];
+                settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].default;
+            }
+            return settings;
+        };
+        if (!getDefaultSettings.__defaults__) Object.defineProperties(getDefaultSettings, {
+            __defaults__ : {value: {_list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["_list"]}
+        });
+
+        function getStoredSettings() {
+            var cb = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var key = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? getStoredSettings.__defaults__.key : arguments[1];
+            var _list = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? getStoredSettings.__defaults__._list : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
+                key = ρσ_kwargs_obj.key;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
+            var settings, gotSettings;
+            settings = getDefaultSettings(_list);
+            gotSettings = (function() {
+                var ρσ_anonfunc = function (stored_settings) {
+                    var migrated_keys, opt;
+                    migrated_keys = ρσ_list_decorate([]);
+                    var ρσ_Iter1 = ρσ_Iterable(settings);
+                    for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                        opt = ρσ_Iter1[ρσ_Index1];
+                        if ((_list[(typeof opt === "number" && opt < 0) ? _list.length + opt : opt].type === "migrate" || typeof _list[(typeof opt === "number" && opt < 0) ? _list.length + opt : opt].type === "object" && ρσ_equals(_list[(typeof opt === "number" && opt < 0) ? _list.length + opt : opt].type, "migrate"))) {
+                            if (ρσ_in(opt, stored_settings)) {
+                                if ((stored_settings[(typeof opt === "number" && opt < 0) ? stored_settings.length + opt : opt] !== _list[(typeof opt === "number" && opt < 0) ? _list.length + opt : opt].default && (typeof stored_settings[(typeof opt === "number" && opt < 0) ? stored_settings.length + opt : opt] !== "object" || ρσ_not_equals(stored_settings[(typeof opt === "number" && opt < 0) ? stored_settings.length + opt : opt], _list[(typeof opt === "number" && opt < 0) ? _list.length + opt : opt].default)))) {
+                                    stored_settings[ρσ_bound_index(_list[(typeof opt === "number" && opt < 0) ? _list.length + opt : opt].default, stored_settings)] = stored_settings[(typeof opt === "number" && opt < 0) ? stored_settings.length + opt : opt];
+                                    migrated_keys.append(opt);
+                                }
+                                ρσ_delitem(stored_settings, opt);
+                            }
+                        } else if (!ρσ_in(opt, stored_settings)) {
+                            stored_settings[(typeof opt === "number" && opt < 0) ? stored_settings.length + opt : opt] = settings[(typeof opt === "number" && opt < 0) ? settings.length + opt : opt];
+                        }
+                    }
+                    if (migrated_keys.length > 0) {
+                        print("Beyond20: Migrated some keys:", stored_settings);
+                        storageSet(key, stored_settings);
+                    }
+                    cb(stored_settings);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["stored_settings"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            storageGet(key, settings, gotSettings);
+        };
+        if (!getStoredSettings.__defaults__) Object.defineProperties(getStoredSettings, {
+            __defaults__ : {value: {key:"settings", _list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["cb", "key", "_list"]}
+        });
+
+        function setSettings() {
+            var settings = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var cb = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? setSettings.__defaults__.cb : arguments[1];
+            var key = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? setSettings.__defaults__.key : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
+                cb = ρσ_kwargs_obj.cb;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
+                key = ρσ_kwargs_obj.key;
+            }
+            storageSet(key, settings, (function() {
+                var ρσ_anonfunc = function (settings) {
+                    console.log("Beyond20: Saved settings (" + key + "): ", settings);
+                    if (cb) {
+                        cb(settings);
+                    }
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["settings"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+        if (!setSettings.__defaults__) Object.defineProperties(setSettings, {
+            __defaults__ : {value: {cb:null, key:"settings"}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["settings", "cb", "key"]}
+        });
+
+        function mergeSettings() {
+            var settings = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var cb = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? mergeSettings.__defaults__.cb : arguments[1];
+            var key = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? mergeSettings.__defaults__.key : arguments[2];
+            var _list = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? mergeSettings.__defaults__._list : arguments[3];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
+                cb = ρσ_kwargs_obj.cb;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
+                key = ρσ_kwargs_obj.key;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
+            console.log("Saving new settings (" + key + "): ", settings);
+            function setNewSettings(stored_settings) {
+                var k;
+                var ρσ_Iter2 = ρσ_Iterable(settings);
+                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                    k = ρσ_Iter2[ρσ_Index2];
+                    stored_settings[(typeof k === "number" && k < 0) ? stored_settings.length + k : k] = settings[(typeof k === "number" && k < 0) ? settings.length + k : k];
+                }
+                setSettings(stored_settings, cb, key);
+            };
+            if (!setNewSettings.__argnames__) Object.defineProperties(setNewSettings, {
+                __argnames__ : {value: ["stored_settings"]}
+            });
+
+            getStoredSettings(setNewSettings, key, _list);
+        };
+        if (!mergeSettings.__defaults__) Object.defineProperties(mergeSettings, {
+            __defaults__ : {value: {cb:null, key:"settings", _list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["settings", "cb", "key", "_list"]}
+        });
+
+        function resetSettings() {
+            var cb = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? resetSettings.__defaults__.cb : arguments[0];
+            var _list = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? resetSettings.__defaults__._list : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
+                cb = ρσ_kwargs_obj.cb;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
+            setSettings(getDefaultSettings(_list), cb);
+        };
+        if (!resetSettings.__defaults__) Object.defineProperties(resetSettings, {
+            __defaults__ : {value: {cb:null, _list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["cb", "_list"]}
+        });
+
+        function createHTMLOptionEx() {
+            var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var option = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
+            var short = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? createHTMLOptionEx.__defaults__.short : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "short")){
+                short = ρσ_kwargs_obj.short;
+            }
+            var description, description_p, title, e, make_li, dropdown_options, p;
+            if ((option.hidden === true || typeof option.hidden === "object" && ρσ_equals(option.hidden, true)) || short && !ρσ_exists.n(option.short) || !ρσ_exists.n(option.title)) {
+                return null;
+            }
+            description = (short) ? option.short_description : option.description;
+            description_p = (description) ? list(map(E.p, description.split("\n"))) : ρσ_list_decorate([]);
+            title = (short) ? option.short : option.title;
+            if ((option.type === "bool" || typeof option.type === "object" && ρσ_equals(option.type, "bool"))) {
+                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [E.h4(title)].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.input, [ρσ_desugar_kwargs({id: name, class_: "beyond20-option-input", name: name, type_: "checkbox"})]), ρσ_interpolate_kwargs.call(E, E.label, [ρσ_desugar_kwargs({for_: name, class_: "label-default"})])].concat([ρσ_desugar_kwargs({class_: "material-switch pull-right"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-bool"})]));
+            } else if ((option.type === "string" || typeof option.type === "object" && ρσ_equals(option.type, "string"))) {
+                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [E.h4(title)].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.input, [ρσ_desugar_kwargs({id: name, class_: "beyond20-option-input", name: name, type_: "text"})])].concat([ρσ_desugar_kwargs({class_: "right-entry"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-string"})]));
+            } else if ((option.type === "combobox" || typeof option.type === "object" && ρσ_equals(option.type, "combobox"))) {
+                make_li = (function() {
+                    var ρσ_anonfunc = function (o) {
+                        return E.li(ρσ_interpolate_kwargs.call(E, E.a, [o].concat([ρσ_desugar_kwargs({href: "#"})])));
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["o"]}
+                    });
+                    return ρσ_anonfunc;
+                })();
+                dropdown_options = list(map(make_li, Object.values(option.choices)));
+                var ρσ_Iter3 = ρσ_Iterable(description_p);
+                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                    p = ρσ_Iter3[ρσ_Index3];
+                    p.classList.add("select");
+                }
+                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, [(ρσ_expr_temp = option.choices)[ρσ_bound_index(option.default, ρσ_expr_temp)]].concat([ρσ_desugar_kwargs({id: name, class_: "input select beyond20-option-input", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-combobox"})]));
+            } else if ((option.type === "link" || typeof option.type === "object" && ρσ_equals(option.type, "link"))) {
+                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4(title)].concat([ρσ_desugar_kwargs({href: option.default})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "link-image", src: chrome.extension.getURL(option.icon)})])].concat([ρσ_desugar_kwargs({class_: "image-link"})]))].concat([ρσ_desugar_kwargs({href: option.default})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", id: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-link"})]));
+            } else if ((option.type === "special" || typeof option.type === "object" && ρσ_equals(option.type, "special"))) {
+                e = option.createHTMLElement(name, short);
+            }
+            return e;
+        };
+        if (!createHTMLOptionEx.__defaults__) Object.defineProperties(createHTMLOptionEx, {
+            __defaults__ : {value: {short:false}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["name", "option", "short"]}
+        });
+
+        function createHTMLOption() {
+            var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var short = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? createHTMLOption.__defaults__.short : arguments[1];
+            var _list = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? createHTMLOption.__defaults__._list : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "short")){
+                short = ρσ_kwargs_obj.short;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
+            return createHTMLOptionEx(name, _list[(typeof name === "number" && name < 0) ? _list.length + name : name], short);
+        };
+        if (!createHTMLOption.__defaults__) Object.defineProperties(createHTMLOption, {
+            __defaults__ : {value: {short:false, _list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["name", "short", "_list"]}
+        });
+
+        function initializeMarkaGroup(group) {
+            var triggerOpen, triggerClose, dropdown_menu, button_group, marka, input, m, makeOpenCB, makeCloseCB;
+            triggerOpen = $(group).find(".select");
+            triggerClose = $(group).find(".dropdown-menu li");
+            dropdown_menu = $(group).find(".dropdown-menu");
+            button_group = $(group).find(".button-group");
+            marka = $(group).find(".icon");
+            input = $(group).find(".input");
+            m = new Marka("#" + marka.attr("id"));
+            m.set("triangle").size(10);
+            m.rotate("down");
+            $(group).find(".button-group").append(marka);
+            makeOpenCB = (function() {
+                var ρσ_anonfunc = function (dropdown_menu, icon, m) {
+                    return (function() {
+                        var ρσ_anonfunc = function (event) {
+                            event.preventDefault();
+                            dropdown_menu.toggleClass("open");
+                            button_group.toggleClass("open");
+                            if (icon.hasClass("marka-icon-times")) {
+                                m.set("triangle").size(10);
+                            } else {
+                                m.set("times").size(15);
+                            }
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["event"]}
+                        });
+                        return ρσ_anonfunc;
+                    })();
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["dropdown_menu", "icon", "m"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            makeCloseCB = (function() {
+                var ρσ_anonfunc = function (dropdown_menu, input, m) {
+                    return (function() {
+                        var ρσ_anonfunc = function (event) {
+                            event.preventDefault();
+                            input.text(this.innerText);
+                            input.trigger("markaChanged");
+                            dropdown_menu.removeClass("open");
+                            button_group.removeClass("open");
+                            m.set("triangle").size(10);
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["event"]}
+                        });
+                        return ρσ_anonfunc;
+                    })();
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["dropdown_menu", "input", "m"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            triggerOpen.bind("click", makeOpenCB(dropdown_menu, marka, m));
+            triggerClose.bind("click", makeCloseCB(dropdown_menu, input, m));
+        };
+        if (!initializeMarkaGroup.__argnames__) Object.defineProperties(initializeMarkaGroup, {
+            __argnames__ : {value: ["group"]}
+        });
+
+        function initializeMarka() {
+            var groups, group;
+            groups = $(".beyond20-option-combobox");
+            var ρσ_Iter4 = ρσ_Iterable(groups);
+            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                group = ρσ_Iter4[ρσ_Index4];
+                initializeMarkaGroup(group);
+            }
+        };
+
+        function extractSettingsData() {
+            var _list = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? extractSettingsData.__defaults__._list : arguments[0];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
+            var settings, e, o_type, val, choices, key, option;
+            settings = {};
+            var ρσ_Iter5 = ρσ_Iterable(_list);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                option = ρσ_Iter5[ρσ_Index5];
+                e = $("#" + option);
+                if (e.length > 0) {
+                    o_type = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].type;
+                    if ((o_type === "bool" || typeof o_type === "object" && ρσ_equals(o_type, "bool"))) {
+                        settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = e.prop("checked");
+                    } else if ((o_type === "combobox" || typeof o_type === "object" && ρσ_equals(o_type, "combobox"))) {
+                        val = e.text();
+                        choices = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].choices;
+                        var ρσ_Iter6 = ρσ_Iterable(choices);
+                        for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                            key = ρσ_Iter6[ρσ_Index6];
+                            if ((choices[(typeof key === "number" && key < 0) ? choices.length + key : key] === val || typeof choices[(typeof key === "number" && key < 0) ? choices.length + key : key] === "object" && ρσ_equals(choices[(typeof key === "number" && key < 0) ? choices.length + key : key], val))) {
+                                settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = key;
+                                break;
+                            }
+                        }
+                    } else if ((o_type === "string" || typeof o_type === "object" && ρσ_equals(o_type, "string"))) {
+                        settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = e.val();
+                    } else if ((o_type === "special" || typeof o_type === "object" && ρσ_equals(o_type, "special"))) {
+                        settings[(typeof option === "number" && option < 0) ? settings.length + option : option] = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].get(option);
+                    }
+                }
+            }
+            return settings;
+        };
+        if (!extractSettingsData.__defaults__) Object.defineProperties(extractSettingsData, {
+            __defaults__ : {value: {_list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["_list"]}
+        });
+
+        function loadSettings() {
+            var settings = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var _list = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? loadSettings.__defaults__._list : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
+            var o_type, val, choices, option;
+            var ρσ_Iter7 = ρσ_Iterable(settings);
+            for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                option = ρσ_Iter7[ρσ_Index7];
+                if (!_list[(typeof option === "number" && option < 0) ? _list.length + option : option]) {
+                    continue;
+                }
+                o_type = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].type;
+                if ((o_type === "bool" || typeof o_type === "object" && ρσ_equals(o_type, "bool"))) {
+                    $("#" + option).prop("checked", settings[(typeof option === "number" && option < 0) ? settings.length + option : option]);
+                } else if ((o_type === "combobox" || typeof o_type === "object" && ρσ_equals(o_type, "combobox"))) {
+                    val = settings[(typeof option === "number" && option < 0) ? settings.length + option : option];
+                    choices = _list[(typeof option === "number" && option < 0) ? _list.length + option : option].choices;
+                    $("#" + option).text(choices[(typeof val === "number" && val < 0) ? choices.length + val : val]);
+                } else if ((o_type === "string" || typeof o_type === "object" && ρσ_equals(o_type, "string"))) {
+                    $("#" + option).val(settings[(typeof option === "number" && option < 0) ? settings.length + option : option]);
+                } else if ((o_type === "special" || typeof o_type === "object" && ρσ_equals(o_type, "special"))) {
+                    _list[(typeof option === "number" && option < 0) ? _list.length + option : option].set(option, settings);
+                }
+            }
+        };
+        if (!loadSettings.__defaults__) Object.defineProperties(loadSettings, {
+            __defaults__ : {value: {_list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["settings", "_list"]}
+        });
+
+        function restoreSavedSettings() {
+            var cb = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? restoreSavedSettings.__defaults__.cb : arguments[0];
+            var key = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? restoreSavedSettings.__defaults__.key : arguments[1];
+            var _list = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? restoreSavedSettings.__defaults__._list : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
+                cb = ρσ_kwargs_obj.cb;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
+                key = ρσ_kwargs_obj.key;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
+            var load;
+            load = (function() {
+                var ρσ_anonfunc = function (stored_settings) {
+                    loadSettings(stored_settings, _list);
+                    if (cb) {
+                        cb(stored_settings);
+                    }
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["stored_settings"]}
+                });
+                return ρσ_anonfunc;
+            })();
+            getStoredSettings(load, key, _list);
+        };
+        if (!restoreSavedSettings.__defaults__) Object.defineProperties(restoreSavedSettings, {
+            __defaults__ : {value: {cb:null, key:"settings", _list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["cb", "key", "_list"]}
+        });
+
+        function saveSettings() {
+            var cb = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var key = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? saveSettings.__defaults__.key : arguments[1];
+            var _list = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? saveSettings.__defaults__._list : arguments[2];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "key")){
+                key = ρσ_kwargs_obj.key;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "_list")){
+                _list = ρσ_kwargs_obj._list;
+            }
+            mergeSettings(extractSettingsData(_list), cb, key, _list);
+        };
+        if (!saveSettings.__defaults__) Object.defineProperties(saveSettings, {
+            __defaults__ : {value: {key:"settings", _list:options_list}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["cb", "key", "_list"]}
+        });
+
+        function initializeSettings() {
+            var cb = (arguments[0] === undefined || ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? initializeSettings.__defaults__.cb : arguments[0];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "cb")){
+                cb = ρσ_kwargs_obj.cb;
+            }
+            initializeMarka();
+            restoreSavedSettings(cb);
+        };
+        if (!initializeSettings.__defaults__) Object.defineProperties(initializeSettings, {
+            __defaults__ : {value: {cb:null}},
+            __handles_kwarg_interpolation__ : {value: true},
+            __argnames__ : {value: ["cb"]}
+        });
+
+        function createRoll20TabCombobox(name, short, dropdown_options) {
+            var opt, description, title, description_p, options, option, p;
+            opt = options_list[(typeof name === "number" && name < 0) ? options_list.length + name : name];
+            description = (short) ? "Restrict where rolls are sent.\nUseful if you have multiple VTT windows open" : opt.description;
+            title = (short) ? "Send Beyond 20 rolls to" : opt.title;
+            description_p = list(map(E.p, description.split("\n")));
+            options = ρσ_list_decorate([]);
+            var ρσ_Iter8 = ρσ_Iterable(dropdown_options);
+            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                option = ρσ_Iter8[ρσ_Index8];
+                options.append(E.li(ρσ_interpolate_kwargs.call(E, E.a, [option].concat([ρσ_desugar_kwargs({href: "#"})]))));
+            }
+            var ρσ_Iter9 = ρσ_Iterable(description_p);
+            for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                p = ρσ_Iter9[ρσ_Index9];
+                p.classList.add("select");
+            }
+            return ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, ["All VTT Tabs"].concat([ρσ_desugar_kwargs({id: name, class_: "input select beyond20-option-input", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({id: "beyond20-option-vtt-tab", class_: "list-group-item beyond20-option beyond20-option-combobox" + ((short) ? " vtt-tab-short" : "")})]));
+        };
+        if (!createRoll20TabCombobox.__argnames__) Object.defineProperties(createRoll20TabCombobox, {
+            __argnames__ : {value: ["name", "short", "dropdown_options"]}
+        });
+
+        function createVTTTabSetting(name, short) {
+            var dropdown_options, vtt, campaign;
+            dropdown_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller" ]);
+            if (short) {
+                vtt = (isFVTT(current_tab.title)) ? "Foundry VTT" : "Roll20";
+                campaign = ((vtt === "Foundry VTT" || typeof vtt === "object" && ρσ_equals(vtt, "Foundry VTT"))) ? "World" : "Campaign";
+                dropdown_options.append("This " + campaign);
+                dropdown_options.append("This Specific Tab");
+            }
+            return createRoll20TabCombobox(name, short, dropdown_options);
+        };
+        if (!createVTTTabSetting.__argnames__) Object.defineProperties(createVTTTabSetting, {
+            __argnames__ : {value: ["name", "short"]}
+        });
+
+        function setVTTTabSetting(name, settings) {
+            var val, combobox, vtt, choice, vtt_name, ρσ_unpack, id, title, campaign, short, current_vtt, current_campaign, current_title, current_id, new_options, dropdown_options, option;
+            val = settings[(typeof name === "number" && name < 0) ? settings.length + name : name];
+            combobox = $("#beyond20-option-vtt-tab");
+            if ((combobox.length === 0 || typeof combobox.length === "object" && ρσ_equals(combobox.length, 0))) {
+                return;
+            }
+            if (val === null) {
+                $("#" + name).text("All VTT Tabs");
+            } else if (val.title === null) {
+                vtt = ρσ_exists.e(val.vtt, "roll20");
+                if ((vtt === "dndbeyond" || typeof vtt === "object" && ρσ_equals(vtt, "dndbeyond"))) {
+                    choice = "D&D Beyond Dice Roller";
+                } else {
+                    vtt_name = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Roll 20" : "Foundry VTT";
+                    choice = "Only " + vtt_name + " Tabs";
+                }
+                $("#" + name).text(choice);
+            } else {
+                ρσ_unpack = [val.id, val.title, ρσ_exists.e(val.vtt, "roll20")];
+                id = ρσ_unpack[0];
+                title = ρσ_unpack[1];
+                vtt = ρσ_unpack[2];
+                vtt_name = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Roll 20" : "Foundry VTT";
+                campaign = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Campaign" : "World";
+                short = combobox.hasClass("vtt-tab-short");
+                if (short) {
+                    console.log("Set roll20 tab, is SHORT ", val);
+                    current_vtt = (isFVTT(current_tab.title)) ? "fvtt" : "roll20";
+                    current_campaign = ((current_vtt === "roll20" || typeof current_vtt === "object" && ρσ_equals(current_vtt, "roll20"))) ? "Campaign" : "World";
+                    current_title = ((current_vtt === "roll20" || typeof current_vtt === "object" && ρσ_equals(current_vtt, "roll20"))) ? roll20Title(current_tab.title) : fvttTitle(current_tab.title);
+                    current_id = current_tab.id;
+                    console.log("vtt-tab settings are : ", id, title, vtt, current_id, current_title, current_vtt);
+                    if ((id === 0 || typeof id === "object" && ρσ_equals(id, 0)) && (title === current_title || typeof title === "object" && ρσ_equals(title, current_title)) && (current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
+                        $("#" + name).text("This " + campaign);
+                    } else if ((id === current_id || typeof id === "object" && ρσ_equals(id, current_id)) && (title === current_title || typeof title === "object" && ρσ_equals(title, current_title)) && (current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
+                        $("#" + name).text("This Specific Tab");
+                    } else {
+                        new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller", "This " + current_campaign, "This Specific Tab" ]);
+                        if ((current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
+                            new_options.append("Another tab or " + campaign.toLowerCase() + "(No change)");
+                        } else {
+                            new_options.append("A " + vtt_name + " " + campaign.toLowerCase() + "(No change)");
+                        }
+                    }
+                } else {
+                    console.log("Set vtt tab, is LONG ", val);
+                    console.log("vtt-tab settings are : ", id, title, vtt);
+                    new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller", campaign + ": " + title ]);
+                    if ((id !== 0 && (typeof id !== "object" || ρσ_not_equals(id, 0)))) {
+                        new_options.append("Tab #" + id + " (" + title + ")");
+                    }
+                }
+                if ((typeof new_options !== "undefined" && new_options !== null)) {
+                    dropdown_options = ρσ_list_decorate([]);
+                    var ρσ_Iter10 = ρσ_Iterable(new_options);
+                    for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                        option = ρσ_Iter10[ρσ_Index10];
+                        dropdown_options.append(E.li(ρσ_interpolate_kwargs.call(E, E.a, [option].concat([ρσ_desugar_kwargs({href: "#"})]))));
+                    }
+                    combobox.replaceWith(createRoll20TabCombobox("vtt-tab", short, dropdown_options));
+                    initializeMarkaGroup($("#beyond20-option-vtt-tab"));
+                    console.log("Added new options", dropdown_options);
+                    $("#" + name).text(new_options[new_options.length-1].replace("(No change)", ""));
+                    $("#" + name).attr("x-beyond20-id", id);
+                    $("#" + name).attr("x-beyond20-title", title);
+                    $("#" + name).attr("x-beyond20-vtt", vtt);
+                }
+            }
+        };
+        if (!setVTTTabSetting.__argnames__) Object.defineProperties(setVTTTabSetting, {
+            __argnames__ : {value: ["name", "settings"]}
+        });
+
+        function getVTTTabSetting(name) {
+            var opt, value, saved_id, saved_title, saved_vtt, ret, vtt, title;
+            opt = $("#" + name);
+            value = opt.text();
+            saved_id = opt.attr("x-beyond20-id");
+            saved_title = opt.attr("x-beyond20-title");
+            saved_vtt = opt.attr("x-beyond20-vtt");
+            if ((value === "All VTT Tabs" || typeof value === "object" && ρσ_equals(value, "All VTT Tabs"))) {
+                ret = null;
+            } else if (ρσ_in(value, ρσ_list_decorate([ "This Campaign", "This World", "This Specific Tab" ]))) {
+                vtt = (isFVTT(current_tab.title)) ? "fvtt" : "roll20";
+                title = ((vtt === "fvtt" || typeof vtt === "object" && ρσ_equals(vtt, "fvtt"))) ? fvttTitle(current_tab.title) : roll20Title(current_tab.title);
+                ret = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["id"] = (ρσ_in(value, ρσ_list_decorate([ "This Campaign", "This World" ]))) ? 0 : current_tab.id;
+                    ρσ_d["title"] = title;
+                    ρσ_d["vtt"] = vtt;
+                    return ρσ_d;
+                }).call(this);
+            } else if ((value === "Only Roll20 Tabs" || typeof value === "object" && ρσ_equals(value, "Only Roll20 Tabs"))) {
+                ret = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["id"] = 0;
+                    ρσ_d["title"] = null;
+                    ρσ_d["vtt"] = "roll20";
+                    return ρσ_d;
+                }).call(this);
+            } else if ((value === "Only Foundry VTT Tabs" || typeof value === "object" && ρσ_equals(value, "Only Foundry VTT Tabs"))) {
+                ret = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["id"] = 0;
+                    ρσ_d["title"] = null;
+                    ρσ_d["vtt"] = "fvtt";
+                    return ρσ_d;
+                }).call(this);
+            } else if ((value === "D&D Beyond Dice Roller" || typeof value === "object" && ρσ_equals(value, "D&D Beyond Dice Roller"))) {
+                ret = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["id"] = 0;
+                    ρσ_d["title"] = null;
+                    ρσ_d["vtt"] = "dndbeyond";
+                    return ρσ_d;
+                }).call(this);
+            } else if (value.startsWith("Campaign: ") || value.startsWith("World: ")) {
+                ret = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["id"] = 0;
+                    ρσ_d["title"] = saved_title;
+                    ρσ_d["vtt"] = saved_vtt;
+                    return ρσ_d;
+                }).call(this);
+            } else {
+                ret = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["id"] = saved_id;
+                    ρσ_d["title"] = saved_title;
+                    ρσ_d["vtt"] = saved_vtt;
+                    return ρσ_d;
+                }).call(this);
+            }
+            console.log("Get " + vtt + " tab: ", ret);
+            return ret;
+        };
+        if (!getVTTTabSetting.__argnames__) Object.defineProperties(getVTTTabSetting, {
+            __argnames__ : {value: ["name"]}
+        });
+
+        function setCurrentTab(tab) {
+            current_tab = tab;
+        };
+        if (!setCurrentTab.__argnames__) Object.defineProperties(setCurrentTab, {
+            __argnames__ : {value: ["tab"]}
+        });
+
+        current_tab = null;
+        options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting;
+        options_list["vtt-tab"]["set"] = setVTTTabSetting;
+        options_list["vtt-tab"]["get"] = getVTTTabSetting;
+        ρσ_modules.settings.options_list = options_list;
+        ρσ_modules.settings.character_settings = character_settings;
+        ρσ_modules.settings.current_tab = current_tab;
+        ρσ_modules.settings.WhisperType = WhisperType;
+        ρσ_modules.settings.RollType = RollType;
+        ρσ_modules.settings.CriticalRules = CriticalRules;
+        ρσ_modules.settings.getStorage = getStorage;
+        ρσ_modules.settings.storageGet = storageGet;
+        ρσ_modules.settings.storageSet = storageSet;
+        ρσ_modules.settings.storageRemove = storageRemove;
+        ρσ_modules.settings.getDefaultSettings = getDefaultSettings;
+        ρσ_modules.settings.getStoredSettings = getStoredSettings;
+        ρσ_modules.settings.setSettings = setSettings;
+        ρσ_modules.settings.mergeSettings = mergeSettings;
+        ρσ_modules.settings.resetSettings = resetSettings;
+        ρσ_modules.settings.createHTMLOptionEx = createHTMLOptionEx;
+        ρσ_modules.settings.createHTMLOption = createHTMLOption;
+        ρσ_modules.settings.initializeMarkaGroup = initializeMarkaGroup;
+        ρσ_modules.settings.initializeMarka = initializeMarka;
+        ρσ_modules.settings.extractSettingsData = extractSettingsData;
+        ρσ_modules.settings.loadSettings = loadSettings;
+        ρσ_modules.settings.restoreSavedSettings = restoreSavedSettings;
+        ρσ_modules.settings.saveSettings = saveSettings;
+        ρσ_modules.settings.initializeSettings = initializeSettings;
+        ρσ_modules.settings.createRoll20TabCombobox = createRoll20TabCombobox;
+        ρσ_modules.settings.createVTTTabSetting = createVTTTabSetting;
+        ρσ_modules.settings.setVTTTabSetting = setVTTTabSetting;
+        ρσ_modules.settings.getVTTTabSetting = getVTTTabSetting;
+        ρσ_modules.settings.setCurrentTab = setCurrentTab;
+    })();
+
+    (function(){
 
         var __name__ = "__main__";
 
 
-        var registered_events;
-        var addCustomEventListener = ρσ_modules.utils.addCustomEventListener;
+        var E = ρσ_modules.elementmaker.E;
 
-        function updateHP(name, current, total, temp) {
-            var character, hp, temp_hp, value;
-            console.log("Updating HP for " + name + " : (" + current + "+" + temp + ")/" + total);
-            name = name.toLowerCase();
-            character = window.Campaign.characters.find((function() {
-                var ρσ_anonfunc = function (c) {
-                    return ρσ_equals(c.attributes.name.toLowerCase(), name);
+        var options_list = ρσ_modules.settings.options_list;
+        var createHTMLOptionEx = ρσ_modules.settings.createHTMLOptionEx;
+
+        var isFVTT = ρσ_modules.utils.isFVTT;
+        var injectPageScript = ρσ_modules.utils.injectPageScript;
+
+        function createOptionList() {
+            var img;
+            $("main").prepend(ρσ_interpolate_kwargs.call(E, E.ul, [createHTMLOptionEx("donate", options_list["donate"], true)].concat([ρσ_desugar_kwargs({class_: "list-group beyond20-options"})])));
+            $(".beyond20-options").append(ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4("Beyond20 Options")].concat([ρσ_desugar_kwargs({id: "openOptions", class_: "list-content", href: "#"})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option"})])));
+            img = $("#donate").find("img");
+            img.attr("src", img.attr("src").replace("donate.png", "donate32.png"));
+            $("#openOptions").bind("click", (function() {
+                var ρσ_anonfunc = function (ev) {
+                    chrome.runtime.openOptionsPage();
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                    __argnames__ : {value: ["c"]}
+                    __argnames__ : {value: ["ev"]}
                 });
                 return ρσ_anonfunc;
             })());
-            if ((typeof character !== "undefined" && character !== null)) {
-                console.log("Found character : ", character);
-                hp = character.attribs.find((function() {
-                    var ρσ_anonfunc = function (a) {
-                        return (a.attributes.name === "hp" || typeof a.attributes.name === "object" && ρσ_equals(a.attributes.name, "hp"));
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["a"]}
-                    });
-                    return ρσ_anonfunc;
-                })());
-                if ((typeof hp !== "undefined" && hp !== null)) {
-                    console.log("Found attribute : ", hp);
-                    hp.set("current", str(current));
-                    hp.set("max", str(total));
-                    hp.save();
-                    character.updateTokensByName("hp", hp.id);
-                }
-                temp_hp = character.attribs.find((function() {
-                    var ρσ_anonfunc = function (a) {
-                        return (a.attributes.name === "hp_temp" || typeof a.attributes.name === "object" && ρσ_equals(a.attributes.name, "hp_temp"));
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["a"]}
-                    });
-                    return ρσ_anonfunc;
-                })());
-                if ((typeof temp_hp !== "undefined" && temp_hp !== null)) {
-                    console.log("Found attribute : ", temp_hp);
-                    if (ρσ_not_equals(temp_hp.attributes.current, str(temp))) {
-                        value = ((temp !== 0 && (typeof temp !== "object" || ρσ_not_equals(temp, 0)))) ? str(temp) : "";
-                        temp_hp.set("current", value);
-                        temp_hp.set("max", value);
-                        temp_hp.save();
-                        character.updateTokensByName("hp_temp", temp_hp.id);
+        };
+
+        function setupHTML() {
+            createOptionList();
+            $(document).on("click", "a", (function() {
+                var ρσ_anonfunc = function (ev) {
+                    var href;
+                    href = this.getAttribute("href");
+                    if (len(href) > 0 && (href !== "#" && (typeof href !== "object" || ρσ_not_equals(href, "#")))) {
+                        window.open(this.href);
                     }
-                }
+                    return false;
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["ev"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        };
+
+        function actOnCurrentTab(tab) {
+            if (isFVTT(tab.title)) {
+                chrome.runtime.sendMessage((function(){
+                    var ρσ_d = {};
+                    ρσ_d["action"] = "activate-icon";
+                    ρσ_d["tab"] = tab;
+                    return ρσ_d;
+                }).call(this));
+                injectPageScript("src/popup.js");
+            } else {
+                setupHTML();
             }
         };
-        if (!updateHP.__argnames__) Object.defineProperties(updateHP, {
-            __argnames__ : {value: ["name", "current", "total", "temp"]}
+        if (!actOnCurrentTab.__argnames__) Object.defineProperties(actOnCurrentTab, {
+            __argnames__ : {value: ["tab"]}
         });
 
-        function disconnectAllEvents() {
-            var event;
-            var ρσ_Iter0 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                event = ρσ_Iter0[ρσ_Index0];
-                document.removeEventListener.apply(document, event);
-            }
-        };
-
-        registered_events = ρσ_list_decorate([]);
-        registered_events.append(addCustomEventListener("UpdateHP", updateHP));
-        registered_events.append(addCustomEventListener("disconnect", disconnectAllEvents));
+        if (ρσ_exists.n(chrome.tabs)) {
+            chrome.tabs.query((function(){
+                var ρσ_d = {};
+                ρσ_d["active"] = true;
+                ρσ_d["currentWindow"] = true;
+                return ρσ_d;
+            }).call(this), (function() {
+                var ρσ_anonfunc = function (tabs) {
+                    actOnCurrentTab(tabs[0]);
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["tabs"]}
+                });
+                return ρσ_anonfunc;
+            })());
+        } else {
+            chrome.runtime.sendMessage((function(){
+                var ρσ_d = {};
+                ρσ_d["action"] = "get-current-tab";
+                return ρσ_d;
+            }).call(this), actOnCurrentTab);
+        }
     })();
 })();

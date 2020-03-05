@@ -2558,7 +2558,8 @@ function all(iterable) {
 if (!all.__argnames__) Object.defineProperties(all, {
     __argnames__ : {value: ["iterable"]}
 });
-var define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+var decimal_sep, define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+decimal_sep = 1.1.toLocaleString()[1];
 function ρσ_repr_js_builtin(x, as_array) {
     var ans, b, keys, key;
     ans = [];
@@ -2935,7 +2936,7 @@ define_str_func("format", function () {
                     value = value.toExponential(prec - 1);
                 }
                 value = value.replace(/0+$/g, "");
-                if (value[value.length-1] === ".") {
+                if (value[value.length-1] === decimal_sep) {
                     value = value.slice(0, -1);
                 }
                 if (ftype === "G") {
@@ -3750,7 +3751,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("aside");
             s.jsset.add("audio");
             s.jsset.add("b");
+            s.jsset.add("base");
             s.jsset.add("big");
+            s.jsset.add("body");
             s.jsset.add("blockquote");
             s.jsset.add("br");
             s.jsset.add("button");
@@ -3789,6 +3792,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("h5");
             s.jsset.add("h6");
             s.jsset.add("hr");
+            s.jsset.add("head");
             s.jsset.add("i");
             s.jsset.add("iframe");
             s.jsset.add("img");
@@ -4733,9 +4737,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                             }
                             pos = close + 1;
                             continue;
-                        }
-                        if (extension === "<") {
-                            throw new SyntaxError("Look behind assertions are not supported in JavaScript");
                         }
                         if (extension === "(") {
                             throw new SyntaxError("Group existence assertions are not supported in JavaScript");
@@ -5824,6 +5825,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["description"] = "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in the VTT\nIf using Roll20, it will also change the way the output of 'Advantage on initiative' rolls appear.";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["initiative-tiebreaker"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Add tiebreaker to initiative rolls";
+                ρσ_d["description"] = "Adds the dexterity score as a decimal to initiative rolls to break any initiative ties.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
             ρσ_d["critical-homebrew"] = (function(){
@@ -8999,7 +9008,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     self._parts.append(part);
                 } else {
                     try {
-                        part = int(part);
+                        part = float(part);
                         self._parts.append(part);
                     } catch (ρσ_Exception) {
                         ρσ_last_exception = ρσ_Exception;
@@ -9030,6 +9039,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     self._total += part;
                 }
             }
+            self._total = Math.round(self._total * 100) / 100;
         };
         DNDBRoll.prototype.getTooltip = function getTooltip() {
             var self = this;
@@ -10644,15 +10654,21 @@ return this.__repr__();
         });
         Monster.prototype.rollInitiative = function rollInitiative() {
             var self = this;
-            var modifier, ability;
+            var modifier, initiative, tiebreaker, ability;
             var ρσ_Iter15 = ρσ_Iterable(self._abilities);
             for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
                 ability = ρσ_Iter15[ρσ_Index15];
                 if ((ability[1] === "DEX" || typeof ability[1] === "object" && ρσ_equals(ability[1], "DEX"))) {
                     modifier = ability[3];
-                    sendRoll(self, "initiative", "1d20" + modifier, (function(){
+                    initiative = modifier;
+                    if (self.getGlobalSetting("initiative-tiebreaker", false)) {
+                        tiebreaker = ability[2];
+                        initiative = float(initiative) + float(tiebreaker) / 100;
+                        initiative = (initiative >= 0) ? "+" + str(initiative) : str(initiative);
+                    }
+                    sendRoll(self, "initiative", "1d20" + initiative, (function(){
                         var ρσ_d = {};
-                        ρσ_d["initiative"] = modifier;
+                        ρσ_d["initiative"] = initiative;
                         return ρσ_d;
                     }).call(this));
                     break;
@@ -11793,36 +11809,44 @@ return this.__repr__();
         var __name__ = "__main__";
 
 
-        var settings, character;
+        var settings, last_monster_name, character, observer;
         var getDefaultSettings = ρσ_modules.settings.getDefaultSettings;
         var getStoredSettings = ρσ_modules.settings.getStoredSettings;
 
         var Monster = ρσ_modules.dndbeyond.Monster;
-        var isRollButtonAdded = ρσ_modules.dndbeyond.isRollButtonAdded;
-
-        var injectCSS = ρσ_modules.utils.injectCSS;
-        var alertFullSettings = ρσ_modules.utils.alertFullSettings;
+        var removeRollButtons = ρσ_modules.dndbeyond.removeRollButtons;
 
         var BUTTON_STYLE_CSS = ρσ_modules.constants.BUTTON_STYLE_CSS;
         var ROLLTYPE_STYLE_CSS = ρσ_modules.constants.ROLLTYPE_STYLE_CSS;
 
-        print("Beyond20: D&D Beyond Monster module loaded.");
+        var isExtensionDisconnected = ρσ_modules.utils.isExtensionDisconnected;
+        var injectCSS = ρσ_modules.utils.injectCSS;
+        var alertFullSettings = ρσ_modules.utils.alertFullSettings;
+
+        print("Beyond20: D&D Beyond Encounter module loaded.");
         settings = getDefaultSettings();
+        last_monster_name = "";
         character = null;
-        function documentLoaded(settings) {
-            character = ρσ_interpolate_kwargs_constructor.call(Object.create(Monster.prototype), false, Monster, ["Monster"].concat([ρσ_desugar_kwargs({global_settings: settings})]));
-            if (isRollButtonAdded()) {
-                chrome.runtime.sendMessage((function(){
-                    var ρσ_d = {};
-                    ρσ_d["action"] = "reload-me";
-                    return ρσ_d;
-                }).call(this));
-            } else {
-                character.parseStatBlock();
+        function documentModified(mutations, observer) {
+            var monster, monster_name;
+            if (isExtensionDisconnected()) {
+                console.log("This extension is DOWN!");
+                observer.disconnect();
+                return;
             }
+            monster = $(".encounter-details-monster-summary-info-panel,.encounter-details__content-section--monster-stat-block,.combat-tracker-page__content-section--monster-stat-block,.monster-details-modal__body");
+            monster_name = monster.find(".mon-stat-block__name").text();
+            console.log("Doc modified, new mon : ", monster_name, " !=?", last_monster_name);
+            if ((monster_name === last_monster_name || typeof monster_name === "object" && ρσ_equals(monster_name, last_monster_name))) {
+                return;
+            }
+            last_monster_name = monster_name;
+            removeRollButtons();
+            character = ρσ_interpolate_kwargs_constructor.call(Object.create(Monster.prototype), false, Monster, ["Monster"].concat([ρσ_desugar_kwargs({global_settings: settings})]));
+            character.parseStatBlock(monster);
         };
-        if (!documentLoaded.__argnames__) Object.defineProperties(documentLoaded, {
-            __argnames__ : {value: ["settings"]}
+        if (!documentModified.__argnames__) Object.defineProperties(documentModified, {
+            __argnames__ : {value: ["mutations", "observer"]}
         });
 
         function updateSettings() {
@@ -11841,7 +11865,7 @@ return this.__repr__();
                 getStoredSettings((function() {
                     var ρσ_anonfunc = function (saved_settings) {
                         updateSettings(saved_settings);
-                        documentLoaded(settings);
+                        documentModified();
                     };
                     if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                         __argnames__ : {value: ["saved_settings"]}
@@ -11869,14 +11893,21 @@ return this.__repr__();
             __argnames__ : {value: ["request", "sender", "sendResponse"]}
         });
 
+        updateSettings();
         injectCSS(BUTTON_STYLE_CSS);
         injectCSS(ROLLTYPE_STYLE_CSS);
         chrome.runtime.onMessage.addListener(handleMessage);
+        observer = new window.MutationObserver(documentModified);
+        observer.observe(document, (function(){
+            var ρσ_d = {};
+            ρσ_d["subtree"] = true;
+            ρσ_d["childList"] = true;
+            return ρσ_d;
+        }).call(this));
         chrome.runtime.sendMessage((function(){
             var ρσ_d = {};
             ρσ_d["action"] = "activate-icon";
             return ρσ_d;
         }).call(this));
-        updateSettings();
     })();
 })();

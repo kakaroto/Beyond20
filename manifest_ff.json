@@ -35,15 +35,15 @@
 	},
 	"web_accessible_resources": [
 		"images/*",
-		"src/roll20_script.js",
-		"src/fvtt_script.js",
+		"output/roll20_script.js",
+		"output/fvtt_script.js",
 		"popup.html",
 		"options.html"
 	],
 	"background": {
 		"persistent": true,
 		"scripts": [
-			"src/background.js"
+			"output/background.js"
 		]
 	},
 	"content_scripts": [
@@ -60,7 +60,7 @@
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/dndbeyond_character.js"
+				"output/dndbeyond_character.js"
 			]
 		},
 		{
@@ -76,7 +76,7 @@
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/dndbeyond_monster.js"
+				"output/dndbeyond_monster.js"
 			]
 		},
 		{
@@ -92,7 +92,7 @@
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/dndbeyond_vehicle.js"
+				"output/dndbeyond_vehicle.js"
 			]
 		},
 		{
@@ -108,7 +108,7 @@
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/dndbeyond_spell.js"
+				"output/dndbeyond_spell.js"
 			]
 		},
 		{
@@ -126,7 +126,7 @@
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/dndbeyond_encounter.js"
+				"output/dndbeyond_encounter.js"
 			]
 		},
 		{
@@ -143,7 +143,7 @@
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/dndbeyond_items.js"
+				"output/dndbeyond_items.js"
 			]
 		},
 		{
@@ -158,7 +158,7 @@
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/roll20.js"
+				"output/roll20.js"
 			]
 		},
 		{
@@ -173,7 +173,7 @@
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/fvtt_test.js"
+				"output/fvtt_test.js"
 			]
 		}
 	]
