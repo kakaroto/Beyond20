@@ -77,8 +77,6 @@ class FVTTRoll(Beyond20BaseRoll):
         formula = formula.replace("ro<2", "r<=2")
         Beyond20BaseRoll.__init__(self, formula, data)
         self._roll = new Roll(formula, data).roll()
-        self._fail_limit = None
-        self._critical_limit = None
 
     @property
     def total(self):

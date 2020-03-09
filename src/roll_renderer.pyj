@@ -678,6 +678,6 @@ class Beyond20BaseRoll:
 
     def isCriticalFail(self):
         return self.checkRollForCrits(def(faces, value):
-            limit = 1 if self._critical_limit is None else self._fail_limit
+            limit = 1 if self._fail_limit is None else self._fail_limit
             return value <= limit
         )

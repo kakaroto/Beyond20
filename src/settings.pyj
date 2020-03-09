@@ -186,7 +186,7 @@ options_list = {
 
     "last-version": {"description": "Last version that was installed. Used to check if an update just happened",
                      "type": "string",
-                     "hidden": "True",
+                     "hidden": True,
                      "default": ""},
 
     "donate": {"short": "Buy rations (1 day) to feed my familiar",
@@ -195,7 +195,7 @@ options_list = {
                    "or donate via paypal!\nI am grateful for your generosity!",
                "type": "link",
                "default": "https://beyond20.here-for-more.info/rations",
-               "icon": "images/donate.png"}
+               "icon": "/images/donate.png"}
     }
 
 character_settings = {
