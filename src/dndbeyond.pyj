@@ -127,6 +127,7 @@ class Character(CharacterBase):
         CharacterBase.__init__(self, "Character", global_settings)
         self._abilities = []
         self._name = None
+        self._avatar = None
         self._id = None
         self._race = None
         self._level = None
@@ -156,6 +157,10 @@ class Character(CharacterBase):
             # This can happen when you reload the page
             if self._name == "":
                 self._name = None
+        if self._avatar is None:
+            self._avatar = $(".ct-character-tidbits__avatar").css('background-image').slice(5, -2)
+            if not self._avatar.startsWith("http"):
+                self._avatar = None
         if self._race is None:
             self._race = $(".ct-character-tidbits__race").text()
             if self._race == "":
@@ -403,6 +408,7 @@ class Character(CharacterBase):
             if key not in ["class-features", "racial-traits", "feats", "actions", "conditions", "exhaustion-level"]:
                 settings[key] = self._settings[key]
         return {"name": self._name,
+                "avatar": self._avatar,
                 "id": self._id,
                 "type": self.type(),
                 "abilities": self._abilities.as_array(),
@@ -440,6 +446,7 @@ class Monster(CharacterBase):
         self._stat_block = $(self._base)
         self._id = None
         self._name = None
+        self._avatar = None
         self._meta = None
         self._attributes = {}
         self._ac = None
@@ -477,7 +484,9 @@ class Monster(CharacterBase):
         else:
             self._id = self._name
         self._meta = stat_block.find(base + "__meta").text().trim()
-
+        avatar = $(".details-aside .image a")
+        if avatar.length > 0:
+            self._avatar = avatar[0].href
         attributes = stat_block.find(base + "__attributes " + base + "__attribute")
         for attr in attributes:
             label = $(attr).find(base + "__attribute-label").text().trim()
@@ -865,6 +874,7 @@ class Monster(CharacterBase):
 
     def getDict(self):
         return {"name": self._name,
+                "avatar": self._avatar,
                 "type": self.type(),
                 "id": self._id,
                 "ac": self._ac,
