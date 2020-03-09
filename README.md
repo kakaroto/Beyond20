@@ -41,6 +41,7 @@ Install RapidScript-NG then type 'make' to compile the *.pyj into *.js
 
 All you need is to load the extension from the source :
 
+0. If you already have Beyond20 installed from the Chrome or Firefox stores, disable it.
 1. Download the extension from [github](https://github.com/kakaroto/Beyond20/archive/master.zip)
 2. Extract the zip file in a directory of your choice
 
