@@ -7918,7 +7918,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                 postToDiscord(self._settings["discord-secret"], request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open).then((function() {
                     var ρσ_anonfunc = function (error) {
                         if ((typeof error !== "undefined" && error !== null)) {
-                            console.log("async error is : ", error);
                             self._displayer.displayError("Beyond20 Discord Integration: " + error);
                         }
                     };
@@ -9864,6 +9863,7 @@ return this.__repr__();
             self.components = get_statblock("components");
             self.duration = get_statblock("duration");
             self.description = body.find(description_selector).text().trim();
+            self.preview = "https://www.dndbeyond.com/content/1-0-851-0/skins/waterdeep/images/spell-schools/35/" + school.toLowerCase() + ".png";
             if ((level === "Cantrip" || typeof level === "object" && ρσ_equals(level, "Cantrip"))) {
                 self.level_school = school + " " + level;
             } else {
@@ -9900,6 +9900,7 @@ return this.__repr__();
             sendRoll(self._character, "spell-card", 0, (function(){
                 var ρσ_d = {};
                 ρσ_d["name"] = self.spell_name;
+                ρσ_d["preview"] = self.preview;
                 ρσ_d["level-school"] = self.level_school;
                 ρσ_d["range"] = self.range_area;
                 ρσ_d["concentration"] = self.concentration;
@@ -10043,7 +10044,7 @@ return this.__repr__();
         Character.__handles_kwarg_interpolation__ = Character.prototype.__init__.__handles_kwarg_interpolation__;
         Character.prototype.updateInfo = function updateInfo() {
             var self = this;
-            var classes, parts, name, level, class_, xp, items, item_name, to_hit, item, ac, speed, abilities, abbr, modifier, value, ability;
+            var avatar, classes, parts, name, level, class_, xp, items, item_name, to_hit, item, ac, speed, abilities, abbr, modifier, value, ability;
             self._id = $("#character-sheet-target").attr("data-character-id");
             if (self._settings === null) {
                 self.updateSettings();
@@ -10055,9 +10056,9 @@ return this.__repr__();
                 }
             }
             if (self._avatar === null) {
-                self._avatar = $(".ct-character-tidbits__avatar").css("background-image").slice(5, -2);
-                if (!self._avatar.startsWith("http")) {
-                    self._avatar = null;
+                avatar = $(".ct-character-tidbits__avatar").css("background-image");
+                if (avatar && avatar.startsWith("url(")) {
+                    self._avatar = avatar.slice(5, -2);
                 }
             }
             if (self._race === null) {
@@ -10963,6 +10964,7 @@ return this.__repr__();
             roll_properties = (function(){
                 var ρσ_d = {};
                 ρσ_d["name"] = name;
+                ρσ_d["preview"] = self._avatar;
                 ρσ_d["attack-source"] = "monster-action";
                 ρσ_d["description"] = description;
                 return ρσ_d;

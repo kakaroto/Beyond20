@@ -14,7 +14,10 @@ console.log("Beyond20: D&D Beyond module loaded.")
 def sendRollWithCharacter(rollType, fallback, args):
     nonlocal character
     nonlocal settings
-
+    
+    preview = $(".ct-sidebar__header-preview > div").css('background-image')
+    if preview and preview.startsWith("url("):
+        args.preview = preview.slice(5, -2)
     sendRoll(character, rollType, fallback, args)
 
 

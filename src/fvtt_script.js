@@ -7914,7 +7914,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                 postToDiscord(self._settings["discord-secret"], request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open).then((function() {
                     var ρσ_anonfunc = function (error) {
                         if ((typeof error !== "undefined" && error !== null)) {
-                            console.log("async error is : ", error);
                             self._displayer.displayError("Beyond20 Discord Integration: " + error);
                         }
                     };

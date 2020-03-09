@@ -59,7 +59,7 @@ class Spell:
         self.components = get_statblock("components")
         self.duration = get_statblock("duration")
         self.description = body.find(description_selector).text().trim()
-
+        self.preview = "https://www.dndbeyond.com/content/1-0-851-0/skins/waterdeep/images/spell-schools/35/" + school.toLowerCase() + ".png"
         if level == "Cantrip":
             self.level_school = school + " " + level
         else:
@@ -83,6 +83,7 @@ class Spell:
     def display(self):
         sendRoll(self._character, "spell-card", 0, {
             "name": self.spell_name,
+            "preview": self.preview,
             "level-school": self.level_school,
             "range": self.range_area,
             "concentration": self.concentration,
@@ -158,9 +159,9 @@ class Character(CharacterBase):
             if self._name == "":
                 self._name = None
         if self._avatar is None:
-            self._avatar = $(".ct-character-tidbits__avatar").css('background-image').slice(5, -2)
-            if not self._avatar.startsWith("http"):
-                self._avatar = None
+            avatar = $(".ct-character-tidbits__avatar").css('background-image')
+            if avatar and avatar.startsWith("url("):
+                self._avatar = avatar.slice(5, -2)
         if self._race is None:
             self._race = $(".ct-character-tidbits__race").text()
             if self._race == "":
@@ -692,6 +693,7 @@ class Monster(CharacterBase):
 
     def buildAttackRoll(self, name, description):
         roll_properties = {"name": name,
+                           "preview": self._avatar,
                            "attack-source": "monster-action",
                            "description": description}
 
