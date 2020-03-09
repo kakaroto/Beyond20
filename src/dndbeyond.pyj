@@ -99,7 +99,7 @@ class CharacterBase:
         self._name = None
         self._type = _type
         self._settings = None
-        self._global_settings = global_settings
+        self.setGlobalSettings(global_settings)
 
     def type(self):
         return self._type

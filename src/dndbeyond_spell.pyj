@@ -46,8 +46,8 @@ def updateSettings(new_settings=None):
             character.setGlobalSettings(new_settings)
     else:
         getStoredSettings(def(saved_settings):
-            updateSettings(saved_settings)
             documentLoaded(saved_settings)
+            updateSettings(saved_settings)
         )
 
 def handleMessage (request, sender, sendResponse):

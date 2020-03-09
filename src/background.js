@@ -3732,7 +3732,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "constants";
-        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTERS_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_COMBAT_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
+        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTERS_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_COMBAT_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, DISCORD_BOT_INVITE_URL, DISCORD_BOT_API_URL, BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
         ROLL20_URL = "*://app.roll20.net/editor/";
         FVTT_URL = "*://*/game";
         DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
@@ -3743,6 +3743,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
         DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
         CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
+        DISCORD_BOT_INVITE_URL = "https://beyond20.kicks-ass.org/invite";
+        DISCORD_BOT_API_URL = "https://beyond20.kicks-ass.org/roll";
         BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
         ROLLTYPE_STYLE_CSS = "\n\n.ct-beyond20-roll .ct-beyond20-roll-button {\n    position: relative;\n    margin-top: 7px;\n}\n\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-double:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-double:after {\n    content: \"2\";\n    position: absolute;\n    padding: 2px;\n    background-color: blue;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-query:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-query:after {\n    content: \"?\";\n    position: absolute;\n    padding: 2px;\n    background-color: grey;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-thrice:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-thrice:after {\n    content: \"3\";\n    position: absolute;\n    padding: 2px;\n    background-color: blue;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-advantage:after {\n    content: \"+\";\n    position: absolute;\n    padding: 2px;\n    background-color: green;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-disadvantage:after {\n    content: \"-\";\n    position: absolute;\n    padding: 2px;\n    background-color: red;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-advantage:after {\n    content: \"+ +\";\n    position: absolute;\n    padding: 2px;\n    background-color: green;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-disadvantage:after {\n    content: \"- -\";\n    position: absolute;\n    padding: 2px;\n    background-color: red;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n";
         ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
@@ -3755,6 +3757,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.constants.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
         ρσ_modules.constants.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
         ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
+        ρσ_modules.constants.DISCORD_BOT_INVITE_URL = DISCORD_BOT_INVITE_URL;
+        ρσ_modules.constants.DISCORD_BOT_API_URL = DISCORD_BOT_API_URL;
         ρσ_modules.constants.BUTTON_STYLE_CSS = BUTTON_STYLE_CSS;
         ρσ_modules.constants.ROLLTYPE_STYLE_CSS = ROLLTYPE_STYLE_CSS;
     })();
@@ -6001,6 +6005,24 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = null;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["discord-integration"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Discord Integration";
+                ρσ_d["description"] = "You can get rolls sent to Discord by enabling Discord Integration!\nClick the link, follow the instructions and enter your secret key below.";
+                ρσ_d["type"] = "link";
+                ρσ_d["default"] = "https://beyond20.here-for-more.info/discord";
+                ρσ_d["icon"] = "https://discordapp.com/assets/fc0b01fe10a0b8c602fb0106d8189d9b.png";
+                ρσ_d["icon-height"] = "80";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["discord-secret"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Discord Bot Secret Key";
+                ρσ_d["description"] = "Enter the secret key the Bot gave you, or Discord server owner. Clear it to disable Discord integration.\nNote that sending to Discord only works with the D&D Beyond Dice Roller, and Foundry VTT.";
+                ρσ_d["type"] = "string";
+                ρσ_d["default"] = "";
+                return ρσ_d;
+            }).call(this);
             ρσ_d["show-changelog"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Show Changelog when installing a new version";
@@ -6013,7 +6035,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 var ρσ_d = {};
                 ρσ_d["description"] = "Last version that was installed. Used to check if an update just happened";
                 ρσ_d["type"] = "string";
-                ρσ_d["hidden"] = "True";
+                ρσ_d["hidden"] = true;
                 ρσ_d["default"] = "";
                 return ρσ_d;
             }).call(this);
@@ -6024,7 +6046,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["description"] = "If you wish to support my work on Beyond 20 or my other D&D related project, subscribe to my patreon or donate via paypal!\nI am grateful for your generosity!";
                 ρσ_d["type"] = "link";
                 ρσ_d["default"] = "https://beyond20.here-for-more.info/rations";
-                ρσ_d["icon"] = "images/donate.png";
+                ρσ_d["icon"] = "/images/donate.png";
+                ρσ_d["icon-width"] = "64";
+                ρσ_d["icon-height"] = "64";
                 return ρσ_d;
             }).call(this);
             return ρσ_d;
@@ -6470,7 +6494,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, [(ρσ_expr_temp = option.choices)[ρσ_bound_index(option.default, ρσ_expr_temp)]].concat([ρσ_desugar_kwargs({id: name, class_: "input select beyond20-option-input", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-combobox"})]));
             } else if ((option.type === "link" || typeof option.type === "object" && ρσ_equals(option.type, "link"))) {
-                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4(title)].concat([ρσ_desugar_kwargs({href: option.default})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "link-image", src: chrome.extension.getURL(option.icon)})])].concat([ρσ_desugar_kwargs({class_: "image-link"})]))].concat([ρσ_desugar_kwargs({href: option.default})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", id: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-link"})]));
+                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4(title)].concat([ρσ_desugar_kwargs({href: option.default})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "link-image", width: option["icon-width"], height: option["icon-height"], src: (option.icon.startsWith("/")) ? chrome.extension.getURL(option.icon) : option.icon})])].concat([ρσ_desugar_kwargs({class_: "image-link"})]))].concat([ρσ_desugar_kwargs({href: option.default})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", id: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-link"})]));
             } else if ((option.type === "special" || typeof option.type === "object" && ρσ_equals(option.type, "special"))) {
                 e = option.createHTMLElement(name, short);
             }
@@ -6752,7 +6776,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function createVTTTabSetting(name, short) {
             var dropdown_options, vtt, campaign;
-            dropdown_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller" ]);
+            dropdown_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller & Discord" ]);
             if (short) {
                 vtt = (isFVTT(current_tab.title)) ? "Foundry VTT" : "Roll20";
                 campaign = ((vtt === "Foundry VTT" || typeof vtt === "object" && ρσ_equals(vtt, "Foundry VTT"))) ? "World" : "Campaign";
@@ -6777,7 +6801,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             } else if (val.title === null) {
                 vtt = ρσ_exists.e(val.vtt, "roll20");
                 if ((vtt === "dndbeyond" || typeof vtt === "object" && ρσ_equals(vtt, "dndbeyond"))) {
-                    choice = "D&D Beyond Dice Roller";
+                    choice = "D&D Beyond Dice Roller & Discord";
                 } else {
                     vtt_name = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Roll 20" : "Foundry VTT";
                     choice = "Only " + vtt_name + " Tabs";
@@ -6803,7 +6827,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     } else if ((id === current_id || typeof id === "object" && ρσ_equals(id, current_id)) && (title === current_title || typeof title === "object" && ρσ_equals(title, current_title)) && (current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
                         $("#" + name).text("This Specific Tab");
                     } else {
-                        new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller", "This " + current_campaign, "This Specific Tab" ]);
+                        new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller & Discord", "This " + current_campaign, "This Specific Tab" ]);
                         if ((current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
                             new_options.append("Another tab or " + campaign.toLowerCase() + "(No change)");
                         } else {
@@ -6813,7 +6837,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else {
                     console.log("Set vtt tab, is LONG ", val);
                     console.log("vtt-tab settings are : ", id, title, vtt);
-                    new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller", campaign + ": " + title ]);
+                    new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller & Discord", campaign + ": " + title ]);
                     if ((id !== 0 && (typeof id !== "object" || ρσ_not_equals(id, 0)))) {
                         new_options.append("Tab #" + id + " (" + title + ")");
                     }
@@ -6874,7 +6898,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["vtt"] = "fvtt";
                     return ρσ_d;
                 }).call(this);
-            } else if ((value === "D&D Beyond Dice Roller" || typeof value === "object" && ρσ_equals(value, "D&D Beyond Dice Roller"))) {
+            } else if ((value === "D&D Beyond Dice Roller & Discord" || typeof value === "object" && ρσ_equals(value, "D&D Beyond Dice Roller & Discord"))) {
                 ret = (function(){
                     var ρσ_d = {};
                     ρσ_d["id"] = 0;
@@ -7028,9 +7052,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     if (failure) {
                         failure((tabs.length === 0 || typeof tabs.length === "object" && ρσ_equals(tabs.length, 0)));
                     }
-                    var ρσ_Iter11 = ρσ_Iterable(tabs);
-                    for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
-                        tab = ρσ_Iter11[ρσ_Index11];
+                    var ρσ_Iter0 = ρσ_Iterable(tabs);
+                    for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
+                        tab = ρσ_Iter0[ρσ_Index0];
                         chrome.tabs.sendMessage(tab.id, request);
                     }
                 };
@@ -7049,9 +7073,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         function filterVTTTab(request, limit, tabs, titleCB) {
             var found, tab;
             found = false;
-            var ρσ_Iter12 = ρσ_Iterable(tabs);
-            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
-                tab = ρσ_Iter12[ρσ_Index12];
+            var ρσ_Iter1 = ρσ_Iterable(tabs);
+            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
+                tab = ρσ_Iter1[ρσ_Index1];
                 if (((limit.id === 0 || typeof limit.id === "object" && ρσ_equals(limit.id, 0)) || (tab.id === limit.id || typeof tab.id === "object" && ρσ_equals(tab.id, limit.id))) && ((limit.title === null || typeof limit.title === "object" && ρσ_equals(limit.title, null)) || ρσ_equals(titleCB(tab.title), limit.title))) {
                     chrome.tabs.sendMessage(tab.id, request);
                     found = true;
@@ -7064,9 +7088,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["vtt-tab"] = limit;
                     return ρσ_d;
                 }).call(this));
-                var ρσ_Iter13 = ρσ_Iterable(tabs);
-                for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
-                    tab = ρσ_Iter13[ρσ_Index13];
+                var ρσ_Iter2 = ρσ_Iterable(tabs);
+                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                    tab = ρσ_Iter2[ρσ_Index2];
                     if (ρσ_equals(titleCB(tab.title), limit.title)) {
                         chrome.tabs.sendMessage(tab.id, request);
                         found = true;
@@ -7151,9 +7175,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if (failure) {
                     failure((fvtt_tabs.length === 0 || typeof fvtt_tabs.length === "object" && ρσ_equals(fvtt_tabs.length, 0)));
                 }
-                var ρσ_Iter14 = ρσ_Iterable(fvtt_tabs);
-                for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
-                    tab = ρσ_Iter14[ρσ_Index14];
+                var ρσ_Iter3 = ρσ_Iterable(fvtt_tabs);
+                for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                    tab = ρσ_Iter3[ρσ_Index3];
                     chrome.tabs.sendMessage(tab.id, request);
                 }
             }
@@ -7179,9 +7203,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function addFVTTTab(tab) {
             var t;
-            var ρσ_Iter15 = ρσ_Iterable(fvtt_tabs);
-            for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
-                t = ρσ_Iter15[ρσ_Index15];
+            var ρσ_Iter4 = ρσ_Iterable(fvtt_tabs);
+            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                t = ρσ_Iter4[ρσ_Index4];
                 if ((t.id === tab.id || typeof t.id === "object" && ρσ_equals(t.id, tab.id))) {
                     return;
                 }
@@ -7195,9 +7219,9 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function removeFVTTTab(id) {
             var t;
-            var ρσ_Iter16 = ρσ_Iterable(fvtt_tabs);
-            for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
-                t = ρσ_Iter16[ρσ_Index16];
+            var ρσ_Iter5 = ρσ_Iterable(fvtt_tabs);
+            for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                t = ρσ_Iter5[ρσ_Index5];
                 if ((t.id === id || typeof t.id === "object" && ρσ_equals(t.id, id))) {
                     fvtt_tabs.remove(t);
                     console.log("Removed ", id, " from fvtt tabs.");
@@ -7219,9 +7243,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 var ρσ_anonfunc = function (tabs) {
                     var found, tab;
                     found = false;
-                    var ρσ_Iter17 = ρσ_Iterable(tabs);
-                    for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
-                        tab = ρσ_Iter17[ρσ_Index17];
+                    var ρσ_Iter6 = ρσ_Iterable(tabs);
+                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                        tab = ρσ_Iter6[ρσ_Index6];
                         if (isFVTT(tab.title)) {
                             found = true;
                             break;
@@ -7277,9 +7301,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                                         onRollFailure(request, sendResponse);
                                     } else {
                                         vtts = ρσ_list_decorate([]);
-                                        var ρσ_Iter18 = ρσ_Iterable(trackFailure);
-                                        for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
-                                            key = ρσ_Iter18[ρσ_Index18];
+                                        var ρσ_Iter7 = ρσ_Iterable(trackFailure);
+                                        for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                                            key = ρσ_Iter7[ρσ_Index7];
                                             if (!trackFailure[(typeof key === "number" && key < 0) ? trackFailure.length + key : key]) {
                                                 vtts.append(key);
                                             }
@@ -7374,12 +7398,12 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function insertCSSs(tabs, css_files) {
             var file, tab;
-            var ρσ_Iter19 = ρσ_Iterable(tabs);
-            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
-                tab = ρσ_Iter19[ρσ_Index19];
-                var ρσ_Iter20 = ρσ_Iterable(css_files);
-                for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
-                    file = ρσ_Iter20[ρσ_Index20];
+            var ρσ_Iter8 = ρσ_Iterable(tabs);
+            for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                tab = ρσ_Iter8[ρσ_Index8];
+                var ρσ_Iter9 = ρσ_Iterable(css_files);
+                for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                    file = ρσ_Iter9[ρσ_Index9];
                     chrome.tabs.insertCSS(tab.id, (function(){
                         var ρσ_d = {};
                         ρσ_d["file"] = file;
@@ -7394,12 +7418,12 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function executeScripts(tabs, js_files) {
             var file, tab;
-            var ρσ_Iter21 = ρσ_Iterable(tabs);
-            for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
-                tab = ρσ_Iter21[ρσ_Index21];
-                var ρσ_Iter22 = ρσ_Iterable(js_files);
-                for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
-                    file = ρσ_Iter22[ρσ_Index22];
+            var ρσ_Iter10 = ρσ_Iterable(tabs);
+            for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                tab = ρσ_Iter10[ρσ_Index10];
+                var ρσ_Iter11 = ρσ_Iterable(js_files);
+                for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                    file = ρσ_Iter11[ρσ_Index11];
                     chrome.tabs.executeScript(tab.id, (function(){
                         var ρσ_d = {};
                         ρσ_d["file"] = file;
@@ -7446,9 +7470,9 @@ var str = ρσ_str, repr = ρσ_repr;;
         if (ρσ_equals(getBrowser(), "Chrome")) {
             chrome.browserAction.onClicked.addListener(browserActionClicked);
             manifest = chrome.runtime.getManifest();
-            var ρσ_Iter23 = ρσ_Iterable(manifest.content_scripts);
-            for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
-                script = ρσ_Iter23[ρσ_Index23];
+            var ρσ_Iter12 = ρσ_Iterable(manifest.content_scripts);
+            for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                script = ρσ_Iter12[ρσ_Index12];
                 cb = (function() {
                     var ρσ_anonfunc = function (js_files, css_files) {
                         return (function() {

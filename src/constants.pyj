@@ -8,6 +8,8 @@ DNDBEYOND_COMBAT_URL = "*://*.dndbeyond.com/combat-tracker/*"
 DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*"
 DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*"
 CHANGELOG_URL = "https://beyond20.here-for-more.info/update"
+DISCORD_BOT_INVITE_URL = "https://beyond20.kicks-ass.org/invite"
+DISCORD_BOT_API_URL = "https://beyond20.kicks-ass.org/roll"
 
 BUTTON_STYLE_CSS = """
 .character-button, .character-button-small {

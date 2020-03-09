@@ -71,6 +71,8 @@ class FVTTDisplayer:
         except:
             return game.settings.get("core", "rollMode")
 
+    def displayError(self, message):
+        ui.notifications.error(message)
 
 class FVTTRoll(Beyond20BaseRoll):
     def __init__(self, formula, data={}):
@@ -87,6 +89,9 @@ class FVTTRoll(Beyond20BaseRoll):
     @property
     def dice(self):
         return self._roll.dice
+    @property
+    def parts(self):
+        return self._roll.parts
 
     def getTooltip(self):
         return self._roll.getTooltip()
@@ -273,3 +278,4 @@ registered_events.append(addCustomEventListener("UpdateHP", updateHP))
 registered_events.append(addCustomEventListener("UpdateConditions", updateConditions))
 registered_events.append(addCustomEventListener("disconnect", disconnectAllEvents))
 setTitle()
+alertify = ui.notifications

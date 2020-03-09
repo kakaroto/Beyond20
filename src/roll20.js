@@ -5971,6 +5971,24 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = null;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["discord-integration"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Discord Integration";
+                ρσ_d["description"] = "You can get rolls sent to Discord by enabling Discord Integration!\nClick the link, follow the instructions and enter your secret key below.";
+                ρσ_d["type"] = "link";
+                ρσ_d["default"] = "https://beyond20.here-for-more.info/discord";
+                ρσ_d["icon"] = "https://discordapp.com/assets/fc0b01fe10a0b8c602fb0106d8189d9b.png";
+                ρσ_d["icon-height"] = "80";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["discord-secret"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Discord Bot Secret Key";
+                ρσ_d["description"] = "Enter the secret key the Bot gave you, or Discord server owner. Clear it to disable Discord integration.\nNote that sending to Discord only works with the D&D Beyond Dice Roller, and Foundry VTT.";
+                ρσ_d["type"] = "string";
+                ρσ_d["default"] = "";
+                return ρσ_d;
+            }).call(this);
             ρσ_d["show-changelog"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Show Changelog when installing a new version";
@@ -5983,7 +6001,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 var ρσ_d = {};
                 ρσ_d["description"] = "Last version that was installed. Used to check if an update just happened";
                 ρσ_d["type"] = "string";
-                ρσ_d["hidden"] = "True";
+                ρσ_d["hidden"] = true;
                 ρσ_d["default"] = "";
                 return ρσ_d;
             }).call(this);
@@ -5994,7 +6012,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["description"] = "If you wish to support my work on Beyond 20 or my other D&D related project, subscribe to my patreon or donate via paypal!\nI am grateful for your generosity!";
                 ρσ_d["type"] = "link";
                 ρσ_d["default"] = "https://beyond20.here-for-more.info/rations";
-                ρσ_d["icon"] = "images/donate.png";
+                ρσ_d["icon"] = "/images/donate.png";
+                ρσ_d["icon-width"] = "64";
+                ρσ_d["icon-height"] = "64";
                 return ρσ_d;
             }).call(this);
             return ρσ_d;
@@ -6440,7 +6460,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, [(ρσ_expr_temp = option.choices)[ρσ_bound_index(option.default, ρσ_expr_temp)]].concat([ρσ_desugar_kwargs({id: name, class_: "input select beyond20-option-input", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-combobox"})]));
             } else if ((option.type === "link" || typeof option.type === "object" && ρσ_equals(option.type, "link"))) {
-                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4(title)].concat([ρσ_desugar_kwargs({href: option.default})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "link-image", src: chrome.extension.getURL(option.icon)})])].concat([ρσ_desugar_kwargs({class_: "image-link"})]))].concat([ρσ_desugar_kwargs({href: option.default})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", id: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-link"})]));
+                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4(title)].concat([ρσ_desugar_kwargs({href: option.default})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "link-image", width: option["icon-width"], height: option["icon-height"], src: (option.icon.startsWith("/")) ? chrome.extension.getURL(option.icon) : option.icon})])].concat([ρσ_desugar_kwargs({class_: "image-link"})]))].concat([ρσ_desugar_kwargs({href: option.default})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", id: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-link"})]));
             } else if ((option.type === "special" || typeof option.type === "object" && ρσ_equals(option.type, "special"))) {
                 e = option.createHTMLElement(name, short);
             }
@@ -6722,7 +6742,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function createVTTTabSetting(name, short) {
             var dropdown_options, vtt, campaign;
-            dropdown_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller" ]);
+            dropdown_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller & Discord" ]);
             if (short) {
                 vtt = (isFVTT(current_tab.title)) ? "Foundry VTT" : "Roll20";
                 campaign = ((vtt === "Foundry VTT" || typeof vtt === "object" && ρσ_equals(vtt, "Foundry VTT"))) ? "World" : "Campaign";
@@ -6747,7 +6767,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             } else if (val.title === null) {
                 vtt = ρσ_exists.e(val.vtt, "roll20");
                 if ((vtt === "dndbeyond" || typeof vtt === "object" && ρσ_equals(vtt, "dndbeyond"))) {
-                    choice = "D&D Beyond Dice Roller";
+                    choice = "D&D Beyond Dice Roller & Discord";
                 } else {
                     vtt_name = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Roll 20" : "Foundry VTT";
                     choice = "Only " + vtt_name + " Tabs";
@@ -6773,7 +6793,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     } else if ((id === current_id || typeof id === "object" && ρσ_equals(id, current_id)) && (title === current_title || typeof title === "object" && ρσ_equals(title, current_title)) && (current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
                         $("#" + name).text("This Specific Tab");
                     } else {
-                        new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller", "This " + current_campaign, "This Specific Tab" ]);
+                        new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller & Discord", "This " + current_campaign, "This Specific Tab" ]);
                         if ((current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
                             new_options.append("Another tab or " + campaign.toLowerCase() + "(No change)");
                         } else {
@@ -6783,7 +6803,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else {
                     console.log("Set vtt tab, is LONG ", val);
                     console.log("vtt-tab settings are : ", id, title, vtt);
-                    new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller", campaign + ": " + title ]);
+                    new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller & Discord", campaign + ": " + title ]);
                     if ((id !== 0 && (typeof id !== "object" || ρσ_not_equals(id, 0)))) {
                         new_options.append("Tab #" + id + " (" + title + ")");
                     }
@@ -6844,7 +6864,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["vtt"] = "fvtt";
                     return ρσ_d;
                 }).call(this);
-            } else if ((value === "D&D Beyond Dice Roller" || typeof value === "object" && ρσ_equals(value, "D&D Beyond Dice Roller"))) {
+            } else if ((value === "D&D Beyond Dice Roller & Discord" || typeof value === "object" && ρσ_equals(value, "D&D Beyond Dice Roller & Discord"))) {
                 ret = (function(){
                     var ρσ_d = {};
                     ρσ_d["id"] = 0;

@@ -5972,6 +5972,24 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = null;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["discord-integration"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Discord Integration";
+                ρσ_d["description"] = "You can get rolls sent to Discord by enabling Discord Integration!\nClick the link, follow the instructions and enter your secret key below.";
+                ρσ_d["type"] = "link";
+                ρσ_d["default"] = "https://beyond20.here-for-more.info/discord";
+                ρσ_d["icon"] = "https://discordapp.com/assets/fc0b01fe10a0b8c602fb0106d8189d9b.png";
+                ρσ_d["icon-height"] = "80";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["discord-secret"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Discord Bot Secret Key";
+                ρσ_d["description"] = "Enter the secret key the Bot gave you, or Discord server owner. Clear it to disable Discord integration.\nNote that sending to Discord only works with the D&D Beyond Dice Roller, and Foundry VTT.";
+                ρσ_d["type"] = "string";
+                ρσ_d["default"] = "";
+                return ρσ_d;
+            }).call(this);
             ρσ_d["show-changelog"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Show Changelog when installing a new version";
@@ -5984,7 +6002,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 var ρσ_d = {};
                 ρσ_d["description"] = "Last version that was installed. Used to check if an update just happened";
                 ρσ_d["type"] = "string";
-                ρσ_d["hidden"] = "True";
+                ρσ_d["hidden"] = true;
                 ρσ_d["default"] = "";
                 return ρσ_d;
             }).call(this);
@@ -5995,7 +6013,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["description"] = "If you wish to support my work on Beyond 20 or my other D&D related project, subscribe to my patreon or donate via paypal!\nI am grateful for your generosity!";
                 ρσ_d["type"] = "link";
                 ρσ_d["default"] = "https://beyond20.here-for-more.info/rations";
-                ρσ_d["icon"] = "images/donate.png";
+                ρσ_d["icon"] = "/images/donate.png";
+                ρσ_d["icon-width"] = "64";
+                ρσ_d["icon-height"] = "64";
                 return ρσ_d;
             }).call(this);
             return ρσ_d;
@@ -6441,7 +6461,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, [(ρσ_expr_temp = option.choices)[ρσ_bound_index(option.default, ρσ_expr_temp)]].concat([ρσ_desugar_kwargs({id: name, class_: "input select beyond20-option-input", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-combobox"})]));
             } else if ((option.type === "link" || typeof option.type === "object" && ρσ_equals(option.type, "link"))) {
-                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4(title)].concat([ρσ_desugar_kwargs({href: option.default})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "link-image", src: chrome.extension.getURL(option.icon)})])].concat([ρσ_desugar_kwargs({class_: "image-link"})]))].concat([ρσ_desugar_kwargs({href: option.default})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", id: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-link"})]));
+                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4(title)].concat([ρσ_desugar_kwargs({href: option.default})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "link-image", width: option["icon-width"], height: option["icon-height"], src: (option.icon.startsWith("/")) ? chrome.extension.getURL(option.icon) : option.icon})])].concat([ρσ_desugar_kwargs({class_: "image-link"})]))].concat([ρσ_desugar_kwargs({href: option.default})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", id: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-link"})]));
             } else if ((option.type === "special" || typeof option.type === "object" && ρσ_equals(option.type, "special"))) {
                 e = option.createHTMLElement(name, short);
             }
@@ -6723,7 +6743,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function createVTTTabSetting(name, short) {
             var dropdown_options, vtt, campaign;
-            dropdown_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller" ]);
+            dropdown_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller & Discord" ]);
             if (short) {
                 vtt = (isFVTT(current_tab.title)) ? "Foundry VTT" : "Roll20";
                 campaign = ((vtt === "Foundry VTT" || typeof vtt === "object" && ρσ_equals(vtt, "Foundry VTT"))) ? "World" : "Campaign";
@@ -6748,7 +6768,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             } else if (val.title === null) {
                 vtt = ρσ_exists.e(val.vtt, "roll20");
                 if ((vtt === "dndbeyond" || typeof vtt === "object" && ρσ_equals(vtt, "dndbeyond"))) {
-                    choice = "D&D Beyond Dice Roller";
+                    choice = "D&D Beyond Dice Roller & Discord";
                 } else {
                     vtt_name = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Roll 20" : "Foundry VTT";
                     choice = "Only " + vtt_name + " Tabs";
@@ -6774,7 +6794,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     } else if ((id === current_id || typeof id === "object" && ρσ_equals(id, current_id)) && (title === current_title || typeof title === "object" && ρσ_equals(title, current_title)) && (current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
                         $("#" + name).text("This Specific Tab");
                     } else {
-                        new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller", "This " + current_campaign, "This Specific Tab" ]);
+                        new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller & Discord", "This " + current_campaign, "This Specific Tab" ]);
                         if ((current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
                             new_options.append("Another tab or " + campaign.toLowerCase() + "(No change)");
                         } else {
@@ -6784,7 +6804,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else {
                     console.log("Set vtt tab, is LONG ", val);
                     console.log("vtt-tab settings are : ", id, title, vtt);
-                    new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller", campaign + ": " + title ]);
+                    new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller & Discord", campaign + ": " + title ]);
                     if ((id !== 0 && (typeof id !== "object" || ρσ_not_equals(id, 0)))) {
                         new_options.append("Tab #" + id + " (" + title + ")");
                     }
@@ -6845,7 +6865,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["vtt"] = "fvtt";
                     return ρσ_d;
                 }).call(this);
-            } else if ((value === "D&D Beyond Dice Roller" || typeof value === "object" && ρσ_equals(value, "D&D Beyond Dice Roller"))) {
+            } else if ((value === "D&D Beyond Dice Roller & Discord" || typeof value === "object" && ρσ_equals(value, "D&D Beyond Dice Roller & Discord"))) {
                 ret = (function(){
                     var ρσ_d = {};
                     ρσ_d["id"] = 0;
@@ -6921,7 +6941,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
     (function(){
         var __name__ = "constants";
-        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTERS_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_COMBAT_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
+        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTERS_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_COMBAT_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, DISCORD_BOT_INVITE_URL, DISCORD_BOT_API_URL, BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
         ROLL20_URL = "*://app.roll20.net/editor/";
         FVTT_URL = "*://*/game";
         DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
@@ -6932,6 +6952,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
         DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
         CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
+        DISCORD_BOT_INVITE_URL = "https://beyond20.kicks-ass.org/invite";
+        DISCORD_BOT_API_URL = "https://beyond20.kicks-ass.org/roll";
         BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
         ROLLTYPE_STYLE_CSS = "\n\n.ct-beyond20-roll .ct-beyond20-roll-button {\n    position: relative;\n    margin-top: 7px;\n}\n\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-double:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-double:after {\n    content: \"2\";\n    position: absolute;\n    padding: 2px;\n    background-color: blue;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-query:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-query:after {\n    content: \"?\";\n    position: absolute;\n    padding: 2px;\n    background-color: grey;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-thrice:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-thrice:after {\n    content: \"3\";\n    position: absolute;\n    padding: 2px;\n    background-color: blue;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-advantage:after {\n    content: \"+\";\n    position: absolute;\n    padding: 2px;\n    background-color: green;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-disadvantage:after {\n    content: \"-\";\n    position: absolute;\n    padding: 2px;\n    background-color: red;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-advantage:after {\n    content: \"+ +\";\n    position: absolute;\n    padding: 2px;\n    background-color: green;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-disadvantage:after {\n    content: \"- -\";\n    position: absolute;\n    padding: 2px;\n    background-color: red;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n";
         ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
@@ -6944,6 +6966,8 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.constants.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
         ρσ_modules.constants.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
         ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
+        ρσ_modules.constants.DISCORD_BOT_INVITE_URL = DISCORD_BOT_INVITE_URL;
+        ρσ_modules.constants.DISCORD_BOT_API_URL = DISCORD_BOT_API_URL;
         ρσ_modules.constants.BUTTON_STYLE_CSS = BUTTON_STYLE_CSS;
         ρσ_modules.constants.ROLLTYPE_STYLE_CSS = ROLLTYPE_STYLE_CSS;
     })();
@@ -7017,7 +7041,13 @@ var str = ρσ_str, repr = ρσ_repr;;
             $("main").prepend(ρσ_interpolate_kwargs.call(E, E.ul, options.concat([ρσ_desugar_kwargs({class_: "list-group beyond20-options"})])));
             $(".beyond20-options").append(ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4("More Options")].concat([ρσ_desugar_kwargs({id: "openOptions", class_: "list-content", href: "#"})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option"})])));
             img = $("#donate").find("img");
-            img.attr("src", img.attr("src").replace("donate.png", "donate32.png"));
+            img.attr((function(){
+                var ρσ_d = {};
+                ρσ_d["src"] = img.attr("src").replace("donate.png", "donate32.png");
+                ρσ_d["width"] = 32;
+                ρσ_d["height"] = 32;
+                return ρσ_d;
+            }).call(this));
             $("#openOptions").on("click", (function() {
                 var ρσ_anonfunc = function (ev) {
                     chrome.runtime.openOptionsPage();

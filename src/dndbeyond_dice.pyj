@@ -31,6 +31,9 @@ class DNDBDisplayer:
             buttons[button]()
         )
 
+    def displayError(self, message):
+        alertify.error(message)
+
     def setError(self, error):
         self._error = error
 
@@ -135,6 +138,13 @@ class DNDBDice:
     def rolls(self):
         return self._rolls or []
 
+    def toJSON(self):
+        return {
+            "total": self.total,
+            "formula": self.formula,
+            "rolls": self.rolls
+        }
+
 class DNDBRoll(Beyond20BaseRoll):
     def __init__(self, formula, data={}):
         formula = formula.replace("ro<2", "r<=2")
@@ -180,6 +190,9 @@ class DNDBRoll(Beyond20BaseRoll):
             if isinstance(part, DNDBDice):
                 dice.append(part)
         return dice
+    @property
+    def parts(self):
+        return self._parts
 
     def roll(self):
         self._total = 0

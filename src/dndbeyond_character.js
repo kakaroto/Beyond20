@@ -3729,12 +3729,13 @@ var str = ρσ_str, repr = ρσ_repr;;
     ρσ_modules.utils = {};
     ρσ_modules.settings = {};
     ρσ_modules.math = {};
+    ρσ_modules.constants = {};
+    ρσ_modules.dndbeyond_discord = {};
     ρσ_modules.roll_renderer = {};
     ρσ_modules.dndbeyond_dice = {};
     ρσ_modules.encodings = {};
     ρσ_modules.uuid = {};
     ρσ_modules.dndbeyond = {};
-    ρσ_modules.constants = {};
 
     (function(){
         var __name__ = "elementmaker";
@@ -5826,6 +5827,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = true;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["initiative-tiebreaker"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Add tiebreaker to initiative rolls";
+                ρσ_d["description"] = "Adds the dexterity score as a decimal to initiative rolls to break any initiative ties.";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             ρσ_d["critical-homebrew"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Critical hit rule";
@@ -5970,6 +5979,24 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = null;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["discord-integration"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Discord Integration";
+                ρσ_d["description"] = "You can get rolls sent to Discord by enabling Discord Integration!\nClick the link, follow the instructions and enter your secret key below.";
+                ρσ_d["type"] = "link";
+                ρσ_d["default"] = "https://beyond20.here-for-more.info/discord";
+                ρσ_d["icon"] = "https://discordapp.com/assets/fc0b01fe10a0b8c602fb0106d8189d9b.png";
+                ρσ_d["icon-height"] = "80";
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["discord-secret"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Discord Bot Secret Key";
+                ρσ_d["description"] = "Enter the secret key the Bot gave you, or Discord server owner. Clear it to disable Discord integration.\nNote that sending to Discord only works with the D&D Beyond Dice Roller, and Foundry VTT.";
+                ρσ_d["type"] = "string";
+                ρσ_d["default"] = "";
+                return ρσ_d;
+            }).call(this);
             ρσ_d["show-changelog"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Show Changelog when installing a new version";
@@ -5982,7 +6009,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 var ρσ_d = {};
                 ρσ_d["description"] = "Last version that was installed. Used to check if an update just happened";
                 ρσ_d["type"] = "string";
-                ρσ_d["hidden"] = "True";
+                ρσ_d["hidden"] = true;
                 ρσ_d["default"] = "";
                 return ρσ_d;
             }).call(this);
@@ -5993,7 +6020,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["description"] = "If you wish to support my work on Beyond 20 or my other D&D related project, subscribe to my patreon or donate via paypal!\nI am grateful for your generosity!";
                 ρσ_d["type"] = "link";
                 ρσ_d["default"] = "https://beyond20.here-for-more.info/rations";
-                ρσ_d["icon"] = "images/donate.png";
+                ρσ_d["icon"] = "/images/donate.png";
+                ρσ_d["icon-width"] = "64";
+                ρσ_d["icon-height"] = "64";
                 return ρσ_d;
             }).call(this);
             return ρσ_d;
@@ -6439,7 +6468,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.h4, [title].concat([ρσ_desugar_kwargs({class_: "select"})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.a, [(ρσ_expr_temp = option.choices)[ρσ_bound_index(option.default, ρσ_expr_temp)]].concat([ρσ_desugar_kwargs({id: name, class_: "input select beyond20-option-input", href: ""})])), ρσ_interpolate_kwargs.call(E, E.ul, dropdown_options.concat([ρσ_desugar_kwargs({class_: "dropdown-menu"})])), ρσ_interpolate_kwargs.call(E, E.i, [ρσ_desugar_kwargs({id: name + "--icon", class_: "icon select"})])].concat([ρσ_desugar_kwargs({class_: "button-group"})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", for_: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-combobox"})]));
             } else if ((option.type === "link" || typeof option.type === "object" && ρσ_equals(option.type, "link"))) {
-                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4(title)].concat([ρσ_desugar_kwargs({href: option.default})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "link-image", src: chrome.extension.getURL(option.icon)})])].concat([ρσ_desugar_kwargs({class_: "image-link"})]))].concat([ρσ_desugar_kwargs({href: option.default})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", id: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-link"})]));
+                e = ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.label, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4(title)].concat([ρσ_desugar_kwargs({href: option.default})]))].concat(description_p).concat([ρσ_interpolate_kwargs.call(E, E.a, [ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.img, [ρσ_desugar_kwargs({class_: "link-image", width: option["icon-width"], height: option["icon-height"], src: (option.icon.startsWith("/")) ? chrome.extension.getURL(option.icon) : option.icon})])].concat([ρσ_desugar_kwargs({class_: "image-link"})]))].concat([ρσ_desugar_kwargs({href: option.default})]))]).concat([ρσ_desugar_kwargs({class_: "list-content", id: name})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option beyond20-option-link"})]));
             } else if ((option.type === "special" || typeof option.type === "object" && ρσ_equals(option.type, "special"))) {
                 e = option.createHTMLElement(name, short);
             }
@@ -6721,7 +6750,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function createVTTTabSetting(name, short) {
             var dropdown_options, vtt, campaign;
-            dropdown_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller" ]);
+            dropdown_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller & Discord" ]);
             if (short) {
                 vtt = (isFVTT(current_tab.title)) ? "Foundry VTT" : "Roll20";
                 campaign = ((vtt === "Foundry VTT" || typeof vtt === "object" && ρσ_equals(vtt, "Foundry VTT"))) ? "World" : "Campaign";
@@ -6746,7 +6775,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             } else if (val.title === null) {
                 vtt = ρσ_exists.e(val.vtt, "roll20");
                 if ((vtt === "dndbeyond" || typeof vtt === "object" && ρσ_equals(vtt, "dndbeyond"))) {
-                    choice = "D&D Beyond Dice Roller";
+                    choice = "D&D Beyond Dice Roller & Discord";
                 } else {
                     vtt_name = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Roll 20" : "Foundry VTT";
                     choice = "Only " + vtt_name + " Tabs";
@@ -6772,7 +6801,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     } else if ((id === current_id || typeof id === "object" && ρσ_equals(id, current_id)) && (title === current_title || typeof title === "object" && ρσ_equals(title, current_title)) && (current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
                         $("#" + name).text("This Specific Tab");
                     } else {
-                        new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller", "This " + current_campaign, "This Specific Tab" ]);
+                        new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller & Discord", "This " + current_campaign, "This Specific Tab" ]);
                         if ((current_vtt === vtt || typeof current_vtt === "object" && ρσ_equals(current_vtt, vtt))) {
                             new_options.append("Another tab or " + campaign.toLowerCase() + "(No change)");
                         } else {
@@ -6782,7 +6811,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 } else {
                     console.log("Set vtt tab, is LONG ", val);
                     console.log("vtt-tab settings are : ", id, title, vtt);
-                    new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller", campaign + ": " + title ]);
+                    new_options = ρσ_list_decorate([ "All VTT Tabs", "Only Roll20 Tabs", "Only Foundry VTT Tabs", "D&D Beyond Dice Roller & Discord", campaign + ": " + title ]);
                     if ((id !== 0 && (typeof id !== "object" || ρσ_not_equals(id, 0)))) {
                         new_options.append("Tab #" + id + " (" + title + ")");
                     }
@@ -6843,7 +6872,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_d["vtt"] = "fvtt";
                     return ρσ_d;
                 }).call(this);
-            } else if ((value === "D&D Beyond Dice Roller" || typeof value === "object" && ρσ_equals(value, "D&D Beyond Dice Roller"))) {
+            } else if ((value === "D&D Beyond Dice Roller & Discord" || typeof value === "object" && ρσ_equals(value, "D&D Beyond Dice Roller & Discord"))) {
                 ret = (function(){
                     var ρσ_d = {};
                     ρσ_d["id"] = 0;
@@ -7289,11 +7318,108 @@ var str = ρσ_str, repr = ρσ_repr;;
     })();
 
     (function(){
+        var __name__ = "constants";
+        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTERS_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_COMBAT_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, DISCORD_BOT_INVITE_URL, DISCORD_BOT_API_URL, BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
+        ROLL20_URL = "*://app.roll20.net/editor/";
+        FVTT_URL = "*://*/game";
+        DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
+        DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
+        DNDBEYOND_ENCOUNTERS_URL = "*://*.dndbeyond.com/my-encounters";
+        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
+        DNDBEYOND_COMBAT_URL = "*://*.dndbeyond.com/combat-tracker/*";
+        DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
+        DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
+        CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
+        DISCORD_BOT_INVITE_URL = "https://beyond20.kicks-ass.org/invite";
+        DISCORD_BOT_API_URL = "https://beyond20.kicks-ass.org/roll";
+        BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
+        ROLLTYPE_STYLE_CSS = "\n\n.ct-beyond20-roll .ct-beyond20-roll-button {\n    position: relative;\n    margin-top: 7px;\n}\n\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-double:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-double:after {\n    content: \"2\";\n    position: absolute;\n    padding: 2px;\n    background-color: blue;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-query:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-query:after {\n    content: \"?\";\n    position: absolute;\n    padding: 2px;\n    background-color: grey;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-thrice:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-thrice:after {\n    content: \"3\";\n    position: absolute;\n    padding: 2px;\n    background-color: blue;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-advantage:after {\n    content: \"+\";\n    position: absolute;\n    padding: 2px;\n    background-color: green;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-disadvantage:after {\n    content: \"-\";\n    position: absolute;\n    padding: 2px;\n    background-color: red;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-advantage:after {\n    content: \"+ +\";\n    position: absolute;\n    padding: 2px;\n    background-color: green;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-disadvantage:after {\n    content: \"- -\";\n    position: absolute;\n    padding: 2px;\n    background-color: red;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n";
+        ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
+        ρσ_modules.constants.FVTT_URL = FVTT_URL;
+        ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
+        ρσ_modules.constants.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
+        ρσ_modules.constants.DNDBEYOND_ENCOUNTERS_URL = DNDBEYOND_ENCOUNTERS_URL;
+        ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
+        ρσ_modules.constants.DNDBEYOND_COMBAT_URL = DNDBEYOND_COMBAT_URL;
+        ρσ_modules.constants.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
+        ρσ_modules.constants.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
+        ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
+        ρσ_modules.constants.DISCORD_BOT_INVITE_URL = DISCORD_BOT_INVITE_URL;
+        ρσ_modules.constants.DISCORD_BOT_API_URL = DISCORD_BOT_API_URL;
+        ρσ_modules.constants.BUTTON_STYLE_CSS = BUTTON_STYLE_CSS;
+        ρσ_modules.constants.ROLLTYPE_STYLE_CSS = ROLLTYPE_STYLE_CSS;
+    })();
+
+    (function(){
+        var __name__ = "dndbeyond_discord";
+        var DISCORD_BOT_API_URL = ρσ_modules.constants.DISCORD_BOT_API_URL;
+
+        async        function postToDiscord(secret, request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
+            var body, json;
+            secret = (secret || "").trim();
+            if (!secret) {
+                return;
+            }
+            body = (function(){
+                var ρσ_d = {};
+                ρσ_d["secret"] = secret;
+                ρσ_d["request"] = request;
+                ρσ_d["title"] = title;
+                ρσ_d["source"] = source;
+                ρσ_d["attributes"] = attributes;
+                ρσ_d["description"] = description;
+                ρσ_d["attack_rolls"] = attack_rolls;
+                ρσ_d["roll_info"] = roll_info;
+                ρσ_d["damage_rolls"] = damage_rolls;
+                ρσ_d["total_damages"] = total_damages;
+                ρσ_d["open"] = open;
+                return ρσ_d;
+            }).call(this);
+            request = window.fetch(DISCORD_BOT_API_URL, (function(){
+                var ρσ_d = {};
+                ρσ_d["method"] = "POST";
+                ρσ_d["headers"] = (function(){
+                    var ρσ_d = {};
+                    ρσ_d["Content-Type"] = "application/json; charset=utf-8";
+                    return ρσ_d;
+                }).call(this);
+                ρσ_d["body"] = JSON.stringify(body);
+                return ρσ_d;
+            }).call(this));
+            json = {};
+            try {
+                let response = await request;
+                json = await response.json();
+            } catch (ρσ_Exception) {
+                ρσ_last_exception = ρσ_Exception;
+                if (ρσ_Exception instanceof Error) {
+                    var e = ρσ_Exception;
+                    console.error(e);
+                    return e.message;
+                } else {
+                    throw ρσ_Exception;
+                }
+            }
+            if (json.error) {
+                console.error("Error from server : ", json.error);
+            }
+            return json.error;
+        };
+        if (!postToDiscord.__argnames__) Object.defineProperties(postToDiscord, {
+            __argnames__ : {value: ["secret", "request", "title", "source", "attributes", "description", "attack_rolls", "roll_info", "damage_rolls", "total_damages", "open"]}
+        });
+
+        ρσ_modules.dndbeyond_discord.postToDiscord = postToDiscord;
+    })();
+
+    (function(){
         var __name__ = "roll_renderer";
         var replaceRolls = ρσ_modules.utils.replaceRolls;
 
         var RollType = ρσ_modules.settings.RollType;
         var WhisperType = ρσ_modules.settings.WhisperType;
+
+        var postToDiscord = ρσ_modules.dndbeyond_discord.postToDiscord;
 
         var math = ρσ_modules.math;
 
@@ -7631,7 +7757,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             var async_function;
             async_function = async            function () {
-                var play_sound, buttons, makeCB, html, attr, ρσ_unpack, name, value, roll_html, i, roll, add_totals, total_damages, is_total, roll_name, kind_of_damage, regular, versatile, flags, key, button, character;
+                var play_sound, buttons, makeCB, html, attr, html_description, ρσ_unpack, name, value, roll_html, i, roll, add_totals, total_damages, is_total, roll_name, kind_of_damage, regular, versatile, flags, key, button, character;
                 play_sound = false;
                 buttons = {};
                 if ((request.whisper === WhisperType.prototype.HIDE_NAMES || typeof request.whisper === "object" && ρσ_equals(request.whisper, WhisperType.prototype.HIDE_NAMES))) {
@@ -7685,8 +7811,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                         }
                         html += "</table>";
                     }
-                    description = self.injectRollsInDescription(description).replace(/\n/g, "</br>");
-                    html += "<div class='beyond20-description'>" + description + "</div></details>";
+                    html_description = self.injectRollsInDescription(description).replace(/\n/g, "</br>");
+                    html += "<div class='beyond20-description'>" + html_description + "</div></details>";
                 } else {
                     html = "<div class='beyond20-title'>" + title + "</div>";
                 }
@@ -7775,6 +7901,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     is_total = roll === null;
                     is_total;
                     roll = self._roller.roll(total_damages[(typeof key === "number" && key < 0) ? total_damages.length + key : key]);
+                    total_damages[(typeof key === "number" && key < 0) ? total_damages.length + key : key] = roll;
                     roll_html = await self.rollToDetails(roll, is_total);
                     html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
                 }
@@ -7788,6 +7915,18 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if ((request.whisper === WhisperType.prototype.HIDE_NAMES || typeof request.whisper === "object" && ρσ_equals(request.whisper, WhisperType.prototype.HIDE_NAMES))) {
                     character = "???";
                 }
+                postToDiscord(self._settings["discord-secret"], request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open).then((function() {
+                    var ρσ_anonfunc = function (error) {
+                        if ((typeof error !== "undefined" && error !== null)) {
+                            console.log("async error is : ", error);
+                            self._displayer.displayError("Beyond20 Discord Integration: " + error);
+                        }
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["error"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
                 self._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound);
                 if (attack_rolls.length > 0) {
                     return attack_rolls.find((function() {
@@ -8498,6 +8637,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }, 
                 "set": function () { throw new AttributeError("can't set attribute") }
             }, 
+            "parts": {
+                "enumerable": true, 
+                "get": function parts() {
+                    var self = this;
+                    throw new Error("NotImplemented");
+                }, 
+                "set": function () { throw new AttributeError("can't set attribute") }
+            }, 
         });
         Beyond20BaseRoll.prototype.__init__ = function __init__() {
             var self = this;
@@ -8595,7 +8742,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             return self.checkRollForCrits((function() {
                 var ρσ_anonfunc = function (faces, value) {
                     var limit;
-                    limit = (self._critical_limit === null) ? 1 : self._fail_limit;
+                    limit = (self._fail_limit === null) ? 1 : self._fail_limit;
                     return value <= limit;
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
@@ -8604,6 +8751,21 @@ var str = ρσ_str, repr = ρσ_repr;;
                 return ρσ_anonfunc;
             })());
         };
+        Beyond20BaseRoll.prototype.toJSON = function toJSON() {
+            var self = this;
+            return (function(){
+                var ρσ_d = {};
+                ρσ_d["formula"] = self.formula;
+                ρσ_d["parts"] = self.parts;
+                ρσ_d["fail-limit"] = self._fail_limit;
+                ρσ_d["critical-limit"] = self._critical_limit;
+                ρσ_d["critical-failure"] = self.isCriticalFail();
+                ρσ_d["critical-success"] = self.isCriticalHit();
+                ρσ_d["discarded"] = self.isDiscarded();
+                ρσ_d["total"] = self.total;
+                return ρσ_d;
+            }).call(this);
+        };
         Beyond20BaseRoll.prototype.__repr__ = function __repr__ () {
                         return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
         };
@@ -8611,6 +8773,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             return this.__repr__();
         };
         Object.defineProperty(Beyond20BaseRoll.prototype, "__bases__", {value: []});
+        
         
         
         
@@ -8678,6 +8841,13 @@ var str = ρσ_str, repr = ρσ_repr;;
         };
         if (!DNDBDisplayer.prototype.postHTML.__argnames__) Object.defineProperties(DNDBDisplayer.prototype.postHTML, {
             __argnames__ : {value: ["request", "title", "html", "buttons", "character", "whisper", "play_sound"]}
+        });
+        DNDBDisplayer.prototype.displayError = function displayError(message) {
+            var self = this;
+            alertify.error(message);
+        };
+        if (!DNDBDisplayer.prototype.displayError.__argnames__) Object.defineProperties(DNDBDisplayer.prototype.displayError, {
+            __argnames__ : {value: ["message"]}
         });
         DNDBDisplayer.prototype.setError = function setError(error) {
             var self = this;
@@ -8903,6 +9073,16 @@ var str = ρσ_str, repr = ρσ_repr;;
             })(), 0);
             return self._total;
         };
+        DNDBDice.prototype.toJSON = function toJSON() {
+            var self = this;
+            return (function(){
+                var ρσ_d = {};
+                ρσ_d["total"] = self.total;
+                ρσ_d["formula"] = self.formula;
+                ρσ_d["rolls"] = self.rolls;
+                return ρσ_d;
+            }).call(this);
+        };
         DNDBDice.prototype.__repr__ = function __repr__ () {
                         return "<" + __name__ + "." + this.constructor.name + " #" + this.ρσ_object_id + ">";
         };
@@ -8969,6 +9149,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }, 
                 "set": function () { throw new AttributeError("can't set attribute") }
             }, 
+            "parts": {
+                "enumerable": true, 
+                "get": function parts() {
+                    var self = this;
+                    return self._parts;
+                }, 
+                "set": function () { throw new AttributeError("can't set attribute") }
+            }, 
         });
         DNDBRoll.prototype.__init__ = function __init__() {
             var self = this;
@@ -8999,7 +9187,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     self._parts.append(part);
                 } else {
                     try {
-                        part = int(part);
+                        part = float(part);
                         self._parts.append(part);
                     } catch (ρσ_Exception) {
                         ρσ_last_exception = ρσ_Exception;
@@ -9030,6 +9218,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     self._total += part;
                 }
             }
+            self._total = Math.round(self._total * 100) / 100;
         };
         DNDBRoll.prototype.getTooltip = function getTooltip() {
             var self = this;
@@ -9072,6 +9261,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 return this.__repr__();
         };
         Object.defineProperty(DNDBRoll.prototype, "__bases__", {value: [Beyond20BaseRoll]});
+        
         
         
         
@@ -9738,7 +9928,7 @@ return this.__repr__();
             self._name = null;
             self._type = _type;
             self._settings = null;
-            self._global_settings = global_settings;
+            self.setGlobalSettings(global_settings);
         };
         if (!CharacterBase.prototype.__init__.__argnames__) Object.defineProperties(CharacterBase.prototype.__init__, {
             __argnames__ : {value: ["_type", "global_settings"]}
@@ -9827,6 +10017,7 @@ return this.__repr__();
             CharacterBase.prototype.__init__.call(self, "Character", global_settings);
             self._abilities = ρσ_list_decorate([]);
             self._name = null;
+            self._avatar = null;
             self._id = null;
             self._race = null;
             self._level = null;
@@ -9861,6 +10052,12 @@ return this.__repr__();
                 self._name = $(".ct-character-tidbits__name").text();
                 if ((self._name === "" || typeof self._name === "object" && ρσ_equals(self._name, ""))) {
                     self._name = null;
+                }
+            }
+            if (self._avatar === null) {
+                self._avatar = $(".ct-character-tidbits__avatar").css("background-image").slice(5, -2);
+                if (!self._avatar.startsWith("http")) {
+                    self._avatar = null;
                 }
             }
             if (self._race === null) {
@@ -10295,6 +10492,7 @@ return this.__repr__();
             return (function(){
                 var ρσ_d = {};
                 ρσ_d["name"] = self._name;
+                ρσ_d["avatar"] = self._avatar;
                 ρσ_d["id"] = self._id;
                 ρσ_d["type"] = self.type();
                 ρσ_d["abilities"] = self._abilities.as_array();
@@ -10361,6 +10559,7 @@ return this.__repr__();
             self._stat_block = $(self._base);
             self._id = null;
             self._name = null;
+            self._avatar = null;
             self._meta = null;
             self._attributes = {};
             self._ac = null;
@@ -10391,7 +10590,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "stat_block")){
                 stat_block = ρσ_kwargs_obj.stat_block;
             }
-            var add_dice, inject_descriptions, base, quick_settings, link, attributes, label, value, cb, attr, abilities, prefix, makeCB, abbr, score, modifier, roll_initiative, initiative, ability, tidbits, data, saves, ρσ_unpack, mod, save, skills, name, skill, mon_skill, text, last, a, first, tidbit;
+            var add_dice, inject_descriptions, base, quick_settings, link, avatar, attributes, label, value, cb, attr, abilities, prefix, makeCB, abbr, score, modifier, roll_initiative, initiative, ability, tidbits, data, saves, ρσ_unpack, mod, save, skills, name, skill, mon_skill, text, last, a, first, tidbit;
             add_dice = self.getGlobalSetting("handle-stat-blocks", true);
             inject_descriptions = self.getGlobalSetting("subst-dndbeyond-stat-blocks", true);
             base = self._base;
@@ -10421,6 +10620,10 @@ return this.__repr__();
                 self._id = self._name;
             }
             self._meta = stat_block.find(base + "__meta").text().trim();
+            avatar = $(".details-aside .image a");
+            if (avatar.length > 0) {
+                self._avatar = avatar[0].href;
+            }
             attributes = stat_block.find(base + "__attributes " + base + "__attribute");
             var ρσ_Iter7 = ρσ_Iterable(attributes);
             for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
@@ -10644,15 +10847,21 @@ return this.__repr__();
         });
         Monster.prototype.rollInitiative = function rollInitiative() {
             var self = this;
-            var modifier, ability;
+            var modifier, initiative, tiebreaker, ability;
             var ρσ_Iter15 = ρσ_Iterable(self._abilities);
             for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
                 ability = ρσ_Iter15[ρσ_Index15];
                 if ((ability[1] === "DEX" || typeof ability[1] === "object" && ρσ_equals(ability[1], "DEX"))) {
                     modifier = ability[3];
-                    sendRoll(self, "initiative", "1d20" + modifier, (function(){
+                    initiative = modifier;
+                    if (self.getGlobalSetting("initiative-tiebreaker", false)) {
+                        tiebreaker = ability[2];
+                        initiative = float(initiative) + float(tiebreaker) / 100;
+                        initiative = (initiative >= 0) ? "+" + str(initiative) : str(initiative);
+                    }
+                    sendRoll(self, "initiative", "1d20" + initiative, (function(){
                         var ρσ_d = {};
-                        ρσ_d["initiative"] = modifier;
+                        ρσ_d["initiative"] = initiative;
                         return ρσ_d;
                     }).call(this));
                     break;
@@ -11042,6 +11251,7 @@ return this.__repr__();
             return (function(){
                 var ρσ_d = {};
                 ρσ_d["name"] = self._name;
+                ρσ_d["avatar"] = self._avatar;
                 ρσ_d["type"] = self.type();
                 ρσ_d["id"] = self._id;
                 ρσ_d["ac"] = self._ac;
@@ -11760,35 +11970,6 @@ return this.__repr__();
     })();
 
     (function(){
-        var __name__ = "constants";
-        var ROLL20_URL, FVTT_URL, DNDBEYOND_CHARACTER_URL, DNDBEYOND_MONSTER_URL, DNDBEYOND_ENCOUNTERS_URL, DNDBEYOND_ENCOUNTER_URL, DNDBEYOND_COMBAT_URL, DNDBEYOND_SPELL_URL, DNDBEYOND_VEHICLE_URL, CHANGELOG_URL, BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
-        ROLL20_URL = "*://app.roll20.net/editor/";
-        FVTT_URL = "*://*/game";
-        DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
-        DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
-        DNDBEYOND_ENCOUNTERS_URL = "*://*.dndbeyond.com/my-encounters";
-        DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
-        DNDBEYOND_COMBAT_URL = "*://*.dndbeyond.com/combat-tracker/*";
-        DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
-        DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
-        CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
-        BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
-        ROLLTYPE_STYLE_CSS = "\n\n.ct-beyond20-roll .ct-beyond20-roll-button {\n    position: relative;\n    margin-top: 7px;\n}\n\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-double:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-double:after {\n    content: \"2\";\n    position: absolute;\n    padding: 2px;\n    background-color: blue;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-query:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-query:after {\n    content: \"?\";\n    position: absolute;\n    padding: 2px;\n    background-color: grey;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-thrice:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-thrice:after {\n    content: \"3\";\n    position: absolute;\n    padding: 2px;\n    background-color: blue;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-advantage:after {\n    content: \"+\";\n    position: absolute;\n    padding: 2px;\n    background-color: green;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-disadvantage:after {\n    content: \"-\";\n    position: absolute;\n    padding: 2px;\n    background-color: red;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-advantage:after {\n    content: \"+ +\";\n    position: absolute;\n    padding: 2px;\n    background-color: green;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-disadvantage:after {\n    content: \"- -\";\n    position: absolute;\n    padding: 2px;\n    background-color: red;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n";
-        ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
-        ρσ_modules.constants.FVTT_URL = FVTT_URL;
-        ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
-        ρσ_modules.constants.DNDBEYOND_MONSTER_URL = DNDBEYOND_MONSTER_URL;
-        ρσ_modules.constants.DNDBEYOND_ENCOUNTERS_URL = DNDBEYOND_ENCOUNTERS_URL;
-        ρσ_modules.constants.DNDBEYOND_ENCOUNTER_URL = DNDBEYOND_ENCOUNTER_URL;
-        ρσ_modules.constants.DNDBEYOND_COMBAT_URL = DNDBEYOND_COMBAT_URL;
-        ρσ_modules.constants.DNDBEYOND_SPELL_URL = DNDBEYOND_SPELL_URL;
-        ρσ_modules.constants.DNDBEYOND_VEHICLE_URL = DNDBEYOND_VEHICLE_URL;
-        ρσ_modules.constants.CHANGELOG_URL = CHANGELOG_URL;
-        ρσ_modules.constants.BUTTON_STYLE_CSS = BUTTON_STYLE_CSS;
-        ρσ_modules.constants.ROLLTYPE_STYLE_CSS = ROLLTYPE_STYLE_CSS;
-    })();
-
-    (function(){
 
         var __name__ = "__main__";
 
@@ -11896,12 +12077,25 @@ return this.__repr__();
         };
 
         function rollInitiative() {
-            var initiative, advantage, roll_properties;
+            var initiative, advantage, tiebreaker, roll_properties;
             initiative = $(".ct-initiative-box__value").text();
             advantage = $(".ct-initiative-box__advantage").length > 0;
             if ((initiative === "" || typeof initiative === "object" && ρσ_equals(initiative, ""))) {
                 initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text();
                 advantage = $(".ct-combat-mobile__advantage").length > 0;
+            }
+            if (character.getGlobalSetting("initiative-tiebreaker", false)) {
+                tiebreaker = character._abilities.reduce((function() {
+                    var ρσ_anonfunc = function (acc, abi) {
+                        return acc + (((abi[1] === "DEX" || typeof abi[1] === "object" && ρσ_equals(abi[1], "DEX"))) ? int(abi[2]) : 0);
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["acc", "abi"]}
+                    });
+                    return ρσ_anonfunc;
+                })(), 0);
+                initiative = float(initiative) + float(tiebreaker) / 100;
+                initiative = (initiative >= 0) ? "+" + str(initiative) : str(initiative);
             }
             roll_properties = (function(){
                 var ρσ_d = {};
@@ -11955,8 +12149,8 @@ return this.__repr__();
                 }
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                for (var ρσ_Index0 = 0; ρσ_Index0 < prop_list.length; ρσ_Index0++) {
-                    i = ρσ_Index0;
+                for (var ρσ_Index8 = 0; ρσ_Index8 < prop_list.length; ρσ_Index8++) {
+                    i = ρσ_Index8;
                     if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label").text(), "Damage:")) {
                         value = prop_list.eq(i).find(".ct-property-list__property-content");
                         damage = value.find(".ct-damage__value").text();
@@ -11988,8 +12182,8 @@ return this.__repr__();
                             damage_types.append(damage_type);
                         }
                         additional_damages = value.find(".ct-item-detail__additional-damage");
-                        for (var ρσ_Index1 = 0; ρσ_Index1 < additional_damages.length; ρσ_Index1++) {
-                            j = ρσ_Index1;
+                        for (var ρσ_Index9 = 0; ρσ_Index9 < additional_damages.length; ρσ_Index9++) {
+                            j = ρσ_Index9;
                             dmg = additional_damages.eq(j).text();
                             dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                             dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text();
@@ -12007,9 +12201,9 @@ return this.__repr__();
                 }
                 custom_damages = character.getSetting("custom-damage-dice", "");
                 if (len(custom_damages) > 0) {
-                    var ρσ_Iter2 = ρσ_Iterable(custom_damages.split(","));
-                    for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                        custom_damage = ρσ_Iter2[ρσ_Index2];
+                    var ρσ_Iter10 = ρσ_Iterable(custom_damages.split(","));
+                    for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                        custom_damage = ρσ_Iter10[ρσ_Index10];
                         damages.append(custom_damage.trim());
                         damage_types.append("Custom");
                     }
@@ -12193,9 +12387,9 @@ return this.__repr__();
                 }
                 custom_damages = character.getSetting("custom-damage-dice", "");
                 if (len(custom_damages) > 0) {
-                    var ρσ_Iter3 = ρσ_Iterable(custom_damages.split(","));
-                    for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                        custom_damage = ρσ_Iter3[ρσ_Index3];
+                    var ρσ_Iter11 = ρσ_Iterable(custom_damages.split(","));
+                    for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                        custom_damage = ρσ_Iter11[ρσ_Index11];
                         damages.append(custom_damage.trim());
                         damage_types.append("Custom");
                     }
@@ -12304,9 +12498,9 @@ return this.__repr__();
             if (force_display === false && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || temp_hp_modifiers.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null))))) {
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                var ρσ_Iter4 = ρσ_Iterable(damage_modifiers);
-                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                    modifier = ρσ_Iter4[ρσ_Index4];
+                var ρσ_Iter12 = ρσ_Iterable(damage_modifiers);
+                for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                    modifier = ρσ_Iter12[ρσ_Index12];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title");
                     if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
@@ -12328,9 +12522,9 @@ return this.__repr__();
                     damage_types.append("Arcane Firearm");
                 }
                 elementalAffinity = null;
-                var ρσ_Iter5 = ρσ_Iterable(character._class_features);
-                for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                    feature = ρσ_Iter5[ρσ_Index5];
+                var ρσ_Iter13 = ρσ_Iterable(character._class_features);
+                for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
+                    feature = ρσ_Iter13[ρσ_Index13];
                     match = feature.match("Elemental Affinity \\((.*)\\)");
                     if (match) {
                         elementalAffinity = match[1];
@@ -12338,18 +12532,18 @@ return this.__repr__();
                     }
                 }
                 if (elementalAffinity && ρσ_in(elementalAffinity, damage_types)) {
-                    var ρσ_Iter6 = ρσ_Iterable(character._abilities);
-                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                        ability = ρσ_Iter6[ρσ_Index6];
+                    var ρσ_Iter14 = ρσ_Iterable(character._abilities);
+                    for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
+                        ability = ρσ_Iter14[ρσ_Index14];
                         if ((ability[1] === "CHA" || typeof ability[1] === "object" && ρσ_equals(ability[1], "CHA")) && (ability[3] !== "" && (typeof ability[3] !== "object" || ρσ_not_equals(ability[3], ""))) && (ability[3] !== "0" && (typeof ability[3] !== "object" || ρσ_not_equals(ability[3], "0")))) {
                             damages.append(ability[3]);
                             damage_types.append(elementalAffinity + " (Elemental Affinity)");
                         }
                     }
                 }
-                var ρσ_Iter7 = ρσ_Iterable(healing_modifiers);
-                for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                    modifier = ρσ_Iter7[ρσ_Index7];
+                var ρσ_Iter15 = ρσ_Iterable(healing_modifiers);
+                for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
+                    modifier = ρσ_Iter15[ρσ_Index15];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     if (dmg.startsWith("Regain ")) {
                         dmg = dmg.slice(7);
@@ -12362,9 +12556,9 @@ return this.__repr__();
                         damage_types.append("Healing");
                     }
                 }
-                var ρσ_Iter8 = ρσ_Iterable(temp_hp_modifiers);
-                for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                    modifier = ρσ_Iter8[ρσ_Index8];
+                var ρσ_Iter16 = ρσ_Iterable(temp_hp_modifiers);
+                for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
+                    modifier = ρσ_Iter16[ρσ_Index16];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     if (dmg.startsWith("Regain ")) {
                         dmg = dmg.slice(7);
@@ -12387,9 +12581,9 @@ return this.__repr__();
                 }
                 custom_damages = character.getSetting("custom-damage-dice", "");
                 if (len(custom_damages) > 0) {
-                    var ρσ_Iter9 = ρσ_Iterable(custom_damages.split(","));
-                    for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
-                        custom_damage = ρσ_Iter9[ρσ_Index9];
+                    var ρσ_Iter17 = ρσ_Iterable(custom_damages.split(","));
+                    for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
+                        custom_damage = ρσ_Iter17[ρσ_Index17];
                         damages.append(custom_damage.trim());
                         damage_types.append("Custom");
                     }
@@ -12405,9 +12599,9 @@ return this.__repr__();
                     ρσ_d["ritual"] = ritual;
                     return ρσ_d;
                 }).call(this);
-                var ρσ_Iter10 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
-                    key = ρσ_Iter10[ρσ_Index10];
+                var ρσ_Iter18 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
+                    key = ρσ_Iter18[ρσ_Index18];
                     roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
                 }
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
@@ -12565,9 +12759,9 @@ return this.__repr__();
                 text_len = 0;
                 while (ρσ_not_equals(text_len, len(text))) {
                     text_len = len(text);
-                    var ρσ_Iter11 = ρσ_Iterable(character._abilities);
-                    for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
-                        ability = ρσ_Iter11[ρσ_Index11];
+                    var ρσ_Iter19 = ρσ_Iterable(character._abilities);
+                    for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
+                        ability = ρσ_Iter19[ρσ_Index19];
                         mod_string = " + your " + ability[0] + " modifier";
                         if (text.startsWith(mod_string)) {
                             strong.append(mod_string);
@@ -12575,9 +12769,9 @@ return this.__repr__();
                             text = text.substring(len(mod_string));
                         }
                     }
-                    var ρσ_Iter12 = ρσ_Iterable(character._classes);
-                    for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
-                        class_name = ρσ_Iter12[ρσ_Index12];
+                    var ρσ_Iter20 = ρσ_Iterable(character._classes);
+                    for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
+                        class_name = ρσ_Iter20[ρσ_Index20];
                         mod_string = " + your " + class_name.toLowerCase() + " level";
                         if (text.startsWith(mod_string)) {
                             strong.append(mod_string);
@@ -12613,9 +12807,9 @@ return this.__repr__();
                 return;
             }
             injectDiceToRolls(selector, character, name);
-            var ρσ_Iter13 = ρσ_Iterable($(".ct-beyond20-custom-roll"));
-            for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
-                custom_roll = ρσ_Iter13[ρσ_Index13];
+            var ρσ_Iter21 = ρσ_Iterable($(".ct-beyond20-custom-roll"));
+            for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
+                custom_roll = ρσ_Iter21[ρσ_Index21];
                 findModifiers(character, custom_roll);
             }
         };
@@ -12774,9 +12968,9 @@ return this.__repr__();
                         return ρσ_anonfunc;
                     })();
                     rows = $(".ct-spell-detail__description table tbody tr");
-                    var ρσ_Iter14 = ρσ_Iterable(rows);
-                    for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
-                        row = ρσ_Iter14[ρσ_Index14];
+                    var ρσ_Iter22 = ρσ_Iterable(rows);
+                    for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
+                        row = ρσ_Iter22[ρσ_Index22];
                         size = $(row).find("td").eq(0);
                         desc = $(row).find("td").eq(5);
                         m = re.search("(\\+[0-9]+) to hit, ([0-9]*d[0-9]+(?:\\s*[-+]\\s*[0-9]+)) damage", desc.text());
@@ -12850,9 +13044,9 @@ return this.__repr__();
                 j_conditions = $(".ct-condition-manage-pane .ct-toggle-field--enabled").closest(".ct-condition-manage-pane__condition");
                 exhaustion_level = $(".ct-condition-manage-pane__condition--special .ct-number-bar__option--active").text();
                 conditions = ρσ_list_decorate([]);
-                var ρσ_Iter15 = ρσ_Iterable(j_conditions);
-                for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
-                    cond = ρσ_Iter15[ρσ_Index15];
+                var ρσ_Iter23 = ρσ_Iterable(j_conditions);
+                for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
+                    cond = ρσ_Iter23[ρσ_Index23];
                     conditions.append(cond.textContent);
                 }
                 if ((exhaustion_level === "" || typeof exhaustion_level === "object" && ρσ_equals(exhaustion_level, ""))) {
@@ -12872,9 +13066,9 @@ return this.__repr__();
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group");
-            var ρσ_Iter16 = ρσ_Iterable(groups);
-            for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
-                group = ρσ_Iter16[ρσ_Index16];
+            var ρσ_Iter24 = ρσ_Iterable(groups);
+            for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
+                group = ρσ_Iter24[ρσ_Index24];
                 label = $(group).find(".ct-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -12883,9 +13077,9 @@ return this.__repr__();
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item");
-                    var ρσ_Iter17 = ρσ_Iterable(items);
-                    for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
-                        item = ρσ_Iter17[ρσ_Index17];
+                    var ρσ_Iter25 = ρσ_Iterable(items);
+                    for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
+                        item = ρσ_Iter25[ρσ_Index25];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -13064,9 +13258,9 @@ return this.__repr__();
             if (!settings["quick-rolls"]) {
                 return;
             }
-            var ρσ_Iter18 = ρσ_Iterable(abilities);
-            for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
-                ability = ρσ_Iter18[ρσ_Index18];
+            var ρσ_Iter26 = ρσ_Iterable(abilities);
+            for (var ρσ_Index26 = 0; ρσ_Index26 < ρσ_Iter26.length; ρσ_Index26++) {
+                ability = ρσ_Iter26[ρσ_Index26];
                 quickRollAbility = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -13085,9 +13279,9 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(ability), beyond20_tooltip, quickRollAbility);
             }
-            var ρσ_Iter19 = ρσ_Iterable(saving_throws);
-            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
-                save = ρσ_Iter19[ρσ_Index19];
+            var ρσ_Iter27 = ρσ_Iterable(saving_throws);
+            for (var ρσ_Index27 = 0; ρσ_Index27 < ρσ_Iter27.length; ρσ_Index27++) {
+                save = ρσ_Iter27[ρσ_Index27];
                 quickRollSave = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -13106,16 +13300,16 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(save), beyond20_tooltip, quickRollSave);
             }
-            var ρσ_Iter20 = ρσ_Iterable(skills);
-            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
-                skill = ρσ_Iter20[ρσ_Index20];
+            var ρσ_Iter28 = ρσ_Iterable(skills);
+            for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
+                skill = ρσ_Iter28[ρσ_Index28];
                 quickRollSkill = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane, paneClass, pane_name;
                         name = el.closest(".ct-skills__item").find(".ct-skills__col--skill").text();
-                        var ρσ_Iter21 = ρσ_Iterable(ρσ_list_decorate([ "ct-skill-pane", "ct-custom-skill-pane" ]));
-                        for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
-                            paneClass = ρσ_Iter21[ρσ_Index21];
+                        var ρσ_Iter29 = ρσ_Iterable(ρσ_list_decorate([ "ct-skill-pane", "ct-custom-skill-pane" ]));
+                        for (var ρσ_Index29 = 0; ρσ_Index29 < ρσ_Iter29.length; ρσ_Index29++) {
+                            paneClass = ρσ_Iter29[ρσ_Index29];
                             pane = $("." + paneClass);
                             if (pane.length > 0) {
                                 break;
@@ -13135,16 +13329,16 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(skill), beyond20_tooltip, quickRollSkill);
             }
-            var ρσ_Iter22 = ρσ_Iterable(actions);
-            for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
-                action = ρσ_Iter22[ρσ_Index22];
+            var ρσ_Iter30 = ρσ_Iterable(actions);
+            for (var ρσ_Index30 = 0; ρσ_Index30 < ρσ_Iter30.length; ρσ_Index30++) {
+                action = ρσ_Iter30[ρσ_Index30];
                 quickRollAction = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane, paneClass, pane_name;
                         name = el.closest(".ct-combat-attack").find(".ct-combat-attack__name .ct-combat-attack__label").text();
-                        var ρσ_Iter23 = ρσ_Iterable(ρσ_list_decorate([ "ct-item-pane", "ct-action-pane", "ct-custom-action-pane", "ct-spell-pane" ]));
-                        for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
-                            paneClass = ρσ_Iter23[ρσ_Index23];
+                        var ρσ_Iter31 = ρσ_Iterable(ρσ_list_decorate([ "ct-item-pane", "ct-action-pane", "ct-custom-action-pane", "ct-spell-pane" ]));
+                        for (var ρσ_Index31 = 0; ρσ_Index31 < ρσ_Iter31.length; ρσ_Index31++) {
+                            paneClass = ρσ_Iter31[ρσ_Index31];
                             pane = $("." + paneClass);
                             if (pane.length > 0) {
                                 break;
@@ -13164,9 +13358,9 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(action), beyond20_tooltip, quickRollAction);
             }
-            var ρσ_Iter24 = ρσ_Iterable(spells);
-            for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
-                spell = ρσ_Iter24[ρσ_Index24];
+            var ρσ_Iter32 = ρσ_Iterable(spells);
+            for (var ρσ_Index32 = 0; ρσ_Index32 < ρσ_Iter32.length; ρσ_Index32++) {
+                spell = ρσ_Iter32[ρσ_Index32];
                 quickRollSpell = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -13210,8 +13404,8 @@ return this.__repr__();
             activateQuickRolls();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index25 = 0; ρσ_Index25 < pane.length; ρσ_Index25++) {
-                    div = ρσ_Index25;
+                for (var ρσ_Index33 = 0; ρσ_Index33 < pane.length; ρσ_Index33++) {
+                    div = ρσ_Index33;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls")) || (paneClass === "ct-beyond20-settings-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-beyond20-settings-pane"))) {
                         continue;

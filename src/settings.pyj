@@ -177,6 +177,19 @@ options_list = {
                    "type": "special",
                    "default": None}, # callbacks will be added after the functions are defined
 
+    "discord-integration": {"title": "Discord Integration",
+               "description": "You can get rolls sent to Discord by enabling Discord Integration!\n" \
+                   "Click the link, follow the instructions and enter your secret key below.",
+               "type": "link",
+               "default": "https://beyond20.here-for-more.info/discord",
+               "icon": "https://discordapp.com/assets/fc0b01fe10a0b8c602fb0106d8189d9b.png",
+               "icon-height": "80"},
+
+    "discord-secret": {"title": "Discord Bot Secret Key",
+                        "description": "Enter the secret key the Bot gave you, or Discord server owner. Clear it to disable Discord integration.\n" \
+                            "Note that sending to Discord only works with the D&D Beyond Dice Roller, and Foundry VTT.",
+                        "type": "string",
+                        "default": ""},
 
     "show-changelog": {"title": "Show Changelog when installing a new version",
                        "description": "When a new version is released and the extension has been updated,\n" \
@@ -195,7 +208,9 @@ options_list = {
                    "or donate via paypal!\nI am grateful for your generosity!",
                "type": "link",
                "default": "https://beyond20.here-for-more.info/rations",
-               "icon": "/images/donate.png"}
+               "icon": "/images/donate.png",
+               "icon-width": "64",
+               "icon-height": "64"}
     }
 
 character_settings = {
@@ -410,7 +425,7 @@ def createHTMLOptionEx(name, option, short=False):
                      *description_p,
                      E.a(href=option.default,
                          E.div(class_="image-link",
-                               E.img(class_="link-image", src=chrome.extension.getURL(option.icon))
+                               E.img(class_="link-image", width=option['icon-width'], height=option['icon-height'], src=chrome.extension.getURL(option.icon) if option.icon.startsWith("/") else option.icon)
                                )
                          )
                      )
@@ -548,7 +563,7 @@ def createVTTTabSetting(name, short):
     dropdown_options = ["All VTT Tabs",
                         "Only Roll20 Tabs",
                         "Only Foundry VTT Tabs",
-                        "D&D Beyond Dice Roller"]
+                        "D&D Beyond Dice Roller & Discord"]
     if short:
         vtt = "Foundry VTT" if isFVTT(current_tab.title) else "Roll20"
         campaign = "World" if vtt == "Foundry VTT" else "Campaign"
@@ -569,7 +584,7 @@ def setVTTTabSetting(name, settings):
     elif val.title is None:
         vtt = val.vtt ? "roll20"
         if vtt == "dndbeyond":
-            choice = "D&D Beyond Dice Roller"
+            choice = "D&D Beyond Dice Roller & Discord"
         else:
             vtt_name = "Roll 20" if vtt == "roll20" else "Foundry VTT"
             choice = "Only " + vtt_name + " Tabs"
@@ -594,7 +609,7 @@ def setVTTTabSetting(name, settings):
                 new_options = [ "All VTT Tabs",
                                 "Only Roll20 Tabs",
                                 "Only Foundry VTT Tabs",
-                                "D&D Beyond Dice Roller",
+                                "D&D Beyond Dice Roller & Discord",
                                 "This " + current_campaign,
                                 "This Specific Tab"]
                 if current_vtt == vtt:
@@ -607,7 +622,7 @@ def setVTTTabSetting(name, settings):
             new_options = ["All VTT Tabs",
                            "Only Roll20 Tabs",
                            "Only Foundry VTT Tabs",
-                           "D&D Beyond Dice Roller",
+                           "D&D Beyond Dice Roller & Discord",
                            campaign + ": " + title]
             if id != 0:
                 new_options.append("Tab #" + id + " (" + title +")")
@@ -644,7 +659,7 @@ def getVTTTabSetting(name):
         ret = {"id": 0, "title": None, "vtt": "roll20"}
     elif value == "Only Foundry VTT Tabs":
         ret = {"id": 0, "title": None, "vtt": "fvtt"}
-    elif value == "D&D Beyond Dice Roller":
+    elif value == "D&D Beyond Dice Roller & Discord":
         ret = {"id": 0, "title": None, "vtt": "dndbeyond"}
     elif value.startsWith("Campaign: ") or value.startsWith("World: "):
         ret = {"id": 0, "title": saved_title, "vtt": saved_vtt}

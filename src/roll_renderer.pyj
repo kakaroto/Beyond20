@@ -1,5 +1,6 @@
 from utils import replaceRolls
 from settings import RollType, WhisperType
+from dndbeyond_discord import postToDiscord
 import math
 
 class DAMAGE_FLAGS:
@@ -188,8 +189,8 @@ class Beyond20RollRenderer:
                     for attr in attributes:
                         html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[attr] + "</td></tr>"
                     html += "</table>"
-                description = self.injectRollsInDescription(description).replace(/\n/g, "</br>")
-                html += "<div class='beyond20-description'>" + description + "</div></details>"
+                html_description = self.injectRollsInDescription(description).replace(/\n/g, "</br>")
+                html += "<div class='beyond20-description'>" + html_description + "</div></details>"
             else:
                 html = "<div class='beyond20-title'>" + title + "</div>"
 
@@ -250,6 +251,7 @@ class Beyond20RollRenderer:
                 # to satisfy lint
                 is_total
                 roll = self._roller.roll(total_damages[key])
+                total_damages[key] = roll
                 roll_html = v'await self.rollToDetails(roll, is_total)'
                 html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>"
 
@@ -259,6 +261,11 @@ class Beyond20RollRenderer:
             character = request.character.name
             if request.whisper == WhisperType.HIDE_NAMES:
                 character = "???"
+
+            postToDiscord(self._settings["discord-secret"], request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open).then(def (error):
+                if error?:
+                    self._displayer.displayError("Beyond20 Discord Integration: " + error)
+            )
             self._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound)
             if attack_rolls.length > 0:
                 return attack_rolls.find(def (r): return not r.isDiscarded();)
@@ -646,6 +653,9 @@ class Beyond20BaseRoll:
     @property
     def dice(self):
         raise Error("NotImplemented")
+    @property
+    def parts(self):
+        raise Error("NotImplemented")
 
     def getTooltip(self):
         raise Error("NotImplemented")
@@ -681,3 +691,14 @@ class Beyond20BaseRoll:
             limit = 1 if self._fail_limit is None else self._fail_limit
             return value <= limit
         )
+    def toJSON(self):
+        return {
+            "formula": self.formula,
+            "parts": self.parts,
+            "fail-limit": self._fail_limit,
+            "critical-limit": self._critical_limit,
+            "critical-failure": self.isCriticalFail(),
+            "critical-success": self.isCriticalHit(),
+            "discarded": self.isDiscarded(),
+            "total": self.total
+        }

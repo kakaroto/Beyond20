@@ -11,7 +11,7 @@ JS_FILES=src/background.js src/roll20.js src/roll20_script.js \
 	src/dndbeyond_character.js src/dndbeyond_monster.js \
 	src/dndbeyond_spell.js src/dndbeyond_encounter.js src/dndbeyond_items.js  \
 	src/dndbeyond_vehicle.js src/options.js  src/popup.js src/default_popup.js
-PYJ_DEPS=src/utils.pyj src/settings.pyj src/dndbeyond.pyj src/dndbeyond_dice.pyj src/constants.pyj src/roll_renderer.pyj
+PYJ_DEPS=src/utils.pyj src/settings.pyj src/dndbeyond.pyj src/dndbeyond_dice.pyj src/constants.pyj src/roll_renderer.pyj src/dndbeyond_discord.pyj
 
 src/fvtt_script.js: PYJ_GLOBALS='$$,chrome,game,canvas,Roll,ChatMessage,ui,Hooks,Dialog,ENTITY_PERMISSIONS,CONFIG,CHAT_MESSAGE_TYPES,CONST,CONFIG,isNewerVersion'
 src/utils.pyj-cached: PYJ_GLOBALS='$$,chrome,browser,cloneInto,alertify'
