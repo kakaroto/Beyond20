@@ -13371,7 +13371,7 @@ return this.__repr__();
                 quickRollSpell = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
-                        name = el.closest(".ct-spells-spell").find(".ct-spell-name").text();
+                        name = el.closest(".ct-spells-spell").find(".ct-spell-name").trigger("click").text();
                         pane_name = $(".ct-spell-pane .ct-sidebar__heading .ct-spell-name").text();
                         if ((name === pane_name || typeof name === "object" && ρσ_equals(name, pane_name))) {
                             execute("ct-spell-pane");

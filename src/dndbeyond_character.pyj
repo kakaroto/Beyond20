@@ -994,7 +994,7 @@ def activateQuickRolls():
     for spell in spells:
         quickRollSpell = def(el):
             nonlocal quick_roll
-            name = el.closest(".ct-spells-spell").find(".ct-spell-name").text()
+            name = el.closest(".ct-spells-spell").find(".ct-spell-name").trigger('click').text()
             # If same item, clicking will be a noop and it won't modify the document
             pane_name = $(".ct-spell-pane .ct-sidebar__heading .ct-spell-name").text()
             if name == pane_name:
