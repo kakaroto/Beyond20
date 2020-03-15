@@ -9,8 +9,14 @@
 		"storage",
 		"*://beyond20.kicks-ass.org/roll",
 		"*://app.roll20.net/editor/",
+		"*://*.forgevtt.com/game",
 		"*://*.dndbeyond.com/*"
 	],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "beyond20@kakaroto.homelinux.net"
+		}
+	},
 	"icons": {
 		"16": "images/icons/icon16.png",
 		"24": "images/icons/icon24.png",
@@ -139,6 +145,21 @@
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"src/dndbeyond_items.js"
+			]
+		},
+		{
+			"matches": [
+				"*://*.forgevtt.com/game"
+			],
+			"css": [
+				"libs/css/alertify.css",
+				"libs/css/alertify-themes/default.css",
+				"libs/css/alertify-themes/beyond20.css"
+			],
+			"js": [
+				"libs/alertify.min.js",
+				"libs/jquery-3.4.1.min.js",
+				"src/fvtt_test.js"
 			]
 		},
 		{
