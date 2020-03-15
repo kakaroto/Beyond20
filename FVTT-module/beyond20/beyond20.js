@@ -7,7 +7,7 @@ Hooks.on('ready', function () {
         default: true,
         type: Boolean
     });
-    if (typeof (chrome) !== "undefined" && typeof (browser) === "undefined" && game.settings.get("beyond20", "notifyAtLoad")) {
+    if (typeof (chrome) !== "undefined" && typeof (browser) === "undefined" && game.settings.get("beyond20", "notifyAtLoad") && document.title.startsWith("Foundry Virtual Tabletop")) {
         dialog = new Dialog({
             title: `Beyond20`,
             content: "<p>Beyond20 does not load automatically for FVTT games on Chrome.</p>" +
