@@ -111,11 +111,11 @@ def rollItem(force_display=False):
     prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property")
     properties = propertyListToDict(prop_list)
     #console.log("Properties are : " + str(properties))
-    item_name = $(".ct-item-pane .ct-item-name")[0].firstChild.textContent
+    item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name")[0].firstChild.textContent
     item_type = $(".ct-item-detail__intro").text()
     description = descriptionToString(".ct-item-detail__description")
     if force_display is False and "Damage" in properties:
-        item_full_name = $(".ct-item-pane .ct-item-name").text()
+        item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name").text()
         to_hit = properties["To Hit"] ? \
             findToHit(item_full_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit")
 
@@ -684,7 +684,7 @@ def injectRollButton(paneClass):
         addRollButtonEx(paneClass, ".ct-trait-pane__content", text="Display in VTT", image=False)
     elif paneClass == "ct-item-pane":
         nonlocal lastItemName
-        item_name = $(".ct-item-pane .ct-item-name").text()
+        item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name").text()
         if isRollButtonAdded() and item_name == lastItemName:
             return
         lastItemName = item_name
