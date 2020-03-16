@@ -9771,7 +9771,7 @@ return this.__repr__();
 
     (function(){
         var __name__ = "dndbeyond";
-        var ability_abbreviations, skill_abilities, last_character_used, button_class, button_class_small, key_modifiers, checkKeyModifiers;
+        var ability_abbreviations, skill_abilities, last_character_used, button_class, button_class_small, key_modifiers, checkKeyModifiers, resetKeyModifiers;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
         var alertQuickSettings = ρσ_modules.utils.alertQuickSettings;
         var isListEqual = ρσ_modules.utils.isListEqual;
@@ -11950,7 +11950,31 @@ return this.__repr__();
             });
             return ρσ_anonfunc;
         })();
-        $(document).keydown(checkKeyModifiers).keyup(checkKeyModifiers);
+        resetKeyModifiers = (function() {
+            var ρσ_anonfunc = function (event) {
+                var needsUpdate;
+                needsUpdate = Object.values(key_modifiers).some((function() {
+                    var ρσ_anonfunc = function (v) {
+                        return v;
+                    };
+                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                        __argnames__ : {value: ["v"]}
+                    });
+                    return ρσ_anonfunc;
+                })());
+                key_modifiers.ctrl = false;
+                key_modifiers.shift = false;
+                key_modifiers.alt = false;
+                if (needsUpdate) {
+                    updateRollTypeButtonClasses();
+                }
+            };
+            if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                __argnames__ : {value: ["event"]}
+            });
+            return ρσ_anonfunc;
+        })();
+        $(window).keydown(checkKeyModifiers).keyup(checkKeyModifiers).blur(resetKeyModifiers);
         ρσ_modules.dndbeyond.ability_abbreviations = ability_abbreviations;
         ρσ_modules.dndbeyond.skill_abilities = skill_abilities;
         ρσ_modules.dndbeyond.last_character_used = last_character_used;
@@ -11958,6 +11982,7 @@ return this.__repr__();
         ρσ_modules.dndbeyond.button_class_small = button_class_small;
         ρσ_modules.dndbeyond.key_modifiers = key_modifiers;
         ρσ_modules.dndbeyond.checkKeyModifiers = checkKeyModifiers;
+        ρσ_modules.dndbeyond.resetKeyModifiers = resetKeyModifiers;
         ρσ_modules.dndbeyond.Spell = Spell;
         ρσ_modules.dndbeyond.CharacterBase = CharacterBase;
         ρσ_modules.dndbeyond.Character = Character;

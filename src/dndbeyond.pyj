@@ -1227,6 +1227,7 @@ alertify.set("notifier", "position", "top-center")
 
 key_modifiers = {"alt": False, "ctrl": False, "shift": False}
 checkKeyModifiers = def(event):
+    nonlocal key_modifiers
     if event.originalEvent.repeat:
         return
     needsUpdate = Object.values(key_modifiers).some(def (v): return v;)
@@ -1236,4 +1237,12 @@ checkKeyModifiers = def(event):
     needsUpdate = needsUpdate or Object.values(key_modifiers).some(def (v): return v;)
     if needsUpdate:
         updateRollTypeButtonClasses()
-$(document).keydown(checkKeyModifiers).keyup(checkKeyModifiers)
+resetKeyModifiers = def(event):
+    nonlocal key_modifiers
+    needsUpdate = Object.values(key_modifiers).some(def (v): return v;)
+    key_modifiers.ctrl = False
+    key_modifiers.shift = False
+    key_modifiers.alt = False
+    if needsUpdate:
+        updateRollTypeButtonClasses()
+$(window).keydown(checkKeyModifiers).keyup(checkKeyModifiers).blur(resetKeyModifiers)
