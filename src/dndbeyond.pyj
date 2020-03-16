@@ -1034,7 +1034,7 @@ def sendRoll(character, rollType, fallback, args):
     chrome.runtime.sendMessage(req, def(resp): beyond20SendMessageFailure(character, resp);)
 
 def isRollButtonAdded():
-    return $(".ct-beyond20-roll").length > 0
+    return $(".ct-beyond20-roll,.ct-beyond20-roll-display").length > 0
 
 def isCustomRollIconsAdded():
     return $(".ct-beyond20-custom-roll").length > 0
@@ -1111,13 +1111,16 @@ def addRollButton(character, callback, where, small=False, append=False, prepend
     )
     return id
 
-def addDisplayButton(callback, where, text="Display in VTT"):
+def addDisplayButton(callback, where, text="Display in VTT", append=True, small=True):
     button = E.div(class_="ct-beyond20-roll-display",
-                   E.button(class_="ct-beyond20-dislay-button " + button_class_small.replace("filled", "outline"),
+                   E.button(class_="ct-beyond20-display-button " + (button_class_small if small else button_class).replace("filled", "outline"),
                             E.span(class_="ct-button__content", text)
                             )
                    )
-    $(where).append(button)
+    if append:
+        $(where).append(button)
+    else:
+        $(where).after(button)
     $(".ct-beyond20-roll-button").css({"margin-left": "auto",
                                        "margin-right": "auto"})
     $(".ct-beyond20-roll-display").css("margin-top", "2px")

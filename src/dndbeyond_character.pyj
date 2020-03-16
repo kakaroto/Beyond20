@@ -662,10 +662,10 @@ def addRollButtonEx(paneClass, where, small=False, append=False, prepend=False, 
         execute(paneClass)
     addRollButton(character, callback, where, small=small, append=append, prepend=prepend, image=image, text=text)
 
-def addDisplayButtonEx(paneClass, where, text="Display in VTT"):
+def addDisplayButtonEx(paneClass, where, text="Display in VTT", append=True, small=True):
     callback = def():
         displayPanel(paneClass)
-    addDisplayButton(callback, where, text)
+    addDisplayButton(callback, where, text, append, small)
 
 lastItemName = ""
 lastSpellName = ""
@@ -704,7 +704,7 @@ def injectRollButton(paneClass):
             addRollButtonEx(paneClass, ".ct-sidebar__heading", small=True)
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll")
         else:
-            addRollButtonEx(paneClass, ".ct-sidebar__heading", image=False)
+            addDisplayButtonEx(paneClass, ".ct-sidebar__heading", append=False, small=False)
             addRollButtonEx(paneClass, ".ct-item-detail__actions", small=True, append=True, image=False)
     elif paneClass in ["ct-action-pane", "ct-custom-action-pane"]:
         if isRollButtonAdded():
@@ -746,7 +746,8 @@ def injectRollButton(paneClass):
             addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on VTT", small=True)
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll")
         else:
-            addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on VTT", image=False)
+            #addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on VTT", image=False)
+            addDisplayButtonEx(paneClass, ".ct-sidebar__heading", append=False, small=False)
 
         if spell_name == "Animate Objects":
             nonlocal character

@@ -11545,7 +11545,7 @@ return this.__repr__();
         });
 
         function isRollButtonAdded() {
-            return $(".ct-beyond20-roll").length > 0;
+            return $(".ct-beyond20-roll,.ct-beyond20-roll-display").length > 0;
         };
 
         function isCustomRollIconsAdded() {
@@ -11682,14 +11682,26 @@ return this.__repr__();
             var callback = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var where = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
             var text = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addDisplayButton.__defaults__.text : arguments[2];
+            var append = (arguments[3] === undefined || ( 3 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addDisplayButton.__defaults__.append : arguments[3];
+            var small = (arguments[4] === undefined || ( 4 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? addDisplayButton.__defaults__.small : arguments[4];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "text")){
                 text = ρσ_kwargs_obj.text;
             }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "append")){
+                append = ρσ_kwargs_obj.append;
+            }
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "small")){
+                small = ρσ_kwargs_obj.small;
+            }
             var button;
-            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.button, [ρσ_interpolate_kwargs.call(E, E.span, [text].concat([ρσ_desugar_kwargs({class_: "ct-button__content"})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-dislay-button " + button_class_small.replace("filled", "outline")})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll-display"})]));
-            $(where).append(button);
+            button = ρσ_interpolate_kwargs.call(E, E.div, [ρσ_interpolate_kwargs.call(E, E.button, [ρσ_interpolate_kwargs.call(E, E.span, [text].concat([ρσ_desugar_kwargs({class_: "ct-button__content"})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-display-button " + ((small) ? button_class_small : button_class).replace("filled", "outline")})]))].concat([ρσ_desugar_kwargs({class_: "ct-beyond20-roll-display"})]));
+            if (append) {
+                $(where).append(button);
+            } else {
+                $(where).after(button);
+            }
             $(".ct-beyond20-roll-button").css((function(){
                 var ρσ_d = {};
                 ρσ_d["margin-left"] = "auto";
@@ -11708,9 +11720,9 @@ return this.__repr__();
             })());
         };
         if (!addDisplayButton.__defaults__) Object.defineProperties(addDisplayButton, {
-            __defaults__ : {value: {text:"Display in VTT"}},
+            __defaults__ : {value: {text:"Display in VTT", append:true, small:true}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["callback", "where", "text"]}
+            __argnames__ : {value: ["callback", "where", "text", "append", "small"]}
         });
 
         function addHitDieButtons(rollCallback) {
