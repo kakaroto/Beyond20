@@ -336,13 +336,13 @@ def rollAction(paneClass):
 
         brutal = 0
         critical_limit = 20
+        if character.hasClassFeature("Hexblade’s Curse") and \
+            character.getSetting("warlock-hexblade-curse", False):
+            critical_limit = 19
         # Polearm master bonus attack using the other end of the polearm is considered a melee attack.
         if action_name == "Polearm Master - Bonus Attack":
             if character.hasAction("Channel Divinity: Legendary Strike") and \
                 character.getSetting("paladin-legendary-strike", False):
-                critical_limit = 19
-            if character.hasClassFeature("Hexblade’s Curse") and \
-                character.getSetting("warlock-hexblade-curse", False):
                 critical_limit = 19
             if character.hasClassFeature("Improved Critical"):
                 critical_limit = 19
@@ -496,6 +496,10 @@ def rollSpell(force_display=False):
                 damages.append(custom_damage.trim())
                 damage_types.append("Custom")
 
+        critical_limit = 20
+        if character.hasClassFeature("Hexblade’s Curse") and \
+            character.getSetting("warlock-hexblade-curse", False):
+            critical_limit = 19
         roll_properties = buildAttackRoll(character,
                                           "spell",
                                           spell_name,
@@ -504,6 +508,9 @@ def rollSpell(force_display=False):
                                           damages,
                                           damage_types,
                                           to_hit)
+
+        if critical_limit != 20:
+            roll_properties["critical-limit"] = critical_limit
 
         spell_properties = {"level-school": level,
                             "concentration": concentration,

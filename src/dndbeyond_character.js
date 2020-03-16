@@ -7333,7 +7333,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         DISCORD_BOT_INVITE_URL = "https://beyond20.kicks-ass.org/invite";
         DISCORD_BOT_API_URL = "https://beyond20.kicks-ass.org/roll";
         BUTTON_STYLE_CSS = "\n.character-button, .character-button-small {\n    display: inline-block;\n    border-radius: 3px;\n    background-color: #96bf6b;\n    color: #fff;\n    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;\n    font-size: 10px;\n    border: 1px solid transparent;\n    text-transform: uppercase;\n    padding: 9px 15px;\n    transition: all 50ms;\n}\n.character-button-small {\n    font-size: 8px;\n    padding: 5px;\n    border-color: transparent;\n    min-height: 22px;\n}\n.ct-button.ct-theme-button {\n    cursor: default;\n}\n.ct-button.ct-theme-button--interactive {\n    cursor: pointer;\n}\n.ct-button.ct-theme-button--filled {\n    background-color: #c53131;\n    color: #fff;\n}\n";
-        ROLLTYPE_STYLE_CSS = "\n\n.ct-beyond20-roll .ct-beyond20-roll-button {\n    position: relative;\n    margin-top: 7px;\n}\n\n.ct-beyond20-roll .ct-beyond20-roll-button:after {\n    position: absolute;\n    padding: 2px;\n    opacity: 20%;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n}\n\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-double:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-double:after {\n    content: \"2\";\n    background-color: blue;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-query:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-query:after {\n    content: \"?\";\n    background-color: grey;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-thrice:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-thrice:after {\n    content: \"3\";\n    background-color: blue;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-advantage:after {\n    content: \"+\";\n    background-color: green;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-disadvantage:after {\n    content: \"-\";\n    background-color: red;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-advantage:after {\n    content: \"+ +\";\n    background-color: green;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-disadvantage:after {\n    content: \"- -\";\n    background-color: red;\n}\n";
+        ROLLTYPE_STYLE_CSS = "\n\n.ct-beyond20-roll .ct-beyond20-roll-button {\n    position: relative;\n    margin-top: 7px;\n}\n\n.ct-beyond20-roll .ct-beyond20-roll-button:after {\n    position: absolute;\n    padding: 2px;\n    top: -10px;\n    right: -5px;\n    font-size: 10px;\n    border-radius: 5px;\n    color: white;\n    opacity: 65%;\n}\n\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-double:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-double:after {\n    content: \"2\";\n    background-color: blue;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-query:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-query:after {\n    content: \"?\";\n    background-color: grey;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-thrice:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-thrice:after {\n    content: \"3\";\n    background-color: blue;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-advantage:after {\n    content: \"+\";\n    background-color: green;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-disadvantage:after {\n    content: \"-\";\n    background-color: red;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-advantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-advantage:after {\n    content: \"+ +\";\n    background-color: green;\n}\n.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-disadvantage:after,\n.beyond20-quick-roll-tooltip.beyond20-roll-type-super-disadvantage:after {\n    content: \"- -\";\n    background-color: red;\n}\n";
         ρσ_modules.constants.ROLL20_URL = ROLL20_URL;
         ρσ_modules.constants.FVTT_URL = FVTT_URL;
         ρσ_modules.constants.DNDBEYOND_CHARACTER_URL = DNDBEYOND_CHARACTER_URL;
@@ -12403,11 +12403,11 @@ return this.__repr__();
                 }
                 brutal = 0;
                 critical_limit = 20;
+                if (character.hasClassFeature("Hexblade’s Curse") && character.getSetting("warlock-hexblade-curse", false)) {
+                    critical_limit = 19;
+                }
                 if ((action_name === "Polearm Master - Bonus Attack" || typeof action_name === "object" && ρσ_equals(action_name, "Polearm Master - Bonus Attack"))) {
                     if (character.hasAction("Channel Divinity: Legendary Strike") && character.getSetting("paladin-legendary-strike", false)) {
-                        critical_limit = 19;
-                    }
-                    if (character.hasClassFeature("Hexblade’s Curse") && character.getSetting("warlock-hexblade-curse", false)) {
                         critical_limit = 19;
                     }
                     if (character.hasClassFeature("Improved Critical")) {
@@ -12470,7 +12470,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
                 force_display = ρσ_kwargs_obj.force_display;
             }
-            var properties, spell_source, spell_full_name, spell_name, description, damage_modifiers, healing_modifiers, temp_hp_modifiers, castas, level, concentration, ritual, duration, to_hit, damages, damage_types, dmg, dmgtype, modifier, elementalAffinity, match, feature, ability, spell_level, custom_damages, custom_damage, roll_properties, spell_properties, key;
+            var properties, spell_source, spell_full_name, spell_name, description, damage_modifiers, healing_modifiers, temp_hp_modifiers, castas, level, concentration, ritual, duration, to_hit, damages, damage_types, dmg, dmgtype, modifier, elementalAffinity, match, feature, ability, spell_level, custom_damages, custom_damage, critical_limit, roll_properties, spell_properties, key;
             properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"));
             spell_source = $(".ct-sidebar__header-parent").text();
             spell_full_name = $(".ct-sidebar__heading .ct-spell-name").text();
@@ -12595,7 +12595,14 @@ return this.__repr__();
                         damage_types.append("Custom");
                     }
                 }
+                critical_limit = 20;
+                if (character.hasClassFeature("Hexblade’s Curse") && character.getSetting("warlock-hexblade-curse", false)) {
+                    critical_limit = 19;
+                }
                 roll_properties = buildAttackRoll(character, "spell", spell_name, description, properties, damages, damage_types, to_hit);
+                if ((critical_limit !== 20 && (typeof critical_limit !== "object" || ρσ_not_equals(critical_limit, 20)))) {
+                    roll_properties["critical-limit"] = critical_limit;
+                }
                 spell_properties = (function(){
                     var ρσ_d = {};
                     ρσ_d["level-school"] = level;
