@@ -110,6 +110,7 @@ def rollItem(force_display=False):
 
     prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property")
     properties = propertyListToDict(prop_list)
+    properties["Properties"] = properties["Properties"] or ""
     #console.log("Properties are : " + str(properties))
     item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name")[0].firstChild.textContent
     item_type = $(".ct-item-detail__intro").text()
@@ -177,7 +178,7 @@ def rollItem(force_display=False):
         if "Rogue" in character._classes and \
                 character.getSetting("rogue-sneak-attack", False) and \
                 (properties["Attack Type"] == "Ranged" or \
-                     (properties["Properties"]? and properties["Properties"].includes("Finesse"))):
+                     properties["Properties"].includes("Finesse")):
             sneak_attack = int(math.ceil(float(character._classes["Rogue"]) / 2)) + "d6"
             damages.append(sneak_attack)
             damage_types.append("Sneak Attack")
