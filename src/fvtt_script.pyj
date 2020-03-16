@@ -180,15 +180,20 @@ def updateHP(name, current, total, temp):
 
     tokens = canvas.tokens.objects.children.filter(def(t): return t.name.toLowerCase() == name;)
 
-    data = {"data.attributes.hp.value": current, "data.attributes.hp.temp": temp, "data.attributes.hp.max": total}
+    dnd5e_data = {"data.attributes.hp.value": current, "data.attributes.hp.temp": temp, "data.attributes.hp.max": total}
+    sws_data = {"data.health.value": current + temp, "data.health.max": total}
     if len(tokens) == 0:
         actor = game.actors.entities.find(def(a): return a.owner and a.name.toLowerCase() == name;)
-        if actor?:
-            actor.update(data)
+        if actor?.data?.data?.attributes?.hp?:
+            actor.update(dnd5e_data)
+        elif actor?.data?.data?.health?:
+            actor.update(sws_data)
 
     for token in tokens:
-        if token.actor:
-            token.actor.update(data)
+        if token.actor?.data?.data?.attributes?.hp?::
+            token.actor.update(dnd5e_data)
+        elif token.actor?.data?.data?.health?:
+            actor.update(sws_data)
 
                                          
 def updateConditions(request, name, conditions, exhaustion):

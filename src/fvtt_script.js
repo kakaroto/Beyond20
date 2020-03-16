@@ -9235,7 +9235,7 @@ return this.__repr__();
         });
 
         function updateHP(name, current, total, temp) {
-            var tokens, data, actor, token;
+            var tokens, dnd5e_data, sws_data, actor, token;
             console.log("Updating HP for " + name + " : (" + current + "+" + temp + ")/" + total);
             name = name.toLowerCase();
             tokens = canvas.tokens.objects.children.filter((function() {
@@ -9247,11 +9247,17 @@ return this.__repr__();
                 });
                 return ρσ_anonfunc;
             })());
-            data = (function(){
+            dnd5e_data = (function(){
                 var ρσ_d = {};
                 ρσ_d["data.attributes.hp.value"] = current;
                 ρσ_d["data.attributes.hp.temp"] = temp;
                 ρσ_d["data.attributes.hp.max"] = total;
+                return ρσ_d;
+            }).call(this);
+            sws_data = (function(){
+                var ρσ_d = {};
+                ρσ_d["data.health.value"] = current + temp;
+                ρσ_d["data.health.max"] = total;
                 return ρσ_d;
             }).call(this);
             if (ρσ_equals(len(tokens), 0)) {
@@ -9264,15 +9270,21 @@ return this.__repr__();
                     });
                     return ρσ_anonfunc;
                 })());
-                if ((typeof actor !== "undefined" && actor !== null)) {
-                    actor.update(data);
+                if (ρσ_exists.n(ρσ_exists.d(ρσ_exists.d(ρσ_exists.d((typeof actor !== "undefined" && actor !== null ? actor : Object.create(null)).data).data).attributes).hp)) {
+                    actor.update(dnd5e_data);
+                } else if (ρσ_exists.n(ρσ_exists.d(ρσ_exists.d((typeof actor !== "undefined" && actor !== null ? actor : Object.create(null)).data).data).health)) {
+                    actor.update(sws_data);
                 }
             }
             var ρσ_Iter1 = ρσ_Iterable(tokens);
             for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
                 token = ρσ_Iter1[ρσ_Index1];
-                if (token.actor) {
-                    token.actor.update(data);
+                if (ρσ_exists.n(ρσ_exists.d(ρσ_exists.d(ρσ_exists.d(ρσ_exists.d(token.actor).data).data).attributes).hp)) {
+                    {
+                        token.actor.update(dnd5e_data);
+                    }
+                } else if (ρσ_exists.n(ρσ_exists.d(ρσ_exists.d(ρσ_exists.d(token.actor).data).data).health)) {
+                    actor.update(sws_data);
                 }
             }
         };
