@@ -16,6 +16,8 @@ class RollType:
     THRICE = 5
     SUPER_ADVANTAGE = 6
     SUPER_DISADVANTAGE = 7
+    # If a feat overrides it to have advantage
+    OVERRIDE_ADVANTAGE = 8
 
 class CriticalRules:
     PHB = 0

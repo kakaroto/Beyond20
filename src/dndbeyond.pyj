@@ -1017,12 +1017,8 @@ def sendRoll(character, rollType, fallback, args):
     if (character.type() == "Monster" or character.type() == "Vehicle") and whisper_monster != WhisperType.NO:
         whisper = whisper_monster
     advantage = int(character.getGlobalSetting("roll-type", RollType.NORMAL))
-    if key_modifiers.shift:
-        advantage = RollType.ADVANTAGE
-    elif key_modifiers.ctrl:
-        advantage = RollType.DISADVANTAGE
-    elif key_modifiers.alt:
-        advantage = RollType.NORMAL
+    if args["advantage"] == RollType.OVERRIDE_ADVANTAGE:
+        args["advantage"] =  RollType.SUPER_ADVANTAGE if advantage == RollType.SUPER_ADVANTAGE else RollType.ADVANTAGE
 
     # Default advantage/whisper would get overriden if they are part of provided args
     req = {"action": "roll", "character": character.getDict(), "type": rollType, "roll": fallback,
@@ -1031,6 +1027,13 @@ def sendRoll(character, rollType, fallback, args):
         req["critical-limit"] = 1
     for key in args:
         req[key] = args[key]
+    if key_modifiers.shift:
+        req["advantage"] = RollType.ADVANTAGE
+    elif key_modifiers.ctrl:
+        req["advantage"] = RollType.DISADVANTAGE
+    elif key_modifiers.alt:
+        req["advantage"] = RollType.NORMAL
+
     console.log("Sending message: ", req)
     chrome.runtime.sendMessage(req, def(resp): beyond20SendMessageFailure(character, resp);)
 

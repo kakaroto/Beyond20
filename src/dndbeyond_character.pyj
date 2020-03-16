@@ -36,7 +36,7 @@ def rollSkillCheck(paneClass):
     if ability == "STR" and \
         ((character.hasClassFeature("Rage") and character.getSetting("barbarian-rage", False)) or \
          (character.hasClassFeature("Giant Might") and character.getSetting("fighter-giant-might", False))):
-        roll_properties["advantage"] = RollType.ADVANTAGE
+        roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE
     sendRollWithCharacter("skill", "1d20" + modifier, roll_properties)
 
 def rollAbilityOrSavingThrow(paneClass, rollType):
@@ -59,7 +59,7 @@ def rollAbilityOrSavingThrow(paneClass, rollType):
     if ability == "STR" and \
         ((character.hasClassFeature("Rage") and character.getSetting("barbarian-rage", False)) or \
          (character.hasClassFeature("Giant Might") and character.getSetting("fighter-giant-might", False))):
-        roll_properties["advantage"] = RollType.ADVANTAGE
+        roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE
     sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties)
 
 def rollAbilityCheck():
@@ -91,7 +91,7 @@ def rollInitiative():
 
     roll_properties = {"initiative": initiative}
     if advantage:
-        roll_properties["advantage"] = RollType.ADVANTAGE
+        roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE
     sendRollWithCharacter("initiative", "1d20" + initiative, roll_properties)
 
 
@@ -287,7 +287,7 @@ def rollItem(force_display=False):
         if character.hasClassFeature("Assassinate") and \
            character.getSetting("rogue-assassinate", False):
             roll_properties["critical-limit"] = 1
-            roll_properties["advantage"] = RollType.ADVANTAGE
+            roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE
             character.mergeCharacterSettings({"rogue-assassinate": False})
         sendRollWithCharacter("attack", damages[0], roll_properties)
     else:
@@ -382,7 +382,7 @@ def rollAction(paneClass):
         if character.hasClassFeature("Assassinate") and \
            character.getSetting("rogue-assassinate", False):
             roll_properties["critical-limit"] = 1
-            roll_properties["advantage"] = RollType.ADVANTAGE
+            roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE
             character.mergeCharacterSettings({"rogue-assassinate": False})
         sendRollWithCharacter("attack", damages[0], roll_properties)
     else:
@@ -528,7 +528,7 @@ def rollSpell(force_display=False):
         if character.hasClassFeature("Assassinate") and \
            character.getSetting("rogue-assassinate", False):
             roll_properties["critical-limit"] = 1
-            roll_properties["advantage"] = RollType.ADVANTAGE
+            roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE
             character.mergeCharacterSettings({"rogue-assassinate": False})
 
         sendRollWithCharacter("spell-attack", damages[0] ? "", roll_properties)

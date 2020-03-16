@@ -5727,6 +5727,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         RollType.prototype.THRICE = 5;
         RollType.prototype.SUPER_ADVANTAGE = 6;
         RollType.prototype.SUPER_DISADVANTAGE = 7;
+        RollType.prototype.OVERRIDE_ADVANTAGE = 8;
 
         function CriticalRules() {
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
@@ -11504,12 +11505,8 @@ return this.__repr__();
                 whisper = whisper_monster;
             }
             advantage = int(character.getGlobalSetting("roll-type", RollType.prototype.NORMAL));
-            if (key_modifiers.shift) {
-                advantage = RollType.prototype.ADVANTAGE;
-            } else if (key_modifiers.ctrl) {
-                advantage = RollType.prototype.DISADVANTAGE;
-            } else if (key_modifiers.alt) {
-                advantage = RollType.prototype.NORMAL;
+            if ((args["advantage"] === RollType.prototype.OVERRIDE_ADVANTAGE || typeof args["advantage"] === "object" && ρσ_equals(args["advantage"], RollType.prototype.OVERRIDE_ADVANTAGE))) {
+                args["advantage"] = ((advantage === RollType.prototype.SUPER_ADVANTAGE || typeof advantage === "object" && ρσ_equals(advantage, RollType.prototype.SUPER_ADVANTAGE))) ? RollType.prototype.SUPER_ADVANTAGE : RollType.prototype.ADVANTAGE;
             }
             req = (function(){
                 var ρσ_d = {};
@@ -11528,6 +11525,13 @@ return this.__repr__();
             for (var ρσ_Index33 = 0; ρσ_Index33 < ρσ_Iter33.length; ρσ_Index33++) {
                 key = ρσ_Iter33[ρσ_Index33];
                 req[(typeof key === "number" && key < 0) ? req.length + key : key] = args[(typeof key === "number" && key < 0) ? args.length + key : key];
+            }
+            if (key_modifiers.shift) {
+                req["advantage"] = RollType.prototype.ADVANTAGE;
+            } else if (key_modifiers.ctrl) {
+                req["advantage"] = RollType.prototype.DISADVANTAGE;
+            } else if (key_modifiers.alt) {
+                req["advantage"] = RollType.prototype.NORMAL;
             }
             console.log("Sending message: ", req);
             chrome.runtime.sendMessage(req, (function() {

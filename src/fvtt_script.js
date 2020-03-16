@@ -5723,6 +5723,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         RollType.prototype.THRICE = 5;
         RollType.prototype.SUPER_ADVANTAGE = 6;
         RollType.prototype.SUPER_DISADVANTAGE = 7;
+        RollType.prototype.OVERRIDE_ADVANTAGE = 8;
 
         function CriticalRules() {
             if (this.ρσ_object_id === undefined) Object.defineProperty(this, "ρσ_object_id", {"value":++ρσ_object_counter});
