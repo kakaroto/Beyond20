@@ -10591,7 +10591,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "stat_block")){
                 stat_block = ρσ_kwargs_obj.stat_block;
             }
-            var add_dice, inject_descriptions, base, quick_settings, link, avatar, attributes, label, value, cb, attr, abilities, prefix, makeCB, abbr, score, modifier, roll_initiative, initiative, ability, tidbits, data, saves, ρσ_unpack, mod, save, skills, name, skill, mon_skill, text, last, a, first, tidbit;
+            var add_dice, inject_descriptions, base, quick_settings, link, avatar, attributes, label, value, cb, attr, abilities, prefix, makeCB, abbr, score, modifier, roll_initiative, initiative, ability, tidbits, data, saves, parts, mod, save, skills, name, skill, mon_skill, text, last, a, first, tidbit;
             add_dice = self.getGlobalSetting("handle-stat-blocks", true);
             inject_descriptions = self.getGlobalSetting("subst-dndbeyond-stat-blocks", true);
             base = self._base;
@@ -10723,10 +10723,9 @@ return this.__repr__();
                     var ρσ_Iter10 = ρσ_Iterable(saves);
                     for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
                         save = ρσ_Iter10[ρσ_Index10];
-                        ρσ_unpack = save.split(" ");
-ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
-                        abbr = ρσ_unpack[0];
-                        mod = ρσ_unpack[1];
+                        parts = save.split(" ");
+                        abbr = parts[0];
+                        mod = parts.slice(1).join(" ");
                         (ρσ_expr_temp = self._saves)[(typeof abbr === "number" && abbr < 0) ? ρσ_expr_temp.length + abbr : abbr] = mod;
                         if (add_dice) {
                             data.append(abbr + " " + mod);
@@ -10741,10 +10740,9 @@ return this.__repr__();
                     var ρσ_Iter11 = ρσ_Iterable(skills);
                     for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
                         skill = ρσ_Iter11[ρσ_Index11];
-                        ρσ_unpack = skill.split(" ");
-ρσ_unpack = ρσ_unpack_asarray(2, ρσ_unpack);
-                        name = ρσ_unpack[0];
-                        mod = ρσ_unpack[1];
+                        parts = skill.split(" ");
+                        name = parts[0];
+                        mod = parts.slice(1).join(" ");
                         (ρσ_expr_temp = self._skills)[(typeof name === "number" && name < 0) ? ρσ_expr_temp.length + name : name] = mod;
                     }
                     if (!add_dice) {

@@ -557,7 +557,9 @@ class Monster(CharacterBase):
                     return def():
                         self.rollSavingThrow(a)
                 for save in saves:
-                    abbr, mod = save.split(" ")
+                    parts = save.split(" ")
+                    abbr = parts[0]
+                    mod = parts.slice(1).join(" ")
                     self._saves[abbr] = mod
                     if add_dice:
                         data.append(abbr + " " + mod)
@@ -567,7 +569,9 @@ class Monster(CharacterBase):
             elif label == "Skills":
                 skills = value.split(", ")
                 for skill in skills:
-                    name, mod = skill.split(" ")
+                    parts = skill.split(" ")
+                    name = parts[0]
+                    mod = parts.slice(1).join(" ")
                     self._skills[name] = mod
                 if not add_dice:
                     continue
