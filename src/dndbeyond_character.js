@@ -11929,7 +11929,7 @@ return this.__repr__();
                     });
                     return ρσ_anonfunc;
                 })());
-                key_modifiers.ctrl = event.ctrlKey;
+                key_modifiers.ctrl = event.ctrlKey || event.metaKey;
                 key_modifiers.shift = event.shiftKey;
                 key_modifiers.alt = event.altKey;
                 needsUpdate = needsUpdate || Object.values(key_modifiers).some((function() {

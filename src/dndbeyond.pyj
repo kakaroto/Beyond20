@@ -1231,7 +1231,7 @@ checkKeyModifiers = def(event):
     if event.originalEvent.repeat:
         return
     needsUpdate = Object.values(key_modifiers).some(def (v): return v;)
-    key_modifiers.ctrl = event.ctrlKey
+    key_modifiers.ctrl = event.ctrlKey or event.metaKey
     key_modifiers.shift = event.shiftKey
     key_modifiers.alt = event.altKey
     needsUpdate = needsUpdate or Object.values(key_modifiers).some(def (v): return v;)
