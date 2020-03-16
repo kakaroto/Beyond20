@@ -11500,7 +11500,7 @@ return this.__repr__();
             var whisper, whisper_monster, advantage, req, key;
             whisper = int(character.getGlobalSetting("whisper-type", WhisperType.prototype.NO));
             whisper_monster = int(character.getGlobalSetting("whisper-type-monsters", WhisperType.prototype.YES));
-            if (ρσ_equals(character.type(), "Monster") && (whisper_monster !== WhisperType.prototype.NO && (typeof whisper_monster !== "object" || ρσ_not_equals(whisper_monster, WhisperType.prototype.NO)))) {
+            if ((ρσ_equals(character.type(), "Monster") || ρσ_equals(character.type(), "Vehicle")) && (whisper_monster !== WhisperType.prototype.NO && (typeof whisper_monster !== "object" || ρσ_not_equals(whisper_monster, WhisperType.prototype.NO)))) {
                 whisper = whisper_monster;
             }
             advantage = int(character.getGlobalSetting("roll-type", RollType.prototype.NORMAL));

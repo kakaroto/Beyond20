@@ -1013,7 +1013,7 @@ def sendRoll(character, rollType, fallback, args):
 
     whisper = int(character.getGlobalSetting("whisper-type", WhisperType.NO))
     whisper_monster = int(character.getGlobalSetting("whisper-type-monsters", WhisperType.YES))
-    if character.type() == "Monster" and whisper_monster != WhisperType.NO:
+    if (character.type() == "Monster" or character.type() == "Vehicle") and whisper_monster != WhisperType.NO:
         whisper = whisper_monster
     advantage = int(character.getGlobalSetting("roll-type", RollType.NORMAL))
     if key_modifiers.shift:
