@@ -623,22 +623,33 @@ def findModifiers(character, custom_roll):
             # If text length changes, we can check again for another modifier
             text_len = len(text)
             for ability in character._abilities:
-                mod_string = " + your " + ability[0] + " modifier"
-                if text.startsWith(mod_string):
-                    strong.append(mod_string)
+                mod_string = " + your " + ability[0].toLowerCase() + " modifier"
+                if text.toLowerCase().startsWith(mod_string):
+                    strong.append(text.substring(0, len(mod_string)))
                     roll_formula += ability[3]
                     text = text.substring(len(mod_string))
             for class_name in character._classes:
                 mod_string = " + your " + class_name.toLowerCase() + " level"
-                if text.startsWith(mod_string):
-                    strong.append(mod_string)
+                if text.toLowerCase().startsWith(mod_string):
+                    strong.append(text.substring(0, len(mod_string)))
                     roll_formula += " + " + character._classes[class_name]
                     text = text.substring(len(mod_string))
 
             mod_string = " + your proficiency bonus"
-            if text.startsWith(mod_string):
-                strong.append(mod_string)
-                roll_formula += character.proficiency
+            if text.toLowerCase().startsWith(mod_string):
+                strong.append(text.substring(0, len(mod_string)))
+                roll_formula += " + " + character._proficiency
+                text = text.substring(len(mod_string))
+
+            mod_string = " + your ac"
+            if text.toLowerCase().startsWith(mod_string):
+                strong.append(text.substring(0, len(mod_string)))
+                roll_formula += " + " + character._ac
+                text = text.substring(len(mod_string))
+            mod_string = " + your armor class"
+            if text.toLowerCase().startsWith(mod_string):
+                strong.append(text.substring(0, len(mod_string)))
+                roll_formula += " + " + character._ac
                 text = text.substring(len(mod_string))
 
         sibling.textContent = text
