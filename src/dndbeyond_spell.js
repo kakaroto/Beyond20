@@ -10933,7 +10933,7 @@ return this.__repr__();
             var ρσ_Iter16 = ρσ_Iterable(damage_matches);
             for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
                 dmg = ρσ_Iter16[ρσ_Index16];
-                if (ρσ_equals(dmg.group(1), "DC ")) {
+                if (ρσ_equals(dmg.group(1), "DC ") || ρσ_equals(dmg.group(4), "hit points by this")) {
                     continue;
                 }
                 if (ρσ_exists.n(dmg.group(3))) {

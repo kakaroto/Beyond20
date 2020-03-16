@@ -676,7 +676,8 @@ class Monster(CharacterBase):
         for dmg in damage_matches:
             # Skip any damage that starts wit "DC" because of "DC 13 saving throw or take damage" which could match.
             # A lookbehind would be a simple solution here but rapydscript doesn't let me.
-            if dmg.group(1) == "DC ":
+            # Also skip "target reduced to 0 hit points by this damage" from demon-grinder vehicle.
+            if dmg.group(1) == "DC " or dmg.group(4) == "hit points by this":
                 continue
             if dmg.group(3)?:
                 damages.append(dmg.group(3))
