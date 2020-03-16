@@ -14,9 +14,9 @@ Once the Beyond 20 bot is in your server, you can send commands to it, try `!bey
 
 In order for the Beyond20 extension to know where to send rolls, and to prevent unauthorized people from spamming you or your server channels, you will need to give it a `secret key`.
 
-As owner of a server, you can send the command `!beyond20 secret` in any channel where the bot has joined, and it will reply with the secret key to send rolls to that channel. You may share that key with your players so they can also send rolls to that channel.
+As owner of a server, you can send the command `!beyond20 secret` in any channel where the bot has joined, and it will reply with a secret key that allows you to send rolls to that channel. You may share that key with your players so they can also send rolls to that channel.
 
-If you are not a server owner, you can send the command `secret` in a Direct Message to the bot and the secret key you will receive will allow it to send rolls to you in private. As DM, you could share it with your party members to get rolls sent to you as whispers.
+If you are not a server owner, you can send the command `secret` in a Direct Message to the bot and the secret key you will receive will allow it to send rolls to you directly in private. As a DM, you could share it with your party members to get rolls sent to you as whispers.
 
 ## 3 - Set the Discord Secret Key in Beyond 20
 
@@ -29,7 +29,9 @@ Save your settings, and you're good to go!
 Due to the nature of how Roll 20 creates its messages, you can only send your rolls to either Roll 20 or to Discord, not both at the same time.
 If you use Roll 20 as your VTT and want to send rolls to Discord, click the Beyond20 options icon *within the Roll 20 tab*, and select "Send rolls to : D&D Beyond Dice Roller & Discord".
 
-Also, the whisper setting will always be ignored when sending rolls to Discord, so you cannot have the rolls whispered to the Dungeon Master only as messages sent to Discord will be visible to all who are in the channel. Your Dungeon Master however may create a channel in their server specific for whispers to which no players have permission to read messages and you can configure Beyond 20 to send rolls to that channel.
+Also, the whisper setting will always be ignored when sending rolls to Discord, so you cannot have the rolls whispered to the Dungeon Master only, as messages sent to Discord will be visible to all who are in the channel. Your Dungeon Master however may create a channel in their server specific for whispers to which no players have permission to read messages and you can configure Beyond 20 to send rolls to that channel.
+
+There is currently no easy way to switch from one channel to another, other than saving and pasting the secret key in the settings any time you wish to change channels. Eventually, I plan on making this easier.
 
 # Secret key
 

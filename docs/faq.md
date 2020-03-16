@@ -14,7 +14,7 @@ You can also check out the [changelog](Changelog) for recent fixes or additions 
 * [How can I use this non-standard spell or feature ?](#how-can-i-use-this-non-standard-spell-or-feature-)
 * [Why isn't the attack button appearing for my homebrew monster?](#why-isnt-the-attack-button-appearing-for-my-homebrew-monster)
 * [Why can't others see my rolls properly in Foundry VTT?](#why-cant-others-see-my-rolls-properly-in-foundry-vtt)
-
+* [How can I enable Discord integration?](#how-can-i-enable-discord-integration)
 ---
 
 ### Can Beyond20 do '\<insert specific feature\>'?
@@ -114,3 +114,11 @@ The damage information needs to follow the format: "X (D) T damage" or "X T dama
 Beyond20 uses CSS to properly display the rolls. If other players (or the DM using the main application window) doesn't have Beyond20 installed, the rolls won't be displayed properly. To fix that, simply ask the DM to install and enable the Beyond20 companion module into the FVTT installation. That will ensure every player sees the rolls displayed properly. 
 
 You can find the companion module [here](https://github.com/kakaroto/Beyond20/tree/master/FVTT-module/)
+
+### How can I enable Discord integration?
+
+Enabling Discord integration is easy and can be done in 4 simple steps : 
+1. [Invite](https://beyond20.kicks-ass.org/invite) the Beyond20 bot to your server
+2. Send `!beyond20 secret` command in the channel of your choice
+3. Set the `secret key` you received in Beyond20's options.
+4. Share the `secret key` with your group.

@@ -1,3 +1,34 @@
+v1.0
+===
+* **Feature**: Added [Discord integration](/discord) via the new Beyond20 Discord Bot!
+* **Feature**: Add setting for adding a dexterity tie breaker to initiative rolls (Contributed by Jeremy '[@jaypoulz](https://github.com/jaypoulz)' Poulin)
+* **Feature**: Track the monster stat blocks from the new encounter page and combat tracker
+* **Feature**: Add support for parsing the avatar of the character/monster and preview image of attacks/items/spells (used in Discord integration)
+* **Feature**: Improved dice formula parsing for D&D Beyond integrated dice roller
+* **Feature**: Use "Display in VTT" button only for spells/items that do not generate attack or damage rolls
+* **Feature**: Add support for parsing "+ your AC" or "+ your Armor Class" dice formulas in description text
+* **Feature**: Allow manually selected super-advantage to remain active when rolling with features that force advantage (such as the Rogue's Assassinate)
+* **Feature**: *Roll20*: Improve display of Temp HP when assigned to a token bar
+* **Feature**: *FVTT*: Add support for HP sync with worlds using the Simple Worldbuilding System
+* **Bugfix**: Fix Quick Roll feature not working properly for spells when character has available spell slots
+* **Bugfix**: Fix rolling attack roll for weapons affected by magic items
+* **Bugfix**: Reset roll type key modifiers (shift, alt, ctrl) when window is unfocused to prevent wrong state in cases of Ctrl-Tab for example
+* **Bugfix**: Fix support for disadvantage key modifier with Ctrl/Cmd on Mac OS 
+* **Bugfix**: Fix the use of the proper modifier in formulas that have "+ your proficiency bonus"
+* **Bugfix**: Apply Hexblade's Curse critical hit on 19 for all attacks, not only weapon attacks
+* **Bugfix**: Fix Monster skill checks not adding the modifier when rolled from the new Encounters page
+* **Bugfix**: Fix rolling of weapons with no item properties, such as Maces
+* **Bugfix**: Fix negative modifiers not being applied to damages when using integrated roller
+* **Bugfix**: Consider Vehicle stat blocks as Monsters with regards to the whisper monster rolls setting
+* **Bugfix**: Don't consider the "0 hit points by this damage" for the Demon Grinder Vehicle as a damage of type "hit points by this"
+* **Bugfix**: *Roll20*: Fix syncing of temp HP with token bars
+* **Bugfix**: *FVTT*: Fix updating initiative on combatants already in encounter
+* **Bugfix**: *Firefox*: Fix condition tracking not working properly
+* **Misc**: Various small miscellaneous fixes
+* **Misc**: Add The Forge (https://forgevtt.com) as a whitelisted FVTT server for Chrome
+* **Misc**: Add transparency to the roll type indicator to make it less conspicuous
+
+
 v0.9
 ===
 

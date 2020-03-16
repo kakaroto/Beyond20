@@ -1,8 +1,10 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v0.9
+Congratulations! Beyond20 was just updated to the latest version : v1.0
 
-I hope you like the new features, and hopefully the killer feature you were waiting for was just added. In that case, please considering [showing your appreciation](rations)?
+I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
+
+If you enjoy using Beyond20 and find it useful for your games, please considering [showing your appreciation](rations) by offering me some rations or your patronage.
 
 Thank you all for your support!
 
@@ -21,20 +23,33 @@ If you find an issue that isn't in the list, I'd appreciate you letting me know 
 
 # Release Notes
 
-v0.9
+v1.0
 ===
 
-It's time for the v0.9 release of your favorite extension! This adds support for a lot of special feats and class features, thanks to @Kelijyr on [Discord](https://discord.gg/ZAasSVS) who tracked down most of them. I've fixed the bugs that have been reported recently, and added some cool new features as well. My favorite is the ability to quickly roll with advantage by holding Shift when clicking the roll button. You can also roll with disadvantage by holding Ctrl, or do a normal roll by holding Alt. Thanks to @TheSheep from [Github](https://github.com/kakaroto/Beyond20/issues/81) for the suggestion and proof of concept.
+Wow, it's the Vee-One Release! 
 
-Another cool feature, is the syncing of Temp HP for your characters and the HP and Temp HP for your Extra creatures. Make sure you rename that "Wolf" Beast Companion that follows you into a unique name to avoid changing the HP of all the wolves attacking you in your next battle. And one final thing which took way too long to achieve was the addition of the quick settings button for Firefox users. I originally thought it was a Firefox bug but I finally realized that Chrome was not following the specification and I had to work around it to achieve what I was trying to do. But now it works, so that's great.
+Alright, the v1.0 version doesn't hold any particularly special importance. I started releasing Beyond20 ten months ago with v0.1 and this is the 10th release since then. This release is still a pretty major milestone as I'm releasing a new feature in Beyond20 that I'm sure many of you will love. I didn't know if I would be able to do it, but it turned out to be easier than expected, and I present to you : [**Discord Integration**](https://beyond20.here-for-more.info/discord)
 
-As usual, big thanks to everyone who helped, supported me, reported bugs, gave feature suggestions, or just spread the word about this extension to their friends and gaming groups. A special thank you as always to [my Patrons](https://patreon.com/kakaroto) who keep me motivated.
+You can now invite the Beyond20 Discord bot into your servers and have all your rolls sent to Discord. Be aware that you can either send to Roll20 or to Discord, not both at the same time. Since that limitation is not there for Foundry VTT, I'll try to find a way to achieve the same thing with Roll20, though I'm not sure if it would be possible.
 
-I have also recently joined the [Github Sponsors](https://github.com/sponsors/kakaroto) program, and for the first year, Github is matching contributions up to 5000$ per developer, so [check it out!](https://github.com/sponsors/kakaroto)
+Here's what it looks like (with and without the spoiler tags revealed, click to zoom) : 
+
+[![s7](images/screenshots/discord-hidden.png){:width="300px"}](images/screenshots/discord-hidden.png) ---  [![s8](images/screenshots/discord-rolls.png){:width="300px"}](images/screenshots/discord-rolls.png)
+
+One other thing of note in this release is that I've received my first external code contribution. Thank you Jeremy '[@jaypoulz](https://github.com/jaypoulz)' Poulin who implemented the option to add the dexterity modifier as tie breaker to initiative rolls. 
+
+This release also fixes (for the third time) the changes to D&D Beyond's Encounters page, allowing you, once again, to roll from the stat blocks of monsters directly in the Encounters or the new Combat tracker.
+
+There's plenty more features and a whole lot of bugfixes that made their way into this release and, as usual, you can read the full [Changelog](Changelog#v10) below. I wanted to do so much more, but saying that I've been busy for the past 2 months would be the understatement of the year, so I had to bump some of those features for the next release, but hopefully the Discord integration makes many of you happy and makes up for any feature you may have been waiting for.
+
+I expect v1.1 to be ready in a month or two, to keep up with my usual release schedule, but I'm dedicating most of my time right now to a new business project I've started for hosting Foundry VTT games, so things may be a bit slower than usual in the coming months. With my new business, [The Forge](https://forgevtt.com), my aim is basically to have a user experience resembling Roll 20 when it comes to game and user management but with the powerful Foundry VTT as the core technology behind it. And of course, I'm doing my best to make it as stable, polished and user-friendly as I've tried to do with Beyond20. Check it out if you're curious, but do note that it's currently still in beta and I'm not taking subscriptions just yet other than offering beta access for my patrons.
+
+As usual, I can't end without saying a big thank you to all those who supported this project and who contributed in one way or another. A big thank you to my patrons of course, who are making this possible, and to the 15226 chrome users and 1611 Firefox users (as of today, March 16th) of the extension who are using it, sharing it with their groups and friends, and who write reviews and send me praise/encouragement every day. Thank you all!
 
 If you find Beyond20 useful to you and it helps you in your games, please consider supporting me, either on [Patreon](https://patreon.com/kakaroto), [Github](https://github.com/sponsors/kakaroto) or [Ko-fi](https://ko-fi.com/kakaroto).
 
 Thank you, and happy rolling!
+
 
 ---
 
@@ -42,37 +57,33 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-* **Feature**: Add indicator on roll buttons to identify the roll type (advantage, disadvantage, roll twice, etc...)
-* **Feature**: Add synchronization of Temporary HP to tokens and character sheets in Roll20 and FVTT
-* **Feature**: Add support for HP and Temp HP synchornization for character sheet creatures from the Extra section
-* **Feature**: Add a "Display to VTT" button on Equipment and Magic Items pages of D&D Beyond
-* **Feature**: Support rolling with Advantage when clicking with the Shift button pressed
-* **Feature**: Support rolling with Disadvantage when clicking with the Ctrl button pressed
-* **Feature**: Support rolling normally (with no advantage/disadvantage/double rolls) when clicking with the Alt button pressed
-* **Feature**: *Firefox*: Add buttons to access Quick Settings menu from Firefox (added for Chrome in v0.7 but finally got it working for Firefox)
-* **Feature**: Add option to force an auto-crit on all attacks (against paralyzed enemies for example)
-* **Feature**: Add the ability to roll multiple separate custom damage dice, by separating them with a comma (for use with Green-flame Blade for example)
-* **Feature**: Add support for spells that add Temp HP instead of healing (such as False Life)
-* **Feature**: Add support for Polearm Master Feat, which considers the bonus action as melee
-* **Feature**: Add support for Fighter's UA Rune Knight's Giant Might class feature
-* **Feature**: Add support for Artificer's Arcane Firearm class feature
-* **Feature**: Add support for Draconic Sorcerer's Elemental Affinity class feature
-* **Feature**: Add support for rolling the Bardic Inspiration dice, and Blade Flourishes for the College of Swords
-* **Feature**: Add support for Cleri's Divine Strike class feature
-* **Feature**: Add support for Whispers Bard's Psychic Blades class feature
-* **Feature**: Add Attack buttons to roll the to-hit with damage on the various object sizes in the Animate Objects spell description
-* **Bugfix**: Fix custom/concentration/ritual Spells and custom weapons which to-hit value was not being parsed properly due to a DNDB website change
-* **Bugfix**: Fix quick roll tooltip from being at the wrong position when the page was not scrolled to the top
-* **Bugfix**: Fix character settings not being saved properly. Caused double output of conditions on Firefox
-* **Bugfix**: Support parsing of monster statblocks from the new My Encounters popup window for monsters
-* **Bugfix**: More lax statblock parsing, which fixes the actions from monster 'Orcus' not being parsed properly
-* **Bugfix**: Reroll all the dice in a critical hit if a custom dice formula had additive dice formulas
-* **Bugfix**: Fix "Display to VTT" button position for Spell pages
-* **Bugfix**: *Roll20*: Use /me instead of /emas for condition mapping if user is not a GM as /emas is a GM-exclusive command
-* **Bugfix**: *FVTT*: Fix HP syncing for actors when the scene doesn't have a token of the character sheet on it
-* **Misc**: Make the Quick Rolls tooltip move with the mouse, as some people were confused by its position, not understanding it was a tooltip
-* **Misc**: Make the D&D Beyond Dice roller animation less flashy and quicker to appear
-* **Misc**: Added the 'sponsor' button on the github page, and registered for the Github Sponsors program
+* **Feature**: Added Discord integration via the new Beyond20 Discord Bot!
+* **Feature**: Add setting for adding a dexterity tie breaker to initiative rolls (Contributed by Jeremy '@jaypoulz' Poulin)
+* **Feature**: Track the monster stat blocks from the new encounter page and combat tracker
+* **Feature**: Add support for parsing the avatar of the character/monster and preview image of attacks/items/spells (used in Discord integration)
+* **Feature**: Improved dice formula parsing for D&D Beyond integrated dice roller
+* **Feature**: Use "Display in VTT" button only for spells/items that do not generate attack or damage rolls
+* **Feature**: Add support for parsing "+ your AC" or "+ your Armor Class" dice formulas in description text
+* **Feature**: Allow manually selected super-advantage to remain active when rolling with features that force advantage (such as the Rogue's Assassinate)
+* **Feature**: *Roll20*: Improve display of Temp HP when assigned to a token bar
+* **Feature**: *FVTT*: Add support for HP sync with worlds using the Simple Worldbuilding System
+* **Bugfix**: Fix Quick Roll feature not working properly for spells when character has available spell slots
+* **Bugfix**: Fix rolling attack roll for weapons affected by magic items
+* **Bugfix**: Reset roll type key modifiers (shift, alt, ctrl) when window is unfocused to prevent wrong state in cases of Ctrl-Tab for example
+* **Bugfix**: Fix support for disadvantage key modifier with Ctrl/Cmd on Mac OS 
+* **Bugfix**: Fix the use of the proper modifier in formulas that have "+ your proficiency bonus"
+* **Bugfix**: Apply Hexblade's Curse critical hit on 19 for all attacks, not only weapon attacks
+* **Bugfix**: Fix Monster skill checks not adding the modifier when rolled from the new Encounters page
+* **Bugfix**: Fix rolling of weapons with no item properties, such as Maces
+* **Bugfix**: Fix negative modifiers not being applied to damages when using integrated roller
+* **Bugfix**: Consider Vehicle stat blocks as Monsters with regards to the whisper monster rolls setting
+* **Bugfix**: Don't consider the "0 hit points by this damage" for the Demon Grinder Vehicle as a damage of type "hit points by this"
+* **Bugfix**: *Roll20*: Fix syncing of temp HP with token bars
+* **Bugfix**: *FVTT*: Fix updating initiative on combatants already in encounter
+* **Bugfix**: *Firefox*: Fix condition tracking not working properly
+* **Misc**: Various small miscellaneous fixes
+* **Misc**: Add The Forge (https://forgevtt.com) as a whitelisted FVTT server
+* **Misc**: Add transparency to the roll type indicator to make it less conspicuous
 
 
 ---

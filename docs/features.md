@@ -1,6 +1,7 @@
 # Virtual Tabletops supported
 * [Roll 20](https://roll20.net)
-* [Foundry VTT](http://foundryvtt.com)
+* [Foundry VTT](https://foundryvtt.com)
+* [Discord Integration](https://discord.com) -- [Instructions](/discord)
 * D&D Beyond Dice Roller
 
 # Feature list
