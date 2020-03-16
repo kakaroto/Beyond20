@@ -9166,7 +9166,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "data")){
                 data = ρσ_kwargs_obj.data;
             }
-            var key, parts, part, match;
+            var key, parts, part, match, sign;
             formula = formula.replace("ro<2", "r<=2");
             Beyond20BaseRoll.prototype.__init__.call(self, formula, data);
             self._parts = ρσ_list_decorate([]);
@@ -9175,7 +9175,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 key = ρσ_Iter3[ρσ_Index3];
                 formula = formula.replace("@" + key, data[(typeof key === "number" && key < 0) ? data.length + key : key]);
             }
-            parts = formula.split("+");
+            parts = formula.split(/(?=[+-])/);
             var ρσ_Iter4 = ρσ_Iterable(parts);
             for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
                 part = ρσ_Iter4[ρσ_Index4];
@@ -9185,13 +9185,17 @@ var str = ρσ_str, repr = ρσ_repr;;
                     part = new DNDBDice(match.group(1), match.group(2), match.group(3));
                     self._parts.append(part);
                 } else {
-                    try {
-                        part = float(part);
-                        self._parts.append(part);
-                    } catch (ρσ_Exception) {
-                        ρσ_last_exception = ρσ_Exception;
-                        {
-                        } 
+                    match = re.search("([+-])?\\s*([0-9\\.]+)", part);
+                    if ((typeof match !== "undefined" && match !== null)) {
+                        try {
+                            sign = match.group(1) || "";
+                            part = float(sign + match.group(2));
+                            self._parts.append(part);
+                        } catch (ρσ_Exception) {
+                            ρσ_last_exception = ρσ_Exception;
+                            {
+                            } 
+                        }
                     }
                 }
             }

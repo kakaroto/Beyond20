@@ -152,7 +152,7 @@ class DNDBRoll(Beyond20BaseRoll):
         self._parts = []
         for key in data:
             formula = formula.replace('@' + key, data[key])
-        parts = formula.split("+")
+        parts = formula.split(/(?=[+-])/)
         for part in parts:
             part = part.trim()
             match = re.search("([0-9]*)d([0-9]+)(.*)", part)
@@ -160,11 +160,14 @@ class DNDBRoll(Beyond20BaseRoll):
                 part = DNDBDice(match.group(1), match.group(2), match.group(3))
                 self._parts.append(part)
             else:
-                try:
-                    part = float(part)
-                    self._parts.append(part)
-                except:
-                    pass
+                match = re.search("([+-])?\s*([0-9\.]+)", part)
+                if match?:
+                    try:
+                        sign = match.group(1) or ""
+                        part = float(sign + match.group(2))
+                        self._parts.append(part)
+                    except:
+                        pass
         self.roll()
 
     @property
