@@ -11,6 +11,5 @@
     "url": "https://github.com/kakaroto/Beyond20",
     "manifest": "https://raw.githubusercontent.com/kakaroto/Beyond20/master/FVTT-module/beyond20/module.json",
     "download": "https://raw.githubusercontent.com/kakaroto/Beyond20/master/FVTT-module/beyond20.zip",
-    "minimumCoreVersion": "0.4.4",
-    "compatibleCoreVersion": "0.5.1"
+    "minimumCoreVersion": "0.4.4"
 }
