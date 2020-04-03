@@ -876,9 +876,10 @@ class Monster(CharacterBase):
             self._temp_hp = temp_hp
             print("Monster HP updated to : (" + hp + "+" + temp_hp + ")/" + max_hp)
 
-            req = {"action": "hp-update", "character": self.getDict()}
-            console.log("Sending message: ", req)
-            chrome.runtime.sendMessage(req, def(resp): beyond20SendMessageFailure(self, resp);)
+            if self.getGlobalSetting("update-hp", True):
+                req = {"action": "hp-update", "character": self.getDict()}
+                console.log("Sending message: ", req)
+                chrome.runtime.sendMessage(req, def(resp): beyond20SendMessageFailure(self, resp);)
 
     def getDict(self):
         return {"name": self._name,

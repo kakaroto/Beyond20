@@ -10211,22 +10211,24 @@ return this.__repr__();
                 self._max_hp = max_hp;
                 self._temp_hp = temp_hp;
                 print("HP updated to : (" + hp + "+" + temp_hp + ")/" + max_hp);
-                req = (function(){
-                    var ρσ_d = {};
-                    ρσ_d["action"] = "hp-update";
-                    ρσ_d["character"] = self.getDict();
-                    return ρσ_d;
-                }).call(this);
-                console.log("Sending message: ", req);
-                chrome.runtime.sendMessage(req, (function() {
-                    var ρσ_anonfunc = function (resp) {
-                        beyond20SendMessageFailure(self, resp);
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["resp"]}
-                    });
-                    return ρσ_anonfunc;
-                })());
+                if (self.getGlobalSetting("update-hp", true)) {
+                    req = (function(){
+                        var ρσ_d = {};
+                        ρσ_d["action"] = "hp-update";
+                        ρσ_d["character"] = self.getDict();
+                        return ρσ_d;
+                    }).call(this);
+                    console.log("Sending message: ", req);
+                    chrome.runtime.sendMessage(req, (function() {
+                        var ρσ_anonfunc = function (resp) {
+                            beyond20SendMessageFailure(self, resp);
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["resp"]}
+                        });
+                        return ρσ_anonfunc;
+                    })());
+                }
             }
         };
         Character.prototype.updateConditions = function updateConditions() {
@@ -11233,22 +11235,24 @@ return this.__repr__();
                 self._max_hp = max_hp;
                 self._temp_hp = temp_hp;
                 print("Monster HP updated to : (" + hp + "+" + temp_hp + ")/" + max_hp);
-                req = (function(){
-                    var ρσ_d = {};
-                    ρσ_d["action"] = "hp-update";
-                    ρσ_d["character"] = self.getDict();
-                    return ρσ_d;
-                }).call(this);
-                console.log("Sending message: ", req);
-                chrome.runtime.sendMessage(req, (function() {
-                    var ρσ_anonfunc = function (resp) {
-                        beyond20SendMessageFailure(self, resp);
-                    };
-                    if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
-                        __argnames__ : {value: ["resp"]}
-                    });
-                    return ρσ_anonfunc;
-                })());
+                if (self.getGlobalSetting("update-hp", true)) {
+                    req = (function(){
+                        var ρσ_d = {};
+                        ρσ_d["action"] = "hp-update";
+                        ρσ_d["character"] = self.getDict();
+                        return ρσ_d;
+                    }).call(this);
+                    console.log("Sending message: ", req);
+                    chrome.runtime.sendMessage(req, (function() {
+                        var ρσ_anonfunc = function (resp) {
+                            beyond20SendMessageFailure(self, resp);
+                        };
+                        if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                            __argnames__ : {value: ["resp"]}
+                        });
+                        return ρσ_anonfunc;
+                    })());
+                }
             }
         };
         Monster.prototype.getDict = function getDict() {
