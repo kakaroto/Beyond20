@@ -27,7 +27,7 @@ def rollSkillCheck(paneClass):
     skill_name = $("." + paneClass + "__header-name").text()
     ability = $("." + paneClass + "__header-ability").text()
     modifier = $("." + paneClass + "__header-modifier").text()
-    proficiency = $("." + paneClass + "__header-icon .ct-tooltip").attr("data-original-title")
+    proficiency = $("." + paneClass + "__header-icon .ct-tooltip,." + paneClass + "__header-icon .ddbc-tooltip").attr("data-original-title")
     #console.log("Skill " + skill_name + "(" + ability + ") : " + modifier)
     roll_properties = {"skill": skill_name,
                        "ability": ability,
@@ -44,7 +44,7 @@ def rollAbilityOrSavingThrow(paneClass, rollType):
 
     ability_string = $("." + paneClass + " .ct-sidebar__heading").text()
     ability_name = ability_string.split(" ")[0]
-    modifier = $("." + paneClass + "__modifier .ct-signed-number").text()
+    modifier = $("." + paneClass + "__modifier .ct-signed-number,." + paneClass + "__modifier .ddbc-signed-number").text()
     ability = ability_abbreviations[ability_name]
 
     if rollType == "ability" and character.hasClassFeature("Jack of All Trades") and \
@@ -108,17 +108,17 @@ def rollHitDie(multiclass, index):
 def rollItem(force_display=False):
     nonlocal character
 
-    prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property")
+    prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property")
     properties = propertyListToDict(prop_list)
     properties["Properties"] = properties["Properties"] or ""
     #console.log("Properties are : " + str(properties))
-    item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name")[0].firstChild.textContent
+    item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name")[0].firstChild.textContent
     item_type = $(".ct-item-detail__intro").text()
     description = descriptionToString(".ct-item-detail__description")
     if force_display is False and "Damage" in properties:
-        item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name").text()
+        item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text()
         to_hit = properties["To Hit"] ? \
-            findToHit(item_full_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit")
+            findToHit(item_full_name, ".ct-combat-attack--item,.ddbc-combat-attack--item", ".ct-item-name,.ddbc-item-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit")
 
         if to_hit ?:
             character._cacheToHit(item_full_name, to_hit)
@@ -128,11 +128,11 @@ def rollItem(force_display=False):
         damages = []
         damage_types = []
         for i in range(prop_list.length):
-            if prop_list.eq(i).find(".ct-property-list__property-label").text() == "Damage:":
-                value = prop_list.eq(i).find(".ct-property-list__property-content")
-                damage = value.find(".ct-damage__value").text()
+            if prop_list.eq(i).find(".ct-property-list__property-label,.ddbc-property-list__property-label").text() == "Damage:":
+                value = prop_list.eq(i).find(".ct-property-list__property-content,.ddbc-property-list__property-content")
+                damage = value.find(".ct-damage__value,.ddbc-damage__value").text()
                 damage_type = properties["Damage Type"] ? ""
-                versatile_damage = value.find(".ct-item-detail__versatile-damage").text()[1:-1]
+                versatile_damage = value.find(".ct-item-detail__versatile-damage,.ddbc-item-detail__versatile-damage").text()[1:-1]
                 if damages.length == 0 and character.hasClassFeature("Fighting Style: Great Weapon Fighting") and \
                     properties["Attack Type"] == "Melee" and \
                     (properties["Properties"].includes("Versatile") or properties["Properties"].includes("Two-Handed")) :
@@ -157,11 +157,11 @@ def rollItem(force_display=False):
                 else:
                     damages.append(damage)
                     damage_types.append(damage_type)
-                additional_damages = value.find(".ct-item-detail__additional-damage")
+                additional_damages = value.find(".ct-item-detail__additional-damage,.ddbc-item-detail__additional-damage")
                 for j in range(additional_damages.length):
                     dmg = additional_damages.eq(j).text()
-                    dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title")
-                    dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info").text()
+                    dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip,.ddbc-damage-type-icon .ddbc-tooltip").attr("data-original-title")
+                    dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info,.ddbc-item-detail__additional-damage-info").text()
                     if dmg != "":
                         dmg = dmg.replace(dmg_info, "")
                         if dmg_info != "":
@@ -297,7 +297,7 @@ def rollItem(force_display=False):
 
 def rollAction(paneClass):
     nonlocal character
-    properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"))
+    properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property,." + paneClass + " .ddbc-property-list .ddbc-property-list__property"))
     #console.log("Properties are : " + str(properties))
     action_name = $(".ct-sidebar__heading").text()
     action_parent = $(".ct-sidebar__header-parent").text()
@@ -391,19 +391,19 @@ def rollAction(paneClass):
 
 def rollSpell(force_display=False):
     nonlocal character
-    properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
+    properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property,.ct-spell-pane .ddbc-property-list .ddbc-property-list__property"))
     #console.log("Properties are : " + str(properties))
     spell_source = $(".ct-sidebar__header-parent").text()
-    spell_full_name = $(".ct-sidebar__heading .ct-spell-name").text()
-    spell_name = $(".ct-sidebar__heading .ct-spell-name")[0].firstChild.textContent
+    spell_full_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name").text()
+    spell_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name")[0].firstChild.textContent
     description = descriptionToString(".ct-spell-pane .ct-spell-detail__description")
     damage_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage")
     healing_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp")
     temp_hp_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--temp")
     castas = $(".ct-spell-caster__casting-level-current").text()
     level = $(".ct-spell-pane .ct-spell-detail__level-school-item").toArray().map(def (i): return i.textContent;).join(" ")
-    concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration").length > 0
-    ritual = $(".ct-spell-pane .ct-spell-name__icon--ritual").length > 0
+    concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration,.ct-spell-pane .ddbc-spell-name__icon--concentration").length > 0
+    ritual = $(".ct-spell-pane .ct-spell-name__icon--ritual,.ct-spell-pane .ddbc-spell-name__icon--ritual").length > 0
     duration = properties["Duration"] ? ""
     if "Concentration" in duration:
         duration = duration.replace("Concentration, ", "")
@@ -411,16 +411,16 @@ def rollSpell(force_display=False):
     else:
         concentration = False
     to_hit = properties["To Hit"] ? \
-        findToHit(spell_full_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit")
+        findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit")
     if not to_hit:
-        to_hit = findToHit(spell_full_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit")
+        to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit")
 
     if force_display is False and (damage_modifiers.length > 0 or healing_modifiers.length > 0 or temp_hp_modifiers.length > 0 or to_hit != None):
         damages = []
         damage_types = []
         for modifier in damage_modifiers:
-            dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text()
-            dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip").attr("data-original-title")
+            dmg = $(modifier).find(".ct-spell-caster__modifier-amount,.ddbc-spell-caster__modifier-amount").text()
+            dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip,.ddbc-damage-type-icon .ddbc-tooltip").attr("data-original-title")
             if not dmgtype?:
                 dmgtype = ""
             damages.append(dmg)
@@ -559,7 +559,7 @@ def displayFeature(paneClass):
     name = $(".ct-sidebar__heading").text()
     source = $(".ct-sidebar__header-parent").text()
     source_type = source_types[paneClass]
-    description = descriptionToString(".ct-snippet__content")
+    description = descriptionToString(".ct-snippet__content,.ct-feature-snippet__content")
     sendRollWithCharacter("feature", 0, {"name": name,
                             "source": source,
                             "source-type": source_type,
@@ -696,21 +696,21 @@ def injectRollButton(paneClass):
             return
         addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Display in VTT", image=False)
         name = $(".ct-sidebar__heading").text()
-        checkAndInjectDiceToRolls(".ct-snippet__content", name)
+        checkAndInjectDiceToRolls(".ct-snippet__content,.ct-feature-snippet__content", name)
     elif paneClass == "ct-trait-pane":
         if isRollButtonAdded():
             return
         addRollButtonEx(paneClass, ".ct-trait-pane__content", text="Display in VTT", image=False)
     elif paneClass == "ct-item-pane":
         nonlocal lastItemName
-        item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name").text()
+        item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text()
         if isRollButtonAdded() and item_name == lastItemName:
             return
         lastItemName = item_name
         removeRollButtons()
 
         checkAndInjectDiceToRolls(".ct-item-detail__description", item_name)
-        properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property"))
+        properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property"))
         if "Damage" in properties:
             addRollButtonEx(paneClass, ".ct-sidebar__heading", small=True)
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll")
@@ -721,7 +721,7 @@ def injectRollButton(paneClass):
         if isRollButtonAdded():
             return
 
-        properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property"))
+        properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property,." + paneClass + " .ddbc-property-list .ddbc-property-list__property"))
         action_name = $(".ct-sidebar__heading").text()
         action_parent = $(".ct-sidebar__header-parent").text()
         if (action_name == "Superiority Dice" or action_parent == "Maneuvers") or \
@@ -731,12 +731,12 @@ def injectRollButton(paneClass):
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll")
         else:
             addRollButtonEx(paneClass, ".ct-sidebar__heading")
-        checkAndInjectDiceToRolls(".ct-action-detail__description", action_name)
+        checkAndInjectDiceToRolls(".ct-action-detail__description,.ddbc-action-detail__description", action_name)
     elif paneClass == "ct-spell-pane":
         nonlocal lastSpellName
         nonlocal lastSpellLevel
-        spell_name = $(".ct-sidebar__heading .ct-spell-name")[0].firstChild.textContent
-        spell_full_name = $(".ct-sidebar__heading .ct-spell-name").text()
+        spell_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name")[0].firstChild.textContent
+        spell_full_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name").text()
         spell_level = $(".ct-spell-caster__casting-level-current").text()
         if isRollButtonAdded() and spell_full_name == lastSpellName and spell_level == lastSpellLevel:
             return
@@ -747,11 +747,11 @@ def injectRollButton(paneClass):
 
         damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier")
         healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier")
-        properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property"))
+        properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property,.ct-spell-pane .ddbc-property-list .ddbc-property-list__property"))
         to_hit = properties["To Hit"] ? \
-            findToHit(spell_full_name, ".ct-combat-attack--spell", ".ct-spell-name", ".ct-combat-attack__tohit")
+            findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit")
         if not to_hit:
-            to_hit = findToHit(spell_full_name, ".ct-spells-spell", ".ct-spell-name", ".ct-spells-spell__tohit")
+            to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit")
 
         if damages.length > 0 or healings.length > 0 or to_hit != None:
             addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on VTT", small=True)
@@ -772,7 +772,7 @@ def injectRollButton(paneClass):
                                           ["Bludgeoning"], to_hit)
                 return def():
                     sendRollWithCharacter("attack", "1d20" + to_hit, props)
-            rows = $(".ct-spell-detail__description table tbody tr")
+            rows = $(".ct-spell-detail__description table tbody tr,.ddbc-spell-detail__description table tbody tr")
             for row in rows:
                 size = $(row).find("td").eq(0)
                 desc = $(row).find("td").eq(5)
@@ -787,7 +787,7 @@ def injectRollButton(paneClass):
                                         small=True, append=True, image=False, text="Attack")
                     $("#" + id).css({"float": "", "text-align": ""})
 
-        $(".ct-spell-caster__casting-action > button").on('click', def(event):
+        $(".ct-spell-caster__casting-action > button,.ddbc-spell-caster__casting-action > button").on('click', def(event):
             execute(paneClass)
         )
     elif paneClass == "ct-reset-pane":
@@ -814,19 +814,21 @@ def injectRollButton(paneClass):
             if creature:
                 creature.updateInfo()
             return
-        creature = Monster("Creature", global_settings=settings)
+        base = ".ct-creature-block" if $(".ct-creature-block").length > 0 else ".ddbc-creature-block"
+        creature = Monster("Creature", base, global_settings=settings)
         creature.parseStatBlock()
         creature.updateInfo()
     elif paneClass == "ct-vehicle-pane":
         if isRollButtonAdded() or isCustomRollIconsAdded():
             return
-        monster = Monster("Extra-Vehicle", ".ct-vehicle-block", global_settings=settings)
+        base = ".ct-vehicle-block" if $(".ct-vehicle-block").length > 0 else ".ddbc-vehicle-block"
+        monster = Monster("Extra-Vehicle", base, global_settings=settings)
         monster.parseStatBlock()
     elif paneClass == "ct-condition-manage-pane":
         nonlocal character
 
-        j_conditions = $(".ct-condition-manage-pane .ct-toggle-field--enabled").closest(".ct-condition-manage-pane__condition")
-        exhaustion_level = $(".ct-condition-manage-pane__condition--special .ct-number-bar__option--active").text()
+        j_conditions = $(".ct-condition-manage-pane .ct-toggle-field--enabled,.ct-condition-manage-pane .ddbc-toggle-field--is-enabled").closest(".ct-condition-manage-pane__condition")
+        exhaustion_level = $(".ct-condition-manage-pane__condition--special .ct-number-bar__option--active,.ct-condition-manage-pane__condition--special .ddbc-number-bar__option--active").text()
         conditions = []
         for cond in j_conditions:
             conditions.append(cond.textContent)
@@ -841,16 +843,16 @@ def injectRollButton(paneClass):
 
 
 def injectRollToSpellAttack():
-    groups = $(".ct-spells-level-casting__info-group")
+    groups = $(".ct-spells-level-casting__info-group,.ddbc-spells-level-casting__info-group")
 
     for group in groups:
-        label = $(group).find(".ct-spells-level-casting__info-label")
+        label = $(group).find(".ct-spells-level-casting__info-label,.ddbc-spells-level-casting__info-label")
         if label.text() == "Spell Attack":
             if label.hasClass("beyond20-rolls-added"):
                 return
             label.addClass("beyond20-rolls-added")
             icon16 = chrome.extension.getURL("images/icons/icon16.png")
-            items = $(group).find(".ct-spells-level-casting__info-item")
+            items = $(group).find(".ct-spells-level-casting__info-item,.ddbc-spells-level-casting__info-item")
             for item in items:
                 modifier = item.textContent
                 name = "Spell Attack"
@@ -920,11 +922,11 @@ def activateTooltipListeners(el, tooltip, callback):
     )
 
 def deactivateQuickRolls():
-    abilities = $(".ct-ability-summary .ct-ability-summary__secondary")
-    saving_throws = $(".ct-saving-throws-summary__ability .ct-saving-throws-summary__ability-modifier")
-    skills = $(".ct-skills .ct-skills__col--modifier")
-    actions = $(".ct-combat-attack .ct-combat-attack__icon")
-    spells = $(".ct-spells-spell .ct-spells-spell__action")
+    abilities = $(".ct-ability-summary .ct-ability-summary__secondary,.ddbc-ability-summary .ddbc-ability-summary__secondary")
+    saving_throws = $(".ct-saving-throws-summary__ability .ct-saving-throws-summary__ability-modifier,.ddbc-saving-throws-summary__ability .ddbc-saving-throws-summary__ability-modifier")
+    skills = $(".ct-skills .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__col--modifier")
+    actions = $(".ct-combat-attack .ct-combat-attack__icon,.ddbc-combat-attack .ddbc-combat-attack__icon")
+    spells = $(".ct-spells-spell .ct-spells-spell__action,.ddbc-spells-spell .ddbc-spells-spell__action")
     deactivateTooltipListeners(abilities)
     deactivateTooltipListeners(saving_throws)
     deactivateTooltipListeners(skills)
@@ -956,7 +958,7 @@ def activateQuickRolls():
     for ability in abilities:
         quickRollAbility = def(el):
             nonlocal quick_roll
-            name = el.closest(".ct-ability-summary").find(".ct-ability-summary__heading .ct-ability-summary__label").text()
+            name = el.closest(".ct-ability-summary,.ddbc-ability-summary").find(".ct-ability-summary__heading .ct-ability-summary__label,.ddbc-ability-summary__heading .ddbc-ability-summary__label").text()
             # If same item, clicking will be a noop and it won't modify the document
             pane_name = $(".ct-ability-pane .ct-sidebar__heading").text().split(" ")[0]
             if name == pane_name:
@@ -968,7 +970,7 @@ def activateQuickRolls():
     for save in saving_throws:
         quickRollSave = def(el):
             nonlocal quick_roll
-            name = el.closest(".ct-saving-throws-summary__ability").find(".ct-saving-throws-summary__ability-name").text()[0:3].toLowerCase()
+            name = el.closest(".ct-saving-throws-summary__ability,.ddbc-saving-throws-summary__ability").find(".ct-saving-throws-summary__ability-name,.ddbc-saving-throws-summary__ability-name").text()[0:3].toLowerCase()
             # If same spell, clicking will be a noop and it won't modify it
             pane_name = $(".ct-ability-saving-throws-pane .ct-sidebar__heading").text()[0:3].toLowerCase()
             if name == pane_name:
@@ -980,7 +982,7 @@ def activateQuickRolls():
     for skill in skills:
         quickRollSkill = def(el):
             nonlocal quick_roll
-            name = el.closest(".ct-skills__item").find(".ct-skills__col--skill").text()
+            name = el.closest(".ct-skills__item,.ddbc-skills__item").find(".ct-skills__col--skill,.ddbc-skills__col--skill").text()
             # If same skill, clicking will be a noop and it won't modify the document
             for paneClass in ["ct-skill-pane", "ct-custom-skill-pane"]:
                 pane = $("." + paneClass)
@@ -997,7 +999,7 @@ def activateQuickRolls():
     for action in actions:
         quickRollAction = def(el):
             nonlocal quick_roll
-            name = el.closest(".ct-combat-attack").find(".ct-combat-attack__name .ct-combat-attack__label").text()
+            name = el.closest(".ct-combat-attack,.ddbc-combat-attack").find(".ct-combat-attack__name .ct-combat-attack__label,.ddbc-combat-attack__name .ddbc-combat-attack__label").text()
             # Need to check all types of panes to find the right one
             for paneClass in ["ct-item-pane", "ct-action-pane", "ct-custom-action-pane", "ct-spell-pane"]:
                 pane = $("." + paneClass)
@@ -1014,9 +1016,9 @@ def activateQuickRolls():
     for spell in spells:
         quickRollSpell = def(el):
             nonlocal quick_roll
-            name = el.closest(".ct-spells-spell").find(".ct-spell-name").trigger('click').text()
+            name = el.closest(".ct-spells-spell,.ddbc-spells-spell").find(".ct-spell-name,.ddbc-spell-name").trigger('click').text()
             # If same item, clicking will be a noop and it won't modify the document
-            pane_name = $(".ct-spell-pane .ct-sidebar__heading .ct-spell-name").text()
+            pane_name = $(".ct-spell-pane .ct-sidebar__heading .ct-spell-name,.ct-spell-pane .ct-sidebar__heading .ddbc-spell-name").text()
             if name == pane_name:
                 execute("ct-spell-pane")
             else:

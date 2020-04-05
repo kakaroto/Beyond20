@@ -10055,25 +10055,25 @@ return this.__repr__();
                 self.updateSettings();
             }
             if (self._name === null) {
-                self._name = $(".ct-character-tidbits__name").text();
+                self._name = $(".ct-character-tidbits__name,.ddbc-character-tidbits__name").text();
                 if ((self._name === "" || typeof self._name === "object" && ρσ_equals(self._name, ""))) {
                     self._name = null;
                 }
             }
             if (self._avatar === null) {
-                avatar = $(".ct-character-tidbits__avatar").css("background-image");
+                avatar = $(".ct-character-tidbits__avatar,.ddbc-character-tidbits__avatar").css("background-image");
                 if (avatar && avatar.startsWith("url(")) {
                     self._avatar = avatar.slice(5, -2);
                 }
             }
             if (self._race === null) {
-                self._race = $(".ct-character-tidbits__race").text();
+                self._race = $(".ct-character-tidbits__race,.ddbc-character-tidbits__race").text();
                 if ((self._race === "" || typeof self._race === "object" && ρσ_equals(self._race, ""))) {
                     self._race = null;
                 }
             }
             if (self._classes === null) {
-                classes = $(".ct-character-tidbits__classes");
+                classes = $(".ct-character-tidbits__classes,.ddbc-character-tidbits__classes");
                 if (classes.length > 0) {
                     classes = classes.text().split(" / ");
                     self._classes = {};
@@ -10088,8 +10088,8 @@ return this.__repr__();
                 }
             }
             if (self._level === null) {
-                level = $(".ct-character-tidbits__xp-level");
-                xp = $(".ct-character-tidbits__xp-bar .ct-xp-bar__item--cur .ct-xp-bar__label");
+                level = $(".ct-character-tidbits__xp-level,.ddbc-character-tidbits__xp-level");
+                xp = $(".ct-character-tidbits__xp-bar .ct-xp-bar__item--cur .ct-xp-bar__label,.ddbc-character-tidbits__xp-bar .ddbc-xp-bar__item--cur .ddbc-xp-bar__label");
                 if (level.length > 0) {
                     self._level = level.text().replace("Level ", "");
                 } else if (xp.length > 0) {
@@ -10097,44 +10097,44 @@ return this.__repr__();
                 }
             }
             if (self._proficiency === null) {
-                self._proficiency = $(".ct-proficiency-bonus-box__value").text();
+                self._proficiency = $(".ct-proficiency-bonus-box__value,.ddbc-proficiency-bonus-box__value").text();
                 if ((self._proficiency === "" || typeof self._proficiency === "object" && ρσ_equals(self._proficiency, ""))) {
-                    self._proficiency = $(".ct-combat-mobile__extra--proficiency .ct-combat-mobile__extra-value").text();
+                    self._proficiency = $(".ct-combat-mobile__extra--proficiency .ct-combat-mobile__extra-value,.ddbc-combat-mobile__extra--proficiency .ddbc-combat-mobile__extra-value").text();
                     if ((self._proficiency === "" || typeof self._proficiency === "object" && ρσ_equals(self._proficiency, ""))) {
                         self._proficiency = null;
                     }
                 }
             }
             if ((Object.keys(self._to_hit_cache).length === 0 || typeof Object.keys(self._to_hit_cache).length === "object" && ρσ_equals(Object.keys(self._to_hit_cache).length, 0))) {
-                items = $(".ct-combat-attack--item .ct-item-name");
+                items = $(".ct-combat-attack--item .ct-item-name,.ddbc-combat-attack--item .ddbc-item-name");
                 var ρσ_Iter1 = ρσ_Iterable(items);
                 for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
                     item = ρσ_Iter1[ρσ_Index1];
                     item_name = item.textContent;
-                    to_hit = findToHit(item_name, ".ct-combat-attack--item", ".ct-item-name", ".ct-combat-attack__tohit");
+                    to_hit = findToHit(item_name, ".ct-combat-attack--item,.ddbc-combat-attack--item", ".ct-item-name,.ddbc-item-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
                     (ρσ_expr_temp = self._to_hit_cache)[(typeof item_name === "number" && item_name < 0) ? ρσ_expr_temp.length + item_name : item_name] = to_hit;
                 }
             }
-            ac = $(".ct-armor-class-box__value").text();
+            ac = $(".ct-armor-class-box__value,.ddbc-armor-class-box__value").text();
             if ((ac === "" || typeof ac === "object" && ρσ_equals(ac, ""))) {
-                ac = $(".ct-combat-mobile__extra--ac .ct-combat-mobile__extra-value").text();
+                ac = $(".ct-combat-mobile__extra--ac .ct-combat-mobile__extra-value,.ddbc-combat-mobile__extra--ac .ddbc-combat-mobile__extra-value").text();
             }
             if ((ac !== "" && (typeof ac !== "object" || ρσ_not_equals(ac, "")))) {
                 self._ac = ac;
             }
-            speed = $(".ct-speed-box__box-value .ct-distance-number__number").text();
+            speed = $(".ct-speed-box__box-value .ct-distance-number__number,.ddbc-speed-box__box-value .ddbc-distance-number__number").text();
             if ((speed === "" || typeof speed === "object" && ρσ_equals(speed, ""))) {
-                speed = $(".ct-combat-mobile__extra--speed .ct-combat-mobile__extra-value .ct-distance-number__number").text();
+                speed = $(".ct-combat-mobile__extra--speed .ct-combat-mobile__extra-value .ct-distance-number__number,.ddbc-combat-mobile__extra--speed .ddbc-combat-mobile__extra-value .ddbc-distance-number__number").text();
             }
             if ((speed !== "" && (typeof speed !== "object" || ρσ_not_equals(speed, "")))) {
                 self._speed = speed;
             }
-            abilities = $(".ct-quick-info__ability");
+            abilities = $(".ct-quick-info__ability,.ddbc-quick-info__ability");
             if ((abilities.length === 0 || typeof abilities.length === "object" && ρσ_equals(abilities.length, 0))) {
-                abilities = $(".ct-main-mobile__ability");
+                abilities = $(".ct-main-mobile__ability,.ddbc-main-mobile__ability");
             }
             if ((abilities.length === 0 || typeof abilities.length === "object" && ρσ_equals(abilities.length, 0))) {
-                abilities = $(".ct-main-tablet__ability");
+                abilities = $(".ct-main-tablet__ability,.ddbc-main-tablet__ability");
             }
             if (abilities.length > 0) {
                 self._abilities = ρσ_list_decorate([]);
@@ -10142,13 +10142,13 @@ return this.__repr__();
             var ρσ_Iter2 = ρσ_Iterable(abilities);
             for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
                 ability = ρσ_Iter2[ρσ_Index2];
-                name = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__label").text();
-                abbr = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__abbr").text().toUpperCase();
-                modifier = $(ability).find(".ct-ability-summary__primary .ct-signed-number").text();
-                value = $(ability).find(".ct-ability-summary__secondary").text();
+                name = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__label,.ddbc-ability-summary__heading .ddbc-ability-summary__label").text();
+                abbr = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__abbr,.ddbc-ability-summary__heading .ddbc-ability-summary__abbr").text().toUpperCase();
+                modifier = $(ability).find(".ct-ability-summary__primary .ct-signed-number,.ddbc-ability-summary__primary .ddbc-signed-number").text();
+                value = $(ability).find(".ct-ability-summary__secondary,.ddbc-ability-summary__secondary").text();
                 if ((modifier === "" || typeof modifier === "object" && ρσ_equals(modifier, ""))) {
-                    modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number").text();
-                    value = $(ability).find(".ct-ability-summary__primary").text();
+                    modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number,.ddbc-ability-summary__secondary .ddbc-signed-number").text();
+                    value = $(ability).find(".ct-ability-summary__primary,.ddbc-ability-summary__primary").text();
                 }
                 self._abilities.append(ρσ_list_decorate([ name, abbr, value, modifier ]).as_array());
             }
@@ -11217,7 +11217,7 @@ return this.__repr__();
             var hp, max_hp, temp_hp, groups, label, item, req;
             self._name = self._stat_block.find(self._base + "__name").text().trim();
             hp = max_hp = temp_hp = null;
-            groups = $(".ct-creature-pane .ct-collapsible__content .ct-creature-pane__adjuster-group");
+            groups = $(".ct-creature-pane .ct-collapsible__content .ct-creature-pane__adjuster-group,.ct-creature-pane .ddbc-collapsible__content .ct-creature-pane__adjuster-group");
             var ρσ_Iter26 = ρσ_Iterable(groups);
             for (var ρσ_Index26 = 0; ρσ_Index26 < ρσ_Iter26.length; ρσ_Index26++) {
                 item = ρσ_Iter26[ρσ_Index26];
@@ -11316,8 +11316,8 @@ return this.__repr__();
             properties = {};
             for (var ρσ_Index28 = 0; ρσ_Index28 < propList.length; ρσ_Index28++) {
                 i = ρσ_Index28;
-                label = propList.eq(i).find(".ct-property-list__property-label").text().slice(0, -1);
-                value = propList.eq(i).find(".ct-property-list__property-content").text();
+                label = propList.eq(i).find(".ct-property-list__property-label,.ddbc-property-list__property-label").text().slice(0, -1);
+                value = propList.eq(i).find(".ct-property-list__property-content,.ddbc-property-list__property-content").text();
                 properties[(typeof label === "number" && label < 0) ? properties.length + label : label] = value;
             }
             return properties;
