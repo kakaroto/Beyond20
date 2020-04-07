@@ -383,7 +383,7 @@ class Character(CharacterBase):
                 not isObjectEqual(self._spell_saves, self.getSetting("spell_saves", {})):
                 console.log("New Spell information")
                 update = True
-        elif self.getSetting("spell_info", None):
+        else:
             self._spell_modifiers = self.getSetting("spell_modifiers", {})
             self._spell_saves = self.getSetting("spell_saves", {})
             self._spell_attacks = self.getSetting("spell_attacks", {})

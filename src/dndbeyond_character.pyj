@@ -622,35 +622,34 @@ def findModifiers(character, custom_roll):
         while text_len != len(text):
             # If text length changes, we can check again for another modifier
             text_len = len(text)
+            
+            find_static_modifier = def(name, value):
+                nonlocal text, roll_formula, strong
+                mod_string = " + your " + name
+                if text.toLowerCase().startsWith(mod_string):
+                    strong.append(text.substring(0, len(mod_string)))
+                    roll_formula += " + " + value
+                    text = text.substring(len(mod_string))
+
             for ability in character._abilities:
-                mod_string = " + your " + ability[0].toLowerCase() + " modifier"
-                if text.toLowerCase().startsWith(mod_string):
-                    strong.append(text.substring(0, len(mod_string)))
-                    roll_formula += ability[3]
-                    text = text.substring(len(mod_string))
+                find_static_modifier(ability[0].toLowerCase() + " modifier", ability[3])
             for class_name in character._classes:
-                mod_string = " + your " + class_name.toLowerCase() + " level"
-                if text.toLowerCase().startsWith(mod_string):
-                    strong.append(text.substring(0, len(mod_string)))
-                    roll_formula += " + " + character._classes[class_name]
-                    text = text.substring(len(mod_string))
+                find_static_modifier(class_name.toLowerCase() + " level", character._classes[class_name])
+            find_static_modifier("proficiency bonus", character._proficiency)
+            find_static_modifier("ac", character._ac)
+            find_static_modifier("armor class", character._ac)
 
-            mod_string = " + your proficiency bonus"
-            if text.toLowerCase().startsWith(mod_string):
-                strong.append(text.substring(0, len(mod_string)))
-                roll_formula += " + " + character._proficiency
-                text = text.substring(len(mod_string))
-
-            mod_string = " + your ac"
-            if text.toLowerCase().startsWith(mod_string):
-                strong.append(text.substring(0, len(mod_string)))
-                roll_formula += " + " + character._ac
-                text = text.substring(len(mod_string))
-            mod_string = " + your armor class"
-            if text.toLowerCase().startsWith(mod_string):
-                strong.append(text.substring(0, len(mod_string)))
-                roll_formula += " + " + character._ac
-                text = text.substring(len(mod_string))
+            find_spell_modifier = def(suffix, obj):
+                default_spell_mod = None
+                for class_name in obj:
+                    default_spell_mod = obj[class_name] if default_spell_mod is None else default_spell_mod
+                    find_static_modifier(class_name.toLowerCase() + " " + suffix, obj[class_name])
+                if default_spell_mod:
+                    find_static_modifier(suffix, default_spell_mod)
+            find_spell_modifier("spell modifier", character._spell_modifiers)
+            find_spell_modifier("spell attack", character._spell_attacks)
+            find_spell_modifier("spell save dc", character._spell_saves)
+            find_spell_modifier("save dc", character._spell_saves)
 
         sibling.textContent = text
         img.attr("x-beyond20-roll", roll_formula)

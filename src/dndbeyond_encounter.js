@@ -10404,7 +10404,7 @@ return this.__repr__();
                     console.log("New Spell information");
                     update = true;
                 }
-            } else if (self.getSetting("spell_info", null)) {
+            } else {
                 self._spell_modifiers = self.getSetting("spell_modifiers", {});
                 self._spell_saves = self.getSetting("spell_saves", {});
                 self._spell_attacks = self.getSetting("spell_attacks", {});
