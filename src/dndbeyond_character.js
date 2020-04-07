@@ -12250,7 +12250,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
                 force_display = ρσ_kwargs_obj.force_display;
             }
-            var prop_list, properties, item_name, item_type, description, item_full_name, to_hit, damages, damage_types, value, damage, damage_type, versatile_damage, versatile_choice, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damages, custom_damage, sneak_attack, bloodhunter_level, rite_die, cleric_level, bard_level, critical_limit, brutal, barbarian_level, rage_damage, roll_properties;
+            var prop_list, properties, item_name, item_type, description, item_full_name, to_hit, damages, damage_types, value, damage, damage_type, versatile_damage, versatile_choice, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damages, parts, custom_damage, sneak_attack, bloodhunter_level, rite_die, cleric_level, bard_level, critical_limit, brutal, barbarian_level, rage_damage, roll_properties;
             prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
             properties = propertyListToDict(prop_list);
             properties["Properties"] = properties["Properties"] || "";
@@ -12322,8 +12322,14 @@ return this.__repr__();
                     var ρσ_Iter2 = ρσ_Iterable(custom_damages.split(","));
                     for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
                         custom_damage = ρσ_Iter2[ρσ_Index2];
-                        damages.append(custom_damage.trim());
-                        damage_types.append("Custom");
+                        if (ρσ_in(":", custom_damage)) {
+                            parts = custom_damage.split(":", 2);
+                            damages.append(parts[1].trim());
+                            damage_types.append(parts[0].trim());
+                        } else {
+                            damages.append(custom_damage.trim());
+                            damage_types.append("Custom");
+                        }
                     }
                 }
                 if (ρσ_in("Rogue", character._classes) && character.getSetting("rogue-sneak-attack", false) && ((properties["Attack Type"] === "Ranged" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Ranged")) || properties["Properties"].includes("Finesse"))) {

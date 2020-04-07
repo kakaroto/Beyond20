@@ -173,8 +173,13 @@ def rollItem(force_display=False):
         custom_damages = character.getSetting("custom-damage-dice", "")
         if len(custom_damages) > 0:
             for custom_damage in custom_damages.split(","):
-                damages.append(custom_damage.trim())
-                damage_types.append("Custom")
+                if ":" in custom_damage:
+                    parts = custom_damage.split(":", 2)
+                    damages.append(parts[1].trim())
+                    damage_types.append(parts[0].trim())
+                else:
+                    damages.append(custom_damage.trim())
+                    damage_types.append("Custom")
         if "Rogue" in character._classes and \
                 character.getSetting("rogue-sneak-attack", False) and \
                 (properties["Attack Type"] == "Ranged" or \
