@@ -9,7 +9,7 @@
 		"storage",
 		"*://app.roll20.net/editor/",
 		"*://*.dndbeyond.com/*",
-		"*://*/game"
+		"*://*/*game"
 	],
 	"browser_specific_settings": {
 		"gecko": {
@@ -163,7 +163,7 @@
 		},
 		{
 			"matches": [
-				"*://*/game"
+				"*://*/*game"
 			],
 			"css": [
 				"libs/css/alertify.css",
