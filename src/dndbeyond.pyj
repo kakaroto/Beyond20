@@ -148,7 +148,7 @@ class Character(CharacterBase):
         self._exhaustion = 0
 
     def updateInfo(self):
-        self._id = $("#character-sheet-target").attr("data-character-id")
+        self._id = $("#character-sheet-target,#character-tools-target").attr("data-character-id")
         if self._settings is None:
             self.updateSettings()
 
