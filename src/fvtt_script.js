@@ -9237,10 +9237,10 @@ return this.__repr__();
         function updateHP(name, current, total, temp) {
             var tokens, dnd5e_data, sws_data, actor, token;
             console.log("Updating HP for " + name + " : (" + current + "+" + temp + ")/" + total);
-            name = name.toLowerCase();
+            name = name.toLowerCase().trim();
             tokens = canvas.tokens.objects.children.filter((function() {
                 var ρσ_anonfunc = function (t) {
-                    return ρσ_equals(t.name.toLowerCase(), name);
+                    return ρσ_equals(t.name.toLowerCase().trim(), name);
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                     __argnames__ : {value: ["t"]}

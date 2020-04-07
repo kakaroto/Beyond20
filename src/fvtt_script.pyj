@@ -176,9 +176,9 @@ def handleRoll(request):
 
 def updateHP(name, current, total, temp):
     console.log("Updating HP for " + name + " : (" + current + "+" + temp + ")/" + total)
-    name = name.toLowerCase()
+    name = name.toLowerCase().trim()
 
-    tokens = canvas.tokens.objects.children.filter(def(t): return t.name.toLowerCase() == name;)
+    tokens = canvas.tokens.objects.children.filter(def(t): return t.name.toLowerCase().trim() == name;)
 
     dnd5e_data = {"data.attributes.hp.value": current, "data.attributes.hp.temp": temp, "data.attributes.hp.max": total}
     sws_data = {"data.health.value": current + temp, "data.health.max": total}

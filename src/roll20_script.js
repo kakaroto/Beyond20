@@ -5681,10 +5681,10 @@ var str = ρσ_str, repr = ρσ_repr;;
         function updateHP(name, current, total, temp) {
             var character, hp, temp_hp, value;
             console.log("Updating HP for " + name + " : (" + current + "+" + temp + ")/" + total);
-            name = name.toLowerCase();
+            name = name.toLowerCase().trim();
             character = window.Campaign.characters.find((function() {
                 var ρσ_anonfunc = function (c) {
-                    return ρσ_equals(c.attributes.name.toLowerCase(), name);
+                    return ρσ_equals(c.attributes.name.toLowerCase().trim(), name);
                 };
                 if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                     __argnames__ : {value: ["c"]}
