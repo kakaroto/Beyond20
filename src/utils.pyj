@@ -91,6 +91,11 @@ def alertFullSettings():
     alertSettings("options.html", "Beyond 20 Settings")
 
 def isListEqual(list1, list2):
-    list1_str = str.join("", list1)
-    list2_str = str.join("", list2)
+    list1_str = list1.join(",")
+    list2_str = list2.join(",")
     return list1_str == list2_str
+
+def isObjectEqual(obj1, obj2):
+    obj1_str = Object.entries(obj1).join(",")
+    obj2_str = Object.entries(obj2).join(",")
+    return obj1_str == obj2_str

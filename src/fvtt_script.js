@@ -5649,12 +5649,22 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         function isListEqual(list1, list2) {
             var list1_str, list2_str;
-            list1_str = str.join("", list1);
-            list2_str = str.join("", list2);
+            list1_str = list1.join(",");
+            list2_str = list2.join(",");
             return (list1_str === list2_str || typeof list1_str === "object" && ρσ_equals(list1_str, list2_str));
         };
         if (!isListEqual.__argnames__) Object.defineProperties(isListEqual, {
             __argnames__ : {value: ["list1", "list2"]}
+        });
+
+        function isObjectEqual(obj1, obj2) {
+            var obj1_str, obj2_str;
+            obj1_str = Object.entries(obj1).join(",");
+            obj2_str = Object.entries(obj2).join(",");
+            return (obj1_str === obj2_str || typeof obj1_str === "object" && ρσ_equals(obj1_str, obj2_str));
+        };
+        if (!isObjectEqual.__argnames__) Object.defineProperties(isObjectEqual, {
+            __argnames__ : {value: ["obj1", "obj2"]}
         });
 
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
@@ -5673,6 +5683,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ρσ_modules.utils.alertQuickSettings = alertQuickSettings;
         ρσ_modules.utils.alertFullSettings = alertFullSettings;
         ρσ_modules.utils.isListEqual = isListEqual;
+        ρσ_modules.utils.isObjectEqual = isObjectEqual;
     })();
 
     (function(){

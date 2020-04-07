@@ -1,4 +1,4 @@
-from utils import replaceRolls, alertQuickSettings, isListEqual
+from utils import replaceRolls, alertQuickSettings, isListEqual, isObjectEqual
 from settings import getStoredSettings, mergeSettings, character_settings, WhisperType, RollType, CriticalRules
 from dndbeyond_dice import dndbeyondDiceRoller
 from elementmaker import E
@@ -143,6 +143,9 @@ class Character(CharacterBase):
         self._racial_traits = []
         self._feats = []
         self._actions = []
+        self._spell_modifiers = {}
+        self._spell_attacks = {}
+        self._spell_saves = {}
         self._to_hit_cache = {}
         self._conditions = []
         self._exhaustion = 0
@@ -322,8 +325,8 @@ class Character(CharacterBase):
             if not isListEqual(self._class_features, self.getSetting("class-features", [])):
                 console.log("New class feature")
                 update = True
-        elif self.getSetting("class-features", None):
-            self._class_features = list(self.getSetting("class-features", None))
+        else:
+            self._class_features = list(self.getSetting("class-features", []))
 
         race_detail = $(".ct-features .ct-race-detail")
         if race_detail.length > 0:
@@ -331,8 +334,8 @@ class Character(CharacterBase):
             if not isListEqual(self._racial_traits, self.getSetting("racial-traits", [])):
                 console.log("New race feature")
                 update = True
-        elif self.getSetting("racial-traits", None):
-            self._racial_traits = list(self.getSetting("racial-traits", None))
+        else:
+            self._racial_traits = list(self.getSetting("racial-traits", []))
 
         feats_detail = $(".ct-features .ct-feats-detail")
         if feats_detail.length > 0:
@@ -340,8 +343,8 @@ class Character(CharacterBase):
             if not isListEqual(self._feats, self.getSetting("feats", [])):
                 console.log("New Feats")
                 update = True
-        elif self.getSetting("feats", None):
-            self._feats = list(self.getSetting("feats", None))
+        else:
+            self._feats = list(self.getSetting("feats", []))
 
         actions_detail = $(".ct-actions-list .ct-actions-list__activatable")
         if actions_detail.length > 0:
@@ -350,13 +353,49 @@ class Character(CharacterBase):
                 console.log("New Actions")
                 update = True
         elif self.getSetting("actions", None):
-            self._actions = list(self.getSetting("actions", None))
+            self._actions = list(self.getSetting("actions", []))
+
+        # Spell modifier, Spell attack and spell save DC
+        spell_info_groups = $(".ct-spells-level-casting__info-group,.ddbc-spells-level-casting__info-group")
+        if spell_info_groups.length > 0:
+            self._spell_modifiers = {}
+            self._spell_attacks = {}
+            self._spell_saves = {}
+            for group in spell_info_groups:
+                label = $(group).find(".ct-spells-level-casting__info-label,.ddbc-spells-level-casting__info-label")
+                items = $(group).find(".ct-spells-level-casting__info-item,.ddbc-spells-level-casting__info-item")
+                obj = None
+                if label.text() == "Modifier":
+                    obj = self._spell_modifiers
+                elif label.text() == "Spell Attack":
+                    obj = self._spell_attacks
+                elif label.text() == "Save DC":
+                    obj = self._spell_saves
+                if obj is None:
+                    continue
+                for item in items:
+                    modifier = item.textContent
+                    char_classes = item.getAttribute("data-original-title").split(",")
+                    for char_class in char_classes:
+                        obj[char_class.trim()] = modifier
+            if not isObjectEqual(self._spell_modifiers, self.getSetting("spell_modifiers", {})) or \
+                not isObjectEqual(self._spell_attacks, self.getSetting("spell_attacks", {})) or \
+                not isObjectEqual(self._spell_saves, self.getSetting("spell_saves", {})):
+                console.log("New Spell information")
+                update = True
+        elif self.getSetting("spell_info", None):
+            self._spell_modifiers = self.getSetting("spell_modifiers", {})
+            self._spell_saves = self.getSetting("spell_saves", {})
+            self._spell_attacks = self.getSetting("spell_attacks", {})
 
         if self._settings? and update:
             self.mergeCharacterSettings({"class-features": self._class_features,
                                          "racial-traits": self._racial_traits,
                                          "feats": self._feats,
-                                         "actions": self._actions})
+                                         "actions": self._actions,
+                                         "spell_modifiers": self._spell_modifiers,
+                                         "spell_saves": self._spell_saves,
+                                         "spell_attacks": self._spell_attacks})
 
     def hasClassFeature(self, name):
         return name in self._class_features
@@ -407,29 +446,35 @@ class Character(CharacterBase):
         # Make a copy of the settings but without the features since they are
         # already in the dict
         for key in self._settings:
-            if key not in ["class-features", "racial-traits", "feats", "actions", "conditions", "exhaustion-level"]:
+            if key not in ["class-features", "racial-traits", "feats", "actions", \
+                "spell_modifiers", "spell_saves", "spell_attacks", "conditions", "exhaustion-level"]:
                 settings[key] = self._settings[key]
-        return {"name": self._name,
-                "avatar": self._avatar,
-                "id": self._id,
-                "type": self.type(),
-                "abilities": self._abilities.as_array(),
-                "classes": self._classes,
-                "level": self._level,
-                "race": self._race,
-                "ac": self._ac,
-                "proficiency": self._proficiency,
-                "speed": self._speed,
-                "hp": self._hp,
-                "max-hp": self._max_hp,
-                "temp-hp": self._temp_hp,
-                "exhaustion": self._exhaustion,
-                "conditions": self._conditions.as_array(),
-                "settings": settings,
-                "class-features": self._class_features.as_array(),
-                "racial-traits": self._racial_traits.as_array(),
-                "feats": self._feats.as_array(),
-                "actions": self._actions.as_array()}
+        return {
+            "name": self._name,
+            "avatar": self._avatar,
+            "id": self._id,
+            "type": self.type(),
+            "abilities": self._abilities.as_array(),
+            "classes": self._classes,
+            "level": self._level,
+            "race": self._race,
+            "ac": self._ac,
+            "proficiency": self._proficiency,
+            "speed": self._speed,
+            "hp": self._hp,
+            "max-hp": self._max_hp,
+            "temp-hp": self._temp_hp,
+            "exhaustion": self._exhaustion,
+            "conditions": self._conditions.as_array(),
+            "settings": settings,
+            "class-features": self._class_features.as_array(),
+            "racial-traits": self._racial_traits.as_array(),
+            "feats": self._feats.as_array(),
+            "actions": self._actions.as_array(),
+            "spell_modifiers": self._spell_modifiers,
+            "spell_saves": self._spell_saves,
+            "spell_attacks": self._spell_attacks
+        }
 
 
 class Monster(CharacterBase):
