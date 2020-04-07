@@ -12212,7 +12212,7 @@ return this.__repr__();
                     return ρσ_anonfunc;
                 })(), 0);
                 initiative = float(initiative) + float(tiebreaker) / 100;
-                initiative = (initiative >= 0) ? "+" + str(initiative) : str(initiative);
+                initiative = (initiative >= 0) ? "+" + initiative.toFixed(2) : initiative.toFixed(2);
             }
             roll_properties = (function(){
                 var ρσ_d = {};

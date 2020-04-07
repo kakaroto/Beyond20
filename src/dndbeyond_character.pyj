@@ -87,7 +87,7 @@ def rollInitiative():
        initiative = float(initiative) + float(tiebreaker) / 100
 
        # Render initiative as a string that begins with '+' or '-'
-       initiative = '+' + str(initiative) if initiative >= 0 else str(initiative)
+       initiative = '+' + initiative.toFixed(2) if initiative >= 0 else initiative.toFixed(2)
 
     roll_properties = {"initiative": initiative}
     if advantage:
