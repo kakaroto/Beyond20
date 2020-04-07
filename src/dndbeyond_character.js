@@ -12345,8 +12345,8 @@ return this.__repr__();
                 }
                 if (character.getSetting("sharpshooter", false) && (properties["Attack Type"] === "Ranged" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Ranged")) && (properties["Proficient"] === "Yes" || typeof properties["Proficient"] === "object" && ρσ_equals(properties["Proficient"], "Yes"))) {
                     to_hit += " - 5";
-                    damages.insert(1, " + 10");
-                    damage_types.insert(1, "Sharpshooter");
+                    damages.append(" + 10");
+                    damage_types.append("Sharpshooter");
                     character.mergeCharacterSettings((function(){
                         var ρσ_d = {};
                         ρσ_d["sharpshooter"] = false;
@@ -12355,8 +12355,8 @@ return this.__repr__();
                 }
                 if (character.getSetting("great-weapon-master", false) && (properties["Attack Type"] === "Melee" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Melee")) && properties["Properties"].includes("Heavy") && (properties["Proficient"] === "Yes" || typeof properties["Proficient"] === "object" && ρσ_equals(properties["Proficient"], "Yes"))) {
                     to_hit += " - 5";
-                    damages.insert(1, " + 10");
-                    damage_types.insert(1, "Weapon Master");
+                    damages.append(" + 10");
+                    damage_types.append("Weapon Master");
                     character.mergeCharacterSettings((function(){
                         var ρσ_d = {};
                         ρσ_d["great-weapon-master"] = false;
