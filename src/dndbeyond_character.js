@@ -12250,7 +12250,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
                 force_display = ρσ_kwargs_obj.force_display;
             }
-            var prop_list, properties, item_name, item_type, description, item_full_name, to_hit, damages, damage_types, value, damage, damage_type, versatile_damage, versatile_choice, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damages, parts, custom_damage, sneak_attack, bloodhunter_level, rite_die, cleric_level, bard_level, critical_limit, brutal, barbarian_level, rage_damage, roll_properties;
+            var prop_list, properties, item_name, item_type, description, item_full_name, to_hit, damages, damage_types, value, damage, damage_type, versatile_damage, versatile_choice, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damages, parts, custom_damage, sneak_attack, barbarian_level, rage_damage, bloodhunter_level, rite_die, cleric_level, bard_level, critical_limit, brutal, roll_properties;
             prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
             properties = propertyListToDict(prop_list);
             properties["Properties"] = properties["Properties"] || "";
@@ -12336,6 +12336,12 @@ return this.__repr__();
                     sneak_attack = int(math.ceil(float(character._classes["Rogue"]) / 2)) + "d6";
                     damages.append(sneak_attack);
                     damage_types.append("Sneak Attack");
+                }
+                if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false) && (properties["Attack Type"] === "Melee" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Melee"))) {
+                    barbarian_level = character.getClassLevel("Barbarian");
+                    rage_damage = (barbarian_level < 9) ? 2 : (barbarian_level < 16) ? 3 : 4;
+                    damages.append(str(rage_damage));
+                    damage_types.append("Rage");
                 }
                 if (character.getSetting("sharpshooter", false) && (properties["Attack Type"] === "Ranged" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Ranged")) && (properties["Proficient"] === "Yes" || typeof properties["Proficient"] === "object" && ρσ_equals(properties["Proficient"], "Yes"))) {
                     to_hit += " - 5";
@@ -12432,12 +12438,6 @@ return this.__repr__();
                         if (character.hasRacialTrait("Savage Attacks")) {
                             brutal += 1;
                         }
-                    }
-                    if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) {
-                        barbarian_level = character.getClassLevel("Barbarian");
-                        rage_damage = (barbarian_level < 9) ? 2 : (barbarian_level < 16) ? 3 : 4;
-                        damages.insert(1, str(rage_damage));
-                        damage_types.insert(1, "Rage");
                     }
                 }
                 roll_properties = buildAttackRoll(character, "item", item_name, description, properties, damages, damage_types, to_hit, brutal);
@@ -12545,8 +12545,8 @@ return this.__repr__();
                     if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) {
                         barbarian_level = character.getClassLevel("Barbarian");
                         rage_damage = (barbarian_level < 9) ? 2 : (barbarian_level < 16) ? 3 : 4;
-                        damages.insert(1, str(rage_damage));
-                        damage_types.insert(1, "Rage");
+                        damages.append(str(rage_damage));
+                        damage_types.append("Rage");
                     }
                     if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)) {
                         damages.append("1d6");

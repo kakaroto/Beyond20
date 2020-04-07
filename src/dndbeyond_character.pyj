@@ -187,6 +187,13 @@ def rollItem(force_display=False):
             sneak_attack = int(math.ceil(float(character._classes["Rogue"]) / 2)) + "d6"
             damages.append(sneak_attack)
             damage_types.append("Sneak Attack")
+        if character.hasClassFeature("Rage") and \
+                character.getSetting("barbarian-rage", False) and \
+                properties["Attack Type"] == "Melee":
+            barbarian_level = character.getClassLevel("Barbarian")
+            rage_damage = 2 if barbarian_level < 9 else (3 if barbarian_level < 16 else 4)
+            damages.append(str(rage_damage))
+            damage_types.append("Rage")
         if character.getSetting("sharpshooter", False) and \
                 properties["Attack Type"] == "Ranged" and \
                 properties["Proficient"] == "Yes":
@@ -270,11 +277,6 @@ def rollItem(force_display=False):
                     brutal += 1 + math.floor((barbarian_level - 9) / 4)
                 if character.hasRacialTrait("Savage Attacks"):
                     brutal += 1
-            if character.hasClassFeature("Rage") and character.getSetting("barbarian-rage", False):
-                barbarian_level = character.getClassLevel("Barbarian")
-                rage_damage = 2 if barbarian_level < 9 else (3 if barbarian_level < 16 else 4)
-                damages.insert(1, str(rage_damage))
-                damage_types.insert(1, "Rage")
         roll_properties = buildAttackRoll(character,
                                           "item",
                                           item_name,
@@ -364,8 +366,8 @@ def rollAction(paneClass):
             if character.hasClassFeature("Rage") and character.getSetting("barbarian-rage", False):
                 barbarian_level = character.getClassLevel("Barbarian")
                 rage_damage = 2 if barbarian_level < 9 else (3 if barbarian_level < 16 else 4)
-                damages.insert(1, str(rage_damage))
-                damage_types.insert(1, "Rage")
+                damages.append(str(rage_damage))
+                damage_types.append("Rage")
             if character.hasClassFeature("Giant Might") and character.getSetting("fighter-giant-might", False):
                 damages.append("1d6")
                 damage_types.append("Giant Might")
