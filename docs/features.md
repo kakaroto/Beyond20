@@ -137,8 +137,8 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Prefix to display with spell components during an attack
 * VTT tab specific options
   * Select a tab to send all rolls to
-  * Select the campaign (Roll2) or world (FVTT) to send the rolls to
-  * Send rolls to All tabs, Only Roll20 Tabs, Only FVTT Tabs
+  * Select the campaign (Roll2) or world (Foundry VTT) to send the rolls to
+  * Send rolls to All tabs, Only Roll20 Tabs, Only Foundry VTT Tabs
 * D&D Beyond character specific options
   * Custom roll dice formula bonus
   * Custom damage dice formula bonus

@@ -23,7 +23,7 @@ You can also check out the [changelog](Changelog) for recent fixes or additions 
 
 You can always check out the [Features](features) page to see if what you're looking for is supported. I would also suggest you click on the Beyond20 icon in the browser's address bar to see what options are available. The feature you want might simply be disabled.
 
-You can also go to your browser's Extensions/Add-Ons page and open the options for Beyond20 that way. Note that the quick options popup will vary from the Roll20/FVTT page to the character sheet or monster pages and some options might only be available for specific characters and not available in the full extension's options page.
+You can also go to your browser's Extensions/Add-Ons page and open the options for Beyond20 that way. Note that the quick options popup will vary from the Roll20/Foundry VTT page to the character sheet or monster pages and some options might only be available for specific characters and not available in the full extension's options page.
 
 
 ### All I see in Roll20 is an empty message
@@ -38,7 +38,7 @@ If you cannot do that (you're not the DM) or you don't wish to do it (you prefer
 
 ### My HP from D&D Beyond doesn't synchronize to my tokens
 
-The HP syncing needs to be enabled in your settings (see [first question](#can-beyond20-do-insert-specific-feature)) and the character name in D&D Beyond must match the character name in Roll 20 or FVTT. This also applies to creatures you have in Extras, such as a Beast companion or a familiar.
+The HP syncing needs to be enabled in your settings (see [first question](#can-beyond20-do-insert-specific-feature)) and the character name in D&D Beyond must match the character name in Roll 20 or Foundry VTT. This also applies to creatures you have in Extras, such as a Beast companion or a familiar.
 
 If you do not have a character sheet in Roll20, that's ok, simly create a new Character, set its name and save, in the character sheet tab, if it asks you how you want to create the character select "Edit Sheet directly" and set its HP and temp HP values to any value (0 for example). That should fix it. The next time you update the HP on your character in D&D Beyond (or if you reload the character sheet), the HP should sync back to the character sheet in Roll20.
 
@@ -74,7 +74,7 @@ Be aware that the roll bonus is applied to all rolls (ability checks, skill chec
 
 For example, if you want it to ask you if you want to apply the Bless bonus on every roll, you could set it to : `+?{Use Bless|Yes,1d4|No,0}`
 
-Of course, the use of macros will only work on Roll 20, not on FVTT.
+Of course, the use of such macros will only work on Roll 20, not on Foundry VTT.
 
 ### How can I use this non-standard spell or feature ? 
 
@@ -111,7 +111,7 @@ The damage information needs to follow the format: "X (D) T damage" or "X T dama
 
 ### Why can't others see my rolls properly in Foundry VTT?
 
-Beyond20 uses CSS to properly display the rolls. If other players (or the DM using the main application window) doesn't have Beyond20 installed, the rolls won't be displayed properly. To fix that, simply ask the DM to install and enable the Beyond20 companion module into the FVTT installation. That will ensure every player sees the rolls displayed properly. 
+Beyond20 uses CSS to properly display the rolls. If other players (or the DM using the main application window) doesn't have Beyond20 installed, the rolls won't be displayed properly. To fix that, simply ask the DM to install and enable the Beyond20 companion module into the Foundry VTT installation. That will ensure every player sees the rolls displayed properly. 
 
 You can find the companion module [here](https://github.com/kakaroto/Beyond20/tree/master/FVTT-module/)
 

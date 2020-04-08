@@ -275,7 +275,7 @@ def setTitle():
         # Wait a second for the world to get loaded
         setTimeout(setTitle, 1000)
 
-console.log("Beyond20: FVTT Page Script loaded")
+console.log("Beyond20: Foundry VTT Page Script loaded")
 registered_events = []
 registered_events.append(addCustomEventListener("Roll", handleRoll))
 registered_events.append(addCustomEventListener("NewSettings", setSettings))

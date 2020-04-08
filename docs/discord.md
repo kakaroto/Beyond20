@@ -26,7 +26,7 @@ Save your settings, and you're good to go!
 
 # Important notes
 
-Make sure you didn't disallow link previews and embeds as the Discord bot uses embed messages to display its rolls.
+Make sure you didn't disallow link previews as the Discord bot uses embed messages to display its rolls. In your discord's `User Settings`, under the `Text & Images`, make sure you enable the option under `Link Preview`
 
 Due to the nature of how Roll 20 creates its messages, you can only send your rolls to either Roll 20 or to Discord, not both at the same time.
 If you use Roll 20 as your VTT and want to send rolls to Discord, click the Beyond20 options icon *within the Roll 20 tab*, and select "Send rolls to : D&D Beyond Dice Roller & Discord".

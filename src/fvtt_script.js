@@ -5879,7 +5879,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             ρσ_d["display-conditions"] = (function(){
                 var ρσ_d = {};
                 ρσ_d["title"] = "Display Condition updates to VTT";
-                ρσ_d["description"] = "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using FVTT with the Beyond20 module, it will also update the token's status icons appropriately.";
+                ρσ_d["description"] = "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using Foundry VTT with the Beyond20 module, it will also update the token's status icons appropriately.";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = true;
                 return ρσ_d;
@@ -9446,7 +9446,7 @@ return this.__repr__();
             }
         };
 
-        console.log("Beyond20: FVTT Page Script loaded");
+        console.log("Beyond20: Foundry VTT Page Script loaded");
         registered_events = ρσ_list_decorate([]);
         registered_events.append(addCustomEventListener("Roll", handleRoll));
         registered_events.append(addCustomEventListener("NewSettings", setSettings));
