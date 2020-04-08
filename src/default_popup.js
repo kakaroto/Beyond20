@@ -6968,7 +6968,13 @@ var str = ρσ_str, repr = ρσ_repr;;
             $("main").prepend(ρσ_interpolate_kwargs.call(E, E.ul, [createHTMLOptionEx("donate", options_list["donate"], true)].concat([ρσ_desugar_kwargs({class_: "list-group beyond20-options"})])));
             $(".beyond20-options").append(ρσ_interpolate_kwargs.call(E, E.li, [ρσ_interpolate_kwargs.call(E, E.a, [E.h4("Beyond20 Options")].concat([ρσ_desugar_kwargs({id: "openOptions", class_: "list-content", href: "#"})]))].concat([ρσ_desugar_kwargs({class_: "list-group-item beyond20-option"})])));
             img = $("#donate").find("img");
-            img.attr("src", img.attr("src").replace("donate.png", "donate32.png"));
+            img.attr((function(){
+                var ρσ_d = {};
+                ρσ_d["src"] = img.attr("src").replace("donate.png", "donate32.png");
+                ρσ_d["width"] = 32;
+                ρσ_d["height"] = 32;
+                return ρσ_d;
+            }).call(this));
             $("#openOptions").bind("click", (function() {
                 var ρσ_anonfunc = function (ev) {
                     chrome.runtime.openOptionsPage();

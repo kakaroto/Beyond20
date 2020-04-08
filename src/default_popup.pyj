@@ -11,7 +11,11 @@ def createOptionList():
                                        )
                                   )
     img = $("#donate").find("img")
-    img.attr("src", img.attr("src").replace("donate.png", "donate32.png"))
+    img.attr({
+        "src": img.attr("src").replace("donate.png", "donate32.png"),
+        "width": 32,
+        "height": 32
+    })
     $("#openOptions").bind('click', def (ev):
         chrome.runtime.openOptionsPage()
     )
