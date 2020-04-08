@@ -10,6 +10,7 @@
 		"*://beyond20.kicks-ass.org/roll",
 		"*://app.roll20.net/editor/",
 		"*://*.forgevtt.com/game",
+		"*://*.forge-vtt.com/game",
 		"*://*.dndbeyond.com/*"
 	],
 	"browser_specific_settings": {
@@ -149,7 +150,8 @@
 		},
 		{
 			"matches": [
-				"*://*.forgevtt.com/game"
+				"*://*.forgevtt.com/game",
+				"*://*.forge-vtt.com/game"
 			],
 			"css": [
 				"libs/css/alertify.css",
