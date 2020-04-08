@@ -300,7 +300,7 @@ class Beyond20RollRenderer:
         data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
 
         # Custom skill
-        if request.modifier == "--" and request.character.abilities.length > 0:
+        if request.ability == "--" and request.character.abilities.length > 0:
             prof = ""
             prof_val = ""
             if request.proficiency == "Proficiency":
@@ -326,6 +326,8 @@ class Beyond20RollRenderer:
                 if html:
                     ability = html.find('[name="ability"]').val()
                     mod = modifiers[ability]
+                    if request.modifier != "--" and request.modifier != "+0":
+                        mod += request.modifier
                     data = {"ability": mod, "prof": prof_val, "custom_dice": custom_roll_dice}
                     self.rollD20(request, request.skill + "(" + ability + ")", data)
             )

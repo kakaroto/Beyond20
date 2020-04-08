@@ -7326,14 +7326,18 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var modifier, ability, prof, prof_val;
+            var modifier, magic, ability, prof, prof_val;
             modifier = request.modifier;
-            if ((modifier === "--" || typeof modifier === "object" && ρσ_equals(modifier, "--")) && request.character.abilities.length > 0) {
+            if ((request.ability === "--" || typeof request.ability === "object" && ρσ_equals(request.ability, "--")) && request.character.abilities.length > 0) {
                 modifier = "?{Choose Ability";
+                magic = "";
+                if ((request.modifier !== "--" && (typeof request.modifier !== "object" || ρσ_not_equals(request.modifier, "--"))) && (request.modifier !== "+0" && (typeof request.modifier !== "object" || ρσ_not_equals(request.modifier, "+0")))) {
+                    magic = request.modifier;
+                }
                 var ρσ_Iter3 = ρσ_Iterable(request.character.abilities);
                 for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
                     ability = ρσ_Iter3[ρσ_Index3];
-                    modifier += "|" + ability[0] + ", " + ability[3];
+                    modifier += "|" + ability[0] + ", " + ability[3] + magic;
                 }
                 modifier += "}";
                 prof = "";

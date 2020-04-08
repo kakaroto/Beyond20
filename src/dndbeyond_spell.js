@@ -8034,7 +8034,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["custom_dice"] = custom_roll_dice;
                 return ρσ_d;
             }).call(this);
-            if ((request.modifier === "--" || typeof request.modifier === "object" && ρσ_equals(request.modifier, "--")) && request.character.abilities.length > 0) {
+            if ((request.ability === "--" || typeof request.ability === "object" && ρσ_equals(request.ability, "--")) && request.character.abilities.length > 0) {
                 prof = "";
                 prof_val = "";
                 if ((request.proficiency === "Proficiency" || typeof request.proficiency === "object" && ρσ_equals(request.proficiency, "Proficiency"))) {
@@ -8066,6 +8066,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                         if (html) {
                             ability = html.find("[name=\"ability\"]").val();
                             mod = modifiers[(typeof ability === "number" && ability < 0) ? modifiers.length + ability : ability];
+                            if ((request.modifier !== "--" && (typeof request.modifier !== "object" || ρσ_not_equals(request.modifier, "--"))) && (request.modifier !== "+0" && (typeof request.modifier !== "object" || ρσ_not_equals(request.modifier, "+0")))) {
+                                mod += request.modifier;
+                            }
                             data = (function(){
                                 var ρσ_d = {};
                                 ρσ_d["ability"] = mod;

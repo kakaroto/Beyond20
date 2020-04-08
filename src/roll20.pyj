@@ -218,11 +218,14 @@ def template(request, name, properties):
 def rollSkill(request, custom_roll_dice=""):
     modifier = request.modifier
     # Custom skill
-    if modifier == "--" and request.character.abilities.length > 0:
+    if request.ability == "--" and request.character.abilities.length > 0:
         modifier = "?{Choose Ability"
         # [name, abbr, value, mod]
+        magic = ""
+        if request.modifier != "--" and request.modifier != "+0":
+            magic = request.modifier
         for ability in request.character.abilities:
-            modifier += "|" + ability[0] + ", " + ability[3]
+            modifier += "|" + ability[0] + ", " + ability[3] + magic
         modifier += "}"
         prof = ""
         prof_val = ""
