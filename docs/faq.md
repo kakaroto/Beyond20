@@ -15,6 +15,8 @@ You can also check out the [changelog](Changelog) for recent fixes or additions 
 * [Why isn't the attack button appearing for my homebrew monster?](#why-isnt-the-attack-button-appearing-for-my-homebrew-monster)
 * [Why can't others see my rolls properly in Foundry VTT?](#why-cant-others-see-my-rolls-properly-in-foundry-vtt)
 * [How can I enable Discord integration?](#how-can-i-enable-discord-integration)
+* [Why doesn't Beyond20 allow me to make a melee attack with my magic staffs?](#why-doesnt-beyond20-allow-me-to-make-a-melee-attack-with-my-magic-staffs)
+
 ---
 
 ### Can Beyond20 do '\<insert specific feature\>'?
@@ -76,9 +78,9 @@ Of course, the use of macros will only work on Roll 20, not on FVTT.
 
 ### How can I use this non-standard spell or feature ? 
 
-If you find a feature that needs to be handled in a special way, please mention it in this [issue](https://github.com/kakaroto/Beyond20/issues/9) where I keep track of all the special features (such as Improved Critical, or Sneak Attack), if it's a non standard spell, then please mention it in this [issue](https://github.com/kakaroto/Beyond20/issues/13) instead. I will add special handling of those features and spells in a future update if it's doable.
+If you find a feature or a spell that needs to be handled in a special way, please report it on the [issue tracker](https://github.com/kakaroto/Beyond20/issues) so I can add special support for it.
 
-In the meantime, you can always create a custom action for your needs or re-cast or click the dice in the description.
+If the spell or feature or your request is particularly unique and specific to your own games, I would instead suggest you simply create a custom Action in your D&D Beyond character sheet, and you can put in the description any of the dice formulas you may need.
 
 For example, if you are a Paladin and need to use [Divine Smite](https://www.dndbeyond.com/sources/basic-rules/classes#DivineSmite) on an Undead creature using 2nd level spell slot, you can either click on the 2d8 once and the 1d8 twice (once for 2nd level spell slot and once for undead extra damage), or you create a Custom Action and fill the description with something like this : 
 
@@ -95,8 +97,6 @@ Then you can click on the dice formula that is relevant to you when it's time to
 If for example, you have access to the [Shadow Blade](https://www.dndbeyond.com/spells/shadow-blade) spell, you can create a custom action or homebrew weapon with the Finesse, Light and Thrown properties that dealds 2d8 psychic damage, and change that damage value if you cast it as a higher level spell. This way you can make a weapon attack with it.
 
 Another example, if you want to cast [Scorching Ray](https://www.dndbeyond.com/spells/scorching-ray) at 4th level, you will see in the sidepanel it says "(3 rays)" and "Additional Rays: 2". Simply click the "Cast on Roll20" button 5 times for you to roll for the 5 ray attacks.
-
-As a last example, if you want to cast [Chaos Bolt](https://www.dndbeyond.com/spells/chaos-bolt), then good luck! Seriously though, you could decide in advance with your DM that you only always take the first damage marked as "Acid" and you can then hover the mouse on the result to see the value of the 2d8 to decide what the actual damage type is (don't forget to add the 1d6 marked as 'Additional'). If the two dice returned the same value, click the "Cast on Roll20" again to attack with it again.
 
 
 ### Why isn't the attack button appearing for my homebrew monster?
@@ -122,3 +122,17 @@ Enabling Discord integration is easy and can be done in 4 simple steps :
 2. Send `!beyond20 secret` command in the channel of your choice
 3. Set the `secret key` you received in Beyond20's options.
 4. Share the `secret key` with your group.
+
+Make sure you didn't disallow link previews and embeds as the Discord bot uses embed messages to display its rolls.
+
+You can read the more detailed discord integration instructions [here](https://beyond20.here-for-more.info/discord)
+
+### Why doesn't Beyond20 allow me to make a melee attack with my magic staffs?
+
+Magic Staffs in D&D Beyond are considered as magical items, rather than melee weapons. Without the information that D&D Beyond would normally give, Beyond20 has no way of knowing how to attack using a magic staff, what to-hit value to use, what damages to use, etc... 
+
+The best way to avoid this issue is to add a Quarterstaff to your equipment (don't forget to add a +1 Quarterrstaff instead if your staff does +1 damage for example). You can then customize the weapon using D&D Beyond's interface to rename the Quarterstaff to the same name as your magic staff.
+
+As an example, you can have your Staff of Healing for healing purposes, and a Quarterstaff with the custom name "Staff of Healing(Melee)" for when you want to use it for attacks.
+
+See [this issue](https://github.com/kakaroto/Beyond20/issues/111) for more details.
