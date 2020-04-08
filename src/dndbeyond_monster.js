@@ -8827,6 +8827,10 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             content += "<div class='beyond20-dice-roller-content'>" + html + "</div>" + "</div>";
             dlg = alertify.Beyond20Roll(title, content);
+            dlg.set("onclose", function () {
+                dlg.set("onclose", null);
+                dlg.destroy();
+            });
             element = $(dlg.elements.content.firstElementChild);
             icon16 = chrome.runtime.getURL("images/icons/icon16.png");
             element.find(".ct-beyond20-custom-icon").attr("src", icon16);
