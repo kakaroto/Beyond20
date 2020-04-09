@@ -14,7 +14,7 @@ Once the Beyond 20 bot is in your server, you can send commands to it, try `!bey
 
 In order for the Beyond20 extension to know where to send rolls, and to prevent unauthorized people from spamming you or your server channels, you will need to give it a `secret key`.
 
-As owner of a server, you can send the command `!beyond20 secret` in any channel where the bot has joined, and it will reply with a secret key that allows you to send rolls to that channel. You may share that key with your players so they can also send rolls to that channel.
+As owner of a server, you can send the command `!beyond20 secret` in any channel where the bot has joined, and it will reply with a secret key that allows you to **send rolls to that specific channel**. You may share that key with your players so they can also send rolls to that channel.
 
 If you are not a server owner, you can send the command `secret` in a Direct Message to the bot and the secret key you will receive will allow it to send rolls to you directly in private. As a DM, you could share it with your party members to get rolls sent to you as whispers.
 

@@ -1,0 +1,1 @@
+- With the new character sheet layout, the quick rolls do not currently work when hovering on saving throws.

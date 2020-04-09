@@ -1,3 +1,19 @@
+v1.1
+===
+* **Feature**: Add support for the new D&D Beyond character sheet layout
+* **Feature**: Save and cache spell modifiers/attack/save DC information from character sheets
+* **Feature**: Add support for dice formulas using "+ your spell save DC" or "+ your Wizard spell attack", etc..
+* **Feature**: Add ability to specify the damage type in custom damage formulas
+* **Bugfix**: Always round initiative value to decimal when using the tie breaker option
+* **Bugfix**: Don't send HP update information to VTT if HP syncing is disabled
+* **Bugfix**: Remove trailing spaces from character names to avoid issues with HP syncing name match
+* **Bugfix**: Fix damage total calculation breaking when enabling Rage
+* **Bugfix**: Fix damage total calculation breaking when enabling Sharpshooter
+* **Bugfix**: Fix statblock detection for character sheet creatures when using the integrated dice roller
+* **Bugfix**: Fix issue with the "Send rolls to" being reset to an invalid value when changing settings
+* **Bugfix**: *FVTT*: Fix detection of FVTT tab when using a route prefix
+* **Misc**: Fix Donate button size being too big in the popout dialog in non-dnd/roll20/fvtt websites
+
 v1.0
 ===
 * **Feature**: Added [Discord integration](/discord) via the new Beyond20 Discord Bot!
