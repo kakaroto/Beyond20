@@ -588,12 +588,12 @@ def setVTTTabSetting(name, settings):
         if vtt == "dndbeyond":
             choice = "D&D Beyond Dice Roller & Discord"
         else:
-            vtt_name = "Roll 20" if vtt == "roll20" else "Foundry VTT"
+            vtt_name = "Roll20" if vtt == "roll20" else "Foundry VTT"
             choice = "Only " + vtt_name + " Tabs"
         $("#" + name).text(choice)
     else:
         id, title, vtt = (val.id, val.title, val.vtt ? "roll20")
-        vtt_name = "Roll 20" if vtt == "roll20" else "Foundry VTT"
+        vtt_name = "Roll20" if vtt == "roll20" else "Foundry VTT"
         campaign = "Campaign" if vtt == "roll20" else "World"
         short = combobox.hasClass("vtt-tab-short")
         if short:

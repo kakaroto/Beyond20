@@ -6815,7 +6815,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 if ((vtt === "dndbeyond" || typeof vtt === "object" && ρσ_equals(vtt, "dndbeyond"))) {
                     choice = "D&D Beyond Dice Roller & Discord";
                 } else {
-                    vtt_name = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Roll 20" : "Foundry VTT";
+                    vtt_name = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Roll20" : "Foundry VTT";
                     choice = "Only " + vtt_name + " Tabs";
                 }
                 $("#" + name).text(choice);
@@ -6824,7 +6824,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                 id = ρσ_unpack[0];
                 title = ρσ_unpack[1];
                 vtt = ρσ_unpack[2];
-                vtt_name = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Roll 20" : "Foundry VTT";
+                vtt_name = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Roll20" : "Foundry VTT";
                 campaign = ((vtt === "roll20" || typeof vtt === "object" && ρσ_equals(vtt, "roll20"))) ? "Campaign" : "World";
                 short = combobox.hasClass("vtt-tab-short");
                 if (short) {
