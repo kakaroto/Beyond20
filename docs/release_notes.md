@@ -18,7 +18,7 @@ When I made the last release, I had announced that I'd achieved, ten months afte
 
 I like to end these release notes with my usual thank yous. First, I'd like to thank the D&D Beyond team who have reached out to me and have granted me access to the alpha character sheet in advance so I could update Beyond20 to work with the new layout. Working with them has been a real pleasure, and I wanted to thank them for being so friendly and open.
 
-I'd also like to thank all of you who have sent me rations/coffees through the [Ko-fi]https://ko-fi.com/kakaroto) link or who pledged on [Patreon](https://patreon.com/kakaroto) through my [support](/support) page. The outpouring of love and support has been tremendous and is what keeps me working and updating Beyond20 for you all. 
+I'd also like to thank all of you who have sent me rations/coffees through the [Ko-fi](https://ko-fi.com/kakaroto) link or who pledged on [Patreon](https://patreon.com/kakaroto) through my [support](/support) page. The outpouring of love and support has been tremendous and is what keeps me working and updating Beyond20 for you all. 
 
 Thank you as well for all of you who told others of the extension or who came to my [Discord](https://discord.gg/ZAasSVS) to thank me or to tell me how much you loved my work.
 
