@@ -13,6 +13,7 @@ v1.1
 * **Bugfix**: Fix issue with the "Send rolls to" being reset to an invalid value when changing settings
 * **Bugfix**: *FVTT*: Fix detection of FVTT tab when using a route prefix
 * **Misc**: Fix Donate button size being too big in the popout dialog in non-dnd/roll20/fvtt websites
+* **Misc**: *Chrome*: Add permissions for forge-vtt.com as I prepare for using a new domain
 
 v1.0
 ===
