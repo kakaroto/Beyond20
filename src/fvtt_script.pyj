@@ -214,7 +214,8 @@ def updateConditions(request, name, conditions, exhaustion):
     })
 
     # Check for the beyond20 module, if it's there, we can use its status effects.
-    module = game.modules.find(def(m): return m.id == "beyond20";)
+    module = game.modules.get("beyond20")
+
     if module ? and isNewerVersion(module.data.version, "0.6"):
         # Update status effects
         name = name.toLowerCase()
@@ -247,7 +248,7 @@ def updateConditions(request, name, conditions, exhaustion):
             data = {"effects": new_effects}
             if defeated:
                 data["overlayEffect"] = "icons/svg/skull.svg"
-            token.update(canvas.id, data)
+            token.update(data)
 
 
 
