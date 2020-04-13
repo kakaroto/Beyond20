@@ -462,6 +462,12 @@ class Beyond20RollRenderer:
                 elif request.name == "Toll the Dead":
                     ttd_dice = v'await self.queryGeneric(request.name, "Is the target missing any of its hit points?", {"d12": "Yes", "d8": "No"}, "ttd_dice", ["d12", "d8"])'
                     damages[0] = damages[0].replace("d8", ttd_dice)
+                elif damage_types.includes("Colossus Slayer"):
+                    cs_index = damage_types.indexOf("Colossus Slayer")
+                    cs_dice = ttd_dice = v'await self.queryGeneric(request.name, "Is the target missing any of its hit points?", {"d8": "Yes", "0": "No"}, "ttd_dice", ["d8", "0"])'
+                    if cs_dice != "d8":
+                        damages.splice(cs_index, 1)
+                        damage_types.splice(cs_index, 1)
 
                 has_versatile = len(damage_types) > 1 and damage_types[1] == "Two-Handed"
                 for i in range(damages.length):
