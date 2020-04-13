@@ -227,6 +227,9 @@ def rollItem(force_display=False):
             damages.append("1d8")
             damage_types.append("Ambush")
             character.mergeCharacterSettings({"ranger-dread-ambusher": False})
+        if character.hasClassFeature("Hunter’s Prey: Colossus Slayer"):
+            damages.append("1d8")
+            damage_types.append("Colossus Slayer")
         if properties["Attack Type"] == "Melee" and \
            character.hasClassFeature("Improved Divine Smite") and \
            character.getSetting("paladin-improved-divine-smite", True):
