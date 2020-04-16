@@ -425,7 +425,7 @@ class Beyond20RollRenderer:
                 is_critical = self.isCriticalHitD20(to_hit, critical_limit)
 
 
-            if request.damages?:
+            if request.damages?:                
                 damages = list(request.damages)
                 damage_types = list(request["damage-types"])
                 critical_damages = list(request["critical-damages"])
@@ -463,8 +463,9 @@ class Beyond20RollRenderer:
                     ttd_dice = v'await self.queryGeneric(request.name, "Is the target missing any of its hit points?", {"d12": "Yes", "d8": "No"}, "ttd_dice", ["d12", "d8"])'
                     damages[0] = damages[0].replace("d8", ttd_dice)
                 elif damage_types.includes("Colossus Slayer"):
+                    console.log("slayer")                    
                     cs_index = damage_types.indexOf("Colossus Slayer")
-                    cs_dice = ttd_dice = v'await self.queryGeneric(request.name, "Is the target missing any of its hit points?", {"d8": "Yes", "0": "No"}, "ttd_dice", ["d8", "0"])'
+                    cs_dice = v'await self.queryGeneric(request.name, "Add Colossus Slayer damage?", {"0": "No", "d8": "Yes"}, "cs_dice", ["0", "d8"])'
                     if cs_dice != "d8":
                         damages.splice(cs_index, 1)
                         damage_types.splice(cs_index, 1)

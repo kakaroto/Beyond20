@@ -8298,7 +8298,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var self = this;
             var async_function;
             async_function = async            function () {
-                var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, ttd_dice, has_versatile, roll, dmg_type, damage_flags, suffix, i, ρσ_unpack, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
+                var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, ttd_dice, cs_index, cs_dice, has_versatile, roll, dmg_type, damage_flags, suffix, i, ρσ_unpack, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
                 to_hit = ρσ_list_decorate([]);
                 damage_rolls = ρσ_list_decorate([]);
                 is_critical = false;
@@ -8354,6 +8354,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                     } else if ((request.name === "Toll the Dead" || typeof request.name === "object" && ρσ_equals(request.name, "Toll the Dead"))) {
                         ttd_dice = await self.queryGeneric(request.name, "Is the target missing any of its hit points?", {"d12": "Yes", "d8": "No"}, "ttd_dice", ["d12", "d8"]);
                         damages[0] = damages[0].replace("d8", ttd_dice);
+                    } else if (damage_types.includes("Colossus Slayer")) {
+                        console.log("slayer");
+                        cs_index = damage_types.indexOf("Colossus Slayer");
+                        cs_dice = await self.queryGeneric(request.name, "Add Colossus Slayer damage?", {"0": "No", "d8": "Yes"}, "cs_dice", ["0", "d8"]);
+                        if ((cs_dice !== "d8" && (typeof cs_dice !== "object" || ρσ_not_equals(cs_dice, "d8")))) {
+                            damages.splice(cs_index, 1);
+                            damage_types.splice(cs_index, 1);
+                        }
                     }
                     has_versatile = len(damage_types) > 1 && (damage_types[1] === "Two-Handed" || typeof damage_types[1] === "object" && ρσ_equals(damage_types[1], "Two-Handed"));
                     for (var ρσ_Index16 = 0; ρσ_Index16 < damages.length; ρσ_Index16++) {
