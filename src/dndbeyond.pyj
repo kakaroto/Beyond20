@@ -476,7 +476,6 @@ class Character(CharacterBase):
             "spell_attacks": self._spell_attacks
         }
 
-
 class Monster(CharacterBase):
     def __init__(self, _type, base=None, global_settings=None):
         CharacterBase.__init__(self, _type, global_settings)
@@ -654,6 +653,9 @@ class Monster(CharacterBase):
         if add_dice:
             self.lookForSpells(stat_block)
         #console.log("Done parsing stat block:", self)
+
+    def displayAvatar(self):
+        sendRoll(self, "avatar", self.avatar, {"name": "Avatar"})        
 
     def rollHitPoints(self):
         sendRoll(self, "custom", self._hp_formula, {"name": "Hit Points",
