@@ -537,7 +537,7 @@ class Monster(CharacterBase):
             if (avatarImg):
                 cb = def():
                     self.displayAvatar()
-                addRollButton(self, cb, avatarImg, small=True, image=True, text="Show in chat")
+                addRollButton(self, cb, avatarImg, small=True, image=True, text="Display in VTT")
         attributes = stat_block.find(base + "__attributes " + base + "__attribute")
         for attr in attributes:
             label = $(attr).find(base + "__attribute-label").text().trim()
