@@ -10707,7 +10707,7 @@ return this.__repr__();
                     cb = function () {
                         self.displayAvatar();
                     };
-                    ρσ_interpolate_kwargs.call(this, addRollButton, [self, cb, avatarImg].concat([ρσ_desugar_kwargs({small: true, image: true, text: "Show in chat"})]));
+                    ρσ_interpolate_kwargs.call(this, addRollButton, [self, cb, avatarImg].concat([ρσ_desugar_kwargs({small: true, image: true, text: "Display in VTT"})]));
                 }
             }
             attributes = stat_block.find(base + "__attributes " + base + "__attribute");
