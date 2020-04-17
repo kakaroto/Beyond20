@@ -10669,7 +10669,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "stat_block")){
                 stat_block = ρσ_kwargs_obj.stat_block;
             }
-            var add_dice, inject_descriptions, base, quick_settings, link, avatar, attributes, label, value, cb, attr, abilities, prefix, makeCB, abbr, score, modifier, roll_initiative, initiative, ability, tidbits, data, saves, parts, mod, save, skills, name, skill, mon_skill, text, last, a, first, tidbit;
+            var add_dice, inject_descriptions, base, quick_settings, link, avatar, avatarImg, cb, attributes, label, value, attr, abilities, prefix, makeCB, abbr, score, modifier, roll_initiative, initiative, ability, tidbits, data, saves, parts, mod, save, skills, name, skill, mon_skill, text, last, a, first, tidbit;
             add_dice = self.getGlobalSetting("handle-stat-blocks", true);
             inject_descriptions = self.getGlobalSetting("subst-dndbeyond-stat-blocks", true);
             base = self._base;
@@ -10702,6 +10702,13 @@ return this.__repr__();
             avatar = $(".details-aside .image a");
             if (avatar.length > 0) {
                 self._avatar = avatar[0].href;
+                avatarImg = $(".details-aside .image");
+                if (avatarImg) {
+                    cb = function () {
+                        self.displayAvatar();
+                    };
+                    ρσ_interpolate_kwargs.call(this, addRollButton, [self, cb, avatarImg].concat([ρσ_desugar_kwargs({small: true, image: true, text: "Show in chat"})]));
+                }
             }
             attributes = stat_block.find(base + "__attributes " + base + "__attribute");
             var ρσ_Iter10 = ρσ_Iterable(attributes);
