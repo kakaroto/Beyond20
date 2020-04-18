@@ -5517,6 +5517,14 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["text", "replaceCB"]}
         });
 
+        function cleanRoll(rollText) {
+            rollText = rollText.replace(/\+ \+/g, "+");
+            return rollText;
+        };
+        if (!cleanRoll.__argnames__) Object.defineProperties(cleanRoll, {
+            __argnames__ : {value: ["rollText"]}
+        });
+
         function getBrowser() {
             if ((typeof chrome !== "undefined" && (typeof typeof chrome !== "object" || ρσ_not_equals(typeof chrome, "undefined")))) {
                 if ((typeof browser !== "undefined" && (typeof typeof browser !== "object" || ρσ_not_equals(typeof browser, "undefined")))) {
@@ -5674,6 +5682,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
+        ρσ_modules.utils.cleanRoll = cleanRoll;
         ρσ_modules.utils.getBrowser = getBrowser;
         ρσ_modules.utils.isExtensionDisconnected = isExtensionDisconnected;
         ρσ_modules.utils.injectPageScript = injectPageScript;
@@ -9793,6 +9802,7 @@ return this.__repr__();
         var __name__ = "dndbeyond";
         var ability_abbreviations, skill_abilities, last_character_used, button_class, button_class_small, key_modifiers, checkKeyModifiers, resetKeyModifiers;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
+        var cleanRoll = ρσ_modules.utils.cleanRoll;
         var alertQuickSettings = ρσ_modules.utils.alertQuickSettings;
         var isListEqual = ρσ_modules.utils.isListEqual;
         var isObjectEqual = ρσ_modules.utils.isObjectEqual;
@@ -11588,7 +11598,7 @@ return this.__repr__();
                 ρσ_d["action"] = "roll";
                 ρσ_d["character"] = character.getDict();
                 ρσ_d["type"] = rollType;
-                ρσ_d["roll"] = fallback;
+                ρσ_d["roll"] = cleanRoll(fallback);
                 ρσ_d["advantage"] = advantage;
                 ρσ_d["whisper"] = whisper;
                 return ρσ_d;

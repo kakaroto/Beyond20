@@ -1,4 +1,4 @@
-from utils import replaceRolls, alertQuickSettings, isListEqual, isObjectEqual
+from utils import replaceRolls, cleanRoll, alertQuickSettings, isListEqual, isObjectEqual
 from settings import getStoredSettings, mergeSettings, character_settings, WhisperType, RollType, CriticalRules
 from dndbeyond_dice import dndbeyondDiceRoller
 from elementmaker import E
@@ -1068,7 +1068,7 @@ def sendRoll(character, rollType, fallback, args):
         args["advantage"] =  RollType.SUPER_ADVANTAGE if advantage == RollType.SUPER_ADVANTAGE else RollType.ADVANTAGE
 
     # Default advantage/whisper would get overriden if they are part of provided args
-    req = {"action": "roll", "character": character.getDict(), "type": rollType, "roll": fallback,
+    req = {"action": "roll", "character": character.getDict(), "type": rollType, "roll": cleanRoll(fallback),
            "advantage": advantage, "whisper": whisper}
     if character.getGlobalSetting("weapon-force-critical", False):
         req["critical-limit"] = 1
