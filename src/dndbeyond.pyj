@@ -1232,7 +1232,7 @@ def recursiveDiceReplace(node, cb):
         children = list(node.childNodes)
         for child in children:
             # don't replace anything inside of a roll button itself
-            if $(child).hasClass("ct-beyond20-roll"):
+            if $(child).hasClass("ct-beyond20-custom-roll"):
                 continue
             recursiveDiceReplace(child, cb)
     elif node.nodeName == "#text":
