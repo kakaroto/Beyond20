@@ -657,6 +657,7 @@ class Monster(CharacterBase):
         self.lookForActions(stat_block, add_dice, inject_descriptions)
         if add_dice:
             self.lookForSpells(stat_block)
+        self._url = window.location.href
         #console.log("Done parsing stat block:", self)
 
     def rollHitPoints(self):
@@ -909,6 +910,7 @@ class Monster(CharacterBase):
     def updateInfo(self):
         # Creature name could change/be customized in between calls
         self._name = self._stat_block.find(self._base + "__name").text().trim()
+        self._url = window.location.href
         hp = max_hp = temp_hp = None
         groups = $(".ct-creature-pane .ct-collapsible__content .ct-creature-pane__adjuster-group,.ct-creature-pane .ddbc-collapsible__content .ct-creature-pane__adjuster-group")
         for item in groups:
@@ -944,7 +946,8 @@ class Monster(CharacterBase):
                 "abilities": self._abilities.as_array(),
                 "saves": self._saves,
                 "skills": self._skills,
-                "cr": self._cr}
+                "cr": self._cr,
+                "url": self._url}
 
 
 def skillToAbility(skill):
@@ -1072,13 +1075,8 @@ def sendRoll(character, rollType, fallback, args):
         args["advantage"] =  RollType.SUPER_ADVANTAGE if advantage == RollType.SUPER_ADVANTAGE else RollType.ADVANTAGE
 
     # Default advantage/whisper would get overriden if they are part of provided args
-<<<<<<< Updated upstream
     req = {"action": "roll", "character": character.getDict(), "type": rollType, "roll": fallback,
-           "advantage": advantage, "whisper": whisper}
-=======
-    req = {"action": "roll", "character": character.getDict(), "type": rollType, "roll": cleanRoll(fallback),
            "advantage": advantage, "whisper": whisper, "whisper_monster": whisper_monster}
->>>>>>> Stashed changes
     if character.getGlobalSetting("weapon-force-critical", False):
         req["critical-limit"] = 1
     for key in args:

@@ -9,8 +9,9 @@ def postToDiscord(secret, request, title, source, attributes, description, attac
 
     if request.character.type == "Monster":
         if request.whisper_monster in [WhisperType.YES, WhisperType.HIDE_NAMES]:
+            request.character.url = None
             request.character.name = "???"
-            title = "???"
+            title = "???"            
         
     body = {
         "secret": secret,

@@ -7006,6 +7006,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             }
             if ((request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster"))) {
                 if (ρσ_in(request.whisper_monster, ρσ_list_decorate([ WhisperType.prototype.YES, WhisperType.prototype.HIDE_NAMES ]))) {
+                    request.character.url = null;
                     request.character.name = "???";
                     title = "???";
                 }
@@ -10890,6 +10891,7 @@ return this.__repr__();
             if (add_dice) {
                 self.lookForSpells(stat_block);
             }
+            self._url = window.location.href;
         };
         if (!Monster.prototype.parseStatBlock.__defaults__) Object.defineProperties(Monster.prototype.parseStatBlock, {
             __defaults__ : {value: {stat_block:null}},
@@ -11298,6 +11300,7 @@ return this.__repr__();
             var self = this;
             var hp, max_hp, temp_hp, groups, label, item, req;
             self._name = self._stat_block.find(self._base + "__name").text().trim();
+            self._url = window.location.href;
             hp = max_hp = temp_hp = null;
             groups = $(".ct-creature-pane .ct-collapsible__content .ct-creature-pane__adjuster-group,.ct-creature-pane .ddbc-collapsible__content .ct-creature-pane__adjuster-group");
             var ρσ_Iter29 = ρσ_Iterable(groups);
@@ -11355,6 +11358,7 @@ return this.__repr__();
                 ρσ_d["saves"] = self._saves;
                 ρσ_d["skills"] = self._skills;
                 ρσ_d["cr"] = self._cr;
+                ρσ_d["url"] = self._url;
                 return ρσ_d;
             }).call(this);
         };
