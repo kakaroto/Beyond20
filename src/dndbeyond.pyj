@@ -100,6 +100,7 @@ class CharacterBase:
         self._name = None
         self._type = _type
         self._settings = None
+        self._url = None
         self.setGlobalSettings(global_settings)
 
     def type(self):
@@ -152,6 +153,8 @@ class Character(CharacterBase):
 
     def updateInfo(self):
         self._id = $("#character-sheet-target,#character-tools-target").attr("data-character-id")
+        self._url = window.location.href
+
         if self._settings is None:
             self.updateSettings()
 
@@ -473,7 +476,8 @@ class Character(CharacterBase):
             "actions": self._actions.as_array(),
             "spell_modifiers": self._spell_modifiers,
             "spell_saves": self._spell_saves,
-            "spell_attacks": self._spell_attacks
+            "spell_attacks": self._spell_attacks,
+            "url": self._url
         }
 
 
@@ -1068,8 +1072,13 @@ def sendRoll(character, rollType, fallback, args):
         args["advantage"] =  RollType.SUPER_ADVANTAGE if advantage == RollType.SUPER_ADVANTAGE else RollType.ADVANTAGE
 
     # Default advantage/whisper would get overriden if they are part of provided args
+<<<<<<< Updated upstream
     req = {"action": "roll", "character": character.getDict(), "type": rollType, "roll": fallback,
            "advantage": advantage, "whisper": whisper}
+=======
+    req = {"action": "roll", "character": character.getDict(), "type": rollType, "roll": cleanRoll(fallback),
+           "advantage": advantage, "whisper": whisper, "whisper_monster": whisper_monster}
+>>>>>>> Stashed changes
     if character.getGlobalSetting("weapon-force-critical", False):
         req["critical-limit"] = 1
     for key in args:

@@ -2558,7 +2558,8 @@ function all(iterable) {
 if (!all.__argnames__) Object.defineProperties(all, {
     __argnames__ : {value: ["iterable"]}
 });
-var define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+var decimal_sep, define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+decimal_sep = 1.1.toLocaleString()[1];
 function ρσ_repr_js_builtin(x, as_array) {
     var ans, b, keys, key;
     ans = [];
@@ -2935,7 +2936,7 @@ define_str_func("format", function () {
                     value = value.toExponential(prec - 1);
                 }
                 value = value.replace(/0+$/g, "");
-                if (value[value.length-1] === ".") {
+                if (value[value.length-1] === decimal_sep) {
                     value = value.slice(0, -1);
                 }
                 if (ftype === "G") {
@@ -3751,7 +3752,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("aside");
             s.jsset.add("audio");
             s.jsset.add("b");
+            s.jsset.add("base");
             s.jsset.add("big");
+            s.jsset.add("body");
             s.jsset.add("blockquote");
             s.jsset.add("br");
             s.jsset.add("button");
@@ -3790,6 +3793,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("h5");
             s.jsset.add("h6");
             s.jsset.add("hr");
+            s.jsset.add("head");
             s.jsset.add("i");
             s.jsset.add("iframe");
             s.jsset.add("img");
@@ -4734,9 +4738,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                             }
                             pos = close + 1;
                             continue;
-                        }
-                        if (extension === "<") {
-                            throw new SyntaxError("Look behind assertions are not supported in JavaScript");
                         }
                         if (extension === "(") {
                             throw new SyntaxError("Group existence assertions are not supported in JavaScript");
@@ -6995,11 +6996,19 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "dndbeyond_discord";
         var DISCORD_BOT_API_URL = ρσ_modules.constants.DISCORD_BOT_API_URL;
 
+        var WhisperType = ρσ_modules.settings.WhisperType;
+
         async        function postToDiscord(secret, request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
             var body, json;
             secret = (secret || "").trim();
             if (!secret) {
                 return;
+            }
+            if ((request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster"))) {
+                if (ρσ_in(request.whisper_monster, ρσ_list_decorate([ WhisperType.prototype.YES, WhisperType.prototype.HIDE_NAMES ]))) {
+                    request.character.name = "???";
+                    title = "???";
+                }
             }
             body = (function(){
                 var ρσ_d = {};
@@ -9953,6 +9962,7 @@ return this.__repr__();
             self._name = null;
             self._type = _type;
             self._settings = null;
+            self._url = null;
             self.setGlobalSettings(global_settings);
         };
         if (!CharacterBase.prototype.__init__.__argnames__) Object.defineProperties(CharacterBase.prototype.__init__, {
@@ -10073,6 +10083,7 @@ return this.__repr__();
             var self = this;
             var avatar, classes, parts, name, level, class_, xp, items, item_name, to_hit, item, ac, speed, abilities, abbr, modifier, value, ability;
             self._id = $("#character-sheet-target,#character-tools-target").attr("data-character-id");
+            self._url = window.location.href;
             if (self._settings === null) {
                 self.updateSettings();
             }
@@ -10590,6 +10601,7 @@ return this.__repr__();
                 ρσ_d["spell_modifiers"] = self._spell_modifiers;
                 ρσ_d["spell_saves"] = self._spell_saves;
                 ρσ_d["spell_attacks"] = self._spell_attacks;
+                ρσ_d["url"] = self._url;
                 return ρσ_d;
             }).call(this);
         };
@@ -11590,6 +11602,7 @@ return this.__repr__();
                 ρσ_d["roll"] = fallback;
                 ρσ_d["advantage"] = advantage;
                 ρσ_d["whisper"] = whisper;
+                ρσ_d["whisper_monster"] = whisper_monster;
                 return ρσ_d;
             }).call(this);
             if (character.getGlobalSetting("weapon-force-critical", false)) {
