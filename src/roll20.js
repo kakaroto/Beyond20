@@ -6956,7 +6956,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY, ROLL20_INITIATIVE_ADVANTAGE_QUERY, ROLL20_TOLL_THE_DEAD_QUERY, ROLL20_COLOSSUS_SLAYER_QUERY, chat, txt, btn, speakingas, settings;
+        var ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY, ROLL20_INITIATIVE_ADVANTAGE_QUERY, ROLL20_TOLL_THE_DEAD_QUERY, ROLL20_ADDL_DMG_QUERY, chat, txt, btn, speakingas, settings;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
         var injectPageScript = ρσ_modules.utils.injectPageScript;
         var sendCustomEvent = ρσ_modules.utils.sendCustomEvent;
@@ -6977,7 +6977,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Super Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2kh}&#125&#125|Super Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2kl}&#125&#125}}";
         ROLL20_INITIATIVE_ADVANTAGE_QUERY = "?{Roll Initiative with advantage?|Normal Roll,1d20|Advantage,2d20kh1|Disadvantage,2d20kl1|Super Advantage,3d20kh1|Super Disadvantage,3d20kl1}";
         ROLL20_TOLL_THE_DEAD_QUERY = "?{Is the target missing any of its hit points?|Yes,d12|No,d8}";
-        ROLL20_COLOSSUS_SLAYER_QUERY = "?{Add Colossus Slayer damage?|No,0|Yes,d8}";
+        ROLL20_ADDL_DMG_QUERY = "?{Add %1 damage?|No,0|Yes,%2}";
         chat = document.getElementById("textchat-input");
         txt = chat.getElementsByTagName("textarea")[0];
         btn = chat.getElementsByTagName("button")[0];
@@ -7626,7 +7626,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
                 custom_roll_dice = ρσ_kwargs_obj.custom_roll_dice;
             }
-            var properties, template_type, dmg_props, d20_roll, damages, damage_types, crit_damages, crit_damage_types, cs_index, dmg_template_crit, dmg_template, key;
+            var properties, template_type, dmg_props, d20_roll, damages, damage_types, crit_damages, crit_damage_types, ρσ_unpack, dmgIndex, dmgType, dmg_template_crit, dmg_template, key;
             properties = (function(){
                 var ρσ_d = {};
                 ρσ_d["charname"] = request.character.name;
@@ -7654,9 +7654,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 damage_types = list(request["damage-types"]);
                 crit_damages = list(request["critical-damages"]);
                 crit_damage_types = list(request["critical-damage-types"]);
-                cs_index = damage_types.indexOf("Colossus Slayer");
-                if ((cs_index !== -1 && (typeof cs_index !== "object" || ρσ_not_equals(cs_index, -1)))) {
-                    damages[(typeof cs_index === "number" && cs_index < 0) ? damages.length + cs_index : cs_index] = ROLL20_COLOSSUS_SLAYER_QUERY;
+                var ρσ_Iter5 = ρσ_Iterable(enumerate(damage_types));
+                for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                    ρσ_unpack = ρσ_Iter5[ρσ_Index5];
+                    dmgIndex = ρσ_unpack[0];
+                    dmgType = ρσ_unpack[1];
+                    if (ρσ_in(damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex], ρσ_list_decorate([ "Colossus Slayer", "Planar Warrior" ]))) {
+                        damages[(typeof dmgIndex === "number" && dmgIndex < 0) ? damages.length + dmgIndex : dmgIndex] = ROLL20_ADDL_DMG_QUERY.replace(/%1/, damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex]).replace(/%2/, damages[(typeof dmgIndex === "number" && dmgIndex < 0) ? damages.length + dmgIndex : dmgIndex]);
+                    }
                 }
                 dmg_props = damagesToRollProperties(damages, damage_types, crit_damages, crit_damage_types);
             }
@@ -7681,9 +7686,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 properties["rname"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")";
                 properties["rnamec"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")";
             } else {
-                var ρσ_Iter5 = ρσ_Iterable(dmg_props);
-                for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
-                    key = ρσ_Iter5[ρσ_Index5];
+                var ρσ_Iter6 = ρσ_Iterable(dmg_props);
+                for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                    key = ρσ_Iter6[ρσ_Index6];
                     properties[(typeof key === "number" && key < 0) ? properties.length + key : key] = dmg_props[(typeof key === "number" && key < 0) ? dmg_props.length + key : key];
                 }
             }
@@ -7779,9 +7784,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 critical_damage_types = list(request["critical-damage-types"]);
                 if ((request.name === "Chromatic Orb" || typeof request.name === "object" && ρσ_equals(request.name, "Chromatic Orb"))) {
                     chromatic_type = "?{Choose damage type";
-                    var ρσ_Iter6 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder" ]));
-                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
-                        dmgtype = ρσ_Iter6[ρσ_Index6];
+                    var ρσ_Iter7 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder" ]));
+                    for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                        dmgtype = ρσ_Iter7[ρσ_Index7];
                         idx = damage_types.index(dmgtype);
                         chromatic_damage = damages.pypop(idx);
                         damage_types.pypop(idx);
@@ -7798,9 +7803,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                     critical_damages.insert(0, crit_damage);
                     critical_damage_types.insert(0, chromatic_type);
                 } else if ((request.name === "Chaos Bolt" || typeof request.name === "object" && ρσ_equals(request.name, "Chaos Bolt"))) {
-                    var ρσ_Iter7 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder" ]));
-                    for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
-                        dmgtype = ρσ_Iter7[ρσ_Index7];
+                    var ρσ_Iter8 = ρσ_Iterable(ρσ_list_decorate([ "Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder" ]));
+                    for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                        dmgtype = ρσ_Iter8[ρσ_Index8];
                         idx = damage_types.index(dmgtype);
                         base_damage = damages.pypop(idx);
                         damage_types.pypop(idx);
@@ -7864,9 +7869,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                 properties["rname"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")";
                 properties["rnamec"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")";
             } else {
-                var ρσ_Iter8 = ρσ_Iterable(dmg_props);
-                for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
-                    key = ρσ_Iter8[ρσ_Index8];
+                var ρσ_Iter9 = ρσ_Iterable(dmg_props);
+                for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                    key = ρσ_Iter9[ρσ_Index9];
                     properties[(typeof key === "number" && key < 0) ? properties.length + key : key] = dmg_props[(typeof key === "number" && key < 0) ? dmg_props.length + key : key];
                 }
             }

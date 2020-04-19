@@ -9,7 +9,7 @@ ROLL20_WHISPER_QUERY="?{Whisper?|Public Roll,|Whisper Roll,/w gm }"
 ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Super Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2kh}&#125&#125|Super Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2kl}&#125&#125}}"
 ROLL20_INITIATIVE_ADVANTAGE_QUERY="?{Roll Initiative with advantage?|Normal Roll,1d20|Advantage,2d20kh1|Disadvantage,2d20kl1|Super Advantage,3d20kh1|Super Disadvantage,3d20kl1}"
 ROLL20_TOLL_THE_DEAD_QUERY="?{Is the target missing any of its hit points?|Yes,d12|No,d8}"
-ROLL20_COLOSSUS_SLAYER_QUERY="?{Add Colossus Slayer damage?|No,0|Yes,d8}"
+ROLL20_ADDL_DMG_QUERY="?{Add %1 damage?|No,0|Yes,%2}"
 
 
 chat = document.getElementById("textchat-input")
@@ -365,9 +365,12 @@ def rollAttack(request, custom_roll_dice=""):
         crit_damage_types = list(request["critical-damage-types"])
 
         # Ranger Colossus Slayer Support
-        cs_index = damage_types.indexOf("Colossus Slayer")
-        if cs_index != -1:            
-            damages[cs_index] = ROLL20_COLOSSUS_SLAYER_QUERY
+        # cs_index = damage_types.indexOf("Colossus Slayer")
+        # if cs_index != -1:            
+        #     damages[cs_index] = ROLL20_COLOSSUS_SLAYER_QUERY
+        for dmgIndex, dmgType in enumerate(damage_types):
+            if damage_types[dmgIndex] in ["Colossus Slayer", "Planar Warrior"]:
+                damages[dmgIndex] = ROLL20_ADDL_DMG_QUERY.replace(/%1/, damage_types[dmgIndex]).replace(/%2/, damages[dmgIndex])
 
         dmg_props = damagesToRollProperties(damages, damage_types, crit_damages, crit_damage_types)
     if request.range?:
