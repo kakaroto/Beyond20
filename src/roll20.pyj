@@ -364,10 +364,7 @@ def rollAttack(request, custom_roll_dice=""):
         crit_damages = list(request["critical-damages"])
         crit_damage_types = list(request["critical-damage-types"])
 
-        # Ranger Colossus Slayer Support
-        # cs_index = damage_types.indexOf("Colossus Slayer")
-        # if cs_index != -1:            
-        #     damages[cs_index] = ROLL20_COLOSSUS_SLAYER_QUERY
+        # Ranger Ability Support
         for dmgIndex, dmgType in enumerate(damage_types):
             if damage_types[dmgIndex] in ["Colossus Slayer", "Planar Warrior"]:
                 damages[dmgIndex] = ROLL20_ADDL_DMG_QUERY.replace(/%1/, damage_types[dmgIndex]).replace(/%2/, damages[dmgIndex])

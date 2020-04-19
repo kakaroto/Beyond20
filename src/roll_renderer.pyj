@@ -462,13 +462,16 @@ class Beyond20RollRenderer:
                 elif request.name == "Toll the Dead":
                     ttd_dice = v'await self.queryGeneric(request.name, "Is the target missing any of its hit points?", {"d12": "Yes", "d8": "No"}, "ttd_dice", ["d12", "d8"])'
                     damages[0] = damages[0].replace("d8", ttd_dice)
-                elif damage_types.includes("Colossus Slayer"):
-                    console.log("slayer")                    
-                    cs_index = damage_types.indexOf("Colossus Slayer")
-                    cs_dice = v'await self.queryGeneric(request.name, "Add Colossus Slayer damage?", {"0": "No", "d8": "Yes"}, "cs_dice", ["0", "d8"])'
-                    if cs_dice != "d8":
-                        damages.splice(cs_index, 1)
-                        damage_types.splice(cs_index, 1)
+                
+                # Ranger Ability Support
+                for dmgIndex, dmgType in enumerate(damage_types):
+                    if damage_types[dmgIndex] in ["Colossus Slayer", "Planar Warrior"]:
+                        dVal = damages[dmgIndex].toString()
+                        if dVal:
+                            dmg_dice = v'await self.queryGeneric(request.name, ("Add %1 damage?").replace(/%1/, dmgType), {"0": "No", [dVal]: "Yes"}, "dmg_dice", ["0", dVal])'
+                            if dmg_dice == "0":
+                                damages.splice(dmgIndex, 1)
+                                damage_types.splice(dmgIndex, 1)
 
                 has_versatile = len(damage_types) > 1 and damage_types[1] == "Two-Handed"
                 for i in range(damages.length):
