@@ -2558,7 +2558,8 @@ function all(iterable) {
 if (!all.__argnames__) Object.defineProperties(all, {
     __argnames__ : {value: ["iterable"]}
 });
-var define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+var decimal_sep, define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+decimal_sep = 1.1.toLocaleString()[1];
 function ρσ_repr_js_builtin(x, as_array) {
     var ans, b, keys, key;
     ans = [];
@@ -2935,7 +2936,7 @@ define_str_func("format", function () {
                     value = value.toExponential(prec - 1);
                 }
                 value = value.replace(/0+$/g, "");
-                if (value[value.length-1] === ".") {
+                if (value[value.length-1] === decimal_sep) {
                     value = value.slice(0, -1);
                 }
                 if (ftype === "G") {
@@ -3751,7 +3752,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("aside");
             s.jsset.add("audio");
             s.jsset.add("b");
+            s.jsset.add("base");
             s.jsset.add("big");
+            s.jsset.add("body");
             s.jsset.add("blockquote");
             s.jsset.add("br");
             s.jsset.add("button");
@@ -3790,6 +3793,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("h5");
             s.jsset.add("h6");
             s.jsset.add("hr");
+            s.jsset.add("head");
             s.jsset.add("i");
             s.jsset.add("iframe");
             s.jsset.add("img");
@@ -4734,9 +4738,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                             }
                             pos = close + 1;
                             continue;
-                        }
-                        if (extension === "<") {
-                            throw new SyntaxError("Look behind assertions are not supported in JavaScript");
                         }
                         if (extension === "(") {
                             throw new SyntaxError("Group existence assertions are not supported in JavaScript");
@@ -8301,7 +8302,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var self = this;
             var async_function;
             async_function = async            function () {
-                var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, ttd_dice, has_versatile, roll, dmg_type, damage_flags, suffix, i, ρσ_unpack, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
+                var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, ttd_dice, dVal, dmg_dice, ρσ_unpack, dmgIndex, dmgType, has_versatile, roll, dmg_type, damage_flags, suffix, i, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
                 to_hit = ρσ_list_decorate([]);
                 damage_rolls = ρσ_list_decorate([]);
                 is_critical = false;
@@ -8358,9 +8359,25 @@ var str = ρσ_str, repr = ρσ_repr;;
                         ttd_dice = await self.queryGeneric(request.name, "Is the target missing any of its hit points?", {"d12": "Yes", "d8": "No"}, "ttd_dice", ["d12", "d8"]);
                         damages[0] = damages[0].replace("d8", ttd_dice);
                     }
+                    var ρσ_Iter16 = ρσ_Iterable(enumerate(damage_types));
+                    for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
+                        ρσ_unpack = ρσ_Iter16[ρσ_Index16];
+                        dmgIndex = ρσ_unpack[0];
+                        dmgType = ρσ_unpack[1];
+                        if (ρσ_in(damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex], ρσ_list_decorate([ "Colossus Slayer", "Planar Warrior" ]))) {
+                            dVal = damages[(typeof dmgIndex === "number" && dmgIndex < 0) ? damages.length + dmgIndex : dmgIndex].toString();
+                            if (dVal) {
+                                dmg_dice = await self.queryGeneric(request.name, ("Add %1 damage?").replace(/%1/, dmgType), {"0": "No", [dVal]: "Yes"}, "dmg_dice", ["0", dVal]);
+                                if ((dmg_dice === "0" || typeof dmg_dice === "object" && ρσ_equals(dmg_dice, "0"))) {
+                                    damages.splice(dmgIndex, 1);
+                                    damage_types.splice(dmgIndex, 1);
+                                }
+                            }
+                        }
+                    }
                     has_versatile = len(damage_types) > 1 && (damage_types[1] === "Two-Handed" || typeof damage_types[1] === "object" && ρσ_equals(damage_types[1], "Two-Handed"));
-                    for (var ρσ_Index16 = 0; ρσ_Index16 < damages.length; ρσ_Index16++) {
-                        i = ρσ_Index16;
+                    for (var ρσ_Index17 = 0; ρσ_Index17 < damages.length; ρσ_Index17++) {
+                        i = ρσ_Index17;
                         roll = self._roller.roll(damages[(typeof i === "number" && i < 0) ? damages.length + i : i]);
                         dmg_type = damage_types[(typeof i === "number" && i < 0) ? damage_types.length + i : i];
                         if (ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life", "Temp HP" ]))) {
@@ -8379,9 +8396,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                         }
                     }
                     if ((request.name === "Chaos Bolt" || typeof request.name === "object" && ρσ_equals(request.name, "Chaos Bolt"))) {
-                        var ρσ_Iter17 = ρσ_Iterable(enumerate(damage_rolls));
-                        for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
-                            ρσ_unpack = ρσ_Iter17[ρσ_Index17];
+                        var ρσ_Iter18 = ρσ_Iterable(enumerate(damage_rolls));
+                        for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
+                            ρσ_unpack = ρσ_Iter18[ρσ_Index18];
                             i = ρσ_unpack[0];
                             dmg_roll = ρσ_unpack[1];
                             ρσ_unpack = dmg_roll;
@@ -8392,9 +8409,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                             if ((dmg_type === "Chaotic energy Damage" || typeof dmg_type === "object" && ρσ_equals(dmg_type, "Chaotic energy Damage")) && (roll.dice[0].faces === 8 || typeof roll.dice[0].faces === "object" && ρσ_equals(roll.dice[0].faces, 8))) {
                                 chaos_bolt_damages = ρσ_list_decorate([ "Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder" ]);
                                 damage_choices = {};
-                                var ρσ_Iter18 = ρσ_Iterable(roll.dice[0].rolls);
-                                for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
-                                    r = ρσ_Iter18[ρσ_Index18];
+                                var ρσ_Iter19 = ρσ_Iterable(roll.dice[0].rolls);
+                                for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
+                                    r = ρσ_Iter19[ρσ_Index19];
                                     damage_choices[ρσ_bound_index(chaos_bolt_damages[ρσ_bound_index(r.roll - 1, chaos_bolt_damages)], damage_choices)] = null;
                                 }
                                 console.log("Damage choices : ", damage_choices, damage_choices.length);
@@ -8413,8 +8430,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                         }
                     }
                     if (is_critical) {
-                        for (var ρσ_Index19 = 0; ρσ_Index19 < critical_damages.length; ρσ_Index19++) {
-                            i = ρσ_Index19;
+                        for (var ρσ_Index20 = 0; ρσ_Index20 < critical_damages.length; ρσ_Index20++) {
+                            i = ρσ_Index20;
                             roll = self._roller.roll(critical_damages[(typeof i === "number" && i < 0) ? critical_damages.length + i : i]);
                             dmg_type = critical_damage_types[(typeof i === "number" && i < 0) ? critical_damage_types.length + i : i];
                             if (ρσ_in(dmg_type, ρσ_list_decorate([ "Healing", "Disciple of Life", "Temp HP" ]))) {
@@ -8442,9 +8459,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             var self = this;
             var new_rolls, ρσ_unpack, roll_name, roll, flags;
             new_rolls = ρσ_list_decorate([]);
-            var ρσ_Iter20 = ρσ_Iterable(rolls);
-            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
-                ρσ_unpack = ρσ_flatten(ρσ_Iter20[ρσ_Index20]);
+            var ρσ_Iter21 = ρσ_Iterable(rolls);
+            for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
+                ρσ_unpack = ρσ_flatten(ρσ_Iter21[ρσ_Index21]);
                 roll_name = ρσ_unpack[0];
                 roll = ρσ_unpack[1];
                 flags = ρσ_unpack[2];
@@ -8719,12 +8736,12 @@ var str = ρσ_str, repr = ρσ_repr;;
         Beyond20BaseRoll.prototype.checkRollForCrits = function checkRollForCrits(cb) {
             var self = this;
             var r, die;
-            var ρσ_Iter21 = ρσ_Iterable(self.dice);
-            for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
-                die = ρσ_Iter21[ρσ_Index21];
-                var ρσ_Iter22 = ρσ_Iterable(die.rolls);
-                for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
-                    r = ρσ_Iter22[ρσ_Index22];
+            var ρσ_Iter22 = ρσ_Iterable(self.dice);
+            for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
+                die = ρσ_Iter22[ρσ_Index22];
+                var ρσ_Iter23 = ρσ_Iterable(die.rolls);
+                for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
+                    r = ρσ_Iter23[ρσ_Index23];
                     if (!ρσ_exists.e(r.discarded, false)) {
                         if (cb(die.faces, r.roll)) {
                             return true;

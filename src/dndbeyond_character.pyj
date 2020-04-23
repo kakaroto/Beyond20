@@ -223,10 +223,21 @@ def rollItem(force_display=False):
                     rite_die = "1d10"
                 damages.append(rite_die)
                 damage_types.append("Crimson Rite")
-        if character.getSetting("ranger-dread-ambusher", False):
-            damages.append("1d8")
-            damage_types.append("Ambush")
-            character.mergeCharacterSettings({"ranger-dread-ambusher": False})
+
+        #Ranger abilities    
+        if "Ranger" in character._classes:
+            rangerlevel = character.getClassLevel("Ranger")
+            if character.getSetting("ranger-dread-ambusher", False):
+                damages.append("1d8")
+                damage_types.append("Ambush")
+                character.mergeCharacterSettings({"ranger-dread-ambusher": False})
+            if character.hasClassFeature("Hunter’s Prey: Colossus Slayer"):
+                damages.append("1d8")
+                damage_types.append("Colossus Slayer")
+            if character.hasClassFeature("Planar Warrior"):
+                damages.append("1d8" if rangerlevel < 11 else "2d8")
+                damage_types.append("Planar Warrior")
+
         if properties["Attack Type"] == "Melee" and \
            character.hasClassFeature("Improved Divine Smite") and \
            character.getSetting("paladin-improved-divine-smite", True):
