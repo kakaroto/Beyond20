@@ -10958,7 +10958,6 @@ return this.__repr__();
             if (add_dice) {
                 self.lookForSpells(stat_block);
             }
-            self._url = window.location.href;
         };
         if (!Monster.prototype.parseStatBlock.__defaults__) Object.defineProperties(Monster.prototype.parseStatBlock, {
             __defaults__ : {value: {stat_block:null}},
