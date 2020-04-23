@@ -247,6 +247,11 @@ def rollItem(force_display=False):
                 ranger_level = character.getClassLevel("Ranger")
                 damages.append("1d8" if ranger_level < 11 else "2d8")
                 damage_types.append("Planar Warrior")
+            if character.hasClassFeature("Gathered Swarm") and \
+                character.getSetting("ranger-gathered-swarm", False):
+                ranger_level = character.getClassLevel("Ranger")
+                damages.append("1d6" if ranger_level < 11 else "2d6")
+                damage_types.append("Gathered Swarm")
 
         if properties["Attack Type"] == "Melee" and \
            character.hasClassFeature("Improved Divine Smite") and \

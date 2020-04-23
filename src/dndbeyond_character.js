@@ -6224,6 +6224,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["ranger-gathered-swarm"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Ranger: Gathered Swarm";
+                ρσ_d["description"] = "Use your Gathered Swarm ability to add extra Force damage to your weapon attacks";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -12443,6 +12451,11 @@ return this.__repr__();
                         ranger_level = character.getClassLevel("Ranger");
                         damages.append((ranger_level < 11) ? "1d8" : "2d8");
                         damage_types.append("Planar Warrior");
+                    }
+                    if (character.hasClassFeature("Gathered Swarm") && character.getSetting("ranger-gathered-swarm", false)) {
+                        ranger_level = character.getClassLevel("Ranger");
+                        damages.append((ranger_level < 11) ? "1d6" : "2d6");
+                        damage_types.append("Gathered Swarm");
                     }
                 }
                 if ((properties["Attack Type"] === "Melee" || typeof properties["Attack Type"] === "object" && ρσ_equals(properties["Attack Type"], "Melee")) && character.hasClassFeature("Improved Divine Smite") && character.getSetting("paladin-improved-divine-smite", true)) {

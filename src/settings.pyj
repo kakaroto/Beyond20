@@ -305,6 +305,10 @@ character_settings = {
     "ranger-slayers-prey": {"title": "Ranger: Slayer's Prey",
                            "description": "Use your Slayer's Prey ability and add 1d6 damage to your target",
                            "type": "bool",
+                           "default": False},
+    "ranger-gathered-swarm": {"title": "Ranger: Gathered Swarm",
+                           "description": "Use your Gathered Swarm ability to add extra Force damage to your weapon attacks",
+                           "type": "bool",
                            "default": False}
 }
 

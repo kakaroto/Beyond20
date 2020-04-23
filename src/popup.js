@@ -6217,6 +6217,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["ranger-gathered-swarm"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Ranger: Gathered Swarm";
+                ρσ_d["description"] = "Use your Gathered Swarm ability to add extra Force damage to your weapon attacks";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -7219,6 +7227,10 @@ var str = ρσ_str, repr = ρσ_repr;;
                 }
                 if (ρσ_in("Slayer’s Prey", response["class-features"])) {
                     e = createHTMLOption("ranger-slayers-prey", false, character_settings);
+                    options.append(e);
+                }
+                if (ρσ_in("Gathered Swarm", response["class-features"])) {
+                    e = createHTMLOption("ranger-gathered-swarm", false, character_settings);
                     options.append(e);
                 }
                 if (ρσ_in("Channel Divinity: Legendary Strike", response["actions"])) {
