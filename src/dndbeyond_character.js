@@ -6216,6 +6216,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["ranger-slayers-prey"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Ranger: Slayer's Prey";
+                ρσ_d["description"] = "Use your Slayer's Prey ability and add 1d6 damage to your target";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {
@@ -12426,6 +12434,10 @@ return this.__repr__();
                     if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer")) {
                         damages.append("1d8");
                         damage_types.append("Colossus Slayer");
+                    }
+                    if (character.hasClassFeature("Slayer’s Prey") && character.getSetting("ranger-slayers-prey", false)) {
+                        damages.append("1d6");
+                        damage_types.append("Slayer’s Prey");
                     }
                     if (character.hasClassFeature("Planar Warrior") && character.getSetting("ranger-planar-warrior", false)) {
                         ranger_level = character.getClassLevel("Ranger");

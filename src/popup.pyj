@@ -116,6 +116,9 @@ def populateCharacter(response):
         if "Planar Warrior" in response["class-features"]:
             e = createHTMLOption("ranger-planar-warrior", False, character_settings)
             options.append(e)
+        if "Slayer’s Prey" in response["class-features"]:
+            e = createHTMLOption("ranger-slayers-prey", False, character_settings)
+            options.append(e)
         if "Channel Divinity: Legendary Strike" in response["actions"]:
             e = createHTMLOption("paladin-legendary-strike", False, character_settings)
             options.append(e)

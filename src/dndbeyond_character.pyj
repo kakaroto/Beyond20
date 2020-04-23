@@ -238,6 +238,10 @@ def rollItem(force_display=False):
             if character.hasClassFeature("Hunter’s Prey: Colossus Slayer"):
                 damages.append("1d8")
                 damage_types.append("Colossus Slayer")
+            if character.hasClassFeature("Slayer’s Prey") and \
+                character.getSetting("ranger-slayers-prey", False):
+                damages.append("1d6")
+                damage_types.append("Slayer’s Prey")
             if character.hasClassFeature("Planar Warrior") and \
                 character.getSetting("ranger-planar-warrior", False):
                 ranger_level = character.getClassLevel("Ranger")

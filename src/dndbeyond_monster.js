@@ -6216,6 +6216,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["ranger-slayers-prey"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Ranger: Slayer's Prey";
+                ρσ_d["description"] = "Use your Slayer's Prey ability and add 1d6 damage to your target";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {

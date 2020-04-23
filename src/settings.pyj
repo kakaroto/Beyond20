@@ -301,6 +301,10 @@ character_settings = {
     "ranger-planar-warrior": {"title": "Ranger: Planar Warrior",
                            "description": "Use your Planar Warrior ability to deal extra Force damage",
                            "type": "bool",
+                           "default": False},
+    "ranger-slayers-prey": {"title": "Ranger: Slayer's Prey",
+                           "description": "Use your Slayer's Prey ability and add 1d6 damage to your target",
+                           "type": "bool",
                            "default": False}
 }
 
