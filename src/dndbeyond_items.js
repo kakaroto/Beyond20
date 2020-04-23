@@ -5517,7 +5517,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function cleanRoll(rollText) {
-            rollText = rollText.replace(/\+ \+/g, "+");
+            rollText = rollText.replace(/\+ \+/g, "+").replace(/\+ \-/g, "-");
             return rollText;
         };
         if (!cleanRoll.__argnames__) Object.defineProperties(cleanRoll, {
