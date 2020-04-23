@@ -2558,8 +2558,7 @@ function all(iterable) {
 if (!all.__argnames__) Object.defineProperties(all, {
     __argnames__ : {value: ["iterable"]}
 });
-var decimal_sep, define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
-decimal_sep = 1.1.toLocaleString()[1];
+var define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
 function ρσ_repr_js_builtin(x, as_array) {
     var ans, b, keys, key;
     ans = [];
@@ -2936,7 +2935,7 @@ define_str_func("format", function () {
                     value = value.toExponential(prec - 1);
                 }
                 value = value.replace(/0+$/g, "");
-                if (value[value.length-1] === decimal_sep) {
+                if (value[value.length-1] === ".") {
                     value = value.slice(0, -1);
                 }
                 if (ftype === "G") {
@@ -3752,9 +3751,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("aside");
             s.jsset.add("audio");
             s.jsset.add("b");
-            s.jsset.add("base");
             s.jsset.add("big");
-            s.jsset.add("body");
             s.jsset.add("blockquote");
             s.jsset.add("br");
             s.jsset.add("button");
@@ -3793,7 +3790,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("h5");
             s.jsset.add("h6");
             s.jsset.add("hr");
-            s.jsset.add("head");
             s.jsset.add("i");
             s.jsset.add("iframe");
             s.jsset.add("img");
@@ -4738,6 +4734,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                             }
                             pos = close + 1;
                             continue;
+                        }
+                        if (extension === "<") {
+                            throw new SyntaxError("Look behind assertions are not supported in JavaScript");
                         }
                         if (extension === "(") {
                             throw new SyntaxError("Group existence assertions are not supported in JavaScript");
@@ -10771,8 +10770,10 @@ return this.__repr__();
             self._name = stat_block.find(base + "__name").text().trim();
             link = stat_block.find(base + "__name-link");
             if (link.length > 0) {
+                self._url = link.attr("href");
                 self._id = link.attr("href").replace("/monsters/", "").replace("/vehicles/", "");
             } else {
+                self._url = window.location.href;
                 self._id = self._name;
             }
             self._meta = stat_block.find(base + "__meta").text().trim();
@@ -11379,7 +11380,6 @@ return this.__repr__();
             var self = this;
             var hp, max_hp, temp_hp, groups, label, item, req;
             self._name = self._stat_block.find(self._base + "__name").text().trim();
-            self._url = window.location.href;
             hp = max_hp = temp_hp = null;
             groups = $(".ct-creature-pane .ct-collapsible__content .ct-creature-pane__adjuster-group,.ct-creature-pane .ddbc-collapsible__content .ct-creature-pane__adjuster-group");
             var ρσ_Iter29 = ρσ_Iterable(groups);

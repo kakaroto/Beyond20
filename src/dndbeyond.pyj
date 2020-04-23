@@ -530,8 +530,10 @@ class Monster(CharacterBase):
         self._name = stat_block.find(base + "__name").text().trim()
         link = stat_block.find(base + "__name-link")
         if link.length > 0:
+            self._url = link.attr("href")
             self._id = link.attr("href").replace("/monsters/", "").replace("/vehicles/", "")
         else:
+            self._url = window.location.href
             self._id = self._name
         self._meta = stat_block.find(base + "__meta").text().trim()
         avatar = $(".details-aside .image a")
@@ -915,7 +917,6 @@ class Monster(CharacterBase):
     def updateInfo(self):
         # Creature name could change/be customized in between calls
         self._name = self._stat_block.find(self._base + "__name").text().trim()
-        self._url = window.location.href
         hp = max_hp = temp_hp = None
         groups = $(".ct-creature-pane .ct-collapsible__content .ct-creature-pane__adjuster-group,.ct-creature-pane .ddbc-collapsible__content .ct-creature-pane__adjuster-group")
         for item in groups:
