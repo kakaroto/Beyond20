@@ -2558,7 +2558,8 @@ function all(iterable) {
 if (!all.__argnames__) Object.defineProperties(all, {
     __argnames__ : {value: ["iterable"]}
 });
-var define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+var decimal_sep, define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+decimal_sep = 1.1.toLocaleString()[1];
 function ρσ_repr_js_builtin(x, as_array) {
     var ans, b, keys, key;
     ans = [];
@@ -2935,7 +2936,7 @@ define_str_func("format", function () {
                     value = value.toExponential(prec - 1);
                 }
                 value = value.replace(/0+$/g, "");
-                if (value[value.length-1] === ".") {
+                if (value[value.length-1] === decimal_sep) {
                     value = value.slice(0, -1);
                 }
                 if (ftype === "G") {
@@ -3744,7 +3745,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("aside");
             s.jsset.add("audio");
             s.jsset.add("b");
+            s.jsset.add("base");
             s.jsset.add("big");
+            s.jsset.add("body");
             s.jsset.add("blockquote");
             s.jsset.add("br");
             s.jsset.add("button");
@@ -3783,6 +3786,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("h5");
             s.jsset.add("h6");
             s.jsset.add("hr");
+            s.jsset.add("head");
             s.jsset.add("i");
             s.jsset.add("iframe");
             s.jsset.add("img");
@@ -4728,9 +4732,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                             pos = close + 1;
                             continue;
                         }
-                        if (extension === "<") {
-                            throw new SyntaxError("Look behind assertions are not supported in JavaScript");
-                        }
                         if (extension === "(") {
                             throw new SyntaxError("Group existence assertions are not supported in JavaScript");
                         }
@@ -5509,6 +5510,14 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["text", "replaceCB"]}
         });
 
+        function cleanRoll(rollText) {
+            rollText = rollText.replace(/\+ \+/g, "+");
+            return rollText;
+        };
+        if (!cleanRoll.__argnames__) Object.defineProperties(cleanRoll, {
+            __argnames__ : {value: ["rollText"]}
+        });
+
         function getBrowser() {
             if ((typeof chrome !== "undefined" && (typeof typeof chrome !== "object" || ρσ_not_equals(typeof chrome, "undefined")))) {
                 if ((typeof browser !== "undefined" && (typeof typeof browser !== "object" || ρσ_not_equals(typeof browser, "undefined")))) {
@@ -5666,6 +5675,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
+        ρσ_modules.utils.cleanRoll = cleanRoll;
         ρσ_modules.utils.getBrowser = getBrowser;
         ρσ_modules.utils.isExtensionDisconnected = isExtensionDisconnected;
         ρσ_modules.utils.injectPageScript = injectPageScript;

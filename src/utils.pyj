@@ -19,6 +19,14 @@ def replaceRolls(text, replaceCB):
         return replaceRollsCallback(m, replaceCB)
     , text)
 
+# Used to clean various imperfections in dice roll strings
+def cleanRoll(rollText):
+    #clean adjacent '+'s (Roll20 treats it as a d20)
+    #eg: (1d10 + + 2 + 3) -> (1d10 + 2 + 3)
+    rollText = rollText.replace(/\+ \+/g, '+')
+    return rollText
+    
+
 # Taken from https://stackoverflow.com/questions/45985198/the-best-practice-to-detect-whether-a-browser-extension-is-running-on-chrome-or
 def getBrowser():
     if jstype(chrome) != "undefined":

@@ -5512,6 +5512,14 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["text", "replaceCB"]}
         });
 
+        function cleanRoll(rollText) {
+            rollText = rollText.replace(/\+ \+/g, "+");
+            return rollText;
+        };
+        if (!cleanRoll.__argnames__) Object.defineProperties(cleanRoll, {
+            __argnames__ : {value: ["rollText"]}
+        });
+
         function getBrowser() {
             if ((typeof chrome !== "undefined" && (typeof typeof chrome !== "object" || ρσ_not_equals(typeof chrome, "undefined")))) {
                 if ((typeof browser !== "undefined" && (typeof typeof browser !== "object" || ρσ_not_equals(typeof browser, "undefined")))) {
@@ -5669,6 +5677,7 @@ var str = ρσ_str, repr = ρσ_repr;;
 
         ρσ_modules.utils.replaceRollsCallback = replaceRollsCallback;
         ρσ_modules.utils.replaceRolls = replaceRolls;
+        ρσ_modules.utils.cleanRoll = cleanRoll;
         ρσ_modules.utils.getBrowser = getBrowser;
         ρσ_modules.utils.isExtensionDisconnected = isExtensionDisconnected;
         ρσ_modules.utils.injectPageScript = injectPageScript;
