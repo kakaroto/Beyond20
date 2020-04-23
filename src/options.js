@@ -6200,6 +6200,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 ρσ_d["default"] = false;
                 return ρσ_d;
             }).call(this);
+            ρσ_d["ranger-planar-warrior"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Ranger: Planar Warrior";
+                ρσ_d["description"] = "Use your Planar Warrior ability to deal extra Force damage";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
             return ρσ_d;
         }).call(this);
         function getStorage() {

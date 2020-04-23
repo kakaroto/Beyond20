@@ -297,6 +297,10 @@ character_settings = {
     "bard-psychic-blades": {"title": "Bard: Psychic Blades",
                            "description": "Use your Bardic Inspiration to deal extra psychic damage (Apply to next roll only)",
                            "type": "bool",
+                           "default": False},
+    "ranger-planar-warrior": {"title": "Ranger: Planar Warrior",
+                           "description": "Use your Planar Warrior ability to deal extra Force damage",
+                           "type": "bool",
                            "default": False}
 }
 

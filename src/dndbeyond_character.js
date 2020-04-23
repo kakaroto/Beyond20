@@ -2558,8 +2558,7 @@ function all(iterable) {
 if (!all.__argnames__) Object.defineProperties(all, {
     __argnames__ : {value: ["iterable"]}
 });
-var decimal_sep, define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
-decimal_sep = 1.1.toLocaleString()[1];
+var define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
 function ρσ_repr_js_builtin(x, as_array) {
     var ans, b, keys, key;
     ans = [];
@@ -2936,7 +2935,7 @@ define_str_func("format", function () {
                     value = value.toExponential(prec - 1);
                 }
                 value = value.replace(/0+$/g, "");
-                if (value[value.length-1] === decimal_sep) {
+                if (value[value.length-1] === ".") {
                     value = value.slice(0, -1);
                 }
                 if (ftype === "G") {
@@ -3752,9 +3751,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("aside");
             s.jsset.add("audio");
             s.jsset.add("b");
-            s.jsset.add("base");
             s.jsset.add("big");
-            s.jsset.add("body");
             s.jsset.add("blockquote");
             s.jsset.add("br");
             s.jsset.add("button");
@@ -3793,7 +3790,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("h5");
             s.jsset.add("h6");
             s.jsset.add("hr");
-            s.jsset.add("head");
             s.jsset.add("i");
             s.jsset.add("iframe");
             s.jsset.add("img");
@@ -4738,6 +4734,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                             }
                             pos = close + 1;
                             continue;
+                        }
+                        if (extension === "<") {
+                            throw new SyntaxError("Look behind assertions are not supported in JavaScript");
                         }
                         if (extension === "(") {
                             throw new SyntaxError("Group existence assertions are not supported in JavaScript");
@@ -6205,6 +6204,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 var ρσ_d = {};
                 ρσ_d["title"] = "Bard: Psychic Blades";
                 ρσ_d["description"] = "Use your Bardic Inspiration to deal extra psychic damage (Apply to next roll only)";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["ranger-planar-warrior"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Ranger: Planar Warrior";
+                ρσ_d["description"] = "Use your Planar Warrior ability to deal extra Force damage";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
                 return ρσ_d;
@@ -8364,7 +8371,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                         ρσ_unpack = ρσ_Iter16[ρσ_Index16];
                         dmgIndex = ρσ_unpack[0];
                         dmgType = ρσ_unpack[1];
-                        if (ρσ_in(damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex], ρσ_list_decorate([ "Colossus Slayer", "Planar Warrior" ]))) {
+                        if ((damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex] === "Colossus Slayer" || typeof damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex] === "object" && ρσ_equals(damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex], "Colossus Slayer"))) {
                             dVal = damages[(typeof dmgIndex === "number" && dmgIndex < 0) ? damages.length + dmgIndex : dmgIndex].toString();
                             if (dVal) {
                                 dmg_dice = await self.queryGeneric(request.name, ("Add %1 damage?").replace(/%1/, dmgType), {"0": "No", [dVal]: "Yes"}, "dmg_dice", ["0", dVal]);
@@ -12274,7 +12281,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "force_display")){
                 force_display = ρσ_kwargs_obj.force_display;
             }
-            var prop_list, properties, item_name, item_type, description, item_full_name, to_hit, damages, damage_types, value, damage, damage_type, versatile_damage, versatile_choice, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damages, parts, custom_damage, sneak_attack, barbarian_level, rage_damage, bloodhunter_level, rite_die, rangerlevel, cleric_level, bard_level, critical_limit, brutal, roll_properties;
+            var prop_list, properties, item_name, item_type, description, item_full_name, to_hit, damages, damage_types, value, damage, damage_type, versatile_damage, versatile_choice, additional_damages, dmg, dmg_type, dmg_info, j, i, custom_damages, parts, custom_damage, sneak_attack, barbarian_level, rage_damage, bloodhunter_level, rite_die, ranger_level, cleric_level, bard_level, critical_limit, brutal, roll_properties;
             prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
             properties = propertyListToDict(prop_list);
             properties["Properties"] = properties["Properties"] || "";
@@ -12304,6 +12311,9 @@ return this.__repr__();
                             } else {
                                 damage = re.sub("[0-9]*d[0-9]+", "\\0ro<2", damage);
                             }
+                        }
+                        if (ρσ_in("Ranger", character._classes) && character.hasClassFeature("Planar Warrior") && character.getSetting("ranger-planar-warrior", false)) {
+                            damage_type = "Force";
                         }
                         if ((versatile_damage !== "" && (typeof versatile_damage !== "object" || ρσ_not_equals(versatile_damage, "")))) {
                             versatile_choice = character.getSetting("versatile-choice", "both");
@@ -12404,7 +12414,6 @@ return this.__repr__();
                     }
                 }
                 if (ρσ_in("Ranger", character._classes)) {
-                    rangerlevel = character.getClassLevel("Ranger");
                     if (character.getSetting("ranger-dread-ambusher", false)) {
                         damages.append("1d8");
                         damage_types.append("Ambush");
@@ -12418,8 +12427,9 @@ return this.__repr__();
                         damages.append("1d8");
                         damage_types.append("Colossus Slayer");
                     }
-                    if (character.hasClassFeature("Planar Warrior")) {
-                        damages.append((rangerlevel < 11) ? "1d8" : "2d8");
+                    if (character.hasClassFeature("Planar Warrior") && character.getSetting("ranger-planar-warrior", false)) {
+                        ranger_level = character.getClassLevel("Ranger");
+                        damages.append((ranger_level < 11) ? "1d8" : "2d8");
                         damage_types.append("Planar Warrior");
                     }
                 }

@@ -465,7 +465,7 @@ class Beyond20RollRenderer:
                 
                 # Ranger Ability Support
                 for dmgIndex, dmgType in enumerate(damage_types):
-                    if damage_types[dmgIndex] in ["Colossus Slayer", "Planar Warrior"]:
+                    if damage_types[dmgIndex]  == "Colossus Slayer":
                         dVal = damages[dmgIndex].toString()
                         if dVal:
                             dmg_dice = v'await self.queryGeneric(request.name, ("Add %1 damage?").replace(/%1/, dmgType), {"0": "No", [dVal]: "Yes"}, "dmg_dice", ["0", dVal])'

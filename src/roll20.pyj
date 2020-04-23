@@ -366,7 +366,7 @@ def rollAttack(request, custom_roll_dice=""):
 
         # Ranger Ability Support
         for dmgIndex, dmgType in enumerate(damage_types):
-            if damage_types[dmgIndex] in ["Colossus Slayer", "Planar Warrior"]:
+            if damage_types[dmgIndex] == "Colossus Slayer":
                 damages[dmgIndex] = ROLL20_ADDL_DMG_QUERY.replace(/%1/, damage_types[dmgIndex]).replace(/%2/, damages[dmgIndex])
 
         dmg_props = damagesToRollProperties(damages, damage_types, crit_damages, crit_damage_types)

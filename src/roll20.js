@@ -2558,8 +2558,7 @@ function all(iterable) {
 if (!all.__argnames__) Object.defineProperties(all, {
     __argnames__ : {value: ["iterable"]}
 });
-var decimal_sep, define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
-decimal_sep = 1.1.toLocaleString()[1];
+var define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
 function ρσ_repr_js_builtin(x, as_array) {
     var ans, b, keys, key;
     ans = [];
@@ -2936,7 +2935,7 @@ define_str_func("format", function () {
                     value = value.toExponential(prec - 1);
                 }
                 value = value.replace(/0+$/g, "");
-                if (value[value.length-1] === decimal_sep) {
+                if (value[value.length-1] === ".") {
                     value = value.slice(0, -1);
                 }
                 if (ftype === "G") {
@@ -4429,6 +4428,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                             pos = close + 1;
                             continue;
                         }
+                        if (extension === "<") {
+                            throw new SyntaxError("Look behind assertions are not supported in JavaScript");
+                        }
                         if (extension === "(") {
                             throw new SyntaxError("Group existence assertions are not supported in JavaScript");
                         }
@@ -5181,9 +5183,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("aside");
             s.jsset.add("audio");
             s.jsset.add("b");
-            s.jsset.add("base");
             s.jsset.add("big");
-            s.jsset.add("body");
             s.jsset.add("blockquote");
             s.jsset.add("br");
             s.jsset.add("button");
@@ -5222,7 +5222,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("h5");
             s.jsset.add("h6");
             s.jsset.add("hr");
-            s.jsset.add("head");
             s.jsset.add("i");
             s.jsset.add("iframe");
             s.jsset.add("img");
@@ -6197,6 +6196,14 @@ var str = ρσ_str, repr = ρσ_repr;;
                 var ρσ_d = {};
                 ρσ_d["title"] = "Bard: Psychic Blades";
                 ρσ_d["description"] = "Use your Bardic Inspiration to deal extra psychic damage (Apply to next roll only)";
+                ρσ_d["type"] = "bool";
+                ρσ_d["default"] = false;
+                return ρσ_d;
+            }).call(this);
+            ρσ_d["ranger-planar-warrior"] = (function(){
+                var ρσ_d = {};
+                ρσ_d["title"] = "Ranger: Planar Warrior";
+                ρσ_d["description"] = "Use your Planar Warrior ability to deal extra Force damage";
                 ρσ_d["type"] = "bool";
                 ρσ_d["default"] = false;
                 return ρσ_d;
@@ -7659,7 +7666,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     ρσ_unpack = ρσ_Iter5[ρσ_Index5];
                     dmgIndex = ρσ_unpack[0];
                     dmgType = ρσ_unpack[1];
-                    if (ρσ_in(damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex], ρσ_list_decorate([ "Colossus Slayer", "Planar Warrior" ]))) {
+                    if ((damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex] === "Colossus Slayer" || typeof damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex] === "object" && ρσ_equals(damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex], "Colossus Slayer"))) {
                         damages[(typeof dmgIndex === "number" && dmgIndex < 0) ? damages.length + dmgIndex : dmgIndex] = ROLL20_ADDL_DMG_QUERY.replace(/%1/, damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex]).replace(/%2/, damages[(typeof dmgIndex === "number" && dmgIndex < 0) ? damages.length + dmgIndex : dmgIndex]);
                     }
                 }

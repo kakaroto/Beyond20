@@ -141,6 +141,11 @@ def rollItem(force_display=False):
                         else:
                             damage = re.sub("[0-9]*d[0-9]+", "\\0ro<2", damage)
 
+                if "Ranger" in character._classes and \
+                    character.hasClassFeature("Planar Warrior") and \
+                    character.getSetting("ranger-planar-warrior", False):
+                    damage_type = "Force"
+
                 if versatile_damage != "":
                     versatile_choice = character.getSetting("versatile-choice", "both")
                     if versatile_choice == "one":
@@ -226,7 +231,6 @@ def rollItem(force_display=False):
 
         #Ranger abilities    
         if "Ranger" in character._classes:
-            rangerlevel = character.getClassLevel("Ranger")
             if character.getSetting("ranger-dread-ambusher", False):
                 damages.append("1d8")
                 damage_types.append("Ambush")
@@ -234,8 +238,10 @@ def rollItem(force_display=False):
             if character.hasClassFeature("Hunter’s Prey: Colossus Slayer"):
                 damages.append("1d8")
                 damage_types.append("Colossus Slayer")
-            if character.hasClassFeature("Planar Warrior"):
-                damages.append("1d8" if rangerlevel < 11 else "2d8")
+            if character.hasClassFeature("Planar Warrior") and \
+                character.getSetting("ranger-planar-warrior", False):
+                ranger_level = character.getClassLevel("Ranger")
+                damages.append("1d8" if ranger_level < 11 else "2d8")
                 damage_types.append("Planar Warrior")
 
         if properties["Attack Type"] == "Melee" and \
