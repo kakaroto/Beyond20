@@ -7390,20 +7390,14 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "dndbeyond_discord";
         var DISCORD_BOT_API_URL = ρσ_modules.constants.DISCORD_BOT_API_URL;
 
-        var WhisperType = ρσ_modules.settings.WhisperType;
-
         async        function postToDiscord(secret, request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
             var body, json;
             secret = (secret || "").trim();
             if (!secret) {
                 return;
             }
-            if ((request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster"))) {
-                if (ρσ_in(request.whisper_monster, ρσ_list_decorate([ WhisperType.prototype.YES, WhisperType.prototype.HIDE_NAMES ]))) {
-                    request.character.url = null;
-                    request.character.name = "???";
-                    title = "???";
-                }
+            if (ρσ_exists.n(request["original-whisper"])) {
+                request.whisper = request["original-whisper"];
             }
             body = (function(){
                 var ρσ_d = {};
@@ -9520,6 +9514,7 @@ return this.__repr__();
         dndbeyondDiceRoller.handleRollError = (function() {
             var ρσ_anonfunc = function (request, error) {
                 dndbeyondDiceRoller._displayer.setError(error);
+                request["original-whisper"] = request.whisper;
                 request.whisper = WhisperType.prototype.NO;
                 return dndbeyondDiceRoller.handleRollRequest(request);
             };
@@ -11685,7 +11680,6 @@ return this.__repr__();
                 ρσ_d["roll"] = fallback;
                 ρσ_d["advantage"] = advantage;
                 ρσ_d["whisper"] = whisper;
-                ρσ_d["whisper_monster"] = whisper_monster;
                 return ρσ_d;
             }).call(this);
             if (character.getGlobalSetting("weapon-force-critical", false)) {
@@ -12370,8 +12364,8 @@ return this.__repr__();
                 }
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                for (var ρσ_Index41 = 0; ρσ_Index41 < prop_list.length; ρσ_Index41++) {
-                    i = ρσ_Index41;
+                for (var ρσ_Index0 = 0; ρσ_Index0 < prop_list.length; ρσ_Index0++) {
+                    i = ρσ_Index0;
                     if (ρσ_equals(prop_list.eq(i).find(".ct-property-list__property-label,.ddbc-property-list__property-label").text(), "Damage:")) {
                         value = prop_list.eq(i).find(".ct-property-list__property-content,.ddbc-property-list__property-content");
                         damage = value.find(".ct-damage__value,.ddbc-damage__value").text();
@@ -12406,8 +12400,8 @@ return this.__repr__();
                             damage_types.append(damage_type);
                         }
                         additional_damages = value.find(".ct-item-detail__additional-damage,.ddbc-item-detail__additional-damage");
-                        for (var ρσ_Index42 = 0; ρσ_Index42 < additional_damages.length; ρσ_Index42++) {
-                            j = ρσ_Index42;
+                        for (var ρσ_Index1 = 0; ρσ_Index1 < additional_damages.length; ρσ_Index1++) {
+                            j = ρσ_Index1;
                             dmg = additional_damages.eq(j).text();
                             dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip,.ddbc-damage-type-icon .ddbc-tooltip").attr("data-original-title");
                             dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info,.ddbc-item-detail__additional-damage-info").text();
@@ -12425,9 +12419,9 @@ return this.__repr__();
                 }
                 custom_damages = character.getSetting("custom-damage-dice", "");
                 if (len(custom_damages) > 0) {
-                    var ρσ_Iter43 = ρσ_Iterable(custom_damages.split(","));
-                    for (var ρσ_Index43 = 0; ρσ_Index43 < ρσ_Iter43.length; ρσ_Index43++) {
-                        custom_damage = ρσ_Iter43[ρσ_Index43];
+                    var ρσ_Iter2 = ρσ_Iterable(custom_damages.split(","));
+                    for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
+                        custom_damage = ρσ_Iter2[ρσ_Index2];
                         if (ρσ_in(":", custom_damage)) {
                             parts = custom_damage.split(":", 2);
                             damages.append(parts[1].trim());
@@ -12637,9 +12631,9 @@ return this.__repr__();
                 }
                 custom_damages = character.getSetting("custom-damage-dice", "");
                 if (len(custom_damages) > 0) {
-                    var ρσ_Iter44 = ρσ_Iterable(custom_damages.split(","));
-                    for (var ρσ_Index44 = 0; ρσ_Index44 < ρσ_Iter44.length; ρσ_Index44++) {
-                        custom_damage = ρσ_Iter44[ρσ_Index44];
+                    var ρσ_Iter3 = ρσ_Iterable(custom_damages.split(","));
+                    for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
+                        custom_damage = ρσ_Iter3[ρσ_Index3];
                         damages.append(custom_damage.trim());
                         damage_types.append("Custom");
                     }
@@ -12748,9 +12742,9 @@ return this.__repr__();
             if (force_display === false && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || temp_hp_modifiers.length > 0 || (to_hit !== null && (typeof to_hit !== "object" || ρσ_not_equals(to_hit, null))))) {
                 damages = ρσ_list_decorate([]);
                 damage_types = ρσ_list_decorate([]);
-                var ρσ_Iter45 = ρσ_Iterable(damage_modifiers);
-                for (var ρσ_Index45 = 0; ρσ_Index45 < ρσ_Iter45.length; ρσ_Index45++) {
-                    modifier = ρσ_Iter45[ρσ_Index45];
+                var ρσ_Iter4 = ρσ_Iterable(damage_modifiers);
+                for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
+                    modifier = ρσ_Iter4[ρσ_Index4];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount,.ddbc-spell-caster__modifier-amount").text();
                     dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip,.ddbc-damage-type-icon .ddbc-tooltip").attr("data-original-title");
                     if (!(typeof dmgtype !== "undefined" && dmgtype !== null)) {
@@ -12772,9 +12766,9 @@ return this.__repr__();
                     damage_types.append("Arcane Firearm");
                 }
                 elementalAffinity = null;
-                var ρσ_Iter46 = ρσ_Iterable(character._class_features);
-                for (var ρσ_Index46 = 0; ρσ_Index46 < ρσ_Iter46.length; ρσ_Index46++) {
-                    feature = ρσ_Iter46[ρσ_Index46];
+                var ρσ_Iter5 = ρσ_Iterable(character._class_features);
+                for (var ρσ_Index5 = 0; ρσ_Index5 < ρσ_Iter5.length; ρσ_Index5++) {
+                    feature = ρσ_Iter5[ρσ_Index5];
                     match = feature.match("Elemental Affinity \\((.*)\\)");
                     if (match) {
                         elementalAffinity = match[1];
@@ -12782,18 +12776,18 @@ return this.__repr__();
                     }
                 }
                 if (elementalAffinity && ρσ_in(elementalAffinity, damage_types)) {
-                    var ρσ_Iter47 = ρσ_Iterable(character._abilities);
-                    for (var ρσ_Index47 = 0; ρσ_Index47 < ρσ_Iter47.length; ρσ_Index47++) {
-                        ability = ρσ_Iter47[ρσ_Index47];
+                    var ρσ_Iter6 = ρσ_Iterable(character._abilities);
+                    for (var ρσ_Index6 = 0; ρσ_Index6 < ρσ_Iter6.length; ρσ_Index6++) {
+                        ability = ρσ_Iter6[ρσ_Index6];
                         if ((ability[1] === "CHA" || typeof ability[1] === "object" && ρσ_equals(ability[1], "CHA")) && (ability[3] !== "" && (typeof ability[3] !== "object" || ρσ_not_equals(ability[3], ""))) && (ability[3] !== "0" && (typeof ability[3] !== "object" || ρσ_not_equals(ability[3], "0")))) {
                             damages.append(ability[3]);
                             damage_types.append(elementalAffinity + " (Elemental Affinity)");
                         }
                     }
                 }
-                var ρσ_Iter48 = ρσ_Iterable(healing_modifiers);
-                for (var ρσ_Index48 = 0; ρσ_Index48 < ρσ_Iter48.length; ρσ_Index48++) {
-                    modifier = ρσ_Iter48[ρσ_Index48];
+                var ρσ_Iter7 = ρσ_Iterable(healing_modifiers);
+                for (var ρσ_Index7 = 0; ρσ_Index7 < ρσ_Iter7.length; ρσ_Index7++) {
+                    modifier = ρσ_Iter7[ρσ_Index7];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     if (dmg.startsWith("Regain ")) {
                         dmg = dmg.slice(7);
@@ -12806,9 +12800,9 @@ return this.__repr__();
                         damage_types.append("Healing");
                     }
                 }
-                var ρσ_Iter49 = ρσ_Iterable(temp_hp_modifiers);
-                for (var ρσ_Index49 = 0; ρσ_Index49 < ρσ_Iter49.length; ρσ_Index49++) {
-                    modifier = ρσ_Iter49[ρσ_Index49];
+                var ρσ_Iter8 = ρσ_Iterable(temp_hp_modifiers);
+                for (var ρσ_Index8 = 0; ρσ_Index8 < ρσ_Iter8.length; ρσ_Index8++) {
+                    modifier = ρσ_Iter8[ρσ_Index8];
                     dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
                     if (dmg.startsWith("Regain ")) {
                         dmg = dmg.slice(7);
@@ -12831,9 +12825,9 @@ return this.__repr__();
                 }
                 custom_damages = character.getSetting("custom-damage-dice", "");
                 if (len(custom_damages) > 0) {
-                    var ρσ_Iter50 = ρσ_Iterable(custom_damages.split(","));
-                    for (var ρσ_Index50 = 0; ρσ_Index50 < ρσ_Iter50.length; ρσ_Index50++) {
-                        custom_damage = ρσ_Iter50[ρσ_Index50];
+                    var ρσ_Iter9 = ρσ_Iterable(custom_damages.split(","));
+                    for (var ρσ_Index9 = 0; ρσ_Index9 < ρσ_Iter9.length; ρσ_Index9++) {
+                        custom_damage = ρσ_Iter9[ρσ_Index9];
                         damages.append(custom_damage.trim());
                         damage_types.append("Custom");
                     }
@@ -12856,9 +12850,9 @@ return this.__repr__();
                     ρσ_d["ritual"] = ritual;
                     return ρσ_d;
                 }).call(this);
-                var ρσ_Iter51 = ρσ_Iterable(spell_properties);
-                for (var ρσ_Index51 = 0; ρσ_Index51 < ρσ_Iter51.length; ρσ_Index51++) {
-                    key = ρσ_Iter51[ρσ_Index51];
+                var ρσ_Iter10 = ρσ_Iterable(spell_properties);
+                for (var ρσ_Index10 = 0; ρσ_Index10 < ρσ_Iter10.length; ρσ_Index10++) {
+                    key = ρσ_Iter10[ρσ_Index10];
                     roll_properties[(typeof key === "number" && key < 0) ? roll_properties.length + key : key] = spell_properties[(typeof key === "number" && key < 0) ? spell_properties.length + key : key];
                 }
                 if ((castas !== "" && (typeof castas !== "object" || ρσ_not_equals(castas, ""))) && !level.startsWith(castas)) {
@@ -13031,14 +13025,14 @@ return this.__repr__();
                         });
                         return ρσ_anonfunc;
                     })();
-                    var ρσ_Iter52 = ρσ_Iterable(character._abilities);
-                    for (var ρσ_Index52 = 0; ρσ_Index52 < ρσ_Iter52.length; ρσ_Index52++) {
-                        ability = ρσ_Iter52[ρσ_Index52];
+                    var ρσ_Iter11 = ρσ_Iterable(character._abilities);
+                    for (var ρσ_Index11 = 0; ρσ_Index11 < ρσ_Iter11.length; ρσ_Index11++) {
+                        ability = ρσ_Iter11[ρσ_Index11];
                         find_static_modifier(ability[0].toLowerCase() + " modifier", ability[3]);
                     }
-                    var ρσ_Iter53 = ρσ_Iterable(character._classes);
-                    for (var ρσ_Index53 = 0; ρσ_Index53 < ρσ_Iter53.length; ρσ_Index53++) {
-                        class_name = ρσ_Iter53[ρσ_Index53];
+                    var ρσ_Iter12 = ρσ_Iterable(character._classes);
+                    for (var ρσ_Index12 = 0; ρσ_Index12 < ρσ_Iter12.length; ρσ_Index12++) {
+                        class_name = ρσ_Iter12[ρσ_Index12];
                         find_static_modifier(class_name.toLowerCase() + " level", (ρσ_expr_temp = character._classes)[(typeof class_name === "number" && class_name < 0) ? ρσ_expr_temp.length + class_name : class_name]);
                     }
                     find_static_modifier("proficiency bonus", character._proficiency);
@@ -13048,9 +13042,9 @@ return this.__repr__();
                         var ρσ_anonfunc = function (suffix, obj) {
                             var default_spell_mod, class_name;
                             default_spell_mod = null;
-                            var ρσ_Iter54 = ρσ_Iterable(obj);
-                            for (var ρσ_Index54 = 0; ρσ_Index54 < ρσ_Iter54.length; ρσ_Index54++) {
-                                class_name = ρσ_Iter54[ρσ_Index54];
+                            var ρσ_Iter13 = ρσ_Iterable(obj);
+                            for (var ρσ_Index13 = 0; ρσ_Index13 < ρσ_Iter13.length; ρσ_Index13++) {
+                                class_name = ρσ_Iter13[ρσ_Index13];
                                 default_spell_mod = (default_spell_mod === null) ? obj[(typeof class_name === "number" && class_name < 0) ? obj.length + class_name : class_name] : default_spell_mod;
                                 find_static_modifier(class_name.toLowerCase() + " " + suffix, obj[(typeof class_name === "number" && class_name < 0) ? obj.length + class_name : class_name]);
                             }
@@ -13089,9 +13083,9 @@ return this.__repr__();
                 return;
             }
             injectDiceToRolls(selector, character, name);
-            var ρσ_Iter55 = ρσ_Iterable($(".ct-beyond20-custom-roll"));
-            for (var ρσ_Index55 = 0; ρσ_Index55 < ρσ_Iter55.length; ρσ_Index55++) {
-                custom_roll = ρσ_Iter55[ρσ_Index55];
+            var ρσ_Iter14 = ρσ_Iterable($(".ct-beyond20-custom-roll"));
+            for (var ρσ_Index14 = 0; ρσ_Index14 < ρσ_Iter14.length; ρσ_Index14++) {
+                custom_roll = ρσ_Iter14[ρσ_Index14];
                 findModifiers(character, custom_roll);
             }
         };
@@ -13258,9 +13252,9 @@ return this.__repr__();
                         return ρσ_anonfunc;
                     })();
                     rows = $(".ct-spell-detail__description table tbody tr,.ddbc-spell-detail__description table tbody tr");
-                    var ρσ_Iter56 = ρσ_Iterable(rows);
-                    for (var ρσ_Index56 = 0; ρσ_Index56 < ρσ_Iter56.length; ρσ_Index56++) {
-                        row = ρσ_Iter56[ρσ_Index56];
+                    var ρσ_Iter15 = ρσ_Iterable(rows);
+                    for (var ρσ_Index15 = 0; ρσ_Index15 < ρσ_Iter15.length; ρσ_Index15++) {
+                        row = ρσ_Iter15[ρσ_Index15];
                         size = $(row).find("td").eq(0);
                         desc = $(row).find("td").eq(5);
                         m = re.search("(\\+[0-9]+) to hit, ([0-9]*d[0-9]+(?:\\s*[-+]\\s*[0-9]+)) damage", desc.text());
@@ -13336,9 +13330,9 @@ return this.__repr__();
                 j_conditions = $(".ct-condition-manage-pane .ct-toggle-field--enabled,.ct-condition-manage-pane .ddbc-toggle-field--is-enabled").closest(".ct-condition-manage-pane__condition");
                 exhaustion_level = $(".ct-condition-manage-pane__condition--special .ct-number-bar__option--active,.ct-condition-manage-pane__condition--special .ddbc-number-bar__option--active").text();
                 conditions = ρσ_list_decorate([]);
-                var ρσ_Iter57 = ρσ_Iterable(j_conditions);
-                for (var ρσ_Index57 = 0; ρσ_Index57 < ρσ_Iter57.length; ρσ_Index57++) {
-                    cond = ρσ_Iter57[ρσ_Index57];
+                var ρσ_Iter16 = ρσ_Iterable(j_conditions);
+                for (var ρσ_Index16 = 0; ρσ_Index16 < ρσ_Iter16.length; ρσ_Index16++) {
+                    cond = ρσ_Iter16[ρσ_Index16];
                     conditions.append(cond.textContent);
                 }
                 if ((exhaustion_level === "" || typeof exhaustion_level === "object" && ρσ_equals(exhaustion_level, ""))) {
@@ -13358,9 +13352,9 @@ return this.__repr__();
         function injectRollToSpellAttack() {
             var groups, label, icon16, items, modifier, name, img, item, group;
             groups = $(".ct-spells-level-casting__info-group,.ddbc-spells-level-casting__info-group");
-            var ρσ_Iter58 = ρσ_Iterable(groups);
-            for (var ρσ_Index58 = 0; ρσ_Index58 < ρσ_Iter58.length; ρσ_Index58++) {
-                group = ρσ_Iter58[ρσ_Index58];
+            var ρσ_Iter17 = ρσ_Iterable(groups);
+            for (var ρσ_Index17 = 0; ρσ_Index17 < ρσ_Iter17.length; ρσ_Index17++) {
+                group = ρσ_Iter17[ρσ_Index17];
                 label = $(group).find(".ct-spells-level-casting__info-label,.ddbc-spells-level-casting__info-label");
                 if (ρσ_equals(label.text(), "Spell Attack")) {
                     if (label.hasClass("beyond20-rolls-added")) {
@@ -13369,9 +13363,9 @@ return this.__repr__();
                     label.addClass("beyond20-rolls-added");
                     icon16 = chrome.extension.getURL("images/icons/icon16.png");
                     items = $(group).find(".ct-spells-level-casting__info-item,.ddbc-spells-level-casting__info-item");
-                    var ρσ_Iter59 = ρσ_Iterable(items);
-                    for (var ρσ_Index59 = 0; ρσ_Index59 < ρσ_Iter59.length; ρσ_Index59++) {
-                        item = ρσ_Iter59[ρσ_Index59];
+                    var ρσ_Iter18 = ρσ_Iterable(items);
+                    for (var ρσ_Index18 = 0; ρσ_Index18 < ρσ_Iter18.length; ρσ_Index18++) {
+                        item = ρσ_Iter18[ρσ_Index18];
                         modifier = item.textContent;
                         name = "Spell Attack";
                         if (items.length > 1) {
@@ -13550,9 +13544,9 @@ return this.__repr__();
             if (!settings["quick-rolls"]) {
                 return;
             }
-            var ρσ_Iter60 = ρσ_Iterable(abilities);
-            for (var ρσ_Index60 = 0; ρσ_Index60 < ρσ_Iter60.length; ρσ_Index60++) {
-                ability = ρσ_Iter60[ρσ_Index60];
+            var ρσ_Iter19 = ρσ_Iterable(abilities);
+            for (var ρσ_Index19 = 0; ρσ_Index19 < ρσ_Iter19.length; ρσ_Index19++) {
+                ability = ρσ_Iter19[ρσ_Index19];
                 quickRollAbility = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -13571,9 +13565,9 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(ability), beyond20_tooltip, quickRollAbility);
             }
-            var ρσ_Iter61 = ρσ_Iterable(saving_throws);
-            for (var ρσ_Index61 = 0; ρσ_Index61 < ρσ_Iter61.length; ρσ_Index61++) {
-                save = ρσ_Iter61[ρσ_Index61];
+            var ρσ_Iter20 = ρσ_Iterable(saving_throws);
+            for (var ρσ_Index20 = 0; ρσ_Index20 < ρσ_Iter20.length; ρσ_Index20++) {
+                save = ρσ_Iter20[ρσ_Index20];
                 quickRollSave = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -13592,16 +13586,16 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(save), beyond20_tooltip, quickRollSave);
             }
-            var ρσ_Iter62 = ρσ_Iterable(skills);
-            for (var ρσ_Index62 = 0; ρσ_Index62 < ρσ_Iter62.length; ρσ_Index62++) {
-                skill = ρσ_Iter62[ρσ_Index62];
+            var ρσ_Iter21 = ρσ_Iterable(skills);
+            for (var ρσ_Index21 = 0; ρσ_Index21 < ρσ_Iter21.length; ρσ_Index21++) {
+                skill = ρσ_Iter21[ρσ_Index21];
                 quickRollSkill = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane, paneClass, pane_name;
                         name = el.closest(".ct-skills__item,.ddbc-skills__item").find(".ct-skills__col--skill,.ddbc-skills__col--skill").text();
-                        var ρσ_Iter63 = ρσ_Iterable(ρσ_list_decorate([ "ct-skill-pane", "ct-custom-skill-pane" ]));
-                        for (var ρσ_Index63 = 0; ρσ_Index63 < ρσ_Iter63.length; ρσ_Index63++) {
-                            paneClass = ρσ_Iter63[ρσ_Index63];
+                        var ρσ_Iter22 = ρσ_Iterable(ρσ_list_decorate([ "ct-skill-pane", "ct-custom-skill-pane" ]));
+                        for (var ρσ_Index22 = 0; ρσ_Index22 < ρσ_Iter22.length; ρσ_Index22++) {
+                            paneClass = ρσ_Iter22[ρσ_Index22];
                             pane = $("." + paneClass);
                             if (pane.length > 0) {
                                 break;
@@ -13621,16 +13615,16 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(skill), beyond20_tooltip, quickRollSkill);
             }
-            var ρσ_Iter64 = ρσ_Iterable(actions);
-            for (var ρσ_Index64 = 0; ρσ_Index64 < ρσ_Iter64.length; ρσ_Index64++) {
-                action = ρσ_Iter64[ρσ_Index64];
+            var ρσ_Iter23 = ρσ_Iterable(actions);
+            for (var ρσ_Index23 = 0; ρσ_Index23 < ρσ_Iter23.length; ρσ_Index23++) {
+                action = ρσ_Iter23[ρσ_Index23];
                 quickRollAction = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane, paneClass, pane_name;
                         name = el.closest(".ct-combat-attack,.ddbc-combat-attack").find(".ct-combat-attack__name .ct-combat-attack__label,.ddbc-combat-attack__name .ddbc-combat-attack__label").text();
-                        var ρσ_Iter65 = ρσ_Iterable(ρσ_list_decorate([ "ct-item-pane", "ct-action-pane", "ct-custom-action-pane", "ct-spell-pane" ]));
-                        for (var ρσ_Index65 = 0; ρσ_Index65 < ρσ_Iter65.length; ρσ_Index65++) {
-                            paneClass = ρσ_Iter65[ρσ_Index65];
+                        var ρσ_Iter24 = ρσ_Iterable(ρσ_list_decorate([ "ct-item-pane", "ct-action-pane", "ct-custom-action-pane", "ct-spell-pane" ]));
+                        for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
+                            paneClass = ρσ_Iter24[ρσ_Index24];
                             pane = $("." + paneClass);
                             if (pane.length > 0) {
                                 break;
@@ -13650,9 +13644,9 @@ return this.__repr__();
                 })();
                 activateTooltipListeners($(action), beyond20_tooltip, quickRollAction);
             }
-            var ρσ_Iter66 = ρσ_Iterable(spells);
-            for (var ρσ_Index66 = 0; ρσ_Index66 < ρσ_Iter66.length; ρσ_Index66++) {
-                spell = ρσ_Iter66[ρσ_Index66];
+            var ρσ_Iter25 = ρσ_Iterable(spells);
+            for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
+                spell = ρσ_Iter25[ρσ_Index25];
                 quickRollSpell = (function() {
                     var ρσ_anonfunc = function (el) {
                         var name, pane_name;
@@ -13696,8 +13690,8 @@ return this.__repr__();
             activateQuickRolls();
             pane = $(".ct-sidebar__pane-content > div");
             if (pane.length > 0) {
-                for (var ρσ_Index67 = 0; ρσ_Index67 < pane.length; ρσ_Index67++) {
-                    div = ρσ_Index67;
+                for (var ρσ_Index26 = 0; ρσ_Index26 < pane.length; ρσ_Index26++) {
+                    div = ρσ_Index26;
                     paneClass = pane[(typeof div === "number" && div < 0) ? pane.length + div : div].className;
                     if ((paneClass === "ct-sidebar__pane-controls" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-sidebar__pane-controls")) || (paneClass === "ct-beyond20-settings-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-beyond20-settings-pane"))) {
                         continue;

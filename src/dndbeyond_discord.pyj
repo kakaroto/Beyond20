@@ -1,5 +1,4 @@
 from constants import DISCORD_BOT_API_URL
-from settings import WhisperType
 
 v'async'
 def postToDiscord(secret, request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open):
@@ -7,11 +6,8 @@ def postToDiscord(secret, request, title, source, attributes, description, attac
     if not secret:
         return
 
-    if request.character.type == "Monster":
-        if request.whisper_monster in [WhisperType.YES, WhisperType.HIDE_NAMES]:
-            request.character.url = None
-            request.character.name = "???"
-            title = "???"            
+    if request['original-whisper']?:
+        request.whisper = request['original-whisper']
         
     body = {
         "secret": secret,

@@ -7019,20 +7019,14 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "dndbeyond_discord";
         var DISCORD_BOT_API_URL = ρσ_modules.constants.DISCORD_BOT_API_URL;
 
-        var WhisperType = ρσ_modules.settings.WhisperType;
-
         async        function postToDiscord(secret, request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
             var body, json;
             secret = (secret || "").trim();
             if (!secret) {
                 return;
             }
-            if ((request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster"))) {
-                if (ρσ_in(request.whisper_monster, ρσ_list_decorate([ WhisperType.prototype.YES, WhisperType.prototype.HIDE_NAMES ]))) {
-                    request.character.url = null;
-                    request.character.name = "???";
-                    title = "???";
-                }
+            if (ρσ_exists.n(request["original-whisper"])) {
+                request.whisper = request["original-whisper"];
             }
             body = (function(){
                 var ρσ_d = {};
@@ -9520,6 +9514,7 @@ return this.__repr__();
         dndbeyondDiceRoller.handleRollError = (function() {
             var ρσ_anonfunc = function (request, error) {
                 dndbeyondDiceRoller._displayer.setError(error);
+                request["original-whisper"] = request.whisper;
                 request.whisper = WhisperType.prototype.NO;
                 return dndbeyondDiceRoller.handleRollRequest(request);
             };
@@ -11685,7 +11680,6 @@ return this.__repr__();
                 ρσ_d["roll"] = fallback;
                 ρσ_d["advantage"] = advantage;
                 ρσ_d["whisper"] = whisper;
-                ρσ_d["whisper_monster"] = whisper_monster;
                 return ρσ_d;
             }).call(this);
             if (character.getGlobalSetting("weapon-force-critical", false)) {

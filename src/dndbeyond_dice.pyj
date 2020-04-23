@@ -310,5 +310,6 @@ dndbeyondDiceRoller.setBaseURL(chrome.runtime.getURL(""))
 dndbeyondDiceRoller.setSettings(getDefaultSettings())
 dndbeyondDiceRoller.handleRollError = def(request, error):
     dndbeyondDiceRoller._displayer.setError(error)
+    request['original-whisper'] = request.whisper
     request.whisper = WhisperType.NO
     return dndbeyondDiceRoller.handleRollRequest(request)
