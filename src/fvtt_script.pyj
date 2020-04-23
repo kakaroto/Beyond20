@@ -141,14 +141,11 @@ def rollInitiative(request, custom_roll_dice=""):
     )
 
 def popAvatar(request):
-    # Check for the beyond20 module, if it's there, we can pop the image.
-    module = game.modules.get("beyond20")
-    if module ? and isNewerVersion(module.data.version, "0.6"):
-        new ImagePopout(request.character.avatar, 
-                         {"shareable":False, 
-                            "title": request.character.name,
-                            "entity": {"type": "User", "id": game.user.id}
-                         }).render(True).shareImage(True)
+    new ImagePopout(request.character.avatar, 
+                        {"shareable":False, 
+                        "title": request.character.name,
+                        "entity": {"type": "User", "id": game.user.id}
+                        }).render(True).shareImage(True)
 
 v'async'
 def addInitiativeToCombat(roll):

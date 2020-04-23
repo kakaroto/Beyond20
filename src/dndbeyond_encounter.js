@@ -2558,8 +2558,7 @@ function all(iterable) {
 if (!all.__argnames__) Object.defineProperties(all, {
     __argnames__ : {value: ["iterable"]}
 });
-var decimal_sep, define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
-decimal_sep = 1.1.toLocaleString()[1];
+var define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
 function ρσ_repr_js_builtin(x, as_array) {
     var ans, b, keys, key;
     ans = [];
@@ -2936,7 +2935,7 @@ define_str_func("format", function () {
                     value = value.toExponential(prec - 1);
                 }
                 value = value.replace(/0+$/g, "");
-                if (value[value.length-1] === decimal_sep) {
+                if (value[value.length-1] === ".") {
                     value = value.slice(0, -1);
                 }
                 if (ftype === "G") {
@@ -3752,9 +3751,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("aside");
             s.jsset.add("audio");
             s.jsset.add("b");
-            s.jsset.add("base");
             s.jsset.add("big");
-            s.jsset.add("body");
             s.jsset.add("blockquote");
             s.jsset.add("br");
             s.jsset.add("button");
@@ -3793,7 +3790,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("h5");
             s.jsset.add("h6");
             s.jsset.add("hr");
-            s.jsset.add("head");
             s.jsset.add("i");
             s.jsset.add("iframe");
             s.jsset.add("img");
@@ -4738,6 +4734,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                             }
                             pos = close + 1;
                             continue;
+                        }
+                        if (extension === "<") {
+                            throw new SyntaxError("Look behind assertions are not supported in JavaScript");
                         }
                         if (extension === "(") {
                             throw new SyntaxError("Group existence assertions are not supported in JavaScript");
@@ -8617,6 +8616,29 @@ var str = ρσ_str, repr = ρσ_repr;;
         if (!Beyond20RollRenderer.prototype.rollSpellAttack.__argnames__) Object.defineProperties(Beyond20RollRenderer.prototype.rollSpellAttack, {
             __argnames__ : {value: ["request", "custom_roll_dice"]}
         });
+        Beyond20RollRenderer.prototype.displayAvatar = function displayAvatar(request) {
+            var self = this;
+            var character;
+            character = request.character.name;
+            if ((request.whisper === WhisperType.prototype.HIDE_NAMES || typeof request.whisper === "object" && ρσ_equals(request.whisper, WhisperType.prototype.HIDE_NAMES))) {
+                character = "???";
+            }
+            postToDiscord(self._settings["discord-secret"], request, request.name, "", {}, "", ρσ_list_decorate([]), ρσ_list_decorate([]), ρσ_list_decorate([]), ρσ_list_decorate([]), false).then((function() {
+                var ρσ_anonfunc = function (error) {
+                    if ((typeof error !== "undefined" && error !== null)) {
+                        self._displayer.displayError("Beyond20 Discord Integration: " + error);
+                    }
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["error"]}
+                });
+                return ρσ_anonfunc;
+            })());
+            self._displayer.postHTML(request, request.name, "<img src='" + request.character.avatar + "' width='100%'>", {}, character, false, false);
+        };
+        if (!Beyond20RollRenderer.prototype.displayAvatar.__argnames__) Object.defineProperties(Beyond20RollRenderer.prototype.displayAvatar, {
+            __argnames__ : {value: ["request"]}
+        });
         Beyond20RollRenderer.prototype.handleRollRequest = function handleRollRequest(request) {
             var self = this;
             var custom_roll_dice, mod, rname;
@@ -8624,7 +8646,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character"))) {
                 custom_roll_dice = ρσ_exists.e(request.character.settings["custom-roll-dice"], "");
             }
-            if ((request.type === "skill" || typeof request.type === "object" && ρσ_equals(request.type, "skill"))) {
+            if ((request.type === "avatar" || typeof request.type === "object" && ρσ_equals(request.type, "avatar"))) {
+                return self.displayAvatar(request);
+            } else if ((request.type === "skill" || typeof request.type === "object" && ρσ_equals(request.type, "skill"))) {
                 return self.rollSkill(request, custom_roll_dice);
             } else if ((request.type === "ability" || typeof request.type === "object" && ρσ_equals(request.type, "ability"))) {
                 return self.rollAbility(request, custom_roll_dice);
@@ -10709,7 +10733,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "stat_block")){
                 stat_block = ρσ_kwargs_obj.stat_block;
             }
-            var add_dice, inject_descriptions, base, quick_settings, link, avatar, avatarImg, cb, attributes, label, value, attr, abilities, prefix, makeCB, abbr, score, modifier, roll_initiative, initiative, ability, tidbits, data, saves, parts, mod, save, skills, name, skill, mon_skill, text, last, a, first, tidbit;
+            var add_dice, inject_descriptions, base, quick_settings, link, avatar, avatarImg, attributes, label, value, cb, attr, abilities, prefix, makeCB, abbr, score, modifier, roll_initiative, initiative, ability, tidbits, data, saves, parts, mod, save, skills, name, skill, mon_skill, text, last, a, first, tidbit;
             add_dice = self.getGlobalSetting("handle-stat-blocks", true);
             inject_descriptions = self.getGlobalSetting("subst-dndbeyond-stat-blocks", true);
             base = self._base;
@@ -10744,10 +10768,9 @@ return this.__repr__();
                 self._avatar = avatar[0].href;
                 avatarImg = $(".details-aside .image");
                 if (avatarImg) {
-                    cb = function () {
+                    ρσ_interpolate_kwargs.call(this, addRollButton, [self, function () {
                         self.displayAvatar();
-                    };
-                    ρσ_interpolate_kwargs.call(this, addRollButton, [self, cb, avatarImg].concat([ρσ_desugar_kwargs({small: true, image: true, text: "Display in VTT"})]));
+                    }, avatarImg].concat([ρσ_desugar_kwargs({small: true, image: true, text: "Display in VTT"})]));
                 }
             }
             attributes = stat_block.find(base + "__attributes " + base + "__attribute");

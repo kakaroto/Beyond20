@@ -612,12 +612,24 @@ class Beyond20RollRenderer:
             return self.postDescription(request, request.name, spell_card[0], spell_card[1], spell_card[2], attack_rolls, roll_info, damage_rolls)
         return async_function()
 
+    def displayAvatar(self, request):
+        character = request.character.name
+        if request.whisper == WhisperType.HIDE_NAMES:
+            character = "???"
+        postToDiscord(self._settings["discord-secret"], request, request.name, "", {}, "", [], [], [], [], False).then(def (error):
+            if error?:
+                self._displayer.displayError("Beyond20 Discord Integration: " + error)
+        )
+        self._displayer.postHTML(request, request.name, "<img src='" + request.character.avatar + "' width='100%'>", {}, character, False, False)
+
     def handleRollRequest(self, request):
         custom_roll_dice = ""
         if request.character.type == "Character":
             custom_roll_dice = request.character.settings["custom-roll-dice"] ? ""
 
-        if request.type == "skill":
+        if request.type == "avatar":
+            return self.displayAvatar(request)
+        elif request.type == "skill":
             return self.rollSkill(request, custom_roll_dice)
         elif request.type == "ability":
             return self.rollAbility(request, custom_roll_dice)

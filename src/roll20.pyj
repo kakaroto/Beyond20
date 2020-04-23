@@ -217,8 +217,8 @@ def template(request, name, properties):
     return result
 
 def rollAvatarDisplay(request):
+    # Use query string to override url for image detection so the avatar link is always displayed in Roll20 as an image
     return "[x](" + request.character.avatar + "#.png)"
-    #postChatMessage("[x](" + request.character.avatar + "#.png)", request.character.name)
 
 def rollSkill(request, custom_roll_dice=""):
     modifier = request.modifier

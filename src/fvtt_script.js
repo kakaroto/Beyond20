@@ -8612,6 +8612,29 @@ var str = ρσ_str, repr = ρσ_repr;;
         if (!Beyond20RollRenderer.prototype.rollSpellAttack.__argnames__) Object.defineProperties(Beyond20RollRenderer.prototype.rollSpellAttack, {
             __argnames__ : {value: ["request", "custom_roll_dice"]}
         });
+        Beyond20RollRenderer.prototype.displayAvatar = function displayAvatar(request) {
+            var self = this;
+            var character;
+            character = request.character.name;
+            if ((request.whisper === WhisperType.prototype.HIDE_NAMES || typeof request.whisper === "object" && ρσ_equals(request.whisper, WhisperType.prototype.HIDE_NAMES))) {
+                character = "???";
+            }
+            postToDiscord(self._settings["discord-secret"], request, request.name, "", {}, "", ρσ_list_decorate([]), ρσ_list_decorate([]), ρσ_list_decorate([]), ρσ_list_decorate([]), false).then((function() {
+                var ρσ_anonfunc = function (error) {
+                    if ((typeof error !== "undefined" && error !== null)) {
+                        self._displayer.displayError("Beyond20 Discord Integration: " + error);
+                    }
+                };
+                if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
+                    __argnames__ : {value: ["error"]}
+                });
+                return ρσ_anonfunc;
+            })());
+            self._displayer.postHTML(request, request.name, "<img src='" + request.character.avatar + "' width='100%'>", {}, character, false, false);
+        };
+        if (!Beyond20RollRenderer.prototype.displayAvatar.__argnames__) Object.defineProperties(Beyond20RollRenderer.prototype.displayAvatar, {
+            __argnames__ : {value: ["request"]}
+        });
         Beyond20RollRenderer.prototype.handleRollRequest = function handleRollRequest(request) {
             var self = this;
             var custom_roll_dice, mod, rname;
@@ -8619,7 +8642,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             if ((request.character.type === "Character" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Character"))) {
                 custom_roll_dice = ρσ_exists.e(request.character.settings["custom-roll-dice"], "");
             }
-            if ((request.type === "skill" || typeof request.type === "object" && ρσ_equals(request.type, "skill"))) {
+            if ((request.type === "avatar" || typeof request.type === "object" && ρσ_equals(request.type, "avatar"))) {
+                return self.displayAvatar(request);
+            } else if ((request.type === "skill" || typeof request.type === "object" && ρσ_equals(request.type, "skill"))) {
                 return self.rollSkill(request, custom_roll_dice);
             } else if ((request.type === "ability" || typeof request.type === "object" && ρσ_equals(request.type, "ability"))) {
                 return self.rollAbility(request, custom_roll_dice);
@@ -9234,22 +9259,18 @@ return this.__repr__();
         });
 
         function popAvatar(request) {
-            var module;
-            module = game.modules.get("beyond20");
-            if ((typeof module !== "undefined" && module !== null) && isNewerVersion(module.data.version, "0.6")) {
-                new ImagePopout(request.character.avatar, (function(){
+            new ImagePopout(request.character.avatar, (function(){
+                var ρσ_d = {};
+                ρσ_d["shareable"] = false;
+                ρσ_d["title"] = request.character.name;
+                ρσ_d["entity"] = (function(){
                     var ρσ_d = {};
-                    ρσ_d["shareable"] = false;
-                    ρσ_d["title"] = request.character.name;
-                    ρσ_d["entity"] = (function(){
-                        var ρσ_d = {};
-                        ρσ_d["type"] = "User";
-                        ρσ_d["id"] = game.user.id;
-                        return ρσ_d;
-                    }).call(this);
+                    ρσ_d["type"] = "User";
+                    ρσ_d["id"] = game.user.id;
                     return ρσ_d;
-                }).call(this)).render(true).shareImage(true);
-            }
+                }).call(this);
+                return ρσ_d;
+            }).call(this)).render(true).shareImage(true);
         };
         if (!popAvatar.__argnames__) Object.defineProperties(popAvatar, {
             __argnames__ : {value: ["request"]}
@@ -9262,9 +9283,9 @@ return this.__repr__();
                     if ((game.combat.scene.id !== canvas.scene.id && (typeof game.combat.scene.id !== "object" || ρσ_not_equals(game.combat.scene.id, canvas.scene.id)))) {
                         ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene");
                     } else {
-                        var ρσ_Iter0 = ρσ_Iterable(canvas.tokens.controlledTokens);
-                        for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                            token = ρσ_Iter0[ρσ_Index0];
+                        var ρσ_Iter24 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                        for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
+                            token = ρσ_Iter24[ρσ_Index24];
                             combatant = game.combat.getCombatantByToken(token.id);
                             if (combatant) {
                                 idField = (combatant._id) ? "_id" : "id";
@@ -9355,9 +9376,9 @@ return this.__repr__();
                     actor.update(sws_data);
                 }
             }
-            var ρσ_Iter1 = ρσ_Iterable(tokens);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                token = ρσ_Iter1[ρσ_Index1];
+            var ρσ_Iter25 = ρσ_Iterable(tokens);
+            for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
+                token = ρσ_Iter25[ρσ_Index25];
                 if (ρσ_exists.n(ρσ_exists.d(ρσ_exists.d(ρσ_exists.d(ρσ_exists.d(token.actor).data).data).attributes).hp)) {
                     {
                         token.actor.update(dnd5e_data);
@@ -9404,9 +9425,9 @@ return this.__repr__();
                     });
                     return ρσ_anonfunc;
                 })());
-                var ρσ_Iter2 = ρσ_Iterable(tokens);
-                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                    token = ρσ_Iter2[ρσ_Index2];
+                var ρσ_Iter26 = ρσ_Iterable(tokens);
+                for (var ρσ_Index26 = 0; ρσ_Index26 < ρσ_Iter26.length; ρσ_Index26++) {
+                    token = ρσ_Iter26[ρσ_Index26];
                     effects = token.data.effects;
                     new_effects = ρσ_list_decorate([]);
                     new_conditions = conditions.map((function() {
@@ -9426,9 +9447,9 @@ return this.__repr__();
                             new_conditions.push("exhaustion" + exhaustion + ".svg");
                         }
                     }
-                    var ρσ_Iter3 = ρσ_Iterable(effects);
-                    for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                        effect = ρσ_Iter3[ρσ_Index3];
+                    var ρσ_Iter27 = ρσ_Iterable(effects);
+                    for (var ρσ_Index27 = 0; ρσ_Index27 < ρσ_Iter27.length; ρσ_Index27++) {
+                        effect = ρσ_Iter27[ρσ_Index27];
                         if (!effect.startsWith("modules/beyond20/conditions/")) {
                             new_effects.push(effect);
                         } else {
@@ -9485,9 +9506,9 @@ return this.__repr__();
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter4 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                event = ρσ_Iter4[ρσ_Index4];
+            var ρσ_Iter28 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
+                event = ρσ_Iter28[ρσ_Index28];
                 document.removeEventListener.apply(document, event);
             }
         };
