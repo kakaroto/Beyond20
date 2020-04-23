@@ -6963,7 +6963,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "__main__";
 
 
-        var ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY, ROLL20_INITIATIVE_ADVANTAGE_QUERY, ROLL20_TOLL_THE_DEAD_QUERY, ROLL20_ADDL_DMG_QUERY, chat, txt, btn, speakingas, settings;
+        var ROLL20_WHISPER_QUERY, ROLL20_ADVANTAGE_QUERY, ROLL20_INITIATIVE_ADVANTAGE_QUERY, ROLL20_TOLL_THE_DEAD_QUERY, ROLL20_ADD_GENERIC_DAMAGE_DMG_QUERY, chat, txt, btn, speakingas, settings;
         var replaceRolls = ρσ_modules.utils.replaceRolls;
         var injectPageScript = ρσ_modules.utils.injectPageScript;
         var sendCustomEvent = ρσ_modules.utils.sendCustomEvent;
@@ -6984,7 +6984,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         ROLL20_ADVANTAGE_QUERY = "{{{{query=1}}}} ?{{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Super Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2kh}&#125&#125|Super Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2kl}&#125&#125}}";
         ROLL20_INITIATIVE_ADVANTAGE_QUERY = "?{Roll Initiative with advantage?|Normal Roll,1d20|Advantage,2d20kh1|Disadvantage,2d20kl1|Super Advantage,3d20kh1|Super Disadvantage,3d20kl1}";
         ROLL20_TOLL_THE_DEAD_QUERY = "?{Is the target missing any of its hit points?|Yes,d12|No,d8}";
-        ROLL20_ADDL_DMG_QUERY = "?{Add %1 damage?|No,0|Yes,%2}";
+        ROLL20_ADD_GENERIC_DAMAGE_DMG_QUERY = "?{Add %dmgType% damage?|No,0|Yes,%dmg%}";
         chat = document.getElementById("textchat-input");
         txt = chat.getElementsByTagName("textarea")[0];
         btn = chat.getElementsByTagName("button")[0];
@@ -7667,7 +7667,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     dmgIndex = ρσ_unpack[0];
                     dmgType = ρσ_unpack[1];
                     if ((damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex] === "Colossus Slayer" || typeof damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex] === "object" && ρσ_equals(damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex], "Colossus Slayer"))) {
-                        damages[(typeof dmgIndex === "number" && dmgIndex < 0) ? damages.length + dmgIndex : dmgIndex] = ROLL20_ADDL_DMG_QUERY.replace(/%1/, damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex]).replace(/%2/, damages[(typeof dmgIndex === "number" && dmgIndex < 0) ? damages.length + dmgIndex : dmgIndex]);
+                        damages[(typeof dmgIndex === "number" && dmgIndex < 0) ? damages.length + dmgIndex : dmgIndex] = ROLL20_ADD_GENERIC_DAMAGE_DMG_QUERY.replace(/%dmgType%/, damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex]).replace(/%dmg%/, damages[(typeof dmgIndex === "number" && dmgIndex < 0) ? damages.length + dmgIndex : dmgIndex]);
                     }
                 }
                 dmg_props = damagesToRollProperties(damages, damage_types, crit_damages, crit_damage_types);

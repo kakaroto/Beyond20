@@ -8305,7 +8305,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             var self = this;
             var async_function;
             async_function = async            function () {
-                var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, ttd_dice, dVal, dmg_dice, ρσ_unpack, dmgIndex, dmgType, has_versatile, roll, dmg_type, damage_flags, suffix, i, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
+                var to_hit, damage_rolls, is_critical, critical_limit, custom, to_hit_mod, damages, damage_types, critical_damages, critical_damage_types, damage_choices, critical_damage_choices, idx, dmgtype, chromatic_type, crit_damage, base_damage, ttd_dice, dmg, dmg_dice, ρσ_unpack, dmgIndex, dmgType, has_versatile, roll, dmg_type, damage_flags, suffix, i, flags, chaos_bolt_damages, r, chaotic_type, dmg_roll;
                 to_hit = ρσ_list_decorate([]);
                 damage_rolls = ρσ_list_decorate([]);
                 is_critical = false;
@@ -8368,9 +8368,9 @@ var str = ρσ_str, repr = ρσ_repr;;
                         dmgIndex = ρσ_unpack[0];
                         dmgType = ρσ_unpack[1];
                         if ((damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex] === "Colossus Slayer" || typeof damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex] === "object" && ρσ_equals(damage_types[(typeof dmgIndex === "number" && dmgIndex < 0) ? damage_types.length + dmgIndex : dmgIndex], "Colossus Slayer"))) {
-                            dVal = damages[(typeof dmgIndex === "number" && dmgIndex < 0) ? damages.length + dmgIndex : dmgIndex].toString();
-                            if (dVal) {
-                                dmg_dice = await self.queryGeneric(request.name, ("Add %1 damage?").replace(/%1/, dmgType), {"0": "No", [dVal]: "Yes"}, "dmg_dice", ["0", dVal]);
+                            dmg = damages[(typeof dmgIndex === "number" && dmgIndex < 0) ? damages.length + dmgIndex : dmgIndex].toString();
+                            if (dmg) {
+                                dmg_dice = await self.queryGeneric(request.name, `Add ${dmgType} damage?`, {"0": "No", [dmg]: "Yes"}, "dmg_dice", ["0", dmg]);
                                 if ((dmg_dice === "0" || typeof dmg_dice === "object" && ρσ_equals(dmg_dice, "0"))) {
                                     damages.splice(dmgIndex, 1);
                                     damage_types.splice(dmgIndex, 1);

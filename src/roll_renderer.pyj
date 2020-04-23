@@ -425,7 +425,7 @@ class Beyond20RollRenderer:
                 is_critical = self.isCriticalHitD20(to_hit, critical_limit)
 
 
-            if request.damages?:                
+            if request.damages?:
                 damages = list(request.damages)
                 damage_types = list(request["damage-types"])
                 critical_damages = list(request["critical-damages"])
@@ -466,9 +466,9 @@ class Beyond20RollRenderer:
                 # Ranger Ability Support
                 for dmgIndex, dmgType in enumerate(damage_types):
                     if damage_types[dmgIndex]  == "Colossus Slayer":
-                        dVal = damages[dmgIndex].toString()
-                        if dVal:
-                            dmg_dice = v'await self.queryGeneric(request.name, ("Add %1 damage?").replace(/%1/, dmgType), {"0": "No", [dVal]: "Yes"}, "dmg_dice", ["0", dVal])'
+                        dmg = damages[dmgIndex].toString()
+                        if dmg:
+                            dmg_dice = v'await self.queryGeneric(request.name, `Add ${dmgType} damage?`, {"0": "No", [dmg]: "Yes"}, "dmg_dice", ["0", dmg])'
                             if dmg_dice == "0":
                                 damages.splice(dmgIndex, 1)
                                 damage_types.splice(dmgIndex, 1)
