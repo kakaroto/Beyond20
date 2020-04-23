@@ -728,7 +728,7 @@ def injectRollButton(paneClass):
             return
         addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Display in VTT", image=False)
         name = $(".ct-sidebar__heading").text()
-        checkAndInjectDiceToRolls(".ct-snippet__content,.ddbc-snippet__content", name)
+        checkAndInjectDiceToRolls("." + paneClass + " .ct-snippet__content,." + paneClass + " .ddbc-snippet__content", name)
     elif paneClass == "ct-trait-pane":
         if isRollButtonAdded():
             return

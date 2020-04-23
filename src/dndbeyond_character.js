@@ -13166,7 +13166,7 @@ return this.__repr__();
                 }
                 ρσ_interpolate_kwargs.call(this, addRollButtonEx, [paneClass, ".ct-sidebar__heading"].concat([ρσ_desugar_kwargs({text: "Display in VTT", image: false})]));
                 name = $(".ct-sidebar__heading").text();
-                checkAndInjectDiceToRolls(".ct-snippet__content,.ddbc-snippet__content", name);
+                checkAndInjectDiceToRolls("." + paneClass + " .ct-snippet__content,." + paneClass + " .ddbc-snippet__content", name);
             } else if ((paneClass === "ct-trait-pane" || typeof paneClass === "object" && ρσ_equals(paneClass, "ct-trait-pane"))) {
                 if (isRollButtonAdded()) {
                     return;
