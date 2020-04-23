@@ -10022,7 +10022,7 @@ return this.__repr__();
             self._name = null;
             self._type = _type;
             self._settings = null;
-            self._url = null;
+            self._url = window.location.href;
             self.setGlobalSettings(global_settings);
         };
         if (!CharacterBase.prototype.__init__.__argnames__) Object.defineProperties(CharacterBase.prototype.__init__, {
@@ -10091,6 +10091,7 @@ return this.__repr__();
                 var ρσ_d = {};
                 ρσ_d["name"] = self._name;
                 ρσ_d["type"] = self._type;
+                ρσ_d["url"] = self._url;
                 return ρσ_d;
             }).call(this);
         };

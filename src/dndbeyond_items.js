@@ -10022,7 +10022,7 @@ return this.__repr__();
             self._name = null;
             self._type = _type;
             self._settings = null;
-            self._url = null;
+            self._url = window.location.href;
             self.setGlobalSettings(global_settings);
         };
         if (!CharacterBase.prototype.__init__.__argnames__) Object.defineProperties(CharacterBase.prototype.__init__, {
@@ -10091,6 +10091,7 @@ return this.__repr__();
                 var ρσ_d = {};
                 ρσ_d["name"] = self._name;
                 ρσ_d["type"] = self._type;
+                ρσ_d["url"] = self._url;
                 return ρσ_d;
             }).call(this);
         };
@@ -12249,7 +12250,7 @@ return this.__repr__();
 
         function documentLoaded(settings) {
             var item_name;
-            character = ρσ_interpolate_kwargs_constructor.call(Object.create(FakeCharacter.prototype), false, FakeCharacter, ["spell"].concat([ρσ_desugar_kwargs({global_settings: settings})]));
+            character = ρσ_interpolate_kwargs_constructor.call(Object.create(FakeCharacter.prototype), false, FakeCharacter, ["item"].concat([ρσ_desugar_kwargs({global_settings: settings})]));
             if (isRollButtonAdded()) {
                 chrome.runtime.sendMessage((function(){
                     var ρσ_d = {};
@@ -12282,8 +12283,8 @@ return this.__repr__();
             } else {
                 getStoredSettings((function() {
                     var ρσ_anonfunc = function (saved_settings) {
-                        updateSettings(saved_settings);
                         documentLoaded(saved_settings);
+                        updateSettings(saved_settings);
                     };
                     if (!ρσ_anonfunc.__argnames__) Object.defineProperties(ρσ_anonfunc, {
                         __argnames__ : {value: ["saved_settings"]}

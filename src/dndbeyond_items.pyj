@@ -33,7 +33,7 @@ def addDisplayButton():
 def documentLoaded(settings):
     nonlocal character
 
-    character = FakeCharacter("spell", global_settings=settings)
+    character = FakeCharacter("item", global_settings=settings)
     if isRollButtonAdded():
         chrome.runtime.sendMessage({"action": "reload-me"})
     else:
@@ -50,8 +50,8 @@ def updateSettings(new_settings=None):
             character.setGlobalSettings(new_settings)
     else:
         getStoredSettings(def(saved_settings):
-            updateSettings(saved_settings)
             documentLoaded(saved_settings)
+            updateSettings(saved_settings)
         )
 
 def handleMessage (request, sender, sendResponse):
