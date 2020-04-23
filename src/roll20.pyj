@@ -216,6 +216,10 @@ def template(request, name, properties):
 
     return result
 
+def rollAvatarDisplay(request):
+    return "[x](" + request.character.avatar + "#.png)"
+    #postChatMessage("[x](" + request.character.avatar + "#.png)", request.character.name)
+
 def rollSkill(request, custom_roll_dice=""):
     modifier = request.modifier
     # Custom skill
@@ -607,6 +611,8 @@ def handleMessage (request, sender, sendResponse):
             roll = rollSpellCard(request)
         elif request.type == "spell-attack":
             roll = rollSpellAttack(request, custom_roll_dice)
+        elif request.type == "avatar":
+            roll = rollAvatarDisplay(request)
         else:
             # 'custom' or anything unexpected
             mod = request.modifier if request.modifier? else request.roll

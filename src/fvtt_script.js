@@ -9233,6 +9233,28 @@ return this.__repr__();
             __argnames__ : {value: ["request", "custom_roll_dice"]}
         });
 
+        function popAvatar(request) {
+            var module;
+            module = game.modules.get("beyond20");
+            if ((typeof module !== "undefined" && module !== null) && isNewerVersion(module.data.version, "0.6")) {
+                new ImagePopout(request.character.avatar, (function(){
+                    var ρσ_d = {};
+                    ρσ_d["shareable"] = false;
+                    ρσ_d["title"] = request.character.name;
+                    ρσ_d["entity"] = (function(){
+                        var ρσ_d = {};
+                        ρσ_d["type"] = "User";
+                        ρσ_d["id"] = game.user.id;
+                        return ρσ_d;
+                    }).call(this);
+                    return ρσ_d;
+                }).call(this)).render(true).shareImage(true);
+            }
+        };
+        if (!popAvatar.__argnames__) Object.defineProperties(popAvatar, {
+            __argnames__ : {value: ["request"]}
+        });
+
         async        function addInitiativeToCombat(roll) {
             var combatant, idField, promise, token;
             if (canvas.tokens.controlledTokens.length > 0) {
@@ -9280,6 +9302,9 @@ return this.__repr__();
             console.log("Received roll request ", request);
             if ((request.type === "initiative" || typeof request.type === "object" && ρσ_equals(request.type, "initiative"))) {
                 rollInitiative(request);
+            }
+            if ((request.type === "avatar" || typeof request.type === "object" && ρσ_equals(request.type, "avatar"))) {
+                popAvatar(request);
             } else {
                 roll_renderer.handleRollRequest(request);
             }

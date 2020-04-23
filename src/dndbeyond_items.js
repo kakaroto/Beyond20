@@ -2558,7 +2558,8 @@ function all(iterable) {
 if (!all.__argnames__) Object.defineProperties(all, {
     __argnames__ : {value: ["iterable"]}
 });
-var define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+var decimal_sep, define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+decimal_sep = 1.1.toLocaleString()[1];
 function ρσ_repr_js_builtin(x, as_array) {
     var ans, b, keys, key;
     ans = [];
@@ -2935,7 +2936,7 @@ define_str_func("format", function () {
                     value = value.toExponential(prec - 1);
                 }
                 value = value.replace(/0+$/g, "");
-                if (value[value.length-1] === ".") {
+                if (value[value.length-1] === decimal_sep) {
                     value = value.slice(0, -1);
                 }
                 if (ftype === "G") {
@@ -3751,7 +3752,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("aside");
             s.jsset.add("audio");
             s.jsset.add("b");
+            s.jsset.add("base");
             s.jsset.add("big");
+            s.jsset.add("body");
             s.jsset.add("blockquote");
             s.jsset.add("br");
             s.jsset.add("button");
@@ -3790,6 +3793,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("h5");
             s.jsset.add("h6");
             s.jsset.add("hr");
+            s.jsset.add("head");
             s.jsset.add("i");
             s.jsset.add("iframe");
             s.jsset.add("img");
@@ -4734,9 +4738,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                             }
                             pos = close + 1;
                             continue;
-                        }
-                        if (extension === "<") {
-                            throw new SyntaxError("Look behind assertions are not supported in JavaScript");
                         }
                         if (extension === "(") {
                             throw new SyntaxError("Group existence assertions are not supported in JavaScript");
@@ -10708,7 +10709,7 @@ return this.__repr__();
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "stat_block")){
                 stat_block = ρσ_kwargs_obj.stat_block;
             }
-            var add_dice, inject_descriptions, base, quick_settings, link, avatar, attributes, label, value, cb, attr, abilities, prefix, makeCB, abbr, score, modifier, roll_initiative, initiative, ability, tidbits, data, saves, parts, mod, save, skills, name, skill, mon_skill, text, last, a, first, tidbit;
+            var add_dice, inject_descriptions, base, quick_settings, link, avatar, avatarImg, cb, attributes, label, value, attr, abilities, prefix, makeCB, abbr, score, modifier, roll_initiative, initiative, ability, tidbits, data, saves, parts, mod, save, skills, name, skill, mon_skill, text, last, a, first, tidbit;
             add_dice = self.getGlobalSetting("handle-stat-blocks", true);
             inject_descriptions = self.getGlobalSetting("subst-dndbeyond-stat-blocks", true);
             base = self._base;
@@ -10741,6 +10742,13 @@ return this.__repr__();
             avatar = $(".details-aside .image a");
             if (avatar.length > 0) {
                 self._avatar = avatar[0].href;
+                avatarImg = $(".details-aside .image");
+                if (avatarImg) {
+                    cb = function () {
+                        self.displayAvatar();
+                    };
+                    ρσ_interpolate_kwargs.call(this, addRollButton, [self, cb, avatarImg].concat([ρσ_desugar_kwargs({small: true, image: true, text: "Display in VTT"})]));
+                }
             }
             attributes = stat_block.find(base + "__attributes " + base + "__attribute");
             var ρσ_Iter10 = ρσ_Iterable(attributes);
@@ -10924,6 +10932,14 @@ return this.__repr__();
             __handles_kwarg_interpolation__ : {value: true},
             __argnames__ : {value: ["stat_block"]}
         });
+        Monster.prototype.displayAvatar = function displayAvatar() {
+            var self = this;
+            sendRoll(self, "avatar", self.avatar, (function(){
+                var ρσ_d = {};
+                ρσ_d["name"] = "Avatar";
+                return ρσ_d;
+            }).call(this));
+        };
         Monster.prototype.rollHitPoints = function rollHitPoints() {
             var self = this;
             sendRoll(self, "custom", self._hp_formula, (function(){

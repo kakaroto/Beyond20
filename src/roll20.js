@@ -2558,7 +2558,8 @@ function all(iterable) {
 if (!all.__argnames__) Object.defineProperties(all, {
     __argnames__ : {value: ["iterable"]}
 });
-var define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+var decimal_sep, define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+decimal_sep = 1.1.toLocaleString()[1];
 function ρσ_repr_js_builtin(x, as_array) {
     var ans, b, keys, key;
     ans = [];
@@ -2935,7 +2936,7 @@ define_str_func("format", function () {
                     value = value.toExponential(prec - 1);
                 }
                 value = value.replace(/0+$/g, "");
-                if (value[value.length-1] === ".") {
+                if (value[value.length-1] === decimal_sep) {
                     value = value.slice(0, -1);
                 }
                 if (ftype === "G") {
@@ -4428,9 +4429,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                             pos = close + 1;
                             continue;
                         }
-                        if (extension === "<") {
-                            throw new SyntaxError("Look behind assertions are not supported in JavaScript");
-                        }
                         if (extension === "(") {
                             throw new SyntaxError("Group existence assertions are not supported in JavaScript");
                         }
@@ -5183,7 +5181,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("aside");
             s.jsset.add("audio");
             s.jsset.add("b");
+            s.jsset.add("base");
             s.jsset.add("big");
+            s.jsset.add("body");
             s.jsset.add("blockquote");
             s.jsset.add("br");
             s.jsset.add("button");
@@ -5222,6 +5222,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("h5");
             s.jsset.add("h6");
             s.jsset.add("hr");
+            s.jsset.add("head");
             s.jsset.add("i");
             s.jsset.add("iframe");
             s.jsset.add("img");
@@ -7343,6 +7344,13 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["request", "name", "properties"]}
         });
 
+        function rollAvatarDisplay(request) {
+            return "[x](" + request.character.avatar + "#.png)";
+        };
+        if (!rollAvatarDisplay.__argnames__) Object.defineProperties(rollAvatarDisplay, {
+            __argnames__ : {value: ["request"]}
+        });
+
         function rollSkill() {
             var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
             var custom_roll_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollSkill.__defaults__.custom_roll_dice : arguments[1];
@@ -8004,6 +8012,8 @@ var str = ρσ_str, repr = ρσ_repr;;
                     roll = rollSpellCard(request);
                 } else if ((request.type === "spell-attack" || typeof request.type === "object" && ρσ_equals(request.type, "spell-attack"))) {
                     roll = rollSpellAttack(request, custom_roll_dice);
+                } else if ((request.type === "avatar" || typeof request.type === "object" && ρσ_equals(request.type, "avatar"))) {
+                    roll = rollAvatarDisplay(request);
                 } else {
                     mod = (ρσ_exists.n(request.modifier)) ? request.modifier : request.roll;
                     rname = (ρσ_exists.n(request.name)) ? request.name : request.type;
