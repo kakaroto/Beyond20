@@ -7015,11 +7015,20 @@ var str = ρσ_str, repr = ρσ_repr;;
         var __name__ = "dndbeyond_discord";
         var DISCORD_BOT_API_URL = ρσ_modules.constants.DISCORD_BOT_API_URL;
 
+        var WhisperType = ρσ_modules.settings.WhisperType;
+
         async        function postToDiscord(secret, request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
             var body, json;
             secret = (secret || "").trim();
             if (!secret) {
                 return;
+            }
+            if ((request.character.type === "Monster" || typeof request.character.type === "object" && ρσ_equals(request.character.type, "Monster"))) {
+                if (ρσ_in(request.whisper_monster, ρσ_list_decorate([ WhisperType.prototype.YES, WhisperType.prototype.HIDE_NAMES ]))) {
+                    request.character.url = null;
+                    request.character.name = "???";
+                    title = "???";
+                }
             }
             body = (function(){
                 var ρσ_d = {};
