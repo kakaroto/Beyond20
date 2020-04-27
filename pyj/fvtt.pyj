@@ -56,4 +56,4 @@ def injectSettingsButton():
 observer = new window.MutationObserver(titleSet)
 observer.observe(document.getElementsByTagName("title")[0], {"childList": True})
 sendCustomEvent("disconnect")
-injectPageScript(chrome.runtime.getURL('src/fvtt_script.js'))
+injectPageScript(chrome.runtime.getURL('dist/fvtt_script.js'))

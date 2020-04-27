@@ -7094,6 +7094,6 @@ var str = ρσ_str, repr = ρσ_repr;;
             return ρσ_d;
         }).call(this));
         sendCustomEvent("disconnect");
-        injectPageScript(chrome.runtime.getURL("src/fvtt_script.js"));
+        injectPageScript(chrome.runtime.getURL("dist/fvtt_script.js"));
     })();
 })();
