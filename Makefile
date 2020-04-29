@@ -9,7 +9,7 @@ VPATH = $(SOURCE_DIR)
 	sed -e ':a;N;$$!ba;s/async;\n/async/g' -i $(OUTPUT_DIR)/$@
 
 
-JS_FILES=roll20.js roll20_script.js \
+JS_FILES=roll20.js \
 	fvtt.js fvtt_script.js \
 	dndbeyond_character.js dndbeyond_monster.js \
 	dndbeyond_spell.js dndbeyond_encounter.js dndbeyond_items.js  \
