@@ -17,7 +17,13 @@ const SRC_FILES = {
         "src/utils.js",
         "src/settings.js",
         "src/default_popup.js"
-    ]
+    ],
+    popup: [
+        "src/constants.js",
+        "src/utils.js",
+        "src/settings.js",
+        "src/popup.js"
+    ],
 }
 
 const targets = {};

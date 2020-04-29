@@ -999,8 +999,6 @@ options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting;
 options_list["vtt-tab"]["set"] = setVTTTabSetting;
 options_list["vtt-tab"]["get"] = getVTTTabSetting;
 
-//from elementmaker import E;
-//from settings import options_list, createHTMLOption, initializeSettings, saveSettings;
 
 function createOptionList() {
     const options = [];

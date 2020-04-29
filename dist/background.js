@@ -98,14 +98,14 @@ ROLLTYPE_STYLE_CSS = `
 `;
 
 function replaceRollsCallback(match, replaceCB) {
-    dice = match[2];
-    modifiers = match[3];
+    let dice = match[2];
+    let modifiers = match[3];
     if (dice === undefined) {
         dice = "";
         modifiers = match[4];
     }
 
-    result = match[1];
+    let result = match[1];
     result += replaceCB(dice, modifiers);
     result += match[5];
     return result;
@@ -113,7 +113,7 @@ function replaceRollsCallback(match, replaceCB) {
 
 function replaceRolls(text, replaceCB) {
     // TODO: Cache the value so we don't recompile the regexp every time
-    dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro<2)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/);
+    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro<2)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/);
     return text.replace(dice_regexp, (...match) => replaceRollsCallback(match, replaceCB));
 }
 
@@ -150,7 +150,7 @@ function isExtensionDisconnected() {
 
 // Taken from https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script;
 function injectPageScript(url) {
-    s = document.createElement('script');
+    const s = document.createElement('script');
     s.src = url;
     s.charset = "UTF-8";
     s.onload = () => s.remove();
@@ -158,21 +158,20 @@ function injectPageScript(url) {
 }
 
 function injectCSS(css) {
-    s = document.createElement('style');
+    const s = document.createElement('style');
     s.textContent = css;
     (document.head || document.documentElement).appendChild(s);
 }
 
 function sendCustomEvent(name, data) {
-    if (getBrowser() === "Firefox") {
+    if (getBrowser() === "Firefox")
         data = cloneInto(data, window);
-    }
-    event = new CustomEvent("Beyond20_" + name, { "detail": data });
+    const event = new CustomEvent("Beyond20_" + name, { "detail": data });
     document.dispatchEvent(event);
 }
 
 function addCustomEventListener(name, callback) {
-    event = ["Beyond20_" + name, (evt) => callback(...evt.detail), false];
+    const event = ["Beyond20_" + name, (evt) => callback(...evt.detail), false];
     document.addEventListener(...event);
     return event;
 }
@@ -194,13 +193,13 @@ function urlMatches(url, matching) {
 }
 
 function alertSettings(url, title) {
-    popup = chrome.extension.getURL(url);
-    img = E.img({src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})
     if (alertify.Beyond20Settings === undefined)
         alertify.dialog('Beyond20Settings', () => { }, false, "alert");
-    iframe = E.iframe({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "yes"});
-    dialog = alertify.Beyond20Settings(img.outerHTML + title, iframe);
 
+    const popup = chrome.extension.getURL(url);
+    const img = E.img({src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})
+    const iframe = E.iframe({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "yes"});
+    const dialog = alertify.Beyond20Settings(img.outerHTML + title, iframe);
     dialog.set('padding', false).set('resizable', true).set('overflow', false).resizeTo("80%", "80%");
 
 }
@@ -212,14 +211,14 @@ function alertFullSettings() {
 
 }
 function isListEqual(list1, list2) {
-    list1_str = list1.join(",");
-    list2_str = list2.join(",");
+    const list1_str = list1.join(",");
+    const list2_str = list2.join(",");
     return list1_str == list2_str;
 
 }
 function isObjectEqual(obj1, obj2) {
-    obj1_str = Object.entries(obj1).join(",");
-    obj2_str = Object.entries(obj2).join(",");
+    const obj1_str = Object.entries(obj1).join(",");
+    const obj2_str = Object.entries(obj2).join(",");
     return obj1_str == obj2_str;
 }
 
@@ -227,12 +226,12 @@ E = new Proxy({}, {
     get: function (obj, name) {
         return new Proxy(function () {}, {
             apply: (target, thisArg, argumentsList) => {
-                attributes = argumentsList[0] || {};
-                children = argumentsList.slice(1);
-                e = document.createElement(name);
-                for (let [name, value] of Object.entries(attributes))
+                const attributes = argumentsList[0] || {};
+                const children = argumentsList.slice(1);
+                const e = document.createElement(name);
+                for (const [name, value] of Object.entries(attributes))
                     e.setAttribute(name, value);
-                for (let child of children)
+                for (const child of children)
                     e.append(child);
                 return e;
             }
@@ -280,7 +279,7 @@ class CriticalRules {
 //                        set: function;
 //                        get: function;
 
-options_list = {
+const options_list = {
     "whisper-type": {
         "short": "Whisper rolls",
         "title": "Whisper rolls to the DM",
@@ -523,9 +522,9 @@ options_list = {
         "icon-width": "64",
         "icon-height": "64"
     }
-
 }
-character_settings = {
+
+const character_settings = {
     "versatile-choice": {
         "title": "Versatile weapon choice",
         "description": "How to roll damage for Versatile weapons",
@@ -698,19 +697,18 @@ function storageRemove(names, cb = null) {
 }
 
 function getDefaultSettings(_list = options_list) {
-    settings = {}
-    for (let option in _list) {
+    const settings = {}
+    for (let option in _list)
         settings[option] = _list[option].default;
-    }
     //console.log("Default settings :", settings);
     return settings;
 }
 
 function getStoredSettings(cb, key = "settings", _list = options_list) {
-    settings = getDefaultSettings(_list);
+    const settings = getDefaultSettings(_list);
     storageGet(key, settings, (stored_settings) => {
         //print("Beyond20: Stored settings (" + key + "):", stored_settings);
-        migrated_keys = [];
+        const migrated_keys = [];
         for (let opt in settings) {
             if (_list[opt].type == "migrate") {
                 if (Object.keys(stored_settings).includes(opt)) {
@@ -758,12 +756,13 @@ function resetSettings(cb = null, _list = options_list) {
 function createHTMLOptionEx(name, option, short = false) {
     if (option.hidden || (short && !option.short) || !option.title)
         return null;
-    description = short ? option.short_description : option.description;
-    description_p = description ? description.split("\n").map(desc => E.p({}, desc)) : [];
-    title = short ? option.short : option.title;
+    const description = short ? option.short_description : option.description;
+    const description_p = description ? description.split("\n").map(desc => E.p({}, desc)) : [];
+    const title = short ? option.short : option.title;
+    let e = null;
     if (option.type == "bool") {
         e = E.li({class: "list-group-item beyond20-option beyond20-option-bool"},
-            E.label({class:"list-content", for:name},
+            E.label({class: "list-content", for: name},
                 E.h4({}, title),
                 ...description_p,
                 E.div({class:'material-switch pull-right'},
@@ -783,7 +782,7 @@ function createHTMLOptionEx(name, option, short = false) {
             )
         );
     } else if (option.type == "combobox") {
-        dropdown_options = Object.values(option.choices).map(o => E.li(E.a(href = "#", o)));
+        const dropdown_options = Object.values(option.choices).map(o => E.li({}, E.a({href: "#"}, o)));
         for (let p of description_p) {
             p.classList.add("select");
         }
@@ -807,10 +806,10 @@ function createHTMLOptionEx(name, option, short = false) {
                 ...description_p,
                 E.a({href: option.default},
                     E.div({class: "image-link"},
-                        E.img({class: option.icon.startsWith("/") ? "link-image" : option.icon,
+                        E.img({class: "link-image",
                             width: option['icon-width'],
                             height: option['icon-height'],
-                            src: chrome.extension.getURL(option.icon)})
+                            src: option.icon.startsWith("/") ? chrome.extension.getURL(option.icon) : option.icon})
                     )
                 )
             )
@@ -826,15 +825,15 @@ function createHTMLOption(name, short = false, _list = options_list) {
 }
 
 function initializeMarkaGroup(group) {
-    triggerOpen = $(group).find('.select');
-    triggerClose = $(group).find('.dropdown-menu li');
-    dropdown_menu = $(group).find(".dropdown-menu");
-    button_group = $(group).find(".button-group");
-    marka = $(group).find('.icon');
-    input = $(group).find('.input');
+    const triggerOpen = $(group).find('.select');
+    const triggerClose = $(group).find('.dropdown-menu li');
+    const dropdown_menu = $(group).find(".dropdown-menu");
+    const button_group = $(group).find(".button-group");
+    const marka = $(group).find('.icon');
+    const input = $(group).find('.input');
 
     // set initial Marka icon;
-    m = new Marka('#' + marka.attr("id"));
+    const m = new Marka('#' + marka.attr("id"));
     m.set('triangle').size(10);
     m.rotate('down');
 
@@ -854,7 +853,7 @@ function initializeMarkaGroup(group) {
         }
     }
     makeCloseCB = (dropdown_menu, input, m) => {
-        return (event) => {
+        return function (event) {
             event.preventDefault();
             input.text(this.innerText);
             input.trigger("markaChanged");
@@ -869,23 +868,23 @@ function initializeMarkaGroup(group) {
 }
 
 function initializeMarka() {
-    groups = $('.beyond20-option-combobox');
+    const groups = $('.beyond20-option-combobox');
 
     for (let group of groups.toArray())
         initializeMarkaGroup(group);
 }
 
 function extractSettingsData(_list = options_list) {
-    settings = {}
+    const settings = {}
     for (let option in _list) {
-        e = $("#" + option);
+        const e = $("#" + option);
         if (e.length > 0) {
-            o_type = _list[option].type;
+            const o_type = _list[option].type;
             if (o_type == "bool") {
                 settings[option] = e.prop('checked');
             } else if (o_type == "combobox") {
-                val = e.text();
-                choices = _list[option].choices;
+                const val = e.text();
+                const choices = _list[option].choices;
                 for (let key in choices) {
                     if (choices[key] == val) {
                         settings[option] = key;
@@ -907,12 +906,12 @@ function loadSettings(settings, _list = options_list) {
         if (!_list[option]) {
             continue;
         }
-        o_type = _list[option].type;
+        const o_type = _list[option].type;
         if (o_type == "bool") {
             $("#" + option).prop('checked', settings[option]);
         } else if (o_type == "combobox") {
-            val = settings[option];
-            choices = _list[option].choices;
+            const val = settings[option];
+            const choices = _list[option].choices;
             $("#" + option).text(choices[val]);
         } else if (o_type == "string") {
             $("#" + option).val(settings[option]);
@@ -941,12 +940,12 @@ function initializeSettings(cb = null) {
 }
 
 function createRoll20TabCombobox(name, short, dropdown_options) {
-    opt = options_list[name];
-    description = short ? "Restrict where rolls are sent.\nUseful if (you have multiple VTT windows open" : opt.description;
-    title = short ? "Send Beyond 20 rolls to" : opt.title;
-    description_p = description.split("\n").map(desc => E.p({}, desc));
-    options = [];
-    for (let option in dropdown_options)
+    const opt = options_list[name];
+    const description = short ? "Restrict where rolls are sent.\nUseful if (you have multiple VTT windows open" : opt.description;
+    const title = short ? "Send Beyond 20 rolls to" : opt.title;
+    const description_p = description.split("\n").map(desc => E.p({}, desc));
+    let options = [];
+    for (let option of dropdown_options)
         options.push(E.li({}, E.a({href: "#"}, option)));
     for (let p of description_p)
         p.classList.add("select");
@@ -967,14 +966,14 @@ function createRoll20TabCombobox(name, short, dropdown_options) {
 }
 
 function createVTTTabSetting(name, short) {
-    dropdown_options = ["All VTT Tabs",
+    const dropdown_options = ["All VTT Tabs",
         "Only Roll20 Tabs",
         "Only Foundry VTT Tabs",
         "D&D Beyond Dice Roller & Discord"];
 
     if (short) {
-        vtt = isFVTT(current_tab.title) ? "Foundry VTT" : "Roll20";
-        campaign = vtt == "Foundry VTT" ? "World" : "Campaign";
+        const vtt = isFVTT(current_tab.title) ? "Foundry VTT" : "Roll20";
+        const campaign = vtt == "Foundry VTT" ? "World" : "Campaign";
         dropdown_options.push("This " + campaign);
         dropdown_options.push("This Specific Tab");
 
@@ -983,31 +982,33 @@ function createVTTTabSetting(name, short) {
 
 }
 function setVTTTabSetting(name, settings) {
-    val = settings[name];
-    combobox = $("#beyond20-option-vtt-tab");
+    const val = settings[name];
+    const combobox = $("#beyond20-option-vtt-tab");
     if (combobox.length == 0) return;
     if (val === null) {
         $("#" + name).text("All VTT Tabs");
     } else if (val.title === null) {
-        vtt = val.vtt || "roll20";
+        const vtt = val.vtt || "roll20";
+        let choice = "";
         if (vtt == "dndbeyond") {
             choice = "D&D Beyond Dice Roller & Discord";
         } else {
-            vtt_name = vtt == "roll20" ? "Roll20" : "Foundry VTT";
+            const vtt_name = vtt == "roll20" ? "Roll20" : "Foundry VTT";
             choice = "Only " + vtt_name + " Tabs";
         }
         $("#" + name).text(choice);
     } else {
-        [id, title, vtt] = [val.id, val.title, val.vtt || "roll20"];
-        vtt_name = vtt == "roll20" ? "Roll20" : "Foundry VTT";
-        campaign = vtt == "roll20" ? "Campaign" : "World";
-        short = combobox.hasClass("vtt-tab-short");
+        const [id, title, vtt] = [val.id, val.title, val.vtt || "roll20"];
+        const vtt_name = vtt == "roll20" ? "Roll20" : "Foundry VTT";
+        const campaign = vtt == "roll20" ? "Campaign" : "World";
+        const short = combobox.hasClass("vtt-tab-short");
+        let new_options = null;
         if (short) {
             console.log("Set roll20 tab, is SHORT ", val);
-            current_vtt = isFVTT(current_tab.title) ? "fvtt" : "roll20";
-            current_campaign = current_vtt == "roll20" ? "Campaign" : "World";
-            current_title = current_vtt == "roll20" ? roll20Title(current_tab.title) : fvttTitle(current_tab.title);
-            current_id = current_tab.id;
+            const current_vtt = isFVTT(current_tab.title) ? "fvtt" : "roll20";
+            const current_campaign = current_vtt == "roll20" ? "Campaign" : "World";
+            const current_title = current_vtt == "roll20" ? roll20Title(current_tab.title) : fvttTitle(current_tab.title);
+            const current_id = current_tab.id;
             console.log("vtt-tab settings are : ", id, title, vtt, current_id, current_title, current_vtt);
             if (id == 0 && title == current_title && current_vtt == vtt) {
                 $("#" + name).text("This " + campaign);
@@ -1039,11 +1040,10 @@ function setVTTTabSetting(name, settings) {
 
             }
         }
-        if (new_options != undefined) {
-            dropdown_options = [];
-            for (let option of new_options) {
+        if (new_options !== null) {
+            const dropdown_options = [];
+            for (let option of new_options)
                 dropdown_options.push(E.li({}, E.a({href: "#"}, option)));
-            }
             combobox.replaceWith(createRoll20TabCombobox("vtt-tab", short, dropdown_options));
             initializeMarkaGroup($("#beyond20-option-vtt-tab"));
             console.log("Added new options", dropdown_options);
@@ -1057,16 +1057,17 @@ function setVTTTabSetting(name, settings) {
 }
 
 function getVTTTabSetting(name) {
-    opt = $("#" + name);
-    value = opt.text();
-    saved_id = opt.attr("x-beyond20-id");
-    saved_title = opt.attr("x-beyond20-title");
-    saved_vtt = opt.attr("x-beyond20-vtt");
+    const opt = $("#" + name);
+    const value = opt.text();
+    const saved_id = opt.attr("x-beyond20-id");
+    const saved_title = opt.attr("x-beyond20-title");
+    const saved_vtt = opt.attr("x-beyond20-vtt");
+    let ret = null;
     if (value == "All VTT Tabs") {
         ret = null;
     } else if (["This Campaign", "This World", "This Specific Tab"].includes(value)) {
-        vtt = isFVTT(current_tab.title) ? "fvtt" : "roll20";
-        title = vtt == "fvtt" ? fvttTitle(current_tab.title) : roll20Title(current_tab.title);
+        const vtt = isFVTT(current_tab.title) ? "fvtt" : "roll20";
+        const title = vtt == "fvtt" ? fvttTitle(current_tab.title) : roll20Title(current_tab.title);
         ret = {
             "id": (["This Campaign", "This World"].includes(value) ? 0 : current_tab.id),
             "title": title,
@@ -1084,7 +1085,7 @@ function getVTTTabSetting(name) {
         // "Another tab || campaign (No change)", "A Roll20 game", "A FVTT game", "Tab #";
         ret = { "id": saved_id, "title": saved_title, "vtt": saved_vtt }
     }
-    console.log("Get " + vtt + " tab: ", ret);
+    console.log("Get tab: ", ret);
     return ret;
 }
 
@@ -1110,7 +1111,7 @@ function updateSettings(new_settings = null) {
     } else {
         getStoredSettings((saved_settings) => {
             settings = saved_settings
-            version = chrome.runtime.getManifest().version
+            const version = chrome.runtime.getManifest().version
             if (settings["show-changelog"] && settings["last-version"] != version) {
                 mergeSettings({ "last-version": version })
                 chrome.tabs.create({ "url": CHANGELOG_URL })
@@ -1154,7 +1155,7 @@ function filterVTTTab(request, limit, tabs, titleCB) {
 
 function sendMessageToRoll20(request, limit = null, failure = null) {
     if (limit) {
-        vtt = limit.vtt || "roll20"
+        const vtt = limit.vtt || "roll20"
         if (vtt == "roll20") {
             chrome.tabs.query({ "url": ROLL20_URL }, (tabs) => {
                 found = filterVTTTab(request, limit, tabs, roll20Title)
@@ -1172,7 +1173,7 @@ function sendMessageToRoll20(request, limit = null, failure = null) {
 function sendMessageToFVTT(request, limit, failure = null) {
     console.log("Sending msg to FVTT ", fvtt_tabs)
     if (limit) {
-        vtt = limit.vtt || "roll20"
+        const vtt = limit.vtt || "roll20"
         if (vtt == "fvtt") {
             found = filterVTTTab(request, limit, fvtt_tabs, fvttTitle)
             if (failure)
@@ -1221,7 +1222,7 @@ function removeFVTTTab(id) {
 function onRollFailure(request, sendResponse) {
     console.log("Failure to find a VTT")
     chrome.tabs.query({ "url": FVTT_URL }, (tabs) => {
-        found = false
+        let found = false
         for (let tab of tabs) {
             if (isFVTT(tab.title)) {
                 found = true;
@@ -1258,7 +1259,7 @@ function onMessage(request, sender, sendResponse) {
                     if (trackFailure["roll20"] == true && trackFailure["fvtt"] == true) {
                         onRollFailure(request, sendResponse)
                     } else {
-                        vtts = []
+                        const vtts = []
                         for (let key in trackFailure) {
                             if (!trackFailure[key]) {
                                 vtts.push(key)
@@ -1269,7 +1270,7 @@ function onMessage(request, sender, sendResponse) {
                 }
             }
         }
-        trackFailure = { "roll20": null, "fvtt": null }
+        const trackFailure = { "roll20": null, "fvtt": null }
         if (settings["vtt-tab"] && settings["vtt-tab"].vtt === "dndbeyond") {
             sendResponse({ "success": false, "vtt": "dndbeyond", "error": null, "request": request })
         } else {
@@ -1285,7 +1286,7 @@ function onMessage(request, sender, sendResponse) {
         sendMessageToFVTT(request)
     } else if (request.action == "activate-icon") {
         // popup doesn't have sender.tab so we grab it from the request.
-        tab = request.tab || sender.tab;
+        const tab = request.tab || sender.tab;
         // Using browserAction on Chrome but pageAction on Firefox
         if (getBrowser() == "Chrome") {
             chrome.browserAction.setPopup({ "tabId": tab.id, "popup": "popup.html" });
@@ -1351,7 +1352,7 @@ chrome.tabs.onRemoved.addListener(onTabRemoved)
 
 if (getBrowser() == "Chrome") {
     chrome.browserAction.onClicked.addListener(browserActionClicked)
-    manifest = chrome.runtime.getManifest()
+    const manifest = chrome.runtime.getManifest()
     for (let script of manifest.content_scripts) {
         cb = (js_files, css_files) => {
             return (tabs) => {

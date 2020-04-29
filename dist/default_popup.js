@@ -1006,14 +1006,14 @@ from utils import isFVTT, injectPageScript;
 
 function createOptionList() {
     $("main").prepend(E.ul({ class: "list-group beyond20-options" }, createHTMLOptionEx("donate", options_list["donate"], true)));
-    $(".beyond20-options").push(
+    $(".beyond20-options").append(
         E.li({ class: "list-group-item beyond20-option" },
             E.a({ id: "openOptions", class: "list-content", href: '#' },
                 E.h4({}, "Beyond20 Options")
             )
         )
     );
-    img = $("#donate").find("img");
+    const img = $("#donate").find("img");
     img.attr({
         "src": img.attr("src").replace("donate.png", "donate32.png"),
         "width": 32,
@@ -1027,7 +1027,7 @@ function createOptionList() {
 function setupHTML() {
     createOptionList();
     $(document).on('click', 'a', function (ev) {
-        href = this.getAttribute('href');
+        const href = this.getAttribute('href');
         if (href.length > 0 && href != "#")
             window.open(this.href);
         return false;

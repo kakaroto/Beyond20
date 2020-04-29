@@ -1,5 +1,3 @@
-//from elementmaker import E;
-//from settings import options_list, createHTMLOption, initializeSettings, saveSettings;
 
 function createOptionList() {
     const options = [];
