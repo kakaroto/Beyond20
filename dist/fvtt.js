@@ -5564,7 +5564,14 @@ var str = ρσ_str, repr = ρσ_repr;;
             __argnames__ : {value: ["css"]}
         });
 
-        function sendCustomEvent(name, data) {
+        function sendCustomEvent() {
+            var name = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
+            var data = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? sendCustomEvent.__defaults__.data : arguments[1];
+            var ρσ_kwargs_obj = arguments[arguments.length-1];
+            if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
+            if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "data")){
+                data = ρσ_kwargs_obj.data;
+            }
             var event;
             if (ρσ_equals(getBrowser(), "Firefox")) {
                 data = cloneInto(data, window);
@@ -5576,7 +5583,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             }).call(this));
             document.dispatchEvent(event);
         };
-        if (!sendCustomEvent.__argnames__) Object.defineProperties(sendCustomEvent, {
+        if (!sendCustomEvent.__defaults__) Object.defineProperties(sendCustomEvent, {
+            __defaults__ : {value: {data:ρσ_list_decorate([])}},
+            __handles_kwarg_interpolation__ : {value: true},
             __argnames__ : {value: ["name", "data"]}
         });
 

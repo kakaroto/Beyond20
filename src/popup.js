@@ -215,7 +215,7 @@ function actOnCurrentTab(tab) {
         const options = $(".beyond20-options");
         options.push(
             E.li({ class: "list-group-item beyond20-option", style: "text-align: center; margin: 10px;" },
-                E.h4(` == ${vtt} Tab Specific Options ==`)
+                E.h4({}, ` == ${vtt} Tab Specific Options ==`)
             )
         );
         let e = null;
