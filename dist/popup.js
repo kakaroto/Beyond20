@@ -163,7 +163,7 @@ function injectCSS(css) {
     (document.head || document.documentElement).appendChild(s);
 }
 
-function sendCustomEvent(name, data) {
+function sendCustomEvent(name, data=[]) {
     if (getBrowser() === "Firefox")
         data = cloneInto(data, window);
     const event = new CustomEvent("Beyond20_" + name, { "detail": data });
@@ -171,7 +171,10 @@ function sendCustomEvent(name, data) {
 }
 
 function addCustomEventListener(name, callback) {
-    const event = ["Beyond20_" + name, (evt) => callback(...evt.detail), false];
+    const event = ["Beyond20_" + name, (evt) => {
+        const detail = evt.detail || [];
+        callback(...detail)
+    }, false];
     document.addEventListener(...event);
     return event;
 }
