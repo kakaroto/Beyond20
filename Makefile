@@ -13,7 +13,7 @@ JS_FILES=roll20.js roll20_script.js \
 	fvtt.js fvtt_script.js \
 	dndbeyond_character.js dndbeyond_monster.js \
 	dndbeyond_spell.js dndbeyond_encounter.js dndbeyond_items.js  \
-	dndbeyond_vehicle.js options.js default_popup.js
+	dndbeyond_vehicle.js options.js
 PYJ_DEPS=utils.pyj settings.pyj dndbeyond.pyj dndbeyond_dice.pyj constants.pyj roll_renderer.pyj dndbeyond_discord.pyj
 
 fvtt_script.js: PYJ_GLOBALS='$$,chrome,game,canvas,Roll,ChatMessage,ui,Hooks,Dialog,ImagePopout,ENTITY_PERMISSIONS,CONFIG,CHAT_MESSAGE_TYPES,CONST,CONFIG,isNewerVersion'
@@ -34,7 +34,8 @@ build: all
 	web-ext build
 
 clean:
-	rm -f $(JS_FILES) *~ */*~ *.pyj-cached
+	rm -f *~ */*~ *.pyj-cached
+	(cd ${OUTPUT_DIR} && rm -f ${JS_FILES})
 
 %.pyj-cached: %.pyj
 	rapydscript lint --globals $(PYJ_GLOBALS) $(PYJ_FLAGS) $<
