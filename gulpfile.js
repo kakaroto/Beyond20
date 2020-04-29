@@ -24,6 +24,11 @@ const SRC_FILES = {
         "src/settings.js",
         "src/popup.js"
     ],
+    roll20: [
+        "src/utils.js",
+        "src/settings.js",
+        "src/roll20.js"
+    ],
     roll20_script: [
         "src/utils.js",
         "src/roll20_script.js"
