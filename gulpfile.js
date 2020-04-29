@@ -20,8 +20,8 @@ const SRC_FILES = {
     ]
 }
 
-targets = {};
-for (target in SRC_FILES) {
+const targets = {};
+for (const target in SRC_FILES) {
     const task = {
         [target]: () => {
             return gulp.src(SRC_FILES[target])
@@ -37,7 +37,6 @@ watch = () => {
     for (target in SRC_FILES)
         gulp.watch(SRC_FILES[target], targets[target]);
 }
-console.log(targets)
 
 build = gulp.series(...Object.values(targets));
 
