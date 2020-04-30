@@ -640,7 +640,7 @@ function handleMessage(request, sender, sendResponse) {
         alertFullSettings();
     } else if (request.action == "hp-update") {
         if (settings["update-hp"])
-            sendCustomEvent("UpdateHP", (request.character.name, request.character.hp, request.character["max-hp"], request.character["temp-hp"]));
+            sendCustomEvent("UpdateHP", [request.character.name, request.character.hp, request.character["max-hp"], request.character["temp-hp"]]);
     } else if (request.action == "conditions-update") {
         if (settings["display-conditions"]) {
             const character_name = request.character.name;

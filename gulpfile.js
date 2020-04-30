@@ -36,6 +36,11 @@ const SRC_FILES = {
     fvtt_test: [
         "src/fvtt/check-tab.js"
     ],
+    fvtt: [
+        "src/common/utils.js",
+        "src/common/settings.js",
+        "src/fvtt/content-script.js"
+    ]
 }
 const CSS_FILES = ['src/extension/beyond20.css']
 
