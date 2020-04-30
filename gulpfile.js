@@ -3,58 +3,67 @@ const concat = require('gulp-concat');
 
 const SRC_FILES = {
     background: [
-        "src/constants.js",
-        "src/utils.js",
-        "src/settings.js",
-        "src/background.js"
+        "src/common/constants.js",
+        "src/common/utils.js",
+        "src/common/settings.js",
+        "src/extension/background.js"
     ],
     options: [
-        "src/utils.js",
-        "src/settings.js",
-        "src/options.js"
+        "src/common/utils.js",
+        "src/common/settings.js",
+        "src/extension/options.js"
     ],
     default_popup: [
-        "src/utils.js",
-        "src/settings.js",
-        "src/default_popup.js"
+        "src/common/utils.js",
+        "src/common/settings.js",
+        "src/extension/default_popup.js"
     ],
     popup: [
-        "src/constants.js",
-        "src/utils.js",
-        "src/settings.js",
-        "src/popup.js"
+        "src/common/constants.js",
+        "src/common/utils.js",
+        "src/common/settings.js",
+        "src/extension/popup.js"
     ],
     roll20: [
-        "src/utils.js",
-        "src/settings.js",
-        "src/roll20.js"
+        "src/common/utils.js",
+        "src/common/settings.js",
+        "src/roll20/content-script.js"
     ],
     roll20_script: [
-        "src/utils.js",
-        "src/roll20_script.js"
+        "src/common/utils.js",
+        "src/roll20/page-script.js"
+    ],
+    fvtt_test: [
+        "src/fvtt/fvtt_test.js"
     ],
 }
+const CSS_FILES = ['src/extension/beyond20.css']
 
 const targets = {};
 for (const target in SRC_FILES) {
+    // Use an object with a named key so each task function gets
+    // named instead of being anonymous functions
     const task = {
-        [target]: () => {
-            return gulp.src(SRC_FILES[target])
+        [target]: () => gulp.src(SRC_FILES[target])
                 .pipe(concat(`${target}.js`))
                 .pipe(gulp.dest("dist"))
-        }
     };
     targets[target] = task[target];
     gulp.task(target, targets[target]);
 }
+css = () => gulp.src(CSS_FILES)
+        .pipe(concat(`beyond20.css`))
+        .pipe(gulp.dest("dist"))
 
 watch = () => {  
     for (target in SRC_FILES)
         gulp.watch(SRC_FILES[target], targets[target]);
+    gulp.watch(CSS_FILES, css);
 }
 
-build = gulp.series(...Object.values(targets));
+build = gulp.series(css, ...Object.values(targets));
 
+gulp.task('css', css);
 gulp.task('watch', watch);
 gulp.task('build', build);
 gulp.task('default', gulp.series(build, watch));

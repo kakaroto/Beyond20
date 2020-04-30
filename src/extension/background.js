@@ -210,7 +210,7 @@ function onMessage(request, sender, sendResponse) {
 }
 
 function injectFVTTScripts(tab) {
-    insertCSSs([tab], ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css", "src/beyond20.css"])
+    insertCSSs([tab], ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css", "dist/beyond20.css"])
     executeScripts([tab], ["libs/alertify.min.js", "libs/jquery-3.4.1.min.js", "dist/fvtt.js"])
 }
 
@@ -242,7 +242,7 @@ function onTabRemoved(id, info) {
 }
 
 function browserActionClicked(tab) {
-    chrome.tabs.executeScript(tab.id, { "file": "src/fvtt_test.js" })
+    chrome.tabs.executeScript(tab.id, { "file": "dist/fvtt_test.js" })
 }
 
 updateSettings()

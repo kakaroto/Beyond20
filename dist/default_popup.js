@@ -1042,7 +1042,7 @@ function actOnCurrentTab(tab) {
     if (isFVTT(tab.title)) {
         // If FVTT, then inject the actual popup, instead of the default one.;
         chrome.runtime.sendMessage({ "action": "activate-icon", "tab": tab });
-        injectPageScript("src/popup.js");
+        injectPageScript("dist/popup.js");
     } else {
         setupHTML();
     }
