@@ -9,8 +9,7 @@ VPATH = $(SOURCE_DIR)
 	sed -e ':a;N;$$!ba;s/async;\n/async/g' -i $(OUTPUT_DIR)/$@
 
 
-JS_FILES=fvtt_script.js \
-	dndbeyond_character.js dndbeyond_monster.js \
+JS_FILES=dndbeyond_character.js dndbeyond_monster.js \
 	dndbeyond_spell.js dndbeyond_encounter.js dndbeyond_items.js  \
 	dndbeyond_vehicle.js
 PYJ_DEPS=utils.pyj settings.pyj dndbeyond.pyj dndbeyond_dice.pyj constants.pyj roll_renderer.pyj dndbeyond_discord.pyj

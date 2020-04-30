@@ -12,7 +12,7 @@ const regexps = [
     [new RegExp(/def +([^ (]+) *\(([^:)]*)\) *: *$/gm), "function $1($2) {"],
 
     // Classes
-    [new RegExp(/class +([^ ]+) *(([^)]+)) *:/gm), "class $1 extends $2 {"],
+    [new RegExp(/class +([^ ]+) *\(([^)]+)\) *:/gm), "class $1 extends $2 {"],
     [new RegExp(/class +([^ ]+) *:/gm), "class $1 {"],
     [new RegExp(/__init__/gm), "constructor"],
     [new RegExp(/self/gm), "this"],

@@ -1,3 +1,4 @@
+(function () {
 function replaceRollsCallback(match, replaceCB) {
     let dice = match[2];
     let modifiers = match[3];
@@ -1053,3 +1054,5 @@ if (chrome.tabs != undefined) {
 } else {
     chrome.runtime.sendMessage({ "action": "get-current-tab" }, actOnCurrentTab);
 }
+
+})();

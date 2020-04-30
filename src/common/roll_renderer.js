@@ -143,13 +143,13 @@ class Beyond20RollRenderer {
         const icon16 = "/modules/beyond20/images/icons/icon16.png";
         return replaceRolls(description, (dice, modifier) => {
             const dice_formula = (dice == "" ? "1d20" : dice) + modifier;
-            // <u> is filtered 0.3.2,.includes(out) so using <span> instead;
-            return `<span class="ct-beyond20-custom-roll">
-                <strong>${dice}${modifier}</strong>
-                <img class="ct-beyond20-custom-icon" src="${icon16}
-                     style="margin-right: 3px; margin-left: 3px; border: 0px;"></img>
-                <span class="beyond20-roll-formula" style="display: none;">${dice_formula}</span>
-            </span>`;
+            // <u> is filtered 0.3.2, so using <span> instead;
+            // Can't use single line, since newlines get replaced with <br/>
+            return `<span class="ct-beyond20-custom-roll">` +
+                `<strong>${dice}${modifier}</strong>` +
+                `<img class="ct-beyond20-custom-icon" src="${icon16} style="margin-right: 3px; margin-left: 3px; border: 0px;"></img>` +
+                `<span class="beyond20-roll-formula" style="display: none;">${dice_formula}</span>` +
+            `</span>`;
         });
     }
 
@@ -177,7 +177,7 @@ class Beyond20RollRenderer {
     }
 
 
-    postDescription(request, title, source, attributes, description, attack_rolls = [], roll_info = [], damage_rolls = [], open = false) {
+    async postDescription(request, title, source, attributes, description, attack_rolls = [], roll_info = [], damage_rolls = [], open = false) {
         let play_sound = false;
         const buttons = {}
 
@@ -214,7 +214,7 @@ class Beyond20RollRenderer {
                     html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[attr] + "</td></tr>";
                 html += "</table>";
             }
-            html_description = this.injectRollsInDescription(description).replace(/\n/g, "</br>");
+            const html_description = this.injectRollsInDescription(description).replace(/\n/g, "</br>");
             html += "<div class='beyond20-description'>" + html_description + "</div></details>";
         } else {
             html = "<div class='beyond20-title'>" + title + "</div>";
@@ -287,7 +287,7 @@ class Beyond20RollRenderer {
             html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
         }
 
-        for (let button of buttons)
+        for (let button in buttons)
             html += '<button class="beyond20-chat-button">' + button + '</button>';
 
         html += "</div>";
@@ -377,22 +377,22 @@ class Beyond20RollRenderer {
     }
 
     rollAbility(request, custom_roll_dice = "") {
-        data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
+        const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
         return this.rollD20(request, request.name + "(" + request.modifier + ")", data);
     }
 
     rollSavingThrow(request, custom_roll_dice = "") {
-        data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
+        const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
         return this.rollD20(request, request.name + " Save" + "(" + request.modifier + ")", data);
     }
 
     rollInitiative(request, custom_roll_dice = "") {
-        data = { "initiative": request.initiative, "custom_dice": custom_roll_dice }
+        const data = { "initiative": request.initiative, "custom_dice": custom_roll_dice }
         return this.rollD20(request, "Initiative" + "(" + request.initiative + ")", data);
     }
 
     rollHitDice(request) {
-        rname = "Hit Dice" + (request.multiclass ? `(${request.class})` : "");
+        const rname = "Hit Dice" + (request.multiclass ? `(${request.class})` : "");
         return this.rollDice(request, rname, request["hit-dice"], {});
     }
 
@@ -613,7 +613,7 @@ class Beyond20RollRenderer {
         }
     }
 
-    rollAttack(request, custom_roll_dice = "") {
+    async rollAttack(request, custom_roll_dice = "") {
         const [to_hit, damage_rolls] = await this.buildAttackRolls(request, custom_roll_dice);
 
         const data = {}
@@ -645,8 +645,7 @@ class Beyond20RollRenderer {
         if (request.concentration)
             data["Concentration"] = "Requires Concentration";
 
-        description = request.description.replace("At Higher Levels.", "</br><b>At Higher levels.</b>");
-
+        const description = request.description.replace("At Higher Levels.", "</br><b>At Higher levels.</b>");
         return [source, data, description];
     }
 
@@ -655,7 +654,7 @@ class Beyond20RollRenderer {
         return this.postDescription(request, request.name, source, data, description, [], [], [], true);
     }
 
-    rollSpellAttack(request, custom_roll_dice) {
+    async rollSpellAttack(request, custom_roll_dice) {
         const [source, data, description] = this.buildSpellCard(request);
 
         const roll_info = [];

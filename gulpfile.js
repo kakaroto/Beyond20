@@ -14,9 +14,11 @@ const SRC_FILES = {
         "src/extension/options.js"
     ],
     default_popup: [
+        "src/common/sandbox-header.js",
         "src/common/utils.js",
         "src/common/settings.js",
-        "src/extension/default_popup.js"
+        "src/extension/default_popup.js",
+        "src/common/sandbox-footer.js"
     ],
     popup: [
         "src/common/constants.js",
@@ -40,6 +42,16 @@ const SRC_FILES = {
         "src/common/utils.js",
         "src/common/settings.js",
         "src/fvtt/content-script.js"
+    ],
+    fvtt_script: [
+        "src/common/sandbox-header.js",
+        "src/common/utils.js",
+        "src/common/settings.js",
+        "src/common/constants.js",
+        "src/discord/discord.js",
+        "src/common/roll_renderer.js",
+        "src/fvtt/page-script.js",
+        "src/common/sandbox-footer.js"
     ]
 }
 const CSS_FILES = ['src/extension/beyond20.css']
