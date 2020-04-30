@@ -6,25 +6,19 @@ import re;
 class DNDBDisplaye extends r {
     constructor() {
         this._error = null;
-
     }
+
     postHTML(request, title, html, buttons, character, whisper, play_sound) {
         content = "<div class='beyond20-dice-roller'>";
         if (this._error) {
-            content += "<div class='beyond20-roller-error'>" + \
-                            "<span class='beyond20-tooltip'>Virtual Table Top Not Found" + \
-                                "<span class='beyond20-tooltip-content'>" + this._error + "</span>" + \
-                            }
-                            "</span>" + \
-                        }
+            content += "<div class='beyond20-roller-error'>" + \;
+                            "<span class='beyond20-tooltip'>Virtual Table Top Not Found" + \;
+                                "<span class='beyond20-tooltip-content'>" + this._error + "</span>" + \;
+                            "</span>" + \;
                         "</div>";
         }
-        }
-        }
-        }
-        content += "<div class='beyond20-dice-roller-content'>" + html + "</div>" + \
+        content += "<div class='beyond20-dice-roller-content'>" + html + "</div>" + \;
             "</div>";
-        }
         dlg = alertify.Beyond20Roll(title, content);
         dlg.set('onclose', () => {
             dlg.set('onclose', null);
@@ -45,17 +39,17 @@ class DNDBDisplaye extends r {
             buttons[button]();
         }
         );
-
     }
+
     displayError(message) {
         alertify.error(message);
-
     }
+
     setError(error) {
         this._error = error;
+    }
+}
 
-}
-}
 class DNDBDic extends e {
     constructor(amount, faces, modifiers="") {
         this.amount = int(amount);
@@ -86,27 +80,26 @@ class DNDBDic extends e {
                 } else if (dk == "kh") {
                     this._dk.keep = true;
                     this._dk.high = true;
+                }
+            }
+        }
 
 
 
-        }
-        }
-        }
         this._rolls = [];
-
     }
+
     roll() {
         this._rolls = [];
         for (let i = 0; i < (this.amount); i++) {
             die = Math.floor(Math.random() * this.faces) + 1;
             // Check for reroll modifier && discard old value && reroll it if (necessary;
-            if this._reroll.active && \
-                ((this._reroll.operator == "=" && die == this._reroll.value) || \
-                 (this._reroll.operator == "<=" && die <= this._reroll.value) || \
-                 (this._reroll.operator == "<" && die < this._reroll.value) || \
-                 (this._reroll.operator == ">=" && die >= this._reroll.value) || \
+            if this._reroll.active && \;
+                ((this._reroll.operator == "=" && die == this._reroll.value) || \;
+                 (this._reroll.operator == "<=" && die <= this._reroll.value) || \;
+                 (this._reroll.operator == "<" && die < this._reroll.value) || \;
+                 (this._reroll.operator == ">=" && die >= this._reroll.value) || \;
                  (this._reroll.operator == ">" && die > this._reroll.value))) {
-                }
                 this._rolls.push({"roll": die, "discarded": true});
                 die = Math.floor(Math.random() * this.faces) + 1;
             }
@@ -151,9 +144,9 @@ class DNDBDic extends e {
             this._rolls = this._rolls.map((r) => {
                 if ( !(r.keep  != undefined false) ) {
                     r.discarded = true;
-                 }
-                 delete r.keep;
                 }
+                 delete r.keep;
+             }
                 return r;
             }
             );
@@ -167,8 +160,8 @@ class DNDBDic extends e {
         }
         ,0);
         return this._total;
-
     }
+
     @property;
     total() {
         return this._total;
@@ -180,17 +173,17 @@ class DNDBDic extends e {
     @property;
     rolls() {
         return this._rolls || [];
-
     }
+
     toJSON() {
         return {
             "total": this.total,
             "formula": this.formula,
             "rolls": this.rolls;
         }
+    }
+}
 
-}
-}
 class DNDBRoll(Beyond20BaseRoll) {
     constructor(formula, data={}) {
         formula = formula.replace("ro<2", "r<=2");
@@ -215,13 +208,13 @@ class DNDBRoll(Beyond20BaseRoll) {
                         this._parts.push(part);
                     } catch(err) {
                         pass;
-        }
-        }
-        }
+                    }
+                }
+            }
         }
         this.roll();
-
     }
+
     @property;
     total() {
         return this._total;
@@ -239,7 +232,7 @@ class DNDBRoll(Beyond20BaseRoll) {
                 formula += part.formula;
             } else {
                 formula += part;
-        }
+            }
         }
         return formula;
     }
@@ -249,15 +242,15 @@ class DNDBRoll(Beyond20BaseRoll) {
         for (let part of this._parts) {
             if (isinstance(part, DNDBDice)) {
                 dice.push(part);
-        }
+            }
         }
         return dice;
     }
     @property;
     parts() {
         return this._parts;
-
     }
+
     roll() {
         this._total = 0;
         for (let part of this._parts) {
@@ -265,11 +258,11 @@ class DNDBRoll(Beyond20BaseRoll) {
                 this._total += part.roll();
             } else {
                 this._total += part;
-        }
+            }
         }
         this._total = Math.round(this._total * 100) / 100;
-
     }
+
     getTooltip() {
         tooltip = "<div class='beyond20-roll-tooltip'>";
         for (let part of this._parts) {
@@ -287,33 +280,33 @@ class DNDBRoll(Beyond20BaseRoll) {
                     tooltip += "<span class='beyond20-roll-die-result " + result_class + "'>" + die.roll + "</span>";
                 }
                 tooltip += "</div></div>";
-        }
+            }
         }
         tooltip += "</div>";
         return tooltip;
-
     }
+
     reroll() {
         this.roll();
         return this;
+    }
+}
 
-}
-}
 class DNDBRolle extends r {
     roll(formula, data) {
         return DNDBRoll(formula, data);
+    }
+}
 
-}
-}
 class DNDBPrompte extends r {
     prompt(title, html, ok_label="OK", cancel_label="Cancel") {
         return new Promise((resolve, reject) => {
             alertify.Beyond20Prompt(title, html, ok_label, cancel_label, resolve);
         }
         );
+    }
+}
 
-}
-}
 alertify.defaults.transition = "zoom";
 if ( !alertify.Beyond20Prompt != undefined) {
     factory = () => {
@@ -377,14 +370,14 @@ if ( !alertify.Beyond20Prompt != undefined) {
         }
     }
     alertify.dialog('Beyond20Prompt', factory, false, "prompt");
-
-
 }
+
+
 if ( !alertify.Beyond20Roll  != undefined) {
     alertify.dialog('Beyond20Roll', () => {}, false, "alert");
-
-
 }
+
+
 dndbeyondDiceRoller = Beyond20RollRenderer(DNDBRoller(), DNDBPrompter(), DNDBDisplayer());
 dndbeyondDiceRoller.setBaseURL(chrome.runtime.getURL(""));
 dndbeyondDiceRoller.setSettings(getDefaultSettings());

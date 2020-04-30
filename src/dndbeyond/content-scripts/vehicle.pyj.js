@@ -18,10 +18,10 @@ function documentLoaded(settings) {
         chrome.runtime.sendMessage({"action": "reload-me"});
     } else {
         character.parseStatBlock();
+    }
+}
 
 
-}
-}
 function updateSettings(new_settings=null) {
     nonlocal settings;
     nonlocal character;
@@ -37,18 +37,18 @@ function updateSettings(new_settings=null) {
             documentLoaded(settings);
         }
         );
+    }
+}
 
-}
-}
 function handleMessage(request, sender, sendResponse) {
     if (request.action == "settings") {
         if (request.type == "general") {
             updateSettings(request.settings);
     } else if (request.action == "open-options") {
         alertFullSettings();
+    }
+}
 
-}
-}
 injectCSS(BUTTON_STYLE_CSS);
 injectCSS(ROLLTYPE_STYLE_CSS);
 chrome.runtime.onMessage.addListener(handleMessage);

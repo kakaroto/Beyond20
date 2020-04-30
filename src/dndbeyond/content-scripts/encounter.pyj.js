@@ -18,8 +18,8 @@ function documentModified(mutations, observer) {
         console.log("This extension is DOWN!");
         observer.disconnect();
         return;
-
     }
+
     monster = $(".encounter-details-monster-summary-info-panel,.encounter-details__content-section--monster-stat-block,.combat-tracker-page__content-section--monster-stat-block,.monster-details-modal__body");
     monster_name = monster.find(".mon-stat-block__name").text();
     console.log("Doc modified, new mon : ", monster_name, " != != undefined", last_monster_name);
@@ -30,8 +30,8 @@ function documentModified(mutations, observer) {
     removeRollButtons();
     character = Monster("Monster", global_settings=settings);
     character.parseStatBlock(monster);
-
 }
+
 function updateSettings(new_settings=null) {
     nonlocal settings;
     nonlocal character;
@@ -47,18 +47,18 @@ function updateSettings(new_settings=null) {
             documentModified();
         }
         );
+    }
+}
 
-}
-}
 function handleMessage(request, sender, sendResponse) {
     if (request.action == "settings") {
         if (request.type == "general") {
             updateSettings(request.settings);
     } else if (request.action == "open-options") {
         alertFullSettings();
+    }
+}
 
-}
-}
 updateSettings();
 injectCSS(BUTTON_STYLE_CSS);
 injectCSS(ROLLTYPE_STYLE_CSS);

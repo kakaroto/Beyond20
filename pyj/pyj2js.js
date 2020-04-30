@@ -19,7 +19,7 @@ const regexps = [
 
     // if/else
     [new RegExp(/\? ""/gm), " or \"\""],
-    [new RegExp(/\?/gm), " != undefined"],
+    [new RegExp(/\?/gm), " !== undefined"],
     [new RegExp(/= *(.*) +if +(.+) +else +(.+)/gm), "= $2 ? $1 : $3"],
     [new RegExp(/, *(.*) +if +(.+) +else +(.+)/gm), ", $2 ? $1 : $3"],
     [new RegExp(/return *(.*) +if +(.+) +else +(.+)/gm), "return $2 ? $1 : $3"],
@@ -55,7 +55,7 @@ const regexps = [
     [new RegExp(/del /gm), " delete "],
     [new RegExp(/jstype/gm), "typeof"],
     [new RegExp(/str\(/gm), "String("],
-    [new RegExp(/len\(([^)])\)/gm), "$1.length"],
+    [new RegExp(/len\(([^)]+)\)/gm), "$1.length"],
     [new RegExp(/([( ])([^( ]+) +not in +([^ )]+)/gm), "$1!$3.includes($2)"],
     [new RegExp(/([( ])([^( ]+) +in +([^ )]+)/gm), "$1$3.includes($2)"],
     [new RegExp(/"""/gm), "`"],
@@ -85,20 +85,38 @@ function replaceFile(contents) {
     }
     const original_lines = result.split("\n");
     const lines = [];
-    let indent = 0;
+    let previousLine = "";
+    let savedIndent = 0;
+    let lastNonEmpty = 0;
     for (let line of original_lines) {
-        const line_indent = getLineIndent(line);
-        if (line.trim() !== "" && line_indent < indent && line[line_indent] != "}") {
-            let i = line_indent;
-            while (i < indent) {
-                lines.push(" ".repeat(i) + "}")
-                indent -= 4;
+        const currentIndent = getLineIndent(line);
+        if (line.trim() !== "" && currentIndent < savedIndent && line[currentIndent] != "}") {
+            let i = currentIndent;
+            let previousIndent = savedIndent;
+            const toAdd = []
+            while (i < previousIndent) {
+                previousIndent -= 4;
+                toAdd.push(" ".repeat(previousIndent) + "}")
             }
+            lines.splice(lastNonEmpty + 1, 0, ...toAdd)
         }
-        if (line.trim() !== "")
-            indent = line_indent;
+        if (line.trim() !== "" && currentIndent < savedIndent)
+            savedIndent = currentIndent;
+        else if (currentIndent > savedIndent && previousLine.substr(-1) === "{") {
+            savedIndent += 4;
+        }
+            
+        if (line.trim() !== "") {
+            previousLine = line.trim();
+            lastNonEmpty = lines.length;
+        }
         line = line.trimEnd();
-        if (![",", "\\", "{", "}", ""].includes(line.substr(-1)))
+        let lastChar = line.substr(-1);
+        if (lastChar == "\\") {
+            line.substr(0, line.length - 1).trimEnd();
+            lastChar = line.substr(-1);
+        }
+        if (![",", "{", "}", ""].includes(lastChar))
             line += ";";
         lines.push(line);
     }
@@ -111,6 +129,7 @@ const glob = require("glob");
 glob.glob("pyj/*.pyj", (err, files) => {
     for (let file of files) {
         const contents = fs.readFileSync(file).toString();
+        console.log("Converting ", file)
         fs.writeFileSync(file + ".js", replaceFile(contents));
     }
 });

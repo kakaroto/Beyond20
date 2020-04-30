@@ -12,13 +12,6 @@ ability_abbreviations = {"Strength": "STR",
                          "Wisdom": "WIS",
                          "Charisma": "CHA"}
 
-}
-}
-}
-}
-}
-}
-}
 skill_abilities = {"Acrobatics": "DEX",
                    "Animal Handling": "WIS",
                    "Arcana": "INT",
@@ -39,11 +32,6 @@ skill_abilities = {"Acrobatics": "DEX",
                    "Survival": "WIS"}
 
 
-}
-}
-}
-}
-}
 class Spel extends l {
     constructor(body, character, type="page") {
         this._character = character;
@@ -59,12 +47,12 @@ class Spel extends l {
             description_selector = ".tooltip-body-description-text";
             casting_time_label = "castingtime";
             range_area_label = "range";
-
         }
+
         function get_statblock(label) {
             return body.find(statblock_selector + "-item-" + label + " " + statblock_selector + "-item-value").text().trim();
-
         }
+
         this.spell_name = body.find(title_selector).text().trim();
         level = get_statblock("level");
         school = get_statblock("school");
@@ -88,17 +76,17 @@ class Spel extends l {
         this.ritual = (body.find(statblock_selector + "-item-casting-time .i-ritual").length > 0);
         if (this.components.slice(-1)[0] == "*") {
             materials = body.find(description_selector + " .components-blurb").text().trim();
-            material_len = len(materials);
+            material_len = materials.length;
             this.description = this.description[:-material_len].trim();
             this.components = this.components[:-2] + materials[4:];
         }
         aoe = body.find(statblock_selector + "-item-range-area .aoe-size").text().trim();
         if (aoe != "") {
-            aoe_len = len(aoe);
+            aoe_len = aoe.length;
             this.range_area = this.range_area[:-aoe_len].trim() + " " + aoe.trim();
+        }
+    }
 
-    }
-    }
     display() {
         sendRoll(this._character, "spell-card", 0, {
             "name": this.spell_name,
@@ -112,10 +100,10 @@ class Spel extends l {
             "ritual": this.ritual,
             "description": this.description;
         });
+    }
+}
 
 
-}
-}
 class CharacterBas extends e {
     constructor(_type, global_settings) {
         this._name = null;
@@ -123,12 +111,12 @@ class CharacterBas extends e {
         this._settings = null;
         this._url = window.location.href;
         this.setGlobalSettings(global_settings);
-
     }
+
     type() {
         return this._type;
-
     }
+
     getSetting(key, default_value="", settings=null) {
         if (settings === null) {
             settings = this._settings;
@@ -137,23 +125,23 @@ class CharacterBas extends e {
             return settings[key];
         }
         return default_value;
-
     }
+
     getGlobalSetting(key, default_value="") {
         return this.getSetting(key, default_value, this._global_settings);
-
     }
+
     setGlobalSettings(new_settings) {
         this._global_settings = new_settings;
         dndbeyondDiceRoller.setSettings(new_settings);
         updateRollTypeButtonClasses(this);
-
     }
+
     getDict() {
         return {"name": this._name, "type": this._type, "url": this._url}
+    }
+}
 
-}
-}
 class Character(CharacterBase) {
     constructor(global_settings) {
         CharacterBase.constructor(this, "Character", global_settings);
@@ -180,35 +168,35 @@ class Character(CharacterBase) {
         this._to_hit_cache = {}
         this._conditions = [];
         this._exhaustion = 0;
-
     }
+
     updateInfo() {
         this._id = $("//character-sheet-target,//character-tools-target").attr("data-character-id");
         this._url = window.location.href;
 
         if (this._settings === null) {
             this.updateSettings();
-
         }
+
         // Static values that need an edit to change;
         if (this._name === null) {
             this._name = $(".ct-character-tidbits__name,.ddbc-character-tidbits__name").text();
             // This can happen when you reload the page;
             if (this._name == "") {
                 this._name = null;
-        }
+            }
         }
         if (this._avatar === null) {
             avatar = $(".ct-character-tidbits__avatar,.ddbc-character-tidbits__avatar").css('background-image');
             if (avatar && avatar.startsWith("url(")) {
                 this._avatar = avatar.slice(5, -2);
-        }
+            }
         }
         if (this._race === null) {
             this._race = $(".ct-character-tidbits__race,.ddbc-character-tidbits__race").text();
             if (this._race == "") {
                 this._race = null;
-        }
+            }
         }
         if (this._classes === null) {
             classes = $(".ct-character-tidbits__classes,.ddbc-character-tidbits__classes");
@@ -220,8 +208,8 @@ class Character(CharacterBase) {
                     name = str.join(" ", parts[:-1]);
                     level = parts.slice(-1)[0];
                     this._classes[name] = level;
-        }
-        }
+                }
+            }
         }
         if (this._level === null) {
             level = $(".ct-character-tidbits__xp-level,.ddbc-character-tidbits__xp-level");
@@ -230,7 +218,7 @@ class Character(CharacterBase) {
                 this._level = level.text().replace("Level ", "");
             } else if (xp.length > 0) {
                 this._level = xp.text().replace("LVL ", "");
-        }
+            }
         }
         if (this._proficiency === null) {
             this._proficiency = $(".ct-proficiency-bonus-box__value,.ddbc-proficiency-bonus-box__value").text();
@@ -238,8 +226,8 @@ class Character(CharacterBase) {
                 this._proficiency = $(".ct-combat-mobile__extra--proficiency .ct-combat-mobile__extra-value,.ddbc-combat-mobile__extra--proficiency .ddbc-combat-mobile__extra-value").text();
                 if (this._proficiency == "") {
                     this._proficiency = null;
-        }
-        }
+                }
+            }
         }
         if (Object.keys(this._to_hit_cache).length == 0) {
             items = $(".ct-combat-attack--item .ct-item-name,.ddbc-combat-attack--item .ddbc-item-name");
@@ -248,9 +236,9 @@ class Character(CharacterBase) {
                 to_hit = findToHit(item_name, ".ct-combat-attack--item,.ddbc-combat-attack--item", ".ct-item-name,.ddbc-item-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
                 //console.log("Caching to hit for ", item_name, " : ", to_hit);
                 this._to_hit_cache[item_name] = to_hit;
+            }
+        }
 
-        }
-        }
         // Values that could change/get overriden dynamically;
         ac = $(".ct-armor-class-box__value,.ddbc-armor-class-box__value").text();
         if (ac == "") {
@@ -272,8 +260,8 @@ class Character(CharacterBase) {
         }
         if (abilities.length == 0) {
             abilities = $(".ct-main-tablet__ability,.ddbc-main-tablet__ability");
-
         }
+
         if (abilities.length > 0) {
             this._abilities = [];
         }
@@ -292,8 +280,8 @@ class Character(CharacterBase) {
             this.updateHP();
         }
         this.updateFeatures();
-
     }
+
     updateHP() {
         health_pane = $(".ct-health-manager");
         if (health_pane.length > 0) {
@@ -312,7 +300,7 @@ class Character(CharacterBase) {
                         hp = int(number.text());
                 } else if (label == "Max") {
                     max_hp = int($(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number").text());
-            }
+                }
             }
             temp_item = $(".ct-health-summary__hp-group--temp .ct-health-summary__hp-item--temp .ct-health-summary__hp-item-content");
             if (temp_item.length > 0) {
@@ -321,8 +309,8 @@ class Character(CharacterBase) {
                 temp_hp = number != "" ? int(number) : 0;
             } else {
                 temp_hp = this._temp_hp;
-
             }
+
             mobile_hp = $(".ct-status-summary-mobile__hp-current");
             if (mobile_hp.length > 0) {
                 hp = int(mobile_hp.text());
@@ -335,14 +323,13 @@ class Character(CharacterBase) {
                 }
                 hp = hp - temp_hp;
             }
-            if ($(".ct-status-summary-mobile__deathsaves-group").length > 0 || \
+            if ($(".ct-status-summary-mobile__deathsaves-group").length > 0 || \;
                     $(".ct-health-summary__deathsaves").length > 0) {
-                }
                 // if (we find death saving section, then it means the HP is 0;
                 hp = 0;
                 temp_hp = 0;
                 max_hp = this._max_hp;
-        }
+            }
         }
         if hp !== null && max_hp !== null && (this._hp != hp || this._max_hp != max_hp || this._temp_hp != temp_hp)) {
             this._hp = hp;
@@ -354,10 +341,10 @@ class Character(CharacterBase) {
                 req = {"action": "hp-update", "character": this.getDict()}
                 console.log("Sending message: ", req);
                 chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(this, resp));
+            }
+        }
+    }
 
-    }
-    }
-    }
     updateConditions(conditions=null, exhaustion_level=null) {
         if (conditions === null) {
             conditions = list(this.getSetting("conditions", []));
@@ -368,10 +355,9 @@ class Character(CharacterBase) {
         this._conditions = conditions;
         this._exhaustion = exhaustion_level;
         //console.log("Updating conditions to : ", conditions, exhaustion_level);
-        if (this._settings  != undefined && \
-            ( !isListEqual(this._conditions, this.getSetting("conditions", [])) || \
+        if (this._settings  != undefined && \;
+            ( !isListEqual(this._conditions, this.getSetting("conditions", [])) || \;
                 this._exhaustion != this.getSetting("exhaustion-level", 0))) {
-            }
             sendUpdate = () => {
                 req = {"action": "conditions-update", "character": this.getDict()}
                 console.log("Sending message: ", req);
@@ -379,17 +365,9 @@ class Character(CharacterBase) {
             }
             this.mergeCharacterSettings({"conditions": this._conditions,
                                          "exhaustion-level": this._exhaustion}, sendUpdate);
+        }
+    }
 
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
     featureDetailsToList(selector, name) {
         features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading");
         feature_list = [];
@@ -400,13 +378,13 @@ class Character(CharacterBase) {
             for (let option of options) {
                 option_name = option.childNodes[0].textContent.trim();
                 feature_list.push(feat_name + ": " + option_name);
+            }
+        }
 
-        }
-        }
         //console.log(name, feature_list);
         return feature_list;
-
     }
+
     updateFeatures() {
         update = false;
         class_detail = $(".ct-features .ct-classes-detail");
@@ -414,15 +392,14 @@ class Character(CharacterBase) {
             this._class_features = this.featureDetailsToList(class_detail, "Class Features");
             if ( !isListEqual(this._class_features, this.getSetting("class-features", []))) {
                 console.log("New class feature");
- }
- }
- }
- }
+            }
+        }
+    }
+}
  extends update = true;
         else {
             this._class_features = list(this.getSetting("class-features", []));
 
-        }
         race_detail = $(".ct-features .ct-race-detail");
         if (race_detail.length > 0) {
             this._racial_traits = this.featureDetailsToList(race_detail, "Racial Traits");
@@ -431,8 +408,8 @@ class Character(CharacterBase) {
                 update = true;
         } else {
             this._racial_traits = list(this.getSetting("racial-traits", []));
-
         }
+
         feats_detail = $(".ct-features .ct-feats-detail");
         if (feats_detail.length > 0) {
             this._feats = this.featureDetailsToList(feats_detail, "Feats");
@@ -441,8 +418,8 @@ class Character(CharacterBase) {
                 update = true;
         } else {
             this._feats = list(this.getSetting("feats", []));
-
         }
+
         actions_detail = $(".ct-actions-list .ct-actions-list__activatable");
         if (actions_detail.length > 0) {
             this._actions = this.featureDetailsToList(actions_detail, "Actions");
@@ -451,8 +428,8 @@ class Character(CharacterBase) {
                 update = true;
         } else if (this.getSetting("actions", null)) {
             this._actions = list(this.getSetting("actions", []));
-
         }
+
         // Spell modifier, Spell attack && spell save DC;
         spell_info_groups = $(".ct-spells-level-casting__info-group,.ddbc-spells-level-casting__info-group");
         if (spell_info_groups.length > 0) {
@@ -478,21 +455,20 @@ class Character(CharacterBase) {
                     char_classes = item.getAttribute("data-original-title").split(",");
                     for (let char_class of extends char_classes {
                         obj[char_class.trim()] = modifier;
-            }
-            }
-            }
-            if ( !isObjectEqual(this._spell_modifiers, this.getSetting("spell_modifiers", {})) || \
-                 !isObjectEqual(this._spell_attacks, this.getSetting("spell_attacks", {})) || \
-                 !isObjectEqual(this._spell_saves, this.getSetting("spell_saves", {}))) {
+                    }
                 }
+            }
+            if ( !isObjectEqual(this._spell_modifiers, this.getSetting("spell_modifiers", {})) || \;
+                 !isObjectEqual(this._spell_attacks, this.getSetting("spell_attacks", {})) || \;
+                 !isObjectEqual(this._spell_saves, this.getSetting("spell_saves", {}))) {
                 console.log("New Spell information");
                 update = true;
         } else {
             this._spell_modifiers = this.getSetting("spell_modifiers", {});
             this._spell_saves = this.getSetting("spell_saves", {});
             this._spell_attacks = this.getSetting("spell_attacks", {});
-
         }
+
         if (this._settings != undefined && update) {
             this.mergeCharacterSettings({"class-features") { this._class_features,
                                          "racial-traits": this._racial_traits,
@@ -501,52 +477,41 @@ class Character(CharacterBase) {
                                          "spell_modifiers": this._spell_modifiers,
                                          "spell_saves": this._spell_saves,
                                          "spell_attacks": this._spell_attacks});
+        }
+    }
 
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
     hasClassFeature(name) {
         return this._class_features;
-}
+    }
 }
 .includes(name)    hasRacialTrait(name) {
         return this._racial_traits;
 }
-}
 .includes(name)    hasFeat(name) {
         return this._feats;
 }
-}
 .includes(name)    hasAction(name) {
         return this._actions;
-}
 }
 .includes(name)    getClassLevel(name) {
         if (this._classes.includes(name)) {
             return this._classes[name];
         } else {
             return 0;
+        }
+    }
 
-    }
-    }
     _cacheToHit(item_name, to_hit) {
         this._to_hit_cache[item_name] = to_hit;
-
     }
+
     _getToHitCache(item_name) {
         if (this._to_hit_cache[item_name]  != undefined) {
             return this._to_hit_cache[item_name];
         }
         return null;
-
     }
+
     mergeCharacterSettings(data, callback=null) {
         cb = (settings) => {
             this.updateSettings(settings);
@@ -554,20 +519,13 @@ class Character(CharacterBase) {
                                         "type": "character",
                                         "id": this._id,
                                         "settings": settings});
-            }
-            }
-            }
-            }
-            }
-            }
-            }
             if (callback) {
                 callback(settings);
-        }
+            }
         }
         mergeSettings(data, cb, "character-" + this._id, character_settings);
-
     }
+
     updateSettings(new_settings=null) {
         if (new_settings) {
             this._settings = new_settings;
@@ -579,18 +537,18 @@ class Character(CharacterBase) {
                 this.updateConditions();
             }
             , "character-" + this._id, character_settings);
+        }
+    }
 
-    }
-    }
     getDict() {
         settings = {}
         // Make a copy of the settings but without the features since they are;
         // the.includes(already) dict;
         for (let key of this._settings) {
-            if (key  !in ["class-features", "racial-traits", "feats", "actions", \
+            if (key  !in ["class-features", "racial-traits", "feats", "actions", \;
                 "spell_modifiers", "spell_saves", "spell_attacks", "conditions", "exhaustion-level"]) {
                 settings[key] = this._settings[key];
-        }
+            }
         }
         return {
             "name": this._name,
@@ -619,9 +577,9 @@ class Character(CharacterBase) {
             "spell_attacks": this._spell_attacks,
             "url": this._url;
         }
+    }
+}
 
-}
-}
 class Monster(CharacterBase) {
     constructor(_type, base=null, global_settings=null) {
         CharacterBase.constructor(this, _type, global_settings);
@@ -655,8 +613,8 @@ class Monster(CharacterBase) {
         this._skills = {}
         this._spells = {}
         this._cr = null;
-
     }
+
     parseStatBlock(stat_block=null) {
         add_dice=this.getGlobalSetting('handle-stat-blocks', true);
         inject_descriptions=this.getGlobalSetting('subst-dndbeyond-stat-blocks', true);
@@ -670,13 +628,7 @@ class Monster(CharacterBase) {
             quick_settings = E.div(class_="ct-beyond20-settings-button", style="background-color: rgba(0, 0, 0, 0.1)",
                                     E.img(class_="ct-beyond20-settings", src=chrome.extension.getURL("images/icons/icon32.png"), style="vertical-align: top;"),
                                     E.span(class_="ct-beyond20-settings-button-label mon-stat-block__tidbit mon-stat-block__tidbit-label", style="font-size: 28px; margin: 5px;", "Beyond 20");
-                            }
-                            }
                             );
-            }
-            }
-            }
-            }
             stat_block.find(base + "__header").prepend(quick_settings);
             $(quick_settings).on('click', (event) => alertQuickSettings());
         }
@@ -696,7 +648,7 @@ class Monster(CharacterBase) {
             avatarImg = $(".details-aside .image");
             if (avatarImg) {
                 addRollButton(this, () => this.displayAvatar(), avatarImg, small=true, image=true, VTT".includes(text="Display));
-        }
+            }
         }
         attributes = stat_block.find(base + "__attributes " + base + "__attribute");
         for (let attr of attributes) {
@@ -719,8 +671,8 @@ class Monster(CharacterBase) {
                 this._speed = value;
             }
             this._attributes[label] = value;
-
         }
+
         abilities = stat_block.find(base + "__abilities");
         if (abilities.length > 0) {
             prefix = base + "__ability-";
@@ -732,7 +684,7 @@ class Monster(CharacterBase) {
         makeCB = (a) => {
             return () => {
                 this.rollAbilityCheck(a);
-        }
+            }
         }
         for (let ability of abilities) {
             abbr = $(ability).find(prefix + "heading").text().toUpperCase();
@@ -751,9 +703,7 @@ class Monster(CharacterBase) {
                                             E.span(class_=base[1:] + "__attribute-label", "Roll Initiative!"),
                                             E.span(class_=base[1:] + "__attribute-data",
                                                 E.span(class_=base[1:] + "__attribute-data-value", "  " + modifier);
-                                            }
                                             );
-                                        }
                                         ));
                         } else {
                             initiative = roll_initiative.eq(0);
@@ -762,14 +712,13 @@ class Monster(CharacterBase) {
                         cb = () => {
                                 this.rollInitiative();
                         }
-                        }
                         addIconButton(cb, initiative.find(base + "__attribute-data"));
+                    }
+                }
+            }
+        }
 
 
-        }
-        }
-        }
-        }
         tidbits = stat_block.find(base + "__tidbits " + base + "__tidbit");
         for (let tidbit of tidbits) {
             label = $(tidbit).find(base + "__tidbit-label").text();
@@ -783,7 +732,7 @@ class Monster(CharacterBase) {
                 makeCB = (a) => {
                     return () => {
                         this.rollSavingThrow(a);
-                }
+                    }
                 }
                 for (let save of saves) {
                     parts = save.split(" ");
@@ -793,7 +742,7 @@ class Monster(CharacterBase) {
                     if (add_dice) {
                         data.push(abbr + " " + mod);
                         addIconButton(makeCB(abbr), data, append=true);
-                        if (len(saves) > len(this._saves)) {
+                        if (saves.length > this._saves.length) {
                             data.push(", ");
             } else if (label == "Skills") {
                 skills = value.split(", ");
@@ -809,7 +758,7 @@ class Monster(CharacterBase) {
                 makeCB = (a) => {
                     return () => {
                         this.rollSkillCheck(a);
-                }
+                    }
                 }
                 if (this.type() == "Monster") {
                     skills = data.find("> a");
@@ -846,28 +795,17 @@ class Monster(CharacterBase) {
             this.lookForSpells(stat_block);
         }
         //console.log("Done parsing stat block:", this);
-
     }
+
     displayAvatar() {
         sendRoll(this, "avatar", this.avatar, {"name": "Avatar"});
-
     }
+
     rollHitPoints() {
         sendRoll(this, "custom", this._hp_formula, {"name": "Hit Points",
                                                     "modifier": this._hp_formula});
+    }
 
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
     rollAbilityCheck(abbr) {
         for (let ability of this._abilities) {
             if (ability[1] == abbr) {
@@ -876,23 +814,11 @@ class Monster(CharacterBase) {
                                                               "ability": abbr,
                                                               "modifier": modifier,
                                                               "ability-score": score} );
-                }
-                }
-                }
-                }
-                }
-                }
-                }
-                }
-                }
-                }
-                }
-                }
                 break;
+            }
+        }
+    }
 
-    }
-    }
-    }
     rollInitiative() {
         for (let ability of this._abilities) {
             if (ability[1] == "DEX") {
@@ -907,62 +833,39 @@ class Monster(CharacterBase) {
 
                     // Render initiative as a string that begins with '+' || '-';
                     initiative = initiative >= 0 ? '+' + String(initiative) : String(initiative);
-
                 }
+
                 sendRoll(this, "initiative", "1d20" + initiative, {"initiative": initiative});
                 break;
+            }
+        }
+    }
 
-    }
-    }
-    }
     rollSavingThrow(abbr) {
         mod = this._saves[abbr];
         name = abbreviationToAbility(abbr);
         sendRoll(this, "saving-throw", "1d20" + mod, {"name" : name,
                                                       "ability": abbr,
                                                       "modifier": mod} );
+    }
 
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
     rollSkillCheck(skill) {
         modifier = this._skills[skill];
         ability = skillToAbility(skill);
         sendRoll(this, "skill", "1d20" + modifier, {"skill": skill,
                                                     "ability": ability,
                                                     "modifier": modifier});
+    }
 
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
     parseAttackInfo(description) {
         m = re.search("(Melee|Ranged)( != undefined: Weapon| Spell) != undefined Attack:.* != undefined(\+[0-9]+) to hit.* != undefined, ( != undefined:reach|ranged != undefined) (.* != undefined)( != undefined:,.* != undefined) != undefined\.", description);
         if (m) {
             return (m.group(1), m.group(2), m.group(3));
         } else {
             return null;
+        }
+    }
 
-    }
-    }
     parseHitInfo(description) {
         damages = null;
         save = null;
@@ -996,26 +899,21 @@ class Monster(CharacterBase) {
             m = re.search("escape DC ([0-9]+)", hit);
             if (m) {
                 save = ("Escape", m.group(1));
+            }
+        }
 
-        }
-        }
         if (damages.length == 0 && save === null) {
             return null;
         }
         return (damages, damage_types, save);
-
     }
+
     buildAttackRoll(name, description) {
         roll_properties = {"name": name,
                            "preview": this._avatar,
                            "attack-source": "monster-action",
                            "description": description}
 
-        }
-        }
-        }
-        }
-        }
         attackInfo = this.parseAttackInfo(description);
         //console.log("Attack info for ", name, attackInfo);
         if (attackInfo) {
@@ -1023,9 +921,9 @@ class Monster(CharacterBase) {
             roll_properties["to-hit"] = to_hit;
             roll_properties["attack-type"] = attack_type;
             roll_properties["reach" if (attack_type == "Melee" else "range"] = reach_range;
-
-
         }
+
+
         hitInfo = this.parseHitInfo(description);
         //console.log("Hit info for ", name, hitInfo);
         if hitInfo) {
@@ -1034,7 +932,7 @@ class Monster(CharacterBase) {
             damages = hitInfo[0];
             damage_types = hitInfo[1];
             save = hitInfo[2];
-            if (len(damages) > 0) {
+            if (damages.length > 0) {
                 roll_properties["damages"] = damages.as_array();
                 roll_properties["damage-types"] = damage_types.as_array();
                 crits = damagesToCrits(this, damages, damage_types);
@@ -1044,7 +942,7 @@ class Monster(CharacterBase) {
                     if (dmg != "") {
                         crit_damages.push(dmg);
                         crit_damage_types.push(damage_types[i]);
-                }
+                    }
                 }
                 roll_properties["critical-damages"] = crit_damages.as_array();
                 roll_properties["critical-damage-types"] = crit_damage_types.as_array();
@@ -1052,22 +950,22 @@ class Monster(CharacterBase) {
             if (save) {
                 roll_properties["save-ability"] = save[0];
                 roll_properties["save-dc"] = save[1];
+            }
+        }
 
-        }
-        }
         if (attackInfo || hitInfo) {
             return roll_properties;
         } else {
             return null;
+        }
+    }
 
-    }
-    }
     lookForActions(stat_block, add_dice, inject_descriptions) {
         blocks = stat_block.find(this._base + "__description-blocks " + this._base + "__description-block");
         makeCB = (props) => {
             return () => {
                 sendRoll(this, "attack", "1d20" + props["to-hit"], props);
-        }
+            }
         }
         for (let block of blocks) {
             actions = $(block).find(this._base + "__description-block-content p");
@@ -1093,20 +991,15 @@ class Monster(CharacterBase) {
                     if (roll_properties) {
                         id = addRollButton(this, makeCB(roll_properties), action,
                                            small=true, prepend=true, image=true, text=action_name);
-                        }
-                        }
-                        }
-                        }
-                        }
                         $("//" + id).css({"float": "", "text-align": ""});
-                }
+                    }
                 }
                 if (inject_descriptions) {
                     injectDiceToRolls(action, this, action_name);
+                }
+            }
+        }
 
-        }
-        }
-        }
         handleAction = (action_name, block, action) => {
             description = $(action).text();
             if (action_name.slice(-1)[0] == ".") {
@@ -1117,19 +1010,14 @@ class Monster(CharacterBase) {
                 if (roll_properties) {
                     id = addRollButton(this, makeCB(roll_properties), block,
                                         small=true, before=true, image=true, text=action_name);
-                    }
-                    }
-                    }
-                    }
-                    }
                     $("//" + id).css({"float": "", "text-align": "", "margin-top": "15px"});
-            }
+                }
             }
             if (inject_descriptions) {
                 injectDiceToRolls(action, this, action_name);
+            }
+        }
 
-        }
-        }
         // Parse Vehicle (boats) weapons;
         blocks = stat_block.find(this._base + "__component-block");
         for (let block of blocks) {
@@ -1142,9 +1030,9 @@ class Monster(CharacterBase) {
                     continue;
                 }
                 handleAction(action_name, block, action);
+            }
+        }
 
-        }
-        }
         // Parse Vehicle (boats) weapons (in character extra);
         blocks = stat_block.find(this._base + "-component");
         for (let block of blocks) {
@@ -1152,8 +1040,8 @@ class Monster(CharacterBase) {
             actions = $(block).find(this._base + "-component__actions");
             // We can't parse each action separately because the entire block is interactive.;
             handleAction(action_name, block, actions);
-
         }
+
         // Parse Vehicle (infernal machines) features;
         blocks = stat_block.find(this._base + "__feature," + this._base + "__features-feature");
         for (let block of blocks) {
@@ -1164,8 +1052,8 @@ class Monster(CharacterBase) {
                 action = $(block).find(this._base + "__features-feature-description");
             }
             handleAction(action_name, block, action);
-
         }
+
         // Parse Vehicle (infernal machines) action stations;
         blocks = stat_block.find(this._base + "__action-station-block," + this._base + "-action-station");
         for (let block of blocks) {
@@ -1176,10 +1064,10 @@ class Monster(CharacterBase) {
                 action = $(block).find(this._base + "-action-station__action");
             }
             handleAction(action_name, block, action);
+        }
+    }
 
 
-    }
-    }
     injectSpellRolls(element, url) {
         icon16 = chrome.extension.getURL("images/icons/icon16.png");
 
@@ -1204,20 +1092,20 @@ class Monster(CharacterBase) {
                     this._spells[spell_url] = spell;
                 }
                 );
-        }
+            }
         }
         );
-
     }
+
     lookForSpells(stat_block) {
         spells = stat_block.find(this._base + "__description-blocks a.spell-tooltip");
         for (let spell of spells) {
             tooltip_href = $(spell).attr("data-tooltip-href");
             tooltip_url = re.sub("-tooltip.*$", "/tooltip", tooltip_href);
             this.injectSpellRolls(spell, tooltip_url);
+        }
+    }
 
-    }
-    }
     updateInfo() {
         // Creature name could change/be between.includes(customized) calls;
         this._name = this._stat_block.find(this._base + "__name").text().trim();
@@ -1231,7 +1119,7 @@ class Monster(CharacterBase) {
                 max_hp = int($(item).find(".ct-creature-pane__adjuster-group-value").text());
             } else if (label == "Temp HP") {
                 temp_hp = int($(item).find(".ct-creature-pane__adjuster-group-value input").val());
-        }
+            }
         }
         if (hp !== null && max_hp !== null && (this._hp != hp || this._max_hp != max_hp || this._temp_hp != temp_hp)) {
             this._hp = hp;
@@ -1243,10 +1131,10 @@ class Monster(CharacterBase) {
                 req = {"action": "hp-update", "character": this.getDict()}
                 console.log("Sending message: ", req);
                 chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(this, resp));
+            }
+        }
+    }
 
-    }
-    }
-    }
     getDict() {
         return {"name": this._name,
                 "avatar": this._avatar,
@@ -1263,29 +1151,27 @@ class Monster(CharacterBase) {
                 "skills": this._skills,
                 "cr": this._cr,
                 "url": this._url}
+    }
+}
 
 
-}
-}
-}
-}
 function skillToAbility(skill) {
     if (skill_abilities[skill] != undefined) {
         return skill_abilities[skill];
     }
     return "";
-
 }
+
 function abbreviationToAbility(abbr) {
     for (let ability of ability_abbreviations) {
         if (ability_abbreviations[ability] == abbr) {
             return ability;
-    }
+        }
     }
     return abbr;
-
-
 }
+
+
 function propertyListToDict(propList) {
     properties = {}
     for (let i = 0; i < (propList.length); i++) {
@@ -1294,13 +1180,13 @@ function propertyListToDict(propList) {
         properties[label] = value;
     }
     return properties;
-
 }
+
 function descriptionToString(selector) {
     // strip tags : https://www.sitepoint.com/jquery-strip-html-tags-div/;
     return ($(selector).html() || "").replace(/<\/ != undefined[^>]+>/gi, '');
-
 }
+
 function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
     items = $(items_selector);
     for (let i = 0; i < (items.length); i++) {
@@ -1311,11 +1197,11 @@ function findToHit(name_to_match, items_selector, name_selector, tohit_selector)
                 return to_hit;
             }
             break;
-    }
+        }
     }
     return null;
-
 }
+
 function damagesToCrits(character, damages) {
     crits = [];
     rule = int(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
@@ -1331,28 +1217,23 @@ function damagesToCrits(character, damages) {
                 return String(dice * faces);
             } else {
                 return match.group(0);
-        }
+            }
         }
         );
         console.log("Damage to crits : ", damage, damage_parts);
         crits.push(damage_parts.join(" + "));
     }
     return crits;
-
 }
+
 function buildAttackRoll(character, attack_source, name, description, properties, damages=[], damage_types=[], to_hit=null, brutal=0) {
     roll_properties = {"name": name,
                        "attack-source": attack_source,
                        "description": description}
-    }
-    }
-    }
-    }
-    }
     if (to_hit) {
         roll_properties["to-hit"] = to_hit;
-
     }
+
     if (properties["Reach"] != undefined) {
         roll_properties["reach"] = properties["Reach"];
         roll_properties["attack-type"] = "Melee";
@@ -1367,23 +1248,23 @@ function buildAttackRoll(character, attack_source, name, description, properties
         } else {
             roll_properties["attack-type"] = "Ranged";
             roll_properties["range"] = range_area;
-    }
+        }
     }
     if (properties["Attack Type"] != undefined) {
         roll_properties["attack-type"] = properties["Attack Type"];
-
     }
+
     if (properties["Attack/Save"] != undefined) {
         save_ability, save_dc = properties["Attack/Save"].split(" ");
         roll_properties["save-ability"] = abbreviationToAbility(save_ability);
         roll_properties["save-dc"] = save_dc;
-
     }
+
     if (properties["Properties"] != undefined) {
         roll_properties["properties"] = properties["Properties"].split(", ");
-
     }
-    if (len(damages) > 0) {
+
+    if (damages.length > 0) {
         roll_properties["damages"] = damages.as_array();
         roll_properties["damage-types"] = damage_types.as_array();
         if (to_hit) {
@@ -1394,7 +1275,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 if (dmg != "") {
                     crit_damages.push(dmg);
                     crit_damage_types.push(damage_types[i]);
-            }
+                }
             }
             if (brutal > 0) {
                 highest_dice = 0;
@@ -1404,22 +1285,22 @@ function buildAttackRoll(character, attack_source, name, description, properties
                         sides = int(match.group(1));
                         if (sides > highest_dice) {
                             highest_dice = sides;
-                }
-                }
+                        }
+                    }
                 }
                 if (highest_dice != 0) {
                     crit_damages.push(String(brutal) + "d" + String(highest_dice));
                     crit_damage_types.push("Brutal");
-            }
+                }
             }
             roll_properties["critical-damages"] = crit_damages.as_array();
             roll_properties["critical-damage-types"] = crit_damage_types.as_array();
+        }
+    }
 
-    }
-    }
     return roll_properties;
-
 }
+
 function sendRoll(character, rollType, fallback, args) {
     nonlocal key_modifiers;
 
@@ -1431,13 +1312,11 @@ function sendRoll(character, rollType, fallback, args) {
     advantage = int(character.getGlobalSetting("roll-type", RollType.NORMAL));
     if (args["advantage"] == RollType.OVERRIDE_ADVANTAGE) {
         args["advantage"] = advantage == RollType.SUPER_ADVANTAGE ? RollType.SUPER_ADVANTAGE : RollType.ADVANTAGE;
-
     }
+
     // Default advantage/whisper would get overriden if (they are part of provided args;
     req = {"action") { "roll", "character": character.getDict(), "type": rollType, "roll": cleanRoll(fallback),
            "advantage": advantage, "whisper": whisper}
-    }
-    }
     if (character.getGlobalSetting("weapon-force-critical", false)) {
         req["critical-limit"] = 1;
     }
@@ -1450,24 +1329,24 @@ function sendRoll(character, rollType, fallback, args) {
         req["advantage"] = RollType.DISADVANTAGE;
     } else if (key_modifiers.alt) {
         req["advantage"] = RollType.NORMAL;
-
     }
+
     console.log("Sending message: ", req);
     chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(character, resp));
-
 }
+
 function isRollButtonAdded() {
     return $(".ct-beyond20-roll,.ct-beyond20-roll-display").length > 0;
-
 }
+
 function isCustomRollIconsAdded() {
     return $(".ct-beyond20-custom-roll").length > 0;
-
 }
+
 function isHitDieButtonAdded() {
     return $(".ct-beyond20-roll-hitdie").length > 0;
-
 }
+
 function getRollTypeButtonClass(character) {
     if (character != undefined) {
         advantage = int(character.getGlobalSetting("roll-type", RollType.NORMAL));
@@ -1501,17 +1380,17 @@ function getRollTypeButtonClass(character) {
         return "beyond20-roll-type-super-disadvantage";
     }
     return "";
-
 }
+
 last_character_used = null;
 function updateRollTypeButtonClasses(character) {
     nonlocal last_character_used;
     button_roll_type_classes="beyond20-roll-type-double beyond20-roll-type-query beyond20-roll-type-thrice beyond20-roll-type-advantage beyond20-roll-type-disadvantage beyond20-roll-type-super-advantage beyond20-roll-type-super-disadvantage";
     rolltype_class = getRollTypeButtonClass(character || last_character_used);
     $(".ct-beyond20-roll .ct-beyond20-roll-button,.beyond20-quick-roll-tooltip").removeClass(button_roll_type_classes).addClass(rolltype_class);
-
-
 }
+
+
 button_class = "ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button";
 button_class_small = button_class + " character-button-small";
 function addRollButton(character, callback, where, small=false, append=false, prepend=false, before=false, image=true, text="Beyond 20") {
@@ -1528,19 +1407,10 @@ function addRollButton(character, callback, where, small=false, append=false, pr
                     E.button(class_= small ? "ct-beyond20-roll-button " + (button_class_small : button_class) + rolltype_class,
                              E.img(class_= image ? "ct-beyond20-icon", small ? src=((icon16 : icon32) : ""),
                                    style= image ? ("margin-right: 6px;" : "")),
-                             }
-                             }
                              E.span(class_="ct-button__content", text);
                              );
-                    }
-                    }
-                    }
                     );
 
-    }
-    }
-    }
-    }
     if (append) {
         $(where).push(button);
     } else if (prepend) {
@@ -1553,33 +1423,19 @@ function addRollButton(character, callback, where, small=false, append=false, pr
     $("//" + String(id)).css({"float": "right",
                                 "display": "block",
                                 "text-align": "center"});
-    }
-    }
-    }
-    }
-    }
-    }
-    }
     $("//" + String(id) + " button").on('click', (event) => {
         callback();
     }
     );
     return id;
-
 }
+
 function addDisplayButton(callback, where, VTT",.includes(text="Display) append=true, small=true) {
     button = E.div(class_="ct-beyond20-roll-display",
                    E.button(class_= small ? "ct-beyond20-display-button " + (button_class_small : button_class).replace("filled", "outline"),
                             E.span(class_="ct-button__content", text);
                             );
-                   }
-                   }
-                   }
                    );
-    }
-    }
-    }
-    }
     if (append) {
         $(where).push(button);
     } else {
@@ -1587,22 +1443,13 @@ function addDisplayButton(callback, where, VTT",.includes(text="Display) append=
     }
     $(".ct-beyond20-roll-button").css({"margin-left": "auto",
                                        "margin-right": "auto"});
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
     $(".ct-beyond20-roll-display").css("margin-top", "2px");
     $(".ct-beyond20-roll-display").on('click', (event) => {
         callback();
     }
     );
-
 }
+
 function addHitDieButtons(rollCallback) {
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
     button = E.div(class_="ct-beyond20-roll-hitdie", style="float: right;",
@@ -1610,14 +1457,7 @@ function addHitDieButtons(rollCallback) {
                     E.button(class_="ct-beyond20-roll-button " + button_class_small,
                              E.span(class_="ct-button__content", "Roll Hit Die");
                              );
-                    }
-                    }
-                    }
                     );
-    }
-    }
-    }
-    }
     print("Adding Hit Dice buttons");
 
     $(".ct-reset-pane__hitdie-heading").push(button);
@@ -1627,13 +1467,13 @@ function addHitDieButtons(rollCallback) {
         cb = (rollCallback, index) => {
             return (event) => {
                 rollCallback(multiclass, index);
+            }
+        }
 
-        }
-        }
         $(".ct-beyond20-roll-hitdie").eq(i).on('click', cb(rollCallback, i));
+    }
+}
 
-}
-}
 function addIconButton(callback, where, append=false, prepend=false) {
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
     id = uuid.uuid4();
@@ -1641,10 +1481,6 @@ function addIconButton(callback, where, append=false, prepend=false) {
                     style="margin-right:3px; margin-left: 3px;",
                     E.img(class_="ct-beyond20-icon", src=icon16));
 
-    }
-    }
-    }
-    }
     if (append) {
         $(where).push(button);
     } else if (prepend) {
@@ -1656,8 +1492,8 @@ function addIconButton(callback, where, append=false, prepend=false) {
         callback();
     }
     );
-
 }
+
 function removeRollButtons() {
     $(".ct-beyond20-roll").remove();
     $(".ct-beyond20-roll-hitdie").remove();
@@ -1666,10 +1502,10 @@ function removeRollButtons() {
     custom_rolls = $("u.ct-beyond20-custom-roll");
     for (let i = 0; i < (custom_rolls.length); i++) {
         custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
+    }
+}
 
 
-}
-}
 function recursiveDiceReplace(node, cb) {
     if (node.hasChildNodes()) {
         // We need to copy the list since its size could change as we modify it;
@@ -1685,25 +1521,24 @@ function recursiveDiceReplace(node, cb) {
         // Only replace if (we changed it, otherwise we might break existing html code bindings;
         if text != node.textContent) {
             $(node).replaceWith($.parseHTML(text));
+        }
+    }
+}
 
-}
-}
-}
 function injectDiceToRolls(selector, character, name="") {
     icon16 = chrome.extension.getURL("images/icons/icon16.png");
     replaceCB = (dice, modifier) => {
         dice_formula = dice == "" ? ("1d20" : dice) + modifier;
-        return '<u class="ct-beyond20-custom-roll"><strong>' + dice + modifier + '</strong>' + \
-            '<img class="ct-beyond20-custom-icon" x-beyond20-name="' + name + \
+        return '<u class="ct-beyond20-custom-roll"><strong>' + dice + modifier + '</strong>' + \;
+            '<img class="ct-beyond20-custom-icon" x-beyond20-name="' + name + \;
             '" x-beyond20-roll="' + dice_formula + '"></img></u>';
+    }
 
-    }
-    }
     items = $(selector);
     for (let item of items) {
         recursiveDiceReplace(item, replaceCB);
-
     }
+
     $(".ct-beyond20-custom-icon").css("margin-right", "3px");
     $(".ct-beyond20-custom-icon").css("margin-left", "3px");
     $(".ct-beyond20-custom-icon").attr("src", icon16);
@@ -1714,8 +1549,8 @@ function injectDiceToRolls(selector, character, name="") {
         sendRoll(character, "custom", roll, {"name": name});
     }
     );
-
 }
+
 function beyond20SendMessageFailure(character, response) {
     if ( !response  != undefined) {
         return;
@@ -1725,9 +1560,9 @@ function beyond20SendMessageFailure(character, response) {
         dndbeyondDiceRoller.handleRollError(response.request, response.error);
     } else if (response.error != undefined) {
         alertify.error("<strong>Beyond 20 : </strong>" + response.error);
+    }
+}
 
-}
-}
 alertify.set("alert", "title", "Beyond 20");
 alertify.set("notifier", "position", "top-center");
 
@@ -1744,7 +1579,7 @@ checkKeyModifiers = (event) => {
     needsUpdate = needsUpdate || Object.values(key_modifiers).some((v) => v);
     if (needsUpdate) {
         updateRollTypeButtonClasses();
-}
+    }
 }
 resetKeyModifiers = (event) => {
     nonlocal key_modifiers;
@@ -1754,6 +1589,6 @@ resetKeyModifiers = (event) => {
     key_modifiers.alt = false;
     if (needsUpdate) {
         updateRollTypeButtonClasses();
-}
+    }
 }
 $(window).keydown(checkKeyModifiers).keyup(checkKeyModifiers).blur(resetKeyModifiers);

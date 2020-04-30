@@ -15,14 +15,12 @@ class FVTTDisplaye extends r {
                         html = data;
                         data = temp;
 
-                    }
                     icon16 = extension_url + "images/icons/icon16.png";
                     html.find(".ct-beyond20-custom-icon").attr('src', icon16);
                     html.find(".ct-beyond20-custom-roll").on('click', (event) => {
                         nonlocal roll_renderer;
                         roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
                         roll_renderer.rollDice(request, title, roll);
-                    }
                     );
                     html.find(".beyond20-chat-button").on('click', (event) => {
                         button = $(event.currentTarget).text();
@@ -31,11 +29,11 @@ class FVTTDisplaye extends r {
                     );
                 }
                 );
-        }
+            }
         }
         return this._postChatMessage(html, character, whisper, play_sound);
-
     }
+
     _postChatMessage(message, character, whisper, play_sound=false) {
         nonlocal CHAT_MESSAGE_TYPES, CONST;
         if (CONST.CHAT_MESSAGE_TYPES != undefined) {
@@ -49,8 +47,6 @@ class FVTTDisplaye extends r {
         data = {"content": message,
                 "user": game.user._id,
                 "speaker": this._getSpeakerByName(character)}
-        }
-        }
         rollMode = this._whisperToRollMode(whisper);
         if (["gmroll",.includes(rollMode) "blindroll"]) {
             data['type'] = MESSAGE_TYPES.WHISPER;
@@ -64,8 +60,8 @@ class FVTTDisplaye extends r {
             data["sound"] = CONFIG.sounds.dice;
         }
         return ChatMessage.create(data);
-
     }
+
     _getSpeakerByName(name) {
         if (name === null) {
             return ChatMessage.getSpeaker();
@@ -75,8 +71,8 @@ class FVTTDisplaye extends r {
         speaker = ChatMessage.getSpeaker({"actor": actor});
         speaker["alias"] = name;
         return speaker;
-
     }
+
     _whisperToRollMode(whisper) {
         try {
             return {WhisperType.NO: "roll",
@@ -85,21 +81,21 @@ class FVTTDisplaye extends r {
                     }[whisper];
         } catch(err) {
             return game.settings.get("core", "rollMode");
+        }
+    }
 
-    }
-    }
     displayError(message) {
         ui.notifications.error(message);
+    }
+}
 
-}
-}
 class FVTTRoll(Beyond20BaseRoll) {
     constructor(formula, data={}) {
         formula = formula.replace("ro<2", "r<=2");
         Beyond20BaseRoll.constructor(this, formula, data);
         this._roll = new Roll(formula, data).roll();
-
     }
+
     @property;
     total() {
         return this._roll.total;
@@ -115,25 +111,25 @@ class FVTTRoll(Beyond20BaseRoll) {
     @property;
     parts() {
         return this._roll.parts;
-
     }
+
     getTooltip() {
         return this._roll.getTooltip();
-
     }
+
     reroll() {
         this._roll = this._roll.reroll();
         return this;
+    }
+}
 
-}
-}
 class FVTTRolle extends r {
     roll(formula, data) {
         return FVTTRoll(formula, data);
+    }
+}
 
 
-}
-}
 class FVTTPrompte extends r {
     prompt(title, html, ok_label="OK", cancel_label="Cancel") {
         return new Promise((resolve, reject) => {
@@ -149,24 +145,19 @@ class FVTTPrompte extends r {
                                                 ok_pressed = true;
 
                                         },
-                                    }
                                     "cancel": {"label": cancel_label}
                                     },
-                        }
-                        }
-                        }
                         "default": "ok",
                         "close": (html) => {
                             resolve(html if (ok_pressed else null);
                         }).render(true);
-        }
-        }
-        }
+                }
+            }
         }
         );
+    }
+}
 
-}
-}
 roll_renderer = Beyond20RollRenderer(FVTTRoller(), FVTTPrompter(), FVTTDisplayer());
 roll_renderer.setBaseURL(extension_url);
 roll_renderer.setSettings(settings);
@@ -177,24 +168,19 @@ function rollInitiative(request, custom_roll_dice="") {
     roll_renderer.handleRollRequest(request).then((roll) => {
         if settings["initiative-tracker"]) {
             addInitiativeToCombat(roll);
-    }
+        }
     }
     );
-
 }
+
 function popAvatar(request) {
     new ImagePopout(request.character.avatar,
                         {"shareable":false,
                         "title": request.character.name,
                         "entity": {"type": "User", "id": game.user.id}
                         }).render(true).shareImage(true);
+}
 
-}
-}
-}
-}
-}
-}
 v'async';
 function addInitiativeToCombat(roll) {
     if (canvas.tokens.controlledTokens.length > 0) {
@@ -217,12 +203,11 @@ function addInitiativeToCombat(roll) {
             ui.notifications.warn("Can !add initiative to tracker: no Encounter has been created yet");
     } else {
             ui.notifications.warn("Can !add initiative to tracker: no token is currently selected");
+    }
+}
 
 
 
-}
-}
-}
 function handleRoll(request) {
     nonlocal roll_renderer;
 
@@ -235,9 +220,9 @@ function handleRoll(request) {
         popAvatar(request);
     } else {
         roll_renderer.handleRollRequest(request);
+    }
+}
 
-}
-}
 function updateHP(name, current, total, temp) {
     console.log("Updating HP for " + name + " : (" + current + "+" + temp + ")/" + total);
     name = name.toLowerCase().trim();
@@ -246,25 +231,25 @@ function updateHP(name, current, total, temp) {
 
     dnd5e_data = {"data.attributes.hp.value": current, "data.attributes.hp.temp": temp, "data.attributes.hp.max": total}
     sws_data = {"data.health.value": current + temp, "data.health.max": total}
-    if (len(tokens) == 0) {
+    if (tokens.length == 0) {
         actor = game.actors.entities.find((a) => a.owner && a.name.toLowerCase() == name);
         if (actor != undefined.data != undefined.data != undefined.attributes != undefined.hp != undefined) {
             actor.update(dnd5e_data);
         } else if (actor != undefined.data != undefined.data != undefined.health != undefined) {
             actor.update(sws_data);
+        }
+    }
 
-    }
-    }
     for (let token of tokens) {
         if (token.actor != undefined.data != undefined.data != undefined.attributes != undefined.hp != undefined) {:;
             token.actor.update(dnd5e_data);
         } else if (token.actor != undefined.data != undefined.data != undefined.health != undefined) {
             actor.update(sws_data);
+        }
+    }
+}
 
 
-}
-}
-}
 function updateConditions(request, name, conditions, exhaustion) {
     nonlocal roll_renderer, CONST, CONFIG;
     console.log("Updating Conditions for " + name + " : ", conditions, " - exhaustion level : ", exhaustion);
@@ -304,9 +289,9 @@ function updateConditions(request, name, conditions, exhaustion) {
                     defeated = true;
                 } else {
                     new_conditions.push("exhaustion" + exhaustion + ".svg");
+                }
+            }
 
-            }
-            }
             // Remove status effects that have disappeared;
             for (let effect of effects) {
                 if ( !effect.startsWith("modules/beyond20/conditions/")) {
@@ -316,8 +301,8 @@ function updateConditions(request, name, conditions, exhaustion) {
                     if (new_conditions.includes(effect_name)) {
                         new_effects.push(effect);
                         new_conditions = new_conditions.filter((c) => c != effect_name);
-            }
-            }
+                    }
+                }
             }
             console.log("From ", effects, "to ", new_effects, " still need to add ", new_conditions);
             new_effects = new_effects.concat(new_conditions.map((c) => "modules/beyond20/conditions/" + c));
@@ -326,12 +311,12 @@ function updateConditions(request, name, conditions, exhaustion) {
                 data["overlayEffect"] = "icons/svg/skull.svg";
             }
             token.update(data);
+        }
+    }
+}
 
 
 
-}
-}
-}
 function setSettings(new_settings, url) {
     nonlocal settings, extension_url, roll_renderer;
 
@@ -339,16 +324,16 @@ function setSettings(new_settings, url) {
     extension_url = url;
     roll_renderer.setBaseURL(extension_url);
     roll_renderer.setSettings(settings);
-
 }
+
 function disconnectAllEvents() {
     nonlocal registered_events;
 
     for (let event of registered_events) {
         document.removeEventListener(*event);
+    }
+}
 
-}
-}
 function setTitle() {
     if (game.world != undefined) {
         title = document.getElementsByTagName("title")[0];
@@ -359,9 +344,9 @@ function setTitle() {
     else) {
         // Wait a second for the world to get loaded;
         setTimeout(setTitle, 1000);
+    }
+}
 
-}
-}
 console.log("Beyond20: Foundry VTT Page Script loaded");
 registered_events = [];
 registered_events.push(addCustomEventListener("Roll", handleRoll));

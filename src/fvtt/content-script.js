@@ -14,16 +14,11 @@ function updateSettings(new_settings=null) {
     } else {
         getStoredSettings((saved_settings) => {
                               updateSettings(saved_settings);
-                          }
                           );
+        }
+    }
+}
 
-}
-}
-}
-}
-}
-}
-}
 function handleMessage(request, sender, sendResponse) {
     nonlocal settings;
 
@@ -41,32 +36,31 @@ function handleMessage(request, sender, sendResponse) {
             sendCustomEvent("UpdateConditions", (request, request.character.name, request.character.conditions, request.character.exhaustion));
     } else if (request.action == "roll") {
         sendCustomEvent("Roll", (request, 0));
+    }
+}
 
-}
-}
 function titleSet(mutations, observer) {
     updateSettings();
     chrome.runtime.onMessage.addListener(handleMessage);
     chrome.runtime.sendMessage({"action": "register-fvtt-tab"});
     injectSettingsButton();
     observer.disconnect();
-
 }
+
 function injectSettingsButton() {
     $(".beyond20-settings").remove();
 
     icon = chrome.extension.getURL("images/icons/icon24.png");
     button = E.div(class_="beyond20-settings", style="flex-grow: 0;",
         E.img(class_="beyond20-settings-logo", src=icon, style="margin: 0px 5px; border: 0px;");
-    }
     );
     $("//chat-controls").push(button);
     $(button).on('click', (event) => alertQuickSettings());
-
-
-
 }
+
+
+
 observer = new window.MutationObserver(titleSet);
 observer.observe(document.getElementsByTagName("title")[0], {"childList": true});
 sendCustomEvent("disconnect");
-injectPageScript(chrome.runtime.getURL('src/fvtt_script.js'));
+injectPageScript(chrome.runtime.getURL('dist/fvtt_script.js'));

@@ -34,7 +34,7 @@ const SRC_FILES = {
         "src/roll20/page-script.js"
     ],
     fvtt_test: [
-        "src/fvtt/fvtt_test.js"
+        "src/fvtt/check-tab.js"
     ],
 }
 const CSS_FILES = ['src/extension/beyond20.css']

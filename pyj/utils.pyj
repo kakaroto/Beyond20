@@ -58,7 +58,7 @@ def injectCSS(css):
     s.textContent = css
     (document.head or document.documentElement).appendChild(s)
 
-def sendCustomEvent(name, data):
+def sendCustomEvent(name, data=[]):
     if getBrowser() == "Firefox":
         data = cloneInto(data, window)
     event = new CustomEvent("Beyond20_" + name, {"detail": data})

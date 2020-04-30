@@ -42,7 +42,7 @@ class Beyond20RollRenderer:
         html += """
                 </select>
             </div>
-        </div>
+        </form>
         """
         return new Promise(def(resolve, reject):
             self._prompter.prompt(title, html, "Roll").then(def(html):
@@ -342,7 +342,7 @@ class Beyond20RollRenderer:
         data = {request.ability: request.modifier, "custom_dice": custom_roll_dice}
         return self.rollD20(request, request.name + " Save" + "(" + request.modifier + ")", data)
 
-    def rollInitiative(self, request, callback, custom_roll_dice=""):
+    def rollInitiative(self, request, custom_roll_dice=""):
         data = {"initiative": request.initiative, "custom_dice": custom_roll_dice}
         return self.rollD20(request, "Initiative" + "(" + request.initiative + ")", data)
 
