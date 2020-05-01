@@ -4,7 +4,7 @@ function createOptionList() {
     for (let option in options_list) {
         const child = createHTMLOption(option);
         if (child)
-            options.push(child);
+            options.append(child);
     }
     $("main").prepend(E.ul({ class: "list-group beyond20-options" }, ...options));
 }

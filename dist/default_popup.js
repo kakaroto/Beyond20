@@ -23,6 +23,7 @@ function replaceRolls(text, replaceCB) {
 function cleanRoll(rollText) {
     //clean adjacent '+'s (Roll20 treats it as a d20);
     //eg: (1d10 + + 2 + 3) -> (1d10 + 2 + 3);
+    rollText = (rollText || "").toString();
     rollText = rollText.replace(/\+ \+/g, '+').replace(/\+ \-/g, '-');
     return rollText;
 }

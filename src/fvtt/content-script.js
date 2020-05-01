@@ -49,7 +49,7 @@ function injectSettingsButton() {
     button = E.div({ class: "beyond20-settings", style: "flex-grow: 0;" },
         E.img({ class: "beyond20-settings-logo", src: icon, style: "margin: 0px 5px; border: 0px;" })
     );
-    $("#chat-controls").push(button);
+    $("#chat-controls").append(button);
     $(button).on('click', (event) => alertQuickSettings());
 }
 

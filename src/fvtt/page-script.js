@@ -12,7 +12,7 @@ class FVTTDisplayer {
             const icon16 = extension_url + "images/icons/icon16.png";
             html.find(".ct-beyond20-custom-icon").attr('src', icon16);
             html.find(".ct-beyond20-custom-roll").on('click', (event) => {
-                roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
+                const roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
                 roll_renderer.rollDice(request, title, roll);
             });
             html.find(".beyond20-chat-button").on('click', (event) => {
@@ -157,7 +157,7 @@ async function addInitiativeToCombat(roll) {
     if (canvas.tokens.controlledTokens.length > 0) {
         if (game.combat) {
             if (game.combat.scene.id != canvas.scene.id) {
-                ui.notifications.warn("Can !add initiative to tracker: Encounter was  !created for this scene");
+                ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene");
             } else {
                 for (let token of canvas.tokens.controlledTokens) {
                     combatant = game.combat.getCombatantByToken(token.id);
@@ -170,10 +170,10 @@ async function addInitiativeToCombat(roll) {
                 }
             }
         } else {
-            ui.notifications.warn("Can !add initiative to tracker: no Encounter has been created yet");
+            ui.notifications.warn("Cannot add initiative to tracker: no Encounter has been created yet");
         }
     } else {
-        ui.notifications.warn("Can !add initiative to tracker: no token is currently selected");
+        ui.notifications.warn("Cannot add initiative to tracker: no token is currently selected");
     }
 }
 

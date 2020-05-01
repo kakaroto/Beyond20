@@ -22,6 +22,7 @@ function replaceRolls(text, replaceCB) {
 function cleanRoll(rollText) {
     //clean adjacent '+'s (Roll20 treats it as a d20);
     //eg: (1d10 + + 2 + 3) -> (1d10 + 2 + 3);
+    rollText = (rollText || "").toString();
     rollText = rollText.replace(/\+ \+/g, '+').replace(/\+ \-/g, '-');
     return rollText;
 }
@@ -1008,7 +1009,7 @@ function createOptionList() {
     for (let option in options_list) {
         const child = createHTMLOption(option);
         if (child)
-            options.push(child);
+            options.append(child);
     }
     $("main").prepend(E.ul({ class: "list-group beyond20-options" }, ...options));
 }

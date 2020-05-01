@@ -54,8 +54,8 @@ function save_settings() {
     });
     if (character !== null) {
         saveSettings((settings) => {
-            chrome.runtime.sendMessage({ "action": "settings", "type": "character", "id": character.id, "settings": settings }), "character-" + character.id, character_settings
-        });
+            chrome.runtime.sendMessage({ "action": "settings", "type": "character", "id": character.id, "settings": settings })
+        }, "character-" + character.id, character_settings);
     }
 }
 
@@ -63,7 +63,7 @@ function setupHTML() {
     createOptionList();
     $('.beyond20-option-input').change(save_settings);
     $(".beyond20-options").on("markaChanged", save_settings);
-    $(document).on('click', 'a', (ev) => {
+    $(document).on('click', 'a', function (ev) {
         const href = this.getAttribute('href');
         if (href.length > 0 && href != "#") {
             window.open(this.href);
@@ -78,7 +78,7 @@ function populateCharacter(response) {
     if (response) {
         console.log("Received character: ", response);
         const options = $(".beyond20-options");
-        options.push(
+        options.append(
             E.li({
                 class: "list-group-item beyond20-option",
                 id: "character-option",
@@ -89,91 +89,91 @@ function populateCharacter(response) {
         );
 
         let e = createHTMLOption("versatile-choice", false, character_settings);
-        options.push(e);
+        options.append(e);
         e = createHTMLOption("custom-roll-dice", false, character_settings);
-        options.push(e);
+        options.append(e);
         e = createHTMLOption("custom-damage-dice", false, character_settings);
-        options.push(e);
+        options.append(e);
         if (Object.keys(response.classes).includes("Rogue")) {
             e = createHTMLOption("rogue-sneak-attack", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Disciple of Life")) {
             e = createHTMLOption("cleric-disciple-life", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (Object.keys(response.classes).includes("Bard")) {
             e = createHTMLOption("bard-joat", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["feats"].includes("Sharpshooter")) {
             e = createHTMLOption("sharpshooter", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["feats"].includes("Great Weapon Master")) {
             e = createHTMLOption("great-weapon-master", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Brutal Critical") ||
             response["racial-traits"].includes("Savage Attacks")) {
             e = createHTMLOption("brutal-critical", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Rage")) {
             e = createHTMLOption("barbarian-rage", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Crimson Rite")) {
             e = createHTMLOption("bloodhunter-crimson-rite", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Dread Ambusher")) {
             e = createHTMLOption("ranger-dread-ambusher", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Planar Warrior")) {
             e = createHTMLOption("ranger-planar-warrior", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Slayer’s Prey")) {
             e = createHTMLOption("ranger-slayers-prey", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Gathered Swarm")) {
             e = createHTMLOption("ranger-gathered-swarm", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["actions"].includes("Channel Divinity: Legendary Strike")) {
             e = createHTMLOption("paladin-legendary-strike", false, character_settings)
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Improved Divine Smite")) {
             e = createHTMLOption("paladin-improved-divine-smite", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Hexblade’s Curse")) {
             e = createHTMLOption("warlock-hexblade-curse", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Assassinate")) {
             e = createHTMLOption("rogue-assassinate", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Giant Might")) {
             e = createHTMLOption("fighter-giant-might", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Arcane Firearm")) {
             e = createHTMLOption("artificer-arcane-firearm", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Divine Strike")) {
             e = createHTMLOption("cleric-divine-strike", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
         if (response["class-features"].includes("Psychic Blades")) {
             e = createHTMLOption("bard-psychic-blades", false, character_settings);
-            options.push(e);
+            options.append(e);
         }
 
         loadSettings(response.settings, character_settings);
@@ -189,16 +189,16 @@ function addMonsterOptions() {
     let e = createHTMLOptionEx("whisper-type-monsters", option, true);
     $(e).insertAfter($("//whisper-type").parents("li"));
     const options = $(".beyond20-options");
-    options.push(
+    options.append(
         E.li({ class: "list-group-item beyond20-option", style: "text-align: center; padding: 10px;" },
             E.h4({}, " == Stat Block Specific Options ==")
         )
     );
 
     e = createHTMLOption("subst-dndbeyond-stat-blocks", false);
-    options.push(e);
+    options.append(e);
     e = createHTMLOption("handle-stat-blocks", false);
-    options.push(e);
+    options.append(e);
     $('.beyond20-option-input').off('change', save_settings);
     $('.beyond20-option-input').change(save_settings);
     initializeSettings(gotSettings);
@@ -213,7 +213,7 @@ function actOnCurrentTab(tab) {
     if (urlMatches(tab.url, ROLL20_URL) || isFVTT(tab.title)) {
         const vtt = isFVTT(tab.title) ? "Foundry VTT" : "Roll20";
         const options = $(".beyond20-options");
-        options.push(
+        options.append(
             E.li({ class: "list-group-item beyond20-option", style: "text-align: center; margin: 10px;" },
                 E.h4({}, ` == ${vtt} Tab Specific Options ==`)
             )
@@ -221,12 +221,12 @@ function actOnCurrentTab(tab) {
         let e = null;
         if (vtt == "Roll20") {
             e = createHTMLOption("roll20-template", false);
-            options.push(e);
+            options.append(e);
         }
         e = createHTMLOption("display-conditions", false);
-        options.push(e);
+        options.append(e);
         e = options_list["vtt-tab"].createHTMLElement("vtt-tab", true);
-        options.push(e);
+        options.append(e);
         $('.beyond20-option-input').off('change', save_settings);
         $('.beyond20-option-input').change(save_settings);
         initializeSettings(gotSettings);

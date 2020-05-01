@@ -48,7 +48,7 @@ const regexps = [
     [new RegExp(/None/gm), "null"],
     [new RegExp(/ or /gm), " || "],
     [new RegExp(/ and /gm), " && "],
-    [new RegExp(/not /gm), " !"],
+    [new RegExp(/ not /gm), " !"],
     [new RegExp(/\(not /gm), "(!"],
     [new RegExp(/True/gm), "true"],
     [new RegExp(/False/gm), "false"],

@@ -32,11 +32,7 @@ class Beyond20RollRenderer {
     }
 
     async queryGeneric(title, question, choices, select_id = "generic-query", order) {
-        let html = `
-        <form>
-            <div class="beyond20-form-row">
-                <label>${question}</label>
-                <select id="${select_id}" name="${select_id}">`;
+        let html = `<form><div class="beyond20-form-row"><label>${question}</label><select id="${select_id}" name="${select_id}">`;
 
         if (!order)
             order = Object.keys(choices);
@@ -45,11 +41,7 @@ class Beyond20RollRenderer {
             const value = choices[option] || option;
             html += `<option value="${option}"${selected}>${value}</option>`;
         }
-        html += `;
-                </select>;
-            </div>;
-        </form>;
-        `;
+        html += `;</select></div></form>`;
         return new Promise((resolve) => {
             this._prompter.prompt(title, html, "Roll").then((html) => {
                 if (html)
@@ -147,7 +139,7 @@ class Beyond20RollRenderer {
             // Can't use single line, since newlines get replaced with <br/>
             return `<span class="ct-beyond20-custom-roll">` +
                 `<strong>${dice}${modifier}</strong>` +
-                `<img class="ct-beyond20-custom-icon" src="${icon16} style="margin-right: 3px; margin-left: 3px; border: 0px;"></img>` +
+                `<img class="ct-beyond20-custom-icon" src="${icon16}" style="margin-right: 3px; margin-left: 3px; border: 0px;"></img>` +
                 `<span class="beyond20-roll-formula" style="display: none;">${dice_formula}</span>` +
             `</span>`;
         });
@@ -165,8 +157,8 @@ class Beyond20RollRenderer {
 
         const total = `<span class='${roll_type_class}'>${roll.total}</span>`;
         const tooltip = await roll.getTooltip();
-        return `<span class='beyond20-tooltip'>${total}<span class='dice-roll beyond20-tooltip-content'>
-            "<div class='dice-formula beyond20-roll-formula'>${roll.formula}</div>${tooltip}</span></span>`;
+        return `<span class='beyond20-tooltip'>${total}<span class='dice-roll beyond20-tooltip-content'>` +
+            `<div class='dice-formula beyond20-roll-formula'>${roll.formula}</div>${tooltip}</span></span>`;
     }
 
     rollsToCells(html) {

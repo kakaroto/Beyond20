@@ -5517,6 +5517,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         });
 
         function cleanRoll(rollText) {
+            rollText = (rollText || "").toString();
             rollText = rollText.replace(/\+ \+/g, "+").replace(/\+ \-/g, "-");
             return rollText;
         };
@@ -7564,7 +7565,7 @@ var str = ρσ_str, repr = ρσ_repr;;
                     html += "<option value=\"" + option + "\"" + selected + ">" + option + "</option>";
                 }
             }
-            html += "\n                </select>\n            </div>\n        </div>\n        ";
+            html += "\n                </select>\n            </div>\n        </form>\n        ";
             return new Promise((function() {
                 var ρσ_anonfunc = function (resolve, reject) {
                     self._prompter.prompt(title, html, "Roll").then((function() {
@@ -8187,8 +8188,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         Beyond20RollRenderer.prototype.rollInitiative = function rollInitiative() {
             var self = this;
             var request = ( 0 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[0];
-            var callback = ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true) ? undefined : arguments[1];
-            var custom_roll_dice = (arguments[2] === undefined || ( 2 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollInitiative.__defaults__.custom_roll_dice : arguments[2];
+            var custom_roll_dice = (arguments[1] === undefined || ( 1 === arguments.length-1 && arguments[arguments.length-1] !== null && typeof arguments[arguments.length-1] === "object" && arguments[arguments.length-1] [ρσ_kwargs_symbol] === true)) ? rollInitiative.__defaults__.custom_roll_dice : arguments[1];
             var ρσ_kwargs_obj = arguments[arguments.length-1];
             if (ρσ_kwargs_obj === null || typeof ρσ_kwargs_obj !== "object" || ρσ_kwargs_obj [ρσ_kwargs_symbol] !== true) ρσ_kwargs_obj = {};
             if (Object.prototype.hasOwnProperty.call(ρσ_kwargs_obj, "custom_roll_dice")){
@@ -8206,7 +8206,7 @@ var str = ρσ_str, repr = ρσ_repr;;
         if (!Beyond20RollRenderer.prototype.rollInitiative.__defaults__) Object.defineProperties(Beyond20RollRenderer.prototype.rollInitiative, {
             __defaults__ : {value: {custom_roll_dice:""}},
             __handles_kwarg_interpolation__ : {value: true},
-            __argnames__ : {value: ["request", "callback", "custom_roll_dice"]}
+            __argnames__ : {value: ["request", "custom_roll_dice"]}
         });
         Beyond20RollRenderer.prototype.rollHitDice = function rollHitDice(request) {
             var self = this;
