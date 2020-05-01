@@ -47,8 +47,10 @@ const SRC_FILES = {
         "src/roll20/content-script.js"
     ],
     roll20_script: [
+        "src/common/sandbox-header.js",
         "src/common/utils.js",
-        "src/roll20/page-script.js"
+        "src/roll20/page-script.js",
+        "src/common/sandbox-footer.js"
     ],
     fvtt_test: [
         "src/fvtt/check-tab.js"
@@ -68,6 +70,10 @@ const SRC_FILES = {
         ...DNDBEYOND_PAGE_DEPS,
         "src/dndbeyond/base/spell.js",
         "src/dndbeyond/content-scripts/spell.js",
+    ],
+    dndbeyond_item: [
+        ...DNDBEYOND_PAGE_DEPS,
+        "src/dndbeyond/content-scripts/item.js",
     ]
 }
 const CSS_FILES = ['src/extension/beyond20.css']

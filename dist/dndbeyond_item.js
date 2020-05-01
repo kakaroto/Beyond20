@@ -2800,121 +2800,56 @@ function beyond20SendMessageFailure(character, response) {
 }
 
 
-
-class SpellCharacter extends CharacterBase {
-    constructor(global_settings) {
-        super("spell", global_settings);
-    }
-}
-
-class Spell {
-    constructor(body, character, type = "page") {
-        this._character = character;
-        // if (type == "page")
-        let title_selector = ".page-title";
-        let statblock_selector = ".ddb-statblock";
-        let description_selector = ".spell-details .more-info-content";
-        let casting_time_label = "casting-time";
-        let range_area_label = "range-area";
-
-        if (type == "tooltip") {
-            title_selector = ".tooltip-header-text";
-            statblock_selector = ".tooltip-body-statblock";
-            description_selector = ".tooltip-body-description-text";
-            casting_time_label = "castingtime";
-            range_area_label = "range";
-        }
-
-        const get_statblock = (label) => {
-            return body.find(`${statblock_selector}-item-${label} ${statblock_selector}-item-value`).text().trim();
-        }
-
-        this.spell_name = body.find(title_selector).text().trim();
-        this.casting_time = get_statblock(casting_time_label);
-        this.range_area = get_statblock(range_area_label);
-        this.components = get_statblock("components");
-        this.duration = get_statblock("duration");
-        this.description = body.find(description_selector).text().trim();
-        const level = get_statblock("level");
-        const school = get_statblock("school");
-        this.preview = "https://www.dndbeyond.com/content/1-0-851-0/skins/waterdeep/images/spell-schools/35/" + school.toLowerCase() + ".png";
-        if (level == "Cantrip") {
-            this.level_school = school + " " + level;
-        } else {
-            this.level_school = level + " Level " + school;
-        }
-        if (this.duration.startsWith("Concentration")) {
-            this.concentration = true;
-            this.duration = this.duration.replace("Concentration", "").trim();
-        } else {
-            this.concentration = false;
-        }
-        this.ritual = (body.find(statblock_selector + "-item-casting-time .i-ritual").length > 0);
-        if (this.components.slice(-1)[0] == "*") {
-            const materials = body.find(description_selector + " .components-blurb").text().trim();
-            this.description = this.description.slice(0, -1 * materials.length).trim();
-            this.components = this.components.slice(0, -2) + materials.slice(4);
-        }
-        const aoe = body.find(statblock_selector + "-item-range-area .aoe-size").text().trim();
-        if (aoe != "") {
-            this.range_area = this.range_area.slice(0, -1 * aoe.length).trim() + " " + aoe.trim();
-        }
-    }
-
-    display() {
-        sendRoll(this._character, "spell-card", 0, {
-            "name": this.spell_name,
-            "preview": this.preview,
-            "level-school": this.level_school,
-            "range": this.range_area,
-            "concentration": this.concentration,
-            "duration": this.duration,
-            "casting-time": this.casting_time,
-            "components": this.components,
-            "ritual": this.ritual,
-            "description": this.description
-        });
-    }
-}
-
-/*
-from settings import getStoredSettings;
-from dndbeyond import injectDiceToRolls, isRollButtonAdded, CharacterBase, Spell;
+/*from settings import getStoredSettings;
+from dndbeyond import injectDiceToRolls, isRollButtonAdded, CharacterBase, sendRoll, descriptionToString;
 from elementmaker import E;
 from utils import alertFullSettings;
 */
 
-console.log("Beyond20: D&D Beyond Spell module loaded.");
+console.log("Beyond20: D&D Beyond Equipment & Magic Items module loaded.");
 
-let character = null;
+class ItemCharacter extends CharacterBase {
+    constructor(global_settings) {
+        super("item", global_settings);
+    }
+}
+
+var character = null;
 
 function addDisplayButton() {
     const icon32 = chrome.extension.getURL("images/icons/icon32.png");
     const button = E.a({ class: "ct-beyond20-roll button-alt", href: "#" },
         E.span({ class: "label" },
             E.img({ class: "ct-beyond20-icon", src: icon32, style: "margin-right: 10px;" }),
-            "Display Spell Card on VTT"
-        )
+            "Display Item on VTT")
     );
-    const spell = new Spell($("body"), character);
+    const item_name = $(".page-title").text().trim();
+    const item_type = descriptionToString(".item-details .item-info .details, .details-container-equipment .details-container-content-description > div > .details-container-content-description-text");
+    const description = descriptionToString(".item-details .more-info-content, .details-container-equipment .marginBottom20 + .details-container-content-description-text");
     $(".page-heading__content").after(button);
     $(".ct-beyond20-roll").css({
         "float": "right",
         "display": "inline-block"
     });
-    $(".ct-beyond20-roll").on('click', (event) => spell.display());
+    $(".ct-beyond20-roll").on('click', (event) => {
+        sendRoll(character, "item", "0", {
+            "name": item_name,
+            "description": description,
+            "item-type": item_type
+        });
+    }
+    );
 }
 
 function documentLoaded(settings) {
-    character = new SpellCharacter(settings);
+    character = new ItemCharacter(settings);
     if (isRollButtonAdded()) {
         chrome.runtime.sendMessage({ "action": "reload-me" });
     } else {
         addDisplayButton();
-        const spell_name = $(".page-title").text().trim();
-        if (settings['subst-dndbeyond']) {
-            injectDiceToRolls(".spell-details .more-info-content", character, spell_name);
-        }
+        const item_name = $(".page-title").text().trim();
+        if (settings['subst-dndbeyond'])
+            injectDiceToRolls(".item-details .more-info-content, .details-container-equipment .details-container-content-description-text", character, item_name);
     }
 }
 
@@ -2942,3 +2877,5 @@ function handleMessage(request, sender, sendResponse) {
 chrome.runtime.onMessage.addListener(handleMessage);
 chrome.runtime.sendMessage({ "action": "activate-icon" });
 updateSettings();
+
+

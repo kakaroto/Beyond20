@@ -1,3 +1,4 @@
+(function () {
 function replaceRollsCallback(match, replaceCB) {
     let dice = match[2];
     let modifiers = match[3];
@@ -181,3 +182,5 @@ function disconnectAllEvents() {
 var registered_events = [];
 registered_events.push(addCustomEventListener("UpdateHP", updateHP));
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
+
+})();
