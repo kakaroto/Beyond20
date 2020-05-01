@@ -1,6 +1,21 @@
 const gulp = require('gulp');
 const concat = require('gulp-concat');
 
+const ROLL_RENDERER_DEPS = [
+    "src/common/utils.js",
+    "src/common/settings.js",
+    "src/common/constants.js",
+    "src/discord/discord.js",
+    "src/common/roll_renderer.js"
+];
+const DNDBEYOND_PAGE_DEPS = [
+    ...ROLL_RENDERER_DEPS,
+    "src/dndbeyond/base/dice.js",
+    "src/dndbeyond/base/base.js",
+    "src/dndbeyond/base/hotkeys.js",
+    "src/dndbeyond/base/utils.js",
+];
+
 const SRC_FILES = {
     background: [
         "src/common/constants.js",
@@ -45,13 +60,14 @@ const SRC_FILES = {
     ],
     fvtt_script: [
         "src/common/sandbox-header.js",
-        "src/common/utils.js",
-        "src/common/settings.js",
-        "src/common/constants.js",
-        "src/discord/discord.js",
-        "src/common/roll_renderer.js",
+        ...ROLL_RENDERER_DEPS,
         "src/fvtt/page-script.js",
         "src/common/sandbox-footer.js"
+    ],
+    dndbeyond_spell: [
+        ...DNDBEYOND_PAGE_DEPS,
+        "src/dndbeyond/base/spell.js",
+        "src/dndbeyond/content-scripts/spell.js",
     ]
 }
 const CSS_FILES = ['src/extension/beyond20.css']
@@ -62,17 +78,17 @@ for (const target in SRC_FILES) {
     // named instead of being anonymous functions
     const task = {
         [target]: () => gulp.src(SRC_FILES[target])
-                .pipe(concat(`${target}.js`))
-                .pipe(gulp.dest("dist"))
+            .pipe(concat(`${target}.js`))
+            .pipe(gulp.dest("dist"))
     };
     targets[target] = task[target];
     gulp.task(target, targets[target]);
 }
 css = () => gulp.src(CSS_FILES)
-        .pipe(concat(`beyond20.css`))
-        .pipe(gulp.dest("dist"))
+    .pipe(concat(`beyond20.css`))
+    .pipe(gulp.dest("dist"))
 
-watch = () => {  
+watch = () => {
     for (target in SRC_FILES)
         gulp.watch(SRC_FILES[target], targets[target]);
     gulp.watch(CSS_FILES, css);

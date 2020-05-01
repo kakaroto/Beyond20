@@ -22,7 +22,7 @@ function documentModified(mutations, observer) {
 
     monster = $(".encounter-details-monster-summary-info-panel,.encounter-details__content-section--monster-stat-block,.combat-tracker-page__content-section--monster-stat-block,.monster-details-modal__body");
     monster_name = monster.find(".mon-stat-block__name").text();
-    console.log("Doc modified, new mon : ", monster_name, " != != undefined", last_monster_name);
+    console.log("Doc modified, new mon : ", monster_name, " != !== undefined", last_monster_name);
     if (monster_name == last_monster_name) {
         return;
     }

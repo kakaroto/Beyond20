@@ -5,7 +5,7 @@ from utils import alertFullSettings;
 
 print("Beyond20: D&D Beyond Equipment & Magic Items module loaded.");
 
-class FakeCharacter(CharacterBase) {
+class FakeCharacter extends CharacterBase {
     pass;
 }
 

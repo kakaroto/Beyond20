@@ -133,10 +133,10 @@ function rollItem(force_display=false) {
     description = descriptionToString(".ct-item-detail__description");
     if (force_display is false && properties.includes("Damage")) {
         item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
-        to_hit = properties["To Hit"]  != undefined \;
+        to_hit = properties["To Hit"]  !== undefined \;
             findToHit(item_full_name, ".ct-combat-attack--item,.ddbc-combat-attack--item", ".ct-item-name,.ddbc-item-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
 
-        if (to_hit  != undefined) {
+        if (to_hit  !== undefined) {
             character._cacheToHit(item_full_name, to_hit);
         } else {
             to_hit = character._getToHitCache(item_full_name);
@@ -405,7 +405,7 @@ function rollAction(paneClass) {
         sendRollWithCharacter("custom", inspiration_die, {"name": action_name,
                                                           "description": description,
                                                           "modifier": inspiration_die});
-    } else if (properties.includes("Damage") || properties["To Hit"] != undefined || properties["Attack/Save"] != undefined) {
+    } else if (properties.includes("Damage") || properties["To Hit"] !== undefined || properties["Attack/Save"] !== undefined) {
         if (properties.includes("Damage")) {
             damages = [properties["Damage"]];
             damage_types = [properties["Damage Type"]  || ""];
@@ -473,7 +473,7 @@ function rollAction(paneClass) {
                                           properties,
                                           damages,
                                           damage_types,
-                                          properties["To Hit"]  != undefined null,
+                                          properties["To Hit"]  !== undefined null,
                                           brutal);
 
         if (critical_limit != 20) {
@@ -516,9 +516,9 @@ function rollSpell(force_display=false) {
     } else {
         concentration = false;
     }
-    to_hit = properties["To Hit"]  != undefined \;
+    to_hit = properties["To Hit"]  !== undefined \;
         findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
-    if ( !to_hit) {
+    if (!to_hit) {
         to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit");
     }
 
@@ -528,7 +528,7 @@ function rollSpell(force_display=false) {
         for (let modifier of damage_modifiers) {
             dmg = $(modifier).find(".ct-spell-caster__modifier-amount,.ddbc-spell-caster__modifier-amount").text();
             dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip,.ddbc-damage-type-icon .ddbc-tooltip").attr("data-original-title");
-            if ( !dmgtype != undefined) {
+            if (!dmgtype !== undefined) {
                 dmgtype = "";
             }
             damages.push(dmg);
@@ -653,7 +653,7 @@ function rollSpell(force_display=false) {
         for (let key of spell_properties) {
             roll_properties[key] = spell_properties[key];
         }
-        if (castas != "" &&  !level.startsWith(castas)) {
+        if (castas != "" && !level.startsWith(castas)) {
             roll_properties["cast-at"] = castas;
         }
 
@@ -676,7 +676,7 @@ function rollSpell(force_display=false) {
                            "components": (properties["Components"]  || ""),
                            "ritual": ritual,
                            "description" : description}
-        if (castas != "" &&  !level.startsWith(castas)) {
+        if (castas != "" && !level.startsWith(castas)) {
             roll_properties["cast-at"] = castas;
         }
         sendRollWithCharacter("spell-card", 0, roll_properties);
@@ -814,7 +814,7 @@ function findModifiers(character, custom_roll) {
 function checkAndInjectDiceToRolls(selector, name="") {
     nonlocal settings;
     nonlocal character;
-    if ( !settings["subst-dndbeyond"]) {
+    if (!settings["subst-dndbeyond"]) {
         return;
     }
 
@@ -893,7 +893,7 @@ function injectRollButton(paneClass) {
         action_parent = $(".ct-sidebar__header-parent").text();
         if ((action_name == "Superiority Dice" || action_parent == "Maneuvers") || \;
             (action_name == "Bardic Inspiration" || action_parent == "Blade Flourish") || \;
-            (properties.includes("Damage") || properties["To Hit"] != undefined || properties["Attack/Save"] != undefined)) {
+            (properties.includes("Damage") || properties["To Hit"] !== undefined || properties["Attack/Save"] !== undefined)) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", small=true);
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
         } else {
@@ -917,9 +917,9 @@ function injectRollButton(paneClass) {
         damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier");
         healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier");
         properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property,.ct-spell-pane .ddbc-property-list .ddbc-property-list__property"));
-        to_hit = properties["To Hit"]  != undefined \;
+        to_hit = properties["To Hit"]  !== undefined \;
             findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
-        if ( !to_hit) {
+        if (!to_hit) {
             to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit");
         }
 
@@ -950,7 +950,7 @@ function injectRollButton(paneClass) {
                 size = $(row).find("td").eq(0);
                 desc = $(row).find("td").eq(5);
 
-                m = re.search("(\+[0-9]+) to hit, ([0-9]*d[0-9]+( != undefined:\s*[-+]\s*[0-9]+)) damage", desc.text());
+                m = re.search("(\+[0-9]+) to hit, ([0-9]*d[0-9]+( !== undefined:\s*[-+]\s*[0-9]+)) damage", desc.text());
                 if (m) {
                     to_hit = m.group(1);
                     dmg = m.group(2);
@@ -1159,7 +1159,7 @@ function activateQuickRolls() {
 
     abilities, saving_throws, skills, actions, spells = deactivateQuickRolls();
 
-    if ( !settings["quick-rolls"]) {
+    if (!settings["quick-rolls"]) {
         return;
     }
 
@@ -1321,7 +1321,7 @@ function handleMessage(request, sender, sendResponse) {
         } else if (request.type == "character" && request.id == character._id) {
             character.updateSettings(request.settings);
         } else {
-            console.log("Ignoring character settings,  !for ID: ", character._id);
+            console.log("Ignoring character settings, !for ID: ", character._id);
     } else if (request.action == "get-character") {
         character.updateInfo();
         sendResponse(character.getDict());

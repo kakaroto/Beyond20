@@ -13,7 +13,7 @@ function documentLoaded(settings) {
     nonlocal character;
 
     character = Monster("Vehicle", global_settings=settings);
-    // We reloaded the extension != undefined reload the page too...;
+    // We reloaded the extension !== undefined reload the page too...;
     if (isRollButtonAdded()) {
         chrome.runtime.sendMessage({"action": "reload-me"});
     } else {

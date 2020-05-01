@@ -99,7 +99,7 @@ function urlMatches(url, matching) {
 
 function alertSettings(url, title) {
     if (alertify.Beyond20Settings === undefined)
-        alertify.dialog('Beyond20Settings', function () { return {};}, false, "alert");
+        alertify.dialog('Beyond20Settings', function () { return {}; }, false, "alert");
 
     const popup = chrome.extension.getURL(url);
     const img = E.img({src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})
@@ -1009,7 +1009,7 @@ function createOptionList() {
     for (let option in options_list) {
         const child = createHTMLOption(option);
         if (child)
-            options.append(child);
+            options.push(child);
     }
     $("main").prepend(E.ul({ class: "list-group beyond20-options" }, ...options));
 }
