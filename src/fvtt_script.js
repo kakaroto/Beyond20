@@ -2558,7 +2558,8 @@ function all(iterable) {
 if (!all.__argnames__) Object.defineProperties(all, {
     __argnames__ : {value: ["iterable"]}
 });
-var define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+var decimal_sep, define_str_func, ρσ_unpack, ρσ_orig_split, ρσ_orig_replace;
+decimal_sep = 1.1.toLocaleString()[1];
 function ρσ_repr_js_builtin(x, as_array) {
     var ans, b, keys, key;
     ans = [];
@@ -2935,7 +2936,7 @@ define_str_func("format", function () {
                     value = value.toExponential(prec - 1);
                 }
                 value = value.replace(/0+$/g, "");
-                if (value[value.length-1] === ".") {
+                if (value[value.length-1] === decimal_sep) {
                     value = value.slice(0, -1);
                 }
                 if (ftype === "G") {
@@ -4432,9 +4433,6 @@ var str = ρσ_str, repr = ρσ_repr;;
                             pos = close + 1;
                             continue;
                         }
-                        if (extension === "<") {
-                            throw new SyntaxError("Look behind assertions are not supported in JavaScript");
-                        }
                         if (extension === "(") {
                             throw new SyntaxError("Group existence assertions are not supported in JavaScript");
                         }
@@ -5187,7 +5185,9 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("aside");
             s.jsset.add("audio");
             s.jsset.add("b");
+            s.jsset.add("base");
             s.jsset.add("big");
+            s.jsset.add("body");
             s.jsset.add("blockquote");
             s.jsset.add("br");
             s.jsset.add("button");
@@ -5226,6 +5226,7 @@ var str = ρσ_str, repr = ρσ_repr;;
             s.jsset.add("h5");
             s.jsset.add("h6");
             s.jsset.add("hr");
+            s.jsset.add("head");
             s.jsset.add("i");
             s.jsset.add("iframe");
             s.jsset.add("img");
@@ -9295,9 +9296,9 @@ return this.__repr__();
                     if ((game.combat.scene.id !== canvas.scene.id && (typeof game.combat.scene.id !== "object" || ρσ_not_equals(game.combat.scene.id, canvas.scene.id)))) {
                         ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene");
                     } else {
-                        var ρσ_Iter0 = ρσ_Iterable(canvas.tokens.controlledTokens);
-                        for (var ρσ_Index0 = 0; ρσ_Index0 < ρσ_Iter0.length; ρσ_Index0++) {
-                            token = ρσ_Iter0[ρσ_Index0];
+                        var ρσ_Iter24 = ρσ_Iterable(canvas.tokens.controlledTokens);
+                        for (var ρσ_Index24 = 0; ρσ_Index24 < ρσ_Iter24.length; ρσ_Index24++) {
+                            token = ρσ_Iter24[ρσ_Index24];
                             combatant = game.combat.getCombatantByToken(token.id);
                             if (combatant) {
                                 idField = (combatant._id) ? "_id" : "id";
@@ -9388,9 +9389,9 @@ return this.__repr__();
                     actor.update(sws_data);
                 }
             }
-            var ρσ_Iter1 = ρσ_Iterable(tokens);
-            for (var ρσ_Index1 = 0; ρσ_Index1 < ρσ_Iter1.length; ρσ_Index1++) {
-                token = ρσ_Iter1[ρσ_Index1];
+            var ρσ_Iter25 = ρσ_Iterable(tokens);
+            for (var ρσ_Index25 = 0; ρσ_Index25 < ρσ_Iter25.length; ρσ_Index25++) {
+                token = ρσ_Iter25[ρσ_Index25];
                 if (ρσ_exists.n(ρσ_exists.d(ρσ_exists.d(ρσ_exists.d(ρσ_exists.d(token.actor).data).data).attributes).hp)) {
                     {
                         token.actor.update(dnd5e_data);
@@ -9437,9 +9438,9 @@ return this.__repr__();
                     });
                     return ρσ_anonfunc;
                 })());
-                var ρσ_Iter2 = ρσ_Iterable(tokens);
-                for (var ρσ_Index2 = 0; ρσ_Index2 < ρσ_Iter2.length; ρσ_Index2++) {
-                    token = ρσ_Iter2[ρσ_Index2];
+                var ρσ_Iter26 = ρσ_Iterable(tokens);
+                for (var ρσ_Index26 = 0; ρσ_Index26 < ρσ_Iter26.length; ρσ_Index26++) {
+                    token = ρσ_Iter26[ρσ_Index26];
                     effects = token.data.effects;
                     new_effects = ρσ_list_decorate([]);
                     new_conditions = conditions.map((function() {
@@ -9459,9 +9460,9 @@ return this.__repr__();
                             new_conditions.push("exhaustion" + exhaustion + ".svg");
                         }
                     }
-                    var ρσ_Iter3 = ρσ_Iterable(effects);
-                    for (var ρσ_Index3 = 0; ρσ_Index3 < ρσ_Iter3.length; ρσ_Index3++) {
-                        effect = ρσ_Iter3[ρσ_Index3];
+                    var ρσ_Iter27 = ρσ_Iterable(effects);
+                    for (var ρσ_Index27 = 0; ρσ_Index27 < ρσ_Iter27.length; ρσ_Index27++) {
+                        effect = ρσ_Iter27[ρσ_Index27];
                         if (!effect.startsWith("modules/beyond20/conditions/")) {
                             new_effects.push(effect);
                         } else {
@@ -9518,9 +9519,9 @@ return this.__repr__();
 
         function disconnectAllEvents() {
             var event;
-            var ρσ_Iter4 = ρσ_Iterable(registered_events);
-            for (var ρσ_Index4 = 0; ρσ_Index4 < ρσ_Iter4.length; ρσ_Index4++) {
-                event = ρσ_Iter4[ρσ_Index4];
+            var ρσ_Iter28 = ρσ_Iterable(registered_events);
+            for (var ρσ_Index28 = 0; ρσ_Index28 < ρσ_Iter28.length; ρσ_Index28++) {
+                event = ρσ_Iter28[ρσ_Index28];
                 document.removeEventListener.apply(document, event);
             }
         };
