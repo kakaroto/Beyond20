@@ -94,7 +94,7 @@ function replaceFile(contents) {
             let i = currentIndent;
             let previousIndent = savedIndent;
             const toAdd = []
-            if (line[currentIndent] != "}")
+            if (line[currentIndent] == "}")
                 previousIndent -= 4;
             while (i < previousIndent) {
                 previousIndent -= 4;
@@ -114,8 +114,8 @@ function replaceFile(contents) {
         }
         line = line.trimEnd();
         let lastChar = line.substr(-1);
-        if (lastChar == "\\") {
-            line.substr(0, line.length - 1).trimEnd();
+        if (line.substr(-2) == "\\;") {
+            line.substr(0, line.length - 2).trimEnd();
             lastChar = line.substr(-1);
         }
         if (![",", "{", "}", ""].includes(lastChar))
