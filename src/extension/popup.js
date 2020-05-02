@@ -187,7 +187,7 @@ function addMonsterOptions() {
     const option = options_list["whisper-type-monsters"];
     option["short"] = "Whisper monster rolls";
     let e = createHTMLOptionEx("whisper-type-monsters", option, true);
-    $(e).insertAfter($("//whisper-type").parents("li"));
+    $(e).insertAfter($("#whisper-type").parents("li"));
     const options = $(".beyond20-options");
     options.append(
         E.li({ class: "list-group-item beyond20-option", style: "text-align: center; padding: 10px;" },

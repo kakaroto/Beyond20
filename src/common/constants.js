@@ -13,86 +13,86 @@ DISCORD_BOT_API_URL = "https://beyond20.kicks-ass.org/roll";
 
 BUTTON_STYLE_CSS = `
 .character-button, .character-button-small {
-    display: inline-block;;
-    border-radius: 3px;;
-    background-color: //96bf6b;;
-    color: //fff;;
-    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;;
-    font-size: 10px;;
-    border: 1px solid transparent;;
-    text-transform: uppercase;;
-    padding: 9px 15px;;
-    transition: all 50ms;;
+    display: inline-block;
+    border-radius: 3px;
+    background-color: #96bf6b;
+    color: #fff;
+    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;
+    font-size: 10px;
+    border: 1px solid transparent;
+    text-transform: uppercase;
+    padding: 9px 15px;
+    transition: all 50ms;
 }
 .character-button-small {
-    font-size: 8px;;
-    padding: 5px;;
-    border-color: transparent;;
-    min-height: 22px;;
+    font-size: 8px;
+    padding: 5px;
+    border-color: transparent;
+    min-height: 22px;
 }
 .ct-button.ct-theme-button {
-    cursor: default;;
+    cursor: default;
 }
 .ct-button.ct-theme-button--interactive {
-    cursor: pointer;;
+    cursor: pointer;
 }
 .ct-button.ct-theme-button--filled {
-    background-color: //c53131;;
-    color: //fff;;
+    background-color: #c53131;
+    color: #fff;
 }
 `;
 
 ROLLTYPE_STYLE_CSS = `
 
 .ct-beyond20-roll .ct-beyond20-roll-button {
-    position: relative;;
-    margin-top: 7px;;
+    position: relative;
+    margin-top: 7px;
 }
 
 .ct-beyond20-roll .ct-beyond20-roll-button:after {
-    position: absolute;;
-    padding: 2px;;
-    top: -10px;;
-    right: -5px;;
-    font-size: 10px;;
-    border-radius: 5px;;
-    color: white;;
-    opacity: 65%;;
+    position: absolute;
+    padding: 2px;
+    top: -10px;
+    right: -5px;
+    font-size: 10px;
+    border-radius: 5px;
+    color: white;
+    opacity: 65%;
 }
 
 .ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-double:after,
 .beyond20-quick-roll-tooltip.beyond20-roll-type-double:after {
-    content: "2";;
-    background-color: blue;;
+    content: "2";
+    background-color: blue;
 }
 .ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-query:after,
 .beyond20-quick-roll-tooltip.beyond20-roll-type-query:after {
-    content: " != undefined";;
-    background-color: grey;;
+    content: " != undefined";
+    background-color: grey;
 }
 .ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-thrice:after,
 .beyond20-quick-roll-tooltip.beyond20-roll-type-thrice:after {
-    content: "3";;
-    background-color: blue;;
+    content: "3";
+    background-color: blue;
 }
 .ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-advantage:after,
 .beyond20-quick-roll-tooltip.beyond20-roll-type-advantage:after {
-    content: "+";;
-    background-color: green;;
+    content: "+";
+    background-color: green;
 }
 .ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-disadvantage:after,
 .beyond20-quick-roll-tooltip.beyond20-roll-type-disadvantage:after {
-    content: "-";;
-    background-color: red;;
+    content: "-";
+    background-color: red;
 }
 .ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-advantage:after,
 .beyond20-quick-roll-tooltip.beyond20-roll-type-super-advantage:after {
-    content: "+ +";;
-    background-color: green;;
+    content: "+ +";
+    background-color: green;
 }
 .ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-disadvantage:after,
 .beyond20-quick-roll-tooltip.beyond20-roll-type-super-disadvantage:after {
-    content: "- -";;
-    background-color: red;;
+    content: "- -";
+    background-color: red;
 }
 `;

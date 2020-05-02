@@ -9,8 +9,7 @@ VPATH = $(SOURCE_DIR)
 	sed -e ':a;N;$$!ba;s/async;\n/async/g' -i $(OUTPUT_DIR)/$@
 
 
-JS_FILES=dndbeyond_character.js dndbeyond_monster.js \
-	dndbeyond_encounter.js dndbeyond_vehicle.js
+JS_FILES=dndbeyond_character.js
 PYJ_DEPS=utils.pyj settings.pyj dndbeyond.pyj dndbeyond_dice.pyj constants.pyj roll_renderer.pyj dndbeyond_discord.pyj
 
 fvtt_script.js: PYJ_GLOBALS='$$,chrome,game,canvas,Roll,ChatMessage,ui,Hooks,Dialog,ImagePopout,ENTITY_PERMISSIONS,CONFIG,CHAT_MESSAGE_TYPES,CONST,CONFIG,isNewerVersion'

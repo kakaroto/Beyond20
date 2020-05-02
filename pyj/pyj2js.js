@@ -62,8 +62,8 @@ const regexps = [
 
     // Arrays
     [new RegExp(/\[ *([^]:]+) *: *\]/gm), ".slice($1)"],
-    [new RegExp(/\[ *: *([^]]+) *\]/gm), ".slice(0, $1)"],
-    [new RegExp(/\[ *([^]:]+) *: *([^]]+) *\]/gm), ".slice($1, $2)"],
+    [new RegExp(/\[ *: *([^\]]+) *\]/gm), ".slice(0, $1)"],
+    [new RegExp(/\[ *([^\]:]+) *: *([^\]]+) *\]/gm), ".slice($1, $2)"],
     [new RegExp(/\.append\(/gm), ".push("],
     [new RegExp(/\.extend\(/gm), ".push(..."],
     [new RegExp(/\[ *-([0-9]+) *\]/gm), ".slice(-$1)[0]"]
@@ -90,10 +90,12 @@ function replaceFile(contents) {
     let lastNonEmpty = 0;
     for (let line of original_lines) {
         const currentIndent = getLineIndent(line);
-        if (line.trim() !== "" && currentIndent < savedIndent && line[currentIndent] != "}") {
+        if (line.trim() !== "" && currentIndent < savedIndent) {
             let i = currentIndent;
             let previousIndent = savedIndent;
             const toAdd = []
+            if (line[currentIndent] != "}")
+                previousIndent -= 4;
             while (i < previousIndent) {
                 previousIndent -= 4;
                 toAdd.push(" ".repeat(previousIndent) + "}")

@@ -1,46 +1,42 @@
+/*
 from settings import getDefaultSettings, getStoredSettings;
 from dndbeyond import Monster, isRollButtonAdded;
 from utils import injectCSS, alertFullSettings;
-from constants import BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
+from constants import BUTTON_STYLE_CSS,ROLLTYPE_STYLE_CSS;
+*/
+console.log("Beyond20: D&D Beyond Vehicle module loaded.");
 
-print("Beyond20: D&D Beyond Monster module loaded.");
+var settings = getDefaultSettings();
+var character = null;
 
-settings = getDefaultSettings();
-character = null;
 
 function documentLoaded(settings) {
-    nonlocal character;
-
-    character = Monster("Monster", global_settings=settings);
+    character = new Monster("Vehicle", null, settings);
     // We reloaded the extension !== undefined reload the page too...;
-    if (isRollButtonAdded()) {
-        chrome.runtime.sendMessage({"action": "reload-me"});
-    } else {
+    if (isRollButtonAdded())
+        chrome.runtime.sendMessage({ "action": "reload-me" });
+    else
         character.parseStatBlock();
-    }
 }
 
-function updateSettings(new_settings=null) {
-    nonlocal settings;
-    nonlocal character;
+
+function updateSettings(new_settings = null) {
 
     if (new_settings) {
         settings = new_settings;
-        if (character !== null) {
+        if (character)
             character.setGlobalSettings(settings);
     } else {
         getStoredSettings((saved_settings) => {
-            nonlocal settings;
             updateSettings(saved_settings);
             documentLoaded(settings);
-        }
-        );
+        });
     }
 }
 
 function handleMessage(request, sender, sendResponse) {
     if (request.action == "settings") {
-        if (request.type == "general") {
+        if (request.type == "general")
             updateSettings(request.settings);
     } else if (request.action == "open-options") {
         alertFullSettings();
@@ -50,6 +46,6 @@ function handleMessage(request, sender, sendResponse) {
 injectCSS(BUTTON_STYLE_CSS);
 injectCSS(ROLLTYPE_STYLE_CSS);
 chrome.runtime.onMessage.addListener(handleMessage);
-chrome.runtime.sendMessage({"action": "activate-icon"});
+chrome.runtime.sendMessage({ "action": "activate-icon" });
 updateSettings();
 

@@ -74,6 +74,24 @@ const SRC_FILES = {
     dndbeyond_item: [
         ...DNDBEYOND_PAGE_DEPS,
         "src/dndbeyond/content-scripts/item.js",
+    ],
+    dndbeyond_monster: [
+        ...DNDBEYOND_PAGE_DEPS,
+        "src/dndbeyond/base/spell.js",
+        "src/dndbeyond/base/monster.js",
+        "src/dndbeyond/content-scripts/monster.js",
+    ],
+    dndbeyond_encounter: [
+        ...DNDBEYOND_PAGE_DEPS,
+        "src/dndbeyond/base/spell.js",
+        "src/dndbeyond/base/monster.js",
+        "src/dndbeyond/content-scripts/encounter.js",
+    ],
+    dndbeyond_vehicle: [
+        ...DNDBEYOND_PAGE_DEPS,
+        "src/dndbeyond/base/spell.js",
+        "src/dndbeyond/base/monster.js",
+        "src/dndbeyond/content-scripts/vehicle.js",
     ]
 }
 const CSS_FILES = ['src/extension/beyond20.css']

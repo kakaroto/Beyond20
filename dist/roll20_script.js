@@ -15,7 +15,7 @@ function replaceRollsCallback(match, replaceCB) {
 
 function replaceRolls(text, replaceCB) {
     // TODO: Cache the value so we don't recompile the regexp every time
-    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro<2)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/);
+    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro<2)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
     return text.replace(dice_regexp, (...match) => replaceRollsCallback(match, replaceCB));
 }
 
@@ -126,6 +126,14 @@ function isObjectEqual(obj1, obj2) {
     const obj1_str = Object.entries(obj1).join(",");
     const obj2_str = Object.entries(obj2).join(",");
     return obj1_str == obj2_str;
+}
+
+// replaces matchAll, requires a non global regexp
+function reMatchAll(regexp, string) {
+    const matches = string.match(new RegExp(regexp, "gm"));
+    if (matches)
+        return matches.map(group0 => group0.match(regexp));
+    return matches;
 }
 
 E = new Proxy({}, {

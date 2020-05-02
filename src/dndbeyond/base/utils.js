@@ -33,7 +33,7 @@ function skillToAbility(skill) {
 }
 
 function abbreviationToAbility(abbr) {
-    for (let ability of ability_abbreviations) {
+    for (let ability in ability_abbreviations) {
         if (ability_abbreviations[ability] == abbr)
             return ability;
     }
@@ -75,8 +75,8 @@ function damagesToCrits(character, damages) {
     if (rule == CriticalRules.HOMEBREW_REROLL || rule == CriticalRules.HOMEBREW_MOD)
         return damages.slice();
     for (let damage of damages) {
-        const damage_parts = damage.match(/([0-9]*)d([0-9]+)(ro<2)?/g, damage).map(formula => {
-            const match = formula.match(/([0-9]*)d([0-9]+)(ro<2)?/);
+        const damage_matches = reMatchAll(/([0-9]*)d([0-9]+)(ro<2)?/, damage) || [];
+        const damage_parts = damage_matches.map(match => {
             if (rule == CriticalRules.HOMEBREW_MAX) {
                 dice = parseInt(match[1] || 1);
                 faces = parseInt(match[2]);
