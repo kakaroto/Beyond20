@@ -266,7 +266,8 @@ def rollItem(force_display=False):
             damage_types.append("Hexblade's Curse")
         # Fighter's Giant Might
         if character.hasClassFeature("Giant Might") and character.getSetting("fighter-giant-might", False):
-            damages.append("1d6")
+            fighter_level = character.getClassLevel("Fighter")
+            damages.append("1d6" if fighter_level < 10 else "1d8")
             damage_types.append("Giant Might")
         # Cleric's Divine Strike
         if properties["Attack Type"] == "Melee" and \
