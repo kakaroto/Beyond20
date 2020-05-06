@@ -6,3 +6,5 @@ Gemfile*
 package-lock.json
 manifest_chrome.json
 docs/run.sh
+pyj/node_modules/
+node_modules/
