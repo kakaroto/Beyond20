@@ -10,7 +10,7 @@ class DAMAGE_FLAGS {
     static get REGULAR() { return 1; }
     static get VERSATILE() { return 2; }
     static get ADDITIONAL() { return 4; }
-    static get HEALIN() { return 8; }
+    static get HEALING() { return 8; }
     static get CRITICAL() { return 0x10; }
 }
 
@@ -336,7 +336,7 @@ class Beyond20RollRenderer {
                 prof_val = request.character.proficiency;
             } else if (request.proficiency == "Half Proficiency") {
                 prof = "half_proficiency";
-                prof_val += math.floor(request.character.proficiency / 2);
+                prof_val += Math.floor(request.character.proficiency / 2);
             } else if (request.proficiency == "Expertise") {
                 prof = "expertise";
                 prof_val += request.character.proficiency * 2;
@@ -487,7 +487,7 @@ class Beyond20RollRenderer {
                 const chromatic_type = await this.queryDamageType(request.name, damage_choices);
                 damages.splice(0, 0, damage_choices[chromatic_type]);
                 damage_types.splice(0, 0, chromatic_type);
-                if (critical_damage_choices.includes(chromatic_type)) {
+                if (critical_damage_choices[chromatic_type] !== undefined) {
                     const crit_damage = critical_damage_choices[chromatic_type];
                     critical_damages.splice(0, 0, crit_damage);
                     critical_damage_types.splice(0, 0, chromatic_type);
@@ -497,7 +497,7 @@ class Beyond20RollRenderer {
                 let crit_damage = null;
                 for (let dmgtype of ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]) {
                     let idx = damage_types.findIndex(t => t === dmgtype);
-                    base_damage = damages.splice(idx, 1)[0].splice(idx, 1)[0];
+                    base_damage = damages.splice(idx, 1)[0];
                     damage_types.splice(idx, 1);
                     idx = critical_damage_types.findIndex(t => t === dmgtype);
                     crit_damage = critical_damages.splice(idx, 1)[0];
@@ -564,7 +564,7 @@ class Beyond20RollRenderer {
                         } else {
                             chaotic_type = await this.queryDamageType(request.name, damage_choices);
                         }
-                        damage_rolls[i] = (chaotic_type + " Damage", roll, flags);
+                        damage_rolls[i] = [chaotic_type + " Damage", roll, flags];
                         critical_damage_types[0] = chaotic_type;
                         break;
                     }
@@ -575,6 +575,7 @@ class Beyond20RollRenderer {
                 for (let i = 0; i < (critical_damages.length); i++) {
                     const roll = this._roller.roll(critical_damages[i]);
                     const dmg_type = critical_damage_types[i];
+                    let damage_flags = DAMAGE_FLAGS.REGULAR;
                     if (["Healing", "Disciple of Life", "Temp HP"].includes(dmg_type)) {
                         damage_flags = DAMAGE_FLAGS.HEALING;
                     } else if (i == 0) {

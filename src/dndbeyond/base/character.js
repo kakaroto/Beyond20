@@ -42,7 +42,7 @@ class Character extends CharacterBase {
                 this._name = null;
         }
         if (this._avatar === null) {
-            avatar = $(".ct-character-tidbits__avatar,.ddbc-character-tidbits__avatar").css('background-image');
+            const avatar = $(".ct-character-tidbits__avatar,.ddbc-character-tidbits__avatar").css('background-image');
             if (avatar && avatar.startsWith("url("))
                 this._avatar = avatar.slice(5, -2);
         }
@@ -52,14 +52,14 @@ class Character extends CharacterBase {
                 this._race = null;
         }
         if (this._classes === null) {
-            classes = $(".ct-character-tidbits__classes,.ddbc-character-tidbits__classes");
-            if (classes.length > 0) {
-                classes = classes.text().split(" / ");
+            const jClasses = $(".ct-character-tidbits__classes,.ddbc-character-tidbits__classes");
+            if (jClasses.length > 0) {
+                const classes = jClasses.text().split(" / ");
                 this._classes = {}
-                for (let class_ of classes.toArray()) {
-                    parts = class_.split(" ");
-                    name = str.join(" ", parts.slice(0, -1));
-                    level = parts.slice(-1)[0];
+                for (let class_ of classes) {
+                    const parts = class_.split(" ");
+                    const name = parts.slice(0, -1).join(" ");
+                    const level = parts.slice(-1)[0];
                     this._classes[name] = level;
                 }
             }
@@ -136,10 +136,10 @@ class Character extends CharacterBase {
         } else {
             const hp_items = $(".ct-health-summary__hp-group--primary .ct-health-summary__hp-item");
             for (let item of hp_items.toArray()) {
-                label = $(item).find(".ct-health-summary__hp-item-label").text();
+                const label = $(item).find(".ct-health-summary__hp-item-label").text();
                 if (label == "Current") {
                     // Make sure it's !an input being modified;
-                    number = $(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number");
+                    const number = $(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number");
                     if (number.length > 0)
                         hp = parseInt(number.text());
                 } else if (label == "Max") {
@@ -177,7 +177,7 @@ class Character extends CharacterBase {
             this._hp = hp;
             this._max_hp = max_hp;
             this._temp_hp = temp_hp;
-            print("HP updated to : (" + hp + "+" + temp_hp + ")/" + max_hp);
+            console.log("HP updated to : (" + hp + "+" + temp_hp + ")/" + max_hp);
 
             if (this.getGlobalSetting("update-hp", true)) {
                 const req = { "action": "hp-update", "character": this.getDict() }
@@ -189,7 +189,7 @@ class Character extends CharacterBase {
 
     updateConditions(conditions = null, exhaustion_level = null) {
         if (conditions === null)
-            conditions = list(this.getSetting("conditions", []));
+            conditions = this.getSetting("conditions", []);
         if (exhaustion_level === null)
             exhaustion_level = this.getSetting("exhaustion-level", 0);
 
@@ -237,7 +237,7 @@ class Character extends CharacterBase {
                 update = true;
             }
         } else {
-            this._class_features = list(this.getSetting("class-features", []));
+            this._class_features = this.getSetting("class-features", []);
         }
 
         const race_detail = $(".ct-features .ct-race-detail");
@@ -248,7 +248,7 @@ class Character extends CharacterBase {
                 update = true;
             }
         } else {
-            this._racial_traits = list(this.getSetting("racial-traits", []));
+            this._racial_traits = this.getSetting("racial-traits", []);
         }
 
         const feats_detail = $(".ct-features .ct-feats-detail");
@@ -259,7 +259,7 @@ class Character extends CharacterBase {
                 update = true;
             }
         } else {
-            this._feats = list(this.getSetting("feats", []));
+            this._feats = this.getSetting("feats", []);
         }
 
         const actions_detail = $(".ct-actions-list .ct-actions-list__activatable");
@@ -270,7 +270,7 @@ class Character extends CharacterBase {
                 update = true;
             }
         } else if (this.getSetting("actions", null)) {
-            this._actions = list(this.getSetting("actions", []));
+            this._actions = this.getSetting("actions", []);
         }
 
         // Spell modifier, Spell attack && spell save DC;
@@ -338,6 +338,9 @@ class Character extends CharacterBase {
     }
     getClassLevel(name) {
         return this._classes[name] || 0;
+    }
+    hasClass(name) {
+        return this._classes[name] !== undefined;
     }
 
     _cacheToHit(item_name, to_hit) {

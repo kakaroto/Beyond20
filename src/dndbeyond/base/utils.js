@@ -97,7 +97,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
         "attack-source": attack_source,
         "description": description
     }
-    if (to_hit)
+    if (to_hit !== null)
         roll_properties["to-hit"] = to_hit;
 
     if (properties["Reach"] !== undefined) {

@@ -620,7 +620,7 @@ function getDefaultSettings(_list = options_list) {
 function getStoredSettings(cb, key = "settings", _list = options_list) {
     const settings = getDefaultSettings(_list);
     storageGet(key, settings, (stored_settings) => {
-        //print("Beyond20: Stored settings (" + key + "):", stored_settings);
+        //console.log("Beyond20: Stored settings (" + key + "):", stored_settings);
         const migrated_keys = [];
         for (let opt in settings) {
             if (_list[opt].type == "migrate") {
@@ -638,7 +638,7 @@ function getStoredSettings(cb, key = "settings", _list = options_list) {
             }
         }
         if (migrated_keys.length > 0) {
-            print("Beyond20: Migrated some keys:", stored_settings);
+            console.log("Beyond20: Migrated some keys:", stored_settings);
             storageSet(key, stored_settings);
         }
         cb(stored_settings);

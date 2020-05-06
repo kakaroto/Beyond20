@@ -1,7 +1,7 @@
 Beyond20: D&D Beyond & Roll20/Foundry VTT Integration
 ==
 
-[Beyond20](https://beyond20.here-for-more.info/) is a browser extension that integrates the Character Sheet from D&D Beyond into Roll20 & Foundry VTT.
+[Beyond20](https://beyond20.here-for-more.info/) is a browser extension that integrates the Character Sheet from D&D Beyond into Roll20, Foundry VTT & Discord.
 
 # Install and Use
 
@@ -27,15 +27,13 @@ If you click on the Beyond20 button in the toolbar, it will pop open the quick s
 
 # Build
 
-This extension is written in 'python', more precisely in RapydScript and you will need [RapydScript-NG](https://github.com/kovidgoyal/rapydscript-ng) installed to compile the .pyj source files into .js
-I don't know if it's totally compatible with rapydscript itself as I've used rapydscript-ng myself. 
+You need 'gulp' installed on your system. Install it using : 
+`sudo npm install -g gulp`
 
-To install :
-`sudo npm install rapydscript-ng -g`
+You may need to also install the local dependencies by running in Beyond20's source directory: 
+`npm install`
 
-Install RapidScript-NG then type 'make' to compile the *.pyj into *.js
-
-    Note: The .js files are already included in the source repository... I don't usually include built files in a repo, but I guess .js files are still source code and that makes it easier for people to just try the extension without having to first install rapydscript.
+You can then build the dist iles using the command `gulp`
 
 # Developer Mode Installation
 
