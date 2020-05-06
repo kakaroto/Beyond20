@@ -4252,7 +4252,12 @@ function rollAction(paneClass) {
         const damages = [];
         const damage_types = [];
         if (Object.keys(properties).includes("Damage")) {
-            damages.push(properties["Damage"]);
+            if(action_name == "Polearm Master - Bonus Attack" && character.hasClassFeature("Fighting Style: Great Weapon Fighting")){
+                damages.push(properties["Damage"]).replace(/[0-9]*d[0-9]+/g, "$&ro<2");    
+            }
+            else{
+                damages.push(properties["Damage"]);
+            }
             damage_types.push(properties["Damage Type"] || "");
             if (character.getSetting("warlock-hexblade-curse", false) &&
                 character.hasClassFeature("Hexblade’s Curse") &&
