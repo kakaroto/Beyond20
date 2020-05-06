@@ -653,7 +653,7 @@ const character_settings = {
     },
     "cleric-divine-strike": {
         "title": "Cleric: Divine Strike",
-        "description": "Deal an extra 1d8 (2d8 at level 14) damage to melee weapon attacks",
+        "description": "Deal an extra 1d8 (2d8 at level 14) damage to weapon attacks",
         "type": "bool",
         "default": true
     },
