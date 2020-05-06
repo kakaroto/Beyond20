@@ -4142,7 +4142,8 @@ function rollItem(force_display = false) {
         }
         // Fighter's Giant Might;
         if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)) {
-            damages.push("1d6");
+            const fighter_level = character.getClassLevel("Fighter");
+            damages.push(fighter_level < 10 ? "1d6" : "1d8");
             damage_types.push("Giant Might");
         }
         // Cleric's Divine Strike;
@@ -4299,7 +4300,8 @@ function rollAction(paneClass) {
                 damage_types.push("Rage");
             }
             if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)) {
-                damages.push("1d6");
+                const fighter_level = character.getClassLevel("Fighter");
+                damages.push(fighter_level < 10 ? "1d6" : "1d8");
                 damage_types.push("Giant Might");
             }
         }
