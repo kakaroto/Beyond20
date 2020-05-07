@@ -1739,7 +1739,7 @@ class Beyond20RollRenderer {
                     } else {
                         damage_flags = DAMAGE_FLAGS.ADDITIONAL;
                     }
-                    suffix = !(damage_flags & DAMAGE_FLAGS.HEALING) ? " Critical Damage" : "";
+                    const suffix = !(damage_flags & DAMAGE_FLAGS.HEALING) ? " Critical Damage" : "";
                     damage_rolls.push([dmg_type + suffix, roll, damage_flags | DAMAGE_FLAGS.CRITICAL]);
                 }
             }
