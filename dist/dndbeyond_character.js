@@ -554,7 +554,7 @@ const character_settings = {
     },
     "cleric-divine-strike": {
         "title": "Cleric: Divine Strike",
-        "description": "Deal an extra 1d8 (2d8 at level 14) damage to melee weapon attacks",
+        "description": "Deal an extra 1d8 (2d8 at level 14) damage to weapon attacks",
         "type": "bool",
         "default": true
     },
@@ -4147,8 +4147,7 @@ function rollItem(force_display = false) {
             damage_types.push("Giant Might");
         }
         // Cleric's Divine Strike;
-        if (properties["Attack Type"] == "Melee" &&
-            character.hasClassFeature("Divine Strike") &&
+        if (character.hasClassFeature("Divine Strike") &&
             character.getSetting("cleric-divine-strike", true)) {
             const cleric_level = character.getClassLevel("Cleric");
             damages.push(cleric_level < 14 ? "1d8" : "2d8");

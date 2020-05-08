@@ -308,8 +308,7 @@ function rollItem(force_display = false) {
             damage_types.push("Giant Might");
         }
         // Cleric's Divine Strike;
-        if (properties["Attack Type"] == "Melee" &&
-            character.hasClassFeature("Divine Strike") &&
+        if (character.hasClassFeature("Divine Strike") &&
             character.getSetting("cleric-divine-strike", true)) {
             const cleric_level = character.getClassLevel("Cleric");
             damages.push(cleric_level < 14 ? "1d8" : "2d8");
