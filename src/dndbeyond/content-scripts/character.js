@@ -438,6 +438,8 @@ function rollAction(paneClass) {
             critical_limit = 19;
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.;
         if (action_name == "Polearm Master - Bonus Attack") {
+            if (character.hasClassFeature("Fighting Style: Great Weapon Fighting"))
+                damages[0] = damges[0].replace(/[0-9]*d[0-9]+/g, "$&ro<2");
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
                 critical_limit = 19;
