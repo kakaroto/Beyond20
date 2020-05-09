@@ -240,6 +240,15 @@ function template(request, name, properties) {
     return result;
 }
 
+function createTable(request, name, properties) {
+    let result = whisperString(request.whisper);
+
+    result += ` &{template:default} {{name=${name}}}`;
+    for (let key in properties)
+        result += " {{" + key + "=" + properties[key] + "}}";
+    return result;
+}
+
 function rollAvatarDisplay(request) {
     // Use query string to override url for image detection so the avatar link is always Roll20.includes(displayed) as an image;
     return "[x](" + request.character.avatar + "#.png)";
@@ -705,6 +714,37 @@ function handleMessage(request, sender, sendResponse) {
         }
         const character_name = request.whisper == WhisperType.HIDE_NAMES ? "???" : request.character.name;
         postChatMessage(roll, character_name);
+    } else if (request.action == "rendered-roll") {
+        const properties = {};
+        if (request.source)
+            properties.source = request.source;
+        if (Object.keys(request.attributes).length) {
+            for (let attr in request.attributes)
+                request[attr] = attributes[attr];
+        }
+        if (request.open)
+            properties.description = request.description;
+
+        for (let [name, value] of request.roll_info)
+            properties[name] = value;
+
+        if (request.attack_rolls.length > 0) {
+            properties["To Hit"] = request.attack_rolls.map(roll => roll.total.toString()).join(" | ")
+        }
+        for (let [roll_name, roll, flags] of request.damage_rolls) {
+            if (typeof (roll) === "string")
+                properties[roll_name] = roll
+            else
+                properties[roll_name] = roll.total.toString()
+        }
+        if (Object.keys(request.total_damages).length > 0)
+            properties["Totals"] = "";
+            
+        for (let [key, roll] of Object.entries(request.total_damages))
+            properties["Total " + key] = roll.total.toString()
+
+        const message = createTable(request, request.title, properties);
+        postChatMessage(message, request.character);
     }
 }
 
