@@ -110,8 +110,11 @@ class FVTTRoll extends Beyond20BaseRoll {
 }
 
 class FVTTRoller {
-    async roll(formula, data) {
+    roll(formula, data) {
         return new FVTTRoll(formula, data);
+    }
+    async resolveRolls(name, rolls) {
+        return Promise.all(rolls.map(roll => roll.roll()))
     }
 }
 
@@ -192,6 +195,10 @@ function handleRoll(request) {
         popAvatar(request);
     else
         roll_renderer.handleRollRequest(request);
+}
+function handleRenderedRoll(request) {
+    console.log("Received rendered roll request ", request);
+    roll_renderer._displayer.postHTML(request.request, request.title, request.html, request.buttons, request.character, request.whisper, request.play_sound);
 }
 
 function updateHP(name, current, total, temp) {
@@ -309,6 +316,7 @@ function setTitle() {
 console.log("Beyond20: Foundry VTT Page Script loaded");
 const registered_events = [];
 registered_events.push(addCustomEventListener("Roll", handleRoll));
+registered_events.push(addCustomEventListener("RenderedRoll", handleRenderedRoll));
 registered_events.push(addCustomEventListener("NewSettings", setSettings));
 registered_events.push(addCustomEventListener("UpdateHP", updateHP));
 registered_events.push(addCustomEventListener("UpdateConditions", updateConditions));

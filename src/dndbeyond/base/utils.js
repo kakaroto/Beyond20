@@ -194,7 +194,12 @@ function sendRoll(character, rollType, fallback, args) {
         req["advantage"] = RollType.NORMAL;
 
     console.log("Sending message: ", req);
-    chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(character, resp));
+    if (character.getGlobalSetting("use-digital-dice", false) && DigitalDice.isEnabled()) {
+        req.sendMessage = true;
+        dndbeyondDiceRoller.handleRollRequest(req);
+    } else {
+        chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(character, resp));
+    }
 }
 
 function isRollButtonAdded() {

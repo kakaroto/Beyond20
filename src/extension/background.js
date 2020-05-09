@@ -150,7 +150,7 @@ function onRollFailure(request, sendResponse) {
 
 function onMessage(request, sender, sendResponse) {
     console.log("Received message: ", request)
-    if (["roll", "hp-update", "conditions-update"].includes(request.action)) {
+    if (["roll", "rendered-roll", "hp-update", "conditions-update"].includes(request.action)) {
         makeFailureCB = (trackFailure, vtt, sendResponse) => {
             return (result) => {
                 trackFailure[vtt] = result

@@ -121,20 +121,6 @@ class Beyond20RollRenderer {
         }
     }
 
-    async resolveAllRolls(name, rolls) {
-        if (this._settings['use-digital-dice'] && DigitalDice.isEnabled()) {
-            const dice = [];
-            for (let roll of rolls) {
-                dice.push(...roll.dice);
-            }
-            const digital = new DigitalDice(name, dice);
-            await digital.roll();
-            rolls.forEach(roll => roll.calculateTotal());
-        } else {
-            await Promise.all(rolls.map(roll => roll.roll()))
-        }
-    }
-
     isCriticalHitD20(rolls, limit = 20) {
         for (let roll of rolls) {
             roll.setCriticalLimit(limit);
@@ -305,7 +291,10 @@ class Beyond20RollRenderer {
                 this._displayer.displayError("Beyond20 Discord Integration: " + discord_error);
         });
 
-        this._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound);
+        if (request.sendMessage && this._displayer.sendMessage)
+            this._displayer.sendMessage(request, title, html, buttons, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
+        else
+            this._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound);
 
         if (attack_rolls.length > 0) {
             return attack_rolls.find((r) => !r.isDiscarded());
@@ -333,13 +322,13 @@ class Beyond20RollRenderer {
 
     async rollDice(request, title, dice, data = {}) {
         const roll = this.createRoll(dice, data);
-        await this.resolveAllRolls(title, [roll]);
+        await this._roller.resolveRolls(title, [roll]);
         return this.postDescription(request, title, null, {}, null, [roll]);
     }
 
     async rollD20(request, title, data) {
         const attack_rolls = await this.getToHit(request, title, "", data)
-        await this.resolveAllRolls(title, attack_rolls);
+        await this._roller.resolveRolls(title, attack_rolls);
         return this.postDescription(request, title, null, {}, null, attack_rolls);
     }
 
@@ -588,7 +577,7 @@ class Beyond20RollRenderer {
                 }
             }
 
-            await this.resolveAllRolls(request.name, all_rolls)
+            await this._roller.resolveRolls(request.name, all_rolls)
             const critical_limit = request["critical-limit"] || 20;
             is_critical = this.isCriticalHitD20(to_hit, critical_limit);
             if (is_critical) {
@@ -610,7 +599,7 @@ class Beyond20RollRenderer {
                     const suffix = !(damage_flags & DAMAGE_FLAGS.HEALING) ? " Critical Damage" : "";
                     damage_rolls.push([dmg_type + suffix, roll, damage_flags | DAMAGE_FLAGS.CRITICAL]);
                 }
-                await this.resolveAllRolls(request.name, critical_damage_rolls);
+                await this._roller.resolveRolls(request.name, critical_damage_rolls);
             }
         }
 

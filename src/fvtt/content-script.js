@@ -31,6 +31,8 @@ function handleMessage(request, sender, sendResponse) {
             sendCustomEvent("UpdateConditions", [request, request.character.name, request.character.conditions, request.character.exhaustion]);
     } else if (request.action == "roll") {
         sendCustomEvent("Roll", [request]);
+    } else if (request.action == "rendered-roll") {
+        sendCustomEvent("RenderedRoll", [request]);
     }
 }
 

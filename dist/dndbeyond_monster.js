@@ -1282,20 +1282,6 @@ class Beyond20RollRenderer {
         }
     }
 
-    async resolveAllRolls(name, rolls) {
-        if (this._settings['use-digital-dice'] && DigitalDice.isEnabled()) {
-            const dice = [];
-            for (let roll of rolls) {
-                dice.push(...roll.dice);
-            }
-            const digital = new DigitalDice(name, dice);
-            await digital.roll();
-            rolls.forEach(roll => roll.calculateTotal());
-        } else {
-            await Promise.all(rolls.map(roll => roll.roll()))
-        }
-    }
-
     isCriticalHitD20(rolls, limit = 20) {
         for (let roll of rolls) {
             roll.setCriticalLimit(limit);
@@ -1466,7 +1452,10 @@ class Beyond20RollRenderer {
                 this._displayer.displayError("Beyond20 Discord Integration: " + discord_error);
         });
 
-        this._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound);
+        if (request.sendMessage && this._displayer.sendMessage)
+            this._displayer.sendMessage(request, title, html, buttons, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
+        else
+            this._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound);
 
         if (attack_rolls.length > 0) {
             return attack_rolls.find((r) => !r.isDiscarded());
@@ -1494,13 +1483,13 @@ class Beyond20RollRenderer {
 
     async rollDice(request, title, dice, data = {}) {
         const roll = this.createRoll(dice, data);
-        await this.resolveAllRolls(title, [roll]);
+        await this._roller.resolveRolls(title, [roll]);
         return this.postDescription(request, title, null, {}, null, [roll]);
     }
 
     async rollD20(request, title, data) {
         const attack_rolls = await this.getToHit(request, title, "", data)
-        await this.resolveAllRolls(title, attack_rolls);
+        await this._roller.resolveRolls(title, attack_rolls);
         return this.postDescription(request, title, null, {}, null, attack_rolls);
     }
 
@@ -1749,7 +1738,7 @@ class Beyond20RollRenderer {
                 }
             }
 
-            await this.resolveAllRolls(request.name, all_rolls)
+            await this._roller.resolveRolls(request.name, all_rolls)
             const critical_limit = request["critical-limit"] || 20;
             is_critical = this.isCriticalHitD20(to_hit, critical_limit);
             if (is_critical) {
@@ -1771,7 +1760,7 @@ class Beyond20RollRenderer {
                     const suffix = !(damage_flags & DAMAGE_FLAGS.HEALING) ? " Critical Damage" : "";
                     damage_rolls.push([dmg_type + suffix, roll, damage_flags | DAMAGE_FLAGS.CRITICAL]);
                 }
-                await this.resolveAllRolls(request.name, critical_damage_rolls);
+                await this._roller.resolveRolls(request.name, critical_damage_rolls);
             }
         }
 
@@ -1923,6 +1912,95 @@ class Beyond20RollRenderer {
 
 
 
+class DigitalDice {
+    constructor(name, dice) {
+        this._name = name;
+        this._dice = dice;
+        for (let dice of this._dice) {
+            dice.rerollDice = async function (amount) {
+                const fake = new this.constructor(amount, this.faces, "");
+                const digital = new DigitalDice(name, [fake])
+                await digital.roll();
+                this._rolls.push(...fake._rolls);
+            }
+        }
+        this._notificationIds = this._getNotificationIds();
+    }
+
+    clear() {
+        $(".dice-toolbar__dropdown-die").click()
+    }
+    clearResults() {
+        $(".dice_notification_controls__clear").click()
+    }
+    rollDice(amount, type) {
+        const dice = $(`.dice-die-button[data-dice="${type}"]`)
+        for (let i = 0; i < amount; i++)
+            dice.click()
+        return amount || 0;
+    }
+    _makeRoll() {
+        this._notificationIds = this._getNotificationIds();
+        $(".dice-toolbar__roll").click();
+    }
+    static isEnabled() {
+        const toolbar = $(".dice-toolbar");
+        return toolbar.length > 0;
+    }
+    async roll() {
+        this.clear();
+        let diceRolled = 0;
+        for (let dice of this._dice)
+            diceRolled += this.rollDice(dice.amount, `d${dice.faces}`);
+        if (diceRolled > 0) {
+            this._makeRoll();
+            return this.result()
+        }
+    }
+    _getNotificationIds() {
+        const notifications = $(".noty_bar").toArray();
+        return notifications.map(n => n.id);
+    }
+    lookForResult() {
+        const notifications = this._getNotificationIds();
+        const myId = notifications.find(n => !this._notificationIds.includes(n))
+        console.log("Found my results : ", myId)
+        if (!myId) return false;
+
+        const result = $(`#${myId} .dice_result`);
+        result.find(".dice_result__info__title .dice_result__info__rolldetail").text("Beyond 20: ")
+        result.find(".dice_result__info__title .dice_result__rolltype").text(this._name);
+        result.find(".dice_result__total").text("").append(E.img({ src: chrome.extension.getURL("images/icons/icon32.png") }));
+        const breakdown = result.find(".dice_result__info__results .dice_result__info__breakdown").text();
+        const dicenotation = result.find(".dice_result__info__dicenotation").text();
+
+        const diceMatches = reMatchAll(/([0-9]*)d([0-9]+)/, dicenotation) || [];
+        const results = breakdown.split("+");
+        this._dice.forEach(d => d._rolls = []);
+        for (let match of diceMatches) {
+            const amount = parseInt(match[1]);
+            const faces = parseInt(match[2]);
+            for (let i = 0; i < amount; i++) {
+                const result = parseInt(results.shift());
+                for (let dice of this._dice) {
+                    if (dice.faces != faces) continue;
+                    if (dice._rolls.length == dice.amount) continue;
+                    dice._rolls.push({ "roll": result });
+                    break;
+                }
+            }
+        }
+
+        this._notificationIds = notifications;
+        return true;
+    }
+    async result() {
+        while (!this.lookForResult())
+            await new Promise(r => setTimeout(r, 500));
+        for (let dice of this._dice)
+            await dice.handleModifiers();
+    }
+}
 
 class Beyond20BaseRoll {
     constructor(formula, data = {}) {
@@ -2017,54 +2095,6 @@ class Beyond20BaseRoll {
     }
 }
 
-/*
-from roll_renderer import Beyond20RollRenderer, Beyond20BaseRoll;
-from settings import getDefaultSettings, WhisperType;
-import re;
-*/
-
-class DNDBDisplayer {
-    constructor() {
-        this._error = null;
-    }
-
-    postHTML(request, title, html, buttons, character, whisper, play_sound) {
-        let content = "<div class='beyond20-dice-roller'>";
-        if (this._error) {
-            content += "<div class='beyond20-roller-error'>" +
-                "<span class='beyond20-tooltip'>Virtual Table Top Not Found" +
-                "<span class='beyond20-tooltip-content'>" + this._error + "</span>" +
-                "</span>" +
-                "</div>";
-        }
-        content += "<div class='beyond20-dice-roller-content'>" + html + "</div>" +
-            "</div>";
-        const dlg = alertify.Beyond20Roll(title, content);
-        dlg.set('onclose', () => {
-            dlg.set('onclose', null);
-            dlg.destroy();
-        });
-        const element = $(dlg.elements.content.firstElementChild);
-        const icon16 = chrome.runtime.getURL("images/icons/icon16.png");
-        element.find(".ct-beyond20-custom-icon").attr('src', icon16);
-        element.find(".ct-beyond20-custom-roll").on('click', (event) => {
-            const roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
-            dndbeyondDiceRoller.rollDice(request, title, roll);
-        });
-        element.find(".beyond20-chat-button").on('click', (event) => {
-            const button = $(event.currentTarget).text();
-            buttons[button]();
-        });
-    }
-
-    displayError(message) {
-        alertify.error(message);
-    }
-
-    setError(error) {
-        this._error = error;
-    }
-}
 
 class DNDBDice {
     constructor(amount, faces, modifiers = "") {
@@ -2312,10 +2342,92 @@ class DNDBRoll extends Beyond20BaseRoll {
         return this;
     }
 }
+/*
+from roll_renderer import Beyond20RollRenderer, Beyond20BaseRoll;
+from settings import getDefaultSettings, WhisperType;
+import re;
+*/
+
+class DNDBDisplayer {
+    constructor() {
+        this._error = null;
+    }
+
+    postHTML(request, title, html, buttons, character, whisper, play_sound) {
+        let content = "<div class='beyond20-dice-roller'>";
+        if (this._error) {
+            content += "<div class='beyond20-roller-error'>" +
+                "<span class='beyond20-tooltip'>Virtual Table Top Not Found" +
+                "<span class='beyond20-tooltip-content'>" + this._error + "</span>" +
+                "</span>" +
+                "</div>";
+        }
+        content += "<div class='beyond20-dice-roller-content'>" + html + "</div>" +
+            "</div>";
+        const dlg = alertify.Beyond20Roll(title, content);
+        dlg.set('onclose', () => {
+            dlg.set('onclose', null);
+            dlg.destroy();
+        });
+        const element = $(dlg.elements.content.firstElementChild);
+        const icon16 = chrome.runtime.getURL("images/icons/icon16.png");
+        element.find(".ct-beyond20-custom-icon").attr('src', icon16);
+        element.find(".ct-beyond20-custom-roll").on('click', (event) => {
+            const roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
+            dndbeyondDiceRoller.rollDice(request, title, roll);
+        });
+        element.find(".beyond20-chat-button").on('click', (event) => {
+            const button = $(event.currentTarget).text();
+            buttons[button]();
+        });
+    }
+
+    async sendMessage(request, title, html, buttons, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
+        const req = {
+            action: "rendered-roll",
+            request,
+            title,
+            html,
+            buttons,
+            character,
+            whisper,
+            play_sound,
+            source,
+            attributes,
+            description,
+            attack_rolls,
+            roll_info,
+            damage_rolls,
+            total_damages,
+            open
+        }
+        chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(character, resp));
+    }
+    displayError(message) {
+        alertify.error(message);
+    }
+
+    setError(error) {
+        this._error = error;
+    }
+}
 
 class DNDBRoller {
     roll(formula, data) {
         return new DNDBRoll(formula, data);
+    }
+    async resolveRolls(name, rolls) {
+        if (dndbeyondDiceRoller._settings['use-digital-dice'] && DigitalDice.isEnabled()) {
+            const dice = [];
+            for (let roll of rolls) {
+                dice.push(...roll.dice);
+            }
+            const digital = new DigitalDice(name, dice);
+            await digital.roll();
+            rolls.forEach(roll => roll.calculateTotal());
+        } else {
+            return Promise.all(rolls.map(roll => roll.roll()))
+        }
     }
 }
 
@@ -2399,98 +2511,10 @@ dndbeyondDiceRoller.handleRollError = (request, error) => {
     dndbeyondDiceRoller._displayer.setError(error);
     request['original-whisper'] = request.whisper;
     request.whisper = WhisperType.NO;
+    delete request.sendMessage;
     return dndbeyondDiceRoller.handleRollRequest(request);
 }
 
-class DigitalDice {
-    constructor(name, dice) {
-        this._name = name;
-        this._dice = dice;
-        for (let dice of this._dice) {
-            dice.rerollDice = async function (amount) {
-                const fake = new this.constructor(amount, this.faces, "");
-                const digital = new DigitalDice(name, [fake])
-                await digital.roll();
-                this._rolls.push(...fake._rolls);
-            }
-        }
-        this._notificationIds = this._getNotificationIds();
-    }
-
-    clear() {
-        $(".dice-toolbar__dropdown-die").click()
-    }
-    clearResults() {
-        $(".dice_notification_controls__clear").click()
-    }
-    rollDice(amount, type) {
-        const dice = $(`.dice-die-button[data-dice="${type}"]`)
-        for (let i = 0; i < amount; i++)
-            dice.click()
-        return amount || 0;
-    }
-    _makeRoll() {
-        this._notificationIds = this._getNotificationIds();
-        $(".dice-toolbar__roll").click();
-    }
-    static isEnabled() {
-        const toolbar = $(".dice-toolbar");
-        return toolbar.length > 0;
-    }
-    async roll() {
-        this.clear();
-        let diceRolled = 0;
-        for (let dice of this._dice)
-            diceRolled += this.rollDice(dice.amount, `d${dice.faces}`);
-        if (diceRolled > 0) {
-            this._makeRoll();
-            return this.result()
-        }
-    }
-    _getNotificationIds() {
-        const notifications = $(".noty_bar").toArray();
-        return notifications.map(n => n.id);
-    }
-    lookForResult() {
-        const notifications = this._getNotificationIds();
-        const myId = notifications.find(n => !this._notificationIds.includes(n))
-        console.log("Found my results : ", myId)
-        if (!myId) return false;
-
-        const result = $(`#${myId} .dice_result`);
-        result.find(".dice_result__info__title .dice_result__info__rolldetail").text("Beyond 20: ")
-        result.find(".dice_result__info__title .dice_result__rolltype").text(this._name);
-        result.find(".dice_result__total").text("").append(E.img({ src: chrome.extension.getURL("images/icons/icon32.png") }));
-        const breakdown = result.find(".dice_result__info__results .dice_result__info__breakdown").text();
-        const dicenotation = result.find(".dice_result__info__dicenotation").text();
-
-        const diceMatches = reMatchAll(/([0-9]*)d([0-9]+)/, dicenotation) || [];
-        const results = breakdown.split("+");
-        this._dice.forEach(d => d._rolls = []);
-        for (let match of diceMatches) {
-            const amount = parseInt(match[1]);
-            const faces = parseInt(match[2]);
-            for (let i = 0; i < amount; i++) {
-                const result = parseInt(results.shift());
-                for (let dice of this._dice) {
-                    if (dice.faces != faces) continue;
-                    if (dice._rolls.length == dice.amount) continue;
-                    dice._rolls.push({ "roll": result });
-                    break;
-                }
-            }
-        }
-
-        this._notificationIds = notifications;
-        return true;
-    }
-    async result() {
-        while (!this.lookForResult())
-            await new Promise(r => setTimeout(r, 500));
-        for (let dice of this._dice)
-            await dice.handleModifiers();
-    }
-}
 /*from utils import replaceRolls, cleanRoll, alertQuickSettings, isListEqual, isObjectEqual;
 from settings import getStoredSettings, mergeSettings, character_settings, WhisperType, RollType, CriticalRules;
 from dndbeyond_dice import dndbeyondDiceRoller;
@@ -2758,7 +2782,12 @@ function sendRoll(character, rollType, fallback, args) {
         req["advantage"] = RollType.NORMAL;
 
     console.log("Sending message: ", req);
-    chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(character, resp));
+    if (character.getGlobalSetting("use-digital-dice", false) && DigitalDice.isEnabled()) {
+        req.sendMessage = true;
+        dndbeyondDiceRoller.handleRollRequest(req);
+    } else {
+        chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(character, resp));
+    }
 }
 
 function isRollButtonAdded() {

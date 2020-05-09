@@ -6,13 +6,14 @@ const ROLL_RENDERER_DEPS = [
     "src/common/settings.js",
     "src/common/constants.js",
     "src/discord/discord.js",
-    "src/common/roll_renderer.js",
-    "src/common/dice.js"
+    "src/common/roll_renderer.js"
 ];
+
 const DNDBEYOND_PAGE_DEPS = [
     ...ROLL_RENDERER_DEPS,
-    "src/dndbeyond/base/dice.js",
     "src/dndbeyond/base/digital-dice.js",
+    "src/common/dice.js",
+    "src/dndbeyond/base/dice.js",
     "src/dndbeyond/base/base.js",
     "src/dndbeyond/base/hotkeys.js",
     "src/dndbeyond/base/utils.js",
