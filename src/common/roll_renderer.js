@@ -85,8 +85,8 @@ class Beyond20RollRenderer {
         }
     }
 
-    async processAdvantage(request, rollsToDiscard){
-        let advantage = request.advantage;
+    async processAdvantage(advantage, rollsToDiscard){
+        // let advantage = request.advantage;
         if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {
             if (advantage == RollType.ADVANTAGE) {
                 if (rollsToDiscard[0].total >= rollsToDiscard[1].total) {
@@ -335,9 +335,8 @@ class Beyond20RollRenderer {
 
     async rollD20(request, title, data) {
         const attack_rolls = await this.getToHit(request, title, "", data)
-        //TODO: Advantage/Disadvantage marking
         await this._roller.resolveRolls(title, attack_rolls);
-        this.processAdvantage(request, attack_rolls);
+        this.processAdvantage(request.advantage, attack_rolls);
         return this.postDescription(request, title, null, {}, null, attack_rolls);
     }
 
@@ -587,7 +586,7 @@ class Beyond20RollRenderer {
             }
 
             await this._roller.resolveRolls(request.name, all_rolls)
-            this.processAdvantage(request, all_rolls);
+            this.processAdvantage(request.advantage, all_rolls);
             const critical_limit = request["critical-limit"] || 20;
             is_critical = this.isCriticalHitD20(to_hit, critical_limit);
             if (is_critical) {
