@@ -1574,52 +1574,59 @@ class Beyond20RollRenderer {
         if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {
             const roll_1 = this.createRoll("1d20" + modifier, data);
             const roll_2 = this.createRoll("1d20" + modifier, data);
-
-            if (advantage == RollType.ADVANTAGE) {
-                if (roll_1.total >= roll_2.total) {
-                    roll_2.setDiscarded(true);
-                } else {
-                    roll_1.setDiscarded(true);
-                }
-            } else if (advantage == RollType.DISADVANTAGE) {
-                if (roll_1.total <= roll_2.total) {
-                    roll_2.setDiscarded(true);
-                } else {
-                    roll_1.setDiscarded(true);
-                }
-            }
+            
             return [roll_1, roll_2];
         } else if ([RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE].includes(advantage)) {
             const roll_1 = this.createRoll("1d20" + modifier, data);
             const roll_2 = this.createRoll("1d20" + modifier, data);
             const roll_3 = this.createRoll("1d20" + modifier, data);
 
-            if (advantage == RollType.SUPER_ADVANTAGE) {
-                if (roll_1.total >= roll_2.total && roll_1.total >= roll_3.total) {
-                    roll_2.setDiscarded(true);
-                    roll_3.setDiscarded(true);
-                } else if (roll_2.total >= roll_3.total) {
-                    roll_1.setDiscarded(true);
-                    roll_3.setDiscarded(true);
-                } else {
-                    roll_1.setDiscarded(true);
-                    roll_2.setDiscarded(true);
-                }
-            } else if (advantage == RollType.SUPER_DISADVANTAGE) {
-                if (roll_1.total <= roll_2.total && roll_1.total <= roll_3.total) {
-                    roll_2.setDiscarded(true);
-                    roll_3.setDiscarded(true);
-                } else if (roll_2.total <= roll_3.total) {
-                    roll_1.setDiscarded(true);
-                    roll_3.setDiscarded(true);
-                } else {
-                    roll_1.setDiscarded(true);
-                    roll_2.setDiscarded(true);
-                }
-            }
             return [roll_1, roll_2, roll_3];
         } else { // advantage == RollType.NORMAL
             return [this.createRoll("1d20" + modifier, data)];
+        }
+    }
+
+    async processAdvantage(request, rollsToDiscard){
+        let advantage = request.advantage;
+        if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {
+            if (advantage == RollType.ADVANTAGE) {
+                if (rollsToDiscard[0].total >= rollsToDiscard[1].total) {
+                    rollsToDiscard[1].setDiscarded(true);
+                } else {
+                    rollsToDiscard[0].setDiscarded(true);
+                }
+            } else if (advantage == RollType.DISADVANTAGE) {
+                if (rollsToDiscard[0].total <= rollsToDiscard[1].total) {
+                    rollsToDiscard[1].setDiscarded(true);
+                } else {
+                    rollsToDiscard[0].setDiscarded(true);
+                }
+            }
+        } else if ([RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE].includes(advantage)) {
+            if (advantage == RollType.SUPER_ADVANTAGE) {
+                if (rollsToDiscard[0].total >= rollsToDiscard[1].total && rollsToDiscard[0].total >= rollsToDiscard[2].total) {
+                    rollsToDiscard[1].setDiscarded(true);
+                    rollsToDiscard[2].setDiscarded(true);
+                } else if (rollsToDiscard[1].total >= rollsToDiscard[2].total) {
+                    rollsToDiscard[0].setDiscarded(true);
+                    rollsToDiscard[2].setDiscarded(true);
+                } else {
+                    rollsToDiscard[0].setDiscarded(true);
+                    rollsToDiscard[1].setDiscarded(true);
+                }
+            } else if (advantage == RollType.SUPER_DISADVANTAGE) {
+                if (rollsToDiscard[0].total <= rollsToDiscard[1].total && rollsToDiscard[0].total <= rollsToDiscard[2].total) {
+                    rollsToDiscard[1].setDiscarded(true);
+                    rollsToDiscard[2].setDiscarded(true);
+                } else if (rollsToDiscard[1].total <= rollsToDiscard[2].total) {
+                    rollsToDiscard[0].setDiscarded(true);
+                    rollsToDiscard[2].setDiscarded(true);
+                } else {
+                    rollsToDiscard[0].setDiscarded(true);
+                    rollsToDiscard[1].setDiscarded(true);
+                }
+            }
         }
     }
 
@@ -1830,7 +1837,9 @@ class Beyond20RollRenderer {
 
     async rollD20(request, title, data) {
         const attack_rolls = await this.getToHit(request, title, "", data)
+        //TODO: Advantage/Disadvantage marking
         await this._roller.resolveRolls(title, attack_rolls);
+        this.processAdvantage(request, attack_rolls);
         return this.postDescription(request, title, null, {}, null, attack_rolls);
     }
 
@@ -2080,6 +2089,7 @@ class Beyond20RollRenderer {
             }
 
             await this._roller.resolveRolls(request.name, all_rolls)
+            this.processAdvantage(request, all_rolls);
             const critical_limit = request["critical-limit"] || 20;
             is_critical = this.isCriticalHitD20(to_hit, critical_limit);
             if (is_critical) {
