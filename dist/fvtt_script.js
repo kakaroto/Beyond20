@@ -247,6 +247,14 @@ const options_list = {
         "default": true
     },
 
+    "use-digital-dice": {
+        "short": "Use D&D Beyond's Digital Dice",
+        "title": "Use D&D Beyond's Digital Dice",
+        "description": "Integrate with D&D Beyond's Digital Dice, rolling the dice on the screen and sending the pre-calculated results to the VTT.",
+        "type": "bool",
+        "default": false
+    },
+
     "auto-roll-damage": {
         "title": "Auto roll Damage and Crit",
         "description": "Always roll damage and critical hit dice when doing an attack",
@@ -1275,6 +1283,20 @@ class Beyond20RollRenderer {
         }
     }
 
+    async resolveAllRolls(name, rolls) {
+        if (this._settings['use-digital-dice'] && DigitalDice.isEnabled()) {
+            const dice = [];
+            for (let roll of rolls) {
+                dice.push(...roll.dice);
+            }
+            const digital = new DigitalDice(name, dice);
+            await digital.roll();
+            rolls.forEach(roll => roll.calculateTotal());
+        } else {
+            await Promise.all(rolls.map(roll => roll.roll()))
+        }
+    }
+
     isCriticalHitD20(rolls, limit = 20) {
         for (let roll of rolls) {
             roll.setCriticalLimit(limit);
@@ -1338,10 +1360,10 @@ class Beyond20RollRenderer {
                 reroll: false
             };
             buttons = {
-                "Roll Damages": () => {
+                "Roll Damages": async () => {
                     let damages = roll_damages_args.damages;
                     if (roll_damages_args.reroll)
-                        damages = this.rerollDamages(damages);
+                        damages = await this.rerollDamages(damages);
                     roll_damages_args.reroll = true;
                     this.postDescription(request, title, source, attributes, description, [], [], damages);
                 }
@@ -1428,6 +1450,7 @@ class Beyond20RollRenderer {
         for (let key in total_damages) {
             const is_total = (roll === null);
             roll = this._roller.roll(total_damages[key]);
+            await roll.roll();
             total_damages[key] = roll;
             const roll_html = await this.rollToDetails(roll, is_total);
             html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
@@ -1470,13 +1493,15 @@ class Beyond20RollRenderer {
         return this._roller.roll(parts.join(" + @"), new_data);
     }
 
-    rollDice(request, title, dice, data = {}) {
+    async rollDice(request, title, dice, data = {}) {
         const roll = this.createRoll(dice, data);
+        await this.resolveAllRolls(title, [roll]);
         return this.postDescription(request, title, null, {}, null, [roll]);
     }
 
     async rollD20(request, title, data) {
         const attack_rolls = await this.getToHit(request, title, "", data)
+        await this.resolveAllRolls(title, attack_rolls);
         return this.postDescription(request, title, null, {}, null, attack_rolls);
     }
 
@@ -1612,14 +1637,13 @@ class Beyond20RollRenderer {
     async buildAttackRolls(request, custom_roll_dice) {
         const to_hit = [];
         const damage_rolls = [];
+        const all_rolls = [];
         let is_critical = false;
         if (request["to-hit"] !== undefined) {
-            const critical_limit = request["critical-limit"] || 20;
-
             const custom = custom_roll_dice == "" ? "" : (" + " + custom_roll_dice);
             const to_hit_mod = " + " + request["to-hit"] + custom;
             to_hit.push(...await this.getToHit(request, request.name, to_hit_mod));
-            is_critical = this.isCriticalHitD20(to_hit, critical_limit);
+            all_rolls.push(...to_hit);
         }
 
         if (request.damages !== undefined) {
@@ -1683,6 +1707,7 @@ class Beyond20RollRenderer {
             const has_versatile = damage_types.length > 1 && damage_types[1] == "Two-Handed";
             for (let i = 0; i < (damages.length); i++) {
                 const roll = this._roller.roll(damages[i]);
+                all_rolls.push(roll);
                 const dmg_type = damage_types[i];
                 let damage_flags = DAMAGE_FLAGS.REGULAR;
                 if (["Healing", "Disciple of Life", "Temp HP"].includes(dmg_type)) {
@@ -1725,9 +1750,14 @@ class Beyond20RollRenderer {
                 }
             }
 
+            await this.resolveAllRolls(request.name, all_rolls)
+            const critical_limit = request["critical-limit"] || 20;
+            is_critical = this.isCriticalHitD20(to_hit, critical_limit);
             if (is_critical) {
+                const critical_damage_rolls = []
                 for (let i = 0; i < (critical_damages.length); i++) {
                     const roll = this._roller.roll(critical_damages[i]);
+                    critical_damage_rolls.push(roll);
                     const dmg_type = critical_damage_types[i];
                     let damage_flags = DAMAGE_FLAGS.REGULAR;
                     if (["Healing", "Disciple of Life", "Temp HP"].includes(dmg_type)) {
@@ -1742,17 +1772,18 @@ class Beyond20RollRenderer {
                     const suffix = !(damage_flags & DAMAGE_FLAGS.HEALING) ? " Critical Damage" : "";
                     damage_rolls.push([dmg_type + suffix, roll, damage_flags | DAMAGE_FLAGS.CRITICAL]);
                 }
+                await this.resolveAllRolls(request.name, critical_damage_rolls);
             }
         }
 
         return [to_hit, damage_rolls];
     }
 
-    rerollDamages(rolls) {
+    async rerollDamages(rolls) {
         const new_rolls = [];
         for (let [roll_name, roll, flags] of rolls) {
             if (typeof (roll.reroll) === "function") {
-                new_rolls.push([roll_name, roll.reroll(), flags]);
+                new_rolls.push([roll_name, await roll.reroll(), flags]);
             } else {
                 new_rolls.push([roll_name, roll, flags]);
             }
@@ -1890,6 +1921,10 @@ class Beyond20RollRenderer {
 }
 
 
+
+
+
+
 class Beyond20BaseRoll {
     constructor(formula, data = {}) {
         this._formula = formula;
@@ -1920,7 +1955,11 @@ class Beyond20BaseRoll {
         throw new Error("NotImplemented");
     }
 
-    reroll() {
+    async roll() {
+        throw new Error("NotImplemented");
+    }
+
+    async reroll() {
         throw new Error("NotImplemented");
     }
 
@@ -1978,6 +2017,7 @@ class Beyond20BaseRoll {
         }
     }
 }
+
 /*
 from utils import addCustomEventListener;
 from settings import WhisperType;
@@ -2055,7 +2095,7 @@ class FVTTRoll extends Beyond20BaseRoll {
     constructor(formula, data = {}) {
         formula = formula.replace("ro<2", "r<=2");
         super(formula, data);
-        this._roll = new Roll(formula, data).roll();
+        this._roll = new Roll(formula, data)
     }
 
     get total() {
@@ -2078,14 +2118,19 @@ class FVTTRoll extends Beyond20BaseRoll {
         return this._roll.getTooltip();
     }
 
-    reroll() {
+    async roll() {
+        this._roll.roll();
+        return this;
+    }
+
+    async reroll() {
         this._roll = this._roll.reroll();
         return this;
     }
 }
 
 class FVTTRoller {
-    roll(formula, data) {
+    async roll(formula, data) {
         return new FVTTRoll(formula, data);
     }
 }

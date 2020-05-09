@@ -93,6 +93,14 @@ const options_list = {
         "default": true
     },
 
+    "use-digital-dice": {
+        "short": "Use D&D Beyond's Digital Dice",
+        "title": "Use D&D Beyond's Digital Dice",
+        "description": "Integrate with D&D Beyond's Digital Dice, rolling the dice on the screen and sending the pre-calculated results to the VTT.",
+        "type": "bool",
+        "default": false
+    },
+
     "auto-roll-damage": {
         "title": "Auto roll Damage and Crit",
         "description": "Always roll damage and critical hit dice when doing an attack",

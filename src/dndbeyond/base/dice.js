@@ -48,7 +48,7 @@ class DNDBDisplayer {
 }
 
 class DNDBDice {
-    constructor(amount, faces, modifiers) {
+    constructor(amount, faces, modifiers = "") {
         this.amount = parseInt(amount);
         this.faces = parseInt(faces);
         this._modifiers = modifiers || "";
@@ -83,21 +83,41 @@ class DNDBDice {
         this._rolls = [];
     }
 
-    roll() {
+    async rollDice() {
         this._rolls = [];
         for (let i = 0; i < this.amount; i++) {
             let die = Math.floor(Math.random() * this.faces) + 1;
-            // Check for reroll modifier && discard old value && reroll it if (necessary;
-            if (this._reroll.active &&
-                ((this._reroll.operator == "=" && die == this._reroll.value) ||
+            this._rolls.push({ "roll": die });
+        }
+    }
+    async rerollDice(amount) {
+        for (let i = 0; i < amount; i++) {
+            let die = Math.floor(Math.random() * this.faces) + 1;
+            this._rolls.push({ "roll": die });
+        }
+    }
+    async roll() {
+        await this.rollDice();
+        await this.handleModifiers();
+        return this.total;
+    }
+    async handleModifiers() {
+        if (this._reroll.active) {
+            let rerolls = 0;
+            for (let roll of this._rolls) {
+                // Check for reroll modifier && discard old value && reroll it if necessary
+                const die = roll.roll;
+                if ((this._reroll.operator == "=" && die == this._reroll.value) ||
                     (this._reroll.operator == "<=" && die <= this._reroll.value) ||
                     (this._reroll.operator == "<" && die < this._reroll.value) ||
                     (this._reroll.operator == ">=" && die >= this._reroll.value) ||
-                    (this._reroll.operator == ">" && die > this._reroll.value))) {
-                this._rolls.push({ "roll": die, "discarded": true });
-                die = Math.floor(Math.random() * this.faces) + 1;
+                    (this._reroll.operator == ">" && die > this._reroll.value)) {
+                    roll.discarded = true;
+                    rerolls++;
+                }
             }
-            this._rolls.push({ "roll": die });
+            if (rerolls)
+                await this.rerollDice(rerolls);
         }
         // Look for drops && keeps;
         const dk_amount = this._dk.amount;
@@ -194,7 +214,6 @@ class DNDBRoll extends Beyond20BaseRoll {
                 }
             }
         }
-        this.roll();
     }
 
     get total() {
@@ -229,11 +248,18 @@ class DNDBRoll extends Beyond20BaseRoll {
         return this._parts;
     }
 
-    roll() {
+    async roll() {
+        for (let part of this._parts) {
+            if (part instanceof DNDBDice)
+                await part.roll();
+        }
+        this.calculateTotal();
+    }
+    calculateTotal() {
         this._total = 0;
         for (let part of this._parts) {
             if (part instanceof DNDBDice) {
-                this._total += part.roll();
+                this._total += part.total;
             } else {
                 this._total += part;
             }
@@ -262,8 +288,8 @@ class DNDBRoll extends Beyond20BaseRoll {
         return tooltip;
     }
 
-    reroll() {
-        this.roll();
+    async reroll() {
+        await this.roll();
         return this;
     }
 }

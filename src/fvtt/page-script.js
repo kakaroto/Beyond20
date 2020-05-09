@@ -75,7 +75,7 @@ class FVTTRoll extends Beyond20BaseRoll {
     constructor(formula, data = {}) {
         formula = formula.replace("ro<2", "r<=2");
         super(formula, data);
-        this._roll = new Roll(formula, data).roll();
+        this._roll = new Roll(formula, data)
     }
 
     get total() {
@@ -98,14 +98,19 @@ class FVTTRoll extends Beyond20BaseRoll {
         return this._roll.getTooltip();
     }
 
-    reroll() {
+    async roll() {
+        this._roll.roll();
+        return this;
+    }
+
+    async reroll() {
         this._roll = this._roll.reroll();
         return this;
     }
 }
 
 class FVTTRoller {
-    roll(formula, data) {
+    async roll(formula, data) {
         return new FVTTRoll(formula, data);
     }
 }
