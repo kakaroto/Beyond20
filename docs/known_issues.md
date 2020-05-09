@@ -1,1 +1,2 @@
 - With the new character sheet layout, the quick rolls do not currently work when hovering on saving throws.
+- Quick rolls are not working with the digital dice enabled. Integration with D&D Beyond's Digital Dice is underway. In the meantime, click the Beyond20 icon from the side panel (click just outside the box on initiative to bring it up there).
