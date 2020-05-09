@@ -1750,19 +1750,19 @@ function handleMessage(request, sender, sendResponse) {
             properties[name] = value;
 
         if (request.attack_rolls.length > 0) {
-            properties["To Hit"] = request.attack_rolls.map(roll => roll.total.toString()).join(" | ")
+            properties["To Hit"] = request.attack_rolls.map(roll => `[[${roll.total}]]`).join(" | ")
         }
         for (let [roll_name, roll, flags] of request.damage_rolls) {
             if (typeof (roll) === "string")
                 properties[roll_name] = roll
             else
-                properties[roll_name] = roll.total.toString()
+                properties[roll_name] = `[[${roll.total}]]`;
         }
         if (Object.keys(request.total_damages).length > 0)
             properties["Totals"] = "";
             
         for (let [key, roll] of Object.entries(request.total_damages))
-            properties["Total " + key] = roll.total.toString()
+            properties["Total " + key] = `[[${roll.total}]]`;
 
         const message = createTable(request, request.title, properties);
         postChatMessage(message, request.character);
