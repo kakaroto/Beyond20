@@ -2303,8 +2303,7 @@ class FVTTDisplayer {
     _getSpeakerByName(name) {
         if (name === null)
             return ChatMessage.getSpeaker();
-        name = name.toLowerCase();
-        const actor = game.actors.entities.find((actor) => actor.data.name.toLowerCase() == name);
+        const actor = game.actors.entities.find((actor) => actor.data.name.toLowerCase() == name.toLowerCase());
         const speaker = ChatMessage.getSpeaker({ actor });
         speaker.alias = name;
         return speaker;
