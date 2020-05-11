@@ -175,6 +175,10 @@ function populateCharacter(response) {
             e = createHTMLOption("bard-psychic-blades", false, character_settings);
             options.append(e);
         }
+        if (response["racial-traits"].includes("Radiant Soul")) {
+            e = createHTMLOption("protector-aasimar-radiant-soul", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }

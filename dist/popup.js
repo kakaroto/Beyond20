@@ -634,6 +634,12 @@ const character_settings = {
         "description": "Use your Gathered Swarm ability to add extra Force damage to your weapon attacks",
         "type": "bool",
         "default": false
+    },
+    "protector-aasimar-radiant-soul": {
+        "title": "Protector Aasimar: Radiant Soul",
+        "description": "Once on each of your turns, while transformed, you can deal extra radiant damage to one target when you deal damage to it with an attack or a spell. The extra radiant damage equals your level.",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -1239,6 +1245,10 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Psychic Blades")) {
             e = createHTMLOption("bard-psychic-blades", false, character_settings);
+            options.append(e);
+        }
+        if (response["racial-traits"].includes("Radiant Soul")) {
+            e = createHTMLOption("protector-aasimar-radiant-soul", false, character_settings);
             options.append(e);
         }
 

@@ -319,6 +319,13 @@ function rollItem(force_display = false) {
             damage_types.push("Psychic");
             character.mergeCharacterSettings({ "bard-psychic-blades": false });
         }
+        //Protector Aasimar: Radiant Soul Damage
+        if (character.hasRacialTrait("Radiant Soul") &&
+            character.getSetting("protector-aasimar-radiant-soul", true)) {
+            damages.push(" + " + character._level);
+            damage_types.push("Radiant Soul");
+            character.mergeCharacterSettings({ "protector-aasimar-radiant-soul": false });
+        }
 
         let critical_limit = 20;
         if (character.hasAction("Channel Divinity: Legendary Strike") &&
