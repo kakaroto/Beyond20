@@ -105,7 +105,7 @@ if (alertify.Beyond20Prompt === undefined) {
                 "cancel_label": undefined,
                 "resolver": undefined,
             },
-            "main": (title, content, ok_label, cancel_label, resolver) => {
+            "main": function (title, content, ok_label, cancel_label, resolver) {
                 this.set('title', title);
                 this.set('content', content);
                 this.set('resolver', resolver);
@@ -138,12 +138,12 @@ if (alertify.Beyond20Prompt === undefined) {
                 }
             },
             "build": () => { },
-            "prepare": () => {
+            "prepare": function () {
                 this.elements.content.innerHTML = this.get('content');
                 this.__internal.buttons[0].element.innerHTML = this.get('ok_label');
                 this.__internal.buttons[1].element.innerHTML = this.get('cancel_label');
             },
-            "callback": (closeEvent) => {
+            "callback": function (closeEvent) {
                 if (closeEvent.index == 0) {
                     this.get('resolver').call(this, $(this.elements.content.firstElementChild));
                 } else {

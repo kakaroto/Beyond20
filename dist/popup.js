@@ -67,7 +67,7 @@ ROLLTYPE_STYLE_CSS = `
 }
 .ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-query:after,
 .beyond20-quick-roll-tooltip.beyond20-roll-type-query:after {
-    content: " != undefined";
+    content: "?";
     background-color: grey;
 }
 .ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-thrice:after,
