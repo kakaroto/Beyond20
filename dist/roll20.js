@@ -1195,7 +1195,7 @@ function template(request, name, properties) {
     for (let key in properties)
         result += " {{" + key + "=" + properties[key] + "}}";
 
-    if (request.advantage && properties.normal === undefined && ["simple", "atk", "atkdmg"].includes(name))
+    if (request.advantage !== undefined && properties.normal === undefined && ["simple", "atk", "atkdmg"].includes(name))
         result += advantageString(request.advantage, properties["r1"]);
 
     if (request.whisper == WhisperType.HIDE_NAMES) {
