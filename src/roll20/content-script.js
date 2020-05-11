@@ -618,6 +618,41 @@ function rollSpellAttack(request, custom_roll_dice) {
     return roll;
 }
 
+function convertRollToText(whisper, roll, standout=false) {
+    const total = roll.total || 0;
+    const prefix = (standout && !roll.discarded) ? '{' : '';
+    const suffix = (standout && !roll.discarded) ? '}' : '';
+    if (whisper === WhisperType.HIDE_NAMES) return `[[${total}]]`;
+    const formula = roll.formula || "";
+    const parts = roll.parts || [];
+    let result = `${prefix}[[ ${total} [${formula}] = `;
+    let plus = '';
+    for (let part of parts) {
+        if (part.rolls) {
+            result += `${plus}(`
+            let part_plus = '';
+            for (let die of part.rolls) {
+                result += die.discarded ? `~${part_plus}${die.roll}~` : `${part_plus}${die.roll}`;
+                part_plus = ' + ';
+            }
+            result += ')';
+        } else {
+            if (['+', '-'].includes(String(part).trim())) {
+                plus = ` ${part} `;
+            } else {
+                part = isNaN(part) ? part : Number(part);
+                if (part < 0) {
+                    part = -1 * part;
+                    plus = ' - ';
+                }
+                result += `${plus}${part}`;
+            }
+        }
+        plus = ' + ';
+    }
+    result += `]]${suffix}`;
+    return result;
+};
 
 function injectSettingsButton() {
     const icon = chrome.extension.getURL("images/icons/icon32.png");
@@ -729,19 +764,19 @@ function handleMessage(request, sender, sendResponse) {
             properties[name] = value;
 
         if (request.attack_rolls.length > 0) {
-            properties["To Hit"] = request.attack_rolls.map(roll => `[[${roll.total}]]`).join(" | ")
+            properties["To Hit"] = request.attack_rolls.map(roll => convertRollToText(request.whisper, roll, true)).join(" | ")
         }
         for (let [roll_name, roll, flags] of request.damage_rolls) {
             if (typeof (roll) === "string")
                 properties[roll_name] = roll
             else
-                properties[roll_name] = `[[${roll.total}]]`;
+                properties[roll_name] = convertRollToText(request.whisper, roll);
         }
         if (Object.keys(request.total_damages).length > 0)
             properties["Totals"] = "";
-            
+
         for (let [key, roll] of Object.entries(request.total_damages))
-            properties["Total " + key] = `[[${roll.total}]]`;
+            properties["Total " + key] = convertRollToText(request.whisper, roll);
 
         const message = createTable(request, request.title, properties);
         postChatMessage(message, request.character);
