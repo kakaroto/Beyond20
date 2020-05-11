@@ -165,6 +165,11 @@ dndbeyondDiceRoller.setBaseURL(chrome.runtime.getURL(""));
 dndbeyondDiceRoller.setSettings(getDefaultSettings());
 dndbeyondDiceRoller.handleRollError = (request, error) => {
     dndbeyondDiceRoller._displayer.setError(error);
+    if (request.action === "rendered-roll") {
+        return dndbeyondDiceRoller._displayer.postHTML(request.request, request.title,
+            request.html, request.buttons, request.character, request.whisper,
+            request.play_sound);
+    }
     request['original-whisper'] = request.whisper;
     request.whisper = WhisperType.NO;
     delete request.sendMessage;
