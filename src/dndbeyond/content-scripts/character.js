@@ -549,6 +549,16 @@ function rollSpell(force_display = false) {
             damage_types.push("Arcane Firearm");
         }
 
+        //Handle Flames of Phlegethos
+        if (damages.length > 0 &&
+            character.hasFeat("Flames of Phlegethos")){
+            for (i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Fire"){
+                    damages[i] = damages[i].replace(/[0-9]*d[0-9]+/g, "$&r=1");
+                }
+            }
+        }
+
         // Check for Draconic Sorcerer's Elemental Affinity;
         let elementalAffinity = null;
         for (let feature of character._class_features) {

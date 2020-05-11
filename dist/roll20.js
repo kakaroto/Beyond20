@@ -14,7 +14,7 @@ function replaceRollsCallback(match, replaceCB) {
 
 function replaceRolls(text, replaceCB) {
     // TODO: Cache the value so we don't recompile the regexp every time
-    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro<2)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
+    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro<2)?(?:r=1)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
     return text.replace(dice_regexp, (...match) => replaceRollsCallback(match, replaceCB));
 }
 
@@ -1534,7 +1534,7 @@ function rollSpellAttack(request, custom_roll_dice) {
     let template_type = "atkdmg";
     let dmg_props = {}
     if (request["to-hit"] !== undefined) {
-        const d20_roll = "1d20";
+        let d20_roll = "1d20";
         if (request["critical-limit"])
             d20_roll = "1d20cs>" + request["critical-limit"];
         properties["mod"] = request["to-hit"];
