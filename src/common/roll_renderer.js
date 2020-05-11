@@ -530,7 +530,7 @@ class Beyond20RollRenderer {
                 critical_damages.splice(0, 0, crit_damage);
                 critical_damage_types.splice(0, 0, "Chaotic energy");
             } else if (request.name == "Toll the Dead") {
-                const ttd_dice = await this.queryGeneric(request.name, "Is the target missing any of its hit points != undefined", { "d12": "Yes", "d8": "No" }, "ttd_dice", ["d12", "d8"]);
+                const ttd_dice = await this.queryGeneric(request.name, "Is the target missing any of its hit points ?", { "d12": "Yes", "d8": "No" }, "ttd_dice", ["d12", "d8"]);
                 damages[0] = damages[0].replace("d8", ttd_dice);
             }
 
@@ -539,7 +539,7 @@ class Beyond20RollRenderer {
                 if (dmgType == "Colossus Slayer") {
                     const dmg = damages[dmgIndex].toString();
                     if (dmg) {
-                        const dmg_dice = await this.queryGeneric(request.name, `Add ${dmgType} damage != undefined`, { "0": "No", [dmg]: "Yes" }, "dmg_dice", ["0", dmg]);
+                        const dmg_dice = await this.queryGeneric(request.name, `Add ${dmgType} damage ?`, { "0": "No", [dmg]: "Yes" }, "dmg_dice", ["0", dmg]);
                         if (dmg_dice == "0") {
                             damages.splice(dmgIndex, 1);
                             damage_types.splice(dmgIndex, 1);
