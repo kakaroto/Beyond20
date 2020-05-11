@@ -63,6 +63,8 @@ This extension is released under the GPL v3 license. Read the LICENSE file for m
 
 The icon image is based on a public domain image from openclipart. I downloaded it from [wikimedia](https://commons.wikimedia.org/wiki/File:Twenty_sided_dice.svg) and subsequently modified it.
 
+The roll badge icons were designed and created by [Jerry Escandon](https://github.com/Jerryescandon) 
+
 The donation icon is a public domain contribution by Fission Strategy, US, downloaded from [thenounproject](https://thenounproject.com/term/donation/15047/)
 
 The 'up' arrow (docs/images/up-arrow.png) used in the screenshots page is a public domain image shared by OCAL on [clker.com](http://www.clker.com/clipart-16838.html)
