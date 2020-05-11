@@ -1575,6 +1575,22 @@ class Beyond20RollRenderer {
             const roll_1 = this.createRoll("1d20" + modifier, data);
             const roll_2 = this.createRoll("1d20" + modifier, data);
 
+            return {advantage, rolls: [roll_1, roll_2]};
+        } else if ([RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE].includes(advantage)) {
+            const roll_1 = this.createRoll("1d20" + modifier, data);
+            const roll_2 = this.createRoll("1d20" + modifier, data);
+            const roll_3 = this.createRoll("1d20" + modifier, data);
+
+            return {advantage, rolls: [roll_1, roll_2, roll_3]};
+        } else { // advantage == RollType.NORMAL
+            return {advantage, rolls: [this.createRoll("1d20" + modifier, data)]};
+        }
+    }
+    processToHitAdvantage(advantage, rolls) {
+        if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {
+            const roll_1 = rolls[0];
+            const roll_2 = rolls[1];
+
             if (advantage == RollType.ADVANTAGE) {
                 if (roll_1.total >= roll_2.total) {
                     roll_2.setDiscarded(true);
@@ -1590,9 +1606,9 @@ class Beyond20RollRenderer {
             }
             return [roll_1, roll_2];
         } else if ([RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE].includes(advantage)) {
-            const roll_1 = this.createRoll("1d20" + modifier, data);
-            const roll_2 = this.createRoll("1d20" + modifier, data);
-            const roll_3 = this.createRoll("1d20" + modifier, data);
+            const roll_1 = rolls[0];
+            const roll_2 = rolls[1];
+            const roll_3 = rolls[2];
 
             if (advantage == RollType.SUPER_ADVANTAGE) {
                 if (roll_1.total >= roll_2.total && roll_1.total >= roll_3.total) {
@@ -1617,9 +1633,6 @@ class Beyond20RollRenderer {
                     roll_2.setDiscarded(true);
                 }
             }
-            return [roll_1, roll_2, roll_3];
-        } else { // advantage == RollType.NORMAL
-            return [this.createRoll("1d20" + modifier, data)];
         }
     }
 
@@ -1829,9 +1842,10 @@ class Beyond20RollRenderer {
     }
 
     async rollD20(request, title, data) {
-        const attack_rolls = await this.getToHit(request, title, "", data)
-        await this._roller.resolveRolls(title, attack_rolls);
-        return this.postDescription(request, title, null, {}, null, attack_rolls);
+        const {advantage, rolls} = await this.getToHit(request, title, "", data)
+        await this._roller.resolveRolls(title, rolls);
+        this.processToHitAdvantage(advantage, rolls);
+        return this.postDescription(request, title, null, {}, null, rolls);
     }
 
     async rollSkill(request, custom_roll_dice = "") {
@@ -1964,15 +1978,18 @@ class Beyond20RollRenderer {
     }
 
     async buildAttackRolls(request, custom_roll_dice) {
-        const to_hit = [];
+        let to_hit = [];
+        let to_hit_advantage = null;
         const damage_rolls = [];
         const all_rolls = [];
         let is_critical = false;
         if (request["to-hit"] !== undefined) {
             const custom = custom_roll_dice == "" ? "" : (" + " + custom_roll_dice);
             const to_hit_mod = " + " + request["to-hit"] + custom;
-            to_hit.push(...await this.getToHit(request, request.name, to_hit_mod));
-            all_rolls.push(...to_hit);
+            const {advantage, rolls} = await this.getToHit(request, request.name, to_hit_mod)
+            to_hit_advantage = advantage;
+            to_hit.push(...rolls);
+            all_rolls.push(...rolls);
         }
 
         if (request.damages !== undefined) {
@@ -2080,6 +2097,8 @@ class Beyond20RollRenderer {
             }
 
             await this._roller.resolveRolls(request.name, all_rolls)
+            if (to_hit.length > 0)
+                this.processToHitAdvantage(to_hit_advantage, to_hit)
             const critical_limit = request["critical-limit"] || 20;
             is_critical = this.isCriticalHitD20(to_hit, critical_limit);
             if (is_critical) {
