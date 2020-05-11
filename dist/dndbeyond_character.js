@@ -5059,25 +5059,43 @@ function deactivateTooltipListeners(el) {
     return el.off('mouseenter').off('mouseleave').off('click');
 }
 
-function activateTooltipListeners(el, tooltip, callback) {
-    setPosition = (e) => {
-        tooltip.css({ "left": e.pageX - tooltip.width() / 2, "top": e.pageY - tooltip.height() - 5 });
-    }
+var quickRollHideId = 0;
+function activateTooltipListeners(el, direction, tooltip, callback) {
     el.on('mouseenter', (e) => {
-        setPosition(e);
-        tooltip.show();
+        if (quickRollHideId)
+            clearTimeout(quickRollHideId);
+        quickRollHideId = 0;
+ 
+        const target = $(e.currentTarget)
+        const position = target.offset()
+        if (direction === "up") {
+            position.left += target.width() / 2 - tooltip.width() / 2;
+            position.top -= tooltip.height() + 5;
+        } else if (direction == "down") {
+            position.left += target.width() / 2 - tooltip.width() / 2;
+            position.top += target.height() + 5;
+        } else if (direction == "left") {
+            position.left -= tooltip.width() - 2;
+            position.top += target.height() / 2 - tooltip.height() / 2;
+        } else if (direction == "right") {
+            position.left += target.width() + 2;
+            position.top += target.height() / 2 - tooltip.height() / 2;
+        }
+        tooltip.css(position)
+        //setPosition(e);
+        tooltip.off('click').on('click', (e) => {
+            callback(el);
+        }).show();
     }).on('mouseleave', (e) => {
-        tooltip.hide();
-    }).on('mousemove', (e) => {
-        setPosition(e);
-    }).on('click', (e) => {
-        callback(el);
+        if (quickRollHideId)
+            clearTimeout(quickRollHideId);
+        quickRollHideId = setTimeout(() => tooltip.hide(), 1000);
     });
 }
 
 function deactivateQuickRolls() {
     const abilities = $(".ct-ability-summary .ct-ability-summary__secondary,.ddbc-ability-summary .ddbc-ability-summary__secondary");
-    const saving_throws = $(".ct-saving-throws-summary__ability .ct-saving-throws-summary__ability-modifier,.ddbc-saving-throws-summary__ability .ddbc-saving-throws-summary__ability-modifier");
+    const saving_throws = $(".ct-saving-throws-summary__ability,.ddbc-saving-throws-summary__ability");
     const skills = $(".ct-skills .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__col--modifier");
     const actions = $(".ct-combat-attack .ct-combat-attack__icon,.ddbc-combat-attack .ddbc-combat-attack__icon");
     const spells = $(".ct-spells-spell .ct-spells-spell__action,.ddbc-spells-spell .ddbc-spells-spell__action");
@@ -5105,6 +5123,15 @@ function activateQuickRolls() {
             "background": 'url("https://www.dndbeyond.com/Content/Skins/Waterdeep/images/character-sheet/content-frames/inspiration.svg") 50% center no-repeat transparent',
             "background-size": "contain"
         });
+        beyond20_tooltip.off('mouseenter').off('mouseleave').on('mouseleave', (e) => {
+            if (quickRollHideId)
+                clearTimeout(quickRollHideId);
+            quickRollHideId = setTimeout(() => beyond20_tooltip.hide(), 1000);
+        }).on('mouseenter', () => {
+            if (quickRollHideId)
+                clearTimeout(quickRollHideId);
+            quickRollHideId = 0;
+        })
         beyond20_tooltip.hide();
         $("body").append(beyond20_tooltip);
     }
@@ -5115,8 +5142,10 @@ function activateQuickRolls() {
         return;
 
     for (let ability of abilities.toArray()) {
-        activateTooltipListeners($(ability), beyond20_tooltip, (el) => {
-            const name = el.closest(".ct-ability-summary,.ddbc-ability-summary").find(".ct-ability-summary__heading .ct-ability-summary__label,.ddbc-ability-summary__heading .ddbc-ability-summary__label").text();
+        activateTooltipListeners($(ability), 'down', beyond20_tooltip, (el) => {
+            const name = el.closest(".ct-ability-summary,.ddbc-ability-summary")
+                .find(".ct-ability-summary__heading .ct-ability-summary__label,.ddbc-ability-summary__heading .ddbc-ability-summary__label")
+                .trigger('click').text();
             // If same item, clicking will be a noop && it won't modify the document;
             const pane_name = $(".ct-ability-pane .ct-sidebar__heading").text().split(" ")[0];
             if (name == pane_name)
@@ -5126,9 +5155,11 @@ function activateQuickRolls() {
         });
     }
 
-    for (let save of saving_throws.toArray()) {
-        activateTooltipListeners($(save), beyond20_tooltip, (el) => {
-            const name = el.closest(".ct-saving-throws-summary__ability,.ddbc-saving-throws-summary__ability").find(".ct-saving-throws-summary__ability-name,.ddbc-saving-throws-summary__ability-name").text().slice(0, 3).toLowerCase();
+    for (let [idx, save] of saving_throws.toArray().entries()) {
+        activateTooltipListeners($(save), idx < 3 ? 'left' : 'right', beyond20_tooltip, (el) => {
+            const name = el.closest(".ct-saving-throws-summary__ability,.ddbc-saving-throws-summary__ability")
+                .find(".ct-saving-throws-summary__ability-name,.ddbc-saving-throws-summary__ability-name")
+                .trigger('click').text().slice(0, 3).toLowerCase();
             // If same spell, clicking will be a noop && it won't modify it;
             const pane_name = $(".ct-ability-saving-throws-pane .ct-sidebar__heading").text().slice(0, 3).toLowerCase();
             if (name == pane_name)
@@ -5139,8 +5170,10 @@ function activateQuickRolls() {
     }
 
     for (let skill of skills.toArray()) {
-        activateTooltipListeners($(skill), beyond20_tooltip, (el) => {
-            const name = el.closest(".ct-skills__item,.ddbc-skills__item").find(".ct-skills__col--skill,.ddbc-skills__col--skill").text();
+        activateTooltipListeners($(skill), 'left', beyond20_tooltip, (el) => {
+            const name = el.closest(".ct-skills__item,.ddbc-skills__item")
+                .find(".ct-skills__col--skill,.ddbc-skills__col--skill")
+                .trigger('click').text();
             let pane = null;
             let paneClass = null;
             // If same skill, clicking will be a noop && it won't modify the document;
@@ -5159,8 +5192,10 @@ function activateQuickRolls() {
     }
 
     for (let action of actions.toArray()) {
-        activateTooltipListeners($(action), beyond20_tooltip, (el) => {
-            const name = el.closest(".ct-combat-attack,.ddbc-combat-attack").find(".ct-combat-attack__name .ct-combat-attack__label,.ddbc-combat-attack__name .ddbc-combat-attack__label").text();
+        activateTooltipListeners($(action), 'right', beyond20_tooltip, (el) => {
+            const name = el.closest(".ct-combat-attack,.ddbc-combat-attack")
+                .find(".ct-combat-attack__name .ct-combat-attack__label,.ddbc-combat-attack__name .ddbc-combat-attack__label")
+                .trigger('click').text();
             let pane = null;
             let paneClass = null;
             // Need to check all types of panes to find the right one;
@@ -5179,8 +5214,10 @@ function activateQuickRolls() {
     }
 
     for (let spell of spells) {
-        activateTooltipListeners($(spell), beyond20_tooltip, (el) => {
-            const name = el.closest(".ct-spells-spell,.ddbc-spells-spell").find(".ct-spell-name,.ddbc-spell-name").trigger('click').text();
+        activateTooltipListeners($(spell), 'right', beyond20_tooltip, (el) => {
+            const name = el.closest(".ct-spells-spell,.ddbc-spells-spell")
+                .find(".ct-spell-name,.ddbc-spell-name")
+                .trigger('click').text();
             // If same item, clicking will be a noop && it won't modify the document;
             const pane_name = $(".ct-spell-pane .ct-sidebar__heading .ct-spell-name,.ct-spell-pane .ct-sidebar__heading .ddbc-spell-name").text();
             if (name == pane_name)
