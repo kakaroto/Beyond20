@@ -321,10 +321,9 @@ function rollItem(force_display = false) {
         }
         //Protector Aasimar: Radiant Soul Damage
         if (character.hasRacialTrait("Radiant Soul") &&
-            character.getSetting("protector-aasimar-radiant-soul", true)) {
-            damages.push(" + " + character._level);
+            character.getSetting("protector-aasimar-radiant-soul", false)) {
+            damages.push(character._level);
             damage_types.push("Radiant Soul");
-            character.mergeCharacterSettings({ "protector-aasimar-radiant-soul": false });
         }
 
         let critical_limit = 20;
@@ -463,6 +462,13 @@ function rollAction(paneClass) {
             }
         }
 
+        //Protector Aasimar: Radiant Soul Damage
+        if (character.hasRacialTrait("Radiant Soul") &&
+            character.getSetting("protector-aasimar-radiant-soul", false)) {
+            damages.push(character._level);
+            damage_types.push("Radiant Soul");
+        }
+
         const roll_properties = buildAttackRoll(character,
             "action",
             action_name,
@@ -537,6 +543,13 @@ function rollSpell(force_display = false) {
             damage_types.length = 0;
             damages.push(dmg);
             damage_types.push("Triggering Type");
+        }
+
+        //Protector Aasimar: Radiant Soul Damage
+        if (character.hasRacialTrait("Radiant Soul") &&
+            character.getSetting("protector-aasimar-radiant-soul", false)) {
+            damages.push(character._level);
+            damage_types.push("Radiant Soul");
         }
 
         // Hex blade's curse only applies if (there are damages;

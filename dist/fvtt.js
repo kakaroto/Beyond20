@@ -592,7 +592,7 @@ const character_settings = {
     },
     "protector-aasimar-radiant-soul": {
         "title": "Protector Aasimar: Radiant Soul",
-        "description": "Once on each of your turns, while transformed, you can deal extra radiant damage to one target when you deal damage to it with an attack or a spell. The extra radiant damage equals your level.",
+        "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
     }
