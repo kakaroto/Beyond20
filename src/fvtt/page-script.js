@@ -9,8 +9,8 @@ var extension_url = "/modules/beyond20/";
 class FVTTDisplayer {
     postHTML(request, title, html, buttons, character, whisper, play_sound) {
         Hooks.once('renderChatMessage', (chat_message, html, data) => {
-            const icon16 = extension_url + "images/icons/icon16.png";
-            html.find(".ct-beyond20-custom-icon").attr('src', icon16);
+            const icon = extension_url + "images/icons/badges/custom20.png";
+            html.find(".ct-beyond20-custom-icon").attr('src', icon);
             html.find(".ct-beyond20-custom-roll").on('click', (event) => {
                 const roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
                 roll_renderer.rollDice(request, title, roll);
@@ -121,7 +121,7 @@ class FVTTRoller {
 class FVTTPrompter {
     prompt(title, html, ok_label = "OK", cancel_label = "Cancel") {
         return new Promise((resolve, reject) => {
-            const icon = `<img style="border: 0px;" src="${extension_url}images/icons/icon16.png"></img>`;
+            const icon = `<img style="border: 0px;" src="${extension_url}images/icons/badges/normal20.png"></img>`;
             let ok_pressed = false;
             new Dialog({
                 "title": title,

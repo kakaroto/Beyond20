@@ -26,8 +26,8 @@ class DNDBDisplayer {
             dlg.destroy();
         });
         const element = $(dlg.elements.content.firstElementChild);
-        const icon16 = chrome.runtime.getURL("images/icons/icon16.png");
-        element.find(".ct-beyond20-custom-icon").attr('src', icon16);
+        const icon = chrome.runtime.getURL("images/icons/badges/custom20.png");
+        element.find(".ct-beyond20-custom-icon").attr('src', icon);
         element.find(".ct-beyond20-custom-roll").on('click', (event) => {
             const roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
             dndbeyondDiceRoller.rollDice(request, title, roll);

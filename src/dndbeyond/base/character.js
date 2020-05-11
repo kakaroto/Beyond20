@@ -158,7 +158,7 @@ class Character extends CharacterBase {
             if (mobile_hp.length > 0) {
                 hp = parseInt(mobile_hp.text());
                 max_hp = parseInt($(".ct-status-summary-mobile__hp-max").text());
-                has_temp = $(".ct-status-summary-mobile__hp.ct-status-summary-mobile__hp--has-temp");
+                const has_temp = $(".ct-status-summary-mobile__hp.ct-status-summary-mobile__hp--has-temp");
                 if (has_temp.length > 0)
                     temp_hp = this._temp_hp;
                 else

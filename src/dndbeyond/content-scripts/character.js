@@ -1,15 +1,3 @@
-/*
-from settings import getDefaultSettings, getStoredSettings, RollType;
-from utils import isExtensionDisconnected, alertQuickSettings, alertFullSettings, injectCSS;
-from elementmaker import E;
-import math;
-import re;
-from dndbeyond import Character, Monster, buildAttackRoll, sendRoll,;
-    ability_abbreviations, findToHit, descriptionToString, propertyListToDict,;
-    injectDiceToRolls, addIconButton, addHitDieButtons, addDisplayButton, addRollButton,;
-    isHitDieButtonAdded, isRollButtonAdded, isCustomRollIconsAdded, removeRollButtons, getRollTypeButtonClass;
-from constants import ROLLTYPE_STYLE_CSS;
-*/
 console.log("Beyond20: D&D Beyond module loaded.");
 
 function sendRollWithCharacter(rollType, fallback, args) {
@@ -952,11 +940,11 @@ function injectRollButton(paneClass) {
         }
     } else if (paneClass == "ct-health-manage-pane") {
         if ($(".ct-health-manage-pane .ct-health-manager__deathsaves").length > 0) {
-            if (isRollButtonAdded())
+            if (isRollButtonAdded() || isCustomRollIconsAdded())
                 return;
-            addIconButton(() => {
+            addIconButton(character, () => {
                 sendRollWithCharacter("death-save", "1d20", { "advantage": RollType.NORMAL })
-            }, ".ct-health-manager__deathsaves-group--fails");
+            }, ".ct-health-manager__deathsaves-group--fails", {custom: true});
         } else {
             removeRollButtons();
         }
@@ -1003,7 +991,7 @@ function injectRollToSpellAttack() {
             if (label.hasClass("beyond20-rolls-added"))
                 return;
             label.addClass("beyond20-rolls-added");
-            const icon16 = chrome.extension.getURL("images/icons/icon16.png");
+            const icon = chrome.extension.getURL("images/icons/badges/spell20.png");
             const items = $(group).find(".ct-spells-level-casting__info-item,.ddbc-spells-level-casting__info-item");
             for (let item of items.toArray()) {
                 const modifier = item.textContent;
@@ -1012,7 +1000,7 @@ function injectRollToSpellAttack() {
                     name += "(" + item.getAttribute("data-original-title") + ")";
                 const img = E.img({
                     class: "ct-beyond20-spell-attack-icon ct-beyond20-spell-attack",
-                    'x-beyond20-name': name, 'x-beyond20-modifier': modifier, src: icon16
+                    'x-beyond20-name': name, 'x-beyond20-modifier': modifier, src: icon
                 });
                 item.append(img);
             }
@@ -1036,7 +1024,7 @@ function injectSettingsButton() {
     let button_type = null;
     let gap = null;
     let span_text = "Beyond 20";
-    let icon = chrome.extension.getURL("images/icons/icon16.png");
+    let icon = chrome.extension.getURL("images/icons/badges/normal20.png");
     if (desktop_gap.length > 0) {
         button_type = "desktop";
         gap = desktop_gap;
@@ -1047,7 +1035,7 @@ function injectSettingsButton() {
         button_type = "mobile";
         gap = mobile_gap;
         span_text = "\u00A0\u00A0"; // Add 2 non breaking spaces as padding;
-        icon = chrome.extension.getURL("images/icons/icon32.png");
+        icon = chrome.extension.getURL("images/icons/badges/normal32.png");
     } else {
         return;
     }
@@ -1104,7 +1092,9 @@ function activateQuickRolls() {
         return;
     let beyond20_tooltip = $(".beyond20-quick-roll-tooltip");
     if (beyond20_tooltip.length == 0) {
-        const img = E.img({ class: "beyond20-quick-roll-icon", src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 5px;margin-left: 5px;padding: 5px 10px;" });
+        const rolltype_class = getRollTypeButtonClass(character);
+        const icon = getBadgeIconFromClass(rolltype_class, "32");
+        const img = E.img({ class: "beyond20-quick-roll-icon", src: icon, style: "margin-right: 5px;margin-left: 5px;padding: 5px 10px;" });
         const div = E.div({ class: "beyond20-quick-roll-tooltip " + getRollTypeButtonClass(character) }, img);
         beyond20_tooltip = $(div);
         beyond20_tooltip.css({
@@ -1267,7 +1257,6 @@ function handleMessage(request, sender, sendResponse) {
     }
 }
 
-injectCSS(ROLLTYPE_STYLE_CSS);
 var settings = getDefaultSettings();
 var character = new Character(settings);
 var creature = null;

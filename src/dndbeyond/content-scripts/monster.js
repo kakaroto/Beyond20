@@ -1,10 +1,3 @@
-/*
-from settings import getDefaultSettings, getStoredSettings;
-from dndbeyond import Monster, isRollButtonAdded;
-from utils import injectCSS, alertFullSettings;
-from constants import BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
-*/
-
 console.log("Beyond20: D&D Beyond Monster module loaded.");
 
 var settings = getDefaultSettings();
@@ -43,7 +36,6 @@ function handleMessage(request, sender, sendResponse) {
 }
 
 injectCSS(BUTTON_STYLE_CSS);
-injectCSS(ROLLTYPE_STYLE_CSS);
 chrome.runtime.onMessage.addListener(handleMessage);
 chrome.runtime.sendMessage({ "action": "activate-icon" });
 updateSettings();

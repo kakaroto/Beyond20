@@ -78,7 +78,7 @@ class Monster extends CharacterBase {
                 this._hp = $(attr).find(base + "__attribute-data-value").text().trim();
                 this._hp_formula = $(attr).find(base + "__attribute-data-extra").text().trim().slice(1, -1);
                 if (add_dice)
-                    addIconButton(() => this.rollHitPoints(), $(attr).find(base + "__attribute-data-extra"));
+                    addIconButton(this, () => this.rollHitPoints(), $(attr).find(base + "__attribute-data-extra"), {custom: true});
             } else if (label == "Speed") {
                 this._speed = value;
             }
@@ -99,7 +99,7 @@ class Monster extends CharacterBase {
             const modifier = $(ability).find(prefix + "modifier").text().slice(1, -1);
             this._abilities.push([abbreviationToAbility(abbr), abbr, score, modifier]);
             if (add_dice) {
-                addIconButton(() => this.rollAbilityCheck(abbr), ability, { prepend: true });
+                addIconButton(this, () => this.rollAbilityCheck(abbr), ability, { prepend: true });
                 if (abbr == "DEX") {
                     const roll_initiative = stat_block.find(base + "__beyond20-roll-initiative");
                     const attributes = stat_block.find(base + "__attributes");
@@ -117,7 +117,7 @@ class Monster extends CharacterBase {
                             );
                         }
                         attributes.eq(0).append(initiative);
-                        addIconButton(() => this.rollInitiative(), initiative.find(base + "__attribute-data"));
+                        addIconButton(this, () => this.rollInitiative(), initiative.find(base + "__attribute-data"));
                     }
                 }
             }
@@ -140,7 +140,7 @@ class Monster extends CharacterBase {
                     this._saves[abbr] = mod;
                     if (add_dice) {
                         data.append(abbr + " " + mod);
-                        addIconButton(() => this.rollSavingThrow(abbr), data, { append: true });
+                        addIconButton(this, () => this.rollSavingThrow(abbr), data, { append: true });
                         if (saves.length > this._saves.length)
                             data.append(", ");
                     }
@@ -165,7 +165,7 @@ class Monster extends CharacterBase {
                             text.textContent = text.textContent.slice(0, -2);
                             last = false;
                         }
-                        addIconButton(() => this.rollSkillCheck(mon_skill), a.nextSibling);
+                        addIconButton(this, () => this.rollSkillCheck(mon_skill), a.nextSibling);
                         if (!last)
                             $(a.nextElementSibling).after(", ");
                     }
@@ -178,7 +178,7 @@ class Monster extends CharacterBase {
                         first = false;
                         data.append(skill + " " + this._skills[skill]);
                         if (add_dice)
-                            addIconButton(() => this.rollSkillCheck(skill), data, { append: true });
+                            addIconButton(this, () => this.rollSkillCheck(skill), data, { append: true });
                     }
                 }
             } else if (label == "Challenge") {
@@ -443,14 +443,14 @@ class Monster extends CharacterBase {
 
 
     injectSpellRolls(element, url) {
-        const icon16 = chrome.extension.getURL("images/icons/icon16.png");
+        const icon = chrome.extension.getURL("images/icons/badges/spell20.png");
         const roll_icon = $('<img class="ct-beyond20-spell-icon" x-beyond20-spell-url="' + url + '"></img>');
 
         $(element).after(roll_icon);
 
         $(".ct-beyond20-spell-icon").css("margin-right", "3px");
         $(".ct-beyond20-spell-icon").css("margin-left", "3px");
-        $(".ct-beyond20-spell-icon").attr("src", icon16);
+        $(".ct-beyond20-spell-icon").attr("src", icon);
         $(".ct-beyond20-spell-icon").off('click');
         $(".ct-beyond20-spell-icon").on('click', (event) => {
             const spell_url = $(event.currentTarget).attr("x-beyond20-spell-url");

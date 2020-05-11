@@ -1,9 +1,3 @@
-/*from settings import getDefaultSettings, getStoredSettings;
-from dndbeyond import Monster, removeRollButtons;
-from constants import BUTTON_STYLE_CSS, ROLLTYPE_STYLE_CSS;
-from utils import isExtensionDisconnected, injectCSS, alertFullSettings;
-*/
-
 console.log("Beyond20: D&D Beyond Encounter module loaded.");
 
 var settings = getDefaultSettings();
@@ -52,7 +46,6 @@ function handleMessage(request, sender, sendResponse) {
 
 updateSettings();
 injectCSS(BUTTON_STYLE_CSS);
-injectCSS(ROLLTYPE_STYLE_CSS);
 chrome.runtime.onMessage.addListener(handleMessage);
 const observer = new window.MutationObserver(documentModified);
 observer.observe(document, { "subtree": true, "childList": true });

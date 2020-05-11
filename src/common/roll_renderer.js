@@ -145,14 +145,14 @@ class Beyond20RollRenderer {
     }
 
     injectRollsInDescription(description) {
-        const icon16 = "/modules/beyond20/images/icons/icon16.png";
+        const icon = "/modules/beyond20/images/icons/badges/custom20.png";
         return replaceRolls(description, (dice, modifier) => {
             const dice_formula = (dice == "" ? "1d20" : dice) + modifier;
             // <u> is filtered 0.3.2, so using <span> instead;
             // Can't use single line, since newlines get replaced with <br/>
             return `<span class="ct-beyond20-custom-roll">` +
                 `<strong>${dice}${modifier}</strong>` +
-                `<img class="ct-beyond20-custom-icon" src="${icon16}" style="margin-right: 3px; margin-left: 3px; border: 0px;"></img>` +
+                `<img class="ct-beyond20-custom-icon" src="${icon}" style="margin-right: 3px; margin-left: 3px; border: 0px;"></img>` +
                 `<span class="beyond20-roll-formula" style="display: none;">${dice_formula}</span>` +
             `</span>`;
         });

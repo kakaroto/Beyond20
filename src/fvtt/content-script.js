@@ -47,8 +47,8 @@ function titleSet(mutations, observer) {
 function injectSettingsButton() {
     $(".beyond20-settings").remove();
 
-    icon = chrome.extension.getURL("images/icons/icon24.png");
-    button = E.div({ class: "beyond20-settings", style: "flex-grow: 0;" },
+    icon = chrome.extension.getURL("images/icons/badges/normal24.png");
+    button = E.div({ class: "beyond20-settings", style: "flex: 0 0 32px;" },
         E.img({ class: "beyond20-settings-logo", src: icon, style: "margin: 0px 5px; border: 0px;" })
     );
     $("#chat-controls").append(button);

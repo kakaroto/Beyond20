@@ -1064,60 +1064,6 @@ BUTTON_STYLE_CSS = `
 }
 `;
 
-ROLLTYPE_STYLE_CSS = `
-
-.ct-beyond20-roll .ct-beyond20-roll-button {
-    position: relative;
-    margin-top: 7px;
-}
-
-.ct-beyond20-roll .ct-beyond20-roll-button:after {
-    position: absolute;
-    padding: 2px;
-    top: -10px;
-    right: -5px;
-    font-size: 10px;
-    border-radius: 5px;
-    color: white;
-    opacity: 65%;
-}
-
-.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-double:after,
-.beyond20-quick-roll-tooltip.beyond20-roll-type-double:after {
-    content: "2";
-    background-color: blue;
-}
-.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-query:after,
-.beyond20-quick-roll-tooltip.beyond20-roll-type-query:after {
-    content: "?";
-    background-color: grey;
-}
-.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-thrice:after,
-.beyond20-quick-roll-tooltip.beyond20-roll-type-thrice:after {
-    content: "3";
-    background-color: blue;
-}
-.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-advantage:after,
-.beyond20-quick-roll-tooltip.beyond20-roll-type-advantage:after {
-    content: "+";
-    background-color: green;
-}
-.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-disadvantage:after,
-.beyond20-quick-roll-tooltip.beyond20-roll-type-disadvantage:after {
-    content: "-";
-    background-color: red;
-}
-.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-advantage:after,
-.beyond20-quick-roll-tooltip.beyond20-roll-type-super-advantage:after {
-    content: "+ +";
-    background-color: green;
-}
-.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-disadvantage:after,
-.beyond20-quick-roll-tooltip.beyond20-roll-type-super-disadvantage:after {
-    content: "- -";
-    background-color: red;
-}
-`;
 
 //from constants import DISCORD_BOT_API_URL;
 
@@ -1648,14 +1594,14 @@ class Beyond20RollRenderer {
     }
 
     injectRollsInDescription(description) {
-        const icon16 = "/modules/beyond20/images/icons/icon16.png";
+        const icon = "/modules/beyond20/images/icons/badges/custom20.png";
         return replaceRolls(description, (dice, modifier) => {
             const dice_formula = (dice == "" ? "1d20" : dice) + modifier;
             // <u> is filtered 0.3.2, so using <span> instead;
             // Can't use single line, since newlines get replaced with <br/>
             return `<span class="ct-beyond20-custom-roll">` +
                 `<strong>${dice}${modifier}</strong>` +
-                `<img class="ct-beyond20-custom-icon" src="${icon16}" style="margin-right: 3px; margin-left: 3px; border: 0px;"></img>` +
+                `<img class="ct-beyond20-custom-icon" src="${icon}" style="margin-right: 3px; margin-left: 3px; border: 0px;"></img>` +
                 `<span class="beyond20-roll-formula" style="display: none;">${dice_formula}</span>` +
             `</span>`;
         });
@@ -2284,8 +2230,8 @@ var extension_url = "/modules/beyond20/";
 class FVTTDisplayer {
     postHTML(request, title, html, buttons, character, whisper, play_sound) {
         Hooks.once('renderChatMessage', (chat_message, html, data) => {
-            const icon16 = extension_url + "images/icons/icon16.png";
-            html.find(".ct-beyond20-custom-icon").attr('src', icon16);
+            const icon = extension_url + "images/icons/badges/custom20.png";
+            html.find(".ct-beyond20-custom-icon").attr('src', icon);
             html.find(".ct-beyond20-custom-roll").on('click', (event) => {
                 const roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
                 roll_renderer.rollDice(request, title, roll);
@@ -2396,7 +2342,7 @@ class FVTTRoller {
 class FVTTPrompter {
     prompt(title, html, ok_label = "OK", cancel_label = "Cancel") {
         return new Promise((resolve, reject) => {
-            const icon = `<img style="border: 0px;" src="${extension_url}images/icons/icon16.png"></img>`;
+            const icon = `<img style="border: 0px;" src="${extension_url}images/icons/badges/normal20.png"></img>`;
             let ok_pressed = false;
             new Dialog({
                 "title": title,

@@ -10,10 +10,10 @@ console.log("Beyond20: D&D Beyond Spell module loaded.");
 let character = null;
 
 function addDisplayButton() {
-    const icon32 = chrome.extension.getURL("images/icons/icon32.png");
+    const icon = chrome.extension.getURL("images/icons/badges/spell32.png");
     const button = E.a({ class: "ct-beyond20-roll button-alt", href: "#" },
         E.span({ class: "label" },
-            E.img({ class: "ct-beyond20-icon", src: icon32, style: "margin-right: 10px;" }),
+            E.img({ class: "ct-beyond20-spell-icon", src: icon, style: "margin-right: 10px;" }),
             "Display Spell Card on VTT"
         )
     );

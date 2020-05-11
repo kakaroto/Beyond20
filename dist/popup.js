@@ -42,60 +42,6 @@ BUTTON_STYLE_CSS = `
 }
 `;
 
-ROLLTYPE_STYLE_CSS = `
-
-.ct-beyond20-roll .ct-beyond20-roll-button {
-    position: relative;
-    margin-top: 7px;
-}
-
-.ct-beyond20-roll .ct-beyond20-roll-button:after {
-    position: absolute;
-    padding: 2px;
-    top: -10px;
-    right: -5px;
-    font-size: 10px;
-    border-radius: 5px;
-    color: white;
-    opacity: 65%;
-}
-
-.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-double:after,
-.beyond20-quick-roll-tooltip.beyond20-roll-type-double:after {
-    content: "2";
-    background-color: blue;
-}
-.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-query:after,
-.beyond20-quick-roll-tooltip.beyond20-roll-type-query:after {
-    content: "?";
-    background-color: grey;
-}
-.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-thrice:after,
-.beyond20-quick-roll-tooltip.beyond20-roll-type-thrice:after {
-    content: "3";
-    background-color: blue;
-}
-.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-advantage:after,
-.beyond20-quick-roll-tooltip.beyond20-roll-type-advantage:after {
-    content: "+";
-    background-color: green;
-}
-.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-disadvantage:after,
-.beyond20-quick-roll-tooltip.beyond20-roll-type-disadvantage:after {
-    content: "-";
-    background-color: red;
-}
-.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-advantage:after,
-.beyond20-quick-roll-tooltip.beyond20-roll-type-super-advantage:after {
-    content: "+ +";
-    background-color: green;
-}
-.ct-beyond20-roll .ct-beyond20-roll-button.beyond20-roll-type-super-disadvantage:after,
-.beyond20-quick-roll-tooltip.beyond20-roll-type-super-disadvantage:after {
-    content: "- -";
-    background-color: red;
-}
-`;
 
 function replaceRollsCallback(match, replaceCB) {
     let dice = match[2];

@@ -242,11 +242,20 @@ function getRollTypeButtonClass(character) {
     return "";
 }
 
+function getBadgeIconFromClass(rolltype_class, size="20") {
+    const type = rolltype_class.replace("beyond20-roll-type-", "") || "normal";
+    return chrome.extension.getURL(`images/icons/badges/${type}${size}.png`);
+}
+
 var last_character_used = null;
 function updateRollTypeButtonClasses(character) {
     const button_roll_type_classes = "beyond20-roll-type-double beyond20-roll-type-query beyond20-roll-type-thrice beyond20-roll-type-advantage beyond20-roll-type-disadvantage beyond20-roll-type-super-advantage beyond20-roll-type-super-disadvantage";
     const rolltype_class = getRollTypeButtonClass(character || last_character_used);
     $(".ct-beyond20-roll .ct-beyond20-roll-button,.beyond20-quick-roll-tooltip").removeClass(button_roll_type_classes).addClass(rolltype_class);
+    const icon20 = getBadgeIconFromClass(rolltype_class, "20");
+    const icon32 = getBadgeIconFromClass(rolltype_class, "32");
+    $(".ct-beyond20-roll .ct-beyond20-icon").attr("src", icon20);
+    $(".beyond20-quick-roll-tooltip .beyond20-quick-roll-icon").attr("src", icon32);
 }
 
 
@@ -255,15 +264,14 @@ const button_class_small = button_class + " character-button-small";
 function addRollButton(character, callback, where, { small = false, append = false, prepend = false, before = false, image = true, text = "Beyond 20" } = {}) {
     last_character_used = character;
 
-    const icon32 = chrome.extension.getURL("images/dice24.png");
-    const icon16 = chrome.extension.getURL("images/dice16.png");
     const id = "beyond20-roll-" + Math.random().toString().slice(2);
 
-    const rolltype_class = " " + getRollTypeButtonClass(character);
+    const rolltype_class = getRollTypeButtonClass(character);
+    const icon = getBadgeIconFromClass(rolltype_class);
 
     const button = E.div({ class: "ct-beyond20-roll", id },
-        E.button({ class: "ct-beyond20-roll-button " + (small ? button_class_small : button_class) + rolltype_class },
-            E.img({ class: "ct-beyond20-icon", src: image ? (small ? icon16 : icon32) : "", style: image ? "margin-right: 6px;" : "" }),
+        E.button({ class: "ct-beyond20-roll-button " + (small ? button_class_small : button_class) + " " + rolltype_class },
+            E.img({ class: "ct-beyond20-icon", src: image ? icon : "", style: image ? "margin-right: 6px;" : "" }),
             E.span({ class: "ct-button__content" }, text)
         )
     )
@@ -306,9 +314,9 @@ function addDisplayButton(callback, where, { text = "Display in VTT", append = t
 }
 
 function addHitDieButtons(rollCallback) {
-    const icon16 = chrome.extension.getURL("images/icons/icon16.png");
+    const icon = chrome.extension.getURL("images/icons/badges/custom20.png");
     const button = E.div({ class: "ct-beyond20-roll-hitdie", style: "float: right;" },
-        E.img({ class: "ct-beyond20-icon", src: icon16, style: "margin-right: 6px;" }),
+        E.img({ class: "ct-beyond20-icon", src: icon, style: "margin-right: 6px;" }),
         E.button({ class: "ct-beyond20-roll-button " + button_class_small },
             E.span({ class: "ct-button__content" }, "Roll Hit Die")
         )
@@ -323,11 +331,13 @@ function addHitDieButtons(rollCallback) {
     }
 }
 
-function addIconButton(callback, where, { append = false, prepend = false } = {}) {
-    const icon16 = chrome.extension.getURL("images/icons/icon16.png");
-    const id = "beyond20-roll-" + Math.random().toString().slice(2);
-    const button = E.span({ class: "ct-beyond20-roll", id, style: "margin-right:3px; margin-left: 3px;" },
-        E.img({ class: "ct-beyond20-icon", src: icon16 })
+function addIconButton(character, callback, where, { append = false, prepend = false, custom = false } = {}) {
+    const rolltype_class = getRollTypeButtonClass(character);
+    const icon = custom ? chrome.extension.getURL("images/icons/badges/custom20.png") :
+                        getBadgeIconFromClass(rolltype_class);
+    const id = "beyond20-roll-" + (custom ? "custom-" : "") + Math.random().toString().slice(2);
+    const button = E.span({ class: "ct-beyond20-" + (custom ? "custom-roll" : "roll"), id, style: "margin-right:3px; margin-left: 3px;" },
+        E.img({ class: "ct-beyond20-" + (custom ? "custom-" : "icon"), src: icon })
     );
 
     if (append)
@@ -369,7 +379,7 @@ function recursiveDiceReplace(node, cb) {
 }
 
 function injectDiceToRolls(selector, character, name = "") {
-    const icon16 = chrome.extension.getURL("images/icons/icon16.png");
+    const icon = chrome.extension.getURL("images/icons/badges/custom20.png");
     const replaceCB = (dice, modifier) => {
         dice_formula = (dice == "" ? "1d20" : dice) + modifier;
         return '<u class="ct-beyond20-custom-roll"><strong>' + dice + modifier + '</strong>' +
@@ -383,7 +393,7 @@ function injectDiceToRolls(selector, character, name = "") {
 
     $(".ct-beyond20-custom-icon").css("margin-right", "3px");
     $(".ct-beyond20-custom-icon").css("margin-left", "3px");
-    $(".ct-beyond20-custom-icon").attr("src", icon16);
+    $(".ct-beyond20-custom-icon").attr("src", icon);
     $(".ct-beyond20-custom-roll").off('click');
     $(".ct-beyond20-custom-roll").on('click', (event) => {
         const name = $(event.currentTarget).find("img").attr("x-beyond20-name");
