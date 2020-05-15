@@ -741,7 +741,7 @@ function displayFeature(paneClass) {
     const name = $(".ct-sidebar__heading").text();
     const source = $(".ct-sidebar__header-parent").text();
     const source_type = source_types[paneClass];
-    const description = descriptionToString(".ct-snippet__content,.ct-feature-snippet__content");
+    const description = descriptionToString(".ct-snippet__content,.ddbc-snippet__content");
     sendRollWithCharacter("feature", 0, {
         "name": name,
         "source": source,
