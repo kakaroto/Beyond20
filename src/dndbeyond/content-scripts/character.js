@@ -1144,7 +1144,7 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
     }).on('mouseleave', (e) => {
         if (quickRollHideId)
             clearTimeout(quickRollHideId);
-        quickRollHideId = setTimeout(() => tooltip.hide(), 1000);
+        quickRollHideId = setTimeout(() => tooltip.hide(), 100);
     });
 }
 
@@ -1182,7 +1182,7 @@ function activateQuickRolls() {
         beyond20_tooltip.off('mouseenter').off('mouseleave').on('mouseleave', (e) => {
             if (quickRollHideId)
                 clearTimeout(quickRollHideId);
-            quickRollHideId = setTimeout(() => beyond20_tooltip.hide(), 1000);
+            quickRollHideId = setTimeout(() => beyond20_tooltip.hide(), 100);
         }).on('mouseenter', () => {
             if (quickRollHideId)
                 clearTimeout(quickRollHideId);
