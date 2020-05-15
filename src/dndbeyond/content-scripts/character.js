@@ -1135,11 +1135,12 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
             position.top += target.height() / 2 - tooltip.height() / 2;
         }
         tooltip.find(".beyond20-quick-roll-indicator").removeClass("left right down up").addClass(direction);
-        tooltip.css(position)
+        tooltip.css(position).show();
         //setPosition(e);
-        tooltip.off('click').on('click', (e) => {
+        el.off('click').on('click', (e) => {
+            e.stopPropagation();
             callback(el);
-        }).show();
+        })
     }).on('mouseleave', (e) => {
         if (quickRollHideId)
             clearTimeout(quickRollHideId);
@@ -1149,7 +1150,7 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
 
 function deactivateQuickRolls() {
     const abilities = $(".ct-ability-summary .ct-ability-summary__secondary,.ddbc-ability-summary .ddbc-ability-summary__secondary");
-    const saving_throws = $(".ct-saving-throws-summary__ability,.ddbc-saving-throws-summary__ability");
+    const saving_throws = $(".ct-saving-throws-summary__ability .ct-saving-throws-summary__ability-modifier,.ddbc-saving-throws-summary__ability .ddbc-saving-throws-summary__ability-modifier");
     const skills = $(".ct-skills .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__col--modifier");
     const actions = $(".ct-combat-attack .ct-combat-attack__icon,.ddbc-combat-attack .ddbc-combat-attack__icon");
     const spells = $(".ct-spells-spell .ct-spells-spell__action,.ddbc-spells-spell .ddbc-spells-spell__action");
