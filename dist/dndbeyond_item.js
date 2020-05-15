@@ -14,7 +14,7 @@ function replaceRollsCallback(match, replaceCB) {
 
 function replaceRolls(text, replaceCB) {
     // TODO: Cache the value so we don't recompile the regexp every time
-    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro<2)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
+    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro<2)?(?:r=1)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
     return text.replace(dice_regexp, (...match) => replaceRollsCallback(match, replaceCB));
 }
 
@@ -2639,7 +2639,7 @@ function damagesToCrits(character, damages) {
     if (rule == CriticalRules.HOMEBREW_REROLL || rule == CriticalRules.HOMEBREW_MOD)
         return damages.slice();
     for (let damage of damages) {
-        const damage_matches = reMatchAll(/([0-9]*)d([0-9]+)(ro<2)?/, damage) || [];
+        const damage_matches = reMatchAll(/([0-9]*)d([0-9]+)((ro<2)|(r=1))?/, damage) || [];
         const damage_parts = damage_matches.map(match => {
             if (rule == CriticalRules.HOMEBREW_MAX) {
                 dice = parseInt(match[1] || 1);

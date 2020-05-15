@@ -513,7 +513,7 @@ function rollSpellAttack(request, custom_roll_dice) {
     let template_type = "atkdmg";
     let dmg_props = {}
     if (request["to-hit"] !== undefined) {
-        const d20_roll = "1d20";
+        let d20_roll = "1d20";
         if (request["critical-limit"])
             d20_roll = "1d20cs>" + request["critical-limit"];
         properties["mod"] = request["to-hit"];
