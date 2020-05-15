@@ -571,7 +571,7 @@ function rollSpellAttack(request, custom_roll_dice) {
             critical_damages.splice(0, 0, crit_damage);
             critical_damage_types.splice(0, 0, "Chaotic energy");
         } else if (request.name === "Life Transference") {
-            damages.push("Equal to Necrotic damage");
+            damages.push("Twice the Necrotic damage");
             damage_types.push("Healing");
         } else if (request.name === "Toll the Dead") {
             damages[0] = ROLL20_TOLL_THE_DEAD_QUERY.replace("d8", damages[0]).replace("d12", damages[0].replace("d8", "d12"));

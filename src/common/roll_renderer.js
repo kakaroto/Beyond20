@@ -567,7 +567,7 @@ class Beyond20RollRenderer {
                 damage_rolls.push([dmg_type + suffix, roll, damage_flags]);
                 // Handle life transference;
                 if (request.name == "Life Transference" && dmg_type == "Necrotic") {
-                    damage_rolls.push(["Healing", roll, DAMAGE_FLAGS.HEALING]);
+                    damage_rolls.push(["Healing", "Twice the Necrotic damage", DAMAGE_FLAGS.HEALING]);
                 }
             }
 
