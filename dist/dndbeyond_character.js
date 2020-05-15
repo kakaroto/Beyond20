@@ -4183,6 +4183,12 @@ function rollItem(force_display = false) {
                         dmg = dmg.replace(dmg_info, "");
                         if (dmg_info != "")
                             dmg_type += "(" + dmg_info + ")";
+
+                        if (character.hasClassFeature("Fighting Style: Great Weapon Fighting") &&
+                            properties["Attack Type"] == "Melee" &&
+                            (properties["Properties"].includes("Two-Handed") ||
+                            (properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice", "both") === "two")))
+                            dmg = dmg.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
                         damages.push(dmg);
                         damage_types.push(dmg_type);
                     }
@@ -4982,7 +4988,7 @@ function injectRollButton(paneClass) {
                 return;
             addIconButton(character, () => {
                 sendRollWithCharacter("death-save", "1d20", { "advantage": RollType.NORMAL })
-            }, ".ct-health-manager__deathsaves-group--fails", {custom: true});
+            }, ".ct-health-manager__deathsaves-group--fails", { custom: true });
         } else {
             removeRollButtons();
         }
@@ -5100,7 +5106,7 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
         if (quickRollHideId)
             clearTimeout(quickRollHideId);
         quickRollHideId = 0;
- 
+
         const target = $(e.currentTarget)
         const position = target.offset()
         if (direction === "up") {
