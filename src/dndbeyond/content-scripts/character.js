@@ -215,7 +215,7 @@ function rollItem(force_display = false) {
             properties["Attack Type"] == "Ranged" &&
             properties["Proficient"] == "Yes") {
             to_hit += " - 5";
-            damages.push(" + 10");
+            damages.push("10");
             damage_types.push("Sharpshooter");
             character.mergeCharacterSettings({ "sharpshooter": false });
         }
@@ -224,7 +224,7 @@ function rollItem(force_display = false) {
             properties["Properties"].includes("Heavy") &&
             properties["Proficient"] == "Yes") {
             to_hit += " - 5";
-            damages.push(" + 10");
+            damages.push("10");
             damage_types.push("Weapon Master");
             character.mergeCharacterSettings({ "great-weapon-master": false });
         }
