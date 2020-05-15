@@ -237,7 +237,7 @@ class DNDBDice {
 
 class DNDBRoll extends Beyond20BaseRoll {
     constructor(formula, data = {}) {
-        formula = formula.replace(/ro<=([0-9]+)/, "r<=$1");
+        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/, "r$1$2");
         super(formula, data);
         this._parts = [];
         for (let key in data)

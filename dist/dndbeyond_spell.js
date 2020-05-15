@@ -14,7 +14,7 @@ function replaceRollsCallback(match, replaceCB) {
 
 function replaceRolls(text, replaceCB) {
     // TODO: Cache the value so we don't recompile the regexp every time
-    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro<=[0-9]+)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
+    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro(?:=|<|<=|>|>=)[0-9]+)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
     return text.replace(dice_regexp, (...match) => replaceRollsCallback(match, replaceCB));
 }
 
@@ -1350,7 +1350,7 @@ class DNDBDice {
 
 class DNDBRoll extends Beyond20BaseRoll {
     constructor(formula, data = {}) {
-        formula = formula.replace(/ro<=([0-9]+)/, "r<=$1");
+        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/, "r$1$2");
         super(formula, data);
         this._parts = [];
         for (let key in data)

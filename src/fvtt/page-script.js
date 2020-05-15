@@ -72,7 +72,7 @@ class FVTTDisplayer {
 
 class FVTTRoll extends Beyond20BaseRoll {
     constructor(formula, data = {}) {
-        formula = formula.replace(/ro<=([0-9]+)/, "r<=$1");
+        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/, "r$1$2");
         super(formula, data);
         this._roll = new Roll(formula, data)
     }
