@@ -52,8 +52,8 @@ class Monster extends CharacterBase {
         this._name = stat_block.find(base + "__name").text().trim();
         const link = stat_block.find(base + "__name-link");
         if (link.length > 0) {
-            this._url = link.attr("href");
-            this._id = link.attr("href").replace("/monsters/", "").replace("/vehicles/", "");
+            this._url = link[0].href;
+            this._id = this._url.replace("/monsters/", "").replace("/vehicles/", "");
         } else {
             this._url = window.location.href;
             this._id = this._name;
