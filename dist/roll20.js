@@ -1075,8 +1075,10 @@ function escapeRoll20Macro(text) {
 function genRoll(dice, modifiers = {}) {
     let roll = "[[" + dice;
     for (let m in modifiers) {
-        const mod = modifiers[m];
+        let mod = modifiers[m];
         if (mod.length > 0) {
+            if (m === "CUSTOM")
+                mod = mod.replace(/([0-9]*d[0-9]+)/, "$1cs>100cf<0");
             if (mod[0] == '+' || mod[0] == '-' || mod[0] == '?' || mod[0] == '&') {
                 roll += " " + mod;
             } else {
@@ -1269,6 +1271,11 @@ function template(request, name, properties) {
     return result;
 }
 
+function format_plus_mod(custom_roll_dice) {
+    const prefix = custom_roll_dice && !["+", "-", "?", ""].includes(custom_roll_dice.trim()[0]) ? " + " : "";
+    return prefix + custom_roll_dice;
+}
+
 function createTable(request, name, properties) {
     let result = whisperString(request.whisper);
 
@@ -1310,14 +1317,14 @@ function rollSkill(request, custom_roll_dice = "") {
         return template(request, "simple", {
             "charname": request.character.name,
             "rname": request.skill,
-            "mod": "[[" + modifier + prof_val + "]]",
+            "mod": format_plus_mod(modifier) + format_plus_mod(prof_val) + format_plus_mod(custom_roll_dice),
             "r1": genRoll("1d20", { "--": modifier, [prof]: prof_val, "CUSTOM": custom_roll_dice })
         });
     } else {
         return template(request, "simple", {
             "charname": request.character.name,
             "rname": request.skill,
-            "mod": modifier,
+            "mod": modifier + format_plus_mod(custom_roll_dice),
             "r1": genRoll("1d20", { [request.ability]: modifier, "CUSTOM": custom_roll_dice })
         });
     }
@@ -1328,7 +1335,7 @@ function rollAbility(request, custom_roll_dice = "") {
     return template(request, "simple", {
         "charname": request.character.name,
         "rname": request.name,
-        "mod": request.modifier,
+        "mod": request.modifier + format_plus_mod(custom_roll_dice),
         "r1": dice_roll
     });
 }
@@ -1337,7 +1344,7 @@ function rollSavingThrow(request, custom_roll_dice = "") {
     return template(request, "simple", {
         "charname": request.character.name,
         "rname": request.name + " Save",
-        "mod": request.modifier,
+        "mod": request.modifier + format_plus_mod(custom_roll_dice),
         "r1": genRoll("1d20", { [request.ability]: request.modifier, "CUSTOM": custom_roll_dice })
     });
 }
@@ -1346,7 +1353,7 @@ function rollInitiative(request, custom_roll_dice = "") {
     const roll_properties = {
         "charname": request.character.name,
         "rname": "Initiative",
-        "mod": request.initiative
+        "mod": request.initiative + format_plus_mod(custom_roll_dice)
     }
     if (settings["initiative-tracker"]) {
         let dice = "1d20";
@@ -1373,7 +1380,7 @@ function rollHitDice(request) {
     return template(request, "simple", {
         "charname": request.character.name,
         "rname": rname,
-        "mod": request["hit-dice"],
+        "mod": request["hit-dice"] + format_plus_mod(custom_roll_dice),
         "r1": subRolls(request["hit-dice"]),
         "normal": 1
     });
@@ -1383,6 +1390,7 @@ function rollDeathSave(request, custom_roll_dice = "") {
     return template(request, "simple", {
         "charname": request.character.name,
         "rname": "Death Saving Throw",
+        "mod": format_plus_mod(custom_roll_dice),
         "r1": genRoll("1d20", { "CUSTOM": custom_roll_dice }),
         "normal": 1
     });
@@ -1404,7 +1412,7 @@ function rollItem(request, custom_roll_dice = "") {
             template(request, "simple", {
                 "charname": request.character.name,
                 "rname": request.name,
-                "mod": "[[" + modifier + prof + "]]",
+                "mod": format_plus_mod(modifier) + format_plus_mod(prof) + format_plus_mod(custom_roll_dice),
                 "r1": genRoll("1d20", { "ABILITY": modifier, "PROF": prof, "CUSTOM": custom_roll_dice })
             });
     } else {
@@ -1440,7 +1448,7 @@ function rollAttack(request, custom_roll_dice = "") {
         let d20_roll = "1d20";
         if (request["critical-limit"])
             d20_roll = "1d20cs>" + request["critical-limit"];
-        properties["mod"] = request["to-hit"];
+        properties["mod"] = request["to-hit"] + format_plus_mod(custom_roll_dice);
         properties["r1"] = genRoll(d20_roll, { "": request["to-hit"], "CUSTOM": custom_roll_dice });
         properties["attack"] = 1;
     }
@@ -1545,7 +1553,7 @@ function rollSpellAttack(request, custom_roll_dice) {
         let d20_roll = "1d20";
         if (request["critical-limit"])
             d20_roll = "1d20cs>" + request["critical-limit"];
-        properties["mod"] = request["to-hit"];
+        properties["mod"] = request["to-hit"] + format_plus_mod(custom_roll_dice);
         properties["r1"] = genRoll(d20_roll, { "": request["to-hit"], "CUSTOM": custom_roll_dice });
         properties["attack"] = 1;
     }
@@ -1736,10 +1744,8 @@ function handleMessage(request, sender, sendResponse) {
         }
     } else if (request.action == "roll") {
         let custom_roll_dice = "";
-        if (request.character.type == "Character") {
+        if (request.character.type == "Character")
             custom_roll_dice = request.character.settings["custom-roll-dice"] || "";
-            custom_roll_dice = custom_roll_dice.replace(/([0-9]*d[0-9]+)/, "$1cs>100cf<0");
-        }
         if (request.type == "skill") {
             roll = rollSkill(request, custom_roll_dice);
         } else if (request.type == "ability") {
