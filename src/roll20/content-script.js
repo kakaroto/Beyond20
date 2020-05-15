@@ -67,6 +67,7 @@ function subRolls(text, damage_only = false, overrideCB = null) {
     let replaceCB = overrideCB;
     if (!overrideCB) {
         replaceCB = (dice, modifier) => {
+            dice = dice.replace(/ro<=([0-9]+)/, "ro<$1");
             if (damage_only && dice == "")
                 return dice + modifier;
             const dice_formula = (dice === "" ? "1d20" : dice) + modifier;
@@ -81,6 +82,7 @@ function subDescriptionRolls(request, description) {
     if (!settings["subst-vtt"])
         return description;
     const replaceCB = (dice, modifier) => {
+        dice = dice.replace(/ro<=([0-9]+)/, "ro<$1");
         const roll = (dice == "" ? "1d20" : dice) + modifier;
         const roll_template = template(request, "simple",
             {

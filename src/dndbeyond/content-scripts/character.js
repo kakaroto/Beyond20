@@ -137,9 +137,9 @@ function rollItem(force_display = false) {
                     properties["Attack Type"] == "Melee" &&
                     (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
                     if (versatile_damage != "") {
-                        versatile_damage = versatile_damage.replace(/[0-9]*d[0-9]+/g, "$&ro<2");
+                        versatile_damage = versatile_damage.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
                     } else {
-                        damage = damage.replace(/[0-9]*d[0-9]+/g, "$&ro<2");
+                        damage = damage.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
                     }
                 }
                 if (character.hasClass("Ranger") &&
@@ -432,7 +432,7 @@ function rollAction(paneClass) {
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.;
         if (action_name == "Polearm Master - Bonus Attack") {
             if (character.hasClassFeature("Fighting Style: Great Weapon Fighting"))
-                damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<2");
+                damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&<=2");
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
                 critical_limit = 19;
@@ -571,11 +571,10 @@ function rollSpell(force_display = false) {
 
         //Handle Flames of Phlegethos
         if (damages.length > 0 &&
-            character.hasFeat("Flames of Phlegethos")){
-            for (i = 0; i < damages.length; i++){
-                if (damage_types[i] === "Fire"){
-                    damages[i] = damages[i].replace(/[0-9]*d[0-9]+/g, "$&r=1");
-                }
+            character.hasFeat("Flames of Phlegethos")) {
+            for (i = 0; i < damages.length; i++) {
+                if (damage_types[i] === "Fire")
+                    damages[i] = damages[i].replace(/[0-9]*d[0-9]+/g, "$&ro<=1");
             }
         }
 

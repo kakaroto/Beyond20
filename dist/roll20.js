@@ -14,7 +14,7 @@ function replaceRollsCallback(match, replaceCB) {
 
 function replaceRolls(text, replaceCB) {
     // TODO: Cache the value so we don't recompile the regexp every time
-    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro<2)?(?:r=1)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
+    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro<=[0-9]+)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
     return text.replace(dice_regexp, (...match) => replaceRollsCallback(match, replaceCB));
 }
 
@@ -1094,6 +1094,7 @@ function subRolls(text, damage_only = false, overrideCB = null) {
     let replaceCB = overrideCB;
     if (!overrideCB) {
         replaceCB = (dice, modifier) => {
+            dice = dice.replace(/ro<=([0-9]+)/, "ro<$1");
             if (damage_only && dice == "")
                 return dice + modifier;
             const dice_formula = (dice === "" ? "1d20" : dice) + modifier;
@@ -1108,6 +1109,7 @@ function subDescriptionRolls(request, description) {
     if (!settings["subst-vtt"])
         return description;
     const replaceCB = (dice, modifier) => {
+        dice = dice.replace(/ro<=([0-9]+)/, "ro<$1");
         const roll = (dice == "" ? "1d20" : dice) + modifier;
         const roll_template = template(request, "simple",
             {

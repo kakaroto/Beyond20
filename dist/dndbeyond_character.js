@@ -14,7 +14,7 @@ function replaceRollsCallback(match, replaceCB) {
 
 function replaceRolls(text, replaceCB) {
     // TODO: Cache the value so we don't recompile the regexp every time
-    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro<2)?(?:r=1)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
+    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro<=[0-9]+)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
     return text.replace(dice_regexp, (...match) => replaceRollsCallback(match, replaceCB));
 }
 
@@ -1350,7 +1350,7 @@ class DNDBDice {
 
 class DNDBRoll extends Beyond20BaseRoll {
     constructor(formula, data = {}) {
-        formula = formula.replace("ro<2", "r<=2");
+        formula = formula.replace(/ro<=([0-9]+)/, "r<=$1");
         super(formula, data);
         this._parts = [];
         for (let key in data)
@@ -2639,7 +2639,7 @@ function damagesToCrits(character, damages) {
     if (rule == CriticalRules.HOMEBREW_REROLL || rule == CriticalRules.HOMEBREW_MOD)
         return damages.slice();
     for (let damage of damages) {
-        const damage_matches = reMatchAll(/([0-9]*)d([0-9]+)((ro<2)|(r=1))?/, damage) || [];
+        const damage_matches = reMatchAll(/([0-9]*)d([0-9]+)(ro<=[0-9]+)?/, damage) || [];
         const damage_parts = damage_matches.map(match => {
             if (rule == CriticalRules.HOMEBREW_MAX) {
                 dice = parseInt(match[1] || 1);
@@ -4146,9 +4146,9 @@ function rollItem(force_display = false) {
                     properties["Attack Type"] == "Melee" &&
                     (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
                     if (versatile_damage != "") {
-                        versatile_damage = versatile_damage.replace(/[0-9]*d[0-9]+/g, "$&ro<2");
+                        versatile_damage = versatile_damage.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
                     } else {
-                        damage = damage.replace(/[0-9]*d[0-9]+/g, "$&ro<2");
+                        damage = damage.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
                     }
                 }
                 if (character.hasClass("Ranger") &&
@@ -4441,7 +4441,7 @@ function rollAction(paneClass) {
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.;
         if (action_name == "Polearm Master - Bonus Attack") {
             if (character.hasClassFeature("Fighting Style: Great Weapon Fighting"))
-                damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<2");
+                damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&<=2");
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
                 critical_limit = 19;
@@ -4580,11 +4580,10 @@ function rollSpell(force_display = false) {
 
         //Handle Flames of Phlegethos
         if (damages.length > 0 &&
-            character.hasFeat("Flames of Phlegethos")){
-            for (i = 0; i < damages.length; i++){
-                if (damage_types[i] === "Fire"){
-                    damages[i] = damages[i].replace(/[0-9]*d[0-9]+/g, "$&r=1");
-                }
+            character.hasFeat("Flames of Phlegethos")) {
+            for (i = 0; i < damages.length; i++) {
+                if (damage_types[i] === "Fire")
+                    damages[i] = damages[i].replace(/[0-9]*d[0-9]+/g, "$&ro<=1");
             }
         }
 
