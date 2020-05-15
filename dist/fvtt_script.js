@@ -2528,14 +2528,15 @@ function disconnectAllEvents() {
 }
 
 function setTitle() {
-    if (game.world) {
+    const chatControls = $("#chat-controls");
+    if (chatControls.length) {
         const title = document.getElementsByTagName("title")[0];
         // Make sure the mutation gets triggerred if (we reload the extension;
         title.textContent = "Foundry Virtual Tabletop";
         title.textContent = game.world.title + " • Foundry Virtual Tabletop";
     } else {
-        // Wait a second for the world to get loaded;
-        setTimeout(setTitle, 1000);
+        // Wait for the world and UI to be loaded;
+        Hooks.once("renderChatLog", setTitle);
     }
 }
 
