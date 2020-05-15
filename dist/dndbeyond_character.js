@@ -589,6 +589,12 @@ const character_settings = {
         "description": "Use your Gathered Swarm ability to add extra Force damage to your weapon attacks",
         "type": "bool",
         "default": false
+    },
+    "protector-aasimar-radiant-soul": {
+        "title": "Protector Aasimar: Radiant Soul",
+        "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -4322,6 +4328,12 @@ function rollItem(force_display = false) {
             damage_types.push("Psychic");
             character.mergeCharacterSettings({ "bard-psychic-blades": false });
         }
+        //Protector Aasimar: Radiant Soul Damage
+        if (character.hasRacialTrait("Radiant Soul") &&
+            character.getSetting("protector-aasimar-radiant-soul", false)) {
+            damages.push(character._level);
+            damage_types.push("Radiant Soul");
+        }
 
         let critical_limit = 20;
         if (character.hasAction("Channel Divinity: Legendary Strike") &&
@@ -4459,6 +4471,13 @@ function rollAction(paneClass) {
             }
         }
 
+        //Protector Aasimar: Radiant Soul Damage
+        if (character.hasRacialTrait("Radiant Soul") &&
+            character.getSetting("protector-aasimar-radiant-soul", false)) {
+            damages.push(character._level);
+            damage_types.push("Radiant Soul");
+        }
+
         const roll_properties = buildAttackRoll(character,
             "action",
             action_name,
@@ -4533,6 +4552,13 @@ function rollSpell(force_display = false) {
             damage_types.length = 0;
             damages.push(dmg);
             damage_types.push("Triggering Type");
+        }
+
+        //Protector Aasimar: Radiant Soul Damage
+        if (character.hasRacialTrait("Radiant Soul") &&
+            character.getSetting("protector-aasimar-radiant-soul", false)) {
+            damages.push(character._level);
+            damage_types.push("Radiant Soul");
         }
 
         // Hex blade's curse only applies if (there are damages;

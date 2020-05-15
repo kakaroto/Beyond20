@@ -634,6 +634,12 @@ const character_settings = {
         "description": "Use your Gathered Swarm ability to add extra Force damage to your weapon attacks",
         "type": "bool",
         "default": false
+    },
+    "protector-aasimar-radiant-soul": {
+        "title": "Protector Aasimar: Radiant Soul",
+        "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
+        "type": "bool",
+        "default": false
     }
 }
 

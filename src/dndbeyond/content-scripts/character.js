@@ -319,6 +319,12 @@ function rollItem(force_display = false) {
             damage_types.push("Psychic");
             character.mergeCharacterSettings({ "bard-psychic-blades": false });
         }
+        //Protector Aasimar: Radiant Soul Damage
+        if (character.hasRacialTrait("Radiant Soul") &&
+            character.getSetting("protector-aasimar-radiant-soul", false)) {
+            damages.push(character._level);
+            damage_types.push("Radiant Soul");
+        }
 
         let critical_limit = 20;
         if (character.hasAction("Channel Divinity: Legendary Strike") &&
@@ -456,6 +462,13 @@ function rollAction(paneClass) {
             }
         }
 
+        //Protector Aasimar: Radiant Soul Damage
+        if (character.hasRacialTrait("Radiant Soul") &&
+            character.getSetting("protector-aasimar-radiant-soul", false)) {
+            damages.push(character._level);
+            damage_types.push("Radiant Soul");
+        }
+
         const roll_properties = buildAttackRoll(character,
             "action",
             action_name,
@@ -530,6 +543,13 @@ function rollSpell(force_display = false) {
             damage_types.length = 0;
             damages.push(dmg);
             damage_types.push("Triggering Type");
+        }
+
+        //Protector Aasimar: Radiant Soul Damage
+        if (character.hasRacialTrait("Radiant Soul") &&
+            character.getSetting("protector-aasimar-radiant-soul", false)) {
+            damages.push(character._level);
+            damage_types.push("Radiant Soul");
         }
 
         // Hex blade's curse only applies if (there are damages;
