@@ -157,9 +157,9 @@ function rollItem(force_display = false) {
                         damage_types.push(damage_type);
                     } else {
                         damages.push(damage);
-                        damage_types.push(damage_type);
+                        damage_types.push(damage_type + "(One-Handed)");
                         damages.push(versatile_damage);
-                        damage_types.push("Two-Handed");
+                        damage_types.push(damage_type + "(Two-Handed)");
                     }
                 } else {
                     damages.push(damage);

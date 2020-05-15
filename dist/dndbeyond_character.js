@@ -1734,8 +1734,26 @@ class Beyond20RollRenderer {
             }
         }
 
-        if (Object.keys(total_damages).length > 0)
+        if (Object.keys(total_damages).length > 0) {
+            // HACK ALERT: Even crappier code than above
+            if (total_damages["Two-Handed Damage"]) {
+                total_damages["One-Handed Damage"] = total_damages["Damage"];
+                delete total_damages["Damage"];
+                // Need to swap them so two-handed goes last
+                const two_handed = total_damages["Two-Handed Damage"];
+                delete total_damages["Two-Handed Damage"];
+                total_damages["Two-Handed Damage"] = two_handed;
+            }
+            if (total_damages["Critical Two-Handed Damage"]) {
+                total_damages["Critical One-Handed Damage"] = total_damages["Critical Damage"];
+                delete total_damages["Critical Damage"];
+                // Need to swap them so two-handed goes last
+                const two_handed = total_damages["Critical Two-Handed Damage"];
+                delete total_damages["Critical Two-Handed Damage"];
+                total_damages["Critical Two-Handed Damage"] = two_handed;
+            }
             html += "<div class='beyond20-roll-result'><b><hr/></b></div>";
+        }
 
         let roll = null;
         for (let key in total_damages) {
@@ -4166,9 +4184,9 @@ function rollItem(force_display = false) {
                         damage_types.push(damage_type);
                     } else {
                         damages.push(damage);
-                        damage_types.push(damage_type);
+                        damage_types.push(damage_type + "(One-Handed)");
                         damages.push(versatile_damage);
-                        damage_types.push("Two-Handed");
+                        damage_types.push(damage_type + "(Two-Handed)");
                     }
                 } else {
                     damages.push(damage);
