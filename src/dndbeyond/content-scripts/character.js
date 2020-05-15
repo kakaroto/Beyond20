@@ -178,7 +178,7 @@ function rollItem(force_display = false) {
                         if (character.hasClassFeature("Fighting Style: Great Weapon Fighting") &&
                             properties["Attack Type"] == "Melee" &&
                             (properties["Properties"].includes("Two-Handed") ||
-                            (properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice", "both") === "two")))
+                                (properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice", "both") === "two")))
                             dmg = dmg.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
                         damages.push(dmg);
                         damage_types.push(dmg_type);
@@ -1171,7 +1171,7 @@ function activateQuickRolls() {
         const rolltype_class = getRollTypeButtonClass(character);
         const icon = getBadgeIconFromClass(rolltype_class, "32");
         const img = E.img({ class: "beyond20-quick-roll-icon", src: icon, style: "margin-right: 5px;margin-left: 5px;padding: 5px 5px;" });
-        const indicator = E.img({ class: "beyond20-quick-roll-indicator", src: chrome.extension.getURL("images/quick-roll-indicator.png")});
+        const indicator = E.img({ class: "beyond20-quick-roll-indicator", src: chrome.extension.getURL("images/quick-roll-indicator.png") });
         const div = E.div({ class: "beyond20-quick-roll-tooltip " + getRollTypeButtonClass(character) }, img, indicator);
         beyond20_tooltip = $(div);
         beyond20_tooltip.css({
@@ -1197,6 +1197,13 @@ function activateQuickRolls() {
     if (!settings["quick-rolls"])
         return;
 
+    activateTooltipListeners($(".ct-initiative-box__value .integrated-dice__container, .ct-initiative-box__value .ddbc-signed-number"), 'up', beyond20_tooltip, (el) => {
+        el.closest(".ct-initiative-box__value").trigger('click');
+        if ($(".ct-initiative-pane").length)
+            execute("ct-initiative-pane");
+        else
+            quick_roll = true;
+    });
     for (let ability of abilities.toArray()) {
         activateTooltipListeners($(ability), 'down', beyond20_tooltip, (el) => {
             const name = el.closest(".ct-ability-summary,.ddbc-ability-summary")
