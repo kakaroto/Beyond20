@@ -816,8 +816,8 @@ function findModifiers(character, custom_roll) {
             // If text length changes, we can check again for another modifier;
             text_len = text.length;
 
-            find_static_modifier = (name, value) => {
-                const mod_string = " + your " + name;
+            find_static_modifier = (name, value, {add_your=true}={}) => {
+                const mod_string = add_your ? " + your " + name : name;
                 if (text.toLowerCase().startsWith(mod_string)) {
                     strong.append(text.substring(0, mod_string.length));
                     roll_formula += " + " + value;
@@ -827,8 +827,11 @@ function findModifiers(character, custom_roll) {
 
             for (let ability of character._abilities)
                 find_static_modifier(ability[0].toLowerCase() + " modifier", ability[3]);
-            for (let class_name in character._classes)
+            for (let class_name in character._classes) {
+                const half_level = Math.min(1, Math.floor(character._classes[class_name] / 2));
                 find_static_modifier(class_name.toLowerCase() + " level", character._classes[class_name]);
+                find_static_modifier(" + half your " + class_name.toLowerCase() + " level", half_level, {add_your: false});
+            }
             find_static_modifier("proficiency bonus", character._proficiency);
             find_static_modifier("ac", character._ac);
             find_static_modifier("armor class", character._ac);
