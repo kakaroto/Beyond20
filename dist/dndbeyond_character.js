@@ -5161,6 +5161,7 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
             position.left += target.width() + 2;
             position.top += target.height() / 2 - tooltip.height() / 2;
         }
+        tooltip.find(".beyond20-quick-roll-indicator").removeClass("left right down up").addClass(direction);
         tooltip.css(position)
         //setPosition(e);
         tooltip.off('click').on('click', (e) => {
@@ -5195,12 +5196,13 @@ function activateQuickRolls() {
     if (beyond20_tooltip.length == 0) {
         const rolltype_class = getRollTypeButtonClass(character);
         const icon = getBadgeIconFromClass(rolltype_class, "32");
-        const img = E.img({ class: "beyond20-quick-roll-icon", src: icon, style: "margin-right: 5px;margin-left: 5px;padding: 5px 10px;" });
-        const div = E.div({ class: "beyond20-quick-roll-tooltip " + getRollTypeButtonClass(character) }, img);
+        const img = E.img({ class: "beyond20-quick-roll-icon", src: icon, style: "margin-right: 5px;margin-left: 5px;padding: 5px 5px;" });
+        const indicator = E.img({ class: "beyond20-quick-roll-indicator", src: chrome.extension.getURL("images/quick-roll-indicator.png")});
+        const div = E.div({ class: "beyond20-quick-roll-tooltip " + getRollTypeButtonClass(character) }, img, indicator);
         beyond20_tooltip = $(div);
         beyond20_tooltip.css({
             "position": "absolute",
-            "background": 'url("https://www.dndbeyond.com/Content/Skins/Waterdeep/images/character-sheet/content-frames/inspiration.svg") 50% center no-repeat transparent',
+            "background": `url("${chrome.extension.getURL("images/quick-roll-background.png")}") 50% center no-repeat transparent`,
             "background-size": "contain"
         });
         beyond20_tooltip.off('mouseenter').off('mouseleave').on('mouseleave', (e) => {
