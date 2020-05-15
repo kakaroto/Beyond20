@@ -4670,6 +4670,15 @@ function rollSpell(force_display = false) {
             damages.push(discipleOfLife.toString());
             damage_types.push("Disciple of Life");
         }
+        if (healing_modifiers.length > 0 &&
+            character.hasClassFeature("Supreme Healing")) {
+            for (let i = 0; i < damages.length; i++) {
+                if (damage_types[i] !== "Healing") continue;
+                damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)?/, (match, dice, faces) => {
+                    return String(parseInt(dice || 1) * parseInt(faces));
+                });
+            }
+        }
 
         const custom_damages = character.getSetting("custom-damage-dice", "");
         if (custom_damages.length > 0) {
