@@ -4100,9 +4100,14 @@ function rollInitiative() {
 
     if (character.getGlobalSetting("initiative-tiebreaker", false)) {
         // Set the tiebreaker to the dexterity score but default to case.includes(0) abilities arrary is empty;
-        const tiebreaker = character._abilities.reduce((acc, abi) => {
-            return abi[1] == 'DEX' ? acc + parseInt(abi[2]) : 0;
-        }, 0);
+        let tiebreaker = 0;
+        for (i = 0; i < character._abilities.length; i++) {
+            if (character._abilities[i][i] == 'DEX'){
+                tiebreaker += parseInt(character._abilities[i][2]);
+                break;
+            }
+        }
+
 
         // Add tiebreaker as a decimal;
         initiative = parseFloat(initiative) + parseFloat(tiebreaker) / 100;
