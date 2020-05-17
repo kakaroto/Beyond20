@@ -172,6 +172,7 @@ class RollType {
     static get SUPER_DISADVANTAGE() { return 7; }
     // If a feat overrides it to have advantage;
     static get OVERRIDE_ADVANTAGE() { return 8; }
+    static get OVERRIDE_DISADVANTAGE() { return 9; }
 }
 
 class CriticalRules {
@@ -2754,6 +2755,8 @@ function sendRoll(character, rollType, fallback, args) {
     advantage = parseInt(character.getGlobalSetting("roll-type", RollType.NORMAL));
     if (args["advantage"] == RollType.OVERRIDE_ADVANTAGE)
         args["advantage"] = advantage == RollType.SUPER_ADVANTAGE ? RollType.SUPER_ADVANTAGE : RollType.ADVANTAGE;
+    if (args["advantage"] == RollType.OVERRIDE_DISADVANTAGE)
+        args["advantage"] = advantage == RollType.SUPER_DISADVANTAGE ? RollType.SUPER_DISADVANTAGE : RollType.DISADVANTAGE;
 
     // Default advantage/whisper would get overriden if (they are part of provided args;
     req = {
@@ -4046,6 +4049,11 @@ function rollSkillCheck(paneClass) {
         "ability": ability,
         "modifier": modifier,
         "proficiency": proficiency
+    }
+    if($("." + paneClass + "__dice-adjustment ." + paneClass + "__dice-adjustment-icon .ddbc-tooltip").attr("data-original-title") === "Advantage"){
+        roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+    } else if ($("." + paneClass + "__dice-adjustment ." + paneClass + "__dice-adjustment-icon .ddbc-tooltip").attr("data-original-title") === "Disadvantage"){
+        roll_properties["advantage"] = RollType.OVERRIDE_DISADVANTAGE;
     }
     if (ability == "STR" &&
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
