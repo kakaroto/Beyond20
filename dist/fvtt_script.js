@@ -173,6 +173,7 @@ class RollType {
     static get SUPER_DISADVANTAGE() { return 7; }
     // If a feat overrides it to have advantage;
     static get OVERRIDE_ADVANTAGE() { return 8; }
+    static get OVERRIDE_DISADVANTAGE() { return 9; }
 }
 
 class CriticalRules {
