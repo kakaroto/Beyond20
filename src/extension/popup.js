@@ -114,9 +114,12 @@ function populateCharacter(response) {
             e = createHTMLOption("great-weapon-master", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Brutal Critical") ||
-            response["racial-traits"].includes("Savage Attacks")) {
+        if (response["class-features"].includes("Brutal Critical")) {
             e = createHTMLOption("brutal-critical", false, character_settings);
+            options.append(e);
+        }
+        if (response["racial-traits"].includes("Savage Attacks")) {
+            e = createHTMLOption("savage-attacks", false, character_settings);
             options.append(e);
         }
         if (response["class-features"].includes("Rage")) {

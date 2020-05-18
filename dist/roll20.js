@@ -500,8 +500,14 @@ const character_settings = {
         "default": false
     },
     "brutal-critical": {
-        "title": "Brutal Critical/Savage Attacks: Roll extra die",
-        "description": "Roll extra damage die on crit for Brutal Critical and Savage Attacks features",
+        "title": "Brutal Critical: Roll extra die",
+        "description": "Roll extra damage die on crit for Brutal Critical feature",
+        "type": "bool",
+        "default": true
+    },
+    "savage-attacks": {
+        "title": "Savage Attacks: Roll extra die",
+        "description": "Roll extra damage die on crit for Savage Attacks feature",
         "type": "bool",
         "default": true
     },

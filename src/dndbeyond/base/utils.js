@@ -91,7 +91,7 @@ function damagesToCrits(character, damages) {
     return crits;
 }
 
-function buildAttackRoll(character, attack_source, name, description, properties, damages = [], damage_types = [], to_hit = null, brutal = 0) {
+function buildAttackRoll(character, attack_source, name, description, properties, damages = [], damage_types = [], to_hit = null, brutal = 0, savage = 0) {
     const roll_properties = {
         "name": name,
         "attack-source": attack_source,
@@ -154,6 +154,21 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 if (highest_dice != 0) {
                     crit_damages.push(`${brutal}d${highest_dice}`);
                     crit_damage_types.push("Brutal");
+                }
+            }
+            if (savage > 0) {
+                let highest_dice = 0;
+                for (let dmg of crit_damages) {
+                    const match = dmg.match(/[0-9]*d([0-9]+)/);
+                    if (match !== undefined) {
+                        const sides = parseInt(match[1]);
+                        if (sides > highest_dice)
+                            highest_dice = sides;
+                    }
+                }
+                if (highest_dice != 0) {
+                    crit_damages.push(`${savage}d${highest_dice}`);
+                    crit_damage_types.push("Savage Attacks");
                 }
             }
             roll_properties["critical-damages"] = crit_damages;

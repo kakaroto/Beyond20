@@ -351,8 +351,13 @@ function rollItem(force_display = false) {
                     const barbarian_level = character.getClassLevel("Barbarian");
                     brutal += 1 + Math.floor((barbarian_level - 9) / 4);
                 }
+            }
+        }
+        let savage = 0;
+        if (properties["Attack Type"] == "Melee") {
+            if (character.getSetting("savage-attacks")) {
                 if (character.hasRacialTrait("Savage Attacks"))
-                    brutal += 1;
+                    savage += 1;
             }
         }
         const roll_properties = buildAttackRoll(character,
@@ -363,7 +368,8 @@ function rollItem(force_display = false) {
             damages,
             damage_types,
             to_hit,
-            brutal);
+            brutal,
+            savage);
         roll_properties["item-type"] = item_type;
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
@@ -437,6 +443,7 @@ function rollAction(paneClass) {
         }
 
         let brutal = 0;
+        let savage = 0;
         let critical_limit = 20;
         if (character.hasClassFeature("Hexblade’s Curse") &&
             character.getSetting("warlock-hexblade-curse", false))
@@ -452,25 +459,28 @@ function rollAction(paneClass) {
                 critical_limit = 19;
             if (character.hasClassFeature("Superior Critical"))
                 critical_limit = 18;
-
             if (character.getSetting("brutal-critical")) {
                 if (character.hasClassFeature("Brutal Critical")) {
                     const barbarian_level = character.getClassLevel("Barbarian");
                     brutal += 1 + Math.floor((barbarian_level - 9) / 4);
                 }
-                if (character.hasRacialTrait("Savage Attacks"))
-                    brutal += 1;
             }
+            if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)) {
+                const fighter_level = character.getClassLevel("Fighter");
+                damages.push(fighter_level < 10 ? "1d6" : "1d8");
+                damage_types.push("Giant Might");
+            }
+        }
+        if (action_name == "Polearm Master - Bonus Attack" || action_name == "Unarmed Strike") {
             if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) {
                 const barbarian_level = character.getClassLevel("Barbarian");
                 const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
                 damages.push(String(rage_damage));
                 damage_types.push("Rage");
             }
-            if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)) {
-                const fighter_level = character.getClassLevel("Fighter");
-                damages.push(fighter_level < 10 ? "1d6" : "1d8");
-                damage_types.push("Giant Might");
+            if (character.getSetting("savage-attacks")) {
+                if (character.hasRacialTrait("Savage Attacks"))
+                    savage += 1;
             }
         }
 
@@ -489,7 +499,8 @@ function rollAction(paneClass) {
             damages,
             damage_types,
             properties["To Hit"] !== undefined ? properties["To Hit"] : null,
-            brutal);
+            brutal,
+            savage);
 
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;

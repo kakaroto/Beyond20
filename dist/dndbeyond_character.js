@@ -500,8 +500,14 @@ const character_settings = {
         "default": false
     },
     "brutal-critical": {
-        "title": "Brutal Critical/Savage Attacks: Roll extra die",
-        "description": "Roll extra damage die on crit for Brutal Critical and Savage Attacks features",
+        "title": "Brutal Critical: Roll extra die",
+        "description": "Roll extra damage die on crit for Brutal Critical feature",
+        "type": "bool",
+        "default": true
+    },
+    "savage-attacks": {
+        "title": "Savage Attacks: Roll extra die",
+        "description": "Roll extra damage die on crit for Savage Attacks feature",
         "type": "bool",
         "default": true
     },
@@ -2673,7 +2679,7 @@ function damagesToCrits(character, damages) {
     return crits;
 }
 
-function buildAttackRoll(character, attack_source, name, description, properties, damages = [], damage_types = [], to_hit = null, brutal = 0) {
+function buildAttackRoll(character, attack_source, name, description, properties, damages = [], damage_types = [], to_hit = null, brutal = 0, savage = 0) {
     const roll_properties = {
         "name": name,
         "attack-source": attack_source,
@@ -2736,6 +2742,21 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 if (highest_dice != 0) {
                     crit_damages.push(`${brutal}d${highest_dice}`);
                     crit_damage_types.push("Brutal");
+                }
+            }
+            if (savage > 0) {
+                let highest_dice = 0;
+                for (let dmg of crit_damages) {
+                    const match = dmg.match(/[0-9]*d([0-9]+)/);
+                    if (match !== undefined) {
+                        const sides = parseInt(match[1]);
+                        if (sides > highest_dice)
+                            highest_dice = sides;
+                    }
+                }
+                if (highest_dice != 0) {
+                    crit_damages.push(`${savage}d${highest_dice}`);
+                    crit_damage_types.push("Savage Attacks");
                 }
             }
             roll_properties["critical-damages"] = crit_damages;
@@ -4378,8 +4399,13 @@ function rollItem(force_display = false) {
                     const barbarian_level = character.getClassLevel("Barbarian");
                     brutal += 1 + Math.floor((barbarian_level - 9) / 4);
                 }
+            }
+        }
+        let savage = 0;
+        if (properties["Attack Type"] == "Melee") {
+            if (character.getSetting("savage-attacks")) {
                 if (character.hasRacialTrait("Savage Attacks"))
-                    brutal += 1;
+                    savage += 1;
             }
         }
         const roll_properties = buildAttackRoll(character,
@@ -4390,7 +4416,8 @@ function rollItem(force_display = false) {
             damages,
             damage_types,
             to_hit,
-            brutal);
+            brutal,
+            savage);
         roll_properties["item-type"] = item_type;
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
@@ -4464,6 +4491,7 @@ function rollAction(paneClass) {
         }
 
         let brutal = 0;
+        let savage = 0;
         let critical_limit = 20;
         if (character.hasClassFeature("Hexblade’s Curse") &&
             character.getSetting("warlock-hexblade-curse", false))
@@ -4472,6 +4500,8 @@ function rollAction(paneClass) {
         if (action_name == "Polearm Master - Bonus Attack") {
             if (character.hasClassFeature("Fighting Style: Great Weapon Fighting"))
                 damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&<=2");
+        }
+        if (action_name == "Polearm Master - Bonus Attack" || action_name == "Unarmed Strike") {
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
                 critical_limit = 19;
@@ -4485,8 +4515,10 @@ function rollAction(paneClass) {
                     const barbarian_level = character.getClassLevel("Barbarian");
                     brutal += 1 + Math.floor((barbarian_level - 9) / 4);
                 }
+            }
+            if (character.getSetting("savage-attacks")) {
                 if (character.hasRacialTrait("Savage Attacks"))
-                    brutal += 1;
+                    savage += 1;
             }
             if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) {
                 const barbarian_level = character.getClassLevel("Barbarian");
@@ -4516,7 +4548,8 @@ function rollAction(paneClass) {
             damages,
             damage_types,
             properties["To Hit"] !== undefined ? properties["To Hit"] : null,
-            brutal);
+            brutal,
+            savage);
 
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;

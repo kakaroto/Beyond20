@@ -545,8 +545,14 @@ const character_settings = {
         "default": false
     },
     "brutal-critical": {
-        "title": "Brutal Critical/Savage Attacks: Roll extra die",
-        "description": "Roll extra damage die on crit for Brutal Critical and Savage Attacks features",
+        "title": "Brutal Critical: Roll extra die",
+        "description": "Roll extra damage die on crit for Brutal Critical feature",
+        "type": "bool",
+        "default": true
+    },
+    "savage-attacks": {
+        "title": "Savage Attacks: Roll extra die",
+        "description": "Roll extra damage die on crit for Savage Attacks feature",
         "type": "bool",
         "default": true
     },
@@ -1186,9 +1192,12 @@ function populateCharacter(response) {
             e = createHTMLOption("great-weapon-master", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Brutal Critical") ||
-            response["racial-traits"].includes("Savage Attacks")) {
+        if (response["class-features"].includes("Brutal Critical")) {
             e = createHTMLOption("brutal-critical", false, character_settings);
+            options.append(e);
+        }
+        if (response["racial-traits"].includes("Savage Attacks")) {
+            e = createHTMLOption("savage-attacks", false, character_settings);
             options.append(e);
         }
         if (response["class-features"].includes("Rage")) {
