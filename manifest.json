@@ -58,7 +58,8 @@
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/dndbeyond_character.js"
-			]
+			],
+			"all_frames":true
 		},
 		{
 			"matches": [
@@ -74,7 +75,8 @@
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/dndbeyond_monster.js"
-			]
+			],
+			"all_frames": true
 		},
 		{
 			"matches": [
@@ -90,7 +92,8 @@
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/dndbeyond_vehicle.js"
-			]
+			],
+			"all_frames": true
 		},
 		{
 			"matches": [
@@ -106,7 +109,8 @@
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/dndbeyond_spell.js"
-			]
+			],
+			"all_frames": true
 		},
 		{
 			"matches": [
@@ -124,7 +128,8 @@
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/dndbeyond_encounter.js"
-			]
+			],
+			"all_frames": true
 		},
 		{
 			"matches": [
@@ -141,7 +146,8 @@
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/dndbeyond_item.js"
-			]
+			],
+			"all_frames": true
 		},
 		{
 			"matches": [
