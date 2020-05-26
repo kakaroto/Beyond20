@@ -31,7 +31,11 @@
 	},
 	"page_action": {
 		"default_popup": "popup.html",
-		"default_icon": "images/icons/icon16.png"
+        "default_icon": {
+          "16": "images/icons/icon16.png",
+          "24": "images/icons/icon24.png",
+          "32": "images/icons/icon32.png"
+        }
 	},
 	"web_accessible_resources": [
 		"images/*",

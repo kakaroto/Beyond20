@@ -11,7 +11,7 @@ Hooks.on('ready', function () {
         dialog = new Dialog({
             title: `Beyond20`,
             content: "<p>Beyond20 does not load automatically for FVTT games on Chrome.</p>" +
-                "<p>If you wish to use Beyond20, please activate it by clicking on the <img style='border: 0px; vertical-align: middle;' src='modules/beyond20/images/icons/icon16.png'/> icon in the Chrome toolbar.</p>" +
+                "<p>If you wish to use Beyond20, please activate it by clicking on the <img style='border: 0px; vertical-align: middle;' src='modules/beyond20/images/icons/icon20.png'/> icon in the Chrome toolbar.</p>" +
                 "<div class='form-group'>" +
                 "<label for='dontaskagain'>Don't remind me again.</label>" +
                 "<input name='dontaskagain' type='checkbox' value='false' data-dtype='Boolean'></input>" +
