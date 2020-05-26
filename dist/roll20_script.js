@@ -182,6 +182,12 @@ function updateHP(name, current, total, temp) {
     }
 }
 
+function checkForOGL() {
+    const isOGL = atob(customcharsheet_html).includes(`<rolltemplate class="sheet-rolltemplate-simple">`);
+    $("#isOGL").remove();
+    document.body.append($(`<input type="hidden" value="${isOGL ? 1 : 0}" name="isOGL" id="isOGL">`)[0]);
+}
+
 function disconnectAllEvents() {
     for (let event of registered_events)
         document.removeEventListener(...event);
@@ -190,5 +196,6 @@ function disconnectAllEvents() {
 var registered_events = [];
 registered_events.push(addCustomEventListener("UpdateHP", updateHP));
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
+checkForOGL();
 
 })();

@@ -12,6 +12,7 @@ const txt = chat.getElementsByTagName("textarea")[0];
 const btn = chat.getElementsByTagName("button")[0];
 const speakingas = document.getElementById("speakingas");
 var settings = getDefaultSettings();
+let isOGL = false;
 
 function postChatMessage(message, character = null) {
     let set_speakingas = true;
@@ -164,6 +165,7 @@ function whisperString(whisper) {
 }
 
 function template(request, name, properties) {
+    const use_default_tempalte = settings["roll20-template"] === "default" || !isOGL;
     let result = whisperString(request.whisper);
 
     const renameProp = (old_key, new_key) => {
@@ -188,7 +190,7 @@ function template(request, name, properties) {
         removeProp("description");
     }
 
-    if (settings["roll20-template"] == "default") {
+    if (use_default_tempalte) {
         result = result.replace("&{template:" + name + "}", "&{template:default}");
 
         renameProp("charname", "Character name");
@@ -687,6 +689,7 @@ function updateSettings(new_settings = null) {
 
 function handleMessage(request, sender, sendResponse) {
     console.log("Got message : ", request);
+    isOGL = $("#isOGL").val() === "1";
     if (request.action == "settings") {
         if (request.type == "general")
             updateSettings(request.settings);
