@@ -371,7 +371,7 @@ function rollDeathSave(request, custom_roll_dice = "") {
 
 function rollItem(request, custom_roll_dice = "") {
     const source = request["item-type"].trim().toLowerCase();
-    if (source == "tool, common" && request.character.abilities && request.character.abilities.length > 0) {
+    if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools"))) && request.character.abilities && request.character.abilities.length > 0) {
         let modifier = "?{Choose Ability";
         // [name, abbr, value, mod];
         for (let ability of request.character.abilities)
@@ -380,7 +380,7 @@ function rollItem(request, custom_roll_dice = "") {
         const proficiency = request.character.proficiency;
         const half_proficiency = "+[[floor(" + proficiency + " / 2)]]";
         const expertise = "+[[" + proficiency + " * 2]]";
-        const prof = "?{Select Proficiency|null,+0|Half-Proficient," + half_proficiency + "|Profient," + proficiency + "|Expert," + expertise + "}";
+        const prof = "?{Select Proficiency|None,+0|Half-Proficient," + half_proficiency + "|Profient," + proficiency + "|Expert," + expertise + "}";
         return rollTrait(request) + "\n" +
             template(request, "simple", {
                 "charname": request.character.name,
