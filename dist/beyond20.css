@@ -80,7 +80,7 @@
 .beyond20-roll-die-result {
     flex: 1 0 auto;
     margin: 1px;
- 
+
     text-align: center;
     border: thin solid black;
     border-radius: 2px;
@@ -152,4 +152,9 @@
 }
 .beyond20-form-row > * {
     flex: 2;
+}
+
+/* Prevent background / border images from swallowing quickroll mouse events */
+.ddbc-box-background {
+    pointer-events: none;
 }
