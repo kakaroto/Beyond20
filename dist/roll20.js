@@ -1791,7 +1791,7 @@ function handleMessage(request, sender, sendResponse) {
             properties.source = request.source;
         if (Object.keys(request.attributes).length) {
             for (let attr in request.attributes)
-                request[attr] = attributes[attr];
+                request[attr] = request.attributes[attr];
         }
         if (request.open)
             properties.description = request.description;

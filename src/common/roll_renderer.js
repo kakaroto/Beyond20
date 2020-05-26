@@ -184,7 +184,7 @@ class Beyond20RollRenderer {
 
     async postDescription(request, title, source, attributes, description, attack_rolls = [], roll_info = [], damage_rolls = [], open = false) {
         let play_sound = false;
-        const buttons = {}
+        let buttons = {}
 
         if (request.whisper == WhisperType.HIDE_NAMES) {
             description = null;
