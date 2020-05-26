@@ -1687,11 +1687,12 @@ class Beyond20RollRenderer {
             html += "<div class='beyond20-roll-result'><b>" + name + ": </b><span>" + value + "</span></div>";
 
         if (attack_rolls.length > 0) {
+            const is_total = attack_rolls.length === 1 && damage_rolls.length === 0;
             let roll_html = "";
             for (let [i, roll] of attack_rolls.entries()) {
                 if (i > 0)
                     roll_html += " | ";
-                roll_html += await this.rollToDetails(roll);
+                roll_html += await this.rollToDetails(roll, is_total);
                 play_sound = true;
             }
             html += "<div class='beyond20-roll-result beyond20-roll-cells'>" + this.rollsToCells(roll_html) + "</div>";
