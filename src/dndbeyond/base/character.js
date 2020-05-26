@@ -342,6 +342,11 @@ class Character extends CharacterBase {
     hasClass(name) {
         return this._classes[name] !== undefined;
     }
+    getAbility(abbr) {
+        const ability = this._abilities.find(abi => abi[1] === abbr);
+        if (!ability) return {score: 0, mod: 0};
+        return {score: parseInt(ability[2]), mod: parseInt(ability[3])}
+    }
 
     _cacheToHit(item_name, to_hit) {
         this._to_hit_cache[item_name] = to_hit;

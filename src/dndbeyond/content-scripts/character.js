@@ -78,9 +78,7 @@ function rollInitiative() {
 
     if (character.getGlobalSetting("initiative-tiebreaker", false)) {
         // Set the tiebreaker to the dexterity score but default to case.includes(0) abilities arrary is empty;
-        const tiebreaker = character._abilities.reduce((acc, abi) => {
-            return acc + (abi[1] == 'DEX' ? parseInt(abi[2]) : 0);
-        }, 0);
+        const tiebreaker = character.getAbility("DEX").score;
 
         // Add tiebreaker as a decimal;
         initiative = parseFloat(initiative) + parseFloat(tiebreaker) / 100;
@@ -399,7 +397,11 @@ function rollAction(paneClass) {
 
     if (action_name == "Superiority Dice" || action_parent == "Maneuvers") {
         const fighter_level = character.getClassLevel("Fighter");
-        const superiority_die = fighter_level < 10 ? "1d8" : (fighter_level < 18 ? "1d10" : "1d12");
+        let superiority_die = fighter_level < 10 ? "1d8" : (fighter_level < 18 ? "1d10" : "1d12");
+        if (action_name === "Parry")
+            superiority_die += " + " + character.getAbility("DEX").mod;
+        else if (action_name === "Rally")
+            superiority_die += " + " + character.getAbility("CHA").mod;
         sendRollWithCharacter("custom", superiority_die, {
             "name": action_name,
             "description": description,
