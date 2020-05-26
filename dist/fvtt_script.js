@@ -2407,12 +2407,12 @@ function popAvatar(request) {
 }
 
 async function addInitiativeToCombat(roll) {
-    if (canvas.tokens.controlledTokens.length > 0) {
+    if (canvas.tokens.controlled.length > 0) {
         if (game.combat) {
             if (game.combat.scene.id != canvas.scene.id) {
                 ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene");
             } else {
-                for (let token of canvas.tokens.controlledTokens) {
+                for (let token of canvas.tokens.controlled) {
                     combatant = game.combat.getCombatantByToken(token.id);
                     if (combatant) {
                         idField = combatant._id ? "_id" : "id";
