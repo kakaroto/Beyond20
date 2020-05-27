@@ -367,10 +367,10 @@ const options_list = {
     "roll20-template": {
         "title": "Roll20 Character Sheet Setting",
         "description": "Select the Character Sheet Template that you use in Roll20\n" +
-            "If the templates do not match, you will not see anything printed in the Roll20 chat.",
+            "If the template does not match the campaign setting, it will default to the Beyond20 Roll Renderer.",
         "type": "combobox",
         "default": "roll20",
-        "choices": { "roll20": "D&D 5E By Roll20", "default": "Other templates" }
+        "choices": { "roll20": "D&D 5E By Roll20", "default": "Beyond20 Roll Renderer" }
     },
 
     "subst-roll20": {
