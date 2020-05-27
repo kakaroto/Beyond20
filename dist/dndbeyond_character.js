@@ -2725,7 +2725,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 let highest_dice = 0;
                 for (let dmg of crit_damages) {
                     const match = dmg.match(/[0-9]*d([0-9]+)/);
-                    if (match !== undefined) {
+                    if (match) {
                         const sides = parseInt(match[1]);
                         if (sides > highest_dice)
                             highest_dice = sides;
@@ -3917,7 +3917,7 @@ class Character extends CharacterBase {
             this._spell_attacks = this.getSetting("spell_attacks", {});
         }
 
-        if (this._settings !== undefined && update) {
+        if (this._settings && update) {
             this.mergeCharacterSettings({
                 "class-features": this._class_features,
                 "racial-traits": this._racial_traits,
@@ -5385,14 +5385,14 @@ function updateSettings(new_settings = null) {
 }
 
 function handleMessage(request, sender, sendResponse) {
-    console.log("Got message : " + String(request));
+    console.log("Got message : ", request);
     if (request.action == "settings") {
         if (request.type == "general") {
             updateSettings(request.settings);
         } else if (request.type == "character" && request.id == character._id) {
             character.updateSettings(request.settings);
         } else {
-            console.log("Ignoring character settings, for ID: ", character._id);
+            console.log("Ignoring character settings, for ID: ", request.id);
         }
     } else if (request.action == "get-character") {
         character.updateInfo();

@@ -1353,14 +1353,14 @@ function updateSettings(new_settings = null) {
 }
 
 function handleMessage(request, sender, sendResponse) {
-    console.log("Got message : " + String(request));
+    console.log("Got message : ", request);
     if (request.action == "settings") {
         if (request.type == "general") {
             updateSettings(request.settings);
         } else if (request.type == "character" && request.id == character._id) {
             character.updateSettings(request.settings);
         } else {
-            console.log("Ignoring character settings, for ID: ", character._id);
+            console.log("Ignoring character settings, for ID: ", request.id);
         }
     } else if (request.action == "get-character") {
         character.updateInfo();

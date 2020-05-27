@@ -2725,7 +2725,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 let highest_dice = 0;
                 for (let dmg of crit_damages) {
                     const match = dmg.match(/[0-9]*d([0-9]+)/);
-                    if (match !== undefined) {
+                    if (match) {
                         const sides = parseInt(match[1]);
                         if (sides > highest_dice)
                             highest_dice = sides;
@@ -3611,7 +3611,7 @@ var character = null;
 
 function documentLoaded(settings) {
     character = new Monster("Monster", null, settings);
-    // We reloaded the extension !== undefined reload the page too...;
+    // We reloaded the extension ? reload the page too...;
     if (isRollButtonAdded()) {
         chrome.runtime.sendMessage({ "action": "reload-me" });
     } else {

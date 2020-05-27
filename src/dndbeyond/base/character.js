@@ -311,7 +311,7 @@ class Character extends CharacterBase {
             this._spell_attacks = this.getSetting("spell_attacks", {});
         }
 
-        if (this._settings !== undefined && update) {
+        if (this._settings && update) {
             this.mergeCharacterSettings({
                 "class-features": this._class_features,
                 "racial-traits": this._racial_traits,

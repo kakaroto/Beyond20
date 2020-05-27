@@ -145,7 +145,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 let highest_dice = 0;
                 for (let dmg of crit_damages) {
                     const match = dmg.match(/[0-9]*d([0-9]+)/);
-                    if (match !== undefined) {
+                    if (match) {
                         const sides = parseInt(match[1]);
                         if (sides > highest_dice)
                             highest_dice = sides;
