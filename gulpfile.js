@@ -113,14 +113,14 @@ for (const target in SRC_FILES) {
     const task = {
         [target]: () => gulp.src(SRC_FILES[target])
             .pipe(concat(`${target}.js`))
-            .pipe(gulp.dest("dist"))
+            .pipe(gulp.dest("compiled"))
     };
     targets[target] = task[target];
     gulp.task(target, targets[target]);
 }
 css = () => gulp.src(CSS_FILES)
     .pipe(concat(`beyond20.css`))
-    .pipe(gulp.dest("dist"))
+    .pipe(gulp.dest("compiled"))
 
 watch = () => {
     for (target in SRC_FILES)
@@ -134,3 +134,95 @@ gulp.task('css', css);
 gulp.task('watch', watch);
 gulp.task('build', build);
 gulp.task('default', gulp.series(build, watch));
+
+// New gulp code
+
+var clean = require('gulp-clean');
+
+gulp.task("clean", () => {
+    return gulp.src('./dist/', { read: false, allowEmpty: true }).pipe(clean());
+});
+
+gulp.task("copy-src", () => {
+    return gulp.src("./src/**")
+        .pipe(gulp.dest('./dist/base/src/'))
+});
+
+gulp.task("copy-compiled", gulp.series("build", () => {
+    return gulp.src("./compiled/**")
+        .pipe(gulp.dest('./dist/base/dist/'));
+}));
+
+gulp.task("copy-libs", () => {
+    return gulp.src("./libs/**")
+        .pipe(gulp.dest('./dist/base/libs/'));
+});
+
+gulp.task("copy-images", () => {
+    return gulp.src("images/**")
+        .pipe(gulp.dest('./dist/base/images/'));
+});
+
+gulp.task("copy-misc", () => {
+    return gulp.src(["LICENSE", "options.*", "*.html", "*.md"])
+        .pipe(gulp.dest('./dist/base/'));
+});
+
+gulp.task("build-base", gulp.parallel([
+    "copy-src",
+    "copy-compiled",
+    "copy-misc",
+    "copy-libs",
+    "copy-images",
+]));
+
+// Creates the specific folders for Chrome and Firefox
+
+
+gulp.task("copy-firefox-from-base", gulp.series("build-base", () => {
+    return gulp.src("./dist/base/**")
+        .pipe(gulp.dest('./dist/firefox/'));
+}));
+
+gulp.task("copy-chrome-from-base", gulp.series("build-base", () => {
+    return gulp.src("./dist/base/**")
+        .pipe(gulp.dest('./dist/chrome/'));
+}));
+
+// Copies manifests around
+
+var rename = require("gulp-rename");
+
+gulp.task("firefox-manifest", () => {
+
+    return gulp.src("./manifest_ff.json")
+        .pipe(rename({
+            basename: "manifest",
+        }))
+        .pipe(gulp.dest("./dist/firefox/"));
+});
+
+gulp.task("chrome-manifest", () => {
+
+    return gulp.src("./manifest.json")
+        .pipe(rename({
+            basename: "manifest",
+        }))
+        .pipe(gulp.dest("./dist/chrome/"));
+});
+
+// Performs full builds
+
+gulp.task("firefox-build", gulp.series(
+    gulp.parallel([
+        "copy-firefox-from-base",
+        "firefox-manifest"
+    ])
+));
+
+gulp.task("chrome-build", gulp.series(
+    gulp.parallel([
+        "copy-chrome-from-base",
+        "chrome-manifest"
+    ])
+));
