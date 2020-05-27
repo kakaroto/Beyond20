@@ -321,5 +321,5 @@ registered_events.push(addCustomEventListener("NewSettings", setSettings));
 registered_events.push(addCustomEventListener("UpdateHP", updateHP));
 registered_events.push(addCustomEventListener("UpdateConditions", updateConditions));
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
-const alertify = ui.notifications;
+//const alertify = ui.notifications;
 setTitle();

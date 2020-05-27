@@ -2241,8 +2241,69 @@ class Beyond20RollRenderer {
 }
 
 
+alertify.defaults.transition = "zoom";
+if (alertify.Beyond20Prompt === undefined) {
+    const factory = function () {
+        return {
+            "settings": {
+                "content": undefined,
+                "ok_label": undefined,
+                "cancel_label": undefined,
+                "resolver": undefined,
+            },
+            "main": function (title, content, ok_label, cancel_label, resolver) {
+                this.set('title', title);
+                this.set('content', content);
+                this.set('resolver', resolver);
+                this.set('ok_label', ok_label);
+                this.set("cancel_label", cancel_label);
+            },
+            "setup": () => {
+                return {
+                    "buttons": [
+                        {
+                            "text": alertify.defaults.glossary.ok,
+                            "key": 13, //keys.ENTER;
+                            "className": alertify.defaults.theme.ok,
+                        },
+                        {
+                            "text": alertify.defaults.glossary.cancel,
+                            "key": 27, //keys.ESC;
+                            "invokeOnClose": true,
+                            "className": alertify.defaults.theme.cancel,
+                        }
+                    ],
+                    "focus": {
+                        "element": 0,
+                        "select": true
+                    },
+                    "options": {
+                        "maximizable": false,
+                        "resizable": false
+                    }
+                }
+            },
+            "build": () => { },
+            "prepare": function () {
+                this.elements.content.innerHTML = this.get('content');
+                this.__internal.buttons[0].element.innerHTML = this.get('ok_label');
+                this.__internal.buttons[1].element.innerHTML = this.get('cancel_label');
+            },
+            "callback": function (closeEvent) {
+                if (closeEvent.index == 0) {
+                    this.get('resolver').call(this, $(this.elements.content.firstElementChild));
+                } else {
+                    this.get('resolver').call(this, null);
+                }
+            }
+        }
+    }
+    alertify.dialog('Beyond20Prompt', factory, false, "prompt");
+}
 
 
+if (alertify.Beyond20Roll === undefined)
+    alertify.dialog('Beyond20Roll', function () { return {}; }, false, "alert");
 
 class DigitalDice {
     constructor(name, dice) {
@@ -2429,71 +2490,6 @@ class DNDBPrompter {
         });
     }
 }
-
-alertify.defaults.transition = "zoom";
-if (alertify.Beyond20Prompt === undefined) {
-    const factory = function () {
-        return {
-            "settings": {
-                "content": undefined,
-                "ok_label": undefined,
-                "cancel_label": undefined,
-                "resolver": undefined,
-            },
-            "main": function (title, content, ok_label, cancel_label, resolver) {
-                this.set('title', title);
-                this.set('content', content);
-                this.set('resolver', resolver);
-                this.set('ok_label', ok_label);
-                this.set("cancel_label", cancel_label);
-            },
-            "setup": () => {
-                return {
-                    "buttons": [
-                        {
-                            "text": alertify.defaults.glossary.ok,
-                            "key": 13, //keys.ENTER;
-                            "className": alertify.defaults.theme.ok,
-                        },
-                        {
-                            "text": alertify.defaults.glossary.cancel,
-                            "key": 27, //keys.ESC;
-                            "invokeOnClose": true,
-                            "className": alertify.defaults.theme.cancel,
-                        }
-                    ],
-                    "focus": {
-                        "element": 0,
-                        "select": true
-                    },
-                    "options": {
-                        "maximizable": false,
-                        "resizable": false
-                    }
-                }
-            },
-            "build": () => { },
-            "prepare": function () {
-                this.elements.content.innerHTML = this.get('content');
-                this.__internal.buttons[0].element.innerHTML = this.get('ok_label');
-                this.__internal.buttons[1].element.innerHTML = this.get('cancel_label');
-            },
-            "callback": function (closeEvent) {
-                if (closeEvent.index == 0) {
-                    this.get('resolver').call(this, $(this.elements.content.firstElementChild));
-                } else {
-                    this.get('resolver').call(this, null);
-                }
-            }
-        }
-    }
-    alertify.dialog('Beyond20Prompt', factory, false, "prompt");
-}
-
-
-if (alertify.Beyond20Roll === undefined)
-    alertify.dialog('Beyond20Roll', function () { return {}; }, false, "alert");
-
 
 const dndbeyondDiceRoller = new Beyond20RollRenderer(new DNDBRoller(), new DNDBPrompter(), new DNDBDisplayer());
 dndbeyondDiceRoller.setBaseURL(chrome.runtime.getURL(""));

@@ -12,7 +12,6 @@ const txt = chat.getElementsByTagName("textarea")[0];
 const btn = chat.getElementsByTagName("button")[0];
 const speakingas = document.getElementById("speakingas");
 var settings = getDefaultSettings();
-let isOGL = false;
 
 function postChatMessage(message, character = null) {
     let set_speakingas = true;
@@ -165,12 +164,8 @@ function whisperString(whisper) {
 }
 
 function template(request, name, properties) {
-    const use_default_tempalte = settings["roll20-template"] === "default" || !isOGL;
     let result = whisperString(request.whisper);
 
-    const renameProp = (old_key, new_key) => {
-        result = result.replace("{{" + old_key + "=", "{{" + new_key + "=");
-    }
     const removeProp = (key) => {
         result = result.replace("{{" + key + "=" + (Object.keys(properties).includes(key) ? properties[key] : "1") + "}}", "");
         result = result.replace("&//123&//123" + key + "=" + (Object.keys(properties).includes(key) ? properties[key] : "1") + "&//125&//125", "");
@@ -190,58 +185,10 @@ function template(request, name, properties) {
         removeProp("description");
     }
 
-    if (use_default_tempalte) {
-        result = result.replace("&{template:" + name + "}", "&{template:default}");
-
-        renameProp("charname", "Character name");
-        renameProp("rname", "name");
-        if (result.includes("{{r2=") || result.includes("&//123&//123r2=")) {
-            renameProp("r1", "Regular Roll");
-            renameProp("r2", "Roll with [Dis]Advantage");
-            renameProp("r3", "Roll with Super [Dis]Advantage");
-            result = result.replace("&//123&//123r2=", "&//123&//123Roll with Advantage=");
-            result = result.replace("&//123&//123r2=", "&//123&//123Roll with Disadvantage=");
-            result = result.replace("&//123&//123r2=", "&//123&//123Roll with Super Advantage=");
-            result = result.replace("&//123&//123r2=", "&//123&//123Roll with Super Disadvantage=");
-        } else {
-            renameProp("r1", "Dice Roll");
-        }
-        renameProp("mod", "Modifier");
-        if (properties["dmg2"] !== undefined) {
-            renameProp("dmg1", "First Damage");
-            renameProp("dmg1type", "First Damage Type");
-            renameProp("crit1", "First Crit Damage IF Critical");
-            renameProp("dmg2", "Second Damage");
-            renameProp("dmg2type", "Second Damage Type");
-            renameProp("crit2", "Second Crit Damage IF Critical");
-        }
-        if (properties["dmg1"] !== undefined) {
-            renameProp("dmg1", "Damage");
-            renameProp("dmg1type", "Damage Type");
-            renameProp("crit1", "Crit Damage IF Critical");
-        }
-        renameProp("saveattr", "Save Ability");
-        renameProp("savedc", "Save DC");
-        renameProp("athigherlevels", "At Higher Levels");
-        renameProp("castingtime", "Casting Time");
-        renameProp("hldmg", "Higher level cast");
-
-        removeProp("attack");
-        removeProp("attack");
-        removeProp("damage");
-        removeProp("save");
-        removeProp("dmg1flag");
-        removeProp("dmg2flag");
-        removeProp("always");
-        removeProp("normal");
-        removeProp("advantage");
-        removeProp("disadvantage");
-        removeProp("query");
-    } else {
-        properties["r3"] = properties["r1"];
-        removeProp("r3");
-        delete properties["r3"];
-    }
+    // Super advantage/disadvantage is not supported
+    properties["r3"] = properties["r1"];
+    removeProp("r3");
+    delete properties["r3"];
 
     return result;
 }
@@ -666,6 +613,39 @@ function convertRollToText(whisper, roll, standout=false) {
     return result;
 };
 
+function handleRenderedRoll(request) {
+    const properties = {};
+    if (request.source)
+        properties.source = request.source;
+    if (Object.keys(request.attributes).length) {
+        for (let attr in request.attributes)
+            request[attr] = request.attributes[attr];
+    }
+    if (request.open)
+        properties.description = request.description;
+
+    for (let [name, value] of request.roll_info)
+        properties[name] = value;
+
+    if (request.attack_rolls.length > 0) {
+        properties["To Hit"] = request.attack_rolls.map(roll => convertRollToText(request.whisper, roll, true)).join(" | ")
+    }
+    for (let [roll_name, roll, flags] of request.damage_rolls) {
+        if (typeof (roll) === "string")
+            properties[roll_name] = roll
+        else
+            properties[roll_name] = convertRollToText(request.whisper, roll);
+    }
+    if (Object.keys(request.total_damages).length > 0)
+        properties["Totals"] = "";
+
+    for (let [key, roll] of Object.entries(request.total_damages))
+        properties["Total " + key] = convertRollToText(request.whisper, roll);
+
+    const message = createTable(request, request.title, properties);
+    postChatMessage(message, request.character);
+}
+
 function injectSettingsButton() {
     const icon = chrome.extension.getURL("images/icons/icon32.png");
     let img = document.getElementById("beyond20-settings");
@@ -680,6 +660,7 @@ function injectSettingsButton() {
 function updateSettings(new_settings = null) {
     if (new_settings) {
         settings = new_settings;
+        roll_renderer.setSettings(settings);
     } else {
         getStoredSettings((saved_settings) => {
             settings = saved_settings;
@@ -689,7 +670,6 @@ function updateSettings(new_settings = null) {
 
 function handleMessage(request, sender, sendResponse) {
     console.log("Got message : ", request);
-    isOGL = $("#isOGL").val() === "1";
     if (request.action == "settings") {
         if (request.type == "general")
             updateSettings(request.settings);
@@ -719,6 +699,11 @@ function handleMessage(request, sender, sendResponse) {
             postChatMessage(message, character_name);
         }
     } else if (request.action == "roll") {
+        const isOGL = $("#isOGL").val() === "1";
+        if (settings["roll20-template"] === "default" || !isOGL) {
+            request.sendMessage = true;
+            return roll_renderer.handleRollRequest(request);
+        }
         let custom_roll_dice = "";
         if (request.character.type == "Character")
             custom_roll_dice = request.character.settings["custom-roll-dice"] || "";
@@ -761,36 +746,7 @@ function handleMessage(request, sender, sendResponse) {
         const character_name = request.whisper == WhisperType.HIDE_NAMES ? "???" : request.character.name;
         postChatMessage(roll, character_name);
     } else if (request.action == "rendered-roll") {
-        const properties = {};
-        if (request.source)
-            properties.source = request.source;
-        if (Object.keys(request.attributes).length) {
-            for (let attr in request.attributes)
-                request[attr] = request.attributes[attr];
-        }
-        if (request.open)
-            properties.description = request.description;
-
-        for (let [name, value] of request.roll_info)
-            properties[name] = value;
-
-        if (request.attack_rolls.length > 0) {
-            properties["To Hit"] = request.attack_rolls.map(roll => convertRollToText(request.whisper, roll, true)).join(" | ")
-        }
-        for (let [roll_name, roll, flags] of request.damage_rolls) {
-            if (typeof (roll) === "string")
-                properties[roll_name] = roll
-            else
-                properties[roll_name] = convertRollToText(request.whisper, roll);
-        }
-        if (Object.keys(request.total_damages).length > 0)
-            properties["Totals"] = "";
-
-        for (let [key, roll] of Object.entries(request.total_damages))
-            properties["Total " + key] = convertRollToText(request.whisper, roll);
-
-        const message = createTable(request, request.title, properties);
-        postChatMessage(message, request.character);
+        handleRenderedRoll(request);
     }
 }
 

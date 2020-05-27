@@ -1026,6 +1026,1332 @@ options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting;
 options_list["vtt-tab"]["set"] = setVTTTabSetting;
 options_list["vtt-tab"]["get"] = getVTTTabSetting;
 
+ROLL20_URL = "*://app.roll20.net/editor/";
+FVTT_URL = "*://*/game";
+DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
+DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
+DNDBEYOND_ENCOUNTERS_URL = "*://*.dndbeyond.com/my-encounters";
+DNDBEYOND_ENCOUNTER_URL = "*://*.dndbeyond.com/encounters/*";
+DNDBEYOND_COMBAT_URL = "*://*.dndbeyond.com/combat-tracker/*";
+DNDBEYOND_SPELL_URL = "*://*.dndbeyond.com/spells/*";
+DNDBEYOND_VEHICLE_URL = "*://*.dndbeyond.com/vehicles/*";
+CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
+DISCORD_BOT_INVITE_URL = "https://beyond20.kicks-ass.org/invite";
+DISCORD_BOT_API_URL = "https://beyond20.kicks-ass.org/roll";
+
+BUTTON_STYLE_CSS = `
+.character-button, .character-button-small {
+    display: inline-block;
+    border-radius: 3px;
+    background-color: #96bf6b;
+    color: #fff;
+    font-family: Roboto Condensed,Roboto,Helvetica,sans-serif;
+    font-size: 10px;
+    border: 1px solid transparent;
+    text-transform: uppercase;
+    padding: 9px 15px;
+    transition: all 50ms;
+}
+.character-button-small {
+    font-size: 8px;
+    padding: 5px;
+    border-color: transparent;
+    min-height: 22px;
+}
+.ct-button.ct-theme-button {
+    cursor: default;
+}
+.ct-button.ct-theme-button--interactive {
+    cursor: pointer;
+}
+.ct-button.ct-theme-button--filled {
+    background-color: #c53131;
+    color: #fff;
+}
+`;
+
+
+//from constants import DISCORD_BOT_API_URL;
+
+async function postToDiscord(secret, request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
+    secret = (secret || "").trim();
+    if (!secret) return;
+
+    if (request['original-whisper'] !== undefined)
+        request.whisper = request['original-whisper'];
+
+    const body = {
+        "secret": secret,
+        "request": request,
+        "title": title,
+        "source": source,
+        "attributes": attributes,
+        "description": description,
+        "attack_rolls": attack_rolls,
+        "roll_info": roll_info,
+        "damage_rolls": damage_rolls,
+        "total_damages": total_damages,
+        "open": open
+    }
+    try {
+        const response = await fetch(DISCORD_BOT_API_URL, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8'
+            },
+            body: JSON.stringify(body)
+        });
+        const json = await response.json();
+        if (json.error)
+            console.error('Error from server : ', json.error);
+        return json.error;
+    } catch (e) {
+        console.error(e);
+        return e.message;
+    }
+    return null;
+}
+
+
+class Beyond20BaseRoll {
+    constructor(formula, data = {}) {
+        this._formula = formula;
+        this._data = data;
+        this._fail_limit = null;
+        this._critical_limit = null;
+        this._discarded = false;
+        this._total = 0;
+    }
+
+    get formula() {
+        return this._formula;
+    }
+
+    get total() {
+        throw new Error("NotImplemented");
+    }
+
+    get dice() {
+        throw new Error("NotImplemented");
+    }
+
+    get parts() {
+        throw new Error("NotImplemented");
+    }
+
+    getTooltip() {
+        throw new Error("NotImplemented");
+    }
+
+    async roll() {
+        throw new Error("NotImplemented");
+    }
+
+    async reroll() {
+        throw new Error("NotImplemented");
+    }
+
+    setDiscarded(discarded) {
+        this._discarded = discarded;
+    }
+    isDiscarded() {
+        return this._discarded;
+    }
+
+    setCriticalLimit(limit) {
+        this._critical_limit = limit;
+    }
+    setFailLimit(limit) {
+        this._fail_limit = limit;
+    }
+    checkRollForCrits(cb) {
+        for (let die of this.dice) {
+            for (let r of die.rolls) {
+                if (r.discarded === undefined || !r.discarded) {
+                    if (cb(die.faces, r.roll)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    isCriticalHit() {
+        return this.checkRollForCrits((faces, value) => {
+            const limit = this._critical_limit === null ? faces : this._critical_limit;
+            return value >= limit;
+        }
+        );
+    }
+
+    isCriticalFail() {
+        return this.checkRollForCrits((faces, value) => {
+            const limit = this._fail_limit === null ? 1 : this._fail_limit;
+            return value <= limit;
+        }
+        );
+    }
+    toJSON() {
+        return {
+            "formula": this.formula,
+            "parts": this.parts,
+            "fail-limit": this._fail_limit,
+            "critical-limit": this._critical_limit,
+            "critical-failure": this.isCriticalFail(),
+            "critical-success": this.isCriticalHit(),
+            "discarded": this.isDiscarded(),
+            "total": this.total
+        }
+    }
+}
+
+
+class DNDBDice {
+    constructor(amount, faces, modifiers = "") {
+        this.amount = parseInt(amount);
+        this.faces = parseInt(faces);
+        this._modifiers = modifiers || "";
+        this._reroll = { "active": false, "value": 0, "operator": "=" }
+        this._dk = { "drop": false, "keep": false, "high": false, "amount": 0 }
+        if (modifiers != "") {
+            const match_ro = modifiers.match(/r(=|<|<=|>|>=)([0-9]+)/);
+            if (match_ro) {
+                this._reroll.active = true;
+                this._reroll.operator = match_ro[1];
+                this._reroll.value = parseInt(match_ro[2]);
+            }
+            const match_dk = modifiers.match(/(dl|dh|kl|kh)([0-9]*)/);
+            if (match_dk) {
+                const dk = match_dk[1];
+                this._dk.amount = parseInt(match_dk[2] || 1);
+                if (dk == "dl") {
+                    this._dk.drop = true;
+                    this._dk.high = false;
+                } else if (dk == "dh") {
+                    this._dk.drop = true;
+                    this._dk.high = true;
+                } else if (dk == "kl") {
+                    this._dk.keep = true;
+                    this._dk.high = false;
+                } else if (dk == "kh") {
+                    this._dk.keep = true;
+                    this._dk.high = true;
+                }
+            }
+        }
+        this._rolls = [];
+    }
+
+    async rollDice() {
+        this._rolls = [];
+        for (let i = 0; i < this.amount; i++) {
+            let die = Math.floor(Math.random() * this.faces) + 1;
+            this._rolls.push({ "roll": die });
+        }
+    }
+    async rerollDice(amount) {
+        for (let i = 0; i < amount; i++) {
+            let die = Math.floor(Math.random() * this.faces) + 1;
+            this._rolls.push({ "roll": die });
+        }
+    }
+    async roll() {
+        await this.rollDice();
+        await this.handleModifiers();
+        return this.total;
+    }
+    async handleModifiers() {
+        if (this._reroll.active) {
+            let rerolls = 0;
+            for (let roll of this._rolls) {
+                // Check for reroll modifier && discard old value && reroll it if necessary
+                const die = roll.roll;
+                if ((this._reroll.operator == "=" && die == this._reroll.value) ||
+                    (this._reroll.operator == "<=" && die <= this._reroll.value) ||
+                    (this._reroll.operator == "<" && die < this._reroll.value) ||
+                    (this._reroll.operator == ">=" && die >= this._reroll.value) ||
+                    (this._reroll.operator == ">" && die > this._reroll.value)) {
+                    roll.discarded = true;
+                    rerolls++;
+                }
+            }
+            if (rerolls)
+                await this.rerollDice(rerolls);
+        }
+        // Look for drops && keeps;
+        const dk_amount = this._dk.amount;
+        while ((this._dk.drop || this._dk.keep) && this._dk.amount > 0) {
+            const non_discarded = this._rolls.filter(r => !r.discarded && !r.keep);
+            if (non_discarded.length == 0)
+                break;
+            let to_dk = 0;
+            if (this._dk.high)
+                to_dk = Math.max(...non_discarded.map((r) => r.roll));
+            else
+                to_dk = Math.min(...non_discarded.map((r) => r.roll));
+            if (this._dk.drop) {
+                this._rolls = this._rolls.map((r) => {
+                    if (to_dk > 0 && !r.discarded && !r.keep && r.roll == to_dk) {
+                        r.discarded = true;
+                        to_dk = 0;
+
+                    }
+                    return r;
+                });
+            } else if (this._dk.keep) {
+                this._rolls = this._rolls.map((r) => {
+                    if (to_dk > 0 && !r.discarded && !r.keep && r.roll == to_dk) {
+                        r.keep = true;
+                        to_dk = 0;
+                    }
+                    return r;
+                });
+            }
+            this._dk.amount -= 1;
+        }
+        if (this._dk.keep) {
+            this._rolls = this._rolls.map((r) => {
+                if (!r.keep)
+                    r.discarded = true;
+                delete r.keep;
+                return r;
+            });
+        }
+        // Restore drop/keep case.includes(amount) of rerolls;
+        this._dk.amount = dk_amount;
+
+        // Accumulate total based on non discarded rolls;
+        this._total = this._rolls.reduce((acc, roll) => {
+            return acc + (roll.discarded ? 0 : roll.roll);
+        }, 0);
+        return this._total;
+    }
+
+    get total() {
+        return this._total;
+    }
+
+    get formula() {
+        return this.amount + "d" + this.faces + this._modifiers;
+    }
+
+    get rolls() {
+        return this._rolls || [];
+    }
+
+    toJSON() {
+        return {
+            "total": this.total,
+            "formula": this.formula,
+            "rolls": this.rolls
+        }
+    }
+}
+
+class DNDBRoll extends Beyond20BaseRoll {
+    constructor(formula, data = {}) {
+        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/, "r$1$2");
+        super(formula, data);
+        this._parts = [];
+        for (let key in data)
+            formula = formula.replace('@' + key, data[key]);
+        const parts = formula.split(/(?=[+-])/);
+        for (let part of parts) {
+            part = part.trim();
+            let match = part.match(/([0-9]*)d([0-9]+)(.*)/);
+            if (match) {
+                const part = new DNDBDice(...match.slice(1, 4));
+                this._parts.push(part);
+            } else {
+                match = part.match(/([+-])?\s*([0-9\.]+)/);
+                if (match) {
+                    try {
+                        const sign = match[1] || "";
+                        const part = parseFloat(sign + match[2]);
+                        this._parts.push(part);
+                    } catch (err) { }
+                }
+            }
+        }
+    }
+
+    get total() {
+        return this._total;
+    }
+
+    get formula() {
+        let formula = "";
+        let first = true;
+        for (let part of this._parts) {
+            if (!first)
+                formula += " + ";
+            first = false;
+            if (part instanceof DNDBDice)
+                formula += part.formula;
+            else
+                formula += part;
+        }
+        return formula;
+    }
+    get dice() {
+        const dice = [];
+        for (let part of this._parts) {
+            if (part instanceof DNDBDice) {
+                dice.push(part);
+            }
+        }
+        return dice;
+    }
+
+    get parts() {
+        return this._parts;
+    }
+
+    async roll() {
+        for (let part of this._parts) {
+            if (part instanceof DNDBDice)
+                await part.roll();
+        }
+        this.calculateTotal();
+    }
+    calculateTotal() {
+        this._total = 0;
+        for (let part of this._parts) {
+            if (part instanceof DNDBDice) {
+                this._total += part.total;
+            } else {
+                this._total += part;
+            }
+        }
+        this._total = Math.round(this._total * 100) / 100;
+    }
+
+    getTooltip() {
+        let tooltip = "<div class='beyond20-roll-tooltip'>";
+        for (let part of this._parts) {
+            if (part instanceof DNDBDice) {
+                tooltip += "<div class='beyond20-roll-dice'>";
+                tooltip += "<div class='beyond20-roll-dice-formula'>" + part.formula + "</div>";
+                tooltip += "<div class='beyond20-roll-dice-rolls'>";
+                for (let die of part.rolls) {
+                    let result_class = 'beyond20-roll-detail-';
+                    result_class += die.roll == part.faces ? 'crit' : (die.roll == 1 ? 'fail' : 'normal');
+                    if (die.discarded)
+                        result_class += ' beyond20-roll-detail-discarded';
+                    tooltip += "<span class='beyond20-roll-die-result " + result_class + "'>" + die.roll + "</span>";
+                }
+                tooltip += "</div></div>";
+            }
+        }
+        tooltip += "</div>";
+        return tooltip;
+    }
+
+    async reroll() {
+        await this.roll();
+        return this;
+    }
+}
+/*
+from utils import replaceRolls;
+from settings import RollType, WhisperType;
+from dndbeyond_discord import postToDiscord;
+import math;
+*/
+
+class DAMAGE_FLAGS {
+    static get MESSAGE() { return 0; }
+    static get REGULAR() { return 1; }
+    static get VERSATILE() { return 2; }
+    static get ADDITIONAL() { return 4; }
+    static get HEALING() { return 8; }
+    static get CRITICAL() { return 0x10; }
+}
+
+class Beyond20RollRenderer {
+    constructor(roller, prompter, displayer) {
+        this._roller = roller;
+        this._prompter = prompter;
+        this._displayer = displayer;
+        this._extension_url = "";
+        this._settings = {}
+    }
+
+    setBaseURL(base_url) {
+        this._extension_url = base_url;
+    }
+
+    setSettings(settings) {
+        this._settings = settings;
+    }
+
+    async queryGeneric(title, question, choices, select_id = "generic-query", order) {
+        let html = `<form><div class="beyond20-form-row"><label>${question}</label><select id="${select_id}" name="${select_id}">`;
+
+        if (!order)
+            order = Object.keys(choices);
+        for (let [i, option] of order.entries()) {
+            const selected = i == 0 ? " selected" : "";
+            const value = choices[option] || option;
+            html += `<option value="${option}"${selected}>${value}</option>`;
+        }
+        html += `;</select></div></form>`;
+        return new Promise((resolve) => {
+            this._prompter.prompt(title, html, "Roll").then((html) => {
+                if (html)
+                    resolve(html.find("#" + select_id).val());
+            });
+        });
+    }
+
+    async queryAdvantage(title) {
+        const choices = {
+            [RollType.NORMAL]: "Normal Roll",
+            [RollType.DOUBLE]: "Roll Twice",
+            [RollType.ADVANTAGE]: "Advantage",
+            [RollType.DISADVANTAGE]: "Disadvantage",
+            [RollType.THRICE]: "Roll Thrice",
+            [RollType.SUPER_ADVANTAGE]: "Super Advantage",
+            [RollType.SUPER_DISADVANTAGE]: "Super Disadvantage"
+        }
+        const order = [RollType.DOUBLE, RollType.NORMAL, RollType.ADVANTAGE, RollType.DISADVANTAGE, RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE];
+        return parseInt(await this.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order));
+    }
+
+    async getToHit(request, title, modifier = "", data = {}) {
+        let advantage = request.advantage;
+        if (advantage == RollType.QUERY)
+            advantage = await this.queryAdvantage(title);
+
+        if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {
+            const roll_1 = this.createRoll("1d20" + modifier, data);
+            const roll_2 = this.createRoll("1d20" + modifier, data);
+
+            return {advantage, rolls: [roll_1, roll_2]};
+        } else if ([RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE].includes(advantage)) {
+            const roll_1 = this.createRoll("1d20" + modifier, data);
+            const roll_2 = this.createRoll("1d20" + modifier, data);
+            const roll_3 = this.createRoll("1d20" + modifier, data);
+
+            return {advantage, rolls: [roll_1, roll_2, roll_3]};
+        } else { // advantage == RollType.NORMAL
+            return {advantage, rolls: [this.createRoll("1d20" + modifier, data)]};
+        }
+    }
+    processToHitAdvantage(advantage, rolls) {
+        if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {
+            const roll_1 = rolls[0];
+            const roll_2 = rolls[1];
+
+            if (advantage == RollType.ADVANTAGE) {
+                if (roll_1.total >= roll_2.total) {
+                    roll_2.setDiscarded(true);
+                } else {
+                    roll_1.setDiscarded(true);
+                }
+            } else if (advantage == RollType.DISADVANTAGE) {
+                if (roll_1.total <= roll_2.total) {
+                    roll_2.setDiscarded(true);
+                } else {
+                    roll_1.setDiscarded(true);
+                }
+            }
+            return [roll_1, roll_2];
+        } else if ([RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE].includes(advantage)) {
+            const roll_1 = rolls[0];
+            const roll_2 = rolls[1];
+            const roll_3 = rolls[2];
+
+            if (advantage == RollType.SUPER_ADVANTAGE) {
+                if (roll_1.total >= roll_2.total && roll_1.total >= roll_3.total) {
+                    roll_2.setDiscarded(true);
+                    roll_3.setDiscarded(true);
+                } else if (roll_2.total >= roll_3.total) {
+                    roll_1.setDiscarded(true);
+                    roll_3.setDiscarded(true);
+                } else {
+                    roll_1.setDiscarded(true);
+                    roll_2.setDiscarded(true);
+                }
+            } else if (advantage == RollType.SUPER_DISADVANTAGE) {
+                if (roll_1.total <= roll_2.total && roll_1.total <= roll_3.total) {
+                    roll_2.setDiscarded(true);
+                    roll_3.setDiscarded(true);
+                } else if (roll_2.total <= roll_3.total) {
+                    roll_1.setDiscarded(true);
+                    roll_3.setDiscarded(true);
+                } else {
+                    roll_1.setDiscarded(true);
+                    roll_2.setDiscarded(true);
+                }
+            }
+        }
+    }
+
+    isCriticalHitD20(rolls, limit = 20) {
+        for (let roll of rolls) {
+            roll.setCriticalLimit(limit);
+            if (!roll.isDiscarded() && roll.isCriticalHit()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    injectRollsInDescription(description) {
+        const icon = "/modules/beyond20/images/icons/badges/custom20.png";
+        return replaceRolls(description, (dice, modifier) => {
+            const dice_formula = (dice == "" ? "1d20" : dice) + modifier;
+            // <u> is filtered 0.3.2, so using <span> instead;
+            // Can't use single line, since newlines get replaced with <br/>
+            return `<span class="ct-beyond20-custom-roll">` +
+                `<strong>${dice}${modifier}</strong>` +
+                `<img class="ct-beyond20-custom-icon" src="${icon}" style="margin-right: 3px; margin-left: 3px; border: 0px;"></img>` +
+                `<span class="beyond20-roll-formula" style="display: none;">${dice_formula}</span>` +
+            `</span>`;
+        });
+    }
+
+    async rollToDetails(roll, is_total = false) {
+        const hit = roll.isCriticalHit();
+        const fail = roll.isCriticalFail();
+        let roll_type_class = 'beyond20-roll-detail-';
+        roll_type_class += hit && fail ? 'crit-fail' : (hit ? 'crit' : (fail ? 'fail' : 'normal'))
+        if (roll.isDiscarded())
+            roll_type_class += ' beyond20-roll-detail-discarded';
+        if (is_total)
+            roll_type_class += ' beyond20-roll-total dice-total';
+
+        const total = `<span class='${roll_type_class}'>${roll.total}</span>`;
+        const tooltip = await roll.getTooltip();
+        return `<span class='beyond20-tooltip'>${total}<span class='dice-roll beyond20-tooltip-content'>` +
+            `<div class='dice-formula beyond20-roll-formula'>${roll.formula}</div>${tooltip}</span></span>`;
+    }
+
+    rollsToCells(html) {
+        let result = "";
+        for (let roll of html.split(" | "))
+            result += `<div class="beyond20-roll-cell">${roll}</div>`;
+        return result;
+    }
+
+
+    async postDescription(request, title, source, attributes, description, attack_rolls = [], roll_info = [], damage_rolls = [], open = false) {
+        let play_sound = false;
+        let buttons = {}
+
+        if (request.whisper == WhisperType.HIDE_NAMES) {
+            description = null;
+            title = "???";
+        }
+        // Handle the case where you don't want to auto-roll damages;
+        if (damage_rolls.length > 0 && attack_rolls.length > 0 && !this._settings["auto-roll-damage"]) {
+            const roll_damages_args = {
+                damages: damage_rolls,
+                reroll: false
+            };
+            buttons = {
+                "Roll Damages": async () => {
+                    let damages = roll_damages_args.damages;
+                    if (roll_damages_args.reroll)
+                        damages = await this.rerollDamages(damages);
+                    roll_damages_args.reroll = true;
+                    this.postDescription(request, title, source, attributes, description, [], [], damages);
+                }
+            }
+            damage_rolls = [];
+        }
+
+        let html = '<div class="beyond20-message">';
+        if (description) {
+            html += "<details" + (open ? " open" : "") + "><summary><a>" + title + "</a></summary>";
+            if (source || Object.keys(attributes).length > 0) {
+                html += "<table>";
+                if (source)
+                    html += "<tr><td colspan'2'><i>" + source + "</i></td></tr>";
+                for (let attr in attributes)
+                    html += "<tr><td><b>" + attr + "</b></td><td>" + attributes[attr] + "</td></tr>";
+                html += "</table>";
+            }
+            const html_description = this.injectRollsInDescription(description).replace(/\n/g, "</br>");
+            html += "<div class='beyond20-description'>" + html_description + "</div></details>";
+        } else {
+            html = "<div class='beyond20-title'>" + title + "</div>";
+        }
+
+        //console.log("Rolls : ", attack_rolls, roll_info, damage_rolls);
+
+        for (let [name, value] of roll_info)
+            html += "<div class='beyond20-roll-result'><b>" + name + ": </b><span>" + value + "</span></div>";
+
+        if (attack_rolls.length > 0) {
+            const is_total = attack_rolls.length === 1 && damage_rolls.length === 0;
+            let roll_html = "";
+            for (let [i, roll] of attack_rolls.entries()) {
+                if (i > 0)
+                    roll_html += " | ";
+                roll_html += await this.rollToDetails(roll, is_total);
+                play_sound = true;
+            }
+            html += "<div class='beyond20-roll-result beyond20-roll-cells'>" + this.rollsToCells(roll_html) + "</div>";
+        }
+        const add_totals = damage_rolls.filter((r) => (r[2] & DAMAGE_FLAGS.CRITICAL) == 0).length > 1;
+        const total_damages = {}
+        for (let [roll_name, roll, flags] of damage_rolls) {
+            const is_total = !add_totals && (flags & DAMAGE_FLAGS.CRITICAL) == 0;
+            let roll_html = "";
+            if (typeof (roll) === "string")
+                roll_html = "<span>" + roll + "</span>";
+            else
+                roll_html = await this.rollToDetails(roll, is_total);
+
+            play_sound = true;
+            roll_name = roll_name[0].toUpperCase() + roll_name.slice(1) + ": ";
+            html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>";
+            if (add_totals) {
+                let kind_of_damage = "";
+                if (flags & DAMAGE_FLAGS.REGULAR) {
+                    kind_of_damage = flags & DAMAGE_FLAGS.CRITICAL ? "Critical Damage" : "Damage";
+                } else if (flags & DAMAGE_FLAGS.VERSATILE) {
+                    kind_of_damage = flags & DAMAGE_FLAGS.CRITICAL ? "Critical Two-Handed Damage" : "Two-Handed Damage";
+                } else if (flags & DAMAGE_FLAGS.HEALING) {
+                    kind_of_damage = "Healing";
+                } else if (flags & DAMAGE_FLAGS.ADDITIONAL) {
+                    // HACK Alert: crappy code;
+                    const regular = flags & DAMAGE_FLAGS.CRITICAL ? "Critical Damage" : "Damage";
+                    const versatile = flags & DAMAGE_FLAGS.CRITICAL ? "Critical Two-Handed Damage" : "Two-Handed Damage";
+                    if (total_damages[regular] !== undefined)
+                        total_damages[regular] += " + " + String(roll.total);
+                    if (total_damages[versatile] !== undefined)
+                        total_damages[versatile] += " + " + String(roll.total);
+                    continue;
+                } else {
+                    continue;
+                }
+                if (total_damages[kind_of_damage] !== undefined)
+                    total_damages[kind_of_damage] += " + " + String(roll.total);
+                else
+                    total_damages[kind_of_damage] = String(roll.total);
+            }
+        }
+
+        if (Object.keys(total_damages).length > 0) {
+            // HACK ALERT: Even crappier code than above
+            if (total_damages["Two-Handed Damage"]) {
+                total_damages["One-Handed Damage"] = total_damages["Damage"];
+                delete total_damages["Damage"];
+                // Need to swap them so two-handed goes last
+                const two_handed = total_damages["Two-Handed Damage"];
+                delete total_damages["Two-Handed Damage"];
+                total_damages["Two-Handed Damage"] = two_handed;
+            }
+            if (total_damages["Critical Two-Handed Damage"]) {
+                total_damages["Critical One-Handed Damage"] = total_damages["Critical Damage"];
+                delete total_damages["Critical Damage"];
+                // Need to swap them so two-handed goes last
+                const two_handed = total_damages["Critical Two-Handed Damage"];
+                delete total_damages["Critical Two-Handed Damage"];
+                total_damages["Critical Two-Handed Damage"] = two_handed;
+            }
+            html += "<div class='beyond20-roll-result'><b><hr/></b></div>";
+        }
+
+        let roll = null;
+        for (let key in total_damages) {
+            const is_total = (roll === null);
+            roll = this._roller.roll(total_damages[key]);
+            await roll.roll();
+            total_damages[key] = roll;
+            const roll_html = await this.rollToDetails(roll, is_total);
+            html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
+        }
+
+        for (let button in buttons)
+            html += '<button class="beyond20-chat-button">' + button + '</button>';
+
+        html += "</div>";
+        const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
+
+        postToDiscord(this._settings["discord-secret"], request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open).then(discord_error => {
+            if (discord_error != undefined)
+                this._displayer.displayError("Beyond20 Discord Integration: " + discord_error);
+        });
+
+        if (request.sendMessage && this._displayer.sendMessage)
+            this._displayer.sendMessage(request, title, html, buttons, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
+        else
+            this._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound);
+
+        if (attack_rolls.length > 0) {
+            return attack_rolls.find((r) => !r.isDiscarded());
+        } else if (total_damages.length > 0) {
+            return total_damages[0];
+        } else if (damage_rolls.length > 0) {
+            return damage_rolls[0];
+        } else {
+            return null;
+        }
+    }
+
+    createRoll(dice, data) {
+        const new_data = {}
+        const parts = [dice];
+        for (let key in data) {
+            if (data[key]) {
+                const new_key = key.replace("_", "").toLowerCase();
+                new_data[new_key] = data[key];
+                parts.push(new_key);
+            }
+        }
+        return this._roller.roll(parts.join(" + @"), new_data);
+    }
+
+    async rollDice(request, title, dice, data = {}) {
+        const roll = this.createRoll(dice, data);
+        await this._roller.resolveRolls(title, [roll]);
+        return this.postDescription(request, title, null, {}, null, [roll]);
+    }
+
+    async rollD20(request, title, data) {
+        const {advantage, rolls} = await this.getToHit(request, title, "", data)
+        await this._roller.resolveRolls(title, rolls);
+        this.processToHitAdvantage(advantage, rolls);
+        return this.postDescription(request, title, null, {}, null, rolls);
+    }
+
+    async rollSkill(request, custom_roll_dice = "") {
+        // Custom skill;
+        if (request.ability == "--" && request.character.abilities.length > 0) {
+            let prof = "";
+            let prof_val = "";
+            if (request.proficiency == "Proficiency") {
+                prof = "proficiency";
+                prof_val = request.character.proficiency;
+            } else if (request.proficiency == "Half Proficiency") {
+                prof = "half_proficiency";
+                prof_val += Math.floor(request.character.proficiency / 2);
+            } else if (request.proficiency == "Expertise") {
+                prof = "expertise";
+                prof_val += request.character.proficiency * 2;
+            }
+            const formula = "1d20 + @ability " + (prof != "" ? " + @" + prof : "") + " + @custom_dice";
+            let html = '<form>';
+            html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>';
+            html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';
+            const modifiers = {};
+            for (let ability of request.character.abilities) {
+                html += '<option value="' + ability[0] + '">' + ability[0] + '</option>';
+                modifiers[ability[0]] = ability[3];
+            }
+            html += "</select></div>";
+            html += '</form>';
+            html = await this._prompter.prompt("Custom Skill", html, request.skill);
+            if (html) {
+                const ability = html.find('[name="ability"]').val();
+                let mod = modifiers[ability];
+                if (request.modifier != "--" && request.modifier != "+0")
+                    mod += request.modifier;
+                const data = { "ability": mod, "prof": prof_val, "custom_dice": custom_roll_dice }
+                this.rollD20(request, request.skill + "(" + ability + ")", data);
+            }
+        } else {
+            const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
+
+            return this.rollD20(request, request.skill + "(" + request.modifier + ")", data);
+        }
+    }
+
+    rollAbility(request, custom_roll_dice = "") {
+        const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
+        return this.rollD20(request, request.name + "(" + request.modifier + ")", data);
+    }
+
+    rollSavingThrow(request, custom_roll_dice = "") {
+        const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
+        return this.rollD20(request, request.name + " Save" + "(" + request.modifier + ")", data);
+    }
+
+    rollInitiative(request, custom_roll_dice = "") {
+        const data = { "initiative": request.initiative, "custom_dice": custom_roll_dice }
+        return this.rollD20(request, "Initiative" + "(" + request.initiative + ")", data);
+    }
+
+    rollHitDice(request) {
+        const rname = "Hit Dice" + (request.multiclass ? `(${request.class})` : "");
+        return this.rollDice(request, rname, request["hit-dice"], {});
+    }
+
+    rollDeathSave(request, custom_roll_dice = "") {
+        return this.rollD20(request, "Death Saving Throw", { "custom_dice": custom_roll_dice });
+    }
+
+    rollItem(request, custom_roll_dice = "") {
+        const source = request["item-type"].trim().toLowerCase();
+        if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools"))) && request.character.abilities.length > 0) {
+            const proficiencies = {}
+            proficiencies["None"] = 0;
+            proficiencies["Half Proficient"] = Math.floor(request.character.proficiency / 2);
+            proficiencies["Proficient"] = request.character.proficiency;
+            proficiencies["Expert"] = request.character.proficiency * 2;
+            const formula = "1d20 + @ability + @proficiency + @custom_dice";
+            let html = '<form>';
+            html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>';
+            html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';
+            const modifiers = {}
+            for (let ability of request.character.abilities) {
+                html += '<option value="' + ability[0] + '">' + ability[0] + '</option>';
+                modifiers[ability[0]] = ability[3];
+            }
+            html += "</select></div>";
+            html += '<div class="beyond20-form-row"><label>Select Proficiency</label><select name="proficiency">';
+            for (let prof in proficiencies) {
+                html += '<option value="' + prof + '">' + prof + '</option>';
+            }
+            html += "</select></div>";
+            html += '</form>';
+            this._prompter.prompt("Using a tool", html, request.name).then((html) => {
+                if (html) {
+                    const ability = html.find('[name="ability"]').val();
+                    const mod = modifiers[ability];
+                    const proficiency = html.find('[name="proficiency"]').val();
+                    const prof_value = proficiencies[proficiency];
+                    const data = { "ability": mod, "proficiency": prof_value, "custom_dice": custom_roll_dice }
+                    this.rollD20(request, request.name + "(" + ability + ")", data);
+                }
+            }
+            );
+        }
+        return this.rollTrait(request);
+    }
+
+    rollTrait(request) {
+        let source = request.type;
+        if (request["source-type"] !== undefined) {
+            source = request["source-type"];
+            if (request.source && request.source.length > 0)
+                source += ": " + request.source;
+        } else if (request["item-type"] !== undefined) {
+            source = request["item-type"];
+        }
+        return this.postDescription(request, request.name, source, {}, request.description, [], [], [], true);
+    }
+
+    queryDamageType(title, damage_types) {
+        const choices = {}
+        for (let option in damage_types) {
+            const value = damage_types[option];
+            if (value)
+                choices[option] = option + " (" + value + ")";
+            else
+                choices[option] = option;
+        }
+        return this.queryGeneric(title, "Choose Damage Type :", choices, "damage-type");
+    }
+
+    async buildAttackRolls(request, custom_roll_dice) {
+        let to_hit = [];
+        let to_hit_advantage = null;
+        const damage_rolls = [];
+        const all_rolls = [];
+        let is_critical = false;
+        if (request["to-hit"] !== undefined) {
+            const custom = custom_roll_dice == "" ? "" : (" + " + custom_roll_dice);
+            const to_hit_mod = " + " + request["to-hit"] + custom;
+            const {advantage, rolls} = await this.getToHit(request, request.name, to_hit_mod)
+            to_hit_advantage = advantage;
+            to_hit.push(...rolls);
+            all_rolls.push(...rolls);
+        }
+
+        if (request.damages !== undefined) {
+            const damages = request.damages;
+            const damage_types = request["damage-types"];
+            const critical_damages = request["critical-damages"];
+            const critical_damage_types = request["critical-damage-types"];
+            if (request.name === "Chromatic Orb") {
+                const damage_choices = {}
+                const critical_damage_choices = {}
+                for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder"]) {
+                    let idx = damage_types.findIndex(t => t === dmgtype);
+                    damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
+                    idx = critical_damage_types.findIndex(t => t === dmgtype);
+                    if (idx >= 0)
+                        critical_damage_choices[critical_damage_types.splice(idx, 1)[0]] = critical_damages.splice(idx, 1)[0];
+                }
+
+                const chromatic_type = await this.queryDamageType(request.name, damage_choices);
+                damages.splice(0, 0, damage_choices[chromatic_type]);
+                damage_types.splice(0, 0, chromatic_type);
+                if (critical_damage_choices[chromatic_type] !== undefined) {
+                    const crit_damage = critical_damage_choices[chromatic_type];
+                    critical_damages.splice(0, 0, crit_damage);
+                    critical_damage_types.splice(0, 0, chromatic_type);
+                }
+            } else if (request.name == "Chaos Bolt") {
+                let base_damage = null;
+                let crit_damage = null;
+                for (let dmgtype of ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]) {
+                    let idx = damage_types.findIndex(t => t === dmgtype);
+                    base_damage = damages.splice(idx, 1)[0];
+                    damage_types.splice(idx, 1);
+                    idx = critical_damage_types.findIndex(t => t === dmgtype);
+                    crit_damage = critical_damages.splice(idx, 1)[0];
+                    critical_damage_types.splice(idx, 1);
+                }
+                damages.splice(0, 0, base_damage);
+                damage_types.splice(0, 0, "Chaotic energy");
+                critical_damages.splice(0, 0, crit_damage);
+                critical_damage_types.splice(0, 0, "Chaotic energy");
+            } else if (request.name == "Toll the Dead") {
+                const ttd_dice = await this.queryGeneric(request.name, "Is the target missing any of its hit points ?", { "d12": "Yes", "d8": "No" }, "ttd_dice", ["d12", "d8"]);
+                damages[0] = damages[0].replace("d8", ttd_dice);
+            }
+
+            // Ranger Ability Support;
+            for (let [dmgIndex, dmgType] of damage_types.entries()) {
+                if (dmgType == "Colossus Slayer") {
+                    const dmg = damages[dmgIndex].toString();
+                    if (dmg) {
+                        const dmg_dice = await this.queryGeneric(request.name, `Add ${dmgType} damage ?`, { "0": "No", [dmg]: "Yes" }, "dmg_dice", ["0", dmg]);
+                        if (dmg_dice == "0") {
+                            damages.splice(dmgIndex, 1);
+                            damage_types.splice(dmgIndex, 1);
+                        }
+                    }
+                }
+            }
+
+            const has_versatile = damage_types.length > 1 && damage_types[1] == "Two-Handed";
+            for (let i = 0; i < (damages.length); i++) {
+                const roll = this._roller.roll(damages[i]);
+                all_rolls.push(roll);
+                const dmg_type = damage_types[i];
+                let damage_flags = DAMAGE_FLAGS.REGULAR;
+                if (["Healing", "Disciple of Life", "Temp HP"].includes(dmg_type)) {
+                    damage_flags = DAMAGE_FLAGS.HEALING;
+                } else if (i == 0) {
+                    damage_flags = DAMAGE_FLAGS.REGULAR;
+                } else if (i == 1 && has_versatile) {
+                    damage_flags = DAMAGE_FLAGS.VERSATILE;
+                } else {
+                    damage_flags = DAMAGE_FLAGS.ADDITIONAL;
+                }
+                const suffix = !(damage_flags & DAMAGE_FLAGS.HEALING) ? " Damage" : "";
+                damage_rolls.push([dmg_type + suffix, roll, damage_flags]);
+                // Handle life transference;
+                if (request.name == "Life Transference" && dmg_type == "Necrotic") {
+                    damage_rolls.push(["Healing", "Twice the Necrotic damage", DAMAGE_FLAGS.HEALING]);
+                }
+            }
+
+            if (request.name == "Chaos Bolt") {
+                for (let [i, dmg_roll] of damage_rolls.entries()) {
+                    const [dmg_type, roll, flags] = dmg_roll;
+                    if (dmg_type == "Chaotic energy Damage" && roll.dice[0].faces == 8) {
+                        const chaos_bolt_damages = ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"];
+                        const damage_choices = {}
+                        for (let r of roll.dice[0].rolls)
+                            damage_choices[chaos_bolt_damages[r.roll - 1]] = null;
+                        //console.log("Damage choices : ", damage_choices, damage_choices.length);
+                        let chaotic_type = null;
+                        if (Object.keys(damage_choices).length == 1) {
+                            damage_rolls.push(["Chaotic energy leaps from the target to a different creature of your choice within 30 feet of it", "", DAMAGE_FLAGS.MESSAGE]);
+                            chaotic_type = Object.keys(damage_choices)[0];
+                        } else {
+                            chaotic_type = await this.queryDamageType(request.name, damage_choices);
+                        }
+                        damage_rolls[i] = [chaotic_type + " Damage", roll, flags];
+                        critical_damage_types[0] = chaotic_type;
+                        break;
+                    }
+                }
+            }
+
+            await this._roller.resolveRolls(request.name, all_rolls)
+            if (to_hit.length > 0)
+                this.processToHitAdvantage(to_hit_advantage, to_hit)
+            const critical_limit = request["critical-limit"] || 20;
+            is_critical = this.isCriticalHitD20(to_hit, critical_limit);
+            if (is_critical) {
+                const critical_damage_rolls = []
+                for (let i = 0; i < (critical_damages.length); i++) {
+                    const roll = this._roller.roll(critical_damages[i]);
+                    critical_damage_rolls.push(roll);
+                    const dmg_type = critical_damage_types[i];
+                    let damage_flags = DAMAGE_FLAGS.REGULAR;
+                    if (["Healing", "Disciple of Life", "Temp HP"].includes(dmg_type)) {
+                        damage_flags = DAMAGE_FLAGS.HEALING;
+                    } else if (i == 0) {
+                        damage_flags = DAMAGE_FLAGS.REGULAR;
+                    } else if (i == 1 && has_versatile) {
+                        damage_flags = DAMAGE_FLAGS.VERSATILE;
+                    } else {
+                        damage_flags = DAMAGE_FLAGS.ADDITIONAL;
+                    }
+                    const suffix = !(damage_flags & DAMAGE_FLAGS.HEALING) ? " Critical Damage" : "";
+                    damage_rolls.push([dmg_type + suffix, roll, damage_flags | DAMAGE_FLAGS.CRITICAL]);
+                }
+                await this._roller.resolveRolls(request.name, critical_damage_rolls);
+            }
+        }
+
+        return [to_hit, damage_rolls];
+    }
+
+    async rerollDamages(rolls) {
+        const new_rolls = [];
+        for (let [roll_name, roll, flags] of rolls) {
+            if (typeof (roll.reroll) === "function") {
+                new_rolls.push([roll_name, await roll.reroll(), flags]);
+            } else {
+                new_rolls.push([roll_name, roll, flags]);
+            }
+            return new_rolls;
+        }
+    }
+
+    async rollAttack(request, custom_roll_dice = "") {
+        const [to_hit, damage_rolls] = await this.buildAttackRolls(request, custom_roll_dice);
+
+        const data = {}
+        if (request.range !== undefined)
+            data["Range"] = request.range;
+
+        const roll_info = [];
+        if (request["save-dc"] != undefined)
+            roll_info.push(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
+
+        return this.postDescription(request, request.name, null, data, request.description || "", to_hit, roll_info, damage_rolls);
+    }
+
+
+    buildSpellCard(request) {
+        const data = {
+            "Casting Time": request["casting-time"],
+            "Range": request.range,
+            "Duration": request.duration,
+            "Components": request.components
+        }
+
+        let source = request["level-school"];
+        if (request["cast-at"] !== undefined)
+            source = request["level-school"] + "(Cast at " + request["cast-at"] + " Level)";
+
+        if (request.ritual)
+            data["Ritual"] = "Can be cast as a ritual";
+        if (request.concentration)
+            data["Concentration"] = "Requires Concentration";
+
+        const description = request.description.replace("At Higher Levels.", "</br><b>At Higher levels.</b>");
+        return [source, data, description];
+    }
+
+    rollSpellCard(request) {
+        const [source, data, description] = this.buildSpellCard(request);
+        return this.postDescription(request, request.name, source, data, description, [], [], [], true);
+    }
+
+    async rollSpellAttack(request, custom_roll_dice) {
+        const [source, data, description] = this.buildSpellCard(request);
+
+        const roll_info = [];
+        if (request.range !== undefined)
+            roll_info.push(["Range", request.range]);
+
+        if (request["cast-at"] !== undefined)
+            roll_info.push(["Cast at", request["cast-at"] + " Level"]);
+        let components = request.components;
+        const prefix = this._settings["component-prefix"] != "" ? this._settings["component-prefix"] : null;
+        if (this._settings["components-display"] == "all") {
+            if (components) {
+                roll_info.push([prefix || "Components", components]);
+            }
+        } else if (this._settings["components-display"] == "material") {
+            while (components) {
+                if (["V", "S"].includes(components[0])) {
+                    components = components.slice(1);
+                    if (components.startsWith(", ")) {
+                        components = components.slice(2);
+                    }
+                }
+                if (components[0] == "M") {
+                    roll_info.push([prefix || "Materials", this._settings["component-prefix"] + components.slice(2, -1)]);
+                    components = "";
+                }
+            }
+        }
+
+        if (request["save-dc"] !== undefined)
+            roll_info.push(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
+
+
+        const [attack_rolls, damage_rolls] = await this.buildAttackRolls(request, custom_roll_dice);
+
+        return this.postDescription(request, request.name, source, data, description, attack_rolls, roll_info, damage_rolls);
+
+    }
+
+    displayAvatar(request) {
+        const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
+        postToDiscord(this._settings["discord-secret"], request, request.name, "", {}, "", [], [], [], [], false).then((error) => {
+            if (error)
+                this._displayer.displayError("Beyond20 Discord Integration: " + error);
+        });
+        this._displayer.postHTML(request, request.name, `<img src='${request.character.avatar}' width='100%'>`, {}, character, false, false);
+    }
+
+    handleRollRequest(request) {
+        let custom_roll_dice = "";
+        if (request.character.type == "Character")
+            custom_roll_dice = request.character.settings["custom-roll-dice"] || "";
+
+        if (request.type == "avatar") {
+            return this.displayAvatar(request);
+        } else if (request.type == "skill") {
+            return this.rollSkill(request, custom_roll_dice);
+        } else if (request.type == "ability") {
+            return this.rollAbility(request, custom_roll_dice);
+        } else if (request.type == "saving-throw") {
+            return this.rollSavingThrow(request, custom_roll_dice);
+        } else if (request.type == "initiative") {
+            return this.rollInitiative(request, custom_roll_dice);
+        } else if (request.type == "hit-dice") {
+            return this.rollHitDice(request);
+        } else if (request.type == "item") {
+            return this.rollItem(request, custom_roll_dice);
+        } else if (["feature", "trait", "action"].includes(request.type)) {
+            return this.rollTrait(request);
+        } else if (request.type == "death-save") {
+            return this.rollDeathSave(request, custom_roll_dice);
+        } else if (request.type == "attack") {
+            return this.rollAttack(request, custom_roll_dice);
+        } else if (request.type == "spell-card") {
+            return this.rollSpellCard(request);
+        } else if (request.type == "spell-attack") {
+            return this.rollSpellAttack(request, custom_roll_dice);
+        } else {
+            // 'custom' || anything unexpected;
+            const mod = request.modifier || request.roll;
+            const rname = request.name || request.type;
+
+            return this.rollDice(request, rname + "(" + mod + ")", mod, {});
+        }
+    }
+}
+
+
+alertify.defaults.transition = "zoom";
+if (alertify.Beyond20Prompt === undefined) {
+    const factory = function () {
+        return {
+            "settings": {
+                "content": undefined,
+                "ok_label": undefined,
+                "cancel_label": undefined,
+                "resolver": undefined,
+            },
+            "main": function (title, content, ok_label, cancel_label, resolver) {
+                this.set('title', title);
+                this.set('content', content);
+                this.set('resolver', resolver);
+                this.set('ok_label', ok_label);
+                this.set("cancel_label", cancel_label);
+            },
+            "setup": () => {
+                return {
+                    "buttons": [
+                        {
+                            "text": alertify.defaults.glossary.ok,
+                            "key": 13, //keys.ENTER;
+                            "className": alertify.defaults.theme.ok,
+                        },
+                        {
+                            "text": alertify.defaults.glossary.cancel,
+                            "key": 27, //keys.ESC;
+                            "invokeOnClose": true,
+                            "className": alertify.defaults.theme.cancel,
+                        }
+                    ],
+                    "focus": {
+                        "element": 0,
+                        "select": true
+                    },
+                    "options": {
+                        "maximizable": false,
+                        "resizable": false
+                    }
+                }
+            },
+            "build": () => { },
+            "prepare": function () {
+                this.elements.content.innerHTML = this.get('content');
+                this.__internal.buttons[0].element.innerHTML = this.get('ok_label');
+                this.__internal.buttons[1].element.innerHTML = this.get('cancel_label');
+            },
+            "callback": function (closeEvent) {
+                if (closeEvent.index == 0) {
+                    this.get('resolver').call(this, $(this.elements.content.firstElementChild));
+                } else {
+                    this.get('resolver').call(this, null);
+                }
+            }
+        }
+    }
+    alertify.dialog('Beyond20Prompt', factory, false, "prompt");
+}
+
+
+if (alertify.Beyond20Roll === undefined)
+    alertify.dialog('Beyond20Roll', function () { return {}; }, false, "alert");
+
+
+class Roll20Displayer {
+    async sendMessage(request, title, html, buttons, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
+        const req = {
+            action: "rendered-roll",
+            request,
+            title,
+            html,
+            buttons,
+            character,
+            whisper,
+            play_sound,
+            source,
+            attributes,
+            description,
+            attack_rolls,
+            roll_info,
+            damage_rolls,
+            total_damages,
+            open
+        }
+        handleRenderedRoll(req);
+    }
+    displayError(message) {
+        alertify.error(message);
+    }
+}
+
+class Roll20Roller {
+    roll(formula, data) {
+        return new DNDBRoll(formula, data);
+    }
+    async resolveRolls(name, rolls) {
+        return Promise.all(rolls.map(roll => roll.roll()))
+    }
+}
+
+class Roll20Prompter {
+    async prompt(title, html, ok_label = "OK", cancel_label = "Cancel") {
+        return new Promise((resolve, reject) => {
+            alertify.Beyond20Prompt(title, html, ok_label, cancel_label, resolve);
+        });
+    }
+}
+
+var roll_renderer = new Beyond20RollRenderer(new Roll20Roller(), new Roll20Prompter(), new Roll20Displayer());
+roll_renderer.setBaseURL(chrome.runtime.getURL(""));
 console.log("Beyond20: Roll20 module loaded.");
 
 const ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }"
@@ -1040,7 +2366,6 @@ const txt = chat.getElementsByTagName("textarea")[0];
 const btn = chat.getElementsByTagName("button")[0];
 const speakingas = document.getElementById("speakingas");
 var settings = getDefaultSettings();
-let isOGL = false;
 
 function postChatMessage(message, character = null) {
     let set_speakingas = true;
@@ -1193,12 +2518,8 @@ function whisperString(whisper) {
 }
 
 function template(request, name, properties) {
-    const use_default_tempalte = settings["roll20-template"] === "default" || !isOGL;
     let result = whisperString(request.whisper);
 
-    const renameProp = (old_key, new_key) => {
-        result = result.replace("{{" + old_key + "=", "{{" + new_key + "=");
-    }
     const removeProp = (key) => {
         result = result.replace("{{" + key + "=" + (Object.keys(properties).includes(key) ? properties[key] : "1") + "}}", "");
         result = result.replace("&//123&//123" + key + "=" + (Object.keys(properties).includes(key) ? properties[key] : "1") + "&//125&//125", "");
@@ -1218,58 +2539,10 @@ function template(request, name, properties) {
         removeProp("description");
     }
 
-    if (use_default_tempalte) {
-        result = result.replace("&{template:" + name + "}", "&{template:default}");
-
-        renameProp("charname", "Character name");
-        renameProp("rname", "name");
-        if (result.includes("{{r2=") || result.includes("&//123&//123r2=")) {
-            renameProp("r1", "Regular Roll");
-            renameProp("r2", "Roll with [Dis]Advantage");
-            renameProp("r3", "Roll with Super [Dis]Advantage");
-            result = result.replace("&//123&//123r2=", "&//123&//123Roll with Advantage=");
-            result = result.replace("&//123&//123r2=", "&//123&//123Roll with Disadvantage=");
-            result = result.replace("&//123&//123r2=", "&//123&//123Roll with Super Advantage=");
-            result = result.replace("&//123&//123r2=", "&//123&//123Roll with Super Disadvantage=");
-        } else {
-            renameProp("r1", "Dice Roll");
-        }
-        renameProp("mod", "Modifier");
-        if (properties["dmg2"] !== undefined) {
-            renameProp("dmg1", "First Damage");
-            renameProp("dmg1type", "First Damage Type");
-            renameProp("crit1", "First Crit Damage IF Critical");
-            renameProp("dmg2", "Second Damage");
-            renameProp("dmg2type", "Second Damage Type");
-            renameProp("crit2", "Second Crit Damage IF Critical");
-        }
-        if (properties["dmg1"] !== undefined) {
-            renameProp("dmg1", "Damage");
-            renameProp("dmg1type", "Damage Type");
-            renameProp("crit1", "Crit Damage IF Critical");
-        }
-        renameProp("saveattr", "Save Ability");
-        renameProp("savedc", "Save DC");
-        renameProp("athigherlevels", "At Higher Levels");
-        renameProp("castingtime", "Casting Time");
-        renameProp("hldmg", "Higher level cast");
-
-        removeProp("attack");
-        removeProp("attack");
-        removeProp("damage");
-        removeProp("save");
-        removeProp("dmg1flag");
-        removeProp("dmg2flag");
-        removeProp("always");
-        removeProp("normal");
-        removeProp("advantage");
-        removeProp("disadvantage");
-        removeProp("query");
-    } else {
-        properties["r3"] = properties["r1"];
-        removeProp("r3");
-        delete properties["r3"];
-    }
+    // Super advantage/disadvantage is not supported
+    properties["r3"] = properties["r1"];
+    removeProp("r3");
+    delete properties["r3"];
 
     return result;
 }
@@ -1694,6 +2967,39 @@ function convertRollToText(whisper, roll, standout=false) {
     return result;
 };
 
+function handleRenderedRoll(request) {
+    const properties = {};
+    if (request.source)
+        properties.source = request.source;
+    if (Object.keys(request.attributes).length) {
+        for (let attr in request.attributes)
+            request[attr] = request.attributes[attr];
+    }
+    if (request.open)
+        properties.description = request.description;
+
+    for (let [name, value] of request.roll_info)
+        properties[name] = value;
+
+    if (request.attack_rolls.length > 0) {
+        properties["To Hit"] = request.attack_rolls.map(roll => convertRollToText(request.whisper, roll, true)).join(" | ")
+    }
+    for (let [roll_name, roll, flags] of request.damage_rolls) {
+        if (typeof (roll) === "string")
+            properties[roll_name] = roll
+        else
+            properties[roll_name] = convertRollToText(request.whisper, roll);
+    }
+    if (Object.keys(request.total_damages).length > 0)
+        properties["Totals"] = "";
+
+    for (let [key, roll] of Object.entries(request.total_damages))
+        properties["Total " + key] = convertRollToText(request.whisper, roll);
+
+    const message = createTable(request, request.title, properties);
+    postChatMessage(message, request.character);
+}
+
 function injectSettingsButton() {
     const icon = chrome.extension.getURL("images/icons/icon32.png");
     let img = document.getElementById("beyond20-settings");
@@ -1708,6 +3014,7 @@ function injectSettingsButton() {
 function updateSettings(new_settings = null) {
     if (new_settings) {
         settings = new_settings;
+        roll_renderer.setSettings(settings);
     } else {
         getStoredSettings((saved_settings) => {
             settings = saved_settings;
@@ -1717,7 +3024,6 @@ function updateSettings(new_settings = null) {
 
 function handleMessage(request, sender, sendResponse) {
     console.log("Got message : ", request);
-    isOGL = $("#isOGL").val() === "1";
     if (request.action == "settings") {
         if (request.type == "general")
             updateSettings(request.settings);
@@ -1747,6 +3053,11 @@ function handleMessage(request, sender, sendResponse) {
             postChatMessage(message, character_name);
         }
     } else if (request.action == "roll") {
+        const isOGL = $("#isOGL").val() === "1";
+        if (settings["roll20-template"] === "default" || !isOGL) {
+            request.sendMessage = true;
+            return roll_renderer.handleRollRequest(request);
+        }
         let custom_roll_dice = "";
         if (request.character.type == "Character")
             custom_roll_dice = request.character.settings["custom-roll-dice"] || "";
@@ -1789,36 +3100,7 @@ function handleMessage(request, sender, sendResponse) {
         const character_name = request.whisper == WhisperType.HIDE_NAMES ? "???" : request.character.name;
         postChatMessage(roll, character_name);
     } else if (request.action == "rendered-roll") {
-        const properties = {};
-        if (request.source)
-            properties.source = request.source;
-        if (Object.keys(request.attributes).length) {
-            for (let attr in request.attributes)
-                request[attr] = request.attributes[attr];
-        }
-        if (request.open)
-            properties.description = request.description;
-
-        for (let [name, value] of request.roll_info)
-            properties[name] = value;
-
-        if (request.attack_rolls.length > 0) {
-            properties["To Hit"] = request.attack_rolls.map(roll => convertRollToText(request.whisper, roll, true)).join(" | ")
-        }
-        for (let [roll_name, roll, flags] of request.damage_rolls) {
-            if (typeof (roll) === "string")
-                properties[roll_name] = roll
-            else
-                properties[roll_name] = convertRollToText(request.whisper, roll);
-        }
-        if (Object.keys(request.total_damages).length > 0)
-            properties["Totals"] = "";
-
-        for (let [key, roll] of Object.entries(request.total_damages))
-            properties["Total " + key] = convertRollToText(request.whisper, roll);
-
-        const message = createTable(request, request.title, properties);
-        postChatMessage(message, request.character);
+        handleRenderedRoll(request);
     }
 }
 

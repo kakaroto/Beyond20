@@ -35,7 +35,8 @@
         }
 	},
 	"web_accessible_resources": [
-		"images/*",
+        "images/*",
+        "libs/alertify.min.js",
 		"dist/roll20_script.js",
 		"dist/fvtt_script.js",
 		"popup.html",

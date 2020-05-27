@@ -45,8 +45,8 @@ const SRC_FILES = {
         "src/extension/popup.js"
     ],
     roll20: [
-        "src/common/utils.js",
-        "src/common/settings.js",
+        ...ROLL_RENDERER_DEPS,
+        "src/roll20/renderer.js",
         "src/roll20/content-script.js"
     ],
     roll20_script: [
