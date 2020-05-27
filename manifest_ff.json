@@ -35,15 +35,15 @@
 	},
 	"web_accessible_resources": [
 		"images/*",
-		"src/roll20_script.js",
-		"src/fvtt_script.js",
+		"dist/roll20_script.js",
+		"dist/fvtt_script.js",
 		"popup.html",
 		"options.html"
 	],
 	"background": {
 		"persistent": true,
 		"scripts": [
-			"src/background.js"
+			"dist/background.js"
 		]
 	},
 	"content_scripts": [
@@ -55,12 +55,12 @@
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
 				"libs/css/alertify-themes/beyond20.css",
-				"src/beyond20.css"
+				"dist/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/dndbeyond_character.js"
+				"dist/dndbeyond_character.js"
 			]
 		},
 		{
@@ -71,12 +71,12 @@
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
 				"libs/css/alertify-themes/beyond20.css",
-				"src/beyond20.css"
+				"dist/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/dndbeyond_monster.js"
+				"dist/dndbeyond_monster.js"
 			]
 		},
 		{
@@ -87,12 +87,12 @@
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
 				"libs/css/alertify-themes/beyond20.css",
-				"src/beyond20.css"
+				"dist/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/dndbeyond_vehicle.js"
+				"dist/dndbeyond_vehicle.js"
 			]
 		},
 		{
@@ -103,12 +103,12 @@
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
 				"libs/css/alertify-themes/beyond20.css",
-				"src/beyond20.css"
+				"dist/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/dndbeyond_spell.js"
+				"dist/dndbeyond_spell.js"
 			]
 		},
 		{
@@ -121,12 +121,12 @@
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
 				"libs/css/alertify-themes/beyond20.css",
-				"src/beyond20.css"
+				"dist/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/dndbeyond_encounter.js"
+				"dist/dndbeyond_encounter.js"
 			]
 		},
 		{
@@ -138,12 +138,12 @@
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
 				"libs/css/alertify-themes/beyond20.css",
-				"src/beyond20.css"
+				"dist/beyond20.css"
 			],
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/dndbeyond_items.js"
+				"dist/dndbeyond_items.js"
 			]
 		},
 		{
@@ -158,7 +158,7 @@
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/roll20.js"
+				"dist/roll20.js"
 			]
 		},
 		{
@@ -173,7 +173,7 @@
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"src/fvtt_test.js"
+				"dist/fvtt_test.js"
 			]
 		}
 	]
