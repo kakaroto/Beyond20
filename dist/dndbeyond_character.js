@@ -2721,7 +2721,9 @@ function buildAttackRoll(character, attack_source, name, description, properties
                     crit_damage_types.push(damage_types[i]);
                 }
             }
-            if (brutal > 0) {
+            //Handle Unarmed Strike Critical
+            const main_match = damages[0].match(/[0-9]*d([0-9]+)/);
+            if (brutal > 0 && main_match != null) {
                 let highest_dice = 0;
                 for (let dmg of crit_damages) {
                     const match = dmg.match(/[0-9]*d([0-9]+)/);
@@ -4481,7 +4483,7 @@ function rollAction(paneClass) {
             character.getSetting("warlock-hexblade-curse", false))
             critical_limit = 19;
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.;
-        if (action_name == "Polearm Master - Bonus Attack") {
+        if (action_name == "Polearm Master - Bonus Attack" || action_name == "Unarmed Strike" || action_name == "Tavern Brawler Strike") {
             if (character.hasClassFeature("Fighting Style: Great Weapon Fighting"))
                 damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&<=2");
             if (character.hasAction("Channel Divinity: Legendary Strike") &&

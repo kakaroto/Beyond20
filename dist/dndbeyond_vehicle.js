@@ -2721,7 +2721,9 @@ function buildAttackRoll(character, attack_source, name, description, properties
                     crit_damage_types.push(damage_types[i]);
                 }
             }
-            if (brutal > 0) {
+            //Handle Unarmed Strike Critical
+            const main_match = damages[0].match(/[0-9]*d([0-9]+)/);
+            if (brutal > 0 && main_match != null) {
                 let highest_dice = 0;
                 for (let dmg of crit_damages) {
                     const match = dmg.match(/[0-9]*d([0-9]+)/);
