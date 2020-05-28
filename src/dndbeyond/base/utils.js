@@ -153,7 +153,8 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 }
                 if (highest_dice != 0) {
                     crit_damages.push(`${brutal}d${highest_dice}`);
-                    crit_damage_types.push("Brutal");
+                    crit_damage_types.push(character.hasClassFeature("Brutal Critical") && character.hasRacialTrait("Savage Attacks") ?
+                    "Savage Attacks & Brutal" :  character.hasClassFeature("Brutal Critical") ? "Brutal" : "Savage");
                 }
             }
             roll_properties["critical-damages"] = crit_damages;
