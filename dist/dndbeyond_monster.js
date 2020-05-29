@@ -2925,7 +2925,7 @@ function addIconButton(character, callback, where, { append = false, prepend = f
     const icon = custom ? chrome.extension.getURL("images/icons/badges/custom20.png") :
                         getBadgeIconFromClass(rolltype_class);
     const id = "beyond20-roll-" + (custom ? "custom-" : "") + Math.random().toString().slice(2);
-    const button = E.span({ class: "ct-beyond20-" + (custom ? "custom-roll" : "roll"), id, style: "margin-right:3px; margin-left: 3px;" },
+    const button = E.span({ class: "ct-beyond20-" + (custom ? "custom-roll-button" : "roll"), id, style: "margin-right:3px; margin-left: 3px;" },
         E.img({ class: "ct-beyond20-" + (custom ? "custom-icon" : "icon"), src: icon })
     );
 
@@ -2936,6 +2936,7 @@ function addIconButton(character, callback, where, { append = false, prepend = f
     else
         $(where).after(button);
     $(`#${id}`).on('click', (event) => callback());
+    return button;
 }
 
 function removeRollButtons() {
