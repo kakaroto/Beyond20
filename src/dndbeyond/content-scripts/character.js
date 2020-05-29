@@ -609,11 +609,27 @@ function rollSpell(force_display = false) {
                 break;
             }
         }
+        const elementalAdepts = [];
+        for (let feature of character._feats) {
+            const match = feature.match("Elemental Adept \\((.*)\\)");
+            if (match) {
+                elementalAdepts.push(match[1]);
+            }
+        }
         if (elementalAffinity && damage_types.includes(elementalAffinity)) {
             for (let ability of character._abilities) {
                 if (ability[1] == "CHA" && ability[3] != "" && ability[3] != "0") {
                     damages.push(ability[3]);
                     damage_types.push(elementalAffinity + " (Elemental Affinity)");
+                }
+            }
+        }
+        for (let elementalAdept of elementalAdepts) {
+            for (let i = 0; i < damages.length; i++) {
+                if (damage_types[i] === elementalAdept) {
+                    damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)(.*)/g, (match, amount, faces, mods) => {
+                        return new Array(parseInt(amount) || 1).fill(`1d${faces}min2`).join(" + ") + mods;
+                    });
                 }
             }
         }
