@@ -2023,7 +2023,7 @@ class Beyond20RollRenderer {
                 }
             }
 
-            const has_versatile = damage_types.length > 1 && damage_types[1] == "Two-Handed";
+            const has_versatile = damage_types.length > 1 && damage_types[1].includes("Two-Handed");
             for (let i = 0; i < (damages.length); i++) {
                 const roll = this._roller.roll(damages[i]);
                 all_rolls.push(roll);
