@@ -2444,7 +2444,8 @@ function subRolls(text, damage_only = false, overrideCB = null) {
         }
     }
 
-    return replaceRolls(text, replaceCB);
+    const result = replaceRolls(text, replaceCB);
+    return result.replace(/\]\](\s*\+\s*)\[\[/g, '$1')
 }
 
 function subDescriptionRolls(request, description) {
