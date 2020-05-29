@@ -155,7 +155,6 @@ function buildAttackRoll(character, attack_source, name, description, properties
                     const isBrutal = character.hasClassFeature("Brutal Critical");
                     const isSavage = character.hasRacialTrait("Savage Attacks");
                     crit_damages.push(`${brutal}d${highest_dice}`);
-                    crit_damage_types.push("Brutal");
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
                 }
             }
