@@ -2107,8 +2107,8 @@ class Beyond20RollRenderer {
             } else {
                 new_rolls.push([roll_name, roll, flags]);
             }
-            return new_rolls;
         }
+        return new_rolls;
     }
 
     async rollAttack(request, custom_roll_dice = "") {
