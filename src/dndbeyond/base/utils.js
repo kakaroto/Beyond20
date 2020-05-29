@@ -198,11 +198,15 @@ function sendRoll(character, rollType, fallback, args) {
     else if (key_modifiers.alt)
         req["advantage"] = RollType.NORMAL;
 
-    console.log("Sending message: ", req);
     if (character.getGlobalSetting("use-digital-dice", false) && DigitalDice.isEnabled()) {
+        if (!character.getGlobalSetting("auto-roll-damage", true))
+            mergeSettings({ "auto-roll-damage": true }, (settings) => {
+                chrome.runtime.sendMessage({ "action": "settings", "type": "general", "settings": settings })
+            });
         req.sendMessage = true;
         dndbeyondDiceRoller.handleRollRequest(req);
     } else {
+        console.log("Sending message: ", req);
         chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(character, resp));
     }
 }
