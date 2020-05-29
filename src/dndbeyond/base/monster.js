@@ -225,7 +225,7 @@ class Monster extends CharacterBase {
 
                 let initiative = modifier;
                 if (this.getGlobalSetting("initiative-tiebreaker", false)) {
-                    tiebreaker = ability[2];
+                    const tiebreaker = ability[2];
 
                     // Add tiebreaker as a decimal;
                     initiative = parseFloat(initiative) + parseFloat(tiebreaker) / 100;

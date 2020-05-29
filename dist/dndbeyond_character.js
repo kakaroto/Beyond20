@@ -2926,7 +2926,7 @@ function addIconButton(character, callback, where, { append = false, prepend = f
                         getBadgeIconFromClass(rolltype_class);
     const id = "beyond20-roll-" + (custom ? "custom-" : "") + Math.random().toString().slice(2);
     const button = E.span({ class: "ct-beyond20-" + (custom ? "custom-roll" : "roll"), id, style: "margin-right:3px; margin-left: 3px;" },
-        E.img({ class: "ct-beyond20-" + (custom ? "custom-" : "icon"), src: icon })
+        E.img({ class: "ct-beyond20-" + (custom ? "custom-icon" : "icon"), src: icon })
     );
 
     if (append)
@@ -3308,7 +3308,7 @@ class Monster extends CharacterBase {
 
                 let initiative = modifier;
                 if (this.getGlobalSetting("initiative-tiebreaker", false)) {
-                    tiebreaker = ability[2];
+                    const tiebreaker = ability[2];
 
                     // Add tiebreaker as a decimal;
                     initiative = parseFloat(initiative) + parseFloat(tiebreaker) / 100;
