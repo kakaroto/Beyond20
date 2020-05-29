@@ -452,7 +452,7 @@ function rollAction(paneClass) {
             character.getSetting("warlock-hexblade-curse", false))
             critical_limit = 19;
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.
-        if (action_name == "Polearm Master - Bonus Attack" || action_name == "Unarmed Strike" || action_name == "Tavern Brawler Strike") {
+        if (action_name == "Polearm Master - Bonus Attack" || action_name.includes("Unarmed Strike") || action_name == "Tavern Brawler Strike") {
             if (character.hasClassFeature("Fighting Style: Great Weapon Fighting"))
                 damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&<=2");
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
@@ -482,6 +482,23 @@ function rollAction(paneClass) {
                 damages.push(fighter_level < 10 ? "1d6" : "1d8");
                 damage_types.push("Giant Might");
             }
+            if (character.getSetting("bloodhunter-crimson-rite", false) &&
+            character.hasClassFeature("Crimson Rite")) {
+            const bloodhunter_level = character.getClassLevel("Blood Hunter");
+            if (bloodhunter_level > 0) {
+                let rite_die = "1d4";
+                if (bloodhunter_level <= 4)
+                    rite_die = "1d4";
+                else if (bloodhunter_level <= 10)
+                    rite_die = "1d6";
+                else if (bloodhunter_level <= 16)
+                    rite_die = "1d8";
+                else
+                    rite_die = "1d10";
+                damages.push(rite_die);
+                damage_types.push("Crimson Rite");
+            }
+        }
         }
 
         //Protector Aasimar: Radiant Soul Damage
