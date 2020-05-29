@@ -14,7 +14,7 @@ function replaceRollsCallback(match, replaceCB) {
 
 function replaceRolls(text, replaceCB) {
     // TODO: Cache the value so we don't recompile the regexp every time
-    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro(?:=|<|<=|>|>=)[0-9]+)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
+    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro(?:=|<|<=|>|>=)[0-9]+)?(?:min[0-9]+)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
     return text.replace(dice_regexp, (...match) => replaceRollsCallback(match, replaceCB));
 }
 
@@ -1214,6 +1214,7 @@ class DNDBDice {
         this._modifiers = modifiers || "";
         this._reroll = { "active": false, "value": 0, "operator": "=" }
         this._dk = { "drop": false, "keep": false, "high": false, "amount": 0 }
+        this._min = 0;
         if (modifiers != "") {
             const match_ro = modifiers.match(/r(=|<|<=|>|>=)([0-9]+)/);
             if (match_ro) {
@@ -1239,6 +1240,10 @@ class DNDBDice {
                     this._dk.high = true;
                 }
             }
+            const match_min = modifiers.match(/min([0-9]*)/);
+            if (match_min)
+                this._min = parseInt(match_min[1]);
+
         }
         this._rolls = [];
     }
@@ -1325,6 +1330,8 @@ class DNDBDice {
         this._total = this._rolls.reduce((acc, roll) => {
             return acc + (roll.discarded ? 0 : roll.roll);
         }, 0);
+        if (this._min && this._total < this._min)
+            this._total = this._min;
         return this._total;
     }
 
@@ -1351,7 +1358,7 @@ class DNDBDice {
 
 class DNDBRoll extends Beyond20BaseRoll {
     constructor(formula, data = {}) {
-        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/, "r$1$2");
+        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/g, "r$1$2");
         super(formula, data);
         this._parts = [];
         for (let key in data)
@@ -1813,8 +1820,8 @@ class Beyond20RollRenderer {
         return this.postDescription(request, title, null, {}, null, [roll]);
     }
 
-    async rollD20(request, title, data) {
-        const {advantage, rolls} = await this.getToHit(request, title, "", data)
+    async rollD20(request, title, data, modifier="") {
+        const {advantage, rolls} = await this.getToHit(request, title, modifier, data)
         await this._roller.resolveRolls(title, rolls);
         this.processToHitAdvantage(advantage, rolls);
         return this.postDescription(request, title, null, {}, null, rolls);
@@ -1825,15 +1832,20 @@ class Beyond20RollRenderer {
         if (request.ability == "--" && request.character.abilities.length > 0) {
             let prof = "";
             let prof_val = "";
+            let d20_modifier = ""
             if (request.proficiency == "Proficiency") {
                 prof = "proficiency";
                 prof_val = request.character.proficiency;
+                if (request.reliableTalent)
+                    d20_modifier = "min10";
             } else if (request.proficiency == "Half Proficiency") {
                 prof = "half_proficiency";
                 prof_val += Math.floor(request.character.proficiency / 2);
             } else if (request.proficiency == "Expertise") {
                 prof = "expertise";
                 prof_val += request.character.proficiency * 2;
+                if (request.reliableTalent)
+                    d20_modifier = "min10";
             }
             const formula = "1d20 + @ability " + (prof != "" ? " + @" + prof : "") + " + @custom_dice";
             let html = '<form>';
@@ -1853,12 +1865,12 @@ class Beyond20RollRenderer {
                 if (request.modifier != "--" && request.modifier != "+0")
                     mod += request.modifier;
                 const data = { "ability": mod, "prof": prof_val, "custom_dice": custom_roll_dice }
-                this.rollD20(request, request.skill + "(" + ability + ")", data);
+                this.rollD20(request, request.skill + "(" + ability + ")", data, d20_modifier);
             }
         } else {
             const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-
-            return this.rollD20(request, request.skill + "(" + request.modifier + ")", data);
+            const d20_modifier = request.reliableTalent ? "min10" : "";
+            return this.rollD20(request, request.skill + "(" + request.modifier + ")", data, d20_modifier);
         }
     }
 
@@ -4070,6 +4082,9 @@ function rollSkillCheck(paneClass) {
             (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
+    // Set Reliable Talent flag if character has the feature and skill is proficient/expertise or a custom skill that needs to be queried
+    if (character.hasClassFeature("Reliable Talent") && (["Proficiency", "Expertise"].includes(proficiency) || ability === "--"))
+        roll_properties["reliableTalent"] = true;
     sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 

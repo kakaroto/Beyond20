@@ -100,6 +100,7 @@ class DNDBDice {
         this._modifiers = modifiers || "";
         this._reroll = { "active": false, "value": 0, "operator": "=" }
         this._dk = { "drop": false, "keep": false, "high": false, "amount": 0 }
+        this._min = 0;
         if (modifiers != "") {
             const match_ro = modifiers.match(/r(=|<|<=|>|>=)([0-9]+)/);
             if (match_ro) {
@@ -125,6 +126,10 @@ class DNDBDice {
                     this._dk.high = true;
                 }
             }
+            const match_min = modifiers.match(/min([0-9]*)/);
+            if (match_min)
+                this._min = parseInt(match_min[1]);
+
         }
         this._rolls = [];
     }
@@ -211,6 +216,8 @@ class DNDBDice {
         this._total = this._rolls.reduce((acc, roll) => {
             return acc + (roll.discarded ? 0 : roll.roll);
         }, 0);
+        if (this._min && this._total < this._min)
+            this._total = this._min;
         return this._total;
     }
 
@@ -237,7 +244,7 @@ class DNDBDice {
 
 class DNDBRoll extends Beyond20BaseRoll {
     constructor(formula, data = {}) {
-        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/, "r$1$2");
+        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/g, "r$1$2");
         super(formula, data);
         this._parts = [];
         for (let key in data)

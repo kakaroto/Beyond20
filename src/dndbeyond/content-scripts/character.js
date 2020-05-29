@@ -30,6 +30,9 @@ function rollSkillCheck(paneClass) {
             (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
+    // Set Reliable Talent flag if character has the feature and skill is proficient/expertise or a custom skill that needs to be queried
+    if (character.hasClassFeature("Reliable Talent") && (["Proficiency", "Expertise"].includes(proficiency) || ability === "--"))
+        roll_properties["reliableTalent"] = true;
     sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 

@@ -358,8 +358,8 @@ class Beyond20RollRenderer {
         return this.postDescription(request, title, null, {}, null, [roll]);
     }
 
-    async rollD20(request, title, data) {
-        const {advantage, rolls} = await this.getToHit(request, title, "", data)
+    async rollD20(request, title, data, modifier="") {
+        const {advantage, rolls} = await this.getToHit(request, title, modifier, data)
         await this._roller.resolveRolls(title, rolls);
         this.processToHitAdvantage(advantage, rolls);
         return this.postDescription(request, title, null, {}, null, rolls);
@@ -370,15 +370,20 @@ class Beyond20RollRenderer {
         if (request.ability == "--" && request.character.abilities.length > 0) {
             let prof = "";
             let prof_val = "";
+            let d20_modifier = ""
             if (request.proficiency == "Proficiency") {
                 prof = "proficiency";
                 prof_val = request.character.proficiency;
+                if (request.reliableTalent)
+                    d20_modifier = "min10";
             } else if (request.proficiency == "Half Proficiency") {
                 prof = "half_proficiency";
                 prof_val += Math.floor(request.character.proficiency / 2);
             } else if (request.proficiency == "Expertise") {
                 prof = "expertise";
                 prof_val += request.character.proficiency * 2;
+                if (request.reliableTalent)
+                    d20_modifier = "min10";
             }
             const formula = "1d20 + @ability " + (prof != "" ? " + @" + prof : "") + " + @custom_dice";
             let html = '<form>';
@@ -398,12 +403,12 @@ class Beyond20RollRenderer {
                 if (request.modifier != "--" && request.modifier != "+0")
                     mod += request.modifier;
                 const data = { "ability": mod, "prof": prof_val, "custom_dice": custom_roll_dice }
-                this.rollD20(request, request.skill + "(" + ability + ")", data);
+                this.rollD20(request, request.skill + "(" + ability + ")", data, d20_modifier);
             }
         } else {
             const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-
-            return this.rollD20(request, request.skill + "(" + request.modifier + ")", data);
+            const d20_modifier = request.reliableTalent ? "min10" : "";
+            return this.rollD20(request, request.skill + "(" + request.modifier + ")", data, d20_modifier);
         }
     }
 

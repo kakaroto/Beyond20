@@ -70,6 +70,7 @@ function subRolls(text, damage_only = false, overrideCB = null) {
     if (!overrideCB) {
         replaceCB = (dice, modifier) => {
             dice = dice.replace(/ro<=([0-9]+)/, "ro<$1");
+            dice = dice.replace(/(^|\s)+([^\s]+)min([0-9]+)/g, "$1{$2, 0d0 + $3}kh1");
             if (damage_only && dice == "")
                 return dice + modifier;
             const dice_formula = (dice === "" ? "1d20" : dice) + modifier;
@@ -226,28 +227,33 @@ function rollSkill(request, custom_roll_dice = "") {
         modifier += "}";
         let prof = "";
         let prof_val = "";
+        let reliableTalent = false;
         if (request.proficiency === "Proficiency") {
             prof = "PROF";
             prof_val += request.character.proficiency;
+            reliableTalent = request.reliableTalent;
         } else if (request.proficiency === "Half Proficiency") {
             prof = "HALF-PROFICIENCY";
             prof_val += "+[[floor(" + request.character.proficiency + " / 2)]]";
         } else if (request.proficiency === "Expertise") {
             prof = "EXPERTISE";
             prof_val += "+[[" + request.character.proficiency + " * 2]]";
+            reliableTalent = request.reliableTalent;
         }
+        const d20 = reliableTalent ? "{1d20, 0d0 + 10}kh1" : "1d20";
         return template(request, "simple", {
             "charname": request.character.name,
             "rname": request.skill,
             "mod": format_plus_mod(modifier) + format_plus_mod(prof_val) + format_plus_mod(custom_roll_dice),
-            "r1": genRoll("1d20", { "--": modifier, [prof]: prof_val, "CUSTOM": custom_roll_dice })
+            "r1": genRoll(d20, { "--": modifier, [prof]: prof_val, "CUSTOM": custom_roll_dice })
         });
     } else {
+        const d20 = request.reliableTalent ? "{1d20, 0d0 + 10}kh1" : "1d20";
         return template(request, "simple", {
             "charname": request.character.name,
             "rname": request.skill,
             "mod": modifier + format_plus_mod(custom_roll_dice),
-            "r1": genRoll("1d20", { [request.ability]: modifier, "CUSTOM": custom_roll_dice })
+            "r1": genRoll(d20, { [request.ability]: modifier, "CUSTOM": custom_roll_dice })
         });
     }
 }

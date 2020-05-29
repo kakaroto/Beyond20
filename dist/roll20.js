@@ -14,7 +14,7 @@ function replaceRollsCallback(match, replaceCB) {
 
 function replaceRolls(text, replaceCB) {
     // TODO: Cache the value so we don't recompile the regexp every time
-    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro(?:=|<|<=|>|>=)[0-9]+)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
+    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro(?:=|<|<=|>|>=)[0-9]+)?(?:min[0-9]+)?)((?:\s*[-+]\s*\d+)*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
     return text.replace(dice_regexp, (...match) => replaceRollsCallback(match, replaceCB));
 }
 
@@ -1214,6 +1214,7 @@ class DNDBDice {
         this._modifiers = modifiers || "";
         this._reroll = { "active": false, "value": 0, "operator": "=" }
         this._dk = { "drop": false, "keep": false, "high": false, "amount": 0 }
+        this._min = 0;
         if (modifiers != "") {
             const match_ro = modifiers.match(/r(=|<|<=|>|>=)([0-9]+)/);
             if (match_ro) {
@@ -1239,6 +1240,10 @@ class DNDBDice {
                     this._dk.high = true;
                 }
             }
+            const match_min = modifiers.match(/min([0-9]*)/);
+            if (match_min)
+                this._min = parseInt(match_min[1]);
+
         }
         this._rolls = [];
     }
@@ -1325,6 +1330,8 @@ class DNDBDice {
         this._total = this._rolls.reduce((acc, roll) => {
             return acc + (roll.discarded ? 0 : roll.roll);
         }, 0);
+        if (this._min && this._total < this._min)
+            this._total = this._min;
         return this._total;
     }
 
@@ -1351,7 +1358,7 @@ class DNDBDice {
 
 class DNDBRoll extends Beyond20BaseRoll {
     constructor(formula, data = {}) {
-        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/, "r$1$2");
+        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/g, "r$1$2");
         super(formula, data);
         this._parts = [];
         for (let key in data)
@@ -1813,8 +1820,8 @@ class Beyond20RollRenderer {
         return this.postDescription(request, title, null, {}, null, [roll]);
     }
 
-    async rollD20(request, title, data) {
-        const {advantage, rolls} = await this.getToHit(request, title, "", data)
+    async rollD20(request, title, data, modifier="") {
+        const {advantage, rolls} = await this.getToHit(request, title, modifier, data)
         await this._roller.resolveRolls(title, rolls);
         this.processToHitAdvantage(advantage, rolls);
         return this.postDescription(request, title, null, {}, null, rolls);
@@ -1825,15 +1832,20 @@ class Beyond20RollRenderer {
         if (request.ability == "--" && request.character.abilities.length > 0) {
             let prof = "";
             let prof_val = "";
+            let d20_modifier = ""
             if (request.proficiency == "Proficiency") {
                 prof = "proficiency";
                 prof_val = request.character.proficiency;
+                if (request.reliableTalent)
+                    d20_modifier = "min10";
             } else if (request.proficiency == "Half Proficiency") {
                 prof = "half_proficiency";
                 prof_val += Math.floor(request.character.proficiency / 2);
             } else if (request.proficiency == "Expertise") {
                 prof = "expertise";
                 prof_val += request.character.proficiency * 2;
+                if (request.reliableTalent)
+                    d20_modifier = "min10";
             }
             const formula = "1d20 + @ability " + (prof != "" ? " + @" + prof : "") + " + @custom_dice";
             let html = '<form>';
@@ -1853,12 +1865,12 @@ class Beyond20RollRenderer {
                 if (request.modifier != "--" && request.modifier != "+0")
                     mod += request.modifier;
                 const data = { "ability": mod, "prof": prof_val, "custom_dice": custom_roll_dice }
-                this.rollD20(request, request.skill + "(" + ability + ")", data);
+                this.rollD20(request, request.skill + "(" + ability + ")", data, d20_modifier);
             }
         } else {
             const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-
-            return this.rollD20(request, request.skill + "(" + request.modifier + ")", data);
+            const d20_modifier = request.reliableTalent ? "min10" : "";
+            return this.rollD20(request, request.skill + "(" + request.modifier + ")", data, d20_modifier);
         }
     }
 
@@ -2424,6 +2436,7 @@ function subRolls(text, damage_only = false, overrideCB = null) {
     if (!overrideCB) {
         replaceCB = (dice, modifier) => {
             dice = dice.replace(/ro<=([0-9]+)/, "ro<$1");
+            dice = dice.replace(/(^|\s)+([^\s]+)min([0-9]+)/g, "$1{$2, 0d0 + $3}kh1");
             if (damage_only && dice == "")
                 return dice + modifier;
             const dice_formula = (dice === "" ? "1d20" : dice) + modifier;
@@ -2580,28 +2593,33 @@ function rollSkill(request, custom_roll_dice = "") {
         modifier += "}";
         let prof = "";
         let prof_val = "";
+        let reliableTalent = false;
         if (request.proficiency === "Proficiency") {
             prof = "PROF";
             prof_val += request.character.proficiency;
+            reliableTalent = request.reliableTalent;
         } else if (request.proficiency === "Half Proficiency") {
             prof = "HALF-PROFICIENCY";
             prof_val += "+[[floor(" + request.character.proficiency + " / 2)]]";
         } else if (request.proficiency === "Expertise") {
             prof = "EXPERTISE";
             prof_val += "+[[" + request.character.proficiency + " * 2]]";
+            reliableTalent = request.reliableTalent;
         }
+        const d20 = reliableTalent ? "{1d20, 0d0 + 10}kh1" : "1d20";
         return template(request, "simple", {
             "charname": request.character.name,
             "rname": request.skill,
             "mod": format_plus_mod(modifier) + format_plus_mod(prof_val) + format_plus_mod(custom_roll_dice),
-            "r1": genRoll("1d20", { "--": modifier, [prof]: prof_val, "CUSTOM": custom_roll_dice })
+            "r1": genRoll(d20, { "--": modifier, [prof]: prof_val, "CUSTOM": custom_roll_dice })
         });
     } else {
+        const d20 = request.reliableTalent ? "{1d20, 0d0 + 10}kh1" : "1d20";
         return template(request, "simple", {
             "charname": request.character.name,
             "rname": request.skill,
             "mod": modifier + format_plus_mod(custom_roll_dice),
-            "r1": genRoll("1d20", { [request.ability]: modifier, "CUSTOM": custom_roll_dice })
+            "r1": genRoll(d20, { [request.ability]: modifier, "CUSTOM": custom_roll_dice })
         });
     }
 }
