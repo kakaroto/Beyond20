@@ -4503,7 +4503,8 @@ function rollAction(paneClass) {
             character.getSetting("warlock-hexblade-curse", false))
             critical_limit = 19;
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.
-        if (action_name == "Polearm Master - Bonus Attack" || action_name.includes("Unarmed Strike") || action_name == "Tavern Brawler Strike") {
+        if (action_name == "Polearm Master - Bonus Attack" || action_name.includes("Unarmed Strike") || action_name == "Tavern Brawler Strike"
+            || action_name.includes("Psychic Blade")) {
             if (character.hasClassFeature("Fighting Style: Great Weapon Fighting"))
                 damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&<=2");
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
@@ -4513,8 +4514,19 @@ function rollAction(paneClass) {
                 critical_limit = 19;
             if (character.hasClassFeature("Superior Critical"))
                 critical_limit = 18;
-
-            if (character.getSetting("brutal-critical")) {
+            
+            //Apply Sneak Attack to rollAction ONLY when "Reach" is not included in the Range/Area
+            //This should preclude melee attacks only, as Sneak Attack Requires Ranged/Finesse, and those are included in rollItem primarily
+            //Notable exception here is Psychic Blades for Soulknife Rogue
+            if (character.hasClass("Rogue") &&
+                character.getSetting("rogue-sneak-attack", false) &&
+                !properties["Range/Area"].includes("Reach")) {
+                const sneak_attack = Math.ceil(character._classes["Rogue"] / 2) + "d6";
+                damages.push(sneak_attack);
+                damage_types.push("Sneak Attack");
+            }
+            
+            if (character.getSetting("brutal-critical") && !properties["Range/Area"].includes("Reach")) {
                 if (character.hasClassFeature("Brutal Critical")) {
                     const barbarian_level = character.getClassLevel("Barbarian");
                     brutal += 1 + Math.floor((barbarian_level - 9) / 4);
@@ -4522,13 +4534,15 @@ function rollAction(paneClass) {
                 if (character.hasRacialTrait("Savage Attacks"))
                     brutal += 1;
             }
-            if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) {
+            if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)
+                && !properties["Range/Area"].includes("Reach")) {
                 const barbarian_level = character.getClassLevel("Barbarian");
                 const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
                 damages.push(String(rage_damage));
                 damage_types.push("Rage");
             }
-            if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)) {
+            if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)
+                && !properties["Range/Area"].includes("Reach")) {
                 const fighter_level = character.getClassLevel("Fighter");
                 damages.push(fighter_level < 10 ? "1d6" : "1d8");
                 damage_types.push("Giant Might");
