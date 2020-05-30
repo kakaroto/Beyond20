@@ -500,6 +500,14 @@ function rollAction(paneClass) {
                     damage_types.push("Crimson Rite");
                 }
             }
+            if (action_name.includes("Psychic Blade")) {
+                if (character.hasClass("Rogue") &&
+                    character.getSetting("rogue-sneak-attack", false)) {
+                    const sneak_attack = Math.ceil(character._classes["Rogue"] / 2) + "d6";
+                    damages.push(sneak_attack);
+                    damage_types.push("Sneak Attack");
+                }
+            }
         }
 
         //Protector Aasimar: Radiant Soul Damage
