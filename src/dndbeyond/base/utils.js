@@ -215,7 +215,7 @@ function isRollButtonAdded() {
 }
 
 function isCustomRollIconsAdded() {
-    return $(".ct-beyond20-custom-roll").length > 0;
+    return $(".ct-beyond20-custom-roll, .ct-beyond20-custom-roll-button").length > 0;
 }
 
 function isHitDieButtonAdded() {
