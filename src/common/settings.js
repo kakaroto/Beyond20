@@ -539,55 +539,57 @@ function createHTMLOptionEx(name, option, short = false) {
     const title = short ? option.short : option.title;
     let e = null;
     if (option.type == "bool") {
-        e = E.li({class: "list-group-item beyond20-option beyond20-option-bool"},
-            E.label({class: "list-content", for: name},
+        e = E.li({ class: "list-group-item beyond20-option beyond20-option-bool" },
+            E.label({ class: "list-content", for: name },
                 E.h4({}, title),
                 ...description_p,
-                E.div({class:'material-switch pull-right'},
-                    E.input({id: name, class: "beyond20-option-input", name, type: "checkbox"}),
-                    E.label({for: name, class: "label-default"})
+                E.div({ class: 'material-switch pull-right' },
+                    E.input({ id: name, class: "beyond20-option-input", name, type: "checkbox" }),
+                    E.label({ for: name, class: "label-default" })
                 )
             )
         );
     } else if (option.type == "string") {
-        e = E.li({class: "list-group-item beyond20-option beyond20-option-string"},
-            E.label({class:"list-content", for: name},
+        e = E.li({ class: "list-group-item beyond20-option beyond20-option-string" },
+            E.label({ class: "list-content", for: name },
                 E.h4({}, title),
                 ...description_p,
-                E.div({class: "right-entry"},
-                    E.input({id: name, class: "beyond20-option-input", name, type:"text"})
+                E.div({ class: "right-entry" },
+                    E.input({ id: name, class: "beyond20-option-input", name, type: "text" })
                 )
             )
         );
     } else if (option.type == "combobox") {
-        const dropdown_options = Object.values(option.choices).map(o => E.li({}, E.a({href: "#"}, o)));
+        const dropdown_options = Object.values(option.choices).map(o => E.li({}, E.a({ href: "#" }, o)));
         for (let p of description_p) {
             p.classList.add("select");
         }
-        e = E.li({class: "list-group-item beyond20-option beyond20-option-combobox"},
-            E.label({class: "list-content", for: name},
-                E.h4({class: "select"}, title),
+        e = E.li({ class: "list-group-item beyond20-option beyond20-option-combobox" },
+            E.label({ class: "list-content", for: name },
+                E.h4({ class: "select" }, title),
                 ...description_p,
-                E.div({class: "button-group"},
-                    E.a({id: name, class: "input select beyond20-option-input", href: ""}, option.choices[option.default]),
-                    E.ul({class: "dropdown-menu"},
+                E.div({ class: "button-group" },
+                    E.a({ id: name, class: "input select beyond20-option-input", href: "" }, option.choices[option.default]),
+                    E.ul({ class: "dropdown-menu" },
                         ...dropdown_options),
-                    E.i({id: `${name}--icon`, class: "icon select"})
+                    E.i({ id: `${name}--icon`, class: "icon select" })
                 )
             )
         );
     } else if (option.type == "link") {
-        e = E.li({class: "list-group-item beyond20-option beyond20-option-link"},
-            E.label({class: "list-content", id: name},
-                E.a({href: option.default},
+        e = E.li({ class: "list-group-item beyond20-option beyond20-option-link" },
+            E.label({ class: "list-content", id: name },
+                E.a({ href: option.default },
                     E.h4({}, title)),
                 ...description_p,
-                E.a({href: option.default},
-                    E.div({class: "image-link"},
-                        E.img({class: "link-image",
+                E.a({ href: option.default },
+                    E.div({ class: "image-link" },
+                        E.img({
+                            class: "link-image",
                             width: option['icon-width'],
                             height: option['icon-height'],
-                            src: option.icon.startsWith("/") ? chrome.extension.getURL(option.icon) : option.icon})
+                            src: option.icon.startsWith("/") ? chrome.extension.getURL(option.icon) : option.icon
+                        })
                     )
                 )
             )
@@ -719,25 +721,27 @@ function initializeSettings(cb = null) {
 
 function createRoll20TabCombobox(name, short, dropdown_options) {
     const opt = options_list[name];
-    const description = short ? "Restrict where rolls are sent.\nUseful if (you have multiple VTT windows open" : opt.description;
+    const description = short ? "Restrict where rolls are sent.\nUseful if you have multiple VTT windows open" : opt.description;
     const title = short ? "Send Beyond 20 rolls to" : opt.title;
     const description_p = description.split("\n").map(desc => E.p({}, desc));
     let options = [];
     for (let option of dropdown_options)
-        options.push(E.li({}, E.a({href: "#"}, option)));
+        options.push(E.li({}, E.a({ href: "#" }, option)));
     for (let p of description_p)
         p.classList.add("select");
 
-    return E.li({id: "beyond20-option-vtt-tab",
-        class: "list-group-item beyond20-option beyond20-option-combobox" + (short ? " vtt-tab-short" : "")},
-        E.label({class: "list-content", for: name},
-            E.h4({class: "select"}, title),
+    return E.li({
+        id: "beyond20-option-vtt-tab",
+        class: "list-group-item beyond20-option beyond20-option-combobox" + (short ? " vtt-tab-short" : "")
+    },
+        E.label({ class: "list-content", for: name },
+            E.h4({ class: "select" }, title),
             ...description_p,
-            E.div({class: "button-group"},
-                E.a({id: name, class: "input select beyond20-option-input", href: ""}, "All VTT Tabs"),
-                E.ul({class: "dropdown-menu"},
+            E.div({ class: "button-group" },
+                E.a({ id: name, class: "input select beyond20-option-input", href: "" }, "All VTT Tabs"),
+                E.ul({ class: "dropdown-menu" },
                     ...options),
-                E.i({id: `${name}--icon`, class: "icon select"})
+                E.i({ id: `${name}--icon`, class: "icon select" })
             )
         )
     );
@@ -821,7 +825,7 @@ function setVTTTabSetting(name, settings) {
         if (new_options !== null) {
             const dropdown_options = [];
             for (let option of new_options)
-                dropdown_options.push(E.li({}, E.a({href: "#"}, option)));
+                dropdown_options.push(E.li({}, E.a({ href: "#" }, option)));
             combobox.replaceWith(createRoll20TabCombobox("vtt-tab", short, dropdown_options));
             initializeMarkaGroup($("#beyond20-option-vtt-tab"));
             console.log("Added new options", dropdown_options);
