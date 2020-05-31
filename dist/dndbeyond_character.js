@@ -5273,7 +5273,7 @@ function injectRollButton(paneClass) {
             return;
         }
         const base = $(".ct-creature-block").length > 0 ? ".ct-creature-block" : ".ddbc-creature-block";
-        const creature = new Monster("Creature", base, settings);
+        creature = new Monster("Creature", base, settings);
         creature.parseStatBlock();
         creature.updateInfo();
     } else if (paneClass == "ct-vehicle-pane") {
