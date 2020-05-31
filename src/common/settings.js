@@ -163,7 +163,8 @@ const options_list = {
 
     "template": {
         "type": "migrate",
-        "default": "roll20-template"
+        "to": "roll20-template",
+        "default": "roll20"
     },
 
     "roll20-template": {
@@ -177,7 +178,8 @@ const options_list = {
 
     "subst-roll20": {
         "type": "migrate",
-        "default": "subst-vtt"
+        "to": "subst-vtt",
+        "default": true
     },
 
     "subst-vtt": {
@@ -236,7 +238,8 @@ const options_list = {
 
     "roll20-tab": {
         "type": "migrate",
-        "default": "vtt-tab"
+        "to": "vtt-tab",
+        "default": null
     },
 
     "vtt-tab": {
@@ -489,13 +492,13 @@ function getStoredSettings(cb, key = "settings", _list = options_list) {
                 if (Object.keys(stored_settings).includes(opt)) {
                     if (stored_settings[opt] != _list[opt].default) {
                         // Migrate opts over when loading them;
-                        stored_settings[_list[opt].default] = stored_settings[opt];
+                        stored_settings[_list[opt].to] = stored_settings[opt];
                         migrated_keys.push(opt);
                     }
                     delete stored_settings[opt];
                 }
             } else if (!Object.keys(stored_settings).includes(opt)) {
-                // On Firefox, if (setting is  !in storage, it won't return the default value;
+                // On Firefox, if setting is not in storage, it won't return the default value
                 stored_settings[opt] = settings[opt];
             }
         }
