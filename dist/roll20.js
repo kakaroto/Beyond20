@@ -2453,6 +2453,7 @@ function subDescriptionRolls(request, description) {
         return description;
     const replaceCB = (dice, modifier) => {
         dice = dice.replace(/ro<=([0-9]+)/, "ro<$1");
+        dice = dice.replace(/(^|\s)+([^\s]+)min([0-9]+)/g, "$1{$2, 0d0 + $3}kh1");
         const roll = (dice == "" ? "1d20" : dice) + modifier;
         const roll_template = template(request, "simple",
             {

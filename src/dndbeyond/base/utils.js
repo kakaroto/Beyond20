@@ -75,7 +75,7 @@ function damagesToCrits(character, damages) {
     if (rule == CriticalRules.HOMEBREW_REROLL || rule == CriticalRules.HOMEBREW_MOD)
         return damages.slice();
     for (let damage of damages) {
-        const damage_matches = reMatchAll(/([0-9]*)d([0-9]+)(ro<=[0-9]+)?/, damage) || [];
+        const damage_matches = reMatchAll(/([0-9]*)d([0-9]+)(?:ro<=[0-9]+)?(?:min[0-9]+)?/, damage) || [];
         const damage_parts = damage_matches.map(match => {
             if (rule == CriticalRules.HOMEBREW_MAX) {
                 dice = parseInt(match[1] || 1);
