@@ -317,8 +317,8 @@ class Beyond20RollRenderer {
 
         html += "</div>";
         const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
-
-        postToDiscord(this._settings["discord-secret"], request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open).then(discord_error => {
+        const discordChannel = (this._settings["discord-channels"] || []).find(c => c.active);
+        postToDiscord(discordChannel ? discordChannel.secret : "", request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open).then(discord_error => {
             if (discord_error != undefined)
                 this._displayer.displayError("Beyond20 Discord Integration: " + discord_error);
         });
@@ -744,7 +744,8 @@ class Beyond20RollRenderer {
 
     displayAvatar(request) {
         const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
-        postToDiscord(this._settings["discord-secret"], request, request.name, "", {}, "", [], [], [], [], false).then((error) => {
+        const discordChannel = (this._settings["discord-channels"] || []).find(c => c.active);
+        postToDiscord(discordChannel ? discordChannel.secret : "", request, request.name, "", {}, "", [], [], [], [], false).then((error) => {
             if (error)
                 this._displayer.displayError("Beyond20 Discord Integration: " + error);
         });

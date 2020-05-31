@@ -317,7 +317,8 @@ const options_list = {
 
     "template": {
         "type": "migrate",
-        "default": "roll20-template"
+        "to": "roll20-template",
+        "default": "roll20"
     },
 
     "roll20-template": {
@@ -331,7 +332,8 @@ const options_list = {
 
     "subst-roll20": {
         "type": "migrate",
-        "default": "subst-vtt"
+        "to": "subst-vtt",
+        "default": true
     },
 
     "subst-vtt": {
@@ -390,7 +392,8 @@ const options_list = {
 
     "roll20-tab": {
         "type": "migrate",
-        "default": "vtt-tab"
+        "to": "vtt-tab",
+        "default": null
     },
 
     "vtt-tab": {
@@ -412,11 +415,16 @@ const options_list = {
     },
 
     "discord-secret": {
-        "title": "Discord Bot Secret Key",
-        "description": "Enter the secret key the Bot gave you, or Discord server owner. Clear it to disable Discord integration.\n" +
-            "Note that sending to Discord only works with the D&D Beyond Dice Roller, and Foundry VTT.",
-        "type": "string",
+        "type": "migrate",
+        "to": "discord-channels",
         "default": ""
+    },
+
+    "discord-channels": {
+        "title": "Discord Default Destination Channel",
+        "description": "Default Discord destination channel to send rolls to",
+        "type": "special",
+        "default": null
     },
 
     "show-changelog": {
@@ -643,13 +651,13 @@ function getStoredSettings(cb, key = "settings", _list = options_list) {
                 if (Object.keys(stored_settings).includes(opt)) {
                     if (stored_settings[opt] != _list[opt].default) {
                         // Migrate opts over when loading them;
-                        stored_settings[_list[opt].default] = stored_settings[opt];
+                        stored_settings[_list[opt].to] = stored_settings[opt];
                         migrated_keys.push(opt);
                     }
                     delete stored_settings[opt];
                 }
             } else if (!Object.keys(stored_settings).includes(opt)) {
-                // On Firefox, if (setting is  !in storage, it won't return the default value;
+                // On Firefox, if setting is not in storage, it won't return the default value
                 stored_settings[opt] = settings[opt];
             }
         }
@@ -690,55 +698,57 @@ function createHTMLOptionEx(name, option, short = false) {
     const title = short ? option.short : option.title;
     let e = null;
     if (option.type == "bool") {
-        e = E.li({class: "list-group-item beyond20-option beyond20-option-bool"},
-            E.label({class: "list-content", for: name},
+        e = E.li({ class: "list-group-item beyond20-option beyond20-option-bool" },
+            E.label({ class: "list-content", for: name },
                 E.h4({}, title),
                 ...description_p,
-                E.div({class:'material-switch pull-right'},
-                    E.input({id: name, class: "beyond20-option-input", name, type: "checkbox"}),
-                    E.label({for: name, class: "label-default"})
+                E.div({ class: 'material-switch pull-right' },
+                    E.input({ id: name, class: "beyond20-option-input", name, type: "checkbox" }),
+                    E.label({ for: name, class: "label-default" })
                 )
             )
         );
     } else if (option.type == "string") {
-        e = E.li({class: "list-group-item beyond20-option beyond20-option-string"},
-            E.label({class:"list-content", for: name},
+        e = E.li({ class: "list-group-item beyond20-option beyond20-option-string" },
+            E.label({ class: "list-content", for: name },
                 E.h4({}, title),
                 ...description_p,
-                E.div({class: "right-entry"},
-                    E.input({id: name, class: "beyond20-option-input", name, type:"text"})
+                E.div({ class: "right-entry" },
+                    E.input({ id: name, class: "beyond20-option-input", name, type: "text" })
                 )
             )
         );
     } else if (option.type == "combobox") {
-        const dropdown_options = Object.values(option.choices).map(o => E.li({}, E.a({href: "#"}, o)));
+        const dropdown_options = Object.values(option.choices).map(o => E.li({}, E.a({ href: "#" }, o)));
         for (let p of description_p) {
             p.classList.add("select");
         }
-        e = E.li({class: "list-group-item beyond20-option beyond20-option-combobox"},
-            E.label({class: "list-content", for: name},
-                E.h4({class: "select"}, title),
+        e = E.li({ class: "list-group-item beyond20-option beyond20-option-combobox" },
+            E.label({ class: "list-content", for: name },
+                E.h4({ class: "select" }, title),
                 ...description_p,
-                E.div({class: "button-group"},
-                    E.a({id: name, class: "input select beyond20-option-input", href: ""}, option.choices[option.default]),
-                    E.ul({class: "dropdown-menu"},
+                E.div({ class: "button-group" },
+                    E.a({ id: name, class: "input select beyond20-option-input", href: "" }, option.choices[option.default]),
+                    E.ul({ class: "dropdown-menu" },
                         ...dropdown_options),
-                    E.i({id: `${name}--icon`, class: "icon select"})
+                    E.i({ id: `${name}--icon`, class: "icon select" })
                 )
             )
         );
     } else if (option.type == "link") {
-        e = E.li({class: "list-group-item beyond20-option beyond20-option-link"},
-            E.label({class: "list-content", id: name},
-                E.a({href: option.default},
+        e = E.li({ class: "list-group-item beyond20-option beyond20-option-link" },
+            E.label({ class: "list-content", id: name },
+                E.a({ href: option.default },
                     E.h4({}, title)),
                 ...description_p,
-                E.a({href: option.default},
-                    E.div({class: "image-link"},
-                        E.img({class: "link-image",
+                E.a({ href: option.default },
+                    E.div({ class: "image-link" },
+                        E.img({
+                            class: "link-image",
                             width: option['icon-width'],
                             height: option['icon-height'],
-                            src: option.icon.startsWith("/") ? chrome.extension.getURL(option.icon) : option.icon})
+                            src: option.icon.startsWith("/") ? chrome.extension.getURL(option.icon) : option.icon
+                        })
                     )
                 )
             )
@@ -792,8 +802,9 @@ function initializeMarkaGroup(group) {
         }
     }
 
-    triggerOpen.bind("click", makeOpenCB(dropdown_menu, marka, m));
-    triggerClose.bind("click", makeCloseCB(dropdown_menu, input, m));
+    triggerOpen.click(makeOpenCB(dropdown_menu, marka, m));
+    triggerClose.click(makeCloseCB(dropdown_menu, input, m));
+    return m;
 }
 
 function initializeMarka() {
@@ -870,25 +881,27 @@ function initializeSettings(cb = null) {
 
 function createRoll20TabCombobox(name, short, dropdown_options) {
     const opt = options_list[name];
-    const description = short ? "Restrict where rolls are sent.\nUseful if (you have multiple VTT windows open" : opt.description;
+    const description = short ? "Restrict where rolls are sent.\nUseful if you have multiple VTT windows open" : opt.description;
     const title = short ? "Send Beyond 20 rolls to" : opt.title;
     const description_p = description.split("\n").map(desc => E.p({}, desc));
     let options = [];
     for (let option of dropdown_options)
-        options.push(E.li({}, E.a({href: "#"}, option)));
+        options.push(E.li({}, E.a({ href: "#" }, option)));
     for (let p of description_p)
         p.classList.add("select");
 
-    return E.li({id: "beyond20-option-vtt-tab",
-        class: "list-group-item beyond20-option beyond20-option-combobox" + (short ? " vtt-tab-short" : "")},
-        E.label({class: "list-content", for: name},
-            E.h4({class: "select"}, title),
+    return E.li({
+        id: "beyond20-option-vtt-tab",
+        class: "list-group-item beyond20-option beyond20-option-combobox" + (short ? " vtt-tab-short" : "")
+    },
+        E.label({ class: "list-content", for: name },
+            E.h4({ class: "select" }, title),
             ...description_p,
-            E.div({class: "button-group"},
-                E.a({id: name, class: "input select beyond20-option-input", href: ""}, "All VTT Tabs"),
-                E.ul({class: "dropdown-menu"},
+            E.div({ class: "button-group" },
+                E.a({ id: name, class: "input select beyond20-option-input", href: "" }, "All VTT Tabs"),
+                E.ul({ class: "dropdown-menu" },
                     ...options),
-                E.i({id: `${name}--icon`, class: "icon select"})
+                E.i({ id: `${name}--icon`, class: "icon select" })
             )
         )
     );
@@ -972,7 +985,7 @@ function setVTTTabSetting(name, settings) {
         if (new_options !== null) {
             const dropdown_options = [];
             for (let option of new_options)
-                dropdown_options.push(E.li({}, E.a({href: "#"}, option)));
+                dropdown_options.push(E.li({}, E.a({ href: "#" }, option)));
             combobox.replaceWith(createRoll20TabCombobox("vtt-tab", short, dropdown_options));
             initializeMarkaGroup($("#beyond20-option-vtt-tab"));
             console.log("Added new options", dropdown_options);
@@ -1023,9 +1036,151 @@ function setCurrentTab(tab) {
 }
 
 var current_tab = null;
+
+
+function createDiscordChannelsCombobox(name, description, title, dropdown_options) {
+    const description_p = description.split("\n").map(desc => E.p({}, desc));
+    let options = [];
+    for (let option of dropdown_options) {
+        const name = option.secret ? E.strong({}, option.name) : option.name;
+        const attributes = {};
+        if (option.action)
+            attributes['data-action'] = option.action;
+        if (option.secret !== undefined)
+            attributes['data-secret'] = option.secret;
+        options.push(E.li(attributes, E.a({ href: "#" }, name)));
+    }
+    for (let p of description_p)
+        p.classList.add("select");
+
+    return E.li({
+        id: "beyond20-option-discord-channels",
+        class: "list-group-item beyond20-option beyond20-option-combobox"
+    },
+        E.label({ class: "list-content", for: name },
+            E.h4({ class: "select" }, title),
+            ...description_p,
+            E.div({ class: "button-group" },
+                E.a({ id: name, class: "input select beyond20-option-input", href: "" }, dropdown_options[0].name),
+                E.ul({ class: "dropdown-menu" },
+                    ...options),
+                E.i({ id: `${name}--icon`, class: "icon select" })
+            )
+        )
+    );
+}
+function createDiscordChannelsSetting(name, short) {
+    const opt = options_list[name];
+    const dropdowns = [{ name: "Do not send to Discord", active: true, secret: "" }]
+    return createDiscordChannelsCombobox(name, opt.description, opt.title, dropdowns);
+
+}
+function setDiscordChannelsSetting(name, settings) {
+    let val = settings[name];
+    const dropdowns = [{ name: "Do not send to Discord", active: false, secret: "" }]
+
+    if (typeof (val) === "string")
+        val = [{ secret: val, name: "Unnamed Channel", active: true }];
+    const channels = val || [];
+    dropdowns.push(...channels)
+    if (!dropdowns.find(d => d.active)) dropdowns[0].active = true;
+    if (dropdowns.find(d => d.secret)) dropdowns.push({ name: "Delete selected channel", action: "delete" })
+    dropdowns.push({ name: "Add new channel", action: "add" })
+    
+    console.log("Added new options", dropdowns);
+    fillDisordChannelsDropdown(name, dropdowns);
+}
+function fillDisordChannelsDropdown(name, dropdowns, triggerChange=false) {
+    const settings_line = $("#beyond20-option-discord-channels");
+    if (settings_line.length == 0) return;
+    const opt = options_list[name];
+    settings_line.replaceWith(createDiscordChannelsCombobox(name, opt.description, opt.title, dropdowns));
+    const markaGroup = $("#beyond20-option-discord-channels")
+    const dropdown_menu = $(markaGroup).find(".dropdown-menu");
+    const button_group = $(markaGroup).find(".button-group");
+    const input = $(markaGroup).find('.input');
+    const m = initializeMarkaGroup(markaGroup);
+
+    const active = dropdowns.find(d => d.active);
+    input.text(active.name);
+    input.attr("data-secret", active.secret.slice(0, 12));
+    
+    $("#beyond20-option-discord-channels li").off('click').click(ev => {
+        ev.stopPropagation();
+        ev.preventDefault()
+        const li = ev.currentTarget;
+        const secret = li.dataset.secret;
+
+        if (secret !== undefined) {
+            input.text(li.textContent);
+            input.attr("data-secret", secret.slice(0, 12));
+        }
+        dropdown_menu.removeClass('open');
+        button_group.removeClass('open');
+        m.set('triangle').size(10);
+        dropdowns.forEach(d => d.active = (d.name === li.textContent && d.secret === secret))
+        fillDisordChannelsDropdown(name, dropdowns, true);
+    });
+    $("#beyond20-option-discord-channels li[data-action=add]").off('click').click(ev => {
+        ev.stopPropagation();
+        ev.preventDefault()
+        
+        dropdown_menu.removeClass('open');
+        button_group.removeClass('open');
+        m.set('triangle').size(10);
+        alertify.prompt('Enter a friendly name for the discord channel you wish to add', '', (evt, channelName) => {
+            console.log("Got evt ", evt, channelName);
+            setTimeout(() => {
+                alertify.prompt('Enter the secret value given by the Beyond20 Bot', '', (evt, channelSecret) => {
+                    console.log("Adding new channel ", channelName, channelSecret);
+                    dropdowns.splice(1, 0, {name: channelName, secret: channelSecret});
+                    fillDisordChannelsDropdown(name, dropdowns, true);
+                });
+            }, 100);
+        });
+    });
+    $("#beyond20-option-discord-channels li[data-action=delete]").off('click').click(ev => {
+        ev.stopPropagation();
+        ev.preventDefault();
+        console.log("DELETE");
+        dropdown_menu.removeClass('open');
+        button_group.removeClass('open');
+        m.set('triangle').size(10);
+        const toDelete = dropdowns.findIndex(d => d.active);
+        if (toDelete > 0) {
+            dropdowns.splice(toDelete, 1);
+            dropdowns[0].active = true;
+            fillDisordChannelsDropdown(name, dropdowns, true);
+        }
+    });
+    if (triggerChange)
+        input.trigger("markaChanged");
+}
+
+function getDiscordChannelsSetting(name) {
+    const combobox = $("#beyond20-option-discord-channels .dropdown-menu li");
+    const opt = $("#" + name);
+    const value = opt.attr("data-secret");
+    const channels = [];
+    for (let option of combobox.toArray()) {
+        const secret = option.dataset.secret;
+        if (secret)
+            channels.push({ name: option.textContent, secret })
+    }
+    if (value) {
+        const active = channels.find(c => c.secret.slice(0, 12) === value);
+        if (active)
+            active.active = true;
+    }
+    console.log("Get Discord channels : ", channels);
+    return channels;
+}
 options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting;
 options_list["vtt-tab"]["set"] = setVTTTabSetting;
 options_list["vtt-tab"]["get"] = getVTTTabSetting;
+options_list["discord-channels"]["createHTMLElement"] = createDiscordChannelsSetting;
+options_list["discord-channels"]["set"] = setDiscordChannelsSetting;
+options_list["discord-channels"]["get"] = getDiscordChannelsSetting;
 
 /*from elementmaker import E;
 from settings import options_list, createHTMLOptionEx;
