@@ -81,7 +81,7 @@ class Beyond20BaseRoll {
     toJSON() {
         return {
             "formula": this.formula,
-            "parts": this.parts,
+            "parts": this.parts.map(p => p.toJSON ? p.toJSON() : p),
             "fail-limit": this._fail_limit,
             "critical-limit": this._critical_limit,
             "critical-failure": this.isCriticalFail(),

@@ -1174,6 +1174,14 @@ function getDiscordChannelsSetting(name) {
     console.log("Get Discord channels : ", channels);
     return channels;
 }
+
+function getDiscordChannel(settings, character) {
+    const channels = (settings["discord-channels"] || [])
+    if (typeof (channels) === "string")
+        return channels;
+    return channels.find(c => c.active);
+}
+
 options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting;
 options_list["vtt-tab"]["set"] = setVTTTabSetting;
 options_list["vtt-tab"]["get"] = getVTTTabSetting;
@@ -1350,7 +1358,7 @@ class Beyond20BaseRoll {
     toJSON() {
         return {
             "formula": this.formula,
-            "parts": this.parts,
+            "parts": this.parts.map(p => p.toJSON ? p.toJSON() : p),
             "fail-limit": this._fail_limit,
             "critical-limit": this._critical_limit,
             "critical-failure": this.isCriticalFail(),
@@ -1934,7 +1942,7 @@ class Beyond20RollRenderer {
 
         html += "</div>";
         const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
-        const discordChannel = (this._settings["discord-channels"] || []).find(c => c.active);
+        const discordChannel = getDiscordChannel(this._settings, request.character)
         postToDiscord(discordChannel ? discordChannel.secret : "", request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open).then(discord_error => {
             if (discord_error != undefined)
                 this._displayer.displayError("Beyond20 Discord Integration: " + discord_error);
@@ -2361,7 +2369,7 @@ class Beyond20RollRenderer {
 
     displayAvatar(request) {
         const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
-        const discordChannel = (this._settings["discord-channels"] || []).find(c => c.active);
+        const discordChannel = getDiscordChannel(this._settings, request.character)
         postToDiscord(discordChannel ? discordChannel.secret : "", request, request.name, "", {}, "", [], [], [], [], false).then((error) => {
             if (error)
                 this._displayer.displayError("Beyond20 Discord Integration: " + error);

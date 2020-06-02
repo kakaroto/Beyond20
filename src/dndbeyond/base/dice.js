@@ -51,12 +51,13 @@ class DNDBDisplayer {
             source,
             attributes,
             description,
-            attack_rolls,
+            attack_rolls: attack_rolls.map(r => r.toJSON ? r.toJSON() : r),
             roll_info,
-            damage_rolls,
-            total_damages,
+            damage_rolls: damage_rolls.map(([l, r, f]) => r.toJSON() ? [l, r.toJSON(), f] : [l, r, f]),
+            total_damages: Object.fromEntries(Object.entries(total_damages).map(([k, v]) => [k, v.toJSON ? v.toJSON() : v])),
             open
         }
+        console.log("Sending message: ", req);
         chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(character, resp));
     }
     displayError(message) {
