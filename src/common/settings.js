@@ -1021,6 +1021,14 @@ function getDiscordChannelsSetting(name) {
     console.log("Get Discord channels : ", channels);
     return channels;
 }
+
+function getDiscordChannel(settings, character) {
+    const channels = (settings["discord-channels"] || [])
+    if (typeof (channels) === "string")
+        return channels;
+    return channels.find(c => c.active);
+}
+
 options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting;
 options_list["vtt-tab"]["set"] = setVTTTabSetting;
 options_list["vtt-tab"]["get"] = getVTTTabSetting;
