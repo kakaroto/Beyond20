@@ -605,6 +605,12 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "indomitable-might": {
+        "title": "Barbarian: Indomitable Might",
+        "description": "Your strength is unmatched!",
+        "type": "bool",
+        "default": true
     }
 }
 
@@ -2036,13 +2042,16 @@ class Beyond20RollRenderer {
             let d20_modifier = request.reliableTalent ? "min10" : "";
             if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
                 d20_modifier = "min10";
+            if (request.indomitableMight && request.skill === "Athletics")
+                d20_modifier = request.indomitableMight ? `min${(parseInt(request.character.abilities[0][2])-parseInt(request.modifier))}` : "";
             return this.rollD20(request, request.skill + "(" + request.modifier + ")", data, d20_modifier);
         }
     }
 
     rollAbility(request, custom_roll_dice = "") {
         const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-        return this.rollD20(request, request.name + "(" + request.modifier + ")", data);
+        const d20_modifier = request.indomitableMight ? `min${(parseInt(request.character.abilities[0][2])-parseInt(request.modifier))}` : "";
+        return this.rollD20(request, request.name + "(" + request.modifier + ")", data, d20_modifier);
     }
 
     rollSavingThrow(request, custom_roll_dice = "") {

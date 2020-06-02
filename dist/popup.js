@@ -649,6 +649,12 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "indomitable-might": {
+        "title": "Barbarian: Indomitable Might",
+        "description": "Your strength is unmatched!",
+        "type": "bool",
+        "default": true
     }
 }
 
@@ -1413,6 +1419,10 @@ function populateCharacter(response) {
         }
         if (response["racial-traits"].includes("Radiant Soul")) {
             e = createHTMLOption("protector-aasimar-radiant-soul", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Indomitable Might")) {
+            e = createHTMLOption("indomitable-might", false, character_settings);
             options.append(e);
         }
 
