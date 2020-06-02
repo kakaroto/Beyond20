@@ -233,7 +233,7 @@ function updateConditions(request, name, conditions, exhaustion) {
     let display_conditions = conditions;
     if (exhaustion > 0)
         display_conditions = conditions.concat(["Exhausted (Level " + exhaustion + ")"]);
-    const message = name + (display_conditions.length == 0) ? " has no active condition" : " is : " + display_conditions.join(", ");
+    const message = name + (display_conditions.length == 0 ? " has no active condition" : " is : " + display_conditions.join(", "));
     const MESSAGE_TYPES = CONST.CHAT_MESSAGE_TYPES || CHAT_MESSAGE_TYPES;
     ChatMessage.create({
         "content": message,
