@@ -42,4 +42,9 @@ function disconnectAllEvents() {
 var registered_events = [];
 registered_events.push(addCustomEventListener("UpdateHP", updateHP));
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
-checkForOGL();
+
+// Hack for VTT ES making every script load before Roll20 loads
+if (window.$ !== undefined)
+    checkForOGL();
+else
+    window.addEventListener("DOMContentLoaded", checkForOGL);
