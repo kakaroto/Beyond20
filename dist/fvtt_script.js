@@ -1373,8 +1373,8 @@ class Beyond20BaseRoll {
 
 class DNDBDice {
     constructor(amount, faces, modifiers = "") {
-        this.amount = parseInt(amount);
-        this.faces = parseInt(faces);
+        this.amount = parseInt(amount) || 1;
+        this.faces = parseInt(faces) || 0;
         this._modifiers = modifiers || "";
         this._reroll = { "active": false, "value": 0, "operator": "=" }
         this._dk = { "drop": false, "keep": false, "high": false, "amount": 0 }
