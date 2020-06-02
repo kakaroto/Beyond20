@@ -1762,7 +1762,7 @@ class Beyond20RollRenderer {
     }
 
     injectRollsInDescription(description) {
-        const icon = "/modules/beyond20/images/icons/badges/custom20.png";
+        const icon = "/modules/beyond20/images/icons/icon20.png";
         return replaceRolls(description, (dice, modifier) => {
             const dice_formula = (dice == "" ? "1d20" : dice) + modifier;
             // <u> is filtered 0.3.2, so using <span> instead;

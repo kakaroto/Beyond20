@@ -122,7 +122,7 @@ class FVTTRoller {
 class FVTTPrompter {
     prompt(title, html, ok_label = "OK", cancel_label = "Cancel") {
         return new Promise((resolve, reject) => {
-            const icon = `<img style="border: 0px;" src="${extension_url}images/icons/badges/normal20.png"></img>`;
+            const icon = `<img style="border: 0px;" src="${extension_url}images/icons/icon20.png"></img>`;
             let ok_pressed = false;
             new Dialog({
                 "title": title,

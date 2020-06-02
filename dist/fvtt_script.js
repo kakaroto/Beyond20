@@ -1763,7 +1763,7 @@ class Beyond20RollRenderer {
     }
 
     injectRollsInDescription(description) {
-        const icon = "/modules/beyond20/images/icons/badges/custom20.png";
+        const icon = "/modules/beyond20/images/icons/icon20.png";
         return replaceRolls(description, (dice, modifier) => {
             const dice_formula = (dice == "" ? "1d20" : dice) + modifier;
             // <u> is filtered 0.3.2, so using <span> instead;
@@ -2598,7 +2598,7 @@ class FVTTRoller {
 class FVTTPrompter {
     prompt(title, html, ok_label = "OK", cancel_label = "Cancel") {
         return new Promise((resolve, reject) => {
-            const icon = `<img style="border: 0px;" src="${extension_url}images/icons/badges/normal20.png"></img>`;
+            const icon = `<img style="border: 0px;" src="${extension_url}images/icons/icon20.png"></img>`;
             let ok_pressed = false;
             new Dialog({
                 "title": title,
