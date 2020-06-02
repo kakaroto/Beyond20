@@ -46,9 +46,9 @@ So far in nearly one year, up to the 1.1 release last month, 173 issues (bugs an
 | 0.9     | 37 commits   |  69 days         |
 | 1.0     | 37 commits   |  32 days         |
 | 1.1     | 24 commits   |  24 days         |
-| 2.0     | 161 commits  |  53 days         |
+| 2.0     | 165 commits  |  53 days         |
 
-Oh and by the way, Beyond20 now has over 132 000 users which is just incredible! 🥳
+Oh and by the way, Beyond20 now has over 135 000 users which is just incredible! 🥳
 
 Now let's get down to the interesting bits. What does this release bring you?
 
