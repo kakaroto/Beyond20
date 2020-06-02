@@ -1,6 +1,6 @@
 {
 	"name": "Beyond 20",
-	"version": "1.1",
+	"version": "2.0",
 	"manifest_version": 2,
 	"description": "Integrates the D&D Beyond Character Sheets with Roll20 and Foundry VTT.",
 	"permissions": [
@@ -9,9 +9,8 @@
 		"storage",
 		"*://beyond20.kicks-ass.org/roll",
 		"*://app.roll20.net/editor/",
-		"*://*.forgevtt.com/game",
-		"*://*.forge-vtt.com/game",
-		"*://*.dndbeyond.com/*"
+		"*://*.dndbeyond.com/*",
+		"*://*.forge-vtt.com/game"
 	],
 	"icons": {
 		"16": "images/icons/icon16.png",
@@ -156,22 +155,6 @@
 		},
 		{
 			"matches": [
-				"*://*.forgevtt.com/game",
-				"*://*.forge-vtt.com/game"
-			],
-			"css": [
-				"libs/css/alertify.css",
-				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css"
-			],
-			"js": [
-				"libs/alertify.min.js",
-				"libs/jquery-3.4.1.min.js",
-				"dist/fvtt_test.js"
-			]
-		},
-		{
-			"matches": [
 				"*://app.roll20.net/editor/"
 			],
 			"css": [
@@ -183,6 +166,21 @@
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/roll20.js"
+			]
+		},
+		{
+			"matches": [
+				"*://*.forge-vtt.com/game"
+			],
+			"css": [
+				"libs/css/alertify.css",
+				"libs/css/alertify-themes/default.css",
+				"libs/css/alertify-themes/beyond20.css"
+			],
+			"js": [
+				"libs/alertify.min.js",
+				"libs/jquery-3.4.1.min.js",
+				"dist/fvtt_test.js"
 			]
 		}
 	]

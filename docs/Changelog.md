@@ -1,3 +1,62 @@
+v2.0
+===
+* **Feature**: Add integration with the D&D Beyond Digital Dice
+* **Feature**: Update the Beyond20 icon sets to make them more beautiful and usable at low resolutions. Icons provided by [Jerry Escandon](https://github.com/Jerryescandon)
+* **Feature**: *Discord*: Add a channel manager for Discord secret keys to allow easily switching channel destinationse](https://github.com/Brunhine))
+* **Feature**: *Discord*: Add support for whispered rolls in the Discord integration
+* **Feature**: *Roll20*: Automatically check for character sheet template and display the roll according to the campaign setting
+* **Feature**: Add quick roll button to Initiative
+* **Feature**: Add ability to send pre-rolled dice using the Digital Dice to Foundry and Roll20
+* **Feature**: *Discord*: Add support for customizing rolls (no spoiler tags) when requesting a secret key from the Discord Bot
+* **Feature**: *Discord*: Hide monster name, attack and formulas on Discord rolls when using the "hide monster name" whisper mode (By [@Brunhin
+* **Feature**: *Discord*: Add support for linking back to the character, spell and item, when rolling to discord
+* **Feature**: Add ability to display a monster avatar in the VTT (By [@Brunhine](https://github.com/Brunhine))
+* **Feature**: *Roll20*: Add custom modifiers to the display of the modifier field in Roll20 rolls (by [@spisin](https://github.com/spisin))
+* **Feature**: Allow the use of reroll modifiers on custom dice formulas
+* **Feature**: Differentiate between one handed and two handed damages for versatile weapons when rolling both damage types
+* **Feature**: Detect Advantage/Disadvantage indicator on skills and apply them to skill checks (By [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add the proper modifiers to a Fighter's Parry and Rally maneuvers
+* **Feature**: Differentiate between Brutal Critical damages and Savage Attacks damages (By [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Consider Unarmed Strike as natural weapons for class features that affect weapon attacks (brutal critical, giant might, etc..) (By [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for roll formulas in descriptions of the form "+ half your `<class>` level"
+* **Feature**: Add support for Ranger's Colossus Slayer class feature (By [@Brunhine](https://github.com/Brunhine))
+* **Feature**: Add support for Ranger's Planar Warrior class feature (By [@Brunhine](https://github.com/Brunhine))
+* **Feature**: Add support for Protector Aasimar's Radiant Soul class feature (By [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Flames of Phlegethos Feat (By [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Ranger's Slayer's Prey class feature
+* **Feature**: Add support for Ranger's Gathered Swarm class feature
+* **Feature**: Add support for Cleric's Supreme Healing class feature
+* **Feature**: Add support for Rogue's Reliable Talent class feature
+* **Feature**: Add support for the Elemental Adept Feat
+* **Bugfix**: Fix some edge cases in roll formula formatting in ability descriptions (By [@Brunhine](https://github.com/Brunhine))
+* **Bugfix**: Fix Fighter's Giant Might class feature not scaling its dice properly at level 11 (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix Cleric's Divine Strike to work for non melee weapons as well (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix handling of Great Weapon Fighting for the Polarm Master bonus action (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Roll Sneak Attack damages on Psychic Blades action (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix saving throws quick roll not working anymore (By [@kbuzsaki](https://github.com/kbuzsaki))
+* **Bugfix**: Do not display duplicate custom dice icons in the class features list
+* **Bugfix**: Fix the integrated dice roller not rolling 'd4' formulas (instead of '1d4') such as in the Bless spell
+* **Bugfix**: Apply Great Weapon Fighting rerolls to a weapon's additional damages
+* **Bugfix**: Fix Cleric's Life Transference damage being wrongly calculated
+* **Bugfix**: Fix custom damage labels being ignored for spells and actions
+* **Bugfix**: Fix class feature descriptions not being properly displayed
+* **Bugfix**: Fix rolling tools from Equipement due to change in equipment type
+* **Bugfix**: *Roll20*: Prevent multiple dice rolls in a single formula from appearing as separate formulas
+* **Bugfix**: *Foundry VTT*: Fix add to initiative breaking with 0.6.0 release (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: *Foundry VTT*: Fix applying damage or healing to a token from a custom roll
+* **Bugfix**: *Foundry VTT*: Fix condition syncing with tokens (By [@Brunhine](https://github.com/Brunhine))
+* **Bugfix**: *Foundry VTT*: Fix PC/NPC Names being displayed in lowercase (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: *Foundry VTT*: Fix loading the Beyond20 setting icon in whitelisted pages
+* **Bugfix**: *Discord*: Use the correct URL for Discord monster link back when rolling from encounter pages
+* **Bugfix**: *Discord*: Send the correct whisper setting when sending the roll to Discord
+* **Bugfix**: *Discord*: Fix displaying Equipment and Magic Items to Discord
+* **Misc**: **Major rewrite** of the Beyond20 extension to use pure Javascript instead of Rapydscript language
+* **Misc**: Allow Beyond20 to work within iframes (By [@Ainias](https://github.com/Ainias))
+* **Misc**: Remove roll type indicators and use the new badge icons to represent the roll type
+* **Misc**: Change internal dice formula reference to be more streamlined and independent of specific VTT implementations
+* **Misc**: Make the quick roll icon remain fixed in place and disappear with a small delay
+* **Misc**: Fix some dice rolls failing on pre-v3 D&D Beyond character sheets (irrelevant at this point)
+
 v1.1
 ===
 * **Feature**: Add support for the new D&D Beyond character sheet layout

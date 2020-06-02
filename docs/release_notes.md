@@ -1,3 +1,45 @@
+v2.0
+===
+
+Hi and welcome to the Two-Point-Oh release of Beyond20!
+
+This is yet another major release version of Beyond20. I have decided to make the jump directly to the 2.0 version because of just how massive this release is and the amount of work that went into it. One of the big changes and which took the most time was a near rewrite of the entire extension into pure Javascript, making the move from the python-like Rapydscript language that I used previously. The change makes Beyond20 generally better, easier to work with and maintain long term.
+
+I usually say this at the end, but this time, I want to start by giving a very special thank you to all my [patrons](https://www.patreon.com/kakaroto) and all the generous people who supported my work by sending rations through [Ko-fi](https://ko-fi.com/kakaroto) or other means. Without you, I wouldn't have had the courage and motivation to spend this much time working on making this release, especially with how busy and chaotic my life has been in the last few months.
+
+As some of you may already know, I've worked relentlessly in the past few months on my new D&D related project and new business venture, [The Forge](https://forge-vtt.com), which is a hosting service for [Foundry VTT](https://foundryvtt.com) games. With Foundry VTT officially releasing just last week (on May 22nd) and me doing my best to [release The Forge](https://www.patreon.com/posts/release-party-37398469) on the same date, it has been a very stressful and chaotic time, but the launch went smoothly and I'm very happy with the results so far. I have still managed to take the time every few days and dedicate myself to working on Beyond20, and that has paid off greatly with this release being ready so soon and being so extensive.
+
+Another big and important thing to mention relating to this release is the number of external contributions that were received, making Beyond20 greater than one man's work. Some of the contributions were small, others were large, and others were non quantifiable. We now have new amazing artwork, made by [Jerry Escandon](https://github.com/Jerryescandon) that makes the Beyond20 icons look beautiful and sleek and much nicer at the low resolutions needed by Beyond20. We've also had code contributions by [@Brunhine](https://github.com/Brunhine), [@spisin](https://github.com/spisin), [@kbuzsaki](https://github.com/kbuzsaki), [@Ainias](https://github.com/Ainias) and last but not least [@Aeristoka](https://github.com/Aeristoka). Aeristoka has also been a huge help in systematically testing every feature of Beyond20 after the rewrite of the extension and reporting all the bugs he could find as well as fixing many of them himself. What this means is that if you find a bug, you can now blame Aeristoka, not me!🤣
+
+I know that some of you may have wanted to see this release appear sooner, especially with the D&D Beyond Digital Dice release that affected our Quick Rolls feature, but let me give you a little bit of perspective before diving into the new features in this release.
+
+So far in nearly one year, up to the 1.1 release last month, 173 issues (bugs and feature requests) were opened on the issue tracker with most of them being closed over that same period of time. In the last 8 weeks alone, we've had 152 new issues created and closed. Here's a little table (for those who like statistics) showing how many changes (according to the github commit log history) each version had and how long it took to prepare that release.
+
+| Release | Code changes | Development time |
+|---------|--------------|------------------|
+| 0.8     | 30 commits   |  17 days         |
+| 0.9     | 37 commits   |  69 days         |
+| 1.0     | 37 commits   |  32 days         |
+| 1.1     | 24 commits   |  24 days         |
+| 2.0     | 161 commits  |  53 days         |
+
+Oh and by the way, Beyond20 now has over 132 000 users which is just incredible! 🥳
+
+Now let's get down to the interesting bits. What does this release bring you?
+
+You should definitely check out the full [Changelog](/Changelog#v20) to see all of the new features and bugfixes that this release brings. I personally think the most important new feature is the rewrite to Javascript, but none of you will care about that, so you'll probably be most excited about the integration with D&D Beyond's amazing new Digital Dice feature. You can now do all your rolls using the dice from D&D Beyond, and have it roll all your To Hit and Damage dice and send all of the results to your VTT of choice.
+
+The other big change, is with regards to Discord Integration. I promised you last time, that I would enhance the features of the Discord integration, and I did. It is still not as complete as I would hope, but it should hold you over until the next round of features are added. You can now add multiple Discord destination channels to Beyond20 and choose where you want the rolls to go. You can also give a friendly name to the channel so you don't need to remember which secret key goes to which channel. I have also added support for specifying a channel dedicated to whispers when creating your secret key, as well as specifying options, the only one available now being the ability to disable the spoiler tags for the roll formulas. See the updated instructions on the [Discord](/discord) page for more information.
+
+Another change that I am very happy about is the automatic detection of the character sheet template used on Roll20. We've had so many people asking about "why does Beyond20 send an empty message" and us having to point them to the [FAQ](/faq) that I've had to tackle that issue and make Beyond20 smarter. Now if your game is not using the 'D&D 5e By Roll20' character sheet template, then it will automatically use the default template instead. This also applies when using pre-rendered rolls when you roll using the Digital Dice.
+
+Finally, I'd like to reiterate my thank you to all who have sent me rations/coffees through the [Ko-fi](https://ko-fi.com/kakaroto) link or who pledged on [Patreon](https://patreon.com/kakaroto) through my [support](/support) page.
+
+If you find Beyond20 useful to you and it helps you run your games more smoothly, please consider [supporting](/rations) me and Beyond20.
+
+Thank you, stay safe, and, as usual, happy rolling!
+
+
 v1.1
 ===
 

@@ -2,7 +2,8 @@
 * [Roll 20](https://roll20.net)
 * [Foundry VTT](https://foundryvtt.com)
 * [Discord Integration](https://discord.com) -- [Instructions](/discord)
-* D&D Beyond Dice Roller
+* Beyond 20 Integrated Dice Roller
+* D&D Beyond Digital Dice Integration
 
 # Feature list
 
@@ -41,7 +42,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Condition tracking
 * Creatures stat blocks
 * Vehicles stat blocks
-* Tools
+* Rolling Tools from Equipment
 
 ## Monsters and Character creatures
 * Hit points
@@ -77,8 +78,11 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 ## Special Class Features/Racial Traits/Feats supported
 * Feat: Sharpshooter
 * Feat: Great Weapon Master
+* Feat: Elemental Adept
 * Feat: Elven Accuracy (Via super advantage option)
+* Feat: Flames of Phlegethos
 * Feat: Polearm Master
+* Aasimar: Radiant Soul
 * Artificer: Arcane Firearm
 * Barbarian: Rage
 * Barbarian: Brutal Critical
@@ -88,6 +92,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Bloodhunter: Crimson Rite
 * Cleric: Disciple of Life (Life domain)
 * Cleric: Divine Strike
+* Cleric: Supreme Healing
 * Fighter: Maneuvers
 * Fighter: Improved Critical and Superior Critical (Champion)
 * Fighter: Rune Knight's Giant Might (UA)
@@ -95,8 +100,13 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Paladin: Legendary Strike (UA)
 * Paladin: Improved Divine Smite
 * Ranger: Dread Ambusher
+* Ranger: Colossus Slayer
+* Ranger: Planar Warrior
+* Ranger: Slayer's Prey
+* Ranger: Gathered Swarm
 * Rogue: Sneak Attack
 * Rogue: Assassinate
+* Rogue: Reliable Talent
 * Sorcerer: Elemental Affinity
 * Warlock: Hexblade's Curse
 * Half-Orc: Savage Attacks
@@ -155,6 +165,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * D&D 5e By Roll20
   * This is the official character sheet template I used and developed for and the one I recommend
 * Fallback option for all other templates
+* Automatically detected character sheet template
 
 
 ## Misc
