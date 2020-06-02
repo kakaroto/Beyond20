@@ -33,6 +33,8 @@ function rollSkillCheck(paneClass) {
     // Set Reliable Talent flag if character has the feature and skill is proficient/expertise or a custom skill that needs to be queried
     if (character.hasClassFeature("Reliable Talent") && (["Proficiency", "Expertise"].includes(proficiency) || ability === "--"))
         roll_properties["reliableTalent"] = true;
+    if (character.hasClassFeature("Silver Tongue"))
+        roll_properties["silverTongue"] = true;
     sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 

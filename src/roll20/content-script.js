@@ -250,7 +250,9 @@ function rollSkill(request, custom_roll_dice = "") {
             "r1": genRoll(d20, { "--": modifier, [prof]: prof_val, "CUSTOM": custom_roll_dice })
         });
     } else {
-        const d20 = request.reliableTalent ? "{1d20, 0d0 + 10}kh1" : "1d20";
+        let d20 = request.reliableTalent ? "{1d20, 0d0 + 10}kh1" : "1d20";
+        if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
+            d20 = "{1d20, 0d0 + 10}kh1"
         return template(request, "simple", {
             "charname": request.character.name,
             "rname": request.skill,
