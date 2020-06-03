@@ -2164,6 +2164,16 @@ class Beyond20RollRenderer {
                     critical_damages.splice(0, 0, crit_damage);
                     critical_damage_types.splice(0, 0, chromatic_type);
                 }
+            } else if (request.name === "Dragon's Breath") {
+                const damage_choices = {}
+                for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Poison"]) {
+                    let idx = damage_types.findIndex(t => t === dmgtype);
+                    damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
+                }
+
+                const dragons_breath_type = await this.queryDamageType(request.name, damage_choices);
+                damages.splice(0, 0, damage_choices[dragons_breath_type]);
+                damage_types.splice(0, 0, dragons_breath_type);
             } else if (request.name == "Chaos Bolt") {
                 let base_damage = null;
                 let crit_damage = null;
