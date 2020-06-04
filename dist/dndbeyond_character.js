@@ -4471,6 +4471,12 @@ function rollItem(force_display = false) {
             damages.push(String(rage_damage));
             damage_types.push("Rage");
         }
+        if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false) && character.hasClassFeature("Divine Fury") &&
+            properties["Attack Type"] == "Melee") {
+            const barbarian_level = character.getClassLevel("Barbarian");
+            damages.push(`1d6+${Math.floor(barbarian_level / 2)}`);
+            damage_types.push("Divine Fury");
+        }
         if (character.getSetting("sharpshooter", false) &&
             properties["Attack Type"] == "Ranged" &&
             properties["Proficient"] == "Yes") {
@@ -4726,6 +4732,11 @@ function rollAction(paneClass) {
                 const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
                 damages.push(String(rage_damage));
                 damage_types.push("Rage");
+            }
+            if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false) && character.hasClassFeature("Divine Fury")) {
+                const barbarian_level = character.getClassLevel("Barbarian");
+                damages.push(`1d6+${Math.floor(barbarian_level / 2)}`);
+                damage_types.push("Divine Fury");
             }
             if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)) {
                 const fighter_level = character.getClassLevel("Fighter");
