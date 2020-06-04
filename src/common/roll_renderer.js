@@ -595,6 +595,9 @@ class Beyond20RollRenderer {
                 }
             }
 
+            await this._roller.resolveRolls(request.name, all_rolls)
+            
+            //Moved after the new resolveRolls so it can access the roll results
             if (request.name == "Chaos Bolt") {
                 for (let [i, dmg_roll] of damage_rolls.entries()) {
                     const [dmg_type, roll, flags] = dmg_roll;
@@ -618,7 +621,6 @@ class Beyond20RollRenderer {
                 }
             }
 
-            await this._roller.resolveRolls(request.name, all_rolls)
             if (to_hit.length > 0)
                 this.processToHitAdvantage(to_hit_advantage, to_hit)
             const critical_limit = request["critical-limit"] || 20;
