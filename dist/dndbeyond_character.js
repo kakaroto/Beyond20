@@ -2032,7 +2032,9 @@ class Beyond20RollRenderer {
             }
         } else {
             const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-            const d20_modifier = request.reliableTalent ? "min10" : "";
+            let d20_modifier = request.reliableTalent ? "min10" : "";
+            if (request.silverTonge && (request.skill === "Deception" || request.skill === "Persuasion"))
+                d20_modifier = "min10";
             return this.rollD20(request, request.skill + "(" + request.modifier + ")", data, d20_modifier);
         }
     }
@@ -4251,6 +4253,8 @@ function rollSkillCheck(paneClass) {
     // Set Reliable Talent flag if character has the feature and skill is proficient/expertise or a custom skill that needs to be queried
     if (character.hasClassFeature("Reliable Talent") && (["Proficiency", "Expertise"].includes(proficiency) || ability === "--"))
         roll_properties["reliableTalent"] = true;
+    if (character.hasClassFeature("Silver Tongue"))
+        roll_properties["silverTongue"] = true;
     sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 
