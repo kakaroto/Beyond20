@@ -451,12 +451,6 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
-    },
-    "indomitable-might": {
-        "title": "Barbarian: Indomitable Might",
-        "description": "Your strength is unmatched!",
-        "type": "bool",
-        "default": true
     }
 }
 

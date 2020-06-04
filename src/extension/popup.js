@@ -179,10 +179,6 @@ function populateCharacter(response) {
             e = createHTMLOption("protector-aasimar-radiant-soul", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Indomitable Might")) {
-            e = createHTMLOption("indomitable-might", false, character_settings);
-            options.append(e);
-        }
 
         loadSettings(response.settings, character_settings);
     }

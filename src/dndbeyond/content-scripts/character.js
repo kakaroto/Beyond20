@@ -35,7 +35,7 @@ function rollSkillCheck(paneClass) {
         roll_properties["reliableTalent"] = true;
     if (character.hasClassFeature("Silver Tongue"))
         roll_properties["silverTongue"] = true;
-    if (character.getSetting("indomitable-might") && ability == "STR")
+    if (character.hasClassFeature("Indomitable Might") && ability == "STR")
         roll_properties["indomitableMight"] = true;
     sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
@@ -64,7 +64,7 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
     
-    if (character.getSetting("indomitable-might") && ability == "STR")
+    if (character.hasClassFeature("Indomitable Might") && ability == "STR")
         roll_properties["indomitableMight"] = true;
 
     sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);

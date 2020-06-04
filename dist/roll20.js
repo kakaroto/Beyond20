@@ -604,12 +604,6 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
-    },
-    "indomitable-might": {
-        "title": "Barbarian: Indomitable Might",
-        "description": "Your strength is unmatched!",
-        "type": "bool",
-        "default": true
     }
 }
 
@@ -2041,8 +2035,8 @@ class Beyond20RollRenderer {
             let d20_modifier = request.reliableTalent ? "min10" : "";
             if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
                 d20_modifier = "min10";
-            if (request.indomitableMight && request.skill === "Athletics")
-                d20_modifier = request.indomitableMight ? `min${(parseInt(request.character.abilities[0][2])-parseInt(request.modifier))}` : "";
+            if (request.indomitableMight)
+                d20_modifier = `min${(parseInt(request.character.abilities[0][2])-parseInt(request.modifier))}`;
             return this.rollD20(request, request.skill + "(" + request.modifier + ")", data, d20_modifier);
         }
     }
@@ -2806,7 +2800,7 @@ function rollSkill(request, custom_roll_dice = "") {
         let d20 = request.reliableTalent ? "{1d20, 0d0 + 10}kh1" : "1d20";
         if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
             d20 = "{1d20, 0d0 + 10}kh1"
-        if (request.indomitableMight && request.skill === "Athletics")
+        if (request.indomitableMight)
             d20 = `{1d20, 0d0 + ${(request.character.abilities[0][2])-parseInt(request.modifier)}}kh1`;
         return template(request, "simple", {
             "charname": request.character.name,
@@ -2818,7 +2812,7 @@ function rollSkill(request, custom_roll_dice = "") {
 }
 
 function rollAbility(request, custom_roll_dice = "") {
-    const d20 = request.indomitableMight && request.ability === "STR" ? `{1d20, 0d0 + ${(request.character.abilities[0][2])-parseInt(request.modifier)}}kh1` : "1d20";
+    const d20 = request.indomitableMight ? `{1d20, 0d0 + ${(request.character.abilities[0][2])-parseInt(request.modifier)}}kh1` : "1d20";
     const dice_roll = genRoll(d20, { [request.ability]: request.modifier, "CUSTOM": custom_roll_dice });
     return template(request, "simple", {
         "charname": request.character.name,
