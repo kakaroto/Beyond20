@@ -2913,21 +2913,37 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 }
             }
             if (brutal > 0) {
+                const rule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
                 let highest_dice = 0;
-                for (let dmg of crit_damages) {
-                    const match = dmg.match(/[0-9]*d([0-9]+)/);
-                    if (match) {
-                        const sides = parseInt(match[1]);
-                        if (sides > highest_dice)
-                            highest_dice = sides;
+                let homebrew_max_damage = 0;
+                if (rule == CriticalRules.HOMEBREW_MAX) {
+                    let highest_damage = 0;
+                    for (let dmg of crit_damages) {
+                        if (dmg > highest_damage){
+                            highest_damage = dmg;
+                        }
+                    }
+                    homebrew_max_damage = brutal * highest_damage;
+                } else {
+                    for (let dmg of crit_damages) {
+                        const match = dmg.match(/[0-9]*d([0-9]+)/);
+                        if (match) {
+                            const sides = parseInt(match[1]);
+                            if (sides > highest_dice)
+                                highest_dice = sides;
+                        }
                     }
                 }
+                const isBrutal = character.hasClassFeature("Brutal Critical");
+                const isSavage = character.hasRacialTrait("Savage Attacks");   
                 if (highest_dice != 0) {
-                    const isBrutal = character.hasClassFeature("Brutal Critical");
-                    const isSavage = character.hasRacialTrait("Savage Attacks");
                     crit_damages.push(`${brutal}d${highest_dice}`);
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
+                } else if (rule == CriticalRules.HOMEBREW_MAX) {
+                    crit_damages.push(`${homebrew_max_damage}`);
+                    crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
                 }
+                
             }
             roll_properties["critical-damages"] = crit_damages;
             roll_properties["critical-damage-types"] = crit_damage_types;
