@@ -514,6 +514,18 @@ function rollSpellAttack(request, custom_roll_dice) {
             damage_types.splice(0, 0, chromatic_type);
             critical_damages.splice(0, 0, crit_damage);
             critical_damage_types.splice(0, 0, chromatic_type);
+        } else if (request.name === "Dragon's Breath") {
+            let dragons_breath_type = "?{Choose damage type";
+            let dragons_breath_damage = null;
+            for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Poison"]) {
+                let idx = damage_types.findIndex(t => t === dmgtype);
+                dragons_breath_damage = damages.splice(idx, 1)[0];
+                damage_types.splice(idx, 1);
+                dragons_breath_type += "|" + dmgtype;
+            }
+            dragons_breath_type += "}";
+            damages.splice(0, 0, dragons_breath_damage);
+            damage_types.splice(0, 0, dragons_breath_type);
         } else if (request.name === "Chaos Bolt") {
             let base_damage = null;
             let crit_damage = null;
