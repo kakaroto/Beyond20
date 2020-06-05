@@ -2507,7 +2507,7 @@ var extension_url = "/modules/beyond20/";
 class FVTTDisplayer {
     postHTML(request, title, html, buttons, character, whisper, play_sound) {
         Hooks.once('renderChatMessage', (chat_message, html, data) => {
-            const icon = extension_url + "images/icons/badges/custom20.png";
+            const icon = extension_url + "images/icons/icon20.png";
             html.find(".ct-beyond20-custom-icon").attr('src', icon);
             html.find(".ct-beyond20-custom-roll").on('click', (event) => {
                 const roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
