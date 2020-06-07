@@ -1067,8 +1067,16 @@ function injectRollButton(paneClass) {
         if ($(".ct-health-manage-pane .ct-health-manager__deathsaves").length > 0) {
             if (isRollButtonAdded() || isCustomRollIconsAdded())
                 return;
+            let modifier = "";
+            if ($(".ddbc-bonus-positive-svg").length >0) {
+                modifier += ` + ${$(".ddbc-bonus-positive-svg").length}`
+            }
+            const roll_properties = {
+                "advantage": RollType.NORMAL,
+                "modifier": modifier
+            }
             addIconButton(character, () => {
-                sendRollWithCharacter("death-save", "1d20", { "advantage": RollType.NORMAL })
+                sendRollWithCharacter("death-save", "1d20" + modifier, roll_properties)
             }, ".ct-health-manager__deathsaves-group--fails", { custom: true });
         } else {
             removeRollButtons();

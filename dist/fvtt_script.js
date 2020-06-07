@@ -2061,7 +2061,8 @@ class Beyond20RollRenderer {
     }
 
     rollDeathSave(request, custom_roll_dice = "") {
-        return this.rollD20(request, "Death Saving Throw", { "custom_dice": custom_roll_dice });
+        const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
+        return this.rollD20(request, "Death Saving Throw", data);
     }
 
     rollItem(request, custom_roll_dice = "") {

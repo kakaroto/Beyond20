@@ -2060,7 +2060,8 @@ class Beyond20RollRenderer {
     }
 
     rollDeathSave(request, custom_roll_dice = "") {
-        return this.rollD20(request, "Death Saving Throw", { "custom_dice": custom_roll_dice });
+        const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
+        return this.rollD20(request, "Death Saving Throw", data);
     }
 
     rollItem(request, custom_roll_dice = "") {
@@ -2867,7 +2868,7 @@ function rollDeathSave(request, custom_roll_dice = "") {
         "charname": request.character.name,
         "rname": "Death Saving Throw",
         "mod": format_plus_mod(custom_roll_dice),
-        "r1": genRoll("1d20", { "CUSTOM": custom_roll_dice }),
+        "r1": genRoll(request["roll"], { "CUSTOM": custom_roll_dice }),
         "normal": 1
     });
 }
