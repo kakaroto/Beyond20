@@ -2054,9 +2054,12 @@ class Beyond20RollRenderer {
         return this.rollD20(request, "Initiative" + "(" + request.initiative + ")", data);
     }
 
-    rollHitDice(request) {
+    rollHitDice(request, custom_roll_dice = "") {
         const rname = "Hit Dice" + (request.multiclass ? `(${request.class})` : "");
-        return this.rollDice(request, rname, request["hit-dice"], {});
+        let dice = request["hit-dice"];
+        if (custom_roll_dice.length > 0)
+            dice += "+" + custom_roll_dice;
+        return this.rollDice(request, rname, dice, {});
     }
 
     rollDeathSave(request, custom_roll_dice = "") {
@@ -2407,7 +2410,7 @@ class Beyond20RollRenderer {
         } else if (request.type == "initiative") {
             return this.rollInitiative(request, custom_roll_dice);
         } else if (request.type == "hit-dice") {
-            return this.rollHitDice(request);
+            return this.rollHitDice(request, custom_roll_dice);
         } else if (request.type == "item") {
             return this.rollItem(request, custom_roll_dice);
         } else if (["feature", "trait", "action"].includes(request.type)) {
@@ -2851,13 +2854,13 @@ function rollInitiative(request, custom_roll_dice = "") {
     return template(request, "simple", roll_properties);
 }
 
-function rollHitDice(request) {
+function rollHitDice(request, custom_roll_dice = "") {
     const rname = "Hit Dice" + (request.multiclass ? `(${request.class})` : "");
     return template(request, "simple", {
         "charname": request.character.name,
         "rname": rname,
         "mod": request["hit-dice"] + format_plus_mod(custom_roll_dice),
-        "r1": subRolls(request["hit-dice"]),
+        "r1": genRoll(request["hit-dice"], { "CUSTOM": custom_roll_dice }),
         "normal": 1
     });
 }
@@ -3282,7 +3285,7 @@ function handleMessage(request, sender, sendResponse) {
         } else if (request.type == "initiative") {
             roll = rollInitiative(request, custom_roll_dice);
         } else if (request.type == "hit-dice") {
-            roll = rollHitDice(request);
+            roll = rollHitDice(request, custom_roll_dice);
         } else if (request.type == "item") {
             roll = rollItem(request, custom_roll_dice);
         } else if (["feature", "trait", "action"].includes(request.type)) {

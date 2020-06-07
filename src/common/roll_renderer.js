@@ -429,9 +429,12 @@ class Beyond20RollRenderer {
         return this.rollD20(request, "Initiative" + "(" + request.initiative + ")", data);
     }
 
-    rollHitDice(request) {
+    rollHitDice(request, custom_roll_dice = "") {
         const rname = "Hit Dice" + (request.multiclass ? `(${request.class})` : "");
-        return this.rollDice(request, rname, request["hit-dice"], {});
+        let dice = request["hit-dice"];
+        if (custom_roll_dice.length > 0)
+            dice += "+" + custom_roll_dice;
+        return this.rollDice(request, rname, dice, {});
     }
 
     rollDeathSave(request, custom_roll_dice = "") {
@@ -782,7 +785,7 @@ class Beyond20RollRenderer {
         } else if (request.type == "initiative") {
             return this.rollInitiative(request, custom_roll_dice);
         } else if (request.type == "hit-dice") {
-            return this.rollHitDice(request);
+            return this.rollHitDice(request, custom_roll_dice);
         } else if (request.type == "item") {
             return this.rollItem(request, custom_roll_dice);
         } else if (["feature", "trait", "action"].includes(request.type)) {

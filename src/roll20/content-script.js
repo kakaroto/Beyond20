@@ -307,13 +307,13 @@ function rollInitiative(request, custom_roll_dice = "") {
     return template(request, "simple", roll_properties);
 }
 
-function rollHitDice(request) {
+function rollHitDice(request, custom_roll_dice = "") {
     const rname = "Hit Dice" + (request.multiclass ? `(${request.class})` : "");
     return template(request, "simple", {
         "charname": request.character.name,
         "rname": rname,
         "mod": request["hit-dice"] + format_plus_mod(custom_roll_dice),
-        "r1": subRolls(request["hit-dice"]),
+        "r1": genRoll(request["hit-dice"], { "CUSTOM": custom_roll_dice }),
         "normal": 1
     });
 }
@@ -738,7 +738,7 @@ function handleMessage(request, sender, sendResponse) {
         } else if (request.type == "initiative") {
             roll = rollInitiative(request, custom_roll_dice);
         } else if (request.type == "hit-dice") {
-            roll = rollHitDice(request);
+            roll = rollHitDice(request, custom_roll_dice);
         } else if (request.type == "item") {
             roll = rollItem(request, custom_roll_dice);
         } else if (["feature", "trait", "action"].includes(request.type)) {
