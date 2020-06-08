@@ -649,6 +649,12 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "artificer-alchemical-savant": {
+        "title": "Artificer: Use Alchemical Savant",
+        "description": "Use an Alchemical Savant for your Artificer spells. Deals extra damage equal to Intelligence Modifier",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -1413,6 +1419,10 @@ function populateCharacter(response) {
         }
         if (response["racial-traits"].includes("Radiant Soul")) {
             e = createHTMLOption("protector-aasimar-radiant-soul", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Alchemical Savant")) {
+            e = createHTMLOption("artificer-alchemical-savant", false, character_settings);
             options.append(e);
         }
 

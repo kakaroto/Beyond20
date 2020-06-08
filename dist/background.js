@@ -649,6 +649,12 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "artificer-alchemical-savant": {
+        "title": "Artificer: Use Alchemical Savant",
+        "description": "Use an Alchemical Savant for your Artificer spells. Deals extra damage equal to Intelligence Modifier",
+        "type": "bool",
+        "default": false
     }
 }
 
