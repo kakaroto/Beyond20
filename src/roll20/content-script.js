@@ -252,7 +252,7 @@ function rollSkill(request, custom_roll_dice = "") {
     } else {
         let d20 = request.reliableTalent ? "{1d20, 0d0 + 10}kh1" : "1d20";
         if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
-            d20 = "{1d20, 0d0 + 10}kh1"
+            d20 = "{1d20, 0d0 + 10}kh1";
         if (request.indomitableMight)
             d20 = `{1d20, 0d0 + ${(request.character.abilities[0][2])-parseInt(request.modifier)}}kh1`;
         return template(request, "simple", {
