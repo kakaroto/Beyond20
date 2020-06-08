@@ -732,6 +732,12 @@ const character_settings = {
         "description": "Add Remarkable Athlete bonus to Strength/Dexterity/Constitution ability checks",
         "type": "bool",
         "default": true
+    },
+    "artificer-alchemical-savant": {
+        "title": "Artificer: Use Alchemical Savant",
+        "description": "Use an Alchemical Savant for your Artificer spells. Deals extra damage equal to Intelligence Modifier",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -1530,6 +1536,10 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Dreadful Strikes")) {
             e = createHTMLOption("fey-wanderer-dreadful-strikes", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Alchemical Savant")) {
+            e = createHTMLOption("artificer-alchemical-savant", false, character_settings);
             options.append(e);
         }
 

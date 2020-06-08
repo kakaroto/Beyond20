@@ -794,6 +794,19 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             damage_types.push("Arcane Firearm");
         }
 
+        if (character.hasClassFeature("Alchemical Savant") &&
+            character.getSetting("artificer-alchemical-savant", false) &&
+            damages.length) {
+            for (let i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Acid" || damage_types[i] === "Fire" ||
+                    damage_types[i] === "Necrotic" || damage_types[i] === "Poison") {
+                    damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
+                    damage_types.push("Alchemical Savant");
+                    break;
+                }
+            }
+        }
+
         //Handle Flames of Phlegethos
         if (damages.length > 0 &&
             character.hasFeat("Flames of Phlegethos")) {
@@ -847,6 +860,17 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             if (dmg.length > 0) {
                 damages.push(dmg);
                 damage_types.push("Healing");
+            }
+        }
+
+        if (character.hasClassFeature("Alchemical Savant") &&
+            character.getSetting("artificer-alchemical-savant", false)) {
+            for (let i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Healing") {
+                    damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
+                    damage_types.push("Alchemical Savant Healing");
+                    break;
+                }
             }
         }
 
