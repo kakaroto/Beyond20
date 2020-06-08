@@ -229,6 +229,10 @@ function populateCharacter(response) {
             e = createHTMLOption("eldritch-invocation-lifedinker", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Arcane Jolt")) {
+            e = createHTMLOption("artificer-arcane-jolt", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }

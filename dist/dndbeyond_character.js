@@ -732,6 +732,7 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+<<<<<<< HEAD
     "cleric-blessed-strikes": {
         "title": "Cleric: Blessed Strikes",
         "description": "Deal an extra 1d8 damage on damaging cantrips and weapon attacks",
@@ -753,6 +754,11 @@ const character_settings = {
     "eldritch-invocation-lifedinker": {
         "title": "Eldritch Invocation: Lifedrinker",
         "description": "Your pact weapon drips with necrotic energy, lending extra damage to your strikes",
+=======
+    "artificer-arcane-jolt": {
+        "title": "Artificer: Use Arcane Jolt",
+        "description": "Apply an Arcane Jolt to you or your Steel Defender's Weapon Attacks. Deals extra 2d6 damage, or 4d6 at Artificer Level 15+",
+>>>>>>> 820de29 (Implement Artificer: Battlesmith Arcane Jolt)
         "type": "bool",
         "default": false
     }
@@ -5415,6 +5421,17 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     brutal += 1;
             }
         }
+
+        //Artificer Battlemaster Arcane Jolt
+        // TODO: Implement for Steel Defender at later date
+        if (damages.length > 0 &&
+            character.hasClassFeature("Arcane Jolt") &&
+            character.getSetting("artificer-arcane-jolt", false) &&
+            item_type.indexOf(", Common") === -1) {
+            damages.push(character._level < 15 ? "2d6" : "4d6");
+            damage_types.push("Arcane Jolt");
+        }
+
         const roll_properties = buildAttackRoll(character,
             "item",
             item_name,

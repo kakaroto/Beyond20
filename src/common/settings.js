@@ -587,6 +587,12 @@ const character_settings = {
         "description": "Your pact weapon drips with necrotic energy, lending extra damage to your strikes",
         "type": "bool",
         "default": false
+    },
+    "artificer-arcane-jolt": {
+        "title": "Artificer: Use Arcane Jolt",
+        "description": "Apply an Arcane Jolt to you or your Steel Defender's Weapon Attacks. Deals extra 2d6 damage, or 4d6 at Artificer Level 15+",
+        "type": "bool",
+        "default": false
     }
 }
 
