@@ -604,6 +604,12 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "champion-remarkable-athlete": {
+        "title": "Champion Fighter: Remarkable Athlete",
+        "description": "Add Remarkable Athlete bonus to Strength/Dexterity/Constitution ability checks",
+        "type": "bool",
+        "default": true
     }
 }
 
@@ -4289,9 +4295,20 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
     const ability_name = ability_string.split(" ")[0];
     const ability = ability_abbreviations[ability_name];
     let modifier = $("." + paneClass + "__modifier .ct-signed-number,." + paneClass + "__modifier .ddbc-signed-number").text();
+    let remarkable_athlete_used = false;
+
+    if (rollType == "ability" &&
+        character.hasClassFeature("Remarkable Athlete") &&
+        character.getSetting("champion-remarkable-athlete", false) &&
+        (ability == "STR" || ability == "DEX" || ability == "CON")) {
+        const remarkable_athlete_mod = Math.ceil(character._proficiency / 2);
+        modifier += " + " + remarkable_athlete_mod;
+        remarkable_athlete_used = true;
+    }
 
     if (rollType == "ability" && character.hasClassFeature("Jack of All Trades") &&
-        character.getSetting("bard-joat", false)) {
+        character.getSetting("bard-joat", false) &&
+        !remarkable_athlete_used) {
         const JoaT = Math.floor(character._proficiency / 2);
         modifier += " + " + JoaT;
     }

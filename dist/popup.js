@@ -649,6 +649,12 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "champion-remarkable-athlete": {
+        "title": "Champion Fighter: Remarkable Athlete",
+        "description": "Add Remarkable Athlete bonus to Strength/Dexterity/Constitution ability checks",
+        "type": "bool",
+        "default": true
     }
 }
 
@@ -1413,6 +1419,10 @@ function populateCharacter(response) {
         }
         if (response["racial-traits"].includes("Radiant Soul")) {
             e = createHTMLOption("protector-aasimar-radiant-soul", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Remarkable Athlete")) {
+            e = createHTMLOption("champion-remarkable-athlete", false, character_settings);
             options.append(e);
         }
 

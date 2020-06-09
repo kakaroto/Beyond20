@@ -179,6 +179,10 @@ function populateCharacter(response) {
             e = createHTMLOption("protector-aasimar-radiant-soul", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Remarkable Athlete")) {
+            e = createHTMLOption("champion-remarkable-athlete", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }
