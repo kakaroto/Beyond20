@@ -698,6 +698,12 @@ const character_settings = {
         "title": "Artificer: Use Alchemical Savant",
         "description": "Use your Alchemist's supplies as spellcasting focus, dealing extra damage or healing equal to your Intelligence Modifier",
         "type": "bool",
+        "default": true
+    },
+    "wildfire-spirit-enhanced-bond": {
+        "title": "Wildfire Spirit: Enhanced Bond",
+        "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
+        "type": "bool",
         "default": false
     }
 }
