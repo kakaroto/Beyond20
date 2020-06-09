@@ -649,7 +649,14 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "paladin-invincible-conquerer": {
+        "title": "Oath of Conquest: Invincible Conquerer",
+        "description": "You can harness extraordinary martial prowess for 1 minute.",
+        "type": "bool",
+        "default": false
     }
+    
 }
 
 function getStorage() {
@@ -1413,6 +1420,10 @@ function populateCharacter(response) {
         }
         if (response["racial-traits"].includes("Radiant Soul")) {
             e = createHTMLOption("protector-aasimar-radiant-soul", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Invincible Conqueror")) {
+            e = createHTMLOption("paladin-invincible-conquerer", false, character_settings);
             options.append(e);
         }
 

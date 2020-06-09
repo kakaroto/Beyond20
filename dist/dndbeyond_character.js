@@ -604,7 +604,14 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "paladin-invincible-conquerer": {
+        "title": "Oath of Conquest: Invincible Conquerer",
+        "description": "You can harness extraordinary martial prowess for 1 minute.",
+        "type": "bool",
+        "default": false
     }
+    
 }
 
 function getStorage() {
@@ -4601,6 +4608,9 @@ function rollItem(force_display = false) {
             critical_limit = 19;
         if (character.hasClassFeature("Improved Critical"))
             critical_limit = 19;
+        if (character.hasClassFeature("Invincible Conqueror") &&
+            character.getSetting("paladin-invincible-conquerer", false))
+            critical_limit = 19;
         if (character.hasClassFeature("Superior Critical"))
             critical_limit = 18;
 
@@ -4715,6 +4725,9 @@ function rollAction(paneClass) {
                 character.getSetting("paladin-legendary-strike", false))
                 critical_limit = 19;
             if (character.hasClassFeature("Improved Critical"))
+                critical_limit = 19;
+            if (character.hasClassFeature("Invincible Conqueror") &&
+                character.getSetting("paladin-invincible-conquerer", false))
                 critical_limit = 19;
             if (character.hasClassFeature("Superior Critical"))
                 critical_limit = 18;

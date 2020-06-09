@@ -604,7 +604,14 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "paladin-invincible-conquerer": {
+        "title": "Oath of Conquest: Invincible Conquerer",
+        "description": "You can harness extraordinary martial prowess for 1 minute.",
+        "type": "bool",
+        "default": false
     }
+    
 }
 
 function getStorage() {
