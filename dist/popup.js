@@ -750,6 +750,12 @@ const character_settings = {
         "description": "You can harness extraordinary martial prowess for 1 minute.",
         "type": "bool",
         "default": false
+    },
+    "wildfire-spirit-enhanced-bond": {
+        "title": "Wildfire Spirit: Enhanced Bond",
+        "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -1558,6 +1564,10 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Invincible Conqueror")) {
             e = createHTMLOption("paladin-invincible-conqueror", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Enhanced Bond")) {
+            e = createHTMLOption("wildfire-spirit-enhanced-bond", false, character_settings);
             options.append(e);
         }
 

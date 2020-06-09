@@ -705,6 +705,12 @@ const character_settings = {
         "description": "You can harness extraordinary martial prowess for 1 minute.",
         "type": "bool",
         "default": false
+    },
+    "wildfire-spirit-enhanced-bond": {
+        "title": "Wildfire Spirit: Enhanced Bond",
+        "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
+        "type": "bool",
+        "default": false
     }
 }
 

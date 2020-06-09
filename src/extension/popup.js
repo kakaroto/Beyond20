@@ -205,6 +205,10 @@ function populateCharacter(response) {
             e = createHTMLOption("paladin-invincible-conqueror", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Enhanced Bond")) {
+            e = createHTMLOption("wildfire-spirit-enhanced-bond", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }

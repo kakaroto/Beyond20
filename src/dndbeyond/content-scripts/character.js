@@ -832,6 +832,18 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             }
         }
 
+        if (character.hasClassFeature("Enhanced Bond") &&
+            character.getSetting("wildfire-spirit-enhanced-bond", false) &&
+            damages.length > 0) {
+            for (let i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Fire") {
+                    damages.push("1d8");
+                    damage_types.push("Enhanced Bond");
+                    break;
+                }
+            }
+        }
+
         //Handle Flames of Phlegethos
         if (damages.length > 0 &&
             character.hasFeat("Flames of Phlegethos")) {
@@ -894,6 +906,17 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
                 if (damage_types[i] === "Healing") {
                     damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
                     damage_types.push("Alchemical Savant Healing");
+                    break;
+                }
+            }
+        }
+        
+        if (character.hasClassFeature("Enhanced Bond") &&
+            character.getSetting("wildfire-spirit-enhanced-bond", false)) {
+            for (let i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Healing") {
+                    damages.push("1d8");
+                    damage_types.push("Enhanced Bond Healing");
                     break;
                 }
             }
