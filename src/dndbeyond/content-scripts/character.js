@@ -200,7 +200,7 @@ function rollItem(force_display = false) {
         if (custom_damages.length > 0) {
             for (let custom_damage of custom_damages.split(",")) {
                 if (custom_damage.includes(":")) {
-                    const parts = custom_damage.split(": ", 2);
+                    const parts = custom_damage.split(":", 2);
                     damages.push(parts[1].trim());
                     damage_types.push(parts[0].trim());
                 } else {
@@ -444,7 +444,7 @@ function rollAction(paneClass) {
         if (custom_damages.length > 0) {
             for (let custom_damage of custom_damages.split(",")) {
                 if (custom_damage.includes(":")) {
-                    const parts = custom_damage.split(": ", 2);
+                    const parts = custom_damage.split(":", 2);
                     damages.push(parts[1].trim());
                     damage_types.push(parts[0].trim());
                 } else {
@@ -723,7 +723,7 @@ function rollSpell(force_display = false) {
         if (custom_damages.length > 0) {
             for (let custom_damage of custom_damages.split(",")) {
                 if (custom_damage.includes(":")) {
-                    const parts = custom_damage.split(": ", 2);
+                    const parts = custom_damage.split(":", 2);
                     damages.push(parts[1].trim());
                     damage_types.push(parts[0].trim());
                 } else {
