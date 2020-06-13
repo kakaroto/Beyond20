@@ -675,6 +675,7 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+<<<<<<< HEAD
     "wizard-bladesong": {
         "title": "Wizard: Bladesong",
         "description": "Activate your Bladesong and make your weapon sing with magic",
@@ -699,6 +700,9 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
+=======
+    // FIXME: UA Content, Wildfire Druid, Wildfire Spirit Enhanced Bond
+>>>>>>> fb1a947... Added // FIXME: UA Content tags
     "wildfire-spirit-enhanced-bond": {
         "title": "Wildfire Spirit: Enhanced Bond",
         "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
@@ -2293,8 +2297,12 @@ class Beyond20RollRenderer {
                 const dmg_type = damage_types[i];
                 let damage_flags = DAMAGE_FLAGS.REGULAR;
 <<<<<<< HEAD
+<<<<<<< HEAD
                 if (["Healing", "Disciple of Life", "Temp HP", "Alchemical Savant Healing"].includes(dmg_type)) {
 =======
+=======
+                // FIXME: UA Content, Wildfire Druid, Wildfire Spirit Enhanced Bond
+>>>>>>> fb1a947... Added // FIXME: UA Content tags
                 if (["Healing", "Disciple of Life", "Temp HP", "Enhanced Bond Healing"].includes(dmg_type)) {
 >>>>>>> f3e4ebe... Implement Wildfire Druid: Enhanced Bond
                     damage_flags = DAMAGE_FLAGS.HEALING;
@@ -2357,8 +2365,12 @@ class Beyond20RollRenderer {
                     const dmg_type = critical_damage_types[i];
                     let damage_flags = DAMAGE_FLAGS.REGULAR;
 <<<<<<< HEAD
+<<<<<<< HEAD
                     if (["Healing", "Disciple of Life", "Temp HP", "Alchemical Savant Healing"].includes(dmg_type)) {
 =======
+=======
+                    // FIXME: UA Content, Wildfire Druid, Wildfire Spirit Enhanced Bond
+>>>>>>> fb1a947... Added // FIXME: UA Content tags
                     if (["Healing", "Disciple of Life", "Temp HP", "Enhanced Bond Healing"].includes(dmg_type)) {
 >>>>>>> f3e4ebe... Implement Wildfire Druid: Enhanced Bond
                         damage_flags = DAMAGE_FLAGS.HEALING;

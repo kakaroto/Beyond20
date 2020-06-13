@@ -813,6 +813,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             damage_types.push("Arcane Firearm");
         }
 
+<<<<<<< HEAD
         if (character.hasClassFeature("Alchemical Savant") &&
             character.getSetting("artificer-alchemical-savant", false) &&
             damages.length) {
@@ -826,6 +827,9 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             }
         }
 
+=======
+        // FIXME: UA Content, Wildfire Druid, Wildfire Spirit Enhanced Bond
+>>>>>>> fb1a947... Added // FIXME: UA Content tags
         if (character.hasClassFeature("Enhanced Bond") &&
             character.getSetting("wildfire-spirit-enhanced-bond", false) &&
             damages.length > 0) {
@@ -894,6 +898,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             }
         }
 
+<<<<<<< HEAD
         if (character.hasClassFeature("Alchemical Savant") &&
             character.getSetting("artificer-alchemical-savant", false)) {
             for (let i = 0; i < damages.length; i++){
@@ -905,6 +910,9 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             }
         }
         
+=======
+        // FIXME: UA Content, Wildfire Druid, Wildfire Spirit Enhanced Bond
+>>>>>>> fb1a947... Added // FIXME: UA Content tags
         if (character.hasClassFeature("Enhanced Bond") &&
             character.getSetting("wildfire-spirit-enhanced-bond", false)) {
             for (let i = 0; i < damages.length; i++){

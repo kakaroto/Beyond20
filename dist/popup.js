@@ -721,6 +721,7 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+<<<<<<< HEAD
     "wizard-bladesong": {
         "title": "Wizard: Bladesong",
         "description": "Activate your Bladesong and make your weapon sing with magic",
@@ -745,6 +746,9 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
+=======
+    // FIXME: UA Content, Wildfire Druid, Wildfire Spirit Enhanced Bond
+>>>>>>> fb1a947... Added // FIXME: UA Content tags
     "wildfire-spirit-enhanced-bond": {
         "title": "Wildfire Spirit: Enhanced Bond",
         "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
@@ -1556,6 +1560,7 @@ function populateCharacter(response) {
             e = createHTMLOption("artificer-alchemical-savant", false, character_settings);
             options.append(e);
         }
+        // FIXME: UA Content, Wildfire Druid, Wildfire Spirit Enhanced Bond
         if (response["class-features"].includes("Enhanced Bond")) {
             e = createHTMLOption("wildfire-spirit-enhanced-bond", false, character_settings);
             options.append(e);
