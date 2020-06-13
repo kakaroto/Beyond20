@@ -312,7 +312,7 @@ function rollHitDice(request) {
     return template(request, "simple", {
         "charname": request.character.name,
         "rname": rname,
-        "mod": request["hit-dice"] + format_plus_mod(custom_roll_dice),
+        "mod": request["hit-dice"],
         "r1": subRolls(request["hit-dice"]),
         "normal": 1
     });
