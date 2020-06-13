@@ -183,6 +183,10 @@ function populateCharacter(response) {
             e = createHTMLOption("wizard-bladesong", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Dreadful Strikes")) {
+            e = createHTMLOption("fey-wanderer-dreadful-strikes", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }
