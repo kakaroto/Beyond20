@@ -20,10 +20,12 @@ function rollSkillCheck(paneClass) {
         "modifier": modifier,
         "proficiency": proficiency
     }
-    if($("." + paneClass + "__dice-adjustment ." + paneClass + "__dice-adjustment-icon .ddbc-tooltip").attr("data-original-title") === "Advantage"){
-        roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-    } else if ($("." + paneClass + "__dice-adjustment ." + paneClass + "__dice-adjustment-icon .ddbc-tooltip").attr("data-original-title") === "Disadvantage"){
-        roll_properties["advantage"] = RollType.OVERRIDE_DISADVANTAGE;
+    if(character.getGlobalSetting("roll-type", RollType.NORMAL) != RollType.QUERY) {
+        if($("." + paneClass + "__dice-adjustment ." + paneClass + "__dice-adjustment-icon .ddbc-tooltip").attr("data-original-title") === "Advantage"){
+            roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+        } else if ($("." + paneClass + "__dice-adjustment ." + paneClass + "__dice-adjustment-icon .ddbc-tooltip").attr("data-original-title") === "Disadvantage"){
+            roll_properties["advantage"] = RollType.OVERRIDE_DISADVANTAGE;
+        }
     }
     if (ability == "STR" &&
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
