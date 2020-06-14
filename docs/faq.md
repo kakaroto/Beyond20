@@ -40,9 +40,19 @@ If you cannot do that (you're not the DM) or you don't wish to do it (you prefer
 
 The HP syncing needs to be enabled in your settings (see [first question](#can-beyond20-do-insert-specific-feature)) and the character name in D&D Beyond must match the character name in Roll 20 or Foundry VTT. This also applies to creatures you have in Extras, such as a Beast companion or a familiar.
 
-If you do not have a character sheet in Roll20, that's ok, simly create a new Character, set its name and save, in the character sheet tab, if it asks you how you want to create the character select "Edit Sheet directly" and set its HP and temp HP values to any value (0 for example). That should fix it. The next time you update the HP on your character in D&D Beyond (or if you reload the character sheet), the HP should sync back to the character sheet in Roll20.
+#### For Roll20
 
-For Foundry VTT, the rules are similar, but slightly different. If a token you own with the same name as your character is in the currently viewed scene, then its HP will be modified, otherwise it will look for an actor with that name in your actors list. If you have multiple tokens with the same name in the scene, all of them will have their HP updated, so it is strongly recommended to not use "Wolf" as your beast companion's name, or your DM might get annoyed when you reach a scene with many wolves in it.
+Ask your GM to create a new character if you don't already have one.
+
+In the character sheet tab, if it asks you how you want to create the character select "Edit Sheet directly". Alternatively, if you do not want to use a character sheet in Roll20, add the "hp" and "temp_hp" (these are case sensitive!) attributes to your character.
+
+Set any value to these attributes (such as 0). A GM will need to link these attributes to your token bars by editing the token linked to the character.
+
+The next time you update the HP on your character in D&D Beyond (or reload the character sheet), the HP should sync back to the character sheet in Roll20, and also the character's token if they are linked.
+
+#### For Foundry VTT
+
+The rules are similar, but slightly different. If a token you own with the same name as your character is in the currently viewed scene, then its HP will be modified, otherwise it will look for an actor with that name in your actors list. If you have multiple tokens with the same name in the scene, all of them will have their HP updated, so it is strongly recommended to not use "Wolf" as your beast companion's name, or your DM might get annoyed when you reach a scene with many wolves in it.
 
 ### I have a \<Class feature/Feat\> that the [Features](features) page says is supported (Sharpshooter Feat for example) but I don't see the option to use it
 
