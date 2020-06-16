@@ -1410,18 +1410,24 @@ class DNDBDice {
         }
         this._rolls = [];
     }
-
+    rollSingleDie () {
+        // Borrowed from https://pthree.org/2018/06/13/why-the-multiply-and-floor-rng-method-is-biased/
+        const max = Math.floor(2 ** 32 / this.faces) * this.faces; // make "max" a multiple of "faces"
+        let x;
+        do {
+            x = Math.floor(Math.random() * 2 ** 32); // pick a number of [0, 2^32).
+        } while (x >= max); // try again if x is too big
+        return (x % this.faces) + 1; // uniformly picked in [1, faces] (inclusively)
+    }
     async rollDice() {
         this._rolls = [];
         for (let i = 0; i < this.amount; i++) {
-            let die = Math.floor(Math.random() * this.faces) + 1;
-            this._rolls.push({ "roll": die });
+            this._rolls.push({ "roll": this.rollSingleDie() });
         }
     }
     async rerollDice(amount) {
         for (let i = 0; i < amount; i++) {
-            let die = Math.floor(Math.random() * this.faces) + 1;
-            this._rolls.push({ "roll": die });
+            this._rolls.push({ "roll": this.rollSingleDie() });
         }
     }
     async roll() {
