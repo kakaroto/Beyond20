@@ -10,8 +10,8 @@ You can also check out the [changelog](Changelog) for recent fixes or additions 
 * [I have a \<Class feature/Feat\> that the Features page says is supported but I don't see the option to use it](#i-have-a-class-featurefeat-that-the-features-page-says-is-supported-sharpshooter-feat-for-example-but-i-dont-see-the-option-to-use-it)
 * [Why doesn't it roll to hit when I click on my weapon attack?](#why-doesnt-it-roll-to-hit-when-i-click-on-my-weapon-attack)
 * [Why is Beyond20 rolling too many damage dice on Roll20?](#why-is-beyond20-rolling-too-many-damage-dice-on-roll20)
-* [How can I add Bless/Guidance bonus or use Elemental Weapon ?](#how-can-i-add-blessguidance-bonus-or-use-elemental-weapon-)
-* [How can I use this non-standard spell or feature ?](#how-can-i-use-this-non-standard-spell-or-feature-)
+* [How can I add Bless/Guidance bonus or use Elemental Weapon?](#how-can-i-add-blessguidance-bonus-or-use-elemental-weapon)
+* [How can I use this non-standard spell or feature?](#how-can-i-use-this-non-standard-spell-or-feature)
 * [Why isn't the attack button appearing for my homebrew monster?](#why-isnt-the-attack-button-appearing-for-my-homebrew-monster)
 * [Why can't others see my rolls properly in Foundry VTT?](#why-cant-others-see-my-rolls-properly-in-foundry-vtt)
 * [How can I enable Discord integration?](#how-can-i-enable-discord-integration)
@@ -72,9 +72,9 @@ That's probably because you have enabled 3D dice in your Roll20 settings. The ex
 
 If it's an issue, the best way to avoid it is to either disable 3D dice, or go to Beyond20 settings and disable the 'Auto roll Damage and Dice' option.
 
-### How can I add Bless/Guidance bonus or use Elemental Weapon ?
+### How can I add Bless/Guidance bonus or use Elemental Weapon?
 
-Since v0.2, you can add custom bonuses for rolls and damages on a per-character basis, simply open the quick settings popup and enter the value there.
+Since v0.2, you can add custom bonuses for rolls and damages on a per-character basis, simply open the quick settings popup (the "Beyond20" button you see in the top of the character sheet, next to the character name) and enter the value there.
 
 In the case of [Bless](https://www.dndbeyond.com/spells/bless) or [Guidance](https://www.dndbeyond.com/spells/guidance) for example, you can enter in the roll bonus : `1d4`
 
@@ -86,7 +86,7 @@ For example, if you want it to ask you if you want to apply the Bless bonus on e
 
 Of course, the use of such macros will only work on Roll 20, not on Foundry VTT.
 
-### How can I use this non-standard spell or feature ? 
+### How can I use this non-standard spell or feature? 
 
 If you find a feature or a spell that needs to be handled in a special way, please report it on the [issue tracker](https://github.com/kakaroto/Beyond20/issues) so I can add special support for it.
 
