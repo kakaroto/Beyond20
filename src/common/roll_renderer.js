@@ -241,7 +241,7 @@ class Beyond20RollRenderer {
             }
             html += "<div class='beyond20-roll-result beyond20-roll-cells'>" + this.rollsToCells(roll_html) + "</div>";
         }
-        const add_totals = damage_rolls.filter((r) => (r[2] & DAMAGE_FLAGS.CRITICAL) == 0).length > 1;
+        const add_totals = damage_rolls.filter((r) => (r[2] & DAMAGE_FLAGS.CRITICAL) == 0).length > 1 || damage_rolls.filter((r) => (r[2] & DAMAGE_FLAGS.CRITICAL) != 0).length > 1;
         const total_damages = {}
         for (let [roll_name, roll, flags] of damage_rolls) {
             const is_total = !add_totals && (flags & DAMAGE_FLAGS.CRITICAL) == 0;
