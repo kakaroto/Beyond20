@@ -1520,7 +1520,8 @@ class DNDBDice {
         return {
             "total": this.total,
             "formula": this.formula,
-            "rolls": this.rolls
+            "rolls": this.rolls,
+            "faces": this.faces
         }
     }
 }
@@ -1957,7 +1958,7 @@ class Beyond20RollRenderer {
         if (request.sendMessage && this._displayer.sendMessage)
             this._displayer.sendMessage(request, title, html, buttons, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
         else
-            this._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound);
+            this._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound, attack_rolls, damage_rolls);
 
         if (attack_rolls.length > 0) {
             return attack_rolls.find((r) => !r.isDiscarded());

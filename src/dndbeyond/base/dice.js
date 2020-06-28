@@ -9,7 +9,7 @@ class DNDBDisplayer {
         this._error = null;
     }
 
-    postHTML(request, title, html, buttons, character, whisper, play_sound) {
+    postHTML(request, title, html, buttons, character, whisper, play_sound, attack_rolls, damage_rolls) {
         let content = "<div class='beyond20-dice-roller'>";
         if (this._error) {
             content += "<div class='beyond20-roller-error'>" +

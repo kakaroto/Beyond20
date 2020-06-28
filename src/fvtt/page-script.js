@@ -7,7 +7,7 @@ var settings = null;
 var extension_url = "/modules/beyond20/";
 
 class FVTTDisplayer {
-    postHTML(request, title, html, buttons, character, whisper, play_sound) {
+    postHTML(request, title, html, buttons, character, whisper, play_sound, attack_rolls, damage_rolls) {
         Hooks.once('renderChatMessage', (chat_message, html, data) => {
             const icon = extension_url + "images/icons/badges/custom20.png";
             html.find(".ct-beyond20-custom-icon").attr('src', icon);
@@ -20,10 +20,10 @@ class FVTTDisplayer {
                 buttons[button]();
             });
         });
-        return this._postChatMessage(html, character, whisper, play_sound);
+        return this._postChatMessage(html, character, whisper, play_sound, attack_rolls, damage_rolls);
     }
 
-    _postChatMessage(message, character, whisper, play_sound = false) {
+    _postChatMessage(message, character, whisper, play_sound = false, attack_rolls, damage_rolls) {
         const MESSAGE_TYPES = CONST.CHAT_MESSAGE_TYPES || CHAT_MESSAGE_TYPES;
         const data = {
             "content": message,
@@ -32,8 +32,8 @@ class FVTTDisplayer {
         }
         const rollMode = this._whisperToRollMode(whisper);
         if (["gmroll", "blindroll"].includes(rollMode)) {
-            data['type'] = MESSAGE_TYPES.WHISPER;
             data["whisper"] = ChatMessage.getWhisperIDs("GM");
+            data['type'] = MESSAGE_TYPES.WHISPER;
             if (rollMode == "blindroll")
                 data["blind"] = true;
         } else {
@@ -41,6 +41,36 @@ class FVTTDisplayer {
         }
         if (play_sound)
             data["sound"] = CONFIG.sounds.dice;
+        // If there are attack roll(s) or damage_roll(s)
+        // Build a dicePool, attach it to a Roll, then attach it to the ChatMessage
+        // Then set ChatMessage type to "ROLL"
+        if (attack_rolls.length > 0 || damage_rolls.length > 0) {
+            const pool = new DicePool([...attack_rolls, ...damage_rolls.map(d => d[1])].map(r => {
+                if (r instanceof FVTTRoll) { return r._roll; }
+                r.class = "Roll";
+                r.dice = [];
+                r.parts = r.parts.map(p => {
+                    if (p.formula) {
+                        p.class = "Die";
+                        const idx = r.dice.length;
+                        r.dice.push(p)
+                        return `_d${idx}`;
+                    }
+                    return p;
+                })
+                return Roll.fromData(r)
+            }));
+            pool.roll();
+            const formulas = pool.dice.map(d => d.formula);
+            const pool_roll = new Roll(`{${formulas.join(",")}}`);
+            pool_roll._result = [pool.total];
+            pool_roll._total = pool.total;
+            pool_roll._dice = pool.dice;
+            pool_roll._parts = [pool];
+            pool_roll._rolled = true;
+            data.roll = pool_roll;
+            data.type = MESSAGE_TYPES.ROLL;
+        }
         return ChatMessage.create(data);
     }
 
@@ -198,7 +228,8 @@ function handleRoll(request) {
 }
 function handleRenderedRoll(request) {
     console.log("Received rendered roll request ", request);
-    roll_renderer._displayer.postHTML(request.request, request.title, request.html, request.buttons, request.character, request.whisper, request.play_sound);
+    roll_renderer._displayer.postHTML(request.request, request.title, request.html, request.buttons, request.character, request.whisper, request.play_sound,
+        request.attack_rolls, request.damage_rolls);
 }
 
 function updateHP(name, current, total, temp) {
