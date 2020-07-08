@@ -3183,7 +3183,10 @@ function convertRollToText(whisper, roll, standout=false) {
     if (whisper === WhisperType.HIDE_NAMES) return `[[${total}]]`;
     const formula = roll.formula || "";
     const parts = roll.parts || [];
-    let result = `${prefix}[[ ${total} [${formula}] = `;
+    let critfail = "";
+    if (roll['critical-success'] || roll['critical-failure'])
+        critfail = ` + 1d0cs>${roll['critical-success'] ? '0' : '1'}cf>${roll['critical-failure'] ? '0' : '1'}`
+    let result = `${prefix}[[ ${total}${critfail} [${formula}] = `;
     let plus = '';
     for (let part of parts) {
         if (part.rolls) {
