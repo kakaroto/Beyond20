@@ -2389,7 +2389,7 @@ class Beyond20RollRenderer {
     }
 
     displayAvatar(request) {
-        const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
+        const character = (request.whisper !== WhisperType.NO) ? "???" : request.character.name;
         const discordChannel = getDiscordChannel(this._settings, request.character)
         postToDiscord(discordChannel ? discordChannel.secret : "", request, request.name, "", {}, "", [], [], [], [], false).then((error) => {
             if (error)
@@ -3304,6 +3304,8 @@ function handleMessage(request, sender, sendResponse) {
             roll = rollSpellAttack(request, custom_roll_dice);
         } else if (request.type == "avatar") {
             roll = rollAvatarDisplay(request);
+            if (request.whisper !== WhisperType.NO)
+                request.whisper = WhisperType.HIDE_NAMES;
         } else {
             // 'custom' || anything unexpected;
             const mod = request.modifier != undefined ? request.modifier : request.roll;

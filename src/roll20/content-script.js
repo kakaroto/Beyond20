@@ -753,6 +753,8 @@ function handleMessage(request, sender, sendResponse) {
             roll = rollSpellAttack(request, custom_roll_dice);
         } else if (request.type == "avatar") {
             roll = rollAvatarDisplay(request);
+            if (request.whisper !== WhisperType.NO)
+                request.whisper = WhisperType.HIDE_NAMES;
         } else {
             // 'custom' || anything unexpected;
             const mod = request.modifier != undefined ? request.modifier : request.roll;

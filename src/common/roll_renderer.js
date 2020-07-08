@@ -757,7 +757,7 @@ class Beyond20RollRenderer {
     }
 
     displayAvatar(request) {
-        const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
+        const character = (request.whisper !== WhisperType.NO) ? "???" : request.character.name;
         const discordChannel = getDiscordChannel(this._settings, request.character)
         postToDiscord(discordChannel ? discordChannel.secret : "", request, request.name, "", {}, "", [], [], [], [], false).then((error) => {
             if (error)

@@ -87,6 +87,7 @@ class FVTTDisplayer {
         try {
             return {
                 [WhisperType.NO]: "roll",
+                [WhisperType.HIDE_NAMES]: "roll",
                 [WhisperType.YES]: "gmroll",
                 [WhisperType.QUERY]: game.settings.get("core", "rollMode")
             }[whisper];
@@ -186,7 +187,7 @@ function rollInitiative(request, custom_roll_dice = "") {
 function popAvatar(request) {
     new ImagePopout(request.character.avatar, {
         "shareable": false,
-        "title": request.character.name,
+        "title": (request.whisper !== WhisperType.NO) ? "???" : request.character.name,
         "entity": { "type": "User", "id": game.user.id }
     }).render(true).shareImage(true);
 }
