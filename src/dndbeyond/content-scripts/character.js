@@ -1206,8 +1206,10 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
             position.top += target.height() / 2 - tooltip.height() / 2;
         }
         tooltip.find(".beyond20-quick-roll-indicator").removeClass("left right down up").addClass(direction);
-        tooltip.css(position).show();
-        //setPosition(e);
+        tooltip.css(position).show().off('click').on('click', (e) => {
+            e.stopPropagation();
+            callback(el);
+        });
         el.off('click').on('click', (e) => {
             e.stopPropagation();
             callback(el);
