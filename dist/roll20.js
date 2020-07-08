@@ -2587,7 +2587,7 @@ function postChatMessage(message, character = null) {
 }
 
 function escapeRoll20Macro(text) {
-    const regexp = new RegExp("\n[]{}()%@&?".split("").join("|\\"), "gm");
+    const regexp = new RegExp("\n[]{}()%@&?\"\'".split("").join("|\\"), "gm");
     return text.replace(regexp, (...match) => {
         let o = match[0].charCodeAt(0);
         if (o == 10)
