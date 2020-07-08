@@ -1,3 +1,5 @@
+- Some spells and weapon attacks are not rolling their "To hit" dice as expected
+- Clicking initiative from the quick roll area will cause it to be sent twice
 - Cannot separate to-hit and damage dice (disabled "auto roll damages" option) when using the Digital Dice.
 - Quick roll tooltip have their positions shifted if there is an ad banner ("Get the Mythic Dice Set" for example) at the top of the D&D Beyond page
 - Conditional Advantage/Disadvantage badges on skill checks will override the roll type setting (Use Alt to force a regular roll)
