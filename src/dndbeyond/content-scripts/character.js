@@ -124,9 +124,9 @@ function rollItem(force_display = false) {
     const description = descriptionToString(".ct-item-detail__description");
     if (!force_display && Object.keys(properties).includes("Damage")) {
         const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
-        let to_hit = properties["To Hit"] && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
+        let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
 
-        if (to_hit === undefined)
+        if (to_hit === null)
             to_hit = findToHit(item_full_name, ".ct-combat-attack--item,.ddbc-combat-attack--item", ".ct-item-name,.ddbc-item-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
 
         if (to_hit !== null)
@@ -233,7 +233,8 @@ function rollItem(force_display = false) {
             damages.push(`1d6+${Math.floor(barbarian_level / 2)}`);
             damage_types.push("Divine Fury");
         }
-        if (character.getSetting("sharpshooter", false) &&
+        if (to_hit !== null && 
+            character.getSetting("sharpshooter", false) &&
             properties["Attack Type"] == "Ranged" &&
             properties["Proficient"] == "Yes") {
             to_hit += " - 5";
@@ -241,7 +242,8 @@ function rollItem(force_display = false) {
             damage_types.push("Sharpshooter");
             character.mergeCharacterSettings({ "sharpshooter": false });
         }
-        if (character.getSetting("great-weapon-master", false) &&
+        if (to_hit !== null && 
+            character.getSetting("great-weapon-master", false) &&
             properties["Attack Type"] == "Melee" &&
             properties["Properties"].includes("Heavy") &&
             properties["Proficient"] == "Yes") {
@@ -407,7 +409,7 @@ function rollAction(paneClass) {
     const action_name = $(".ct-sidebar__heading").text();
     const action_parent = $(".ct-sidebar__header-parent").text();
     const description = descriptionToString(".ct-action-detail__description");
-    const to_hit = properties["To Hit"] && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
+    const to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
 
     if (action_name == "Superiority Dice" || action_parent == "Maneuvers") {
         const fighter_level = character.getClassLevel("Fighter");
@@ -584,9 +586,9 @@ function rollSpell(force_display = false) {
     } else {
         concentration = false;
     }
-    let to_hit = properties["To Hit"] && properties["To Hit"] !== "--" ? properties["To Hit"] : null;;
+    let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;;
 
-    if (to_hit === undefined)
+    if (to_hit === null)
         to_hit = findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
     if (to_hit === null)
         to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit");
@@ -989,7 +991,7 @@ function injectRollButton(paneClass) {
         const properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property,." + paneClass + " .ddbc-property-list .ddbc-property-list__property"));
         const action_name = $(".ct-sidebar__heading").text();
         const action_parent = $(".ct-sidebar__header-parent").text();
-        const to_hit = properties["To Hit"] && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
+        const to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
         if ((action_name == "Superiority Dice" || action_parent == "Maneuvers") ||
             (action_name == "Bardic Inspiration" || action_parent == "Blade Flourish") ||
             (properties["Damage"] !== undefined || to_hit !== null || properties["Attack/Save"] !== undefined)) {
@@ -1013,8 +1015,8 @@ function injectRollButton(paneClass) {
         const damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier");
         const healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier");
         const properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property,.ct-spell-pane .ddbc-property-list .ddbc-property-list__property"));
-        let to_hit = properties["To Hit"] && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
-        if (to_hit === undefined)
+        let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
+        if (to_hit === null)
             to_hit = findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
         if (to_hit === null)
             to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit");
