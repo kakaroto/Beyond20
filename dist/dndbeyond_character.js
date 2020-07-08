@@ -5479,13 +5479,25 @@ function deactivateQuickRolls() {
     const saving_throws = $(".ct-saving-throws-summary__ability .ct-saving-throws-summary__ability-modifier,.ddbc-saving-throws-summary__ability .ddbc-saving-throws-summary__ability-modifier");
     const skills = $(".ct-skills .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__col--modifier");
     const actions = $(".ct-combat-attack .ct-combat-attack__icon,.ddbc-combat-attack .ddbc-combat-attack__icon");
+    const actions_to_hit = $(".ddbc-combat-attack .ddbc-combat-attack__tohit .integrated-dice__container");
+    const actions_damage = $(".ddbc-combat-attack .ddbc-combat-attack__damage .integrated-dice__container");
     const spells = $(".ct-spells-spell .ct-spells-spell__action,.ddbc-spells-spell .ddbc-spells-spell__action");
+    const spells_to_hit = $(".ct-spells-spell .ct-spells-spell__tohit .integrated-dice__container, .ddbc-spells-spell .ddbc-spells-spell__tohit .integrated-dice__container");
+    const spells_damage = $(".ct-spells-spell .ct-spells-spell__damage .integrated-dice__container, .ddc-spells-spell .ddc-spells-spell__damage .integrated-dice__container");
     deactivateTooltipListeners(abilities);
     deactivateTooltipListeners(saving_throws);
     deactivateTooltipListeners(skills);
     deactivateTooltipListeners(actions);
+    deactivateTooltipListeners(actions_to_hit);
+    deactivateTooltipListeners(actions_damage);
     deactivateTooltipListeners(spells);
-    return [abilities, saving_throws, skills, actions, spells];
+    deactivateTooltipListeners(spells_to_hit);
+    deactivateTooltipListeners(spells_damage);
+    return {
+        abilities, saving_throws, skills,
+        actions, actions_to_hit, actions_damage,
+        spells, spells_to_hit, spells_damage
+    };
 }
 
 function activateQuickRolls() {
@@ -5518,7 +5530,11 @@ function activateQuickRolls() {
         $("body").append(beyond20_tooltip);
     }
 
-    const [abilities, saving_throws, skills, actions, spells] = deactivateQuickRolls();
+    const {
+        abilities, saving_throws, skills,
+        actions, actions_to_hit, actions_damage,
+        spells, spells_to_hit, spells_damage
+    } = deactivateQuickRolls();
 
     if (!settings["quick-rolls"])
         return;
@@ -5580,8 +5596,9 @@ function activateQuickRolls() {
         });
     }
 
-    for (let action of actions.toArray()) {
-        activateTooltipListeners($(action), 'right', beyond20_tooltip, (el) => {
+    for (let action of [...actions.toArray(), ...actions_to_hit.toArray(), ...actions_damage.toArray()]) {
+        action = $(action);
+        activateTooltipListeners(action, action.hasClass('integrated-dice__container') ? 'up' : 'right', beyond20_tooltip, (el) => {
             const name = el.closest(".ct-combat-attack,.ddbc-combat-attack")
                 .find(".ct-combat-attack__name .ct-combat-attack__label,.ddbc-combat-attack__name .ddbc-combat-attack__label")
                 .trigger('click').text();
@@ -5602,8 +5619,9 @@ function activateQuickRolls() {
         });
     }
 
-    for (let spell of spells) {
-        activateTooltipListeners($(spell), 'right', beyond20_tooltip, (el) => {
+    for (let spell of [...spells.toArray(), ...spells_to_hit.toArray(), ...spells_damage.toArray()]) {
+        spell = $(spell);
+        activateTooltipListeners(spell, spell.hasClass('integrated-dice__container') ? 'up' : 'right', beyond20_tooltip, (el) => {
             const name = el.closest(".ct-spells-spell,.ddbc-spells-spell")
                 .find(".ct-spell-name,.ddbc-spell-name")
                 .trigger('click').text();
