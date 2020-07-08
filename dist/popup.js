@@ -270,6 +270,7 @@ const options_list = {
         "short": "Type of Roll",
         "title": "Type of Roll (Advantange/Disadvantage)",
         "description": "Determines if rolls should be with advantage, disadvantage, double rolls or user queries",
+        "short_description": "Hold Shift/Ctrl/Alt to override for Advantage/Disadvantage/Regular rolls",
         "type": "combobox",
         "default": RollType.NORMAL,
         "choices": {
