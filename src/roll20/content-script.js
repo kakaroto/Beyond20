@@ -644,7 +644,7 @@ function convertRollToText(whisper, roll, standout=false) {
     return result;
 };
 
-function handleRenderedRoll(request) {
+async function handleRenderedRoll(request) {
     const properties = {};
     if (request.source)
         properties.source = request.source;
@@ -673,6 +673,14 @@ function handleRenderedRoll(request) {
     for (let [key, roll] of Object.entries(request.total_damages))
         properties["Total " + key] = convertRollToText(request.whisper, roll);
 
+    const buttons = {}
+    if (request.buttons) {
+        for (let button in request.buttons) {
+            const id = `beyond20-rendered-roll-button-${Math.random()}`;
+            buttons[id] = request.buttons[button];
+            properties[button] = `[Click](!${id})`;
+        }
+    }
     let message = createTable(request, request.character, properties);
     if (request.request.type === "initiative" && settings["initiative-tracker"]) {
         const initiative = request.attack_rolls.find((roll) => !roll.discarded);
@@ -680,6 +688,23 @@ function handleRenderedRoll(request) {
             message += `  [[${initiative.total} &{tracker}]]`;
     }
     postChatMessage(message, request.character);
+    for (let button in buttons) {
+        let a = null;
+        let timeout = 20;
+        while (timeout > 0) {
+            a = $(`a[href='!${button}']`);
+            // Yeay for crappy code.
+            // Wait until the link appears in chat
+            if (a.length > 0)
+                break;
+            a = null;
+            await new Promise(r => setTimeout(r, 500));
+            timeout--;
+        }
+        if (!a) continue;
+        a.attr("href", "!");
+        a.click(ev => buttons[button]());
+    }
 }
 
 function injectSettingsButton() {
