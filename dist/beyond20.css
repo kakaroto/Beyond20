@@ -3,7 +3,8 @@
     padding: 0px;
     height: 50%;
     top: 25%;
-    left: 0;
+    left: -5px;
+    transform: rotate(180deg);
 }
 
 .beyond20-quick-roll-tooltip .beyond20-quick-roll-indicator.left {
@@ -11,26 +12,25 @@
     padding: 0px;
     height: 50%;
     top: 25%;
-    left: calc(100% - 10px);
-    transform: rotate(180deg);
+    left: calc(100% - 6px);
 }
 
 .beyond20-quick-roll-tooltip .beyond20-quick-roll-indicator.down {
     position: absolute;
     padding: 0px;
     height: 50%;
-    top: -10px;
+    top: -16px;
     left: calc(50% - 5px);
-    transform: rotate(90deg);
+    transform: rotate(-90deg);
 }
 
 .beyond20-quick-roll-tooltip .beyond20-quick-roll-indicator.up {
     position: absolute;
     padding: 0px;
     height: 50%;
-    top: calc(100% - 10px);
+    top: calc(100% - 6px);
     left: calc(50% - 5px);
-    transform: rotate(-90deg);
+    transform: rotate(90deg);
 }
 
 /* This is needed so the tooltip's absolute position is
