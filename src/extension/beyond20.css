@@ -1,3 +1,7 @@
+.beyond20-quick-roll-tooltip,
+.beyond20-quick-roll-area {
+    cursor: pointer;
+}
 .beyond20-quick-roll-tooltip .beyond20-quick-roll-indicator.right {
     position: absolute;
     padding: 0px;

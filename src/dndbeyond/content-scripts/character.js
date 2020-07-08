@@ -1220,6 +1220,7 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
             clearTimeout(quickRollHideId);
         quickRollHideId = setTimeout(() => tooltip.hide(), 100);
     });
+    el.addClass("beyond20-quick-roll-area");
 }
 
 function deactivateQuickRolls() {
