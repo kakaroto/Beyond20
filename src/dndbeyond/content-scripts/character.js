@@ -1237,6 +1237,10 @@ function deactivateQuickRolls() {
     const spells = $(".ct-spells-spell .ct-spells-spell__action,.ddbc-spells-spell .ddbc-spells-spell__action");
     const spells_to_hit = $(".ct-spells-spell .ct-spells-spell__tohit .integrated-dice__container, .ddbc-spells-spell .ddbc-spells-spell__tohit .integrated-dice__container");
     const spells_damage = $(".ct-spells-spell .ct-spells-spell__damage .integrated-dice__container, .ddc-spells-spell .ddc-spells-spell__damage .integrated-dice__container");
+    let initiative = $(".ct-initiative-box__value .integrated-dice__container");
+    if (initiative.length === 0)
+        initiative = $(".ct-initiative-box__value .ddbc-signed-number");
+    deactivateTooltipListeners(initiative);
     deactivateTooltipListeners(abilities);
     deactivateTooltipListeners(saving_throws);
     deactivateTooltipListeners(skills);
@@ -1246,7 +1250,9 @@ function deactivateQuickRolls() {
     deactivateTooltipListeners(spells);
     deactivateTooltipListeners(spells_to_hit);
     deactivateTooltipListeners(spells_damage);
+
     return {
+        initiative,
         abilities, saving_throws, skills,
         actions, actions_to_hit, actions_damage,
         spells, spells_to_hit, spells_damage
@@ -1284,6 +1290,7 @@ function activateQuickRolls() {
     }
 
     const {
+        initiative,
         abilities, saving_throws, skills,
         actions, actions_to_hit, actions_damage,
         spells, spells_to_hit, spells_damage
@@ -1292,7 +1299,7 @@ function activateQuickRolls() {
     if (!settings["quick-rolls"])
         return;
 
-    activateTooltipListeners($(".ct-initiative-box__value .integrated-dice__container, .ct-initiative-box__value .ddbc-signed-number"), 'up', beyond20_tooltip, (el) => {
+    activateTooltipListeners(initiative, 'up', beyond20_tooltip, (el) => {
         el.closest(".ct-initiative-box__value").trigger('click');
         if ($(".ct-initiative-pane").length)
             execute("ct-initiative-pane");
