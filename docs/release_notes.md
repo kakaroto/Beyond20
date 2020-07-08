@@ -1,3 +1,20 @@
+v2.1
+===
+
+Another month, another Beyond20 release.
+This time, it's mostly a bugfix release, and while I wanted to release this earlier—considering the number of bugs that crept into the v2.0 update—I found myself lacking the time and energy to do much work on Beyond20. Thankfully, there weren't too many bad bugs in v2.0, nothing game breaking at least, so I allowed myself to concentrate on other works and to actually take some time off and finally rest for the first time in months (yeay!). Most of the initial bugs were fixed by Aeristoka who has been contributing a large number of features and bugfixes lately, so everybody send some thanks his way!
+
+Today unfortunately, D&D Beyond have [updated](https://www.dndbeyond.com/changelog/844-character-sheet-changelog-july-7th-updates) the character sheet and it broke Beyond20 pretty much instantly for everybody. This has forced me to rush out this release to you all, but I didn't want it to be an underwhelming release with just a few fixes, so I spent the afternoon and all night working on trying to cram as much features and bugfixes into this release. I still managed to do about half (23 out of 51) of the originally planned features/fixes for 2.1, so I'm pretty happy with that.
+
+That's about it, a short release notes this time, the main changes here are bugfixes, especially for the break from the July 7th update of D&D Beyond, and a few general improvements to the user experience. There's still plenty of changes to read about in the [Changelog](/Changelog#v21).
+
+Finally, as usual, a big thank you to all who have sent me [rations](https://ko-fi.com/kakaroto) or who support me via [Patreon](https://patreon.com/kakaroto).
+
+If you find Beyond20 useful and it helps you run your games more smoothly, please consider [supporting](/rations) me and Beyond20.
+
+Thank you, stay safe, and, as usual, happy rolling!
+
+
 v2.0
 ===
 

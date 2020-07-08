@@ -1,5 +1,3 @@
-- **D&D Beyond's [Update](https://www.dndbeyond.com/changelog/844-character-sheet-changelog-july-7th-updates) of July 7th broke support for Beyond20 v2.0. This is already fixed in the development version and a new release is being prepared.**
 - Cannot separate to-hit and damage dice (disabled "auto roll damages" option) when using the Digital Dice.
 - Quick roll tooltip have their positions shifted if there is an ad banner ("Get the Mythic Dice Set" for example) at the top of the D&D Beyond page
-- Rolling Initiative to Roll20 with the new Digital Dice (or using non OGL template), will not add the initiative to tracker
-- The 'Cast' button for casting spells directly from the sheet is preventing D&D Beyond from marking used spell slots.
+- Conditional Advantage/Disadvantage badges on skill checks will override the roll type setting (Use Alt to force a regular roll)

@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.0
+Congratulations! Beyond20 was just updated to the latest version : v2.1
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -23,47 +23,21 @@ If you find an issue that isn't in the list, I'd appreciate you letting me know 
 
 # Release Notes
 
-v2.0
+v2.1
 ===
 
-Hi and welcome to the Two-Point-Oh release of Beyond20!
+Another month, another Beyond20 release.
+This time, it's mostly a bugfix release, and while I wanted to release this earlier—considering the number of bugs that crept into the v2.0 update—I found myself lacking the time and energy to do much work on Beyond20. Thankfully, there weren't too many bad bugs in v2.0, nothing game breaking at least, so I allowed myself to concentrate on other works and to actually take some time off and finally rest for the first time in months (yeay!). Most of the initial bugs were fixed by Aeristoka who has been contributing a large number of features and bugfixes lately, so everybody send some thanks his way!
 
-This is yet another major release version of Beyond20. I have decided to make the jump directly to the 2.0 version because of just how massive this release is and the amount of work that went into it. One of the big changes and which took the most time was a near rewrite of the entire extension into pure Javascript, making the move from the python-like Rapydscript language that I used previously. The change makes Beyond20 generally better, easier to work with and maintain long term.
+Today unfortunately, D&D Beyond have [updated](https://www.dndbeyond.com/changelog/844-character-sheet-changelog-july-7th-updates) the character sheet and it broke Beyond20 pretty much instantly for everybody. This has forced me to rush out this release to you all, but I didn't want it to be an underwhelming release with just a few fixes, so I spent the afternoon and all night working on trying to cram as much features and bugfixes into this release. I still managed to do about half (23 out of 51) of the originally planned features/fixes for 2.1, so I'm pretty happy with that.
 
-I usually say this at the end, but this time, I want to start by giving a very special thank you to all my [patrons](https://www.patreon.com/kakaroto) and all the generous people who supported my work by sending rations through [Ko-fi](https://ko-fi.com/kakaroto) or other means. Without you, I wouldn't have had the courage and motivation to spend this much time working on making this release, especially with how busy and chaotic my life has been in the last few months.
+That's about it, a short release notes this time, the main changes here are bugfixes, especially for the break from the July 7th update of D&D Beyond, and a few general improvements to the user experience. There's still plenty of changes to read about in the [Changelog](/Changelog#v21).
 
-As some of you may already know, I've worked relentlessly in the past few months on my new D&D related project and new business venture, [The Forge](https://forge-vtt.com), which is a hosting service for [Foundry VTT](https://foundryvtt.com) games. With Foundry VTT officially releasing just last week (on May 22nd) and me doing my best to [release The Forge](https://www.patreon.com/posts/release-party-37398469) on the same date, it has been a very stressful and chaotic time, but the launch went smoothly and I'm very happy with the results so far. I have still managed to take the time every few days and dedicate myself to working on Beyond20, and that has paid off greatly with this release being ready so soon and being so extensive.
+Finally, as usual, a big thank you to all who have sent me [rations](https://ko-fi.com/kakaroto) or who support me via [Patreon](https://patreon.com/kakaroto).
 
-Another big and important thing to mention relating to this release is the number of external contributions that were received, making Beyond20 greater than one man's work. Some of the contributions were small, others were large, and others were non quantifiable. We now have new amazing artwork, made by [Jerry Escandon](https://github.com/Jerryescandon) that makes the Beyond20 icons look beautiful and sleek and much nicer at the low resolutions needed by Beyond20. We've also had code contributions by [@Brunhine](https://github.com/Brunhine), [@spisin](https://github.com/spisin), [@kbuzsaki](https://github.com/kbuzsaki), [@Ainias](https://github.com/Ainias) and last but not least [@Aeristoka](https://github.com/Aeristoka). Aeristoka has also been a huge help in systematically testing every feature of Beyond20 after the rewrite of the extension and reporting all the bugs he could find as well as fixing many of them himself. What this means is that if you find a bug, you can now blame Aeristoka, not me!🤣
-
-I know that some of you may have wanted to see this release appear sooner, especially with the D&D Beyond Digital Dice release that affected our Quick Rolls feature, but let me give you a little bit of perspective before diving into the new features in this release.
-
-So far in nearly one year, up to the 1.1 release last month, 173 issues (bugs and feature requests) were opened on the issue tracker with most of them being closed over that same period of time. In the last 8 weeks alone, we've had 152 new issues created and closed. Here's a little table (for those who like statistics) showing how many changes (according to the github commit log history) each version had and how long it took to prepare that release.
-
-| Release | Code changes | Development time |
-|---------|--------------|------------------|
-| 0.8     | 30 commits   |  17 days         |
-| 0.9     | 37 commits   |  69 days         |
-| 1.0     | 37 commits   |  32 days         |
-| 1.1     | 24 commits   |  24 days         |
-| 2.0     | 165 commits  |  53 days         |
-
-Oh and by the way, Beyond20 now has over 135 000 users which is just incredible! 🥳
-
-Now let's get down to the interesting bits. What does this release bring you?
-
-You should definitely check out the full [Changelog](/Changelog#v20) to see all of the new features and bugfixes that this release brings. I personally think the most important new feature is the rewrite to Javascript, but none of you will care about that, so you'll probably be most excited about the integration with D&D Beyond's amazing new Digital Dice feature. You can now do all your rolls using the dice from D&D Beyond, and have it roll all your To Hit and Damage dice and send all of the results to your VTT of choice.
-
-The other big change, is with regards to Discord Integration. I promised you last time, that I would enhance the features of the Discord integration, and I did. It is still not as complete as I would hope, but it should hold you over until the next round of features are added. You can now add multiple Discord destination channels to Beyond20 and choose where you want the rolls to go. You can also give a friendly name to the channel so you don't need to remember which secret key goes to which channel. I have also added support for specifying a channel dedicated to whispers when creating your secret key, as well as specifying options, the only one available now being the ability to disable the spoiler tags for the roll formulas. See the updated instructions on the [Discord](/discord) page for more information.
-
-Another change that I am very happy about is the automatic detection of the character sheet template used on Roll20. We've had so many people asking about "why does Beyond20 send an empty message" and us having to point them to the [FAQ](/faq) that I've had to tackle that issue and make Beyond20 smarter. Now if your game is not using the 'D&D 5e By Roll20' character sheet template, then it will automatically use the default template instead. This also applies when using pre-rendered rolls when you roll using the Digital Dice.
-
-Finally, I'd like to reiterate my thank you to all who have sent me rations/coffees through the [Ko-fi](https://ko-fi.com/kakaroto) link or who pledged on [Patreon](https://patreon.com/kakaroto).
-
-If you find Beyond20 useful to you and it helps you run your games more smoothly, please consider [supporting](/rations) me and Beyond20.
+If you find Beyond20 useful and it helps you run your games more smoothly, please consider [supporting](/rations) me and Beyond20.
 
 Thank you, stay safe, and, as usual, happy rolling!
-
 
 ---
 
@@ -71,63 +45,42 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-* **Feature**: Add integration with the D&D Beyond Digital Dice
-* **Feature**: Update the Beyond20 icon sets to make them more beautiful and usable at low resolutions. Icons provided by [Jerry Escandon](https://github.com/Jerryescandon)
-* **Feature**: *Discord*: Add a channel manager for Discord secret keys to allow easily switching channel destinationse](https://github.com/Brunhine))
-* **Feature**: *Discord*: Add support for whispered rolls in the Discord integration
-* **Feature**: *Roll20*: Automatically check for character sheet template and display the roll according to the campaign setting
-* **Feature**: Add quick roll button to Initiative
-* **Feature**: Add ability to send pre-rolled dice using the Digital Dice to Foundry and Roll20
-* **Feature**: *Discord*: Add support for customizing rolls (no spoiler tags) when requesting a secret key from the Discord Bot
-* **Feature**: *Discord*: Hide monster name, attack and formulas on Discord rolls when using the "hide monster name" whisper mode (By [@Brunhin
-* **Feature**: *Discord*: Add support for linking back to the character, spell and item, when rolling to discord
-* **Feature**: Add ability to display a monster avatar in the VTT (By [@Brunhine](https://github.com/Brunhine))
-* **Feature**: *Roll20*: Add custom modifiers to the display of the modifier field in Roll20 rolls (by [@spisin](https://github.com/spisin))
-* **Feature**: Allow the use of reroll modifiers on custom dice formulas
-* **Feature**: Differentiate between one handed and two handed damages for versatile weapons when rolling both damage types
-* **Feature**: Detect Advantage/Disadvantage indicator on skills and apply them to skill checks (By [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add the proper modifiers to a Fighter's Parry and Rally maneuvers
-* **Feature**: Differentiate between Brutal Critical damages and Savage Attacks damages (By [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Consider Unarmed Strike as natural weapons for class features that affect weapon attacks (brutal critical, giant might, etc..) (By [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for roll formulas in descriptions of the form "+ half your `<class>` level"
-* **Feature**: Add support for Ranger's Colossus Slayer class feature (By [@Brunhine](https://github.com/Brunhine))
-* **Feature**: Add support for Ranger's Planar Warrior class feature (By [@Brunhine](https://github.com/Brunhine))
-* **Feature**: Add support for Protector Aasimar's Radiant Soul class feature (By [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for Flames of Phlegethos Feat (By [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for Ranger's Slayer's Prey class feature
-* **Feature**: Add support for Ranger's Gathered Swarm class feature
-* **Feature**: Add support for Cleric's Supreme Healing class feature
-* **Feature**: Add support for Rogue's Reliable Talent class feature
-* **Feature**: Add support for the Elemental Adept Feat
-* **Bugfix**: Fix some edge cases in roll formula formatting in ability descriptions (By [@Brunhine](https://github.com/Brunhine))
-* **Bugfix**: Fix Fighter's Giant Might class feature not scaling its dice properly at level 11 (By [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Fix Cleric's Divine Strike to work for non melee weapons as well (By [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Fix handling of Great Weapon Fighting for the Polarm Master bonus action (By [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Roll Sneak Attack damages on Psychic Blades action (By [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Fix saving throws quick roll not working anymore (By [@kbuzsaki](https://github.com/kbuzsaki))
-* **Bugfix**: Do not display duplicate custom dice icons in the class features list
-* **Bugfix**: Fix the integrated dice roller not rolling 'd4' formulas (instead of '1d4') such as in the Bless spell
-* **Bugfix**: Apply Great Weapon Fighting rerolls to a weapon's additional damages
-* **Bugfix**: Fix Cleric's Life Transference damage being wrongly calculated
-* **Bugfix**: Fix custom damage labels being ignored for spells and actions
-* **Bugfix**: Fix class feature descriptions not being properly displayed
-* **Bugfix**: Fix rolling tools from Equipement due to change in equipment type
-* **Bugfix**: *Roll20*: Prevent multiple dice rolls in a single formula from appearing as separate formulas
-* **Bugfix**: *Foundry VTT*: Fix add to initiative breaking with 0.6.0 release (By [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: *Foundry VTT*: Fix applying damage or healing to a token from a custom roll
-* **Bugfix**: *Foundry VTT*: Fix condition syncing with tokens (By [@Brunhine](https://github.com/Brunhine))
-* **Bugfix**: *Foundry VTT*: Fix PC/NPC Names being displayed in lowercase (By [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: *Foundry VTT*: Fix loading the Beyond20 setting icon in whitelisted pages
-* **Bugfix**: *Discord*: Use the correct URL for Discord monster link back when rolling from encounter pages
-* **Bugfix**: *Discord*: Send the correct whisper setting when sending the roll to Discord
-* **Bugfix**: *Discord*: Fix displaying Equipment and Magic Items to Discord
-* **Misc**: **Major rewrite** of the Beyond20 extension to use pure Javascript instead of Rapydscript language
-* **Misc**: Allow Beyond20 to work within iframes (By [@Ainias](https://github.com/Ainias))
-* **Misc**: Remove roll type indicators and use the new badge icons to represent the roll type
-* **Misc**: Change internal dice formula reference to be more streamlined and independent of specific VTT implementations
-* **Misc**: Make the quick roll icon remain fixed in place and disappear with a small delay
-* **Misc**: Fix some dice rolls failing on pre-v3 D&D Beyond character sheets (irrelevant at this point)
-
+* **Feature**: Add Quick Roll Area to the Digital Dice buttons for "To Hit" and "Damages" in Actions and Spells tabs
+* **Feature**: Add support for the Bard's Silver Tongue class feature (By [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Natural Weapons (Claws, Bites, Tails, Ram, Horns, Hooves, etc..) (By [@Aeristoka](https://github.com/Aeristoka)) 
+* **Feature**: Add support for Dragon's Breath Spell attack (By [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Path of the Zealot's Divine Fury (By [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Use a slightly less biased random number generator (1 in a few trillion chances of having a biased result) (By [@shadow7412](https://github.com/shadow7412))
+* **Feature**: *FVTT:* Save Roll information in ChatMessage (allows interoperability with Dice So Nice module) (By [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Make Quick Roll icon clickable and change the mouse pointer when hovering on it
+* **Feature**: Change the Quick Roll tooltip's arrow to point to the quick roll area instead of the tooltip itself, to avoid confusion
+* **Feature**: Make Quick Roll areas show a clickable mouse pointer
+* **Feature**: Hide monster names when showing their avatars in whisper mode
+* **Feature**: Query for whisper type on the D&D Beyond page instead of the VTT which allows the "Ask every time" option to work with Discord integration
+* **Feature**: Add hint in the settings popup about the Shift/Ctrl/Alt hotkey for changing the roll type 
+* **Feature**: Add support for monster that do multiple damages of a single type (Orc War Chief)
+* **Bugfix**: Fix support for the new Character Sheet update of D&D Beyond's 7th of July update
+* **Bugfix**: Fix adding the initiative to the initiative tracker when using the Digital Dice
+* **Bugfix**: Fix Cast button not working when using the Quick Roll area to click on it
+* **Bugfix**: Fix issue with rolling hit dice (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix issue with Polearm Master Bonus attack and Great Weapon Fighting (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix issue preventing Chaos Bolt from working properly (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix issue with Brutal Critical/Savage Attacks when using "Perfect Dice" critical homebrew rules (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix custom damage parsing when using ":" as separator without a space (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix roll type query not appearing when a skill check has an advantage/disadvantage badge (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix display issue with some sentences that were garbles after the python to javascript conversion
+* **Bugfix**: Fix issue with separate roll damages breaking when character's name has a quotation mark in it
+* **Bugfix**: Small fix to quick roll tooltip position so it is better centered
+* **Bugfix**: Fix initiative value not updating when switching between statblocks in the Encounters page
+* **Bugfix**: Fix parsing of some monster stat blocks that had non-breaking spaces in their actions' descriptions
+* **Bugfix**: Fix issue of displaying results of zero when doing a monster's attack that has a to-hit value but no damages
+* **Bugfix**: Fix issue with rolling actions that have "--" as their "To Hit" value (Fist of Unbroken Air)
+* **Bugfix**: *Roll20*: Fix newly introduced bug where custom roll modifiers that uses queries may not change the roll to display as a critical hit when it's not
+* **Bugfix**: *Roll20*: Fix bug where damages could not be rolled separately on a monster with "Hide Monster and Attack Name" whisper mode
+* **Bugfix**: *Roll20*: Show critical success/failure colored results on rolls using the Beyond20 roll renderer
+* **Bugfix**: *Roll20*: Change the Beyond20 renderer display so it doesn't say "To Hit" on non attack rolls
+* **Bugfix**: *Roll20*: Add the "Roll Damages" button when using the Beyond20 renderer with the 'auto roll damages' option disables
+* **Misc**: Improved and more standard build and packaging process (By [@moritonal ](https://github.com/moritonal))
 
 
 ---

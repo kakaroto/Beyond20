@@ -1,3 +1,43 @@
+v2.1
+===
+* **Feature**: Add Quick Roll Area to the Digital Dice buttons for "To Hit" and "Damages" in Actions and Spells tabs
+* **Feature**: Add support for the Bard's Silver Tongue class feature (By [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Natural Weapons (Claws, Bites, Tails, Ram, Horns, Hooves, etc..) (By [@Aeristoka](https://github.com/Aeristoka)) 
+* **Feature**: Add support for Dragon's Breath Spell attack (By [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Path of the Zealot's Divine Fury (By [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Use a slightly less biased random number generator (1 in a few trillion chances of having a biased result) (By [@shadow7412](https://github.com/shadow7412))
+* **Feature**: *FVTT:* Save Roll information in ChatMessage (allows interoperability with Dice So Nice module) (By [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Make Quick Roll icon clickable and change the mouse pointer when hovering on it
+* **Feature**: Change the Quick Roll tooltip's arrow to point to the quick roll area instead of the tooltip itself, to avoid confusion
+* **Feature**: Make Quick Roll areas show a clickable mouse pointer
+* **Feature**: Hide monster names when showing their avatars in whisper mode
+* **Feature**: Query for whisper type on the D&D Beyond page instead of the VTT which allows the "Ask every time" option to work with Discord integration
+* **Feature**: Add hint in the settings popup about the Shift/Ctrl/Alt hotkey for changing the roll type 
+* **Feature**: Add support for monster that do multiple damages of a single type (Orc War Chief)
+* **Bugfix**: Fix support for the new Character Sheet update of D&D Beyond's 7th of July update
+* **Bugfix**: Fix adding the initiative to the initiative tracker when using the Digital Dice
+* **Bugfix**: Fix Cast button not working when using the Quick Roll area to click on it
+* **Bugfix**: Fix issue with rolling hit dice (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix issue with Polearm Master Bonus attack and Great Weapon Fighting (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix issue preventing Chaos Bolt from working properly (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix issue with Brutal Critical/Savage Attacks when using "Perfect Dice" critical homebrew rules (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix custom damage parsing when using ":" as separator without a space (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix roll type query not appearing when a skill check has an advantage/disadvantage badge (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix display issue with some sentences that were garbles after the python to javascript conversion
+* **Bugfix**: Fix issue with separate roll damages breaking when character's name has a quotation mark in it
+* **Bugfix**: Small fix to quick roll tooltip position so it is better centered
+* **Bugfix**: Fix initiative value not updating when switching between statblocks in the Encounters page
+* **Bugfix**: Fix parsing of some monster stat blocks that had non-breaking spaces in their actions' descriptions
+* **Bugfix**: Fix issue of displaying results of zero when doing a monster's attack that has a to-hit value but no damages
+* **Bugfix**: Fix issue with rolling actions that have "--" as their "To Hit" value (Fist of Unbroken Air)
+* **Bugfix**: *Roll20*: Fix newly introduced bug where custom roll modifiers that uses queries may not change the roll to display as a critical hit when it's not
+* **Bugfix**: *Roll20*: Fix bug where damages could not be rolled separately on a monster with "Hide Monster and Attack Name" whisper mode
+* **Bugfix**: *Roll20*: Show critical success/failure colored results on rolls using the Beyond20 roll renderer
+* **Bugfix**: *Roll20*: Change the Beyond20 renderer display so it doesn't say "To Hit" on non attack rolls
+* **Bugfix**: *Roll20*: Add the "Roll Damages" button when using the Beyond20 renderer with the 'auto roll damages' option disables
+* **Misc**: Improved and more standard build and packaging process (By [@moritonal ](https://github.com/moritonal))
+
+
 v2.0
 ===
 * **Feature**: Add integration with the D&D Beyond Digital Dice
