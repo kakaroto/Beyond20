@@ -53,7 +53,13 @@ function propertyListToDict(propList) {
 
 function descriptionToString(selector) {
     // strip tags : https://www.sitepoint.com/jquery-strip-html-tags-div/;
-    return ($(selector).html() || "").replace(/<\/?[^>]+>/gi, '');
+    return ($(selector).html() || "").replace(/<\/?[^>]+>/gi, '')
+        .replace("&nbsp;", " ")
+        .replace("&amp;", "&")
+        .replace("&quot;", "\"")
+        .replace("&apos;", "\'")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">");
 }
 
 function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
