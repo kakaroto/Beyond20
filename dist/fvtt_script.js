@@ -1697,6 +1697,16 @@ class Beyond20RollRenderer {
         return parseInt(await this.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order));
     }
 
+    async queryWhisper(title, monster) {
+        const choices = {
+            [WhisperType.YES]: "Whisper Roll",
+            [WhisperType.NO]: "Public Roll"
+        }
+        if (monster)
+            choices[WhisperType.HIDE_NAMES] = "Hide Monster and Attack Name";
+        return parseInt(await dndbeyondDiceRoller.queryGeneric(title, "Select whisper mode : ", choices, "whisper-mode"));
+    }
+
     async getToHit(request, title, modifier = "", data = {}) {
         let advantage = request.advantage;
         if (advantage == RollType.QUERY)

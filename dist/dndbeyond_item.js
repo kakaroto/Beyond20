@@ -1696,6 +1696,16 @@ class Beyond20RollRenderer {
         return parseInt(await this.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order));
     }
 
+    async queryWhisper(title, monster) {
+        const choices = {
+            [WhisperType.YES]: "Whisper Roll",
+            [WhisperType.NO]: "Public Roll"
+        }
+        if (monster)
+            choices[WhisperType.HIDE_NAMES] = "Hide Monster and Attack Name";
+        return parseInt(await dndbeyondDiceRoller.queryGeneric(title, "Select whisper mode : ", choices, "whisper-mode"));
+    }
+
     async getToHit(request, title, modifier = "", data = {}) {
         let advantage = request.advantage;
         if (advantage == RollType.QUERY)
@@ -2966,11 +2976,14 @@ function buildAttackRoll(character, attack_source, name, description, properties
     return roll_properties;
 }
 
-function sendRoll(character, rollType, fallback, args) {
+async function sendRoll(character, rollType, fallback, args) {
     let whisper = parseInt(character.getGlobalSetting("whisper-type", WhisperType.NO));
     const whisper_monster = parseInt(character.getGlobalSetting("whisper-type-monsters", WhisperType.YES));
-    if ((character.type() == "Monster" || character.type() == "Vehicle") && whisper_monster != WhisperType.NO)
+    let is_monster = character.type() == "Monster" || character.type() == "Vehicle";
+    if (is_monster && whisper_monster != WhisperType.NO)
         whisper = whisper_monster;
+    if (whisper === WhisperType.QUERY)
+        whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
     advantage = parseInt(character.getGlobalSetting("roll-type", RollType.NORMAL));
     if (args["advantage"] == RollType.OVERRIDE_ADVANTAGE)
         args["advantage"] = advantage == RollType.SUPER_ADVANTAGE ? RollType.SUPER_ADVANTAGE : RollType.ADVANTAGE;
