@@ -51,7 +51,7 @@ function genRoll(dice, modifiers = {}) {
         let mod = modifiers[m];
         if (mod.length > 0) {
             if (m === "CUSTOM")
-                mod = mod.replace(/([0-9]*d[0-9]+)/, "$1cs>100cf<0");
+                mod = mod.replace(/([0-9]*d[0-9]+)/, "$1cs0cf0");
             if (mod[0] == '+' || mod[0] == '-' || mod[0] == '?' || mod[0] == '&') {
                 roll += " " + mod;
             } else {
@@ -198,7 +198,7 @@ function template(request, name, properties) {
 
 function format_plus_mod(custom_roll_dice) {
     const prefix = custom_roll_dice && !["+", "-", "?", ""].includes(custom_roll_dice.trim()[0]) ? " + " : "";
-    return prefix + custom_roll_dice;
+    return prefix + (custom_roll_dice || "").replace(/([0-9]*d[0-9]+)/, "$1cs0cf0");;
 }
 
 function createTable(request, name, properties) {
