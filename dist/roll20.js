@@ -3230,7 +3230,7 @@ function handleRenderedRoll(request) {
         properties[name] = value;
 
     if (request.attack_rolls.length > 0) {
-        properties["To Hit"] = request.attack_rolls.map(roll => convertRollToText(request.whisper, roll, true)).join(" | ")
+        properties[request.title] = request.attack_rolls.map(roll => convertRollToText(request.whisper, roll, true)).join(" | ")
     }
     for (let [roll_name, roll, flags] of request.damage_rolls) {
         if (typeof (roll) === "string")
@@ -3244,7 +3244,7 @@ function handleRenderedRoll(request) {
     for (let [key, roll] of Object.entries(request.total_damages))
         properties["Total " + key] = convertRollToText(request.whisper, roll);
 
-    const message = createTable(request, request.title, properties);
+    const message = createTable(request, request.character, properties);
     postChatMessage(message, request.character);
 }
 
