@@ -2238,58 +2238,58 @@ class Beyond20RollRenderer {
                     damage_rolls.push(["Healing", "Twice the Necrotic damage", DAMAGE_FLAGS.HEALING]);
                 }
             }
+        }
 
-            await this._roller.resolveRolls(request.name, all_rolls)
-            
-            //Moved after the new resolveRolls so it can access the roll results
-            if (request.name == "Chaos Bolt") {
-                for (let [i, dmg_roll] of damage_rolls.entries()) {
-                    const [dmg_type, roll, flags] = dmg_roll;
-                    if (dmg_type == "Chaotic energy Damage" && roll.dice[0].faces == 8) {
-                        const chaos_bolt_damages = ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"];
-                        const damage_choices = {}
-                        for (let r of roll.dice[0].rolls)
-                            damage_choices[chaos_bolt_damages[r.roll - 1]] = null;
-                        //console.log("Damage choices : ", damage_choices, damage_choices.length);
-                        let chaotic_type = null;
-                        if (Object.keys(damage_choices).length == 1) {
-                            damage_rolls.push(["Chaotic energy leaps from the target to a different creature of your choice within 30 feet of it", "", DAMAGE_FLAGS.MESSAGE]);
-                            chaotic_type = Object.keys(damage_choices)[0];
-                        } else {
-                            chaotic_type = await this.queryDamageType(request.name, damage_choices);
-                        }
-                        damage_rolls[i] = [chaotic_type + " Damage", roll, flags];
-                        critical_damage_types[0] = chaotic_type;
-                        break;
-                    }
-                }
-            }
-
-            if (to_hit.length > 0)
-                this.processToHitAdvantage(to_hit_advantage, to_hit)
-            const critical_limit = request["critical-limit"] || 20;
-            is_critical = this.isCriticalHitD20(to_hit, critical_limit);
-            if (is_critical) {
-                const critical_damage_rolls = []
-                for (let i = 0; i < (critical_damages.length); i++) {
-                    const roll = this._roller.roll(critical_damages[i]);
-                    critical_damage_rolls.push(roll);
-                    const dmg_type = critical_damage_types[i];
-                    let damage_flags = DAMAGE_FLAGS.REGULAR;
-                    if (["Healing", "Disciple of Life", "Temp HP"].includes(dmg_type)) {
-                        damage_flags = DAMAGE_FLAGS.HEALING;
-                    } else if (i == 0) {
-                        damage_flags = DAMAGE_FLAGS.REGULAR;
-                    } else if (i == 1 && has_versatile) {
-                        damage_flags = DAMAGE_FLAGS.VERSATILE;
+        await this._roller.resolveRolls(request.name, all_rolls)
+        
+        //Moved after the new resolveRolls so it can access the roll results
+        if (request.name == "Chaos Bolt") {
+            for (let [i, dmg_roll] of damage_rolls.entries()) {
+                const [dmg_type, roll, flags] = dmg_roll;
+                if (dmg_type == "Chaotic energy Damage" && roll.dice[0].faces == 8) {
+                    const chaos_bolt_damages = ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"];
+                    const damage_choices = {}
+                    for (let r of roll.dice[0].rolls)
+                        damage_choices[chaos_bolt_damages[r.roll - 1]] = null;
+                    //console.log("Damage choices : ", damage_choices, damage_choices.length);
+                    let chaotic_type = null;
+                    if (Object.keys(damage_choices).length == 1) {
+                        damage_rolls.push(["Chaotic energy leaps from the target to a different creature of your choice within 30 feet of it", "", DAMAGE_FLAGS.MESSAGE]);
+                        chaotic_type = Object.keys(damage_choices)[0];
                     } else {
-                        damage_flags = DAMAGE_FLAGS.ADDITIONAL;
+                        chaotic_type = await this.queryDamageType(request.name, damage_choices);
                     }
-                    const suffix = !(damage_flags & DAMAGE_FLAGS.HEALING) ? " Critical Damage" : "";
-                    damage_rolls.push([dmg_type + suffix, roll, damage_flags | DAMAGE_FLAGS.CRITICAL]);
+                    damage_rolls[i] = [chaotic_type + " Damage", roll, flags];
+                    critical_damage_types[0] = chaotic_type;
+                    break;
                 }
-                await this._roller.resolveRolls(request.name, critical_damage_rolls);
             }
+        }
+
+        if (to_hit.length > 0)
+            this.processToHitAdvantage(to_hit_advantage, to_hit)
+        const critical_limit = request["critical-limit"] || 20;
+        is_critical = this.isCriticalHitD20(to_hit, critical_limit);
+        if (is_critical) {
+            const critical_damage_rolls = []
+            for (let i = 0; i < (critical_damages.length); i++) {
+                const roll = this._roller.roll(critical_damages[i]);
+                critical_damage_rolls.push(roll);
+                const dmg_type = critical_damage_types[i];
+                let damage_flags = DAMAGE_FLAGS.REGULAR;
+                if (["Healing", "Disciple of Life", "Temp HP"].includes(dmg_type)) {
+                    damage_flags = DAMAGE_FLAGS.HEALING;
+                } else if (i == 0) {
+                    damage_flags = DAMAGE_FLAGS.REGULAR;
+                } else if (i == 1 && has_versatile) {
+                    damage_flags = DAMAGE_FLAGS.VERSATILE;
+                } else {
+                    damage_flags = DAMAGE_FLAGS.ADDITIONAL;
+                }
+                const suffix = !(damage_flags & DAMAGE_FLAGS.HEALING) ? " Critical Damage" : "";
+                damage_rolls.push([dmg_type + suffix, roll, damage_flags | DAMAGE_FLAGS.CRITICAL]);
+            }
+            await this._roller.resolveRolls(request.name, critical_damage_rolls);
         }
 
         return [to_hit, damage_rolls];
