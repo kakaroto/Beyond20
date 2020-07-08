@@ -1193,17 +1193,17 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
         const target = $(e.currentTarget)
         const position = target.offset()
         if (direction === "up") {
-            position.left += target.width() / 2 - tooltip.width() / 2;
-            position.top -= tooltip.height() + 5;
+            position.left += target.outerWidth() / 2 - tooltip.outerWidth() / 2;
+            position.top -= tooltip.outerHeight() + 5;
         } else if (direction == "down") {
-            position.left += target.width() / 2 - tooltip.width() / 2;
-            position.top += target.height() + 5;
+            position.left += target.outerWidth() / 2 - tooltip.outerWidth() / 2;
+            position.top += target.outerHeight() + 5;
         } else if (direction == "left") {
-            position.left -= tooltip.width() - 2;
-            position.top += target.height() / 2 - tooltip.height() / 2;
+            position.left -= tooltip.outerWidth() - 2;
+            position.top += target.outerHeight() / 2 - tooltip.outerHeight() / 2;
         } else if (direction == "right") {
-            position.left += target.width() + 2;
-            position.top += target.height() / 2 - tooltip.height() / 2;
+            position.left += target.outerWidth() + 2;
+            position.top += target.outerHeight() / 2 - tooltip.outerHeight() / 2;
         }
         tooltip.find(".beyond20-quick-roll-indicator").removeClass("left right down up").addClass(direction);
         tooltip.css(position).show().off('click').on('click', (e) => {
