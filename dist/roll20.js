@@ -2745,18 +2745,24 @@ function template(request, name, properties) {
     }
 
     result += " &{template:" + name + "}";
+    
+    if (request.whisper == WhisperType.HIDE_NAMES) {
+        if (properties["charname"])
+            properties["charname"] = "???"
+        // Take into account links for disabled auto-roll-damages option
+        if (properties["rname"])
+            properties["rname"] = properties["rname"].includes("](!") ? 
+                properties["rname"].replace(/\[[^\]]*\]\(\!/, "[???](!") : "???";
+        if (properties["rnamec"])
+            properties["rnamec"] = properties["rnamec"].includes("](!") ?
+                properties["rnamec"].replace(/\[[^\]]*\]\(\!/, "[???](!") : "???";
+        delete properties["description"];
+    }
     for (let key in properties)
         result += " {{" + key + "=" + properties[key] + "}}";
 
     if (request.advantage !== undefined && properties.normal === undefined && ["simple", "atk", "atkdmg"].includes(name))
         result += advantageString(request.advantage, properties["r1"]);
-
-    if (request.whisper == WhisperType.HIDE_NAMES) {
-        removeProp("charname");
-        removeProp("rname");
-        removeProp("rnamec");
-        removeProp("description");
-    }
 
     // Super advantage/disadvantage is not supported
     properties["r3"] = properties["r1"];
