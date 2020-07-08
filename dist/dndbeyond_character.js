@@ -3398,14 +3398,21 @@ class Monster extends CharacterBase {
             if (add_dice) {
                 addIconButton(this, () => this.rollAbilityCheck(abbr), ability, { prepend: true });
                 if (abbr == "DEX") {
-                    const roll_initiative = stat_block.find(base + "__beyond20-roll-initiative");
+                    let roll_initiative = stat_block.find(base + "__beyond20-roll-initiative");
                     const attributes = stat_block.find(base + "__attributes");
                     if (attributes.length > 0) {
                         let initiative = roll_initiative.eq(0);
+                        // Make sure the modifier didn't change (encounters)
+                        if (roll_initiative.length > 0 && roll_initiative.attr("data-modifier") !== modifier) {
+                            initiative = null;
+                            roll_initiative.remove();
+                            roll_initiative = [];
+                        }
                         if (roll_initiative.length == 0) {
                             const attribute_prefix = `${base.slice(1)}__attribute`
                             initiative = $(
-                                E.div({ class: `${attribute_prefix} ${base.slice(1)}__beyond20-roll-initiative` },
+                                E.div({ class: `${attribute_prefix} ${base.slice(1)}__beyond20-roll-initiative`,
+                                        "data-modifier": modifier },
                                     E.span({ class: `${attribute_prefix}-label` }, "Roll Initiative!"),
                                     E.span({ class: `${attribute_prefix}-data` },
                                         E.span({ class: `${attribute_prefix}-data-value` }, "  " + modifier)
