@@ -3863,23 +3863,23 @@ class Character extends CharacterBase {
 
         // Static values that need an edit to change;
         if (this._name === null) {
-            this._name = $(".ct-character-tidbits__name,.ddbc-character-tidbits__name").text();
+            this._name = $(".ddbc-character-name").text();
             // This can happen when you reload the page;
             if (this._name == "")
                 this._name = null;
         }
         if (this._avatar === null) {
-            const avatar = $(".ct-character-tidbits__avatar,.ddbc-character-tidbits__avatar").css('background-image');
+            const avatar = $(".ddbc-character-avatar__portrait").css('background-image');
             if (avatar && avatar.startsWith("url("))
                 this._avatar = avatar.slice(5, -2);
         }
         if (this._race === null) {
-            this._race = $(".ct-character-tidbits__race,.ddbc-character-tidbits__race").text();
+            this._race = $(".ddbc-character-summary__race").text();
             if (this._race == "")
                 this._race = null;
         }
         if (this._classes === null) {
-            const jClasses = $(".ct-character-tidbits__classes,.ddbc-character-tidbits__classes");
+            const jClasses = $(".ddbc-character-summary__classes");
             if (jClasses.length > 0) {
                 const classes = jClasses.text().split(" / ");
                 this._classes = {}
@@ -3892,8 +3892,8 @@ class Character extends CharacterBase {
             }
         }
         if (this._level === null) {
-            const level = $(".ct-character-tidbits__xp-level,.ddbc-character-tidbits__xp-level");
-            const xp = $(".ct-character-tidbits__xp-bar .ct-xp-bar__item--cur .ct-xp-bar__label,.ddbc-character-tidbits__xp-bar .ddbc-xp-bar__item--cur .ddbc-xp-bar__label");
+            const level = $(".ddbc-character-progression-summary__level");
+            const xp = $(".ddbc-character-summary__xp-bar .ddbc-xp-bar__item--cur .ddbc-xp-bar__label");
             if (level.length > 0)
                 this._level = level.text().replace("Level ", "");
             else if (xp.length > 0)
