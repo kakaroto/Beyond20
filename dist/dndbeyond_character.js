@@ -5490,7 +5490,8 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
             callback(el);
         });
         el.off('click').on('click', (e) => {
-            e.stopPropagation();
+            if ($(e.currentTarget).hasClass('integrated-dice__container') || $(e.currentTarget).find(".integrated-dice__container").length > 0)
+                e.stopPropagation();
             callback(el);
         })
     }).on('mouseleave', (e) => {
