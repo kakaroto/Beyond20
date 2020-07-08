@@ -3244,7 +3244,12 @@ function handleRenderedRoll(request) {
     for (let [key, roll] of Object.entries(request.total_damages))
         properties["Total " + key] = convertRollToText(request.whisper, roll);
 
-    const message = createTable(request, request.character, properties);
+    let message = createTable(request, request.character, properties);
+    if (request.request.type === "initiative" && settings["initiative-tracker"]) {
+        const initiative = request.attack_rolls.find((roll) => !roll.discarded);
+        if (initiative)
+            message += `  [[${initiative.total} &{tracker}]]`;
+    }
     postChatMessage(message, request.character);
 }
 
