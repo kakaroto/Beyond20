@@ -1,5 +1,7 @@
 const gulp = require('gulp');
 const concat = require('gulp-concat');
+const clean = require('gulp-clean');
+const rename = require("gulp-rename");
 
 const ROLL_RENDERER_DEPS = [
     "src/common/utils.js",
@@ -134,3 +136,87 @@ gulp.task('css', css);
 gulp.task('watch', watch);
 gulp.task('build', build);
 gulp.task('default', gulp.series(build, watch));
+
+
+gulp.task("clean", () => {
+    return gulp.src(['./dist/', "./build/"], { read: false, allowEmpty: true }).pipe(clean());
+});
+
+gulp.task("copy-src", () => {
+    return gulp.src("./src/**")
+        .pipe(gulp.dest('./build/base/src/'))
+});
+
+gulp.task("copy-dist", gulp.series("build", () => {
+    return gulp.src("./dist/**")
+        .pipe(gulp.dest('./build/base/dist/'));
+}));
+
+gulp.task("copy-libs", () => {
+    return gulp.src("./libs/**")
+        .pipe(gulp.dest('./build/base/libs/'));
+});
+
+gulp.task("copy-images", () => {
+    return gulp.src("images/**")
+        .pipe(gulp.dest('./build/base/images/'));
+});
+
+gulp.task("copy-misc", () => {
+    return gulp.src(["LICENSE", "LICENSE.MIT", "package.json", "gulpfile.js", "options.*", "*.html", "*.md"])
+        .pipe(gulp.dest('./build/base/'));
+});
+
+gulp.task("build-base", gulp.parallel([
+    "copy-src",
+    "copy-dist",
+    "copy-misc",
+    "copy-libs",
+    "copy-images",
+]));
+
+// Creates the specific folders for Chrome and Firefox
+
+
+gulp.task("copy-firefox-from-base", gulp.series("build-base", () => {
+    return gulp.src("./build/base/**")
+        .pipe(gulp.dest('./build/firefox/'));
+}));
+
+gulp.task("copy-chrome-from-base", gulp.series("build-base", () => {
+    return gulp.src("./build/base/**")
+        .pipe(gulp.dest('./build/chrome/'));
+}));
+
+// Copies manifests around
+
+gulp.task("firefox-manifest", () => {
+
+    return gulp.src("./manifest_ff.json")
+        .pipe(rename({
+            basename: "manifest",
+        }))
+        .pipe(gulp.dest("./build/firefox/"));
+});
+
+gulp.task("chrome-manifest", () => {
+
+    return gulp.src("./manifest.json")
+        .pipe(gulp.dest("./build/chrome/"));
+});
+
+// Performs full builds
+
+gulp.task("build-firefox", gulp.series(
+    gulp.series([
+        "copy-firefox-from-base",
+        "firefox-manifest"
+    ])
+));
+
+gulp.task("build-chrome", gulp.series(
+    gulp.series([
+        "copy-chrome-from-base",
+        "chrome-manifest"
+    ])
+)); 

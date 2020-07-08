@@ -1,0 +1,39 @@
+{
+    "name": "beyond20",
+    "version": "1.1.0",
+    "description": "Beyond20: D&D Beyond & Roll20/Foundry VTT Integration",
+    "directories": {
+        "doc": "docs"
+    },
+    "scripts": {
+        "gulp": "gulp",
+        "clean": "gulp clean",
+        "build": "run-s clean build:*",
+        "build:firefox": "gulp build-firefox",
+        "build:chrome": "gulp build-chrome",
+        "package": "run-s build package:*",
+        "package:chrome": "web-ext build --source-dir=./build/chrome/ --artifacts-dir=./build/chrome/web-ext-artifacts/",
+        "package:firefox": "web-ext build --source-dir=./build/firefox/ --artifacts-dir=./build/firefox/web-ext-artifacts/",
+        "start:chrome": "web-ext run -t chromium --source-dir ./build/chrome/",
+        "start:firefox": "web-ext run --source-dir ./build/firefox/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/kakaroto/Beyond20.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "GNU",
+    "bugs": {
+        "url": "https://github.com/kakaroto/Beyond20/issues"
+    },
+    "homepage": "https://beyond20.here-for-more.info",
+    "devDependencies": {
+        "gulp": "^4.0.2",
+        "gulp-concat": "^2.6.1",
+        "npm-run-all": "^4.1.5",
+        "web-ext": "^4.2.0",
+        "gulp-clean": "^0.4.0",
+        "gulp-rename": "^2.0.0"
+    }
+}
