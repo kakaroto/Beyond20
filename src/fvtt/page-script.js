@@ -231,6 +231,11 @@ function handleRenderedRoll(request) {
     console.log("Received rendered roll request ", request);
     roll_renderer._displayer.postHTML(request.request, request.title, request.html, request.buttons, request.character, request.whisper, request.play_sound,
         request.attack_rolls, request.damage_rolls);
+    if (request.request.type === "initiative" && settings["initiative-tracker"]) {
+        const initiative = request.attack_rolls.find((roll) => !roll.discarded);
+        if (initiative)
+            addInitiativeToCombat(initiative);
+    }
 }
 
 function updateHP(name, current, total, temp) {
