@@ -2865,8 +2865,10 @@ function findToHit(name_to_match, items_selector, name_selector, tohit_selector)
     for (let i = 0; i < items.length; i++) {
         if (items.eq(i).find(name_selector).text() == name_to_match) {
             const to_hit = items.eq(i).find(tohit_selector);
-            if (to_hit.length > 0)
-                return to_hit.text();
+            if (to_hit.length > 0) {
+                const value = to_hit.text();
+                return value === "--" ? null : value;
+            }
             break;
         }
     }

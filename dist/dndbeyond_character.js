@@ -2865,8 +2865,10 @@ function findToHit(name_to_match, items_selector, name_selector, tohit_selector)
     for (let i = 0; i < items.length; i++) {
         if (items.eq(i).find(name_selector).text() == name_to_match) {
             const to_hit = items.eq(i).find(tohit_selector);
-            if (to_hit.length > 0)
-                return to_hit.text();
+            if (to_hit.length > 0) {
+                const value = to_hit.text();
+                return value === "--" ? null : value;
+            }
             break;
         }
     }
@@ -4410,7 +4412,7 @@ function rollItem(force_display = false) {
     const description = descriptionToString(".ct-item-detail__description");
     if (!force_display && Object.keys(properties).includes("Damage")) {
         const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
-        let to_hit = properties["To Hit"];
+        let to_hit = properties["To Hit"] && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
 
         if (to_hit === undefined)
             to_hit = findToHit(item_full_name, ".ct-combat-attack--item,.ddbc-combat-attack--item", ".ct-item-name,.ddbc-item-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
@@ -4693,6 +4695,7 @@ function rollAction(paneClass) {
     const action_name = $(".ct-sidebar__heading").text();
     const action_parent = $(".ct-sidebar__header-parent").text();
     const description = descriptionToString(".ct-action-detail__description");
+    const to_hit = properties["To Hit"] && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
 
     if (action_name == "Superiority Dice" || action_parent == "Maneuvers") {
         const fighter_level = character.getClassLevel("Fighter");
@@ -4714,7 +4717,7 @@ function rollAction(paneClass) {
             "description": description,
             "modifier": inspiration_die
         });
-    } else if (Object.keys(properties).includes("Damage") || properties["To Hit"] !== undefined || properties["Attack/Save"] !== undefined) {
+    } else if (Object.keys(properties).includes("Damage") || to_hit !== null || properties["Attack/Save"] !== undefined) {
         const damages = [];
         const damage_types = [];
         if (Object.keys(properties).includes("Damage")) {
@@ -4826,7 +4829,7 @@ function rollAction(paneClass) {
             properties,
             damages,
             damage_types,
-            properties["To Hit"] !== undefined ? properties["To Hit"] : null,
+            to_hit,
             brutal);
 
         if (critical_limit != 20)
@@ -4869,7 +4872,7 @@ function rollSpell(force_display = false) {
     } else {
         concentration = false;
     }
-    let to_hit = properties["To Hit"];
+    let to_hit = properties["To Hit"] && properties["To Hit"] !== "--" ? properties["To Hit"] : null;;
 
     if (to_hit === undefined)
         to_hit = findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
@@ -5274,9 +5277,10 @@ function injectRollButton(paneClass) {
         const properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property,." + paneClass + " .ddbc-property-list .ddbc-property-list__property"));
         const action_name = $(".ct-sidebar__heading").text();
         const action_parent = $(".ct-sidebar__header-parent").text();
+        const to_hit = properties["To Hit"] && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
         if ((action_name == "Superiority Dice" || action_parent == "Maneuvers") ||
             (action_name == "Bardic Inspiration" || action_parent == "Blade Flourish") ||
-            (properties["Damage"] !== undefined || properties["To Hit"] !== undefined || properties["Attack/Save"] !== undefined)) {
+            (properties["Damage"] !== undefined || to_hit !== null || properties["Attack/Save"] !== undefined)) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true });
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
         } else {
@@ -5297,7 +5301,7 @@ function injectRollButton(paneClass) {
         const damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier");
         const healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier");
         const properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property,.ct-spell-pane .ddbc-property-list .ddbc-property-list__property"));
-        let to_hit = properties["To Hit"];
+        let to_hit = properties["To Hit"] && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
         if (to_hit === undefined)
             to_hit = findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
         if (to_hit === null)
