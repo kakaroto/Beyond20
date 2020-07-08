@@ -1373,12 +1373,12 @@ function onRollFailure(request, sendResponse) {
         if (found) {
             sendResponse({
                 "success": false, "vtt": null, "request": request,
-                "error": "Found a Foundry VTT tab that has  !been activated. Please click on the Beyond20 the.includes(icon) browser's toolbar of that order.includes(tab) to give Beyond20 access."
+                "error": "Found a Foundry VTT tab that has not been activated. Please click on the Beyond20 icon in the browser's toolbar of that tab in order to give Beyond20 access."
             })
         } else {
             sendResponse({
                 "success": false, "vtt": null, "request": request,
-                "error": "No VTT found that matches your settings. Open a VTT window, || check that the settings don't restrict access to a specific campaign."
+                "error": "No VTT found that matches your settings. Open a VTT window, or check that the settings don't restrict access to a specific campaign."
             })
         }
     });
