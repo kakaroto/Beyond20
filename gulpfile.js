@@ -128,6 +128,9 @@ watch = () => {
     for (target in SRC_FILES)
         gulp.watch(SRC_FILES[target], targets[target]);
     gulp.watch(CSS_FILES, css);
+    gulp.watch(["manifest.json", "manifest_ff.json", "dist/**"], gulp.series([
+        "copy-chrome-dist", "chrome-manifest", "copy-firefox-dist", "firefox-manifest"
+    ]));
 }
 
 build = gulp.series(css, ...Object.values(targets));
@@ -135,7 +138,6 @@ build = gulp.series(css, ...Object.values(targets));
 gulp.task('css', css);
 gulp.task('watch', watch);
 gulp.task('build', build);
-gulp.task('default', gulp.series(build, watch));
 
 
 gulp.task("clean", () => {
@@ -147,10 +149,11 @@ gulp.task("copy-src", () => {
         .pipe(gulp.dest('./build/base/src/'))
 });
 
-gulp.task("copy-dist", gulp.series("build", () => {
+gulp.task("copy-dist-nobuild", () => {
     return gulp.src("./dist/**")
         .pipe(gulp.dest('./build/base/dist/'));
-}));
+});
+gulp.task("copy-dist", gulp.series("build", "copy-dist-nobuild"));
 
 gulp.task("copy-libs", () => {
     return gulp.src("./libs/**")
@@ -177,6 +180,16 @@ gulp.task("build-base", gulp.parallel([
 
 // Creates the specific folders for Chrome and Firefox
 
+gulp.task("copy-firefox-dist", () => {
+    return gulp.src("./dist/**")
+        .pipe(gulp.dest('./build/firefox/dist/'));
+});
+
+gulp.task("copy-chrome-dist", () => {
+    return gulp.src("./dist/**")
+        .pipe(gulp.dest('./build/chrome/dist/'));
+});
+
 
 gulp.task("copy-firefox-from-base", gulp.series("build-base", () => {
     return gulp.src("./build/base/**")
@@ -191,7 +204,6 @@ gulp.task("copy-chrome-from-base", gulp.series("build-base", () => {
 // Copies manifests around
 
 gulp.task("firefox-manifest", () => {
-
     return gulp.src("./manifest_ff.json")
         .pipe(rename({
             basename: "manifest",
@@ -200,23 +212,21 @@ gulp.task("firefox-manifest", () => {
 });
 
 gulp.task("chrome-manifest", () => {
-
     return gulp.src("./manifest.json")
         .pipe(gulp.dest("./build/chrome/"));
 });
 
 // Performs full builds
 
-gulp.task("build-firefox", gulp.series(
-    gulp.series([
-        "copy-firefox-from-base",
-        "firefox-manifest"
-    ])
-));
+gulp.task("build-firefox",gulp.series([
+    "copy-firefox-from-base",
+    "firefox-manifest"
+]));
 
-gulp.task("build-chrome", gulp.series(
-    gulp.series([
-        "copy-chrome-from-base",
-        "chrome-manifest"
-    ])
-)); 
+gulp.task("build-chrome", gulp.series([
+    "copy-chrome-from-base",
+    "chrome-manifest"
+])); 
+
+
+gulp.task('default', gulp.series(['build', 'build-chrome', 'build-firefox', 'watch']));

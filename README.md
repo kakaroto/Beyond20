@@ -27,13 +27,10 @@ If you click on the Beyond20 button in the toolbar, it will pop open the quick s
 
 # Build
 
-You need 'gulp' installed on your system. Install it using : 
-`sudo npm install -g gulp`
-
-You may need to also install the local dependencies by running in Beyond20's source directory: 
+You need to install the build dependencies by running in Beyond20's source directory: 
 `npm install`
 
-You can then build the dist iles using the command `gulp`
+You can then build the files using the command `npm run build`
 
 # Developer Mode Installation
 

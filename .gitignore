@@ -9,3 +9,4 @@ docs/run.sh
 pyj/node_modules/
 node_modules/
 .idea/
+build/
