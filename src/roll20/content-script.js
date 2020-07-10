@@ -175,13 +175,13 @@ function template(request, name, properties) {
     }
 
     result += " &{template:" + name + "}";
-    
+
     if (request.whisper == WhisperType.HIDE_NAMES) {
         if (properties["charname"])
             properties["charname"] = "???"
         // Take into account links for disabled auto-roll-damages option
         if (properties["rname"])
-            properties["rname"] = properties["rname"].includes("](!") ? 
+            properties["rname"] = properties["rname"].includes("](!") ?
                 properties["rname"].replace(/\[[^\]]*\]\(\!/, "[???](!") : "???";
         if (properties["rnamec"])
             properties["rnamec"] = properties["rnamec"].includes("](!") ?
@@ -810,6 +810,8 @@ function handleMessage(request, sender, sendResponse) {
         postChatMessage(roll, character_name);
     } else if (request.action == "rendered-roll") {
         handleRenderedRoll(request);
+    } else if (request.action === "combat-tracker") {
+        sendCustomEvent("CombatTracker", [request.combat]);
     }
 }
 

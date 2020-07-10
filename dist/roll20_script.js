@@ -182,6 +182,23 @@ function updateHP(name, current, total, temp) {
     }
 }
 
+function updateCombatTracker(combat) {
+    const index = combat.findIndex(x => x[2]);
+    if (index === -1) {
+        console.warn("It's apparently nobody's turn :/");
+    } else {
+        const c = combat.splice(index, combat.length);
+        combat.splice(0, 0, ...c);
+    }
+    const turnOrder = combat.map(x => ({
+        id: "-1",
+        pr: x[1],
+        custom: x[0],
+    }));
+    Campaign.set("turnorder", JSON.stringify(turnOrder));
+}
+
+
 function checkForOGL() {
     const isOGL = atob(customcharsheet_html).includes(`<rolltemplate class="sheet-rolltemplate-simple">`);
     $("#isOGL").remove();
@@ -195,6 +212,7 @@ function disconnectAllEvents() {
 
 var registered_events = [];
 registered_events.push(addCustomEventListener("UpdateHP", updateHP));
+registered_events.push(addCustomEventListener("CombatTracker", updateCombatTracker));
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
 
 // Hack for VTT ES making every script load before Roll20 loads

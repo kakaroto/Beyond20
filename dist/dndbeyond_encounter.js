@@ -442,6 +442,13 @@ const options_list = {
         "default": ""
     },
 
+    "sync-combat-tracker": {
+        "title": "Sync D&D Beyond Encounter with VTT turn tracker",
+        "description": "Currently only supports roll 20.",
+        "type": "bool",
+        "default": false
+    },
+
     "donate": {
         "short": "Buy rations (1 day) to feed my familiar",
         "title": "Become a patron of the art of software development!",
@@ -1086,7 +1093,7 @@ function setDiscordChannelsSetting(name, settings) {
     if (!dropdowns.find(d => d.active)) dropdowns[0].active = true;
     if (dropdowns.find(d => d.secret)) dropdowns.push({ name: "Delete selected channel", action: "delete" })
     dropdowns.push({ name: "Add new channel", action: "add" })
-    
+
     console.log("Added new options", dropdowns);
     fillDisordChannelsDropdown(name, dropdowns);
 }
@@ -1104,7 +1111,7 @@ function fillDisordChannelsDropdown(name, dropdowns, triggerChange=false) {
     const active = dropdowns.find(d => d.active);
     input.text(active.name);
     input.attr("data-secret", active.secret.slice(0, 12));
-    
+
     $("#beyond20-option-discord-channels li").off('click').click(ev => {
         ev.stopPropagation();
         ev.preventDefault()
@@ -1124,7 +1131,7 @@ function fillDisordChannelsDropdown(name, dropdowns, triggerChange=false) {
     $("#beyond20-option-discord-channels li[data-action=add]").off('click').click(ev => {
         ev.stopPropagation();
         ev.preventDefault()
-        
+
         dropdown_menu.removeClass('open');
         button_group.removeClass('open');
         m.set('triangle').size(10);
@@ -3875,6 +3882,9 @@ function documentModified(mutations, observer) {
 
     const monster = $(".encounter-details-monster-summary-info-panel,.encounter-details__content-section--monster-stat-block,.combat-tracker-page__content-section--monster-stat-block,.monster-details-modal__body");
     const monster_name = monster.find(".mon-stat-block__name").text();
+    if (settings["sync-combat-tracker"]) {
+        updateCombatTracker();
+    }
     console.log("Doc modified, new mon : ", monster_name, " !=? ", last_monster_name);
     if (monster_name == last_monster_name)
         return;
@@ -3882,6 +3892,23 @@ function documentModified(mutations, observer) {
     removeRollButtons();
     character = new Monster("Monster", null, settings);
     character.parseStatBlock(monster);
+}
+
+function updateCombatTracker() {
+    if ($(".turn-controls__next-turn-button").length) {
+        $(".ui-dialog-buttonpane").hide(); // get rid of turn controls, to make it more obvious to do things from DDB.
+        const combat = Array.from($(".combatant-card.in-combat")).map(x => [
+            $(".combatant-summary__name", x).text(),
+            $(".combatant-card__initiative-value", x).text(),
+            $(x).hasClass("is-turn"),
+        ]);
+        const req = {
+            action: "combat-tracker",
+            combat,
+        };
+        console.log("Sending combat update", combat);
+        chrome.runtime.sendMessage(req, resp => beyond20SendMessageFailure(character, resp));
+    }
 }
 
 function updateSettings(new_settings = null) {
@@ -3910,5 +3937,5 @@ updateSettings();
 injectCSS(BUTTON_STYLE_CSS);
 chrome.runtime.onMessage.addListener(handleMessage);
 const observer = new window.MutationObserver(documentModified);
-observer.observe(document, { "subtree": true, "childList": true });
+observer.observe(document, { "subtree": true, "childList": true, attributes: true, });
 chrome.runtime.sendMessage({ "action": "activate-icon" });
