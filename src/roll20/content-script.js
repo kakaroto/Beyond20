@@ -763,6 +763,11 @@ function handleMessage(request, sender, sendResponse) {
             postChatMessage(message, character_name);
         }
     } else if (request.action == "roll") {
+        if (request.type == "avatar") {
+            roll = rollAvatarDisplay(request);
+            const character_name = request.whisper !== WhisperType.NO ? "???" : request.character.name;
+            return postChatMessage(roll, character_name);
+        }
         const isOGL = $("#isOGL").val() === "1";
         if (settings["roll20-template"] === "default" || !isOGL) {
             request.sendMessage = true;
@@ -793,10 +798,6 @@ function handleMessage(request, sender, sendResponse) {
             roll = rollSpellCard(request);
         } else if (request.type == "spell-attack") {
             roll = rollSpellAttack(request, custom_roll_dice);
-        } else if (request.type == "avatar") {
-            roll = rollAvatarDisplay(request);
-            if (request.whisper !== WhisperType.NO)
-                request.whisper = WhisperType.HIDE_NAMES;
         } else {
             // 'custom' || anything unexpected;
             const mod = request.modifier != undefined ? request.modifier : request.roll;
