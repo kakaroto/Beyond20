@@ -26,20 +26,24 @@ function documentModified(mutations, observer) {
 }
 
 function updateCombatTracker() {
-    if ($(".turn-controls__next-turn-button").length) {
-        $(".ui-dialog-buttonpane").hide(); // get rid of turn controls, to make it more obvious to do things from DDB.
-        const combat = Array.from($(".combatant-card.in-combat")).map(x => [
-            $(".combatant-summary__name", x).text(),
-            $(".combatant-card__initiative-value", x).text(),
-            $(x).hasClass("is-turn"),
-        ]);
-        const req = {
-            action: "combat-tracker",
-            combat,
-        };
-        console.log("Sending combat update", combat);
-        chrome.runtime.sendMessage(req, resp => beyond20SendMessageFailure(character, resp));
+    if (!$(".turn-controls__next-turn-button").length) {
+        return;
     }
+    $(".ui-dialog-buttonpane").hide(); // get rid of turn controls, to make it more obvious to do things from DDB.
+    const combat = Array.from($(".combatant-card.in-combat")).map(combatant => {
+        const $combatant = $(combatant);
+        return {
+            name: $combatant.find(".combatant-summary__name").text(),
+            initiative: $combatant.find(".combatant-card__initiative-value").text(),
+            turn: $combatant.hasClass("is-turn"),
+        };
+    });
+    const req = {
+        action: "update-combat",
+        combat,
+    };
+    console.log("Sending combat update", combat);
+    chrome.runtime.sendMessage(req, resp => beyond20SendMessageFailure(character, resp));
 }
 
 function updateSettings(new_settings = null) {

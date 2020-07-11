@@ -443,10 +443,10 @@ const options_list = {
     },
 
     "sync-combat-tracker": {
-        "title": "Sync D&D Beyond Encounter with VTT turn tracker",
-        "description": "Currently only supports roll 20.",
+        "title": "Synchronize the Combat Tracker with the VTT",
+        "description": "Overwrites the VTT's combat tracker with the details from D&D Beyond's Encounter tool (Roll20 only)",
         "type": "bool",
-        "default": false
+        "default": true
     },
 
     "donate": {
@@ -2977,7 +2977,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                     }
                 }
                 const isBrutal = character.hasClassFeature("Brutal Critical");
-                const isSavage = character.hasRacialTrait("Savage Attacks");   
+                const isSavage = character.hasRacialTrait("Savage Attacks");
                 if (highest_dice != 0) {
                     crit_damages.push(`${brutal}d${highest_dice}`);
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
@@ -2985,7 +2985,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                     crit_damages.push(`${homebrew_max_damage}`);
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
                 }
-                
+
             }
             roll_properties["critical-damages"] = crit_damages;
             roll_properties["critical-damage-types"] = crit_damage_types;
@@ -3245,7 +3245,7 @@ function injectDiceToRolls(selector, character, name = "") {
 }
 
 function beyond20SendMessageFailure(character, response) {
-    if (!response)
+    if (!response || (response.request && response.request.action === "update-combat"))
         return;
     console.log("Received response : ", response);
     if (["roll", "rendered-roll"].includes(response.request.action)  && (response.vtt == "dndbeyond" || response.error)) {

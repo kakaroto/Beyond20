@@ -29,19 +29,23 @@ function updateHP(name, current, total, temp) {
 }
 
 function updateCombatTracker(combat) {
-    const index = combat.findIndex(x => x[2]);
+    const index = combat.findIndex(x => x.turn);
     if (index === -1) {
         console.warn("It's apparently nobody's turn :/");
     } else {
+        // Roll20 needs the unit whose turn it is at the top of the array.
         const c = combat.splice(index, combat.length);
         combat.splice(0, 0, ...c);
     }
     const turnOrder = combat.map(x => ({
         id: "-1",
-        pr: x[1],
-        custom: x[0],
+        pr: x.initiative,
+        custom: x.name,
     }));
     Campaign.set("turnorder", JSON.stringify(turnOrder));
+    // Make sure the turn tracker window is open
+    // This also forces roll20 to sync the initiative tracker state to other clients.
+    $("#startrounds").click();
 }
 
 

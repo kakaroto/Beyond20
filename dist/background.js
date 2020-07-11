@@ -488,10 +488,10 @@ const options_list = {
     },
 
     "sync-combat-tracker": {
-        "title": "Sync D&D Beyond Encounter with VTT turn tracker",
-        "description": "Currently only supports roll 20.",
+        "title": "Synchronize the Combat Tracker with the VTT",
+        "description": "Overwrites the VTT's combat tracker with the details from D&D Beyond's Encounter tool (Roll20 only)",
         "type": "bool",
-        "default": false
+        "default": true
     },
 
     "donate": {
@@ -1393,17 +1393,17 @@ function onRollFailure(request, sendResponse) {
 }
 
 
-const acceptedActions = [
+const forwardedActions = [
     "roll",
     "rendered-roll",
     "hp-update",
     "conditions-update",
-    "combat-tracker",
+    "update-combat",
 ];
 
 function onMessage(request, sender, sendResponse) {
     console.log("Received message: ", request)
-    if (acceptedActions.includes(request.action)) {
+    if (forwardedActions.includes(request.action)) {
         const makeFailureCB = (trackFailure, vtt, sendResponse) => {
             return (result) => {
                 trackFailure[vtt] = result

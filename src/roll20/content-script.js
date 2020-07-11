@@ -810,7 +810,7 @@ function handleMessage(request, sender, sendResponse) {
         postChatMessage(roll, character_name);
     } else if (request.action == "rendered-roll") {
         handleRenderedRoll(request);
-    } else if (request.action === "combat-tracker") {
+    } else if (request.action === "update-combat") {
         sendCustomEvent("CombatTracker", [request.combat]);
     }
 }
