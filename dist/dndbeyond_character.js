@@ -5789,5 +5789,5 @@ var creature = null;
 updateSettings();
 chrome.runtime.onMessage.addListener(handleMessage);
 observer = new window.MutationObserver(documentModified);
-observer.observe(document, { "subtree": true, "childList": true });
+observer.observe(document, { subtree: true, childList: true, characterData: true });
 chrome.runtime.sendMessage({ "action": "activate-icon" });
