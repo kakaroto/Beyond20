@@ -183,6 +183,7 @@ function updateHP(name, current, total, temp) {
 }
 
 function updateCombatTracker(combat) {
+    if (!is_gm) return;
     const index = combat.findIndex(x => x.turn);
     if (index === -1) {
         console.warn("It's apparently nobody's turn :/");
