@@ -1,3 +1,14 @@
+v2.1.1
+===
+* **Feature**: Add synchronization of D&D Beyond's combat tracker with Roll20's Combat tracker (By [@shadow7412](https://github.com/shadow7412))
+* **Feature**: Add support for the Wizard's Bladesong class feature (By [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Aarakocra Talons as Natural Weapons (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix incorrect detection of "To Hit" values (spells in action page and customized weapons) 
+* **Bugfix**: Prevent initiative rolls from being sent twice  
+* **Bugfix**: Fix HP not syncing immediately if applying damage/healing from the main page directly
+* **Bugfix**: *Roll20*: Show the spell's name when rolling a spell without to-hit using the Beyond20 renderer
+* **Bugfix**: *Roll20*: Fix "Display in VTT" for a monster's avatar when using the Beyond20 renderer 
+
 v2.1
 ===
 * **Feature**: Add Quick Roll Area to the Digital Dice buttons for "To Hit" and "Damages" in Actions and Spells tabs

@@ -1,3 +1,14 @@
+v2.1.1
+===
+
+Hey everyone! Here's another small bugfix release of Beyond20. It's only been a few days since the 2.1 release, but I introduced some rather critical bugs in the last release (that's what happens when you add "one last fix before I release" at 6AM which ends up breaking other stuff instead).
+
+This update fixes some issues with the attack rolls being sent properly for some spells and weapons, as well as initiative rolls being sent twice. There's also a nice new experimental feature that was added by [@shadow7412](https://github.com/shadow7412) which adds synchronization of the Combat Tracker with Roll20 (no support yet for Foundry).
+
+If you've just been updated to 2.1.1 directly, please refer to the release notes and changelog of the 2.1 release below from a couple of days ago for more information about this update.
+
+Thanks!
+
 v2.1
 ===
 
