@@ -3877,6 +3877,7 @@ console.log("Beyond20: D&D Beyond Encounter module loaded.");
 
 var settings = getDefaultSettings();
 var last_monster_name = "";
+var last_combat = null;
 var character = null;
 
 function documentModified(mutations, observer) {
@@ -3900,12 +3901,8 @@ function documentModified(mutations, observer) {
     character.parseStatBlock(monster);
 }
 
-let lastCombatUpdate = null;
-
 function updateCombatTracker() {
-    if (!$(".turn-controls__next-turn-button").length) {
-        return;
-    }
+    if (!$(".turn-controls__next-turn-button").length) return;
     const combat = Array.from($(".combatant-card.in-combat")).map(combatant => {
         const $combatant = $(combatant);
         return {
@@ -3915,10 +3912,8 @@ function updateCombatTracker() {
         };
     });
     const json = JSON.stringify(combat);
-    if (lastCombatUpdate === json) {
-        return;
-    }
-    lastCombatUpdate = json;
+    if (last_combat === json) return;
+    last_combat = json;
 
     const req = {
         action: "update-combat",
