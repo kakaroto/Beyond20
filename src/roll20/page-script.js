@@ -37,11 +37,16 @@ function updateCombatTracker(combat) {
         const c = combat.splice(index, combat.length);
         combat.splice(0, 0, ...c);
     }
-    const turnOrder = combat.map(x => ({
-        id: "-1",
-        pr: x.initiative,
-        custom: x.name,
-    }));
+    const turnOrder = combat.map(combatant => {
+        const name = combatant.name.toLowerCase().trim();
+        const page = Campaign.activePage();
+        const graphic = page && page.thegraphics ? page.thegraphics.models.find(g => g.attributes.name.toLowerCase().trim() === name) : null;
+        return {
+            id: graphic ? graphic.id : "-1",
+            pr: combatant.initiative,
+            custom: combatant.name,
+        }
+    });
     Campaign.set("turnorder", JSON.stringify(turnOrder));
     // Make sure the turn tracker window is open
     // This also forces roll20 to sync the initiative tracker state to other clients.
