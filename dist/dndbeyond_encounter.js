@@ -443,10 +443,10 @@ const options_list = {
     },
 
     "sync-combat-tracker": {
-        "title": "Sync D&D Beyond Encounter with VTT turn tracker",
-        "description": "Currently only supports roll 20.",
+        "title": "Synchronize the Combat Tracker with the VTT",
+        "description": "Overwrites the VTT's combat tracker with the details from D&D Beyond's Encounter tool (Roll20 only)",
         "type": "bool",
-        "default": false
+        "default": true
     },
 
     "donate": {
@@ -2977,7 +2977,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                     }
                 }
                 const isBrutal = character.hasClassFeature("Brutal Critical");
-                const isSavage = character.hasRacialTrait("Savage Attacks");   
+                const isSavage = character.hasRacialTrait("Savage Attacks");
                 if (highest_dice != 0) {
                     crit_damages.push(`${brutal}d${highest_dice}`);
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
@@ -2985,7 +2985,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                     crit_damages.push(`${homebrew_max_damage}`);
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
                 }
-                
+
             }
             roll_properties["critical-damages"] = crit_damages;
             roll_properties["critical-damage-types"] = crit_damage_types;
@@ -3245,7 +3245,7 @@ function injectDiceToRolls(selector, character, name = "") {
 }
 
 function beyond20SendMessageFailure(character, response) {
-    if (!response)
+    if (!response || (response.request && response.request.action === "update-combat"))
         return;
     console.log("Received response : ", response);
     if (["roll", "rendered-roll"].includes(response.request.action)  && (response.vtt == "dndbeyond" || response.error)) {
@@ -3894,22 +3894,34 @@ function documentModified(mutations, observer) {
     character.parseStatBlock(monster);
 }
 
+let lastCombatUpdate = null;
+
 function updateCombatTracker() {
-    if ($(".turn-controls__next-turn-button").length) {
-        $(".ui-dialog-buttonpane").hide(); // get rid of turn controls, to make it more obvious to do things from DDB.
-        const combat = Array.from($(".combatant-card.in-combat")).map(x => [
-            $(".combatant-summary__name", x).text(),
-            $(".combatant-card__initiative-value", x).text(),
-            $(x).hasClass("is-turn"),
-        ]);
-        const req = {
-            action: "combat-tracker",
-            combat,
-        };
-        console.log("Sending combat update", combat);
-        chrome.runtime.sendMessage(req, resp => beyond20SendMessageFailure(character, resp));
+    if (!$(".turn-controls__next-turn-button").length) {
+        return;
     }
+    const combat = Array.from($(".combatant-card.in-combat")).map(combatant => {
+        const $combatant = $(combatant);
+        return {
+            name: $combatant.find(".combatant-summary__name").text(),
+            initiative: $combatant.find(".combatant-card__initiative-value").text(),
+            turn: $combatant.hasClass("is-turn"),
+        };
+    });
+    const json = JSON.stringify(combat);
+    if (lastCombatUpdate === json) {
+        return;
+    }
+    lastCombatUpdate = json;
+
+    const req = {
+        action: "update-combat",
+        combat,
+    };
+    console.log("Sending combat update", combat);
+    chrome.runtime.sendMessage(req, resp => beyond20SendMessageFailure(character, resp));
 }
+
 
 function updateSettings(new_settings = null) {
     if (new_settings) {

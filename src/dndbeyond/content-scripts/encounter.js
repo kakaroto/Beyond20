@@ -25,11 +25,12 @@ function documentModified(mutations, observer) {
     character.parseStatBlock(monster);
 }
 
+let lastCombatUpdate = null;
+
 function updateCombatTracker() {
     if (!$(".turn-controls__next-turn-button").length) {
         return;
     }
-    $(".ui-dialog-buttonpane").hide(); // get rid of turn controls, to make it more obvious to do things from DDB.
     const combat = Array.from($(".combatant-card.in-combat")).map(combatant => {
         const $combatant = $(combatant);
         return {
@@ -38,6 +39,12 @@ function updateCombatTracker() {
             turn: $combatant.hasClass("is-turn"),
         };
     });
+    const json = JSON.stringify(combat);
+    if (lastCombatUpdate === json) {
+        return;
+    }
+    lastCombatUpdate = json;
+
     const req = {
         action: "update-combat",
         combat,
@@ -45,6 +52,7 @@ function updateCombatTracker() {
     console.log("Sending combat update", combat);
     chrome.runtime.sendMessage(req, resp => beyond20SendMessageFailure(character, resp));
 }
+
 
 function updateSettings(new_settings = null) {
     if (new_settings) {

@@ -444,10 +444,10 @@ const options_list = {
     },
 
     "sync-combat-tracker": {
-        "title": "Sync D&D Beyond Encounter with VTT turn tracker",
-        "description": "Currently only supports roll 20.",
+        "title": "Synchronize the Combat Tracker with the VTT",
+        "description": "Overwrites the VTT's combat tracker with the details from D&D Beyond's Encounter tool (Roll20 only)",
         "type": "bool",
-        "default": false
+        "default": true
     },
 
     "donate": {
