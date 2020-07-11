@@ -658,8 +658,11 @@ async function handleRenderedRoll(request) {
     for (let [name, value] of request.roll_info)
         properties[name] = value;
 
+    let title = request.character;
     if (request.attack_rolls.length > 0) {
         properties[request.title] = request.attack_rolls.map(roll => convertRollToText(request.whisper, roll, true)).join(" | ")
+    } else {
+        title = `${request.title} (${request.character})`
     }
     for (let [roll_name, roll, flags] of request.damage_rolls) {
         if (typeof (roll) === "string")
@@ -681,7 +684,7 @@ async function handleRenderedRoll(request) {
             properties[button] = `[Click](!${id})`;
         }
     }
-    let message = createTable(request, request.character, properties);
+    let message = createTable(request, title, properties);
     if (request.request.type === "initiative" && settings["initiative-tracker"]) {
         const initiative = request.attack_rolls.find((roll) => !roll.discarded);
         if (initiative)
