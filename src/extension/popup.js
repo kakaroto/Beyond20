@@ -179,6 +179,10 @@ function populateCharacter(response) {
             e = createHTMLOption("protector-aasimar-radiant-soul", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Bladesong")) {
+            e = createHTMLOption("wizard-bladesong", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }

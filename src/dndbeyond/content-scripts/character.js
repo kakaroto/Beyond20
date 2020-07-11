@@ -32,6 +32,9 @@ function rollSkillCheck(paneClass) {
             (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
+    if (skill_name == "Acrobatics" && character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false)) {
+        roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+    }
     // Set Reliable Talent flag if character has the feature and skill is proficient/expertise or a custom skill that needs to be queried
     if (character.hasClassFeature("Reliable Talent") && (["Proficiency", "Expertise"].includes(proficiency) || ability === "--"))
         roll_properties["reliableTalent"] = true;
@@ -350,6 +353,14 @@ function rollItem(force_display = false) {
             damage_types.push("Radiant Soul");
         }
 
+        // Wizard Bladesong
+        if (character.hasClassFeature("Song of Victory") && character.getSetting("wizard-bladesong", false)) {
+            const intelligence = character.getAbility("INT") || {mod: 0};
+            const mod = parseInt(intelligence.mod) || 0;
+            damages.push(String(Math.max(mod, 1)));
+            damage_types.push("Bladesong");
+        }
+
         let critical_limit = 20;
         if (character.hasAction("Channel Divinity: Legendary Strike") &&
             character.getSetting("paladin-legendary-strike", false))
@@ -526,6 +537,13 @@ function rollAction(paneClass) {
                     damages.push(sneak_attack);
                     damage_types.push("Sneak Attack");
                 }
+            }
+            // Wizard: Bladesong
+            if (character.hasClassFeature("Song of Victory") && character.getSetting("wizard-bladesong", false)) {
+                const intelligence = character.getAbility("INT") || {mod: 0};
+                const mod = parseInt(intelligence.mod) || 0;
+                damages.push(String(Math.max(mod, 1)));
+                damage_types.push("Bladesong");
             }
         }
 
