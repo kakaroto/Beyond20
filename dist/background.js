@@ -650,6 +650,12 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "wizard-bladesong": {
+        "title": "Wizard: Bladesong",
+        "description": "Activate your Bladesong and make your weapon sing with magic",
+        "type": "bool",
+        "default": false
     }
 }
 

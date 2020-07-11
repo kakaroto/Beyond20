@@ -650,6 +650,12 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "wizard-bladesong": {
+        "title": "Wizard: Bladesong",
+        "description": "Activate your Bladesong and make your weapon sing with magic",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -1414,6 +1420,10 @@ function populateCharacter(response) {
         }
         if (response["racial-traits"].includes("Radiant Soul")) {
             e = createHTMLOption("protector-aasimar-radiant-soul", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Bladesong")) {
+            e = createHTMLOption("wizard-bladesong", false, character_settings);
             options.append(e);
         }
 
