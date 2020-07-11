@@ -291,7 +291,7 @@ const options_list = {
 
     "sync-combat-tracker": {
         "title": "Synchronize the Combat Tracker with the VTT",
-        "description": "Overwrites the VTT's combat tracker with the details from D&D Beyond's Encounter tool (Roll20 only)",
+        "description": "Overwrites the VTT's combat tracker with the details from D&D Beyond's Encounter tool (Roll20 only, GM only)",
         "type": "bool",
         "default": true
     },
