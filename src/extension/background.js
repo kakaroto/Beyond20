@@ -148,10 +148,19 @@ function onRollFailure(request, sendResponse) {
     });
 }
 
+
+const forwardedActions = [
+    "roll",
+    "rendered-roll",
+    "hp-update",
+    "conditions-update",
+    "update-combat",
+];
+
 function onMessage(request, sender, sendResponse) {
     console.log("Received message: ", request)
-    if (["roll", "rendered-roll", "hp-update", "conditions-update"].includes(request.action)) {
-        makeFailureCB = (trackFailure, vtt, sendResponse) => {
+    if (forwardedActions.includes(request.action)) {
+        const makeFailureCB = (trackFailure, vtt, sendResponse) => {
             return (result) => {
                 trackFailure[vtt] = result
                 console.log("Result of sending to VTT ", vtt, ": ", result)

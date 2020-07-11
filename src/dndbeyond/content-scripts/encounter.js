@@ -13,6 +13,9 @@ function documentModified(mutations, observer) {
 
     const monster = $(".encounter-details-monster-summary-info-panel,.encounter-details__content-section--monster-stat-block,.combat-tracker-page__content-section--monster-stat-block,.monster-details-modal__body");
     const monster_name = monster.find(".mon-stat-block__name").text();
+    if (settings["sync-combat-tracker"]) {
+        updateCombatTracker();
+    }
     console.log("Doc modified, new mon : ", monster_name, " !=? ", last_monster_name);
     if (monster_name == last_monster_name)
         return;
@@ -21,6 +24,35 @@ function documentModified(mutations, observer) {
     character = new Monster("Monster", null, settings);
     character.parseStatBlock(monster);
 }
+
+let lastCombatUpdate = null;
+
+function updateCombatTracker() {
+    if (!$(".turn-controls__next-turn-button").length) {
+        return;
+    }
+    const combat = Array.from($(".combatant-card.in-combat")).map(combatant => {
+        const $combatant = $(combatant);
+        return {
+            name: $combatant.find(".combatant-summary__name").text(),
+            initiative: $combatant.find(".combatant-card__initiative-value").text(),
+            turn: $combatant.hasClass("is-turn"),
+        };
+    });
+    const json = JSON.stringify(combat);
+    if (lastCombatUpdate === json) {
+        return;
+    }
+    lastCombatUpdate = json;
+
+    const req = {
+        action: "update-combat",
+        combat,
+    };
+    console.log("Sending combat update", combat);
+    chrome.runtime.sendMessage(req, resp => beyond20SendMessageFailure(character, resp));
+}
+
 
 function updateSettings(new_settings = null) {
     if (new_settings) {
@@ -48,5 +80,5 @@ updateSettings();
 injectCSS(BUTTON_STYLE_CSS);
 chrome.runtime.onMessage.addListener(handleMessage);
 const observer = new window.MutationObserver(documentModified);
-observer.observe(document, { "subtree": true, "childList": true });
+observer.observe(document, { "subtree": true, "childList": true, attributes: true, });
 chrome.runtime.sendMessage({ "action": "activate-icon" });

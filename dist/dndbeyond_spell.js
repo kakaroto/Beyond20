@@ -442,6 +442,13 @@ const options_list = {
         "default": ""
     },
 
+    "sync-combat-tracker": {
+        "title": "Synchronize the Combat Tracker with the VTT",
+        "description": "Overwrites the VTT's combat tracker with the details from D&D Beyond's Encounter tool (Roll20 only)",
+        "type": "bool",
+        "default": true
+    },
+
     "donate": {
         "short": "Buy rations (1 day) to feed my familiar",
         "title": "Become a patron of the art of software development!",
@@ -1092,7 +1099,7 @@ function setDiscordChannelsSetting(name, settings) {
     if (!dropdowns.find(d => d.active)) dropdowns[0].active = true;
     if (dropdowns.find(d => d.secret)) dropdowns.push({ name: "Delete selected channel", action: "delete" })
     dropdowns.push({ name: "Add new channel", action: "add" })
-    
+
     console.log("Added new options", dropdowns);
     fillDisordChannelsDropdown(name, dropdowns);
 }
@@ -1110,7 +1117,7 @@ function fillDisordChannelsDropdown(name, dropdowns, triggerChange=false) {
     const active = dropdowns.find(d => d.active);
     input.text(active.name);
     input.attr("data-secret", active.secret.slice(0, 12));
-    
+
     $("#beyond20-option-discord-channels li").off('click').click(ev => {
         ev.stopPropagation();
         ev.preventDefault()
@@ -1130,7 +1137,7 @@ function fillDisordChannelsDropdown(name, dropdowns, triggerChange=false) {
     $("#beyond20-option-discord-channels li[data-action=add]").off('click').click(ev => {
         ev.stopPropagation();
         ev.preventDefault()
-        
+
         dropdown_menu.removeClass('open');
         button_group.removeClass('open');
         m.set('triangle').size(10);
@@ -2976,7 +2983,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                     }
                 }
                 const isBrutal = character.hasClassFeature("Brutal Critical");
-                const isSavage = character.hasRacialTrait("Savage Attacks");   
+                const isSavage = character.hasRacialTrait("Savage Attacks");
                 if (highest_dice != 0) {
                     crit_damages.push(`${brutal}d${highest_dice}`);
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
@@ -2984,7 +2991,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                     crit_damages.push(`${homebrew_max_damage}`);
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
                 }
-                
+
             }
             roll_properties["critical-damages"] = crit_damages;
             roll_properties["critical-damage-types"] = crit_damage_types;
@@ -3244,7 +3251,7 @@ function injectDiceToRolls(selector, character, name = "") {
 }
 
 function beyond20SendMessageFailure(character, response) {
-    if (!response)
+    if (!response || (response.request && response.request.action === "update-combat"))
         return;
     console.log("Received response : ", response);
     if (["roll", "rendered-roll"].includes(response.request.action)  && (response.vtt == "dndbeyond" || response.error)) {

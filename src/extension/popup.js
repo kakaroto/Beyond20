@@ -212,6 +212,11 @@ function addMonsterOptions() {
     initializeSettings(gotSettings);
 }
 
+function addEncounterOptions() {
+    const options = $(".beyond20-options");
+    options.append(createHTMLOption("sync-combat-tracker", false));
+}
+
 function tabMatches(tab, url) {
     return tab.url.match(url.replace(/\*/g, "[^]*")) != null;
 }
@@ -240,11 +245,10 @@ function actOnCurrentTab(tab) {
         initializeSettings(gotSettings);
     } else if (urlMatches(tab.url, DNDBEYOND_CHARACTER_URL)) {
         sendMessageToTab(tab.id, { "action": "get-character" }, populateCharacter);
-    } else if (urlMatches(tab.url, DNDBEYOND_MONSTER_URL) ||
-        urlMatches(tab.url, DNDBEYOND_VEHICLE_URL) ||
-        urlMatches(tab.url, DNDBEYOND_ENCOUNTERS_URL) ||
-        urlMatches(tab.url, DNDBEYOND_ENCOUNTER_URL) ||
-        urlMatches(tab.url, DNDBEYOND_COMBAT_URL)) {
+    } else if (urlMatches(tab.url, DNDBEYOND_MONSTER_URL) || urlMatches(tab.url, DNDBEYOND_VEHICLE_URL)) {
+        addMonsterOptions();
+    } else if (urlMatches(tab.url, DNDBEYOND_COMBAT_URL) || urlMatches(tab.url, DNDBEYOND_ENCOUNTERS_URL) || urlMatches(tab.url, DNDBEYOND_ENCOUNTER_URL)) {
+        addEncounterOptions();
         addMonsterOptions();
     } else {
         initializeSettings(gotSettings);
