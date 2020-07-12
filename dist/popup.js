@@ -743,6 +743,12 @@ const character_settings = {
         "title": "Artificer: Use Alchemical Savant",
         "description": "Use your Alchemist's supplies as spellcasting focus, dealing extra damage or healing equal to your Intelligence Modifier",
         "type": "bool",
+        "default": true
+    },
+    "paladin-invincible-conqueror": {
+        "title": "Paladin: Oath of Conquest: Invincible Conqueror",
+        "description": "You can harness extraordinary martial prowess for 1 minute.",
+        "type": "bool",
         "default": false
     }
 }
@@ -1548,6 +1554,10 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Alchemical Savant")) {
             e = createHTMLOption("artificer-alchemical-savant", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Invincible Conqueror")) {
+            e = createHTMLOption("paladin-invincible-conqueror", false, character_settings);
             options.append(e);
         }
 
