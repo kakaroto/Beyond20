@@ -456,6 +456,9 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             critical_limit = 19;
         if (character.hasClassFeature("Improved Critical"))
             critical_limit = 19;
+        if (character.hasClassFeature("Invincible Conqueror") &&
+            character.getSetting("paladin-invincible-conqueror", false))
+            critical_limit = 19;
         if (character.hasClassFeature("Superior Critical"))
             critical_limit = 18;
 
@@ -628,6 +631,9 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
                 character.getSetting("paladin-legendary-strike", false))
                 critical_limit = 19;
             if (character.hasClassFeature("Improved Critical"))
+                critical_limit = 19;
+            if (character.hasClassFeature("Invincible Conqueror") &&
+                character.getSetting("paladin-invincible-conqueror", false))
                 critical_limit = 19;
             if (character.hasClassFeature("Superior Critical"))
                 critical_limit = 18;

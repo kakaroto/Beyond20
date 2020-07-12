@@ -201,6 +201,10 @@ function populateCharacter(response) {
             e = createHTMLOption("artificer-alchemical-savant", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Invincible Conqueror")) {
+            e = createHTMLOption("paladin-invincible-conqueror", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }
