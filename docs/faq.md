@@ -4,7 +4,7 @@ First of all, make sure you have the latest version of Beyond20 since some issue
 
 You can also check out the [changelog](Changelog) for recent fixes or additions to the extension.
 
-* [Why isn't my self-hosted Foundry VTT working with Beyond 20?](#why-isnt-my-self-hosted-foundry-vtt-working-with-beyond20)
+* [Why isn't my self-hosted Foundry VTT working with Beyond 20?](#why-isnt-my-foundry-vtt-server-working-with-beyond-20)
 * [Can Beyond20 do '\<insert specific feature\>'?](#can-beyond20-do-insert-specific-feature)
 * [All I see in Roll20 is an empty message](#all-i-see-in-roll20-is-an-empty-message)
 * [My HP from D&D Beyond doesn't synchronize to my tokens](#my-hp-from-dd-beyond-doesnt-synchronize-to-my-tokens)
