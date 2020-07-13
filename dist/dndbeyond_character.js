@@ -3941,7 +3941,7 @@ class Character extends CharacterBase {
         }
         if (this._level === null) {
             const level = $(".ddbc-character-progression-summary__level");
-            const xp = $(".ddbc-character-summary__xp-bar .ddbc-xp-bar__item--cur .ddbc-xp-bar__label");
+            const xp = $(".ddbc-character-progression-summary__xp-bar .ddbc-xp-bar__item--cur .ddbc-xp-bar__label");
             if (level.length > 0)
                 this._level = level.text().replace("Level ", "");
             else if (xp.length > 0)
