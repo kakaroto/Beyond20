@@ -4,6 +4,7 @@ First of all, make sure you have the latest version of Beyond20 since some issue
 
 You can also check out the [changelog](Changelog) for recent fixes or additions to the extension.
 
+* [Why isn't my self-hosted Foundry VTT working with Beyond 20?](#why-isnt-my-self-hosted-foundry-vtt-working-with-beyond20)
 * [Can Beyond20 do '\<insert specific feature\>'?](#can-beyond20-do-insert-specific-feature)
 * [All I see in Roll20 is an empty message](#all-i-see-in-roll20-is-an-empty-message)
 * [My HP from D&D Beyond doesn't synchronize to my tokens](#my-hp-from-dd-beyond-doesnt-synchronize-to-my-tokens)
@@ -18,6 +19,13 @@ You can also check out the [changelog](Changelog) for recent fixes or additions 
 * [Why doesn't Beyond20 allow me to make a melee attack with my magic staffs?](#why-doesnt-beyond20-allow-me-to-make-a-melee-attack-with-my-magic-staffs)
 
 ---
+
+### Why isn't my Foundry VTT server working with Beyond 20?
+
+You must open Foundry VTT in your web browser (by default, at http://localhost:30000).
+This extension does not interact with the application directly due to a limitation in the way browser extensions work.
+
+The second step is to give Beyond20 access to the tab running Foundry VTT. To do this, simply click on the extension icon (generally in the top right of your browser). You will need to do this at the start of every session.
 
 ### Can Beyond20 do '\<insert specific feature\>'?
 
