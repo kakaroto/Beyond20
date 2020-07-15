@@ -193,7 +193,7 @@
 .alertify.ajs-resizable .ajs-body .ajs-content,
 .alertify.ajs-maximized .ajs-body .ajs-content {
   position: absolute;
-  top: 64px;
+  top: 50px;
   right: 24px;
   bottom: 50px;
   left: 24px;

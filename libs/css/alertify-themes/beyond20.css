@@ -27,3 +27,9 @@
   -webkit-animation-duration: 100ms;
           animation-duration: 100ms;
 }
+
+/* Prevent ajs-content from overlapping with ajs-header in "Beyond20 Quick Settings" */
+.alertify.ajs-resizable .ajs-body .ajs-content,
+.alertify.ajs-maximized .ajs-body .ajs-content {
+  top: 64px;
+}
