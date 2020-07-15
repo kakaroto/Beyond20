@@ -798,6 +798,8 @@ function handleMessage(request, sender, sendResponse) {
             roll = rollSpellCard(request);
         } else if (request.type == "spell-attack") {
             roll = rollSpellAttack(request, custom_roll_dice);
+        } else if (request.type == "raw-text") {
+            roll = request.text;
         } else {
             // 'custom' || anything unexpected;
             const mod = request.modifier != undefined ? request.modifier : request.roll;

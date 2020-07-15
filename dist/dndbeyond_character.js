@@ -5158,8 +5158,61 @@ function displayAction(paneClass) {
     });
 }
 
+function displayCustomText(paneClass) {
+    // Function Goal: Search for block of VTT Message text in pane Notes, Snippet, or Description
+    // (Priority descending in that order.)
+    const regexp = /```\[([^\]]*)\]\s*((\S|\s)*?)\s*```/g;
+    let pane = $("."+paneClass);
+    let elemText;
+    let matchedText;
+    
+    //Notes: Iterate through classes in pane: "ddbc-property-list__property"
+    //  If exists: find child "ddbc-property-list__property-label" with innerHTML "Notes:"
+    //    If exists: load text from "ddbc-property-list__property-content" (Child of "ddbc-property-list__property")
+    let msgElement = pane.find(".ddbc-property-list__property:contains('Notes:')").get(0)
+    if (msgElement!=undefined && msgElement!=null) {
+        elemText = msgElement.lastChild.innerText;
+        console.log("Notes Text: "+elemText);
+        matchedText = [...elemText.matchAll(regexp)];
+    }
+
+    //Description: find "ct-action-detail__description"
+    //  If exists: load text from its html content
+    //    (make sure you remove the B20 custom roll insertions if they are there...)
+    //    (You can do so by simply appending the innerHTML of all child elements to the main string)
+    if (matchedText==undefined || matchedText==null) {
+        msgElement = pane.find(".ct-action-detail__description").get(0);
+        console.log(msgElement);
+        if (msgElement!=undefined) {
+            elemText = msgElement.innerText;
+            console.log("Description Text: "+elemText);    
+            matchedText = [...elemText.matchAll(regexp)]; 
+        }
+    }
+
+    //Handle Matched Text
+    if (matchedText!=undefined && matchedText!=null) {
+        console.log("Matched Text:\n"+matchedText);
+        for (let i=0; i<matchedText.length; i++) {
+            let cMatch = matchedText[i]
+            let cMatchType = cMatch[1];
+            let cMatchText = cMatch[2];
+            console.log("Match #"+i+" (Type: "+cMatchType+"):\n"+cMatchText);
+            sendRollWithCharacter(/*"raw_text"*/"action", 0, {
+                "type": cMatchType,
+                "text": cMatchText
+            });
+        }
+    }
+    
+    //Should the original click action be executed? (T/F)
+    return true;
+}
+
 function execute(paneClass) {
     console.log("Beyond20: Executing panel : " + paneClass);
+    console.log("test1");
+    displayCustomText(paneClass);
     if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
         rollSkillCheck(paneClass);
     else if (paneClass == "ct-ability-pane")
