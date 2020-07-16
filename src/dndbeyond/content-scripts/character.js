@@ -857,77 +857,82 @@ function displayAction(paneClass) {
     });
 }
 
-function displayCustomText(paneClass) {
-    // Function Goal: Search for block of VTT Message text in pane Notes, Snippet, or Description
-    // (Priority descending in that order.)
+function handleCustomText(paneClass) {
+    let allowDefaultAction = true;
+    // Function Objective: Search for and handle block of VTT Message text...
+    //...in pane Notes or Description (Priority descending in that order.)
     const regexp = /```\[([^\]]*)\]\s*((\S|\s)*?)\s*```/g;
     let pane = $("."+paneClass);
     let elemText;
     let matchedText;
     
+    // Search for msg text in "Notes" section, if it exists
     //Notes: Iterate through classes in pane: "ddbc-property-list__property"
     //  If exists: find child "ddbc-property-list__property-label" with innerHTML "Notes:"
     //    If exists: load text from "ddbc-property-list__property-content" (Child of "ddbc-property-list__property")
     let msgElement = pane.find(".ddbc-property-list__property:contains('Notes:')").get(0)
     if (msgElement!=undefined && msgElement!=null) {
         elemText = msgElement.lastChild.innerText;
-        console.log("Notes Text: "+elemText);
+        // console.log("Notes Text: "+elemText);
         matchedText = [...elemText.matchAll(regexp)];
     }
 
-    //Description: find "ct-action-detail__description"
-    //  If exists: load text from its html content
-    //    (make sure you remove the B20 custom roll insertions if they are there...)
-    //    (You can do so by simply appending the innerHTML of all child elements to the main string)
+    // If no message was found, search for msg in the "Description" section, if it exists
     if (matchedText==undefined || matchedText==null) {
         msgElement = pane.find(".ct-action-detail__description").get(0);
         console.log(msgElement);
         if (msgElement!=undefined) {
             elemText = msgElement.innerText;
-            console.log("Description Text: "+elemText);    
+            // console.log("Description Text: "+elemText);    
             matchedText = [...elemText.matchAll(regexp)]; 
         }
     }
 
+    //TODO possibly add the ability to have the note text add its own, separate roll button, instead of using the existing ones
     //Handle Matched Text
     if (matchedText!=undefined && matchedText!=null) {
         console.log("Matched Text:\n"+matchedText);
         for (let i=0; i<matchedText.length; i++) {
-            let cMatch = matchedText[i]
-            let cMatchType = cMatch[1];
-            let cMatchText = cMatch[2];
-            console.log("Match #"+i+" (Type: "+cMatchType+"):\n"+cMatchText);
-            sendRollWithCharacter(/*"raw_text"*/"action", 0, {
-                "type": cMatchType,
+            let cMatchType = matchedText[i][1].toLowerCase();
+            let cMatchText = matchedText[i][2];
+            // Determine if we should prevent the default action/message from being sent to the VTT
+            if (cMatchType == "replace")
+                allowDefaultAction = false;
+            console.log("Note Match #"+i+" (Type: "+cMatchType+"):\n"+cMatchText);
+            sendRollWithCharacter("action", 0, {
+                "type": "raw-text",
                 "text": cMatchText
             });
         }
     }
     
     //Should the original click action be executed? (T/F)
-    return true;
+    return allowDefaultAction;
 }
 
 function execute(paneClass) {
     console.log("Beyond20: Executing panel : " + paneClass);
-    console.log("test1");
-    displayCustomText(paneClass);
-    if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
-        rollSkillCheck(paneClass);
-    else if (paneClass == "ct-ability-pane")
-        rollAbilityCheck();
-    else if (paneClass == "ct-ability-saving-throws-pane")
-        rollSavingThrow();
-    else if (paneClass == "ct-initiative-pane")
-        rollInitiative();
-    else if (paneClass == "ct-item-pane")
-        rollItem();
-    else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
-        rollAction(paneClass);
-    else if (paneClass == "ct-spell-pane")
-        rollSpell();
-    else
-        displayPanel(paneClass);
+    // 'handleCustomText' returns 'false' if the custom text specifies that the default...
+    //...action for the element should be prevented.
+    //TODO allow adding additional custom roll modifiers within custom text
+    if (handleCustomText(paneClass)) {
+        if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
+            rollSkillCheck(paneClass);
+        else if (paneClass == "ct-ability-pane")
+            rollAbilityCheck();
+        else if (paneClass == "ct-ability-saving-throws-pane")
+            rollSavingThrow();
+        else if (paneClass == "ct-initiative-pane")
+            rollInitiative();
+        else if (paneClass == "ct-item-pane")
+            rollItem();
+        else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
+            rollAction(paneClass);
+        else if (paneClass == "ct-spell-pane")
+            rollSpell();
+        else
+            displayPanel(paneClass);
+    }
 }
 
 function displayPanel(paneClass) {
