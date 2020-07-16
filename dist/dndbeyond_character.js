@@ -334,7 +334,7 @@ const options_list = {
         "title": "Send custom text to the VTT (currently Roll20 only)",
         "description": "In the \"Notes\" or \"Description\" section of any item, action, or spell on the D&D Beyond Character Sheet, "
             + "you may add your own custom text to be sent to the VTT as a message when you use that element's roll action."
-            + "\nDo this by surrounding the text formatting the text you wish to send as follows:"
+            + "\nTo do this, format the text you wish to send as follows:"
             + "\n```[msg-type] Put text you wish to send HERE```"
             + "\nReplace \"msg-type\" with one of the following: \"before\", \"after\", or \"replace\" depending on how you want to affect the message or action that would normally be sent to the VTT.",
         "type": "info"
@@ -5176,18 +5176,21 @@ function displayAction(paneClass) {
 }
 
 function handleCustomText(paneClass) {
-    let allowDefaultAction = true;
     // Function Objective: Search for and handle block of VTT Message text...
     //...in pane Notes or Description (Priority descending in that order.)
     const regexp = /```\[([^\]]*)\]\s*((\S|\s)*?)\s*```/g;
+    const rollOrderTypes = ["before", "after", "replace"];//(relative to normal roll msg)
+    const defaultRollFunc = function () {};
+    let rollOrder = rollOrderTypes[0];
+    let rollFunc = defaultRollFunc;
+    
     let pane = $("."+paneClass);
     let elemText;
     let matchedText;
     
     // Search for msg text in "Notes" section, if it exists
-    //Notes: Iterate through classes in pane: "ddbc-property-list__property"
-    //  If exists: find child "ddbc-property-list__property-label" with innerHTML "Notes:"
-    //    If exists: load text from "ddbc-property-list__property-content" (Child of "ddbc-property-list__property")
+    //Notes: Iterate through classes in pane: "ddbc-property-list__property" that contain the text "Notes:"
+    //  If exists: load text from "ddbc-property-list__property-content" (Last child of "ddbc-property-list__property")
     let msgElement = pane.find(".ddbc-property-list__property:contains('Notes:')").get(0)
     if (msgElement!=undefined && msgElement!=null) {
         elemText = msgElement.lastChild.innerText;
@@ -5214,26 +5217,24 @@ function handleCustomText(paneClass) {
             let cMatchType = matchedText[i][1].toLowerCase();
             let cMatchText = matchedText[i][2];
             // Determine if we should prevent the default action/message from being sent to the VTT
-            if (cMatchType == "replace")
-                allowDefaultAction = false;
-            console.log("Note Match #"+i+" (Type: "+cMatchType+"):\n"+cMatchText);
-            sendRollWithCharacter("action", 0, {
-                "type": "raw-text",
-                "text": cMatchText
-            });
+            console.log("Note Match #"+i+" (Provided Type: "+cMatchType+"):\n"+cMatchText);
+            if (rollOrderTypes.includes(cMatchType))
+                rollOrder = cMatchType;
+            rollFunc = function () { 
+                sendRollWithCharacter("action", 0, {
+                    "type": "raw-text",
+                    "text": cMatchText
+                })
+            };
         }
     }
     
-    //Should the original click action be executed? (T/F)
-    return allowDefaultAction;
+    return { rollOrder: rollOrder, rollFunction: rollFunc };
 }
 
 function execute(paneClass) {
     console.log("Beyond20: Executing panel : " + paneClass);
-    // 'handleCustomText' returns 'false' if the custom text specifies that the default...
-    //...action for the element should be prevented.
-    //TODO allow adding additional custom roll modifiers within custom text
-    if (handleCustomText(paneClass)) {
+    const execRolls = function() {
         if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
             rollSkillCheck(paneClass);
         else if (paneClass == "ct-ability-pane")
@@ -5249,7 +5250,21 @@ function execute(paneClass) {
         else if (paneClass == "ct-spell-pane")
             rollSpell();
         else
-            displayPanel(paneClass);
+            displayPanel(paneClass);  
+    }
+
+    //TODO allow adding additional custom roll modifiers within custom text?
+    let customText = handleCustomText(paneClass);
+    if (customText.rollOrder == "before") {
+        customText.rollFunction();
+        execRolls();
+    } else if (customText.rollOrder == "after") {
+        execRolls();
+        customText.rollFunction();
+    } else if (customText.rollOrder == "replace") {
+        customText.rollFunction();
+    } else {
+        execRolls();
     }
 }
 

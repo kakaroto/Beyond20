@@ -334,7 +334,7 @@ const options_list = {
         "title": "Send custom text to the VTT (currently Roll20 only)",
         "description": "In the \"Notes\" or \"Description\" section of any item, action, or spell on the D&D Beyond Character Sheet, "
             + "you may add your own custom text to be sent to the VTT as a message when you use that element's roll action."
-            + "\nDo this by surrounding the text formatting the text you wish to send as follows:"
+            + "\nTo do this, format the text you wish to send as follows:"
             + "\n```[msg-type] Put text you wish to send HERE```"
             + "\nReplace \"msg-type\" with one of the following: \"before\", \"after\", or \"replace\" depending on how you want to affect the message or action that would normally be sent to the VTT.",
         "type": "info"
