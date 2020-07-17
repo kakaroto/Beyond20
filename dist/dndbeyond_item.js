@@ -2096,7 +2096,7 @@ class Beyond20RollRenderer {
 
     rollItem(request, custom_roll_dice = "") {
         const source = request["item-type"].trim().toLowerCase();
-        if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools"))) && request.character.abilities.length > 0) {
+        if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools")) || request.tags.includes("instrument")) && request.character.abilities && request.character.abilities.length > 0) {
             const proficiencies = {}
             proficiencies["None"] = 0;
             proficiencies["Half Proficient"] = Math.floor(request.character.proficiency / 2);
@@ -3288,6 +3288,7 @@ function addDisplayButton() {
     const item_name = $(".page-title").text().trim();
     const item_type = descriptionToString(".item-details .item-info .details, .details-container-equipment .details-container-content-description > div > .details-container-content-description-text");
     const description = descriptionToString(".item-details .more-info-content, .details-container-equipment .marginBottom20 + .details-container-content-description-text");
+    const item_tags = $(".details-container-content-footer .tags").find(".tag").map(function(){ return $(this).text().toLowerCase(); }).toArray();
     $(".page-heading__content").after(button);
     $(".ct-beyond20-roll").css({
         "float": "right",
@@ -3297,7 +3298,8 @@ function addDisplayButton() {
         sendRoll(character, "item", "0", {
             "name": item_name,
             "description": description,
-            "item-type": item_type
+            "item-type": item_type,
+            "tags": item_tags
         });
     }
     );
