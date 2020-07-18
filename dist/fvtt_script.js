@@ -2097,7 +2097,7 @@ class Beyond20RollRenderer {
 
     rollItem(request, custom_roll_dice = "") {
         const source = request["item-type"].trim().toLowerCase();
-        if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools")) || request.tags.includes("instrument")) && request.character.abilities && request.character.abilities.length > 0) {
+        if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools")) || request.tags.includes("Instrument")) && request.character.abilities && request.character.abilities.length > 0) {
             const proficiencies = {}
             proficiencies["None"] = 0;
             proficiencies["Half Proficient"] = Math.floor(request.character.proficiency / 2);

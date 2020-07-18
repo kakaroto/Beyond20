@@ -124,7 +124,7 @@ function rollItem(force_display = false) {
     //console.log("Properties are : " + String(properties));
     const item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name")[0].firstChild.textContent;
     const item_type = $(".ct-item-detail__intro").text();
-    const item_tags = $(".ct-item-detail__tags-list").find(".ct-item-detail__tag").map(function(){ return $(this).text().toLowerCase(); }).toArray();
+    const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
     const description = descriptionToString(".ct-item-detail__description");
     if (!force_display && Object.keys(properties).includes("Damage")) {
         const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
