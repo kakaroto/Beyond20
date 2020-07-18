@@ -23,7 +23,7 @@ You can also check out the [changelog](Changelog) for recent fixes or additions 
 
 ### How can I use Beyond20 with Foundry VTT?
 
-In order to use Beyond20 with Foundry VTT, you need to have your Foundry game open in the same browser as your D&D Beyond page. This means that you cannot send your rolls from D&D Beyond to the native desktop application, as that is not your Chrome or Firefox browser.
+You need to have your Foundry game open in the same browser as your D&D Beyond page. This means that you cannot send your rolls from D&D Beyond to the native desktop application, as that is not your Chrome or Firefox browser.
 If you use the Foundry desktop application, we suggest you simply open it and leave it in the background without logging into it, then opening the invitation link (http://localhost:30000 by default) in your browser instead.
 
 If you are using Chrome, due to restrictions imposed on extensions in the Chrome Store, you will need to manually *activate* Beyond20 for your Foundry VTT browser tab. You can do so by clicking on the Beyond20 icon in the browser's address bar from within the Foundry tab. You will need to do this everytime you load or reload the VTT page.
