@@ -4,7 +4,7 @@ First of all, make sure you have the latest version of Beyond20 since some issue
 
 You can also check out the [changelog](Changelog) for recent fixes or additions to the extension.
 
-* [Why isn't my self-hosted Foundry VTT working with Beyond 20?](#why-isnt-my-foundry-vtt-server-working-with-beyond-20)
+* [How can I use Beyond20 with Foundry VTT?](#how-can-i-use-beyond20-with-foundry-vtt)
 * [Can Beyond20 do '\<insert specific feature\>'?](#can-beyond20-do-insert-specific-feature)
 * [All I see in Roll20 is an empty message](#all-i-see-in-roll20-is-an-empty-message)
 * [My HP from D&D Beyond doesn't synchronize to my tokens](#my-hp-from-dd-beyond-doesnt-synchronize-to-my-tokens)
@@ -20,12 +20,17 @@ You can also check out the [changelog](Changelog) for recent fixes or additions 
 
 ---
 
-### Why isn't my Foundry VTT server working with Beyond 20?
 
-You must open Foundry VTT in your web browser (by default, at http://localhost:30000).
-This extension does not interact with the application directly due to a limitation in the way browser extensions work.
+### How can I use Beyond20 with Foundry VTT?
 
-The second step is to give Beyond20 access to the tab running Foundry VTT. To do this, simply click on the extension icon (generally in the top right of your browser). You will need to do this at the start of every session.
+In order to use Beyond20 with Foundry VTT, you need to have your Foundry game open in the same browser as your D&D Beyond page. This means that you cannot send your rolls from D&D Beyond to the native desktop application, as that is not your Chrome or Firefox browser.
+If you use the Foundry desktop application, we suggest you simply open it and leave it in the background without logging into it, then opening the invitation link (http://localhost:30000 by default) in your browser instead.
+
+If you are using Chrome, due to restrictions imposed on extensions in the Chrome Store, you will need to manually *activate* Beyond20 for your Foundry VTT browser tab. You can do so by clicking on the Beyond20 icon in the browser's address bar from within the Foundry tab. You will need to do this everytime you load or reload the VTT page.
+We recommend installing and enabling the Beyond20 companion module within your Foundry world as it will remind you to do so, and will allow other users who do not have Beyond20 installed to see your rolls properly displayed.
+
+If you are using Firefox or if you use [The Forge](https://forge-vtt.com) for your Foundry game hosting, then activating Beyond20 in the Foundry tab is not required.
+
 
 ### Can Beyond20 do '\<insert specific feature\>'?
 
