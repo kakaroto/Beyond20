@@ -547,6 +547,12 @@ function rollAction(paneClass) {
                 damages.push(String(Math.max(mod, 1)));
                 damage_types.push("Bladesong");
             }
+
+            if (character.hasClassFeature("Improved Divine Smite") &&
+                character.getSetting("paladin-improved-divine-smite", true)) {
+                damages.push("1d8");
+                damage_types.push("Radiant");
+            }
         }
 
         //Protector Aasimar: Radiant Soul Damage
