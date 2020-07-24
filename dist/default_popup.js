@@ -711,7 +711,13 @@ const character_settings = {
         "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
         "type": "bool",
         "default": false
-    }
+    },
+    "paladin-sacred-weapon": {
+        "title": "Oath of Devotion: Sacred Weapon",
+        "description": "Add your Charisma Modifier to attack rolls",
+        "type": "bool",
+        "default": false
+    },
 }
 
 function getStorage() {

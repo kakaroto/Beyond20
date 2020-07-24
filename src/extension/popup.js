@@ -209,6 +209,10 @@ function populateCharacter(response) {
             e = createHTMLOption("wildfire-spirit-enhanced-bond", false, character_settings);
             options.append(e);
         }
+        if (response["actions"].includes("Channel Divinity: Sacred Weapon")) {
+            e = createHTMLOption("paladin-sacred-weapon", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }
