@@ -4777,11 +4777,12 @@ function rollAction(paneClass) {
             character.getSetting("warlock-hexblade-curse", false))
             critical_limit = 19;
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.
+        if (action_name.includes("Polearm Master - Bonus Attack") && character.hasClassFeature("Fighting Style: Great Weapon Fighting")) {
+            damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
+        }
         if (action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
             || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
             || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons")) {
-            if (character.hasClassFeature("Fighting Style: Great Weapon Fighting"))
-                damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
                 critical_limit = 19;
