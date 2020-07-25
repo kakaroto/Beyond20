@@ -426,7 +426,7 @@ const options_list = {
         "title": "Display Spell Descriptions in spell attacks",
         "description": "When doing a spell attack, display the spells full description (Roll20 only toggle)",
         "type": "bool",
-        "defult": false
+        "default": false
     },
 
     "component-prefix": {
