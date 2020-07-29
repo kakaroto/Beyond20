@@ -1725,20 +1725,25 @@ class Beyond20RollRenderer {
         let advantage = request.advantage;
         if (advantage == RollType.QUERY)
             advantage = await this.queryAdvantage(title);
+        
+        let d20_roll = "1d20";
+        // Halfling Luck affects Attack Rolls
+        if (request.character["racial-traits"].includes("Lucky"))
+            d20_roll = d20_roll.replace(/[0-9]*d[0-9]+/g, "$&ro<=1");
 
         if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {
-            const roll_1 = this.createRoll("1d20" + modifier, data);
-            const roll_2 = this.createRoll("1d20" + modifier, data);
+            const roll_1 = this.createRoll(d20_roll + modifier, data);
+            const roll_2 = this.createRoll(d20_roll + modifier, data);
 
             return {advantage, rolls: [roll_1, roll_2]};
         } else if ([RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE].includes(advantage)) {
-            const roll_1 = this.createRoll("1d20" + modifier, data);
-            const roll_2 = this.createRoll("1d20" + modifier, data);
-            const roll_3 = this.createRoll("1d20" + modifier, data);
+            const roll_1 = this.createRoll(d20_roll + modifier, data);
+            const roll_2 = this.createRoll(d20_roll + modifier, data);
+            const roll_3 = this.createRoll(d20_roll + modifier, data);
 
             return {advantage, rolls: [roll_1, roll_2, roll_3]};
         } else { // advantage == RollType.NORMAL
-            return {advantage, rolls: [this.createRoll("1d20" + modifier, data)]};
+            return {advantage, rolls: [this.createRoll(d20_roll + modifier, data)]};
         }
     }
     processToHitAdvantage(advantage, rolls) {

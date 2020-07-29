@@ -1724,20 +1724,25 @@ class Beyond20RollRenderer {
         let advantage = request.advantage;
         if (advantage == RollType.QUERY)
             advantage = await this.queryAdvantage(title);
+        
+        let d20_roll = "1d20";
+        // Halfling Luck affects Attack Rolls
+        if (request.character["racial-traits"].includes("Lucky"))
+            d20_roll = d20_roll.replace(/[0-9]*d[0-9]+/g, "$&ro<=1");
 
         if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {
-            const roll_1 = this.createRoll("1d20" + modifier, data);
-            const roll_2 = this.createRoll("1d20" + modifier, data);
+            const roll_1 = this.createRoll(d20_roll + modifier, data);
+            const roll_2 = this.createRoll(d20_roll + modifier, data);
 
             return {advantage, rolls: [roll_1, roll_2]};
         } else if ([RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE].includes(advantage)) {
-            const roll_1 = this.createRoll("1d20" + modifier, data);
-            const roll_2 = this.createRoll("1d20" + modifier, data);
-            const roll_3 = this.createRoll("1d20" + modifier, data);
+            const roll_1 = this.createRoll(d20_roll + modifier, data);
+            const roll_2 = this.createRoll(d20_roll + modifier, data);
+            const roll_3 = this.createRoll(d20_roll + modifier, data);
 
             return {advantage, rolls: [roll_1, roll_2, roll_3]};
         } else { // advantage == RollType.NORMAL
-            return {advantage, rolls: [this.createRoll("1d20" + modifier, data)]};
+            return {advantage, rolls: [this.createRoll(d20_roll + modifier, data)]};
         }
     }
     processToHitAdvantage(advantage, rolls) {
@@ -2832,17 +2837,21 @@ function rollSkill(request, custom_roll_dice = "") {
             prof_val += "+[[" + request.character.proficiency + " * 2]]";
             reliableTalent = request.reliableTalent;
         }
-        const d20 = reliableTalent ? "{1d20, 0d0 + 10}kh1" : "1d20";
+        const d20_roll = reliableTalent ? "{1d20, 0d0 + 10}kh1" : "1d20";
+        if (request.character["racial-traits"].includes("Lucky"))
+            d20_roll = d20_roll.replace(/1d20+/g, "$&r1");
         return template(request, "simple", {
             "charname": request.character.name,
             "rname": request.skill,
             "mod": format_plus_mod(modifier) + format_plus_mod(prof_val) + format_plus_mod(custom_roll_dice),
-            "r1": genRoll(d20, { "--": modifier, [prof]: prof_val, "CUSTOM": custom_roll_dice })
+            "r1": genRoll(d20_roll, { "--": modifier, [prof]: prof_val, "CUSTOM": custom_roll_dice })
         });
     } else {
-        let d20 = request.reliableTalent ? "{1d20, 0d0 + 10}kh1" : "1d20";
+        let d20_roll = request.reliableTalent ? "{1d20, 0d0 + 10}kh1" : "1d20";
         if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
-            d20 = "{1d20, 0d0 + 10}kh1";
+            d20_roll = "{1d20, 0d0 + 10}kh1";
+        if (request.character["racial-traits"].includes("Lucky"))
+            d20_roll = d20_roll.replace(/1d20+/g, "$&r1");
         return template(request, "simple", {
             "charname": request.character.name,
             "rname": request.skill,
@@ -2853,7 +2862,11 @@ function rollSkill(request, custom_roll_dice = "") {
 }
 
 function rollAbility(request, custom_roll_dice = "") {
-    const dice_roll = genRoll("1d20", { [request.ability]: request.modifier, "CUSTOM": custom_roll_dice });
+    let d20_roll = "1d20";
+    if (request.character["racial-traits"].includes("Lucky"))
+        d20_roll = d20_roll.replace(/[0-9]*d[0-9]+/g, "$&r1");
+
+    const dice_roll = genRoll(d20_roll, { [request.ability]: request.modifier, "CUSTOM": custom_roll_dice });
     return template(request, "simple", {
         "charname": request.character.name,
         "rname": request.name,
@@ -2863,11 +2876,15 @@ function rollAbility(request, custom_roll_dice = "") {
 }
 
 function rollSavingThrow(request, custom_roll_dice = "") {
+    let d20_roll = "1d20";
+    if (request.character["racial-traits"].includes("Lucky"))
+        d20_roll = d20_roll.replace(/[0-9]*d[0-9]+/g, "$&r1");
+
     return template(request, "simple", {
         "charname": request.character.name,
         "rname": request.name + " Save",
         "mod": request.modifier + format_plus_mod(custom_roll_dice),
-        "r1": genRoll("1d20", { [request.ability]: request.modifier, "CUSTOM": custom_roll_dice })
+        "r1": genRoll(d20_roll, { [request.ability]: request.modifier, "CUSTOM": custom_roll_dice })
     });
 }
 
@@ -2889,6 +2906,10 @@ function rollInitiative(request, custom_roll_dice = "") {
             dice = "3d20kl1";
         else if (request.advantage == RollType.DOUBLE || request.advantage == RollType.THRICE || request.advantage == RollType.QUERY)
             dice = ROLL20_INITIATIVE_ADVANTAGE_QUERY;
+        
+        if (request.character["racial-traits"].includes("Lucky"))
+            dice = dice.replace(/[0-9]*d[0-9]+/g, "$&r1");
+        
         roll_properties["r1"] = genRoll(dice, { "INIT": request.initiative, "CUSTOM": custom_roll_dice, "": "&{tracker}" });
         roll_properties["normal"] = 1;
     } else {
@@ -2909,11 +2930,14 @@ function rollHitDice(request) {
 }
 
 function rollDeathSave(request, custom_roll_dice = "") {
+    let d20_roll = "1d20";
+    if (request.character["racial-traits"].includes("Lucky"))
+            d20_roll = d20_roll.replace(/[0-9]*d[0-9]+/g, "$&r1");
     return template(request, "simple", {
         "charname": request.character.name,
         "rname": "Death Saving Throw",
         "mod": format_plus_mod(custom_roll_dice),
-        "r1": genRoll("1d20", { "CUSTOM": custom_roll_dice }),
+        "r1": genRoll(d20_roll, { "CUSTOM": custom_roll_dice }),
         "normal": 1
     });
 }
@@ -2971,6 +2995,8 @@ function rollAttack(request, custom_roll_dice = "") {
         if (request["critical-limit"])
             d20_roll = "1d20cs>" + request["critical-limit"];
         properties["mod"] = request["to-hit"] + format_plus_mod(custom_roll_dice);
+        if (request.character["racial-traits"].includes("Lucky"))
+            d20_roll += "r1";
         properties["r1"] = genRoll(d20_roll, { "": request["to-hit"], "CUSTOM": custom_roll_dice });
         properties["attack"] = 1;
     }
@@ -3076,6 +3102,8 @@ function rollSpellAttack(request, custom_roll_dice) {
         if (request["critical-limit"])
             d20_roll = "1d20cs>" + request["critical-limit"];
         properties["mod"] = request["to-hit"] + format_plus_mod(custom_roll_dice);
+        if (request.character["racial-traits"].includes("Lucky"))
+            d20_roll += "r1";
         properties["r1"] = genRoll(d20_roll, { "": request["to-hit"], "CUSTOM": custom_roll_dice });
         properties["attack"] = 1;
     }
