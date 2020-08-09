@@ -49,7 +49,7 @@ function subRolls(text, overrideCB = null) {
     return result.replace(/\]\](\s*\+\s*)\[\[/g, '$1')
 }
 
-function subDescriptionRolls(request, description, {
+function parseDescription(request, description, {
     bulletList = true,
     notes = true,
     tables = true,
@@ -285,7 +285,7 @@ function rollTrait(request) {
         title: request.name,
         message: `_**Source:** ${source}_
 
-${ subDescriptionRolls(request, request.description)}
+${ parseDescription(request, request.description)}
 `
     }
 }
@@ -348,8 +348,8 @@ function rollSpellCard(request) {
     let higher = description.indexOf("At Higher Levels.");
     let higherDesc = null;
     if (higher > 0) {
-        higherDesc = subDescriptionRolls(request, description.slice(higher + "At Higher Levels. ".length));
-        description = subDescriptionRolls(request, description.slice(0, higher - 1), {bulletList: false});
+        higherDesc = parseDescription(request, description.slice(higher + "At Higher Levels. ".length));
+        description = parseDescription(request, description.slice(0, higher - 1), {bulletList: false});
     }
 
     return {
@@ -498,8 +498,7 @@ function handleMessage(request, sender, sendResponse) {
     } else if (request.action == "open-options") {
         alertFullSettings();
     } else if (request.action == "hp-update") {
-        updateHpBar(request.character.hp, request.character["max-hp"], request.character["temp-hp"])
-        console.warn("hp-update not supported in astral vtt");
+        updateHpBar(request.character.hp, request.character["max-hp"], request.character["temp-hp"]);
     } else if (request.action == "conditions-update") {
         if (settings["display-conditions"]) {
             const character_name = request.character.name;
