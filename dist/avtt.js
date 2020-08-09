@@ -1310,18 +1310,21 @@ function parseDescription(request, description, {
     return subRolls(description, replaceCB);
 }
 
-function subDamageRolls(text, isCrit = false, doubleCrit = false) {
+function subDamageRolls(text) {
     return subRolls(text, (dice, modifier) => {
         const prefix = settings["auto-roll-damage"] ? "!(" : "!!(";
-        modifier = doubleCrit ? `)${modifier}` : isCrit ? `${modifier})` : ')'
+        modifier = settings['critical-homebrew'] == CriticalRules.HOMEBREW_DOUBLE ? `)${modifier}` : `${modifier})`;
         return dice == "" ? modifier : `${prefix}${dice}${modifier}`;
     });
 }
 
 function damagesToRolls(damages, damage_types, crits, crit_types) {
     return [
-        ...damages.map((value, index) => [damage_types[index], subDamageRolls(value, false, settings['critical-homebrew'] == CriticalRules.HOMEBREW_DOUBLE)]),
-        ...(settings['critical-homebrew'] == CriticalRules.HOMEBREW_DOUBLE ? [] : crits.map((value, index) => ["Crit " + crit_types[index], subDamageRolls(value, true)]))
+        ...damages.map((value, index) => [damage_types[index], subDamageRolls(value)]),
+        ...(settings['critical-homebrew'] == CriticalRules.HOMEBREW_DOUBLE ? 
+            [] : 
+            crits.map((value, index) => ["Crit " + crit_types[index], subDamageRolls(value)])
+        )
     ];
 }
 
