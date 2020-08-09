@@ -46,6 +46,15 @@ const SRC_FILES = {
         "src/common/settings.js",
         "src/extension/popup.js"
     ],
+    avtt: [
+        "src/common/utils.js",
+        "src/common/settings.js",
+        "src/avtt/utils.js",
+        "src/avtt/content-script.js"
+    ],
+    avtt_script: [
+        "src/avtt/page-script.js"
+    ],
     roll20: [
         ...ROLL_RENDERER_DEPS,
         "src/roll20/renderer.js",

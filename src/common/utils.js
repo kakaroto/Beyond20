@@ -89,8 +89,16 @@ function isFVTT(title) {
     return title.includes("Foundry Virtual Tabletop");
 }
 
+function isAVTT(title) {
+    return title.includes("Astral TableTop");
+}
+
 function fvttTitle(title) {
     return title.replace(" • Foundry Virtual Tabletop", "");
+}
+
+function avttTitle(title) {
+    return title.replace(" | Astral TableTop", "");
 }
 
 function urlMatches(url, matching) {
