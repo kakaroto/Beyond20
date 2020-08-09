@@ -1,8 +1,8 @@
-const getCharacter = () => Object.keys(localStorage).filter(key => key.startsWith("game_characters"))[0].split('/')[2];
+const getCharacter = () => getReactData().props.pageProps.data.selectedActor;
 
-const getRoom = () => getUser().lastPlayedGame.id || Object.keys(localStorage).filter(key => key.startsWith("game_characters"))[0].split('/')[1];
+const getRoom = () => location.pathname.split('/')[2];
 
-const getUser = () => JSON.parse(document.querySelector("#BEYOND20_ASTRAL_USER").innerText).user;
+const getUser = () => JSON.parse(document.querySelector("#BEYOND20_ASTRAL_USER").innerText);
 
 const getAccessToken = () => new Promise((resolve, reject) => {
     const req = indexedDB.open("firebaseLocalStorageDb", 1);
@@ -23,4 +23,6 @@ const getAccessToken = () => new Promise((resolve, reject) => {
     req.onerror = reject;
 });
 
-const getDungeonMasters = () => JSON.parse(document.querySelector("#BEYOND20_NEXT_DATA").innerText).props.pageProps.data.game.gameMasters;
+const getReactData = () => JSON.parse(document.querySelector("#BEYOND20_NEXT_DATA").innerText);
+
+const getDungeonMasters = () => getReactData().props.pageProps.data.game.gameMasters;

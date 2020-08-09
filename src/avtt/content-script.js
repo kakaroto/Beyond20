@@ -44,7 +44,7 @@ function getName(request) {
 
 function subRolls(text, overrideCB = null) {
     let replaceCB = overrideCB;
-    console.log(text)
+    
     if (!overrideCB) {
         replaceCB = (dice, modifier) => {
             return dice == "" ? modifier : `!!(${dice}${modifier})`;

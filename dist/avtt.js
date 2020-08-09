@@ -1213,11 +1213,11 @@ options_list["discord-channels"]["createHTMLElement"] = createDiscordChannelsSet
 options_list["discord-channels"]["set"] = setDiscordChannelsSetting;
 options_list["discord-channels"]["get"] = getDiscordChannelsSetting;
 
-const getCharacter = () => Object.keys(localStorage).filter(key => key.startsWith("game_characters"))[0].split('/')[2];
+const getCharacter = () => getReactData().props.pageProps.data.selectedActor;
 
-const getRoom = () => getUser().lastPlayedGame.id || Object.keys(localStorage).filter(key => key.startsWith("game_characters"))[0].split('/')[1];
+const getRoom = () => location.pathname.split('/')[2];
 
-const getUser = () => JSON.parse(document.querySelector("#BEYOND20_ASTRAL_USER").innerText).user;
+const getUser = () => JSON.parse(document.querySelector("#BEYOND20_ASTRAL_USER").innerText);
 
 const getAccessToken = () => new Promise((resolve, reject) => {
     const req = indexedDB.open("firebaseLocalStorageDb", 1);
@@ -1238,7 +1238,9 @@ const getAccessToken = () => new Promise((resolve, reject) => {
     req.onerror = reject;
 });
 
-const getDungeonMasters = () => JSON.parse(document.querySelector("#BEYOND20_NEXT_DATA").innerText).props.pageProps.data.game.gameMasters;
+const getReactData = () => JSON.parse(document.querySelector("#BEYOND20_NEXT_DATA").innerText);
+
+const getDungeonMasters = () => getReactData().props.pageProps.data.game.gameMasters;
 async function postChatMessage({message, color, icon, title, whisper}) {
     const user = getUser().uid;
     const room = getRoom();
@@ -1285,7 +1287,7 @@ function getName(request) {
 
 function subRolls(text, overrideCB = null) {
     let replaceCB = overrideCB;
-    console.log(text)
+    
     if (!overrideCB) {
         replaceCB = (dice, modifier) => {
             return dice == "" ? modifier : `!!(${dice}${modifier})`;
