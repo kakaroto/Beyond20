@@ -124,6 +124,7 @@ function rollItem(force_display = false) {
     //console.log("Properties are : " + String(properties));
     const item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name")[0].firstChild.textContent;
     const item_type = $(".ct-item-detail__intro").text();
+    const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
     const description = descriptionToString(".ct-item-detail__description");
     if (!force_display && Object.keys(properties).includes("Damage")) {
         const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
@@ -409,7 +410,8 @@ function rollItem(force_display = false) {
         sendRollWithCharacter("item", 0, {
             "name": item_name,
             "description": description,
-            "item-type": item_type
+            "item-type": item_type,
+            "tags": item_tags
         });
     }
 }
@@ -476,11 +478,12 @@ function rollAction(paneClass) {
             character.getSetting("warlock-hexblade-curse", false))
             critical_limit = 19;
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.
-        if (action_name == "Polearm Master - Bonus Attack" || action_name.includes("Unarmed Strike") || action_name == "Tavern Brawler Strike"
+        if (action_name.includes("Polearm Master - Bonus Attack") && character.hasClassFeature("Fighting Style: Great Weapon Fighting")) {
+            damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
+        }
+        if (action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
             || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
             || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons")) {
-            if (character.hasClassFeature("Fighting Style: Great Weapon Fighting"))
-                damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
                 critical_limit = 19;
@@ -544,6 +547,12 @@ function rollAction(paneClass) {
                 const mod = parseInt(intelligence.mod) || 0;
                 damages.push(String(Math.max(mod, 1)));
                 damage_types.push("Bladesong");
+            }
+
+            if (character.hasClassFeature("Improved Divine Smite") &&
+                character.getSetting("paladin-improved-divine-smite", true)) {
+                damages.push("1d8");
+                damage_types.push("Radiant");
             }
         }
 

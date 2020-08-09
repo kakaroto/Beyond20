@@ -28,9 +28,11 @@
 	.list-group > .list-group-item > .list-content h4 {
 		margin: 0px;
 		margin-bottom: 5px;
+		margin-right: 16px;
 	}
 	.list-group > .list-group-item > .list-content p {
 		margin: 0px;
+		margin-right: 16px;
 	}
 	.list-group > .list-group-item > .list-content input[type="text"] {
 		background-color: rgb(255, 255, 255);

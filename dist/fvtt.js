@@ -420,7 +420,8 @@ const options_list = {
         "type": "link",
         "default": "https://beyond20.here-for-more.info/discord",
         "icon": "https://discordapp.com/assets/fc0b01fe10a0b8c602fb0106d8189d9b.png",
-        "icon-height": "80"
+        "icon-height": "100%",
+        "icon-width": "100%"
     },
 
     "discord-secret": {

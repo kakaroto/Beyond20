@@ -420,7 +420,8 @@ const options_list = {
         "type": "link",
         "default": "https://beyond20.here-for-more.info/discord",
         "icon": "https://discordapp.com/assets/fc0b01fe10a0b8c602fb0106d8189d9b.png",
-        "icon-height": "80"
+        "icon-height": "100%",
+        "icon-width": "100%"
     },
 
     "discord-secret": {
@@ -2106,7 +2107,7 @@ class Beyond20RollRenderer {
 
     rollItem(request, custom_roll_dice = "") {
         const source = request["item-type"].trim().toLowerCase();
-        if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools"))) && request.character.abilities.length > 0) {
+        if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools")) || request.tags.includes("Instrument")) && request.character.abilities && request.character.abilities.length > 0) {
             const proficiencies = {}
             proficiencies["None"] = 0;
             proficiencies["Half Proficient"] = Math.floor(request.character.proficiency / 2);
@@ -2930,7 +2931,7 @@ function rollDeathSave(request, custom_roll_dice = "") {
 
 function rollItem(request, custom_roll_dice = "") {
     const source = request["item-type"].trim().toLowerCase();
-    if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools"))) && request.character.abilities && request.character.abilities.length > 0) {
+    if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools")) || request.tags.includes("Instrument")) && request.character.abilities && request.character.abilities.length > 0) {
         let modifier = "?{Choose Ability";
         // [name, abbr, value, mod];
         for (let ability of request.character.abilities)
