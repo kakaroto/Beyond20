@@ -1,4 +1,4 @@
-async function postChatMessage({message, color, icon, title}) {
+async function postChatMessage({message, color, icon, title, whisper}) {
     const user = getUser().uid;
     const room = getRoom();
     const token = await getAccessToken();
@@ -8,7 +8,9 @@ async function postChatMessage({message, color, icon, title}) {
         method: "PUT",
         body: JSON.stringify({
             text: message,
-            color, icon, hidden: false, user, character, title
+            color, icon, hidden: false, user, character, title,
+            hidden: whisper,
+            ...(whisper ? {recipients: Object.fromEntries(getDungeonMasters().map(key => [key, true]))} : {})
         }),
         headers: {
             'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
@@ -34,6 +36,10 @@ async function updateHpBar(hp, maxHp, tempHp) {
             'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
         }
     });
+}
+
+function getName(request) {
+    return request.name != "" ? request.name : request.character.name;
 }
 
 function subRolls(text, overrideCB = null) {
@@ -285,7 +291,7 @@ function rollTrait(request) {
     return {
         icon: "pyramid-eye",
         color: "#50E3C2",
-        title: request.name,
+        title: getName(request),
         message: `_**Source:** ${source}_
 
 ${ parseDescription(request, request.description)}
@@ -331,7 +337,7 @@ function rollAttack(request, custom_roll_dice = "") {
     return {
         icon: "knife",
         color: "#D0021B",
-        title: request.name,
+        title: getName(request),
         message: template(rolls)
     }
 }
@@ -358,7 +364,7 @@ function rollSpellCard(request) {
     return {
         icon: "torch",
         color: "#BD10E0",
-        title: request.name,
+        title: getName(request),
         message: `${template(rolls)}
 
 ${description}
@@ -465,7 +471,7 @@ function rollSpellAttack(request, custom_roll_dice) {
     return {
         icon: "torch",
         color: "#BD10E0",
-        title: request.name,
+        title: getName(request),
         message: template(rolls) + (request.name === "Chaos Bolt" ? "\n\n### Damage Type Table\n\n" + template(["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"].map((v, index) => {
             return [index + 1, v];
         }), "d8", "Damage Type") : "")
@@ -519,7 +525,7 @@ function handleMessage(request, sender, sendResponse) {
             } else {
                 message = "I am: " + conditions.join(", ");
             }
-            postChatMessage({ message, icon: 'smiley-worry', color: '#F8E71C', title: 'Conditions'});
+            postChatMessage({ message, icon: 'smiley-worry', color: '#F8E71C', title: 'Conditions', whisper: request.whisper == WhisperType.YES });
         }
     } else if (request.action == "roll") {
         
@@ -550,18 +556,15 @@ function handleMessage(request, sender, sendResponse) {
             roll = rollSpellAttack(request, custom_roll_dice);
         } else if (request.type == "avatar") {
             roll = displayAvatar(request);
-        } else {
-            // 'custom' || anything unexpected;
-            const rname = request.name != undefined ? request.name : request.type;
-            
+        } else {            
             roll = {
                 icon: 'home-1',
                 color: '#FFFFFF',
-                title: rname,
-                message:  subRolls(request.roll)
+                title: getName(request),
+                message: subRolls(request.roll)
             }
         }
-        postChatMessage(roll);
+        postChatMessage({ ...roll, whisper: request.whisper == WhisperType.YES });
     } else if (request.action == "rendered-roll") {
         console.warn("rendered-roll not supported in astral vtt");
     } else if (request.action === "update-combat") {

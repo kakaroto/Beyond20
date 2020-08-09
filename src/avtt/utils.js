@@ -22,3 +22,5 @@ const getAccessToken = () => new Promise((resolve, reject) => {
 
     req.onerror = reject;
 });
+
+const getDungeonMasters = () => JSON.parse(document.querySelector("#BEYOND20_NEXT_DATA").innerText).props.pageProps.data.game.gameMasters;
