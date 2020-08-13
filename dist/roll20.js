@@ -1841,28 +1841,10 @@ class Beyond20RollRenderer {
 
     async postDescription(request, title, source, attributes, description, attack_rolls = [], roll_info = [], damage_rolls = [], open = false) {
         let play_sound = false;
-        let buttons = {}
 
         if (request.whisper == WhisperType.HIDE_NAMES) {
             description = null;
             title = "???";
-        }
-        // Handle the case where you don't want to auto-roll damages;
-        if (damage_rolls.length > 0 && attack_rolls.length > 0 && !this._settings["auto-roll-damage"]) {
-            const roll_damages_args = {
-                damages: damage_rolls,
-                reroll: false
-            };
-            buttons = {
-                "Roll Damages": async () => {
-                    let damages = roll_damages_args.damages;
-                    if (roll_damages_args.reroll)
-                        damages = await this.rerollDamages(damages);
-                    roll_damages_args.reroll = true;
-                    this.postDescription(request, title, source, attributes, description, [], [], damages);
-                }
-            }
-            damage_rolls = [];
         }
 
         let html = '<div class="beyond20-message">';
@@ -1969,8 +1951,8 @@ class Beyond20RollRenderer {
             html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
         }
 
-        for (let button in buttons)
-            html += '<button class="beyond20-chat-button">' + button + '</button>';
+        if (request.rollAttack && !request.rollDamage)
+            html += '<button class="beyond20-button-roll-damages">Roll Damages</button>';
 
         html += "</div>";
         const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
@@ -1981,9 +1963,9 @@ class Beyond20RollRenderer {
         });
 
         if (request.sendMessage && this._displayer.sendMessage)
-            this._displayer.sendMessage(request, title, html, buttons, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
+            this._displayer.sendMessage(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
         else
-            this._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound, attack_rolls, damage_rolls);
+            this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);
 
         if (attack_rolls.length > 0) {
             return attack_rolls.find((r) => !r.isDiscarded());
@@ -2164,7 +2146,7 @@ class Beyond20RollRenderer {
         const damage_rolls = [];
         const all_rolls = [];
         let is_critical = false;
-        if (request["to-hit"] !== undefined) {
+        if (request.rollAttack && request["to-hit"] !== undefined) {
             const custom = custom_roll_dice == "" ? "" : (" + " + custom_roll_dice);
             const to_hit_mod = " + " + request["to-hit"] + custom;
             const {advantage, rolls} = await this.getToHit(request, request.name, to_hit_mod)
@@ -2173,7 +2155,7 @@ class Beyond20RollRenderer {
             all_rolls.push(...rolls);
         }
 
-        if (request.damages !== undefined) {
+        if (request.rollDamage && request.damages !== undefined) {
             const damages = request.damages;
             const damage_types = request["damage-types"];
             const critical_damages = request["critical-damages"];
@@ -2291,10 +2273,15 @@ class Beyond20RollRenderer {
                 }
             }
 
-            if (to_hit.length > 0)
-                this.processToHitAdvantage(to_hit_advantage, to_hit)
-            const critical_limit = request["critical-limit"] || 20;
-            is_critical = this.isCriticalHitD20(to_hit, critical_limit);
+            // If rolling the attack, check for critical hit, otherwise, use argument.
+            if (request.rollAttack) {
+                if (to_hit.length > 0)
+                    this.processToHitAdvantage(to_hit_advantage, to_hit)
+                const critical_limit = request["critical-limit"] || 20;
+                is_critical = this.isCriticalHitD20(to_hit, critical_limit);
+            } else {
+                is_critical = request.rollCritical;
+            }
             if (is_critical) {
                 const critical_damage_rolls = []
                 for (let i = 0; i < (critical_damages.length); i++) {
@@ -2538,13 +2525,15 @@ if (alertify.Beyond20Roll === undefined)
 
 
 class Roll20Displayer {
-    async sendMessage(request, title, html, buttons, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
+    sendMessage(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
+        return this.postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);
+    }
+    postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
         const req = {
             action: "rendered-roll",
             request,
             title,
             html,
-            buttons,
             character,
             whisper,
             play_sound,
@@ -2559,6 +2548,7 @@ class Roll20Displayer {
         }
         handleRenderedRoll(req);
     }
+    
     displayError(message) {
         alertify.error(message);
     }
@@ -3261,26 +3251,24 @@ async function handleRenderedRoll(request) {
     for (let [key, roll] of Object.entries(request.total_damages))
         properties["Total " + key] = convertRollToText(request.whisper, roll);
 
-    const buttons = {}
-    if (request.buttons) {
-        for (let button in request.buttons) {
-            const id = `beyond20-rendered-roll-button-${Math.random()}`;
-            buttons[id] = request.buttons[button];
-            properties[button] = `[Click](!${id})`;
-        }
+    let rollDamages = null;
+    const originalRequest = request.request;
+    if (originalRequest.rollAttack && !originalRequest.rollDamages) {
+        rollDamages = `beyond20-rendered-roll-button-${Math.random()}`;
+        properties["Roll Damages"] = `[Click](!${rollDamages})`;
     }
     let message = createTable(request, title, properties);
-    if (request.request.type === "initiative" && settings["initiative-tracker"]) {
+    if (originalRequest.type === "initiative" && settings["initiative-tracker"]) {
         const initiative = request.attack_rolls.find((roll) => !roll.discarded);
         if (initiative)
             message += `  [[${initiative.total} &{tracker}]]`;
     }
     postChatMessage(message, request.character);
-    for (let button in buttons) {
+    if (rollDamages) {
         let a = null;
-        let timeout = 20;
+        let timeout = 50;
         while (timeout > 0) {
-            a = $(`a[href='!${button}']`);
+            a = $(`a[href='!${rollDamages}']`);
             // Yeay for crappy code.
             // Wait until the link appears in chat
             if (a.length > 0)
@@ -3289,9 +3277,15 @@ async function handleRenderedRoll(request) {
             await new Promise(r => setTimeout(r, 500));
             timeout--;
         }
-        if (!a) continue;
-        a.attr("href", "!");
-        a.click(ev => buttons[button]());
+        if (a) {
+            a.attr("href", "!");
+            a.click(ev => {
+                originalRequest.rollAttack = false;
+                originalRequest.rollDamage = true;
+                originalRequest.rollCritical = request.attack_rolls.some(r => !r.discarded && r["critical-success"])
+                roll_renderer.handleRollRequest(originalRequest);
+            });
+        }
     }
 }
 
@@ -3355,7 +3349,6 @@ function handleMessage(request, sender, sendResponse) {
         }
         const isOGL = $("#isOGL").val() === "1";
         if (settings["roll20-template"] === "default" || !isOGL) {
-            request.sendMessage = true;
             return roll_renderer.handleRollRequest(request);
         }
         let custom_roll_dice = "";

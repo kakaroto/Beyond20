@@ -1841,28 +1841,10 @@ class Beyond20RollRenderer {
 
     async postDescription(request, title, source, attributes, description, attack_rolls = [], roll_info = [], damage_rolls = [], open = false) {
         let play_sound = false;
-        let buttons = {}
 
         if (request.whisper == WhisperType.HIDE_NAMES) {
             description = null;
             title = "???";
-        }
-        // Handle the case where you don't want to auto-roll damages;
-        if (damage_rolls.length > 0 && attack_rolls.length > 0 && !this._settings["auto-roll-damage"]) {
-            const roll_damages_args = {
-                damages: damage_rolls,
-                reroll: false
-            };
-            buttons = {
-                "Roll Damages": async () => {
-                    let damages = roll_damages_args.damages;
-                    if (roll_damages_args.reroll)
-                        damages = await this.rerollDamages(damages);
-                    roll_damages_args.reroll = true;
-                    this.postDescription(request, title, source, attributes, description, [], [], damages);
-                }
-            }
-            damage_rolls = [];
         }
 
         let html = '<div class="beyond20-message">';
@@ -1969,8 +1951,8 @@ class Beyond20RollRenderer {
             html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
         }
 
-        for (let button in buttons)
-            html += '<button class="beyond20-chat-button">' + button + '</button>';
+        if (request.rollAttack && !request.rollDamage)
+            html += '<button class="beyond20-button-roll-damages">Roll Damages</button>';
 
         html += "</div>";
         const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
@@ -1981,9 +1963,9 @@ class Beyond20RollRenderer {
         });
 
         if (request.sendMessage && this._displayer.sendMessage)
-            this._displayer.sendMessage(request, title, html, buttons, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
+            this._displayer.sendMessage(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
         else
-            this._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound, attack_rolls, damage_rolls);
+            this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);
 
         if (attack_rolls.length > 0) {
             return attack_rolls.find((r) => !r.isDiscarded());
@@ -2164,7 +2146,7 @@ class Beyond20RollRenderer {
         const damage_rolls = [];
         const all_rolls = [];
         let is_critical = false;
-        if (request["to-hit"] !== undefined) {
+        if (request.rollAttack && request["to-hit"] !== undefined) {
             const custom = custom_roll_dice == "" ? "" : (" + " + custom_roll_dice);
             const to_hit_mod = " + " + request["to-hit"] + custom;
             const {advantage, rolls} = await this.getToHit(request, request.name, to_hit_mod)
@@ -2173,7 +2155,7 @@ class Beyond20RollRenderer {
             all_rolls.push(...rolls);
         }
 
-        if (request.damages !== undefined) {
+        if (request.rollDamage && request.damages !== undefined) {
             const damages = request.damages;
             const damage_types = request["damage-types"];
             const critical_damages = request["critical-damages"];
@@ -2291,10 +2273,15 @@ class Beyond20RollRenderer {
                 }
             }
 
-            if (to_hit.length > 0)
-                this.processToHitAdvantage(to_hit_advantage, to_hit)
-            const critical_limit = request["critical-limit"] || 20;
-            is_critical = this.isCriticalHitD20(to_hit, critical_limit);
+            // If rolling the attack, check for critical hit, otherwise, use argument.
+            if (request.rollAttack) {
+                if (to_hit.length > 0)
+                    this.processToHitAdvantage(to_hit_advantage, to_hit)
+                const critical_limit = request["critical-limit"] || 20;
+                is_critical = this.isCriticalHitD20(to_hit, critical_limit);
+            } else {
+                is_critical = request.rollCritical;
+            }
             if (is_critical) {
                 const critical_damage_rolls = []
                 for (let i = 0; i < (critical_damages.length); i++) {
@@ -2636,7 +2623,7 @@ class DNDBDisplayer {
         this._error = null;
     }
 
-    postHTML(request, title, html, buttons, character, whisper, play_sound, attack_rolls, damage_rolls) {
+    postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
         let content = "<div class='beyond20-dice-roller'>";
         if (this._error) {
             content += "<div class='beyond20-roller-error'>" +
@@ -2659,19 +2646,20 @@ class DNDBDisplayer {
             const roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
             dndbeyondDiceRoller.rollDice(request, title, roll);
         });
-        element.find(".beyond20-chat-button").on('click', (event) => {
-            const button = $(event.currentTarget).text();
-            buttons[button]();
+        element.find(".beyond20-button-roll-damages").on('click', (event) => {
+            request.rollAttack = false;
+            request.rollDamage = true;
+            request.rollCritical = attack_rolls.some(r => !r.discarded && r["critical-success"])
+            dndbeyondDiceRoller.handleRollRequest(request);
         });
     }
 
-    async sendMessage(request, title, html, buttons, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
+    async sendMessage(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
         const req = {
             action: "rendered-roll",
             request,
             title,
             html,
-            buttons,
             character,
             whisper,
             play_sound,
@@ -2730,8 +2718,10 @@ dndbeyondDiceRoller.handleRollError = (request, error) => {
     dndbeyondDiceRoller._displayer.setError(error);
     if (request.action === "rendered-roll") {
         return dndbeyondDiceRoller._displayer.postHTML(request.request, request.title,
-            request.html, request.buttons, request.character, request.whisper,
-            request.play_sound);
+            request.html, request.character, request.whisper,
+            request.play_sound, request.source, request.attributes, 
+            request.description, request.attack_rolls, request.roll_info, 
+            request.damage_rolls, request.total_damages, request.open);
     }
     request['original-whisper'] = request.whisper;
     request.whisper = WhisperType.NO;
@@ -2915,7 +2905,10 @@ function buildAttackRoll(character, attack_source, name, description, properties
     const roll_properties = {
         "name": name,
         "attack-source": attack_source,
-        "description": description
+        "description": description,
+        "rollAttack": true,
+        "rollDamage": character.getGlobalSetting("auto-roll-damage", true),
+        "rollCritical": false
     }
     if (to_hit !== null)
         roll_properties["to-hit"] = to_hit;
@@ -3037,10 +3030,6 @@ async function sendRoll(character, rollType, fallback, args) {
         req["advantage"] = RollType.NORMAL;
 
     if (character.getGlobalSetting("use-digital-dice", false) && DigitalDice.isEnabled()) {
-        if (!character.getGlobalSetting("auto-roll-damage", true))
-            mergeSettings({ "auto-roll-damage": true }, (settings) => {
-                chrome.runtime.sendMessage({ "action": "settings", "type": "general", "settings": settings })
-            });
         req.sendMessage = true;
         dndbeyondDiceRoller.handleRollRequest(req);
     } else {
@@ -3714,6 +3703,7 @@ class Monster extends CharacterBase {
                 const roll_properties = this.buildAttackRoll(action_name, description);
                 if (roll_properties) {
                     const id = addRollButton(this, () => {
+                        const roll_properties = this.buildAttackRoll(action_name, description);
                         sendRoll(this, "attack", "1d20" + roll_properties["to-hit"], roll_properties)
                     }, block, {small: true, before: true, image: true, text: action_name});
                     $("#" + id).css({ "float": "", "text-align": "", "margin-top": "15px" });

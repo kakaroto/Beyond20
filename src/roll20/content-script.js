@@ -676,26 +676,24 @@ async function handleRenderedRoll(request) {
     for (let [key, roll] of Object.entries(request.total_damages))
         properties["Total " + key] = convertRollToText(request.whisper, roll);
 
-    const buttons = {}
-    if (request.buttons) {
-        for (let button in request.buttons) {
-            const id = `beyond20-rendered-roll-button-${Math.random()}`;
-            buttons[id] = request.buttons[button];
-            properties[button] = `[Click](!${id})`;
-        }
+    let rollDamages = null;
+    const originalRequest = request.request;
+    if (originalRequest.rollAttack && !originalRequest.rollDamages) {
+        rollDamages = `beyond20-rendered-roll-button-${Math.random()}`;
+        properties["Roll Damages"] = `[Click](!${rollDamages})`;
     }
     let message = createTable(request, title, properties);
-    if (request.request.type === "initiative" && settings["initiative-tracker"]) {
+    if (originalRequest.type === "initiative" && settings["initiative-tracker"]) {
         const initiative = request.attack_rolls.find((roll) => !roll.discarded);
         if (initiative)
             message += `  [[${initiative.total} &{tracker}]]`;
     }
     postChatMessage(message, request.character);
-    for (let button in buttons) {
+    if (rollDamages) {
         let a = null;
-        let timeout = 20;
+        let timeout = 50;
         while (timeout > 0) {
-            a = $(`a[href='!${button}']`);
+            a = $(`a[href='!${rollDamages}']`);
             // Yeay for crappy code.
             // Wait until the link appears in chat
             if (a.length > 0)
@@ -704,9 +702,15 @@ async function handleRenderedRoll(request) {
             await new Promise(r => setTimeout(r, 500));
             timeout--;
         }
-        if (!a) continue;
-        a.attr("href", "!");
-        a.click(ev => buttons[button]());
+        if (a) {
+            a.attr("href", "!");
+            a.click(ev => {
+                originalRequest.rollAttack = false;
+                originalRequest.rollDamage = true;
+                originalRequest.rollCritical = request.attack_rolls.some(r => !r.discarded && r["critical-success"])
+                roll_renderer.handleRollRequest(originalRequest);
+            });
+        }
     }
 }
 
@@ -770,7 +774,6 @@ function handleMessage(request, sender, sendResponse) {
         }
         const isOGL = $("#isOGL").val() === "1";
         if (settings["roll20-template"] === "default" || !isOGL) {
-            request.sendMessage = true;
             return roll_renderer.handleRollRequest(request);
         }
         let custom_roll_dice = "";

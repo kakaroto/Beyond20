@@ -103,7 +103,10 @@ function buildAttackRoll(character, attack_source, name, description, properties
     const roll_properties = {
         "name": name,
         "attack-source": attack_source,
-        "description": description
+        "description": description,
+        "rollAttack": true,
+        "rollDamage": character.getGlobalSetting("auto-roll-damage", true),
+        "rollCritical": false
     }
     if (to_hit !== null)
         roll_properties["to-hit"] = to_hit;
@@ -225,10 +228,6 @@ async function sendRoll(character, rollType, fallback, args) {
         req["advantage"] = RollType.NORMAL;
 
     if (character.getGlobalSetting("use-digital-dice", false) && DigitalDice.isEnabled()) {
-        if (!character.getGlobalSetting("auto-roll-damage", true))
-            mergeSettings({ "auto-roll-damage": true }, (settings) => {
-                chrome.runtime.sendMessage({ "action": "settings", "type": "general", "settings": settings })
-            });
         req.sendMessage = true;
         dndbeyondDiceRoller.handleRollRequest(req);
     } else {
