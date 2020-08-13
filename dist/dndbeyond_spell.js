@@ -2901,13 +2901,15 @@ function damagesToCrits(character, damages) {
     return crits;
 }
 
-function buildAttackRoll(character, attack_source, name, description, properties, damages = [], damage_types = [], to_hit = null, brutal = 0) {
+function buildAttackRoll(character, attack_source, name, description, properties,
+                         damages = [], damage_types = [], to_hit = null,
+                         brutal = 0, force_to_hit_only = false, force_damages_only = false) {
     const roll_properties = {
         "name": name,
         "attack-source": attack_source,
         "description": description,
-        "rollAttack": true,
-        "rollDamage": character.getGlobalSetting("auto-roll-damage", true),
+        "rollAttack": !force_damages_only,
+        "rollDamage": !force_to_hit_only && character.getGlobalSetting("auto-roll-damage", true),
         "rollCritical": false
     }
     if (to_hit !== null)
