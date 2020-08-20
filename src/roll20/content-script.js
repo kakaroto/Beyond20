@@ -798,7 +798,7 @@ function handleMessage(request, sender, sendResponse) {
             roll = rollSpellCard(request);
         } else if (request.type == "spell-attack") {
             roll = rollSpellAttack(request, custom_roll_dice);
-        } else if (request.type == "raw-text") {
+        } else if (request.type == "chat-message") {
             roll = request.text;
         } else {
             // 'custom' || anything unexpected;

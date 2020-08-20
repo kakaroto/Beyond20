@@ -859,64 +859,55 @@ function displayAction(paneClass) {
 
 function handleCustomText(paneClass) {
     // Function Objective: Search for and handle block of VTT Message text...
-    //...in pane Notes or Description (Priority descending in that order.)
+    //...in pane Notes or Description
+    const outCustomRollFuncs = {
+        before: [],
+        replace:[],
+        after:  [],
+        roll: (customTextFuncList, normalRollFunction=undefined) => {
+            if (customTextFuncList.length > 0) {
+                for (let i = 0; i < customTextFuncList.length; i++) {
+                    customTextFuncList[i]();
+                }
+            } else if (normalRollFunction) {
+                normalRollFunction();
+            }
+        },
+    };
     const regexp = /```\[([^\]]*)\]\s*((\S|\s)*?)\s*```/g;
     const rollOrderTypes = ["before", "after", "replace"];//(relative to normal roll msg)
-    const defaultRollFunc = function () {};
-    let rollOrder = rollOrderTypes[0];
-    let rollFunc = defaultRollFunc;
-    
-    let pane = $("."+paneClass);
-    let elemText;
-    let matchedText;
-    
-    // Search for msg text in "Notes" section, if it exists
-    //Notes: Iterate through classes in pane: "ddbc-property-list__property" that contain the text "Notes:"
-    //  If exists: load text from "ddbc-property-list__property-content" (Last child of "ddbc-property-list__property")
-    let msgElement = pane.find(".ddbc-property-list__property:contains('Notes:')").get(0)
-    if (msgElement!=undefined && msgElement!=null) {
-        elemText = msgElement.lastChild.innerText;
-        // console.log("Notes Text: "+elemText);
-        matchedText = [...elemText.matchAll(regexp)];
-    }
-
-    // If no message was found, search for msg in the "Description" section, if it exists
-    if (matchedText==undefined || matchedText==null) {
-        msgElement = pane.find(".ct-action-detail__description").get(0);
-        console.log(msgElement);
-        if (msgElement!=undefined) {
-            elemText = msgElement.innerText;
-            // console.log("Description Text: "+elemText);    
-            matchedText = [...elemText.matchAll(regexp)]; 
-        }
-    }
-
-    //TODO possibly add the ability to have the note text add its own, separate roll button, instead of using the existing ones
+    const paneText = descriptionToString($(`.${paneClass}`).find(".ddbc-property-list__property:contains('Notes:'), .ct-action-detail__description, .ct-spell-detail__description, .ct-item-detail__description, .ddbc-action-detail__description, .ddbc-spell-detail__description, .ddbc-item-detail__description"));
+    console.log("Pane Text: " + paneText);
+    const matchedText = [...paneText.matchAll(regexp)];
     //Handle Matched Text
-    if (matchedText!=undefined && matchedText!=null) {
+    if (matchedText) {
         console.log("Matched Text:\n"+matchedText);
-        for (let i=0; i<matchedText.length; i++) {
-            let cMatchType = matchedText[i][1].toLowerCase();
-            let cMatchText = matchedText[i][2];
+        for (let i = 0; i < matchedText.length; i++) {
+            const cMatchType = matchedText[i][1].toLowerCase();
+            const cMatchText = matchedText[i][2];
             // Determine if we should prevent the default action/message from being sent to the VTT
             console.log("Note Match #"+i+" (Provided Type: "+cMatchType+"):\n"+cMatchText);
-            if (rollOrderTypes.includes(cMatchType))
+            let rollOrder = rollOrderTypes[0];
+            if (rollOrderTypes.includes(cMatchType)) {
                 rollOrder = cMatchType;
-            rollFunc = function () { 
+            } else {
+                console.warn(`Invalid CustomText roll order specified ("${cMatchType}"). Defaulting to "${rollOrder}" instead.`)
+            }
+            outCustomRollFuncs[rollOrder].push(()=>{ 
                 sendRollWithCharacter("action", 0, {
-                    "type": "raw-text",
+                    "type": "chat-message",
                     "text": cMatchText
-                })
-            };
+                });
+            });
         }
     }
     
-    return { rollOrder: rollOrder, rollFunction: rollFunc };
+    return outCustomRollFuncs;
 }
 
 function execute(paneClass) {
     console.log("Beyond20: Executing panel : " + paneClass);
-    const execRolls = function() {
+    const execRoll = function() {
         if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
             rollSkillCheck(paneClass);
         else if (paneClass == "ct-ability-pane")
@@ -935,19 +926,10 @@ function execute(paneClass) {
             displayPanel(paneClass);  
     }
 
-    //TODO allow adding additional custom roll modifiers within custom text?
-    let customText = handleCustomText(paneClass);
-    if (customText.rollOrder == "before") {
-        customText.rollFunction();
-        execRolls();
-    } else if (customText.rollOrder == "after") {
-        execRolls();
-        customText.rollFunction();
-    } else if (customText.rollOrder == "replace") {
-        customText.rollFunction();
-    } else {
-        execRolls();
-    }
+    const customTextRolls = handleCustomText(paneClass);
+    customTextRolls.roll(customTextRolls.before);
+    customTextRolls.roll(customTextRolls.replace, execRoll);
+    customTextRolls.roll(customTextRolls.after);
 }
 
 function displayPanel(paneClass) {
