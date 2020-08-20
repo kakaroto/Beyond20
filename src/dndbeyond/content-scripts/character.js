@@ -117,13 +117,14 @@ function rollHitDie(multiclass, index) {
     });
 }
 
-function rollItem(force_display = false) {
+function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false) {
     const prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
     const properties = propertyListToDict(prop_list);
     properties["Properties"] = properties["Properties"] || "";
     //console.log("Properties are : " + String(properties));
     const item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name")[0].firstChild.textContent;
     const item_type = $(".ct-item-detail__intro").text();
+    const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
     const description = descriptionToString(".ct-item-detail__description");
     if (!force_display && Object.keys(properties).includes("Damage")) {
         const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
@@ -392,7 +393,9 @@ function rollItem(force_display = false) {
             damages,
             damage_types,
             to_hit,
-            brutal);
+            brutal,
+            force_to_hit_only,
+            force_damages_only);
         roll_properties["item-type"] = item_type;
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
@@ -409,12 +412,13 @@ function rollItem(force_display = false) {
         sendRollWithCharacter("item", 0, {
             "name": item_name,
             "description": description,
-            "item-type": item_type
+            "item-type": item_type,
+            "tags": item_tags
         });
     }
 }
 
-function rollAction(paneClass) {
+function rollAction(paneClass, force_to_hit_only = false, force_damages_only = false) {
     const properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property,." + paneClass + " .ddbc-property-list .ddbc-property-list__property"));
     //console.log("Properties are : " + String(properties));
     const action_name = $(".ct-sidebar__heading").text();
@@ -476,11 +480,12 @@ function rollAction(paneClass) {
             character.getSetting("warlock-hexblade-curse", false))
             critical_limit = 19;
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.
-        if (action_name == "Polearm Master - Bonus Attack" || action_name.includes("Unarmed Strike") || action_name == "Tavern Brawler Strike"
+        if (action_name.includes("Polearm Master - Bonus Attack") && character.hasClassFeature("Fighting Style: Great Weapon Fighting")) {
+            damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
+        }
+        if (action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
             || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
             || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons")) {
-            if (character.hasClassFeature("Fighting Style: Great Weapon Fighting"))
-                damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
                 critical_limit = 19;
@@ -545,6 +550,12 @@ function rollAction(paneClass) {
                 damages.push(String(Math.max(mod, 1)));
                 damage_types.push("Bladesong");
             }
+
+            if (character.hasClassFeature("Improved Divine Smite") &&
+                character.getSetting("paladin-improved-divine-smite", true)) {
+                damages.push("1d8");
+                damage_types.push("Radiant");
+            }
         }
 
         //Protector Aasimar: Radiant Soul Damage
@@ -562,7 +573,9 @@ function rollAction(paneClass) {
             damages,
             damage_types,
             to_hit,
-            brutal);
+            brutal,
+            force_to_hit_only,
+            force_damages_only);
 
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
@@ -583,7 +596,7 @@ function rollAction(paneClass) {
     }
 }
 
-function rollSpell(force_display = false) {
+function rollSpell(force_display = false, force_to_hit_only = false, force_damages_only = false) {
     const properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property,.ct-spell-pane .ddbc-property-list .ddbc-property-list__property"));
     //console.log("Properties are : " + String(properties));
     const spell_source = $(".ct-sidebar__header-parent").text();
@@ -767,7 +780,10 @@ function rollSpell(force_display = false) {
             properties,
             damages,
             damage_types,
-            to_hit);
+            to_hit,
+            0,
+            force_to_hit_only,
+            force_damages_only);
 
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
@@ -905,8 +921,8 @@ function handleCustomText(paneClass) {
     return outCustomRollFuncs;
 }
 
-function execute(paneClass) {
-    console.log("Beyond20: Executing panel : " + paneClass);
+function execute(paneClass, force_to_hit_only = false, force_damages_only = false) {
+    console.log("Beyond20: Executing panel : " + paneClass, force_to_hit_only, force_damages_only);
     const execRoll = function() {
         if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
             rollSkillCheck(paneClass);
@@ -917,13 +933,13 @@ function execute(paneClass) {
         else if (paneClass == "ct-initiative-pane")
             rollInitiative();
         else if (paneClass == "ct-item-pane")
-            rollItem();
+            rollItem(false, force_to_hit_only, force_damages_only);
         else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
-            rollAction(paneClass);
+            rollAction(paneClass, force_to_hit_only, force_damages_only);
         else if (paneClass == "ct-spell-pane")
-            rollSpell();
+            rollSpell(false, force_to_hit_only, force_damages_only);
         else
-            displayPanel(paneClass);  
+            displayPanel(paneClass);
     }
 
     const customTextRolls = handleCustomText(paneClass);
@@ -1429,7 +1445,7 @@ function activateQuickRolls() {
         });
     }
 
-    for (let action of [...actions.toArray(), ...actions_to_hit.toArray(), ...actions_damage.toArray()]) {
+    const activateQRAction = (action, force_to_hit_only, force_damages_only) => {
         action = $(action);
         activateTooltipListeners(action, action.hasClass('integrated-dice__container') ? 'up' : 'right', beyond20_tooltip, (el) => {
             const name = el.closest(".ct-combat-attack,.ddbc-combat-attack")
@@ -1446,13 +1462,23 @@ function activateQuickRolls() {
             const pane_name = pane.find(".ct-sidebar__heading").text();
 
             if (name == pane_name)
-                execute(paneClass);
+                execute(paneClass, force_to_hit_only, force_damages_only);
             else
                 quick_roll = true;
         });
     }
 
-    for (let spell of [...spells.toArray(), ...spells_to_hit.toArray(), ...spells_damage.toArray()]) {
+    for (let action of actions.toArray()) {
+        activateQRAction(action, false, false);
+    }
+    for (let action of actions_to_hit.toArray()) {
+        activateQRAction(action, true, false);
+    }
+    for (let action of actions_damage.toArray()) {
+        activateQRAction(action, false, true);
+    }
+
+    const activateQRSpell = (spell, force_to_hit_only, force_damages_only) => {
         spell = $(spell);
         activateTooltipListeners(spell, spell.hasClass('integrated-dice__container') ? 'up' : 'right', beyond20_tooltip, (el) => {
             const name = el.closest(".ct-spells-spell,.ddbc-spells-spell")
@@ -1461,10 +1487,19 @@ function activateQuickRolls() {
             // If same item, clicking will be a noop && it won't modify the document;
             const pane_name = $(".ct-spell-pane .ct-sidebar__heading .ct-spell-name,.ct-spell-pane .ct-sidebar__heading .ddbc-spell-name").text();
             if (name == pane_name)
-                execute("ct-spell-pane");
+                execute("ct-spell-pane", force_to_hit_only, force_damages_only);
             else
                 quick_roll = true;
         });
+    }
+    for (let spell of spells.toArray()) {
+        activateQRSpell(spell, false, false);
+    }
+    for (let spell of spells_to_hit.toArray()) {
+        activateQRSpell(spell, true, false);
+    }
+    for (let spell of spells_damage.toArray()) {
+        activateQRSpell(spell, false, true);
     }
 }
 
