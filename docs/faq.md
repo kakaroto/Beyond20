@@ -4,6 +4,7 @@ First of all, make sure you have the latest version of Beyond20 since some issue
 
 You can also check out the [changelog](Changelog) for recent fixes or additions to the extension.
 
+* [How can I use Beyond20 with Foundry VTT?](#how-can-i-use-beyond20-with-foundry-vtt)
 * [Can Beyond20 do '\<insert specific feature\>'?](#can-beyond20-do-insert-specific-feature)
 * [All I see in Roll20 is an empty message](#all-i-see-in-roll20-is-an-empty-message)
 * [My HP from D&D Beyond doesn't synchronize to my tokens](#my-hp-from-dd-beyond-doesnt-synchronize-to-my-tokens)
@@ -18,6 +19,18 @@ You can also check out the [changelog](Changelog) for recent fixes or additions 
 * [Why doesn't Beyond20 allow me to make a melee attack with my magic staffs?](#why-doesnt-beyond20-allow-me-to-make-a-melee-attack-with-my-magic-staffs)
 
 ---
+
+
+### How can I use Beyond20 with Foundry VTT?
+
+You need to have your Foundry game open in the same browser as your D&D Beyond page. This means that you cannot send your rolls from D&D Beyond to the native desktop application, as that is not your Chrome or Firefox browser.
+If you use the Foundry desktop application, we suggest you simply open it and leave it in the background without logging into it, then opening the invitation link (http://localhost:30000 by default) in your browser instead.
+
+If you are using Chrome, due to restrictions imposed on extensions in the Chrome Store, you will need to manually *activate* Beyond20 for your Foundry VTT browser tab. You can do so by clicking on the Beyond20 icon in the browser's address bar from within the Foundry tab. You will need to do this everytime you load or reload the VTT page.
+We recommend installing and enabling the Beyond20 companion module within your Foundry world as it will remind you to do so, and will allow other users who do not have Beyond20 installed to see your rolls properly displayed.
+
+If you are using Firefox or if you use [The Forge](https://forge-vtt.com) for your Foundry game hosting, then activating Beyond20 in the Foundry tab is not required.
+
 
 ### Can Beyond20 do '\<insert specific feature\>'?
 
