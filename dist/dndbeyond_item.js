@@ -3280,7 +3280,7 @@ function addDisplayButton() {
     const item_name = $(".page-title").text().trim();
     const item_type = descriptionToString(".item-details .item-info .details, .details-container-equipment .details-container-content-description > div > .details-container-content-description-text");
     const description = descriptionToString(".item-details .more-info-content, .details-container-equipment .marginBottom20 + .details-container-content-description-text");
-    const item_tags = $(".details-container-content-footer .tags").find(".tag").toArray().map(elem => elem.textContent);
+    const item_tags = $(".details-container-content-footer .tags .tag").toArray().map(elem => elem.textContent);
     $(".page-heading__content").after(button);
 
     $(".ct-beyond20-roll").css({
