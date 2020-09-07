@@ -1,13 +1,18 @@
 class DigitalDice {
-    constructor(name, dice) {
+    constructor(name, rolls) {
         this._name = name;
-        this._dice = dice;
+        this._rolls = rolls;
+        this._dice = [];
+        for (let roll of rolls) {
+            this._dice.push(...roll.dice);
+        }
         for (let dice of this._dice) {
             dice.rerollDice = async function (amount) {
-                const fake = new this.constructor(amount, this.faces, "");
-                const digital = new DigitalDice(name, [fake])
+                const fakeDice = new this.constructor(amount, this.faces, "");
+                const fakeRoll = new this._rolls[0].constructor(fakeDice.formula);
+                const digital = new DigitalDice(name, [fakeRoll])
                 await digital.roll();
-                this._rolls.push(...fake._rolls);
+                this._rolls.push(...fakeRoll.dice[0]._rolls);
             }
         }
         this._notificationIds = this._getNotificationIds();
@@ -40,7 +45,7 @@ class DigitalDice {
             diceRolled += this.rollDice(dice.amount, `d${dice.faces}`);
         if (diceRolled > 0) {
             this._makeRoll();
-            return this.result()
+            return this.result();
         }
     }
     _getNotificationIds() {
@@ -54,9 +59,11 @@ class DigitalDice {
         if (!myId) return false;
 
         const result = $(`#${myId} .dice_result`);
+        this._myId = myId;
+        this._myResult = result;
+        
         result.find(".dice_result__info__title .dice_result__info__rolldetail").text("Beyond 20: ")
         result.find(".dice_result__info__title .dice_result__rolltype").text(this._name);
-        result.find(".dice_result__total").text("").append(E.img({ src: chrome.extension.getURL("images/icons/icon32.png") }));
         const breakdown = result.find(".dice_result__info__results .dice_result__info__breakdown").text();
         const dicenotation = result.find(".dice_result__info__dicenotation").text();
 
@@ -76,7 +83,6 @@ class DigitalDice {
                 }
             }
         }
-
         this._notificationIds = notifications;
         return true;
     }
@@ -85,5 +91,10 @@ class DigitalDice {
             await new Promise(r => setTimeout(r, 500));
         for (let dice of this._dice)
             await dice.handleModifiers();
+        this._rolls.forEach(roll => roll.calculateTotal());
+        
+        this._myResult.find(".dice_result__total-result").text(this._rolls[0].total);
+        this._myResult.find(".dice_result__info__results .dice_result__info__breakdown").text(this._rolls[0].formula)
+        this._myResult.find(".dice_result__info__dicenotation").text(`${this._rolls.length} total roll${this._rolls.length > 1 ? 's' : ''}`).prepend(E.img({ src: chrome.extension.getURL("images/icons/icon32.png") }))
     }
 }

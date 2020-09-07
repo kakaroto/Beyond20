@@ -76,13 +76,8 @@ class DNDBRoller {
     }
     async resolveRolls(name, rolls) {
         if (dndbeyondDiceRoller._settings['use-digital-dice'] && DigitalDice.isEnabled()) {
-            const dice = [];
-            for (let roll of rolls) {
-                dice.push(...roll.dice);
-            }
-            const digital = new DigitalDice(name, dice);
-            await digital.roll();
-            rolls.forEach(roll => roll.calculateTotal());
+            const digital = new DigitalDice(name, rolls);
+            return digital.roll();
         } else {
             return Promise.all(rolls.map(roll => roll.roll()))
         }
