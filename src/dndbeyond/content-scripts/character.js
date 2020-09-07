@@ -1262,6 +1262,7 @@ function deactivateTooltipListeners(el) {
 
 var quickRollHideId = 0;
 function activateTooltipListeners(el, direction, tooltip, callback) {
+    const site = $("#site");
     el.on('mouseenter', (e) => {
         if (quickRollHideId)
             clearTimeout(quickRollHideId);
@@ -1269,6 +1270,9 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
 
         const target = $(e.currentTarget)
         const position = target.offset()
+        const siteOffset = site.offset(); // Banner on top of the site can shift everything down
+        position.left -= siteOffset.left;
+        position.top -= siteOffset.top;
         if (direction === "up") {
             position.left += target.outerWidth() / 2 - tooltip.outerWidth() / 2;
             position.top -= tooltip.outerHeight() + 5;
