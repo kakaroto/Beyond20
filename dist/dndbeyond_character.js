@@ -335,7 +335,7 @@ const options_list = {
         "description": "In the \"Notes\" or \"Description\" section of any item, action, or spell on the D&D Beyond Character Sheet, "
             + "you may add your own custom text to be sent to the VTT as a message when you use that element's roll action."
             + "\nTo do this, format the text you wish to send as follows:"
-            + "\n```[msg-type] Put text you wish to send HERE```"
+            + "\n[[msg-type]] Put text you wish to send HERE[[/msg-type]]"
             + "\nReplace \"msg-type\" with one of the following: \"before\", \"after\", or \"replace\" depending on how you want to affect the message or action that would normally be sent to the VTT.",
         "type": "info"
     },
@@ -779,7 +779,7 @@ function createHTMLOptionEx(name, option, short = false) {
         );
     } else if (option.type == "info") {
         e = E.li({ class: "list-group-item beyond20-option beyond20-option-info" },
-            E.label({ class: "list-content", for: name },
+            E.label({ class: "list-content", for: name, style: "background-color: LightCyan;"},
                 E.h4({}, title),
                 ...description_p
             )
@@ -1995,6 +1995,17 @@ class Beyond20RollRenderer {
         }
     }
 
+    postMessage(request, title, message) {
+        const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
+        if (request.whisper == WhisperType.HIDE_NAMES)
+            title = "???";
+        if (request.sendMessage && this._displayer.sendMessage)
+            this._displayer.sendMessage(request, title, message, character, request.whisper, false, '', {}, '', [], [], [], [], true);
+        else
+            this._displayer.postHTML(request, title, message, character, request.whisper, false, '', {}, '', [], [], [], [], true);
+
+    }
+
     createRoll(dice, data) {
         const new_data = {}
         const parts = [dice];
@@ -2465,6 +2476,8 @@ class Beyond20RollRenderer {
             return this.rollSpellCard(request);
         } else if (request.type == "spell-attack") {
             return this.rollSpellAttack(request, custom_roll_dice);
+        } else if (request.type == "chat-message") {
+            return this.postMessage(request, request.name, request.message);
         } else {
             // 'custom' || anything unexpected;
             const mod = request.modifier || request.roll;
@@ -5191,56 +5204,44 @@ function displayAction(paneClass) {
 }
 
 function handleCustomText(paneClass) {
-    // Function Objective: Search for and handle block of VTT Message text...
-    //...in pane Notes or Description
-    const outCustomRollFuncs = {
+    const customRolls = {
         before: [],
         replace:[],
-        after:  [],
-        roll: (customTextFuncList, normalRollFunction=undefined) => {
-            if (customTextFuncList.length > 0) {
-                for (let i = 0; i < customTextFuncList.length; i++) {
-                    customTextFuncList[i]();
-                }
-            } else if (normalRollFunction) {
-                normalRollFunction();
-            }
-        },
+        after:  []
     };
-    const regexp = /```\[([^\]]*)\]\s*((\S|\s)*?)\s*```/g;
-    const rollOrderTypes = ["before", "after", "replace"];//(relative to normal roll msg)
-    const paneText = descriptionToString($(`.${paneClass}`).find(".ddbc-property-list__property:contains('Notes:'), .ct-action-detail__description, .ct-spell-detail__description, .ct-item-detail__description, .ddbc-action-detail__description, .ddbc-spell-detail__description, .ddbc-item-detail__description"));
-    console.log("Pane Text: " + paneText);
-    const matchedText = [...paneText.matchAll(regexp)];
-    //Handle Matched Text
-    if (matchedText) {
-        console.log("Matched Text:\n"+matchedText);
-        for (let i = 0; i < matchedText.length; i++) {
-            const cMatchType = matchedText[i][1].toLowerCase();
-            const cMatchText = matchedText[i][2];
-            // Determine if we should prevent the default action/message from being sent to the VTT
-            console.log("Note Match #"+i+" (Provided Type: "+cMatchType+"):\n"+cMatchText);
-            let rollOrder = rollOrderTypes[0];
-            if (rollOrderTypes.includes(cMatchType)) {
-                rollOrder = cMatchType;
-            } else {
-                console.warn(`Invalid CustomText roll order specified ("${cMatchType}"). Defaulting to "${rollOrder}" instead.`)
-            }
-            outCustomRollFuncs[rollOrder].push(()=>{ 
-                sendRollWithCharacter("action", 0, {
-                    "type": "chat-message",
-                    "text": cMatchText
-                });
-            });
-        }
+    // Relative to normal roll msg
+    const rollOrderTypes = ["before", "after", "replace"];
+    const pane = $(`.${paneClass}`);
+    const notes = descriptionToString(pane.find(".ddbc-property-list__property:contains('Notes:')"));
+    const description = descriptionToString(pane.find(".ct-action-detail__description, .ct-spell-detail__description, .ct-item-detail__description, .ddbc-action-detail__description, .ddbc-spell-detail__description, .ddbc-item-detail__description"));
+
+    // Look for all the roll orders
+    for (const rollOrder of rollOrderTypes) {
+        // Use global, multiline and dotall flags
+        const regexp = new RegExp(`\\[\\[${rollOrder}\\]\\]\\s*(.+?)\\s*\\[\\[/${rollOrder}\\]\\]`, "gms");
+        const matches = [...notes.matchAll(regexp), ...description.matchAll(regexp)];
+        customRolls[rollOrder] = matches.map(([match, content]) => content)
     }
     
-    return outCustomRollFuncs;
+    return customRolls;
 }
 
 function execute(paneClass, force_to_hit_only = false, force_damages_only = false) {
     console.log("Beyond20: Executing panel : " + paneClass, force_to_hit_only, force_damages_only);
-    const execRoll = function() {
+    const rollCustomText = (customTextList) => {
+        for (const customText of customTextList) {
+            sendRollWithCharacter("chat-message", 0, {
+                name: "",
+                message: customText
+            });
+        }
+     };
+     
+    const customTextRolls = handleCustomText(paneClass);
+    rollCustomText(customTextRolls.before);
+    if (customTextRolls.replace.length > 0) {
+        rollCustomText(customTextRolls.replace);
+    } else {
         if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
             rollSkillCheck(paneClass);
         else if (paneClass == "ct-ability-pane")
@@ -5258,11 +5259,7 @@ function execute(paneClass, force_to_hit_only = false, force_damages_only = fals
         else
             displayPanel(paneClass);
     }
-
-    const customTextRolls = handleCustomText(paneClass);
-    customTextRolls.roll(customTextRolls.before);
-    customTextRolls.roll(customTextRolls.replace, execRoll);
-    customTextRolls.roll(customTextRolls.after);
+    rollCustomText(customTextRolls.after);
 }
 
 function displayPanel(paneClass) {

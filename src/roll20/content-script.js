@@ -673,7 +673,7 @@ async function handleRoll(request) {
     } else if (request.type == "spell-attack") {
         roll = rollSpellAttack(request, custom_roll_dice);
     } else if (request.type == "chat-message") {
-        roll = request.text;
+        roll = request.message;
     } else {
         // 'custom' || anything unexpected;
         const mod = request.modifier != undefined ? request.modifier : request.roll;
