@@ -936,12 +936,12 @@ function handleMessage(request, sender, sendResponse) {
 
             // We can't use window.is_gm because it's  !available to the content script;
             const is_gm = $("#textchat .message.system").text().includes("The player link for this campaign is");
-            const em_command = is_gm ? "/emas " : "/em ";
+            const em_command = is_gm ? "/emas \"" + character_name + "\" " : "/em ";
             let message = "";
             if (conditions.length == 0) {
-                message = em_command + character_name + " has no active condition";
+                message = em_command + "has no active conditions";
             } else {
-                message = em_command + character_name + " is : " + conditions.join(", ");
+                message = em_command + "is: " + conditions.join(", ");
             }
             postChatMessage(message, character_name);
         }
