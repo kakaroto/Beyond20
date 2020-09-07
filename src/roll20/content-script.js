@@ -934,9 +934,17 @@ function handleMessage(request, sender, sendResponse) {
                 conditions = request.character.conditions.concat([`Exhausted (Level ${request.character.exhaustion})`]);
             }
 
-            // We can't use window.is_gm because it's  !available to the content script;
+            // We can't use window.is_gm because it's not available to the content script
             const is_gm = $("#textchat .message.system").text().includes("The player link for this campaign is");
-            const em_command = is_gm ? "/emas \"" + character_name + "\" " : "/em ";
+            let em_command = `/emas "${character_name}" `;
+            if (!is_gm) {
+                // Add character name only if we can't speak as them
+                const availableAs = Array.from(speakingas.children).map(c => c.text.toLowerCase())
+                if (availableAs.includes(character_name.toLowerCase()))
+                    em_command = "/em ";
+                else
+                    em_command = `/em | ${character_name} `;
+            }
             let message = "";
             if (conditions.length == 0) {
                 message = em_command + "has no active conditions";
