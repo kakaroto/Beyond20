@@ -873,24 +873,79 @@ function displayAction(paneClass) {
     });
 }
 
+function handleCustomText(paneClass) {
+    // Function Objective: Search for and handle block of VTT Message text...
+    //...in pane Notes or Description
+    const outCustomRollFuncs = {
+        before: [],
+        replace:[],
+        after:  [],
+        roll: (customTextFuncList, normalRollFunction=undefined) => {
+            if (customTextFuncList.length > 0) {
+                for (let i = 0; i < customTextFuncList.length; i++) {
+                    customTextFuncList[i]();
+                }
+            } else if (normalRollFunction) {
+                normalRollFunction();
+            }
+        },
+    };
+    const regexp = /```\[([^\]]*)\]\s*((\S|\s)*?)\s*```/g;
+    const rollOrderTypes = ["before", "after", "replace"];//(relative to normal roll msg)
+    const paneText = descriptionToString($(`.${paneClass}`).find(".ddbc-property-list__property:contains('Notes:'), .ct-action-detail__description, .ct-spell-detail__description, .ct-item-detail__description, .ddbc-action-detail__description, .ddbc-spell-detail__description, .ddbc-item-detail__description"));
+    console.log("Pane Text: " + paneText);
+    const matchedText = [...paneText.matchAll(regexp)];
+    //Handle Matched Text
+    if (matchedText) {
+        console.log("Matched Text:\n"+matchedText);
+        for (let i = 0; i < matchedText.length; i++) {
+            const cMatchType = matchedText[i][1].toLowerCase();
+            const cMatchText = matchedText[i][2];
+            // Determine if we should prevent the default action/message from being sent to the VTT
+            console.log("Note Match #"+i+" (Provided Type: "+cMatchType+"):\n"+cMatchText);
+            let rollOrder = rollOrderTypes[0];
+            if (rollOrderTypes.includes(cMatchType)) {
+                rollOrder = cMatchType;
+            } else {
+                console.warn(`Invalid CustomText roll order specified ("${cMatchType}"). Defaulting to "${rollOrder}" instead.`)
+            }
+            outCustomRollFuncs[rollOrder].push(()=>{ 
+                sendRollWithCharacter("action", 0, {
+                    "type": "chat-message",
+                    "text": cMatchText
+                });
+            });
+        }
+    }
+    
+    return outCustomRollFuncs;
+}
+
 function execute(paneClass, force_to_hit_only = false, force_damages_only = false) {
     console.log("Beyond20: Executing panel : " + paneClass, force_to_hit_only, force_damages_only);
-    if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
-        rollSkillCheck(paneClass);
-    else if (paneClass == "ct-ability-pane")
-        rollAbilityCheck();
-    else if (paneClass == "ct-ability-saving-throws-pane")
-        rollSavingThrow();
-    else if (paneClass == "ct-initiative-pane")
-        rollInitiative();
-    else if (paneClass == "ct-item-pane")
-        rollItem(false, force_to_hit_only, force_damages_only);
-    else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
-        rollAction(paneClass, force_to_hit_only, force_damages_only);
-    else if (paneClass == "ct-spell-pane")
-        rollSpell(false, force_to_hit_only, force_damages_only);
-    else
-        displayPanel(paneClass);
+    const execRoll = function() {
+        if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
+            rollSkillCheck(paneClass);
+        else if (paneClass == "ct-ability-pane")
+            rollAbilityCheck();
+        else if (paneClass == "ct-ability-saving-throws-pane")
+            rollSavingThrow();
+        else if (paneClass == "ct-initiative-pane")
+            rollInitiative();
+        else if (paneClass == "ct-item-pane")
+            rollItem(false, force_to_hit_only, force_damages_only);
+        else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
+            rollAction(paneClass, force_to_hit_only, force_damages_only);
+        else if (paneClass == "ct-spell-pane")
+            rollSpell(false, force_to_hit_only, force_damages_only);
+        else
+            displayPanel(paneClass);
+    }
+
+    const customTextRolls = handleCustomText(paneClass);
+    customTextRolls.roll(customTextRolls.before);
+    customTextRolls.roll(customTextRolls.replace, execRoll);
+    customTextRolls.roll(customTextRolls.after);
 }
 
 function displayPanel(paneClass) {

@@ -177,6 +177,16 @@ const options_list = {
         "choices": { "roll20": "D&D 5E By Roll20", "default": "Beyond20 Roll Renderer" }
     },
 
+    "notes-to-vtt": {
+        "title": "Send custom text to the VTT (currently Roll20 only)",
+        "description": "In the \"Notes\" or \"Description\" section of any item, action, or spell on the D&D Beyond Character Sheet, "
+            + "you may add your own custom text to be sent to the VTT as a message when you use that element's roll action."
+            + "\nTo do this, format the text you wish to send as follows:"
+            + "\n```[msg-type] Put text you wish to send HERE```"
+            + "\nReplace \"msg-type\" with one of the following: \"before\", \"after\", or \"replace\" depending on how you want to affect the message or action that would normally be sent to the VTT.",
+        "type": "info"
+    },
+
     "subst-roll20": {
         "type": "migrate",
         "to": "subst-vtt",
@@ -612,6 +622,13 @@ function createHTMLOptionEx(name, option, short = false) {
                         })
                     )
                 )
+            )
+        );
+    } else if (option.type == "info") {
+        e = E.li({ class: "list-group-item beyond20-option beyond20-option-info" },
+            E.label({ class: "list-content", for: name },
+                E.h4({}, title),
+                ...description_p
             )
         );
     } else if (option.type == "special") {
