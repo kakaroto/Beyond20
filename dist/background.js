@@ -597,6 +597,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "barbarian-divine-fury": {
+        "title": "Barbarian: Divine Fury",
+        "description": "Add Divine Fury damage to your attack (when raging)",
+        "type": "bool",
+        "default": true
+    },
     "bloodhunter-crimson-rite": {
         "title": "Bloodhunter: Crimson Rite",
         "description": "Add Crimson Rite damage",

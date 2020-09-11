@@ -597,6 +597,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "barbarian-divine-fury": {
+        "title": "Barbarian: Divine Fury",
+        "description": "Add Divine Fury damage to your attack (when raging)",
+        "type": "bool",
+        "default": true
+    },
     "bloodhunter-crimson-rite": {
         "title": "Bloodhunter: Crimson Rite",
         "description": "Add Crimson Rite damage",
@@ -1412,6 +1418,10 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Rage")) {
             e = createHTMLOption("barbarian-rage", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Divine Fury")) {
+            e = createHTMLOption("barbarian-divine-fury", false, character_settings);
             options.append(e);
         }
         if (response["class-features"].includes("Crimson Rite")) {
