@@ -2850,7 +2850,7 @@ function updateHP(name, current, total, temp) {
     console.log(`Updating HP for ${name} : (${current} + ${temp})/${total}`);
     name = name.toLowerCase().trim();
 
-    const tokens = canvas.tokens.placeables.filter((t) => t.name.toLowerCase().trim() == name);
+    const tokens = canvas.tokens.placeables.filter((t) => t.owner && t.name.toLowerCase().trim() == name);
 
     const dnd5e_data = { "data.attributes.hp.value": current, "data.attributes.hp.temp": temp, "data.attributes.hp.max": total }
     const sws_data = { "data.health.value": current + temp, "data.health.max": total }
