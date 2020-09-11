@@ -3655,15 +3655,18 @@ class Monster extends CharacterBase {
         const damages = [];
         const damage_types = [];
         for (let dmg of damage_matches) {
-            // Skip any damage that starts wit "DC" because of "DC 13 saving throw || take damage" which could match.;
-            // A lookbehind would be a simple solution here but rapydscript doesn't let me.;
-            // Also skip "target reduced to 0 hit points by this damage" from demon-grinder vehicle.;
+            // Skip any damage that starts wit "DC" because of "DC 13 saving throw or take damage" which could match.
+            // A lookbehind would be a simple solution here but rapydscript doesn't let me.
+            // Also skip "target reduced to 0 hit points by this damage" from demon-grinder vehicle.
             if (dmg[1] == "DC " || dmg[4] == "hit points by this") {
                 continue;
             }
             const damage = dmg[3] || dmg[2];
-            damages.push(damage.replace("plus", "+"));
-            damage_types.push(dmg[4]);
+            // Make sure we did match a damage ('  some damage' would match the regexp, but there is no value)
+            if (damage) {
+                damages.push(damage.replace("plus", "+"));
+                damage_types.push(dmg[4]);
+            }
         }
         let save = null;
         const m = hit.match(/DC ([0-9]+) (.*?) saving throw/)
