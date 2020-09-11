@@ -2825,7 +2825,8 @@ function template(request, name, properties) {
     for (let key in properties)
         result += " {{" + key + "=" + properties[key] + "}}";
 
-    if (request.advantage !== undefined && properties.normal === undefined && ["simple", "atk", "atkdmg"].includes(name))
+    if (request.advantage !== undefined && properties.normal === undefined && properties.always === undefined
+        && ["simple", "atk", "atkdmg"].includes(name))
         result += advantageString(request.advantage, properties["r1"]);
 
     // Super advantage/disadvantage is not supported
@@ -2929,18 +2930,33 @@ function rollInitiative(request, custom_roll_dice = "") {
     }
     if (settings["initiative-tracker"]) {
         let dice = "1d20";
-        if (request.advantage == RollType.ADVANTAGE)
+        let r2 = false;
+        let indicator = "";
+        if (request.advantage == RollType.DOUBLE || request.advantage == RollType.THRICE) {
+            dice = "1d20";
+            r2 = true;
+        } else if (request.advantage == RollType.ADVANTAGE) {
             dice = "2d20kh1";
-        else if (request.advantage == RollType.SUPER_ADVANTAGE)
+            indicator = " (Advantage)";
+        } else if (request.advantage == RollType.SUPER_ADVANTAGE) {
             dice = "3d20kh1";
-        else if (request.advantage == RollType.DISADVANTAGE)
+            indicator = " (S Advantage)";
+        } else if (request.advantage == RollType.DISADVANTAGE) {
             dice = "2d20kl1";
-        else if (request.advantage == RollType.SUPER_DISADVANTAGE)
+            indicator = " (Disadvantage)";
+        } else if (request.advantage == RollType.SUPER_DISADVANTAGE) {
             dice = "3d20kl1";
-        else if (request.advantage == RollType.DOUBLE || request.advantage == RollType.THRICE || request.advantage == RollType.QUERY)
+            indicator = " (S Disadvantage)";
+        } else if (request.advantage == RollType.QUERY) {
             dice = ROLL20_INITIATIVE_ADVANTAGE_QUERY;
-        roll_properties["r1"] = genRoll(dice, { "INIT": request.initiative, "CUSTOM": custom_roll_dice, "": "&{tracker}" });
-        roll_properties["normal"] = 1;
+        }
+        roll_properties["r1"] = genRoll(dice, { "INIT": request.initiative, "CUSTOM": custom_roll_dice, "": "&{tracker}"}) + indicator;
+        if (r2) {
+            roll_properties["r2"] = genRoll(dice, { "INIT": request.initiative, "CUSTOM": custom_roll_dice});
+            roll_properties["always"] = 1;
+        } else {
+            roll_properties["normal"] = 1;
+        }
     } else {
         roll_properties["r1"] = genRoll("1d20", { "INIT": request.initiative, "CUSTOM": custom_roll_dice });
     }
