@@ -2591,9 +2591,11 @@ class DigitalDice {
             this._dice.push(...roll.dice);
         }
         for (let dice of this._dice) {
+            // Need access to the roll Class used to create the fake Roll on reroll
+            const rollClass = this._rolls[0].constructor;
             dice.rerollDice = async function (amount) {
                 const fakeDice = new this.constructor(amount, this.faces, "");
-                const fakeRoll = new this._rolls[0].constructor(fakeDice.formula);
+                const fakeRoll = new rollClass(fakeDice.formula);
                 const digital = new DigitalDice(name, [fakeRoll])
                 await digital.roll();
                 this._rolls.push(...fakeRoll.dice[0]._rolls);
