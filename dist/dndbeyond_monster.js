@@ -3789,7 +3789,7 @@ class Monster extends CharacterBase {
                 if (roll_properties) {
                     const id = addRollButton(this, () => {
                         const roll_properties = this.buildAttackRoll(action_name, description);
-                        sendRoll(this, "attack", "1d20" + roll_properties["to-hit"], roll_properties)
+                        sendRoll(this, "attack", "1d20" + (roll_properties["to-hit"] || ""), roll_properties)
                     }, block, {small: true, before: true, image: true, text: action_name});
                     $("#" + id).css({ "float": "", "text-align": "", "margin-top": "15px" });
                 }
