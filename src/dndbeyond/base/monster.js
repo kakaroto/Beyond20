@@ -301,8 +301,14 @@ class Monster extends CharacterBase {
         }
         let save = null;
         const m = hit.match(/DC ([0-9]+) (.*?) saving throw/)
+        let preDCDamages = damages.length;
         if (m) {
             save = [m[2], m[1]];
+            preDCDamages = damage_matches.reduce((total, match) => {
+                if (match.index < m.index)
+                    total++;
+                return total
+            }, 0);
         } else {
             const m2 = hit.match(/escape DC ([0-9]+)/);
             if (m)
@@ -311,7 +317,7 @@ class Monster extends CharacterBase {
 
         if (damages.length == 0 && save === null)
             return null;
-        return [damages, damage_types, save];
+        return [damages, damage_types, save, preDCDamages];
     }
 
     buildAttackRoll(name, description) {
@@ -335,11 +341,11 @@ class Monster extends CharacterBase {
         const hitInfo = this.parseHitInfo(description);
         //console.log("Hit info for ", name, hitInfo);
         if (hitInfo) {
-            const [damages, damage_types, save] = hitInfo;
+            const [damages, damage_types, save, toCrit] = hitInfo;
             if (damages.length > 0) {
                 roll_properties["damages"] = damages;
                 roll_properties["damage-types"] = damage_types;
-                const crits = damagesToCrits(this, damages, damage_types);
+                const crits = damagesToCrits(this, damages.slice(0, toCrit), damage_types.slice(0, toCrit));
                 const crit_damages = [];
                 const crit_damage_types = [];
                 for (let [i, dmg] of crits.entries()) {

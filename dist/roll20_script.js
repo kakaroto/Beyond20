@@ -131,8 +131,15 @@ function isObjectEqual(obj1, obj2) {
 // replaces matchAll, requires a non global regexp
 function reMatchAll(regexp, string) {
     const matches = string.match(new RegExp(regexp, "gm"));
-    if (matches)
-        return matches.map(group0 => group0.match(regexp));
+    if ( matches) {
+        let start = 0;
+        return matches.map(group0 => {
+            const match = group0.match(regexp);
+            match.index = string.indexOf(group0, start);
+            start = match.index;
+            return match;
+        });
+    }
     return matches;
 }
 
