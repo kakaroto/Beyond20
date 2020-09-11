@@ -299,6 +299,12 @@ const options_list = {
         "hidden": true,
         "default": ""
     },
+    "migrated-sync-settings": {
+        "description": "Whether the user settings were migrated from sync storage to local storage",
+        "type": "bool",
+        "hidden": true,
+        "default": false
+    },
 
     "sync-combat-tracker": {
         "title": "Synchronize the Combat Tracker with the VTT",
@@ -321,6 +327,12 @@ const options_list = {
 }
 
 const character_settings = {
+    "migrated-sync-settings": {
+        "description": "Whether the user settings were migrated from sync storage to local storage",
+        "type": "bool",
+        "hidden": true,
+        "default": false
+    },
     "versatile-choice": {
         "title": "Versatile weapon choice",
         "description": "How to roll damage for Versatile weapons",
@@ -480,7 +492,7 @@ const character_settings = {
 }
 
 function getStorage() {
-    return chrome.storage.sync;
+    return chrome.storage.local;
 }
 
 function storageGet(name, default_value, cb) {
@@ -514,7 +526,7 @@ function getDefaultSettings(_list = options_list) {
 
 function getStoredSettings(cb, key = "settings", _list = options_list) {
     const settings = getDefaultSettings(_list);
-    storageGet(key, settings, (stored_settings) => {
+    storageGet(key, settings, async (stored_settings) => {
         //console.log("Beyond20: Stored settings (" + key + "):", stored_settings);
         const migrated_keys = [];
         for (let opt in settings) {
@@ -531,6 +543,17 @@ function getStoredSettings(cb, key = "settings", _list = options_list) {
                 // On Firefox, if setting is not in storage, it won't return the default value
                 stored_settings[opt] = settings[opt];
             }
+        }
+        // Migrate settings from sync storage to local storage
+        if (!stored_settings["migrated-sync-settings"]) {
+            await new Promise(resolve => {
+                chrome.storage.sync.get({ [key]: stored_settings }, (items) => {
+                    stored_settings = Object.assign(stored_settings, items[key]);
+                    resolve();
+                });
+            });;
+            stored_settings["migrated-sync-settings"] = true;
+            migrated_keys.push("migrated-sync-settings");
         }
         if (migrated_keys.length > 0) {
             console.log("Beyond20: Migrated some keys:", stored_settings);
