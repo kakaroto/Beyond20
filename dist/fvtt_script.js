@@ -2866,8 +2866,8 @@ function updateHP(name, current, total, temp) {
     for (let token of tokens) {
         if (token.actor && getProperty(token.actor.data, "data.attributes.hp") !== undefined) {
             token.actor.update(dnd5e_data);
-        } else if (token.actor && getProperty(actor.data, "data.health") !== undefined) {
-            actor.update(sws_data);
+        } else if (token.actor && getProperty(token.actor.data, "data.health") !== undefined) {
+            token.actor.update(sws_data);
         }
     }
 }
