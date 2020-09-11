@@ -1754,7 +1754,7 @@ class Beyond20RollRenderer {
             [RollType.SUPER_ADVANTAGE]: "Super Advantage",
             [RollType.SUPER_DISADVANTAGE]: "Super Disadvantage"
         }
-        const order = [RollType.DOUBLE, RollType.NORMAL, RollType.ADVANTAGE, RollType.DISADVANTAGE, RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE];
+        const order = [RollType.NORMAL, RollType.ADVANTAGE, RollType.DISADVANTAGE, RollType.DOUBLE, RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE];
         return parseInt(await this.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order));
     }
 
