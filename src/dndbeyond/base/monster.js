@@ -311,8 +311,8 @@ class Monster extends CharacterBase {
             }, 0);
         } else {
             const m2 = hit.match(/escape DC ([0-9]+)/);
-            if (m)
-                save = ["Escape", m[1]];
+            if (m2)
+                save = ["Escape", m2[1]];
         }
 
         if (damages.length == 0 && save === null)
