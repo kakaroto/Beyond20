@@ -859,10 +859,20 @@ function displayFeature(paneClass) {
 
 function displayTrait() {
     const trait = $(".ct-sidebar__heading").text();
-    const description = $(".ct-trait-pane__input").text();
+    const description = descriptionToString(".ct-trait-pane__input");
     sendRollWithCharacter("trait", 0, {
         "name": trait,
         "description": description
+    });
+}
+
+function displayBackground() {
+    const background = $(".ct-sidebar__heading").text();
+    const description = descriptionToString(".ct-background-pane__description > p");
+    sendRollWithCharacter("trait", 0, {
+        name: background,
+        source: "Bakground",
+        description: description
     });
 }
 
@@ -946,6 +956,8 @@ function displayPanel(paneClass) {
         displayTrait();
     else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
         displayAction(paneClass);
+    else if (paneClass == "ct-background-pane")
+        displayBackground();
     else
         alertify.alert("Not recognizing the currently open sidebar");
 }
@@ -1039,6 +1051,12 @@ function injectRollButton(paneClass) {
         addRollButtonEx(paneClass, ".ct-sidebar__heading", { image: false });
         const name = $(".ct-sidebar__heading").text();
         checkAndInjectDiceToRolls("." + paneClass + " .ct-snippet__content,." + paneClass + " .ddbc-snippet__content", name);
+    } else if (paneClass === "ct-background-pane") {
+        if (isRollButtonAdded())
+            return;
+        addRollButtonEx(paneClass, ".ct-sidebar__heading", { image: false });
+        const name = $(".ct-sidebar__heading").text();
+        checkAndInjectDiceToRolls("." + paneClass + " .ct-background-pane__description", name);
     } else if (paneClass == "ct-trait-pane") {
         if (isRollButtonAdded())
             return;
