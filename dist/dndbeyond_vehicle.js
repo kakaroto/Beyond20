@@ -3732,7 +3732,9 @@ class Monster extends CharacterBase {
             "name": name,
             "preview": this._avatar,
             "attack-source": "monster-action",
-            "description": description
+            "description": description,
+            "rollAttack": true,
+            "rollDamage": this.getGlobalSetting("auto-roll-damage", true),
         }
 
         const attackInfo = this.parseAttackInfo(description);
