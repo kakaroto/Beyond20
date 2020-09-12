@@ -145,12 +145,12 @@ class Monster extends CharacterBase {
                     const abbr = parts[0];
                     const mod = parts.slice(1).join(" ");
                     this._saves[abbr] = mod;
-                    if (add_dice) {
-                        data.append(abbr + " " + mod);
-                        addIconButton(this, () => this.rollSavingThrow(abbr), data, { append: true });
-                        if (saves.length > this._saves.length)
-                            data.append(", ");
-                    }
+                    if (!add_dice)
+                        continue;
+                    data.append(abbr + " " + mod);
+                    addIconButton(this, () => this.rollSavingThrow(abbr), data, { append: true });
+                    if (saves.length > Object.keys(this._saves).length)
+                        data.append(", ");
                 }
             } else if (label == "Skills") {
                 const skills = value.split(", ");
