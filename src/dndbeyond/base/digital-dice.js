@@ -97,6 +97,6 @@ class DigitalDice {
         
         this._myResult.find(".dice_result__total-result").text(this._rolls[0].total);
         this._myResult.find(".dice_result__info__results .dice_result__info__breakdown").text(this._rolls[0].formula)
-        this._myResult.find(".dice_result__info__dicenotation").text(`${this._rolls.length} total roll${this._rolls.length > 1 ? 's' : ''}`).prepend(E.img({ src: chrome.extension.getURL("images/icons/icon32.png") }))
+        this._myResult.find(".dice_result__info__dicenotation").text(`${this._rolls.length} roll${this._rolls.length > 1 ? 's' : ''} sent to VTT`).prepend(E.img({ src: chrome.extension.getURL("images/icons/icon32.png") }))
     }
 }
