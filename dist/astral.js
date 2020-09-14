@@ -89,7 +89,7 @@ function isFVTT(title) {
     return title.includes("Foundry Virtual Tabletop");
 }
 
-function isAVTT(title) {
+function isAstral(title) {
     return title.includes("Astral TableTop");
 }
 
@@ -97,7 +97,7 @@ function fvttTitle(title) {
     return title.replace(" • Foundry Virtual Tabletop", "");
 }
 
-function avttTitle(title) {
+function astralTitle(title) {
     return title.replace(" | Astral TableTop", "");
 }
 
@@ -294,7 +294,6 @@ const options_list = {
         "default": CriticalRules.PHB.toString(),
         "choices": {
             [CriticalRules.PHB.toString()]: "Standard PHB Rules (reroll dice)",
-            [CriticalRules.HOMEBREW_DOUBLE.toString()]: "Homebrew: Double initial roll",
             [CriticalRules.HOMEBREW_MAX.toString()]: "Homebrew: Perfect rolls",
             [CriticalRules.HOMEBREW_REROLL.toString()]: "Homebrew: Reroll all damages"
         }
@@ -1213,13 +1212,14 @@ options_list["discord-channels"]["createHTMLElement"] = createDiscordChannelsSet
 options_list["discord-channels"]["set"] = setDiscordChannelsSetting;
 options_list["discord-channels"]["get"] = getDiscordChannelsSetting;
 
-const getCharacter = () => getReactData().props.pageProps.data.selectedActor;
+const tokenCache = {
+    access: null,
+    apiKey: null,
+    refresh: null,
+    expires: null
+};
 
-const getRoom = () => location.pathname.split('/')[2];
-
-const getUser = () => JSON.parse(document.querySelector("#BEYOND20_ASTRAL_USER").innerText);
-
-const getAccessToken = () => new Promise((resolve, reject) => {
+const _getTokenFromDb = () => new Promise((resolve, reject) => {
     const req = indexedDB.open("firebaseLocalStorageDb", 1);
     console.log("Created db req", req)
     req.onsuccess = (event) => {
@@ -1231,29 +1231,88 @@ const getAccessToken = () => new Promise((resolve, reject) => {
 
         cursorReq.onsuccess = (event) => {
             console.log("Create cursor req", cursorReq.result)
-            resolve(cursorReq.result.value.value.stsTokenManager.accessToken);
+            resolve(cursorReq.result.value.value.stsTokenManager);
         };
     }
 
     req.onerror = reject;
 });
 
+const getAccessToken = async () => {
+    if (!tokenCache.expires) {
+        const tokenData = await _getTokenFromDb();
+
+        tokenCache.access = tokenData.accessToken;
+        tokenCache.apiKey = tokenData.apiKey;
+        tokenCache.expires = tokenData.expirationTime;
+        tokenCache.refresh = tokenData.refreshToken;
+    } else if (tokenCache.expires < Date.now()) {
+        const tokenData = await (await fetch('https://securetoken.googleapis.com/v1/token?key=' + tokenCache.apiKey, {
+            method: 'POST',
+            headers: {'content-type': 'application/x-www-form-urlencoded'},
+            body: 'grant_type=refresh_token&refresh_token=' + tokenCache.refresh,
+        })).json();
+        
+        tokenCache.access = tokenData.access_token;
+        tokenCache.refresh = tokenData.refresh_token;
+        const tokenInfo = jwt_decode(tokenCache.access);
+
+        // Multipling by 1000 for miliseconds
+        tokenData.expires = tokenInfo.exp * 1000; 
+    }
+
+    return tokenCache.access;
+}
+
+const getHeaders = async () => ({ 
+    'x-authorization': `Bearer ${await getAccessToken()}`, 
+    'content-type': 'application/json'
+});
+
+const getRoom = () => location.pathname.split('/')[2];
+
+const getRoomData = async () => await (await fetch(
+    `https://app.astraltabletop.com/api/game/${getRoom()}/`, 
+    {
+        method: "GET", 
+        headers: await getHeaders()
+    }
+)).json();
+
+const getCharacters = async () => (await getRoomData()).characters;
+
+const getCharacter = async (name) => {
+    const characters = await getCharacters();
+    const char = characters.find(c => c.displayName === name);
+    return char ? char.id : undefined;
+}
+
 const getReactData = () => JSON.parse(document.querySelector("#BEYOND20_NEXT_DATA").innerText);
 
+const getUser = () => getReactData().props.pageProps.user;
+
 const getDungeonMasters = () => getReactData().props.pageProps.data.game.gameMasters;
-async function postChatMessage({message, color, icon, title, whisper}) {
+
+
+async function postChatMessage({characterName, message, color, icon, title, whisper}) {
     const user = getUser().uid;
     const room = getRoom();
     const token = await getAccessToken();
-    const character = getCharacter();
+    const character = await getCharacter(characterName);
+
+    const recipients = whisper ? Object.fromEntries(getDungeonMasters().map(key => [key, true])) : undefined
     
-    fetch(location.origin + `/api/game/${room}/chat`, {
+    return fetch(location.origin + `/api/game/${room}/chat`, {
         method: "PUT",
         body: JSON.stringify({
             text: message,
-            color, icon, hidden: false, user, character, title,
+            color, 
+            icon, 
+            user, 
+            character, 
+            title: character ? title : `${title} (${characterName})`,
             hidden: whisper,
-            ...(whisper ? {recipients: Object.fromEntries(getDungeonMasters().map(key => [key, true]))} : {})
+            recipients
         }),
         headers: {
             'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
@@ -1261,11 +1320,15 @@ async function postChatMessage({message, color, icon, title, whisper}) {
     });
 }
 
-async function updateHpBar(hp, maxHp, tempHp) {
+async function updateHpBar(characterName, hp, maxHp, tempHp) {
     const room = getRoom();
     const token = await getAccessToken();
-    const character = getCharacter();
-    fetch(location.origin + `/api/game/${room}/character/${character}`, {
+    const character = await getCharacter(characterName);
+    if (!character) {
+        console.error(`No character found with name ${characterName}`)
+        return
+    }
+    return fetch(location.origin + `/api/game/${room}/character/${character}`, {
         method: "PATCH",
         body: JSON.stringify({
             character: {
@@ -1281,8 +1344,9 @@ async function updateHpBar(hp, maxHp, tempHp) {
     });
 }
 
-function getName(request) {
-    return request.name != "" ? request.name : request.character.name;
+function formatPlusMod(custom_roll_dice) {
+    const prefix = custom_roll_dice && !["+", "-", "?", ""].includes(custom_roll_dice.trim()[0]) ? " + " : "";
+    return prefix + (custom_roll_dice || "").replace(/([0-9]*d[0-9]+)/, "$1cs0cf0");;
 }
 
 function subRolls(text, overrideCB = null) {
@@ -1290,7 +1354,7 @@ function subRolls(text, overrideCB = null) {
     
     if (!overrideCB) {
         replaceCB = (dice, modifier) => {
-            return dice == "" ? modifier : `!!(${dice}${modifier})`;
+            return dice == "" ? modifier : `!!(${dice}${formatPlusMod(modifier)})`;
         }
     }
 
@@ -1310,10 +1374,14 @@ function parseDescription(request, description, {
     if (!settings["subst-vtt"])
         return description;
         
-    notes && (description = formatNotesInDescription(description));
-    tables && (description = formatTableInDescription(description));
-    bulletList ? (description = formatBulletListsInDescription(description)) : (description = formatSeparateParagraphsInDescription(description));
-    bolded && (description = formatBoldedSectionInDescription(description));
+    if (notes) description = formatNotesInDescription(description);
+    if (tables) description = formatTableInDescription(description);
+    if (bulletList) {
+        description = formatBulletListsInDescription(description);
+    } else {
+        description = formatSeparateParagraphsInDescription(description);
+    }
+    if (bolded) description = formatBoldedSectionInDescription(description);
     const replaceCB = (dice, modifier) => {
         return dice == "" ? modifier : `${dice}${modifier} (!!(${dice}${modifier}))`;
     }
@@ -1322,19 +1390,15 @@ function parseDescription(request, description, {
 
 function subDamageRolls(text) {
     return subRolls(text, (dice, modifier) => {
-        const prefix = settings["auto-roll-damage"] ? "!(" : "!!(";
-        modifier = settings['critical-homebrew'] == CriticalRules.HOMEBREW_DOUBLE ? `)${modifier}` : `${modifier})`;
-        return dice == "" ? modifier : `${prefix}${dice}${modifier}`;
+        const prefix = settings["auto-roll-damage"] ? "!" : "!!";
+        return dice == "" ? modifier : `${prefix}(${dice}${formatPlusMod(modifier)})`;
     });
 }
 
 function damagesToRolls(damages, damage_types, crits, crit_types) {
     return [
         ...damages.map((value, index) => [damage_types[index], subDamageRolls(value)]),
-        ...(settings['critical-homebrew'] == CriticalRules.HOMEBREW_DOUBLE ? 
-            [] : 
-            crits.map((value, index) => ["Crit " + crit_types[index], subDamageRolls(value)])
-        )
+        ...crits.map((value, index) => ["Crit " + crit_types[index], subDamageRolls(value)])
     ];
 }
 
@@ -1349,17 +1413,16 @@ ${rolls.map(([key, value]) => {
 }
 
 function formatTableInDescription(description) {
-    const matchTable =  new RegExp(/(^\n\n([^\n\r]+)\n([^\n\r]+)\n\n\n\n$)(^\n([^\n\r]+)\n([^\n\r]+)\n\n$)+/gm);
-    const matchHead =  new RegExp(/(^\n\n([^\n\r]+)\n([^\n\r]+)\n\n\n\n$)/gm);
-    const matchRow =  new RegExp(/(^\n([^\n\r]+)\n([^\n\r]+)\n\n$)/gm);
+    const matchTable = new RegExp(/(^\n\n([^\n\r]+)\n([^\n\r]+)\n\n\n\n$)(^\n([^\n\r]+)\n([^\n\r]+)\n\n$)+/m);
+    const matchHead = new RegExp(/(^\n\n([^\n\r]+)\n([^\n\r]+)\n\n\n\n$)/m);
+    const matchRow = new RegExp(/(^\n([^\n\r]+)\n([^\n\r]+)\n\n$)/m);
 
     return description.replace(matchTable, (match) => {
-        let [_1, _2, firstHead, secondHead] = match.matchAll(matchHead).next().value;
+        let [_1, _2, firstHead, secondHead] = reMatchAll(matchHead, match)[0];
         
+        const allMatches = reMatchAll(match, matchRow);
         // Skip first as it is matched by the matchHead too
-        const [_, ...rows] = [...match.matchAll(matchRow)].map(([_1, _2, firstRow, secondRow]) => {
-            return `| ${firstRow} | ${secondRow} |`
-        });
+        const rows = allMatches.map(match => `| ${match[2]} | ${match[3]} |`).slice(1);
         return `
 
 | ${firstHead} | ${secondHead} |
@@ -1390,22 +1453,25 @@ function formatSeparateParagraphsInDescription(description) {
     })
 }
 
-
+const advantageMap = {
+    [RollType.NORMAL]: (name, roll) => [name, roll],
+    [RollType.DOUBLE]: (name, roll) => [`${name} (Double Roll)`, `${roll} ${roll}`],
+    [RollType.THRICE]: (name, roll) => [`${name} (Triple Roll)`, `${roll} ${roll} ${roll}`],
+    [RollType.ADVANTAGE]: (name, roll) => [`${name} (Advantage)`, `${roll} ${roll}`],
+    [RollType.DISADVANTAGE]: (name, roll) => [`${name} (Disadvantage)`, `${roll} ${roll}`],
+    [RollType.SUPER_ADVANTAGE]: (name, roll) => [`${name} (Super Advantage)`, `${roll} ${roll} ${roll}`],
+    [RollType.SUPER_DISADVANTAGE]: (name, roll) => [`${name} (Super Disadvantage)`, `${roll} ${roll} ${roll}`],
+}
 
 function advantageRoll(request, name, roll) {
-    return {
-        [RollType.NORMAL]: [[name, roll]],
-        [RollType.DOUBLE]: [[name, roll], ["2nd time", roll]],
-        [RollType.THRICE]: [[name, roll], ["2nd time", roll], ["3rd time", roll]],
-        [RollType.ADVANTAGE]: [[name, roll], ["Advantage", roll]],
-        [RollType.DISADVANTAGE]: [[name, roll], ["Disadvantage", roll]],
-        [RollType.SUPER_ADVANTAGE]: [[name, roll], ["Advantage", roll], ["Super Advantage", roll]],
-        [RollType.SUPER_DISADVANTAGE]: [[name, roll], ["Disadvantage", roll], ["Super Disadvantage", roll]],
-    }[request.advantage] || [[name, roll]]
+    return advantageMap[request.advantage](name, roll) || [name, roll]
+}
+
+function generateRoll(d20, rolls, prefix="") {
+    return `${prefix}!(${d20}${rolls.map(formatPlusMod).join('')})`;
 }
 
 function rollSkill(request, custom_roll_dice = "") {
-    let modifier = request.modifier;
     // Custom skill;
     if (request.ability === "--" && request.character.abilities.length > 0) {
         let prof = "";
@@ -1424,13 +1490,13 @@ function rollSkill(request, custom_roll_dice = "") {
             reliableTalent = request.reliableTalent;
         }
         const d20 = reliableTalent ? "1d20min10" : "1d20";
+
+        const roll = `!(${d20}${formatPlusMod(prof_val)}${formatPlusMod(custom_roll_dice)})`;
         return {
             icon: "bunker-soldier-standing",
             color: "#7ED321",
             title: request.skill + " Skill Check",
-            message: template([
-                ...advantageRoll(request, "Skill Check", `!(${d20}${prof_val.length > 0 ? " + " + prof_val : ""}${custom_roll_dice.length > 0 ? " + " + custom_roll_dice : ""})`)
-            ])
+            message: template([advantageRoll(request, "Skill Check", generateRoll(d20, [prof_val, custom_roll_dice]))])
         }
         
     } else {
@@ -1443,9 +1509,7 @@ function rollSkill(request, custom_roll_dice = "") {
             icon: "bunker-soldier-standing",
             color: "#7ED321",
             title: request.skill + " Skill Check",
-            message: template([
-                ...advantageRoll(request, "Skill Check", `!(${d20}${modifier}${custom_roll_dice.length > 0 ? " + " + custom_roll_dice : ""})`)
-            ])
+            message: template([advantageRoll(request, "Skill Check", generateRoll(d20, [request.modifier, custom_roll_dice]))])
         }
     }
 }
@@ -1455,9 +1519,7 @@ function rollAbility(request, custom_roll_dice = "") {
         icon: "coin-star",
         color: "#4A90E2",
         title: request.ability + " Ability Check",
-        message:  template([
-            ...advantageRoll(request, "Ability Check", `!(1d20${request.modifier}${custom_roll_dice.length > 0 ? " + " + custom_roll_dice : ""})`)
-        ])
+        message:  template([advantageRoll(request, "Ability Check",  generateRoll("d20", [request.modifier, custom_roll_dice]))])
     }
 }
 
@@ -1466,9 +1528,7 @@ function rollSavingThrow(request, custom_roll_dice = "") {
         icon: "report-problem-triangle",
         color: "#F5A623",
         title: request.ability + " Saving Throw",
-        message:  template([
-            ...advantageRoll(request, "Saving Throw", `!(1d20${request.modifier}${custom_roll_dice.length > 0 ? " + " + custom_roll_dice : ""})`)
-        ])
+        message:  template([advantageRoll(request, "Saving Throw",  generateRoll("d20", [request.modifier, custom_roll_dice]))])
     }
 }
 
@@ -1478,7 +1538,7 @@ function rollInitiative(request, custom_roll_dice = "") {
         color: "#7ED321",
         title: "Initiative",
         message:  template([
-            ["Initiative", `i!(1d20${request.initiative}${custom_roll_dice.length > 0 ? " + " + custom_roll_dice : ""})`]
+            ["Initiative",  generateRoll("d20", [request.initiative, custom_roll_dice], 'i')]
         ])
     }
 }
@@ -1500,7 +1560,7 @@ function rollDeathSave(request, custom_roll_dice = "") {
         color: "#FFFFFF",
         title: "Death Saving Throw",
         message:  template([
-            ["Normal", `!(1d20${custom_roll_dice.length > 0 ? " + " + custom_roll_dice : ""})`]
+            ["Normal", generateRoll('d20', [custom_roll_dice])]
         ])
     }
 }
@@ -1509,13 +1569,8 @@ function rollItem(request, custom_roll_dice = "") {
     const source = request["item-type"].trim().toLowerCase();
     if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools"))) && request.character.abilities && request.character.abilities.length > 0) {
         const ret = rollTrait(request);
-
-        return {
-            ...ret,
-            message: ret.message + '\n' + template([
-                ...advantageRoll(request, request.name, `!(1d20${custom_roll_dice.length > 0 ? " + " + custom_roll_dice : ""})`)
-            ])
-        }
+        ret.message += "\n" + template([advantageRoll(request, request.name, generateRoll("d20", custom_roll_dice))])
+        return ret;
     } else {
         return rollTrait(request);
     }
@@ -1534,7 +1589,7 @@ function rollTrait(request) {
     return {
         icon: "pyramid-eye",
         color: "#50E3C2",
-        title: getName(request),
+        title: request.name,
         message: `_**Source:** ${source}_
 
 ${ parseDescription(request, request.description)}
@@ -1545,24 +1600,15 @@ ${ parseDescription(request, request.description)}
 function rollAttack(request, custom_roll_dice = "") {
     let rolls = [];
     if (request["to-hit"] !== undefined) {
-        rolls = [
-            ...rolls,
-            ...advantageRoll(request, "To Hit", `!(1d20cr>=${request["critical-limit"] || 20}${request["to-hit"]}${custom_roll_dice.length > 0 ? " + " + custom_roll_dice : ""})`),
-        ]
+        rolls.push(advantageRoll(request, "To Hit", generateRoll(`1d20cr>=${request["critical-limit"] || 20}`, [request["to-hit"], custom_roll_dice])))
     }
     
     if (request["save-dc"] !== undefined) {
-        rolls = [
-            ...rolls,
-            ["Save DC", `DC ${request["save-dc"]} ${request["save-ability"]}`],
-        ]
+        rolls.push(["Save DC", `DC ${request["save-dc"]} ${request["save-ability"]}`]);
     }
 
     if (request.range !== undefined)
-        rolls = [
-            ...rolls,
-            ["Range", request.range],
-        ]
+        rolls.push(["Range", request.range]);
         
     if (request.damages !== undefined) {
         const damages = request.damages;
@@ -1570,17 +1616,13 @@ function rollAttack(request, custom_roll_dice = "") {
         const crit_damages = request["critical-damages"] || [];
         const crit_damage_types = request["critical-damage-types"] || [];
 
-        rolls = [
-            ...rolls,
-            ...damagesToRolls(damages, damage_types, crit_damages, crit_damage_types)
-        ]
+        rolls.push(...damagesToRolls(damages, damage_types, crit_damages, crit_damage_types))
     }
-
 
     return {
         icon: "knife",
         color: "#D0021B",
-        title: getName(request),
+        title: request.name,
         message: template(rolls)
     }
 }
@@ -1592,9 +1634,10 @@ function rollSpellCard(request) {
         ["Range", request.range],
         ["Casting Time", request["casting-time"]],
         ["Duration", request.duration],
-        ...(request.ritual ? [["Ritual", "Yes"]] : []),
-        ...(request.concentration ? [["Concentration", "Yes"]] : []),
     ];
+
+    if (request.ritual) rolls.push(["Ritual", "Yes"]);
+    if (request.concentration) rolls.push(["Concentration", "Yes"])
 
     let description = request.description;
     let higher = description.indexOf("At Higher Levels.");
@@ -1607,7 +1650,7 @@ function rollSpellCard(request) {
     return {
         icon: "torch",
         color: "#BD10E0",
-        title: getName(request),
+        title: request.name,
         message: `${template(rolls)}
 
 ${description}
@@ -1624,22 +1667,17 @@ function rollSpellAttack(request, custom_roll_dice) {
         ["Range", request.range],
         ["Casting Time", request["casting-time"]],
         ["Duration", request.duration],
-        ...(request.ritual ? [["Ritual", "Yes"]] : []),
-        ...(request.concentration ? [["Concentration", "Yes"]] : []),
     ];
 
+    if (request.ritual) rolls.push(["Ritual", "Yes"]);
+    if (request.concentration) rolls.push(["Concentration", "Yes"])
+
     if (request["save-dc"] !== undefined) {
-        rolls = [
-            ...rolls,
-            ["Save DC", `DC ${request["save-dc"]} ${request["save-ability"]}`],
-        ]
+        rolls.push(["Save DC", `DC ${request["save-dc"]} ${request["save-ability"]}`]);
     }
       
     if (request["to-hit"] !== undefined) {
-       rolls = [
-            ...rolls,
-            ...advantageRoll(request, "To Hit", `!(1d20cr>=${request["critical-limit"] || 20}${request["to-hit"]}${custom_roll_dice.length > 0 ? " + " + custom_roll_dice : ""})`),
-        ]
+        rolls.push(advantageRoll(request, "To Hit", generateRoll(`1d20cr>=${request["critical-limit"] || 20}`, [request["to-hit"], custom_roll_dice])))
     }
 
     if (request.damages !== undefined) {
@@ -1660,14 +1698,12 @@ function rollSpellAttack(request, custom_roll_dice) {
                     critical_damage_types.splice(idx, 1)[0];
                 }
             }
-            damages.splice(0, 0, chromatic_damage + "m2");
+            damages.splice(0, 0, chromatic_damage);
             damage_types.splice(0, 0, "Chromatic Damage");
             critical_damages.splice(0, 0, crit_damage);
             critical_damage_types.splice(0, 0, "Chromatic Damage");
-            rolls = [
-                ...rolls,
-                ["Choose Damage", ["Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder"].join(', ')],
-            ]
+
+            rolls.push(["Choose Damage", ["Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder"].join(', ')])
         } else if (request.name === "Dragon's Breath") {
             let dragons_breath_damage = null;
             for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Poison"]) {
@@ -1677,10 +1713,7 @@ function rollSpellAttack(request, custom_roll_dice) {
             }
             damages.splice(0, 0, dragons_breath_damage);
             damage_types.splice(0, 0, "Breath Damage");
-            rolls = [
-                ...rolls,
-                ["Choose Damage", ["Acid", "Cold", "Fire", "Lightning", "Poison"].join(', ')],
-            ]
+            rolls.push(["Choose Damage", ["Acid", "Cold", "Fire", "Lightning", "Poison"].join(', ')])
         } else if (request.name === "Chaos Bolt") {
             let base_damage = null;
             let crit_damage = null;
@@ -1705,16 +1738,13 @@ function rollSpellAttack(request, custom_roll_dice) {
             damage_types[1] = damage_types[1] + " on Moving";
         }
         
-        rolls = [
-            ...rolls,
-            ...damagesToRolls(damages, damage_types, critical_damages, critical_damage_types)
-        ]
+        rolls.push(...damagesToRolls(damages, damage_types, critical_damages, critical_damage_types))
     }
 
     return {
         icon: "torch",
         color: "#BD10E0",
-        title: getName(request),
+        title: request.name,
         message: template(rolls) + (request.name === "Chaos Bolt" ? "\n\n### Damage Type Table\n\n" + template(["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"].map((v, index) => {
             return [index + 1, v];
         }), "d8", "Damage Type") : "")
@@ -1750,7 +1780,7 @@ function handleMessage(request, sender, sendResponse) {
     } else if (request.action == "open-options") {
         alertFullSettings();
     } else if (request.action == "hp-update") {
-        updateHpBar(request.character.hp, request.character["max-hp"], request.character["temp-hp"]);
+        updateHpBar(request.character.name, request.character.hp, request.character["max-hp"], request.character["temp-hp"]);
     } else if (request.action == "conditions-update") {
         if (settings["display-conditions"]) {
             const character_name = request.character.name;
@@ -1760,15 +1790,13 @@ function handleMessage(request, sender, sendResponse) {
                 conditions = request.character.conditions.concat([`Exhausted (Level ${request.character.exhaustion})`]);
             }
 
-            // We can't use window.is_gm because it's  !available to the content script;
-            const is_gm = $("#textchat .message.system").text().includes("The player link for this campaign is");
             let message = "";
             if (conditions.length == 0) {
-                message = "I have no active condition";
+                message = "No active condition";
             } else {
-                message = "I am: " + conditions.join(", ");
+                message = conditions.join(", ");
             }
-            postChatMessage({ message, icon: 'smiley-worry', color: '#F8E71C', title: 'Conditions', whisper: request.whisper == WhisperType.YES });
+            postChatMessage({ characterName: request.character.name, message, icon: 'smiley-worry', color: '#F8E71C', title: 'Conditions', whisper: request.whisper == WhisperType.YES });
         }
     } else if (request.action == "roll") {
         
@@ -1803,11 +1831,11 @@ function handleMessage(request, sender, sendResponse) {
             roll = {
                 icon: 'home-1',
                 color: '#FFFFFF',
-                title: getName(request),
+                title: request.name,
                 message: subRolls(request.roll)
             }
         }
-        postChatMessage({ ...roll, whisper: request.whisper == WhisperType.YES });
+        postChatMessage({ ...roll, characterName: request.character.name, whisper: request.whisper == WhisperType.YES });
     } else if (request.action == "rendered-roll") {
         console.warn("rendered-roll not supported in astral vtt");
     } else if (request.action === "update-combat") {
@@ -1818,6 +1846,6 @@ function handleMessage(request, sender, sendResponse) {
 chrome.runtime.onMessage.addListener(handleMessage);
 updateSettings();
 chrome.runtime.sendMessage({ "action": "activate-icon" });
-chrome.runtime.sendMessage({ "action": "register-avtt-tab" });
-injectPageScript(chrome.runtime.getURL('dist/avtt_script.js'));
+chrome.runtime.sendMessage({ "action": "register-astral-tab" });
+injectPageScript(chrome.runtime.getURL('dist/astral_script.js'));
 sendCustomEvent("disconnect");

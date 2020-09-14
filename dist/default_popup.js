@@ -90,7 +90,7 @@ function isFVTT(title) {
     return title.includes("Foundry Virtual Tabletop");
 }
 
-function isAVTT(title) {
+function isAstral(title) {
     return title.includes("Astral TableTop");
 }
 
@@ -98,7 +98,7 @@ function fvttTitle(title) {
     return title.replace(" • Foundry Virtual Tabletop", "");
 }
 
-function avttTitle(title) {
+function astralTitle(title) {
     return title.replace(" | Astral TableTop", "");
 }
 
@@ -295,7 +295,6 @@ const options_list = {
         "default": CriticalRules.PHB.toString(),
         "choices": {
             [CriticalRules.PHB.toString()]: "Standard PHB Rules (reroll dice)",
-            [CriticalRules.HOMEBREW_DOUBLE.toString()]: "Homebrew: Double initial roll",
             [CriticalRules.HOMEBREW_MAX.toString()]: "Homebrew: Perfect rolls",
             [CriticalRules.HOMEBREW_REROLL.toString()]: "Homebrew: Reroll all damages"
         }

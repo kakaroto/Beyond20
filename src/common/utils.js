@@ -89,7 +89,7 @@ function isFVTT(title) {
     return title.includes("Foundry Virtual Tabletop");
 }
 
-function isAVTT(title) {
+function isAstral(title) {
     return title.includes("Astral TableTop");
 }
 
@@ -97,7 +97,7 @@ function fvttTitle(title) {
     return title.replace(" • Foundry Virtual Tabletop", "");
 }
 
-function avttTitle(title) {
+function astralTitle(title) {
     return title.replace(" | Astral TableTop", "");
 }
 

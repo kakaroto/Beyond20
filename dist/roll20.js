@@ -89,7 +89,7 @@ function isFVTT(title) {
     return title.includes("Foundry Virtual Tabletop");
 }
 
-function isAVTT(title) {
+function isAstral(title) {
     return title.includes("Astral TableTop");
 }
 
@@ -97,7 +97,7 @@ function fvttTitle(title) {
     return title.replace(" • Foundry Virtual Tabletop", "");
 }
 
-function avttTitle(title) {
+function astralTitle(title) {
     return title.replace(" | Astral TableTop", "");
 }
 
@@ -294,7 +294,6 @@ const options_list = {
         "default": CriticalRules.PHB.toString(),
         "choices": {
             [CriticalRules.PHB.toString()]: "Standard PHB Rules (reroll dice)",
-            [CriticalRules.HOMEBREW_DOUBLE.toString()]: "Homebrew: Double initial roll",
             [CriticalRules.HOMEBREW_MAX.toString()]: "Homebrew: Perfect rolls",
             [CriticalRules.HOMEBREW_REROLL.toString()]: "Homebrew: Reroll all damages"
         }
@@ -1215,7 +1214,7 @@ options_list["discord-channels"]["get"] = getDiscordChannelsSetting;
 
 ROLL20_URL = "*://app.roll20.net/editor/";
 FVTT_URL = "*://*/game";
-AVTT_URL = "*://app.astraltabletop.com/play/*";
+ASTRAL_URL = "*://app.astraltabletop.com/play/*";
 DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
 DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
 DNDBEYOND_ENCOUNTERS_URL = "*://*.dndbeyond.com/my-encounters";

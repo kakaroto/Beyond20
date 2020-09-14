@@ -1,6 +1,6 @@
 ROLL20_URL = "*://app.roll20.net/editor/";
 FVTT_URL = "*://*/game";
-AVTT_URL = "*://app.astraltabletop.com/play/*";
+ASTRAL_URL = "*://app.astraltabletop.com/play/*";
 DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
 DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
 DNDBEYOND_ENCOUNTERS_URL = "*://*.dndbeyond.com/my-encounters";
@@ -135,7 +135,7 @@ function isFVTT(title) {
     return title.includes("Foundry Virtual Tabletop");
 }
 
-function isAVTT(title) {
+function isAstral(title) {
     return title.includes("Astral TableTop");
 }
 
@@ -143,7 +143,7 @@ function fvttTitle(title) {
     return title.replace(" • Foundry Virtual Tabletop", "");
 }
 
-function avttTitle(title) {
+function astralTitle(title) {
     return title.replace(" | Astral TableTop", "");
 }
 
@@ -340,7 +340,6 @@ const options_list = {
         "default": CriticalRules.PHB.toString(),
         "choices": {
             [CriticalRules.PHB.toString()]: "Standard PHB Rules (reroll dice)",
-            [CriticalRules.HOMEBREW_DOUBLE.toString()]: "Homebrew: Double initial roll",
             [CriticalRules.HOMEBREW_MAX.toString()]: "Homebrew: Perfect rolls",
             [CriticalRules.HOMEBREW_REROLL.toString()]: "Homebrew: Reroll all damages"
         }
@@ -1265,7 +1264,6 @@ options_list["discord-channels"]["get"] = getDiscordChannelsSetting;
 
 var settings = getDefaultSettings()
 var fvtt_tabs = []
-var avtt_tabs = []
 
 function updateSettings(new_settings = null) {
     if (new_settings) {
@@ -1332,23 +1330,20 @@ function sendMessageToRoll20(request, limit = null, failure = null) {
     }
 }
 
-function sendMessageToAVTT(request, limit = null, failure = null) {
-    console.log("Sending msg to AVTT ", avtt_tabs)
+function sendMessageToAstral(request, limit = null, failure = null) {
     if (limit) {
-        const vtt = limit.vtt || "avtt"
-        if (vtt == "avtt") {
-            found = filterVTTTab(request, limit, avtt_tabs, avttTitle)
-            if (failure)
-                failure(!found)
+        const vtt = limit.vtt || "astral"
+        if (vtt == "astral") {
+            chrome.tabs.query({ "url": ASTRAL_URL }, (tabs) => {
+                found = filterVTTTab(request, limit, tabs, astralTitle)
+                if (failure)
+                    failure(!found)
+            })
         } else {
             failure(true)
         }
     } else {
-        if (failure)
-            failure(avtt_tabs.length == 0)
-        for (let tab of avtt_tabs) {
-            chrome.tabs.sendMessage(tab.id, request)
-        }
+        sendMessageTo(ASTRAL_URL, request, failure = failure)
     }
 }
 
@@ -1392,15 +1387,6 @@ function addFVTTTab(tab) {
     console.log("Added ", tab.id, " to fvtt tabs.");
 }
 
-function addAVTTTab(tab) {
-    for (let t of avtt_tabs) {
-        if (t.id == tab.id)
-            return;
-    }
-    avtt_tabs.push(tab);
-    console.log("Added ", tab.id, " to avtt tabs.");
-}
-
 function removeFVTTTab(id) {
     for (let t of fvtt_tabs) {
         if (t.id == id) {
@@ -1410,17 +1396,6 @@ function removeFVTTTab(id) {
         }
     }
 }
-
-function removeAVTTTab(id) {
-    for (let t of avtt_tabs) {
-        if (t.id == id) {
-            avtt_tabs = avtt_tabs.filter(tab => tab !== t);
-            console.log("Removed ", id, " from avtt tabs.");
-            return;
-        }
-    }
-}
-
 
 function onRollFailure(request, sendResponse) {
     console.log("Failure to find a VTT")
@@ -1467,8 +1442,8 @@ function onMessage(request, sender, sendResponse) {
             return (result) => {
                 trackFailure[vtt] = result
                 console.log("Result of sending to VTT ", vtt, ": ", result)
-                if (trackFailure["roll20"] !== null && trackFailure["fvtt"] !== null && trackFailure["avtt"] !== null) {
-                    if (trackFailure["roll20"] == true && trackFailure["fvtt"] == true && trackFailure["avtt"] == true) {
+                if (trackFailure["roll20"] !== null && trackFailure["fvtt"] !== null && trackFailure["astral"] !== null) {
+                    if (trackFailure["roll20"] == true && trackFailure["fvtt"] == true && trackFailure["astral"] == true) {
                         onRollFailure(request, sendResponse)
                     } else {
                         const vtts = []
@@ -1482,13 +1457,13 @@ function onMessage(request, sender, sendResponse) {
                 }
             }
         }
-        const trackFailure = { "roll20": null, "fvtt": null, 'avtt': null }
+        const trackFailure = { "roll20": null, "fvtt": null, 'astral': null }
         if (settings["vtt-tab"] && settings["vtt-tab"].vtt === "dndbeyond") {
             sendResponse({ "success": false, "vtt": "dndbeyond", "error": null, "request": request })
         } else {
             sendMessageToRoll20(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "roll20", sendResponse))
             sendMessageToFVTT(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "fvtt", sendResponse))
-            sendMessageToAVTT(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "avtt", sendResponse))
+            sendMessageToAstral(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "astral", sendResponse))
         }
         return true
     } else if (request.action == "settings") {
@@ -1497,7 +1472,7 @@ function onMessage(request, sender, sendResponse) {
         sendMessageToRoll20(request)
         sendMessageToBeyond(request)
         sendMessageToFVTT(request)
-        sendMessageToAVTT(request)
+        sendMessageToAstral(request)
     } else if (request.action == "activate-icon") {
         // popup doesn't have sender.tab so we grab it from the request.
         const tab = request.tab || sender.tab;
@@ -1512,9 +1487,6 @@ function onMessage(request, sender, sendResponse) {
         }
     } else if (request.action == "register-fvtt-tab") {
         addFVTTTab(sender.tab)
-    } else if (request.action == "register-avtt-tab") {
-        console.log("AVTT request", request)
-        addAVTTTab(sender.tab)
     } else if (request.action == "reload-me") {
         chrome.tabs.reload(sender.tab.id)
     } else if (request.action == "get-current-tab") {
@@ -1552,16 +1524,10 @@ function onTabsUpdated(id, changes, tab) {
         (Object.keys(changes).includes("url") && !urlMatches(changes["url"], "*) {//*/game")) ||
         (Object.keys(changes).includes("status") && changes["status"] == "loading"))
         removeFVTTTab(id)
-
-    if (avtt_tabs.includes(id) &&
-        (Object.keys(changes).includes("url") && !urlMatches(changes["url"], "*) {//*/play")) ||
-        (Object.keys(changes).includes("status") && changes["status"] == "loading"))
-        removeAVTTTab(id)
 }
 
 function onTabRemoved(id, info) {
     removeFVTTTab(id)
-    removeAVTTTab(id)
 }
 
 function browserActionClicked(tab) {

@@ -80,7 +80,7 @@ function findToHit(name_to_match, items_selector, name_selector, tohit_selector)
 function damagesToCrits(character, damages) {
     const crits = [];
     const rule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
-    if (rule == CriticalRules.HOMEBREW_REROLL || rule == CriticalRules.HOMEBREW_MOD || rule == CriticalRules.HOMEBREW_DOUBLE)
+    if (rule == CriticalRules.HOMEBREW_REROLL || rule == CriticalRules.HOMEBREW_MOD)
         return damages.slice();
     for (let damage of damages) {
         const damage_matches = reMatchAll(/([0-9]*)d([0-9]+)(?:ro<=[0-9]+)?(?:min[0-9]+)?/, damage) || [];

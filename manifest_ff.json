@@ -44,7 +44,7 @@
         "libs/alertify.min.js",
 		"dist/roll20_script.js",
 		"dist/fvtt_script.js",
-		"dist/avtt_script.js",
+		"dist/astral_script.js",
 		"popup.html",
 		"options.html"
 	],
@@ -202,7 +202,8 @@
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"dist/avtt.js"
+				"libs/jwt-decode.min.js",
+				"dist/astral.js"
 			]
 		}
 	]
