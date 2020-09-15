@@ -54,12 +54,12 @@ function propertyListToDict(propList) {
 function descriptionToString(selector) {
     // strip tags : https://www.sitepoint.com/jquery-strip-html-tags-div/;
     return ($(selector).html() || "").replace(/<\/?[^>]+>/gi, '')
-        .replace("&nbsp;", " ")
-        .replace("&amp;", "&")
-        .replace("&quot;", "\"")
-        .replace("&apos;", "\'")
-        .replace("&lt;", "<")
-        .replace("&gt;", ">");
+        .replace(/&nbsp;/g, " ")
+        .replace(/&amp;/g, "&")
+        .replace(/&quot;/g, "\"")
+        .replace(/&apos;/g, "\'")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">");
 }
 
 function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
@@ -99,11 +99,16 @@ function damagesToCrits(character, damages) {
     return crits;
 }
 
-function buildAttackRoll(character, attack_source, name, description, properties, damages = [], damage_types = [], to_hit = null, brutal = 0) {
+function buildAttackRoll(character, attack_source, name, description, properties,
+                         damages = [], damage_types = [], to_hit = null,
+                         brutal = 0, force_to_hit_only = false, force_damages_only = false) {
     const roll_properties = {
         "name": name,
         "attack-source": attack_source,
-        "description": description
+        "description": description,
+        "rollAttack": !force_damages_only,
+        "rollDamage": !force_to_hit_only && character.getGlobalSetting("auto-roll-damage", true),
+        "rollCritical": false
     }
     if (to_hit !== null)
         roll_properties["to-hit"] = to_hit;
@@ -225,10 +230,6 @@ async function sendRoll(character, rollType, fallback, args) {
         req["advantage"] = RollType.NORMAL;
 
     if (character.getGlobalSetting("use-digital-dice", false) && DigitalDice.isEnabled()) {
-        if (!character.getGlobalSetting("auto-roll-damage", true))
-            mergeSettings({ "auto-roll-damage": true }, (settings) => {
-                chrome.runtime.sendMessage({ "action": "settings", "type": "general", "settings": settings })
-            });
         req.sendMessage = true;
         dndbeyondDiceRoller.handleRollRequest(req);
     } else {

@@ -138,8 +138,15 @@ function isObjectEqual(obj1, obj2) {
 // replaces matchAll, requires a non global regexp
 function reMatchAll(regexp, string) {
     const matches = string.match(new RegExp(regexp, "gm"));
-    if (matches)
-        return matches.map(group0 => group0.match(regexp));
+    if ( matches) {
+        let start = 0;
+        return matches.map(group0 => {
+            const match = group0.match(regexp);
+            match.index = string.indexOf(group0, start);
+            start = match.index;
+            return match;
+        });
+    }
     return matches;
 }
 
@@ -338,6 +345,16 @@ const options_list = {
         "choices": { "roll20": "D&D 5E By Roll20", "default": "Beyond20 Roll Renderer" }
     },
 
+    "notes-to-vtt": {
+        "title": "Send custom text to the VTT (currently Roll20 only)",
+        "description": "In the \"Notes\" or \"Description\" section of any item, action, or spell on the D&D Beyond Character Sheet, "
+            + "you may add your own custom text to be sent to the VTT as a message when you use that element's roll action."
+            + "\nTo do this, format the text you wish to send as follows:"
+            + "\n[[msg-type]] Put text you wish to send HERE[[/msg-type]]"
+            + "\nReplace \"msg-type\" with one of the following: \"before\", \"after\", or \"replace\" depending on how you want to affect the message or action that would normally be sent to the VTT.",
+        "type": "info"
+    },
+
     "subst-roll20": {
         "type": "migrate",
         "to": "subst-vtt",
@@ -450,6 +467,12 @@ const options_list = {
         "hidden": true,
         "default": ""
     },
+    "migrated-sync-settings": {
+        "description": "Whether the user settings were migrated from sync storage to local storage",
+        "type": "bool",
+        "hidden": true,
+        "default": false
+    },
 
     "sync-combat-tracker": {
         "title": "Synchronize the Combat Tracker with the VTT",
@@ -472,6 +495,12 @@ const options_list = {
 }
 
 const character_settings = {
+    "migrated-sync-settings": {
+        "description": "Whether the user settings were migrated from sync storage to local storage",
+        "type": "bool",
+        "hidden": true,
+        "default": false
+    },
     "versatile-choice": {
         "title": "Versatile weapon choice",
         "description": "How to roll damage for Versatile weapons",
@@ -537,6 +566,12 @@ const character_settings = {
         "description": "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws",
         "type": "bool",
         "default": false
+    },
+    "barbarian-divine-fury": {
+        "title": "Barbarian: Divine Fury",
+        "description": "Add Divine Fury damage to your attack (when raging)",
+        "type": "bool",
+        "default": true
     },
     "bloodhunter-crimson-rite": {
         "title": "Bloodhunter: Crimson Rite",
@@ -631,7 +666,7 @@ const character_settings = {
 }
 
 function getStorage() {
-    return chrome.storage.sync;
+    return chrome.storage.local;
 }
 
 function storageGet(name, default_value, cb) {
@@ -665,7 +700,7 @@ function getDefaultSettings(_list = options_list) {
 
 function getStoredSettings(cb, key = "settings", _list = options_list) {
     const settings = getDefaultSettings(_list);
-    storageGet(key, settings, (stored_settings) => {
+    storageGet(key, settings, async (stored_settings) => {
         //console.log("Beyond20: Stored settings (" + key + "):", stored_settings);
         const migrated_keys = [];
         for (let opt in settings) {
@@ -682,6 +717,17 @@ function getStoredSettings(cb, key = "settings", _list = options_list) {
                 // On Firefox, if setting is not in storage, it won't return the default value
                 stored_settings[opt] = settings[opt];
             }
+        }
+        // Migrate settings from sync storage to local storage
+        if (!stored_settings["migrated-sync-settings"]) {
+            await new Promise(resolve => {
+                chrome.storage.sync.get({ [key]: stored_settings }, (items) => {
+                    stored_settings = Object.assign(stored_settings, items[key]);
+                    resolve();
+                });
+            });;
+            stored_settings["migrated-sync-settings"] = true;
+            migrated_keys.push("migrated-sync-settings");
         }
         if (migrated_keys.length > 0) {
             console.log("Beyond20: Migrated some keys:", stored_settings);
@@ -773,6 +819,13 @@ function createHTMLOptionEx(name, option, short = false) {
                         })
                     )
                 )
+            )
+        );
+    } else if (option.type == "info") {
+        e = E.li({ class: "list-group-item beyond20-option beyond20-option-info" },
+            E.label({ class: "list-content", for: name, style: "background-color: LightCyan;"},
+                E.h4({}, title),
+                ...description_p
             )
         );
     } else if (option.type == "special") {
@@ -1716,7 +1769,7 @@ class Beyond20RollRenderer {
             [RollType.SUPER_ADVANTAGE]: "Super Advantage",
             [RollType.SUPER_DISADVANTAGE]: "Super Disadvantage"
         }
-        const order = [RollType.DOUBLE, RollType.NORMAL, RollType.ADVANTAGE, RollType.DISADVANTAGE, RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE];
+        const order = [RollType.NORMAL, RollType.ADVANTAGE, RollType.DISADVANTAGE, RollType.DOUBLE, RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE];
         return parseInt(await this.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order));
     }
 
@@ -1850,28 +1903,10 @@ class Beyond20RollRenderer {
 
     async postDescription(request, title, source, attributes, description, attack_rolls = [], roll_info = [], damage_rolls = [], open = false) {
         let play_sound = false;
-        let buttons = {}
 
         if (request.whisper == WhisperType.HIDE_NAMES) {
             description = null;
             title = "???";
-        }
-        // Handle the case where you don't want to auto-roll damages;
-        if (damage_rolls.length > 0 && attack_rolls.length > 0 && !this._settings["auto-roll-damage"]) {
-            const roll_damages_args = {
-                damages: damage_rolls,
-                reroll: false
-            };
-            buttons = {
-                "Roll Damages": async () => {
-                    let damages = roll_damages_args.damages;
-                    if (roll_damages_args.reroll)
-                        damages = await this.rerollDamages(damages);
-                    roll_damages_args.reroll = true;
-                    this.postDescription(request, title, source, attributes, description, [], [], damages);
-                }
-            }
-            damage_rolls = [];
         }
 
         let html = '<div class="beyond20-message">';
@@ -1978,8 +2013,8 @@ class Beyond20RollRenderer {
             html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
         }
 
-        for (let button in buttons)
-            html += '<button class="beyond20-chat-button">' + button + '</button>';
+        if (request.rollAttack && !request.rollDamage)
+            html += '<button class="beyond20-button-roll-damages">Roll Damages</button>';
 
         html += "</div>";
         const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
@@ -1990,9 +2025,9 @@ class Beyond20RollRenderer {
         });
 
         if (request.sendMessage && this._displayer.sendMessage)
-            this._displayer.sendMessage(request, title, html, buttons, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
+            this._displayer.sendMessage(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
         else
-            this._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound, attack_rolls, damage_rolls);
+            this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);
 
         if (attack_rolls.length > 0) {
             return attack_rolls.find((r) => !r.isDiscarded());
@@ -2003,6 +2038,17 @@ class Beyond20RollRenderer {
         } else {
             return null;
         }
+    }
+
+    postMessage(request, title, message) {
+        const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
+        if (request.whisper == WhisperType.HIDE_NAMES)
+            title = "???";
+        if (request.sendMessage && this._displayer.sendMessage)
+            this._displayer.sendMessage(request, title, message, character, request.whisper, false, '', {}, '', [], [], [], [], true);
+        else
+            this._displayer.postHTML(request, title, message, character, request.whisper, false, '', {}, '', [], [], [], [], true);
+
     }
 
     createRoll(dice, data) {
@@ -2173,7 +2219,7 @@ class Beyond20RollRenderer {
         const damage_rolls = [];
         const all_rolls = [];
         let is_critical = false;
-        if (request["to-hit"] !== undefined) {
+        if (request.rollAttack && request["to-hit"] !== undefined) {
             const custom = custom_roll_dice == "" ? "" : (" + " + custom_roll_dice);
             const to_hit_mod = " + " + request["to-hit"] + custom;
             const {advantage, rolls} = await this.getToHit(request, request.name, to_hit_mod)
@@ -2182,7 +2228,7 @@ class Beyond20RollRenderer {
             all_rolls.push(...rolls);
         }
 
-        if (request.damages !== undefined) {
+        if (request.rollDamage && request.damages !== undefined) {
             const damages = request.damages;
             const damage_types = request["damage-types"];
             const critical_damages = request["critical-damages"];
@@ -2300,10 +2346,15 @@ class Beyond20RollRenderer {
                 }
             }
 
-            if (to_hit.length > 0)
-                this.processToHitAdvantage(to_hit_advantage, to_hit)
-            const critical_limit = request["critical-limit"] || 20;
-            is_critical = this.isCriticalHitD20(to_hit, critical_limit);
+            // If rolling the attack, check for critical hit, otherwise, use argument.
+            if (request.rollAttack) {
+                if (to_hit.length > 0)
+                    this.processToHitAdvantage(to_hit_advantage, to_hit)
+                const critical_limit = request["critical-limit"] || 20;
+                is_critical = this.isCriticalHitD20(to_hit, critical_limit);
+            } else {
+                is_critical = request.rollCritical;
+            }
             if (is_critical) {
                 const critical_damage_rolls = []
                 for (let i = 0; i < (critical_damages.length); i++) {
@@ -2470,6 +2521,8 @@ class Beyond20RollRenderer {
             return this.rollSpellCard(request);
         } else if (request.type == "spell-attack") {
             return this.rollSpellAttack(request, custom_roll_dice);
+        } else if (request.type == "chat-message") {
+            return this.postMessage(request, request.name, request.message);
         } else {
             // 'custom' || anything unexpected;
             const mod = request.modifier || request.roll;
@@ -2546,15 +2599,22 @@ if (alertify.Beyond20Roll === undefined)
     alertify.dialog('Beyond20Roll', function () { return {}; }, false, "alert");
 
 class DigitalDice {
-    constructor(name, dice) {
+    constructor(name, rolls) {
         this._name = name;
-        this._dice = dice;
+        this._rolls = rolls;
+        this._dice = [];
+        for (let roll of rolls) {
+            this._dice.push(...roll.dice);
+        }
         for (let dice of this._dice) {
+            // Need access to the roll Class used to create the fake Roll on reroll
+            const rollClass = this._rolls[0].constructor;
             dice.rerollDice = async function (amount) {
-                const fake = new this.constructor(amount, this.faces, "");
-                const digital = new DigitalDice(name, [fake])
+                const fakeDice = new this.constructor(amount, this.faces, "");
+                const fakeRoll = new rollClass(fakeDice.formula);
+                const digital = new DigitalDice(name, [fakeRoll])
                 await digital.roll();
-                this._rolls.push(...fake._rolls);
+                this._rolls.push(...fakeRoll.dice[0]._rolls);
             }
         }
         this._notificationIds = this._getNotificationIds();
@@ -2587,7 +2647,7 @@ class DigitalDice {
             diceRolled += this.rollDice(dice.amount, `d${dice.faces}`);
         if (diceRolled > 0) {
             this._makeRoll();
-            return this.result()
+            return this.result();
         }
     }
     _getNotificationIds() {
@@ -2601,9 +2661,11 @@ class DigitalDice {
         if (!myId) return false;
 
         const result = $(`#${myId} .dice_result`);
+        this._myId = myId;
+        this._myResult = result;
+        
         result.find(".dice_result__info__title .dice_result__info__rolldetail").text("Beyond 20: ")
         result.find(".dice_result__info__title .dice_result__rolltype").text(this._name);
-        result.find(".dice_result__total").text("").append(E.img({ src: chrome.extension.getURL("images/icons/icon32.png") }));
         const breakdown = result.find(".dice_result__info__results .dice_result__info__breakdown").text();
         const dicenotation = result.find(".dice_result__info__dicenotation").text();
 
@@ -2623,7 +2685,6 @@ class DigitalDice {
                 }
             }
         }
-
         this._notificationIds = notifications;
         return true;
     }
@@ -2632,6 +2693,11 @@ class DigitalDice {
             await new Promise(r => setTimeout(r, 500));
         for (let dice of this._dice)
             await dice.handleModifiers();
+        this._rolls.forEach(roll => roll.calculateTotal());
+        
+        this._myResult.find(".dice_result__total-result").text(this._rolls[0].total);
+        this._myResult.find(".dice_result__info__results .dice_result__info__breakdown").text(this._rolls[0].formula)
+        this._myResult.find(".dice_result__info__dicenotation").text(`${this._rolls.length} roll${this._rolls.length > 1 ? 's' : ''} sent to VTT`).prepend(E.img({ src: chrome.extension.getURL("images/icons/icon32.png") }))
     }
 }
 /*
@@ -2645,7 +2711,7 @@ class DNDBDisplayer {
         this._error = null;
     }
 
-    postHTML(request, title, html, buttons, character, whisper, play_sound, attack_rolls, damage_rolls) {
+    postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
         let content = "<div class='beyond20-dice-roller'>";
         if (this._error) {
             content += "<div class='beyond20-roller-error'>" +
@@ -2668,19 +2734,20 @@ class DNDBDisplayer {
             const roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
             dndbeyondDiceRoller.rollDice(request, title, roll);
         });
-        element.find(".beyond20-chat-button").on('click', (event) => {
-            const button = $(event.currentTarget).text();
-            buttons[button]();
+        element.find(".beyond20-button-roll-damages").on('click', (event) => {
+            request.rollAttack = false;
+            request.rollDamage = true;
+            request.rollCritical = attack_rolls.some(r => !r.discarded && r["critical-success"])
+            dndbeyondDiceRoller.handleRollRequest(request);
         });
     }
 
-    async sendMessage(request, title, html, buttons, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
+    async sendMessage(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
         const req = {
             action: "rendered-roll",
             request,
             title,
             html,
-            buttons,
             character,
             whisper,
             play_sound,
@@ -2711,13 +2778,8 @@ class DNDBRoller {
     }
     async resolveRolls(name, rolls) {
         if (dndbeyondDiceRoller._settings['use-digital-dice'] && DigitalDice.isEnabled()) {
-            const dice = [];
-            for (let roll of rolls) {
-                dice.push(...roll.dice);
-            }
-            const digital = new DigitalDice(name, dice);
-            await digital.roll();
-            rolls.forEach(roll => roll.calculateTotal());
+            const digital = new DigitalDice(name, rolls);
+            return digital.roll();
         } else {
             return Promise.all(rolls.map(roll => roll.roll()))
         }
@@ -2739,8 +2801,10 @@ dndbeyondDiceRoller.handleRollError = (request, error) => {
     dndbeyondDiceRoller._displayer.setError(error);
     if (request.action === "rendered-roll") {
         return dndbeyondDiceRoller._displayer.postHTML(request.request, request.title,
-            request.html, request.buttons, request.character, request.whisper,
-            request.play_sound);
+            request.html, request.character, request.whisper,
+            request.play_sound, request.source, request.attributes, 
+            request.description, request.attack_rolls, request.roll_info, 
+            request.damage_rolls, request.total_damages, request.open);
     }
     request['original-whisper'] = request.whisper;
     request.whisper = WhisperType.NO;
@@ -2875,12 +2939,12 @@ function propertyListToDict(propList) {
 function descriptionToString(selector) {
     // strip tags : https://www.sitepoint.com/jquery-strip-html-tags-div/;
     return ($(selector).html() || "").replace(/<\/?[^>]+>/gi, '')
-        .replace("&nbsp;", " ")
-        .replace("&amp;", "&")
-        .replace("&quot;", "\"")
-        .replace("&apos;", "\'")
-        .replace("&lt;", "<")
-        .replace("&gt;", ">");
+        .replace(/&nbsp;/g, " ")
+        .replace(/&amp;/g, "&")
+        .replace(/&quot;/g, "\"")
+        .replace(/&apos;/g, "\'")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">");
 }
 
 function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {
@@ -2920,11 +2984,16 @@ function damagesToCrits(character, damages) {
     return crits;
 }
 
-function buildAttackRoll(character, attack_source, name, description, properties, damages = [], damage_types = [], to_hit = null, brutal = 0) {
+function buildAttackRoll(character, attack_source, name, description, properties,
+                         damages = [], damage_types = [], to_hit = null,
+                         brutal = 0, force_to_hit_only = false, force_damages_only = false) {
     const roll_properties = {
         "name": name,
         "attack-source": attack_source,
-        "description": description
+        "description": description,
+        "rollAttack": !force_damages_only,
+        "rollDamage": !force_to_hit_only && character.getGlobalSetting("auto-roll-damage", true),
+        "rollCritical": false
     }
     if (to_hit !== null)
         roll_properties["to-hit"] = to_hit;
@@ -3046,10 +3115,6 @@ async function sendRoll(character, rollType, fallback, args) {
         req["advantage"] = RollType.NORMAL;
 
     if (character.getGlobalSetting("use-digital-dice", false) && DigitalDice.isEnabled()) {
-        if (!character.getGlobalSetting("auto-roll-damage", true))
-            mergeSettings({ "auto-roll-damage": true }, (settings) => {
-                chrome.runtime.sendMessage({ "action": "settings", "type": "general", "settings": settings })
-            });
         req.sendMessage = true;
         dndbeyondDiceRoller.handleRollRequest(req);
     } else {
@@ -3496,12 +3561,12 @@ class Monster extends CharacterBase {
                     const abbr = parts[0];
                     const mod = parts.slice(1).join(" ");
                     this._saves[abbr] = mod;
-                    if (add_dice) {
-                        data.append(abbr + " " + mod);
-                        addIconButton(this, () => this.rollSavingThrow(abbr), data, { append: true });
-                        if (saves.length > this._saves.length)
-                            data.append(", ");
-                    }
+                    if (!add_dice)
+                        continue;
+                    data.append(abbr + " " + mod);
+                    addIconButton(this, () => this.rollSavingThrow(abbr), data, { append: true });
+                    if (saves.length > Object.keys(this._saves).length)
+                        data.append(", ");
                 }
             } else if (label == "Skills") {
                 const skills = value.split(", ");
@@ -3637,29 +3702,38 @@ class Monster extends CharacterBase {
         const damages = [];
         const damage_types = [];
         for (let dmg of damage_matches) {
-            // Skip any damage that starts wit "DC" because of "DC 13 saving throw || take damage" which could match.;
-            // A lookbehind would be a simple solution here but rapydscript doesn't let me.;
-            // Also skip "target reduced to 0 hit points by this damage" from demon-grinder vehicle.;
+            // Skip any damage that starts wit "DC" because of "DC 13 saving throw or take damage" which could match.
+            // A lookbehind would be a simple solution here but rapydscript doesn't let me.
+            // Also skip "target reduced to 0 hit points by this damage" from demon-grinder vehicle.
             if (dmg[1] == "DC " || dmg[4] == "hit points by this") {
                 continue;
             }
             const damage = dmg[3] || dmg[2];
-            damages.push(damage.replace("plus", "+"));
-            damage_types.push(dmg[4]);
+            // Make sure we did match a damage ('  some damage' would match the regexp, but there is no value)
+            if (damage) {
+                damages.push(damage.replace("plus", "+"));
+                damage_types.push(dmg[4]);
+            }
         }
         let save = null;
         const m = hit.match(/DC ([0-9]+) (.*?) saving throw/)
+        let preDCDamages = damages.length;
         if (m) {
             save = [m[2], m[1]];
+            preDCDamages = damage_matches.reduce((total, match) => {
+                if (match.index < m.index)
+                    total++;
+                return total
+            }, 0);
         } else {
             const m2 = hit.match(/escape DC ([0-9]+)/);
-            if (m)
-                save = ["Escape", m[1]];
+            if (m2)
+                save = ["Escape", m2[1]];
         }
 
         if (damages.length == 0 && save === null)
             return null;
-        return [damages, damage_types, save];
+        return [damages, damage_types, save, preDCDamages];
     }
 
     buildAttackRoll(name, description) {
@@ -3667,7 +3741,9 @@ class Monster extends CharacterBase {
             "name": name,
             "preview": this._avatar,
             "attack-source": "monster-action",
-            "description": description
+            "description": description,
+            "rollAttack": true,
+            "rollDamage": this.getGlobalSetting("auto-roll-damage", true),
         }
 
         const attackInfo = this.parseAttackInfo(description);
@@ -3683,11 +3759,11 @@ class Monster extends CharacterBase {
         const hitInfo = this.parseHitInfo(description);
         //console.log("Hit info for ", name, hitInfo);
         if (hitInfo) {
-            const [damages, damage_types, save] = hitInfo;
+            const [damages, damage_types, save, toCrit] = hitInfo;
             if (damages.length > 0) {
                 roll_properties["damages"] = damages;
                 roll_properties["damage-types"] = damage_types;
-                const crits = damagesToCrits(this, damages, damage_types);
+                const crits = damagesToCrits(this, damages.slice(0, toCrit), damage_types.slice(0, toCrit));
                 const crit_damages = [];
                 const crit_damage_types = [];
                 for (let [i, dmg] of crits.entries()) {
@@ -3723,7 +3799,8 @@ class Monster extends CharacterBase {
                 const roll_properties = this.buildAttackRoll(action_name, description);
                 if (roll_properties) {
                     const id = addRollButton(this, () => {
-                        sendRoll(this, "attack", "1d20" + roll_properties["to-hit"], roll_properties)
+                        const roll_properties = this.buildAttackRoll(action_name, description);
+                        sendRoll(this, "attack", "1d20" + (roll_properties["to-hit"] || ""), roll_properties)
                     }, block, {small: true, before: true, image: true, text: action_name});
                     $("#" + id).css({ "float": "", "text-align": "", "margin-top": "15px" });
                 }
@@ -4428,7 +4505,7 @@ function rollHitDie(multiclass, index) {
     });
 }
 
-function rollItem(force_display = false) {
+function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false) {
     const prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
     const properties = propertyListToDict(prop_list);
     properties["Properties"] = properties["Properties"] || "";
@@ -4542,7 +4619,8 @@ function rollItem(force_display = false) {
             damages.push(String(rage_damage));
             damage_types.push("Rage");
         }
-        if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false) && character.hasClassFeature("Divine Fury") &&
+        if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false) &&
+            character.getSetting("barbarian-divine-fury", true) && character.hasClassFeature("Divine Fury") &&
             properties["Attack Type"] == "Melee") {
             const barbarian_level = character.getClassLevel("Barbarian");
             damages.push(`1d6+${Math.floor(barbarian_level / 2)}`);
@@ -4704,7 +4782,9 @@ function rollItem(force_display = false) {
             damages,
             damage_types,
             to_hit,
-            brutal);
+            brutal,
+            force_to_hit_only,
+            force_damages_only);
         roll_properties["item-type"] = item_type;
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
@@ -4727,7 +4807,7 @@ function rollItem(force_display = false) {
     }
 }
 
-function rollAction(paneClass) {
+function rollAction(paneClass, force_to_hit_only = false, force_damages_only = false) {
     const properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property,." + paneClass + " .ddbc-property-list .ddbc-property-list__property"));
     //console.log("Properties are : " + String(properties));
     const action_name = $(".ct-sidebar__heading").text();
@@ -4817,7 +4897,8 @@ function rollAction(paneClass) {
                 damages.push(String(rage_damage));
                 damage_types.push("Rage");
             }
-            if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false) && character.hasClassFeature("Divine Fury")) {
+            if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false) &&
+                character.getSetting("barbarian-divine-fury", true) && character.hasClassFeature("Divine Fury")) {
                 const barbarian_level = character.getClassLevel("Barbarian");
                 damages.push(`1d6+${Math.floor(barbarian_level / 2)}`);
                 damage_types.push("Divine Fury");
@@ -4882,7 +4963,9 @@ function rollAction(paneClass) {
             damages,
             damage_types,
             to_hit,
-            brutal);
+            brutal,
+            force_to_hit_only,
+            force_damages_only);
 
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
@@ -4903,7 +4986,7 @@ function rollAction(paneClass) {
     }
 }
 
-function rollSpell(force_display = false) {
+function rollSpell(force_display = false, force_to_hit_only = false, force_damages_only = false) {
     const properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property,.ct-spell-pane .ddbc-property-list .ddbc-property-list__property"));
     //console.log("Properties are : " + String(properties));
     const spell_source = $(".ct-sidebar__header-parent").text();
@@ -5087,7 +5170,10 @@ function rollSpell(force_display = false) {
             properties,
             damages,
             damage_types,
-            to_hit);
+            to_hit,
+            0,
+            force_to_hit_only,
+            force_damages_only);
 
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
@@ -5161,10 +5247,20 @@ function displayFeature(paneClass) {
 
 function displayTrait() {
     const trait = $(".ct-sidebar__heading").text();
-    const description = $(".ct-trait-pane__input").text();
+    const description = descriptionToString(".ct-trait-pane__input");
     sendRollWithCharacter("trait", 0, {
         "name": trait,
         "description": description
+    });
+}
+
+function displayBackground() {
+    const background = $(".ct-sidebar__heading").text();
+    const description = descriptionToString(".ct-background-pane__description > p");
+    sendRollWithCharacter("trait", 0, {
+        name: background,
+        source: "Bakground",
+        description: description
     });
 }
 
@@ -5177,24 +5273,63 @@ function displayAction(paneClass) {
     });
 }
 
-function execute(paneClass) {
-    console.log("Beyond20: Executing panel : " + paneClass);
-    if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
-        rollSkillCheck(paneClass);
-    else if (paneClass == "ct-ability-pane")
-        rollAbilityCheck();
-    else if (paneClass == "ct-ability-saving-throws-pane")
-        rollSavingThrow();
-    else if (paneClass == "ct-initiative-pane")
-        rollInitiative();
-    else if (paneClass == "ct-item-pane")
-        rollItem();
-    else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
-        rollAction(paneClass);
-    else if (paneClass == "ct-spell-pane")
-        rollSpell();
-    else
-        displayPanel(paneClass);
+function handleCustomText(paneClass) {
+    const customRolls = {
+        before: [],
+        replace:[],
+        after:  []
+    };
+    // Relative to normal roll msg
+    const rollOrderTypes = ["before", "after", "replace"];
+    const pane = $(`.${paneClass}`);
+    const notes = descriptionToString(pane.find(".ddbc-property-list__property:contains('Notes:')"));
+    const description = descriptionToString(pane.find(".ct-action-detail__description, .ct-spell-detail__description, .ct-item-detail__description, .ddbc-action-detail__description, .ddbc-spell-detail__description, .ddbc-item-detail__description"));
+
+    // Look for all the roll orders
+    for (const rollOrder of rollOrderTypes) {
+        // Use global, multiline and dotall flags
+        const regexp = new RegExp(`\\[\\[${rollOrder}\\]\\]\\s*(.+?)\\s*\\[\\[/${rollOrder}\\]\\]`, "gms");
+        const matches = [...notes.matchAll(regexp), ...description.matchAll(regexp)];
+        customRolls[rollOrder] = matches.map(([match, content]) => content)
+    }
+    
+    return customRolls;
+}
+
+function execute(paneClass, force_to_hit_only = false, force_damages_only = false) {
+    console.log("Beyond20: Executing panel : " + paneClass, force_to_hit_only, force_damages_only);
+    const rollCustomText = (customTextList) => {
+        for (const customText of customTextList) {
+            sendRollWithCharacter("chat-message", 0, {
+                name: "",
+                message: customText
+            });
+        }
+     };
+     
+    const customTextRolls = handleCustomText(paneClass);
+    rollCustomText(customTextRolls.before);
+    if (customTextRolls.replace.length > 0) {
+        rollCustomText(customTextRolls.replace);
+    } else {
+        if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
+            rollSkillCheck(paneClass);
+        else if (paneClass == "ct-ability-pane")
+            rollAbilityCheck();
+        else if (paneClass == "ct-ability-saving-throws-pane")
+            rollSavingThrow();
+        else if (paneClass == "ct-initiative-pane")
+            rollInitiative();
+        else if (paneClass == "ct-item-pane")
+            rollItem(false, force_to_hit_only, force_damages_only);
+        else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
+            rollAction(paneClass, force_to_hit_only, force_damages_only);
+        else if (paneClass == "ct-spell-pane")
+            rollSpell(false, force_to_hit_only, force_damages_only);
+        else
+            displayPanel(paneClass);
+    }
+    rollCustomText(customTextRolls.after);
 }
 
 function displayPanel(paneClass) {
@@ -5209,6 +5344,8 @@ function displayPanel(paneClass) {
         displayTrait();
     else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
         displayAction(paneClass);
+    else if (paneClass == "ct-background-pane")
+        displayBackground();
     else
         alertify.alert("Not recognizing the currently open sidebar");
 }
@@ -5302,6 +5439,12 @@ function injectRollButton(paneClass) {
         addRollButtonEx(paneClass, ".ct-sidebar__heading", { image: false });
         const name = $(".ct-sidebar__heading").text();
         checkAndInjectDiceToRolls("." + paneClass + " .ct-snippet__content,." + paneClass + " .ddbc-snippet__content", name);
+    } else if (paneClass === "ct-background-pane") {
+        if (isRollButtonAdded())
+            return;
+        addRollButtonEx(paneClass, ".ct-sidebar__heading", { image: false });
+        const name = $(".ct-sidebar__heading").text();
+        checkAndInjectDiceToRolls("." + paneClass + " .ct-background-pane__description", name);
     } else if (paneClass == "ct-trait-pane") {
         if (isRollButtonAdded())
             return;
@@ -5527,6 +5670,7 @@ function deactivateTooltipListeners(el) {
 
 var quickRollHideId = 0;
 function activateTooltipListeners(el, direction, tooltip, callback) {
+    const site = $("#site");
     el.on('mouseenter', (e) => {
         if (quickRollHideId)
             clearTimeout(quickRollHideId);
@@ -5534,6 +5678,9 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
 
         const target = $(e.currentTarget)
         const position = target.offset()
+        const siteOffset = site.offset(); // Banner on top of the site can shift everything down
+        position.left -= siteOffset.left;
+        position.top -= siteOffset.top;
         if (direction === "up") {
             position.left += target.outerWidth() / 2 - tooltip.outerWidth() / 2;
             position.top -= tooltip.outerHeight() + 5;
@@ -5694,7 +5841,7 @@ function activateQuickRolls() {
         });
     }
 
-    for (let action of [...actions.toArray(), ...actions_to_hit.toArray(), ...actions_damage.toArray()]) {
+    const activateQRAction = (action, force_to_hit_only, force_damages_only) => {
         action = $(action);
         activateTooltipListeners(action, action.hasClass('integrated-dice__container') ? 'up' : 'right', beyond20_tooltip, (el) => {
             const name = el.closest(".ct-combat-attack,.ddbc-combat-attack")
@@ -5711,13 +5858,23 @@ function activateQuickRolls() {
             const pane_name = pane.find(".ct-sidebar__heading").text();
 
             if (name == pane_name)
-                execute(paneClass);
+                execute(paneClass, force_to_hit_only, force_damages_only);
             else
                 quick_roll = true;
         });
     }
 
-    for (let spell of [...spells.toArray(), ...spells_to_hit.toArray(), ...spells_damage.toArray()]) {
+    for (let action of actions.toArray()) {
+        activateQRAction(action, false, false);
+    }
+    for (let action of actions_to_hit.toArray()) {
+        activateQRAction(action, true, false);
+    }
+    for (let action of actions_damage.toArray()) {
+        activateQRAction(action, false, true);
+    }
+
+    const activateQRSpell = (spell, force_to_hit_only, force_damages_only) => {
         spell = $(spell);
         activateTooltipListeners(spell, spell.hasClass('integrated-dice__container') ? 'up' : 'right', beyond20_tooltip, (el) => {
             const name = el.closest(".ct-spells-spell,.ddbc-spells-spell")
@@ -5726,10 +5883,19 @@ function activateQuickRolls() {
             // If same item, clicking will be a noop && it won't modify the document;
             const pane_name = $(".ct-spell-pane .ct-sidebar__heading .ct-spell-name,.ct-spell-pane .ct-sidebar__heading .ddbc-spell-name").text();
             if (name == pane_name)
-                execute("ct-spell-pane");
+                execute("ct-spell-pane", force_to_hit_only, force_damages_only);
             else
                 quick_roll = true;
         });
+    }
+    for (let spell of spells.toArray()) {
+        activateQRSpell(spell, false, false);
+    }
+    for (let spell of spells_to_hit.toArray()) {
+        activateQRSpell(spell, true, false);
+    }
+    for (let spell of spells_damage.toArray()) {
+        activateQRSpell(spell, false, true);
     }
 }
 

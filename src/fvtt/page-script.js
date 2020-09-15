@@ -7,7 +7,7 @@ var settings = null;
 var extension_url = "/modules/beyond20/";
 
 class FVTTDisplayer {
-    postHTML(request, title, html, buttons, character, whisper, play_sound, attack_rolls, damage_rolls) {
+    postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
         Hooks.once('renderChatMessage', (chat_message, html, data) => {
             const icon = extension_url + "images/icons/badges/custom20.png";
             html.find(".ct-beyond20-custom-icon").attr('src', icon);
@@ -15,9 +15,11 @@ class FVTTDisplayer {
                 const roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
                 roll_renderer.rollDice(request, title, roll);
             });
-            html.find(".beyond20-chat-button").on('click', (event) => {
-                const button = $(event.currentTarget).text();
-                buttons[button]();
+            html.find(".beyond20-button-roll-damages").on('click', (event) => {
+                request.rollAttack = false;
+                request.rollDamage = true;
+                request.rollCritical = attack_rolls.some(r => !r.discarded && r["critical-success"])
+                roll_renderer.handleRollRequest(request)
             });
         });
         return this._postChatMessage(html, character, whisper, play_sound, attack_rolls, damage_rolls);
@@ -45,30 +47,54 @@ class FVTTDisplayer {
         // Build a dicePool, attach it to a Roll, then attach it to the ChatMessage
         // Then set ChatMessage type to "ROLL"
         if (attack_rolls.length > 0 || damage_rolls.length > 0) {
-            const pool = new DicePool([...attack_rolls, ...damage_rolls.map(d => d[1])].map(r => {
+            const rolls = [...attack_rolls, ...damage_rolls.map(d => d[1])];
+            const fvttRolls = rolls.map(r => {
                 if (r instanceof FVTTRoll) { return r._roll; }
-                r.class = "Roll";
-                r.dice = [];
-                r.parts = r.parts.map(p => {
+                const dice = [];
+                const result = []
+                const parts = [];
+                r.parts.forEach(p => {
+                    if (parts.length > 0) parts.push("+");
                     if (p.formula) {
+                        const idx = dice.length;
                         p.class = "Die";
-                        const idx = r.dice.length;
-                        r.dice.push(p)
-                        return `_d${idx}`;
+                        dice.push(p)
+                        result.push(p.total)
+                        parts.push(`_d${idx}`);
+                    } else {
+                        parts.push(p)
+                        result.push(p)
                     }
-                    return p;
                 })
+                r.class = "Roll";
+                r.dice = dice;
+                r.parts = parts;
+                r.result = result.join(" + ")
                 return Roll.fromData(r)
-            }));
-            pool.roll();
-            const formulas = pool.dice.map(d => d.formula);
-            const pool_roll = new Roll(`{${formulas.join(",")}}`);
-            pool_roll._result = [pool.total];
-            pool_roll._total = pool.total;
-            pool_roll._dice = pool.dice;
-            pool_roll._parts = [pool];
-            pool_roll._rolled = true;
-            data.roll = pool_roll;
+            });
+            if (isNewerVersion(game.data.version, "0.7")) {
+                // Foundry 0.7.x API
+                // This will accept backware compatible fvttRolls format
+                const pool = new DicePool({rolls: fvttRolls}).evaluate();
+                const pool_roll = Roll.create(pool.formula);
+                pool_roll.terms = [pool];
+                pool_roll._dice = pool.dice;
+                pool_roll.results = [pool.total];
+                pool_roll._total = pool.total;
+                pool_roll._rolled = true;
+                data.roll = pool_roll;
+            } else {
+                // Foundry 0.6.x API
+                const pool = new DicePool(fvttRolls).roll();
+                const formulas = pool.dice.map(d => d.formula);
+                const pool_roll = new Roll(`{${formulas.join(",")}}`);
+                pool_roll._result = [pool.total];
+                pool_roll._total = pool.total;
+                pool_roll._dice = pool.dice;
+                pool_roll.parts = [pool];
+                pool_roll._rolled = true;
+                data.roll = pool_roll;
+            }
             data.type = MESSAGE_TYPES.ROLL;
         }
         return ChatMessage.create(data);
@@ -229,8 +255,11 @@ function handleRoll(request) {
 }
 function handleRenderedRoll(request) {
     console.log("Received rendered roll request ", request);
-    roll_renderer._displayer.postHTML(request.request, request.title, request.html, request.buttons, request.character, request.whisper, request.play_sound,
-        request.attack_rolls, request.damage_rolls);
+    roll_renderer._displayer.postHTML(request.request, request.title,
+        request.html, request.character, request.whisper, 
+        request.play_sound, request.source, request.attributes, 
+        request.description, request.attack_rolls, request.roll_info, 
+        request.damage_rolls, request.total_damages, request.open);
     if (request.request.type === "initiative" && settings["initiative-tracker"]) {
         const initiative = request.attack_rolls.find((roll) => !roll.discarded);
         if (initiative)
@@ -242,7 +271,7 @@ function updateHP(name, current, total, temp) {
     console.log(`Updating HP for ${name} : (${current} + ${temp})/${total}`);
     name = name.toLowerCase().trim();
 
-    const tokens = canvas.tokens.placeables.filter((t) => t.name.toLowerCase().trim() == name);
+    const tokens = canvas.tokens.placeables.filter((t) => t.owner && t.name.toLowerCase().trim() == name);
 
     const dnd5e_data = { "data.attributes.hp.value": current, "data.attributes.hp.temp": temp, "data.attributes.hp.max": total }
     const sws_data = { "data.health.value": current + temp, "data.health.max": total }
@@ -258,8 +287,8 @@ function updateHP(name, current, total, temp) {
     for (let token of tokens) {
         if (token.actor && getProperty(token.actor.data, "data.attributes.hp") !== undefined) {
             token.actor.update(dnd5e_data);
-        } else if (token.actor && getProperty(actor.data, "data.health") !== undefined) {
-            actor.update(sws_data);
+        } else if (token.actor && getProperty(token.actor.data, "data.health") !== undefined) {
+            token.actor.update(sws_data);
         }
     }
 }

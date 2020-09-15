@@ -123,6 +123,10 @@ function populateCharacter(response) {
             e = createHTMLOption("barbarian-rage", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Divine Fury")) {
+            e = createHTMLOption("barbarian-divine-fury", false, character_settings);
+            options.append(e);
+        }
         if (response["class-features"].includes("Crimson Rite")) {
             e = createHTMLOption("bloodhunter-crimson-rite", false, character_settings);
             options.append(e);

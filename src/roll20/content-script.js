@@ -1,7 +1,7 @@
 console.log("Beyond20: Roll20 module loaded.");
 
 const ROLL20_WHISPER_QUERY = "?{Whisper?|Public Roll,|Whisper Roll,/w gm }"
-const ROLL20_ADVANTAGE_QUERY = "{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Super Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2kh}&#125&#125|Super Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2kl}&#125&#125}"
+const ROLL20_ADVANTAGE_QUERY = "{{query=1}} ?{Advantage?|Normal Roll,&#123&#123normal=1&#125&#125|Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2}&#125&#125|Roll Twice,&#123&#123always=1&#125&#125 &#123&#123r2={r2}&#125&#125|Super Advantage,&#123&#123advantage=1&#125&#125 &#123&#123r2={r2kh}&#125&#125|Super Disadvantage,&#123&#123disadvantage=1&#125&#125 &#123&#123r2={r2kl}&#125&#125}"
 const ROLL20_INITIATIVE_ADVANTAGE_QUERY = "?{Roll Initiative with advantage?|Normal Roll,1d20|Advantage,2d20kh1|Disadvantage,2d20kl1|Super Advantage,3d20kh1|Super Disadvantage,3d20kl1}"
 const ROLL20_TOLL_THE_DEAD_QUERY = "?{Is the target missing any of its hit points?|Yes,d12|No,d8}"
 const ROLL20_ADD_GENERIC_DAMAGE_DMG_QUERY = "?{Add %dmgType% damage?|No,0|Yes,%dmg%}"
@@ -191,7 +191,8 @@ function template(request, name, properties) {
     for (let key in properties)
         result += " {{" + key + "=" + properties[key] + "}}";
 
-    if (request.advantage !== undefined && properties.normal === undefined && ["simple", "atk", "atkdmg"].includes(name))
+    if (request.advantage !== undefined && properties.normal === undefined && properties.always === undefined
+        && ["simple", "atk", "atkdmg"].includes(name))
         result += advantageString(request.advantage, properties["r1"]);
 
     // Super advantage/disadvantage is not supported
@@ -295,18 +296,33 @@ function rollInitiative(request, custom_roll_dice = "") {
     }
     if (settings["initiative-tracker"]) {
         let dice = "1d20";
-        if (request.advantage == RollType.ADVANTAGE)
+        let r2 = false;
+        let indicator = "";
+        if (request.advantage == RollType.DOUBLE || request.advantage == RollType.THRICE) {
+            dice = "1d20";
+            r2 = true;
+        } else if (request.advantage == RollType.ADVANTAGE) {
             dice = "2d20kh1";
-        else if (request.advantage == RollType.SUPER_ADVANTAGE)
+            indicator = " (Advantage)";
+        } else if (request.advantage == RollType.SUPER_ADVANTAGE) {
             dice = "3d20kh1";
-        else if (request.advantage == RollType.DISADVANTAGE)
+            indicator = " (S Advantage)";
+        } else if (request.advantage == RollType.DISADVANTAGE) {
             dice = "2d20kl1";
-        else if (request.advantage == RollType.SUPER_DISADVANTAGE)
+            indicator = " (Disadvantage)";
+        } else if (request.advantage == RollType.SUPER_DISADVANTAGE) {
             dice = "3d20kl1";
-        else if (request.advantage == RollType.DOUBLE || request.advantage == RollType.THRICE || request.advantage == RollType.QUERY)
+            indicator = " (S Disadvantage)";
+        } else if (request.advantage == RollType.QUERY) {
             dice = ROLL20_INITIATIVE_ADVANTAGE_QUERY;
-        roll_properties["r1"] = genRoll(dice, { "INIT": request.initiative, "CUSTOM": custom_roll_dice, "": "&{tracker}" });
-        roll_properties["normal"] = 1;
+        }
+        roll_properties["r1"] = genRoll(dice, { "INIT": request.initiative, "CUSTOM": custom_roll_dice, "": "&{tracker}"}) + indicator;
+        if (r2) {
+            roll_properties["r2"] = genRoll(dice, { "INIT": request.initiative, "CUSTOM": custom_roll_dice});
+            roll_properties["always"] = 1;
+        } else {
+            roll_properties["normal"] = 1;
+        }
     } else {
         roll_properties["r1"] = genRoll("1d20", { "INIT": request.initiative, "CUSTOM": custom_roll_dice });
     }
@@ -606,6 +622,8 @@ function rollSpellAttack(request, custom_roll_dice) {
 }
 
 function convertRollToText(whisper, roll, standout=false) {
+    if (typeof (roll) === "string")
+        return roll;
     const total = roll.total || 0;
     const prefix = (standout && !roll.discarded) ? '{' : '';
     const suffix = (standout && !roll.discarded) ? '}' : '';
@@ -644,7 +662,207 @@ function convertRollToText(whisper, roll, standout=false) {
     return result;
 };
 
+async function handleRoll(request) {
+    let custom_roll_dice = "";
+    if (request.character.type == "Character")
+        custom_roll_dice = request.character.settings["custom-roll-dice"] || "";
+    if (request.type == "skill") {
+        roll = rollSkill(request, custom_roll_dice);
+    } else if (request.type == "ability") {
+        roll = rollAbility(request, custom_roll_dice);
+    } else if (request.type == "saving-throw") {
+        roll = rollSavingThrow(request, custom_roll_dice);
+    } else if (request.type == "initiative") {
+        roll = rollInitiative(request, custom_roll_dice);
+    } else if (request.type == "hit-dice") {
+        roll = rollHitDice(request);
+    } else if (request.type == "item") {
+        roll = rollItem(request, custom_roll_dice);
+    } else if (["feature", "trait", "action"].includes(request.type)) {
+        roll = rollTrait(request);
+    } else if (request.type == "death-save") {
+        roll = rollDeathSave(request, custom_roll_dice);
+    } else if (request.type == "attack") {
+        roll = rollAttack(request, custom_roll_dice);
+    } else if (request.type == "spell-card") {
+        roll = rollSpellCard(request);
+    } else if (request.type == "spell-attack") {
+        roll = rollSpellAttack(request, custom_roll_dice);
+    } else if (request.type == "chat-message") {
+        roll = request.message;
+    } else {
+        // 'custom' || anything unexpected;
+        const mod = request.modifier != undefined ? request.modifier : request.roll;
+        const rname = request.name != undefined ? request.name : request.type;
+        roll = template(request, "simple", {
+            "charname": request.character.name,
+            "rname": rname,
+            "mod": mod,
+            "r1": subRolls(request.roll),
+            "normal": 1
+        });
+    }
+    const character_name = request.whisper == WhisperType.HIDE_NAMES ? "???" : request.character.name;
+    postChatMessage(roll, character_name);
+}
+
+async function hookRollDamages(rollDamages, request) {
+    const originalRequest = request.request;
+    let a = null;
+    let timeout = 50;
+    while (timeout > 0) {
+        a = $(`a[href='!${rollDamages}']`);
+        // Yeay for crappy code.
+        // Wait until the link appears in chat
+        if (a.length > 0)
+            break;
+        a = null;
+        await new Promise(r => setTimeout(r, 500));
+        timeout--;
+    }
+    if (a) {
+        a.attr("href", "!");
+        a.click(ev => {
+            originalRequest.rollAttack = false;
+            originalRequest.rollDamage = true;
+            originalRequest.rollCritical = request.attack_rolls.some(r => !r.discarded && r["critical-success"])
+            roll_renderer.handleRollRequest(originalRequest);
+        });
+    }
+}
+
+async function handleOGLRenderedRoll(request) {
+    if (request.attack_rolls.length === 0 && request.damage_rolls.length === 0) {
+        return handleRoll(request.request);
+    }
+    const originalRequest = request.request;
+    let message = ""
+    let rollDamages = null;
+    let atkType = "simple";
+    const atk_props = {
+        "charname": request.character,
+        "rname": request.title
+    };
+    if (request.attack_rolls.length > 1) {
+        atk_props["r1"] = convertRollToText(request.whisper, request.attack_rolls[0]);
+        atk_props["r2"] = request.attack_rolls.slice(1).map(roll => convertRollToText(request.whisper, roll)).join(" | ")
+        atk_props["always"] = "1";
+        atk_props["attack"] = "1"
+    } else if (request.attack_rolls.length > 0) {
+        atk_props["r1"] = convertRollToText(request.whisper, request.attack_rolls[0]);
+        atk_props["normal"]  = "1";
+        atk_props["attack"] = "1"
+    }
+    if (originalRequest.type === "initiative" && settings["initiative-tracker"]) {
+        const initiative = request.attack_rolls.find((roll) => !roll.discarded);
+        if (initiative)
+            atk_props["initiative"] = `[[${initiative.total} &{tracker}]]`;
+    }
+    if (originalRequest.rollAttack && !originalRequest.rollDamage) {
+        rollDamages = `beyond20-rendered-roll-button-${Math.random()}`;
+        atk_props["rname"]  = `[${request.title}](!${rollDamages})`;
+    }
+
+    if (originalRequest.range !== undefined) {
+        atk_props["range"] = originalRequest.range;
+        atkType = "atkdmg";
+    }
+
+    if (originalRequest["save-dc"] !== undefined) {
+        atk_props["save"] = 1;
+        atk_props["saveattr"] = originalRequest["save-ability"];
+        atk_props["savedc"] = originalRequest["save-dc"];
+        atkType = "atkdmg";
+    }
+    if (originalRequest["cast-at"] !== undefined) {
+        atk_props["hldmg"] = genRoll(originalRequest["cast-at"][0]) + originalRequest["cast-at"].slice(1) + " Level";
+        atkType = "atkdmg";
+    }
+    let components = originalRequest.components || "";
+    if (components != "")
+        atkType = "atkdmg";
+    if (settings["components-display"] === "all") {
+        if (components != "") {
+            atk_props["desc"] = settings["component-prefix"] + components;
+            components = "";
+        }
+    } else if (settings["components-display"] === "material") {
+        while (components != "") {
+            if (["V", "S"].includes(components[0])) {
+                components = components.slice(1);
+                if (components.startsWith(", "))
+                    components = components.slice(2);
+            }
+            if (components[0] == "M") {
+                atk_props["desc"] = settings["component-prefix"] + components.slice(2, -1);
+                components = "";
+            }
+        }
+    }
+    if (request.damage_rolls.length > 0) {
+        atkType = "atkdmg";
+        atk_props["damage"] = "1";
+        atk_props["dmg1flag"] = "1";
+        atk_props["dmg1"] = convertRollToText(request.whisper, request.damage_rolls[0][1]);
+        atk_props["dmg1type"] = request.damage_rolls[0][0];
+    };
+    if (request.damage_rolls.length > 1) {
+        atk_props["dmg2flag"] = "1";
+        atk_props["dmg2"] = convertRollToText(request.whisper, request.damage_rolls[1][1]);
+        atk_props["dmg2type"] = request.damage_rolls[1][0];
+    }
+
+    message += template(request, atkType, atk_props) + "\n";
+
+    let damages = request.damage_rolls.slice(2)
+    while (damages.length > 0) {
+        const dmg_props = {
+            "damage": "1",
+            "dmg1flag": "1",
+            "dmg1": convertRollToText(request.whisper, damages[0][1]),
+            "dmg1type": damages[0][0]
+        };
+        damages = damages.slice(1);
+        if (damages.length > 0) {
+            dmg_props["dmg2flag"] = "1";
+            dmg_props["dmg2"] = convertRollToText(request.whisper, damages[0][1]);
+            dmg_props["dmg2type"] = damages[0][0];
+            damages = damages.slice(1);
+        }
+        message += template(request, "dmg", dmg_props) + "\n";
+    }
+    let totals = Object.entries(request.total_damages)
+    while (totals.length > 0) {
+        const dmg_props = {
+            "damage": "1",
+            "dmg1flag": "1",
+            "dmg1": convertRollToText(request.whisper, totals[0][1]),
+            "dmg1type": `Total ${totals[0][0]}`
+        };
+        if (totals.length === Object.entries(request.total_damages).length)
+            dmg_props["desc"] = "Totals"
+        totals = totals.slice(1);
+        if (totals.length > 0) {
+            dmg_props["dmg2flag"] = "1"
+            dmg_props["dmg2"] = convertRollToText(request.whisper, totals[0][1])
+            dmg_props["dmg2type"] = `Total ${totals[0][0]}`;
+            totals = totals.slice(1);
+        }
+        message += template(request, "dmg", dmg_props) + "\n";
+    }
+    const character_name = request.whisper == WhisperType.HIDE_NAMES ? "???" : request.character.name;
+    postChatMessage(message, character_name);
+
+    if (rollDamages) {
+        hookRollDamages(rollDamages, request);
+    }
+}
+
 async function handleRenderedRoll(request) {
+    const isOGL = $("#isOGL").val() === "1";
+    if (settings["roll20-template"] === "roll20" && isOGL) {
+        return handleOGLRenderedRoll(request);
+    }
     const properties = {};
     if (request.source)
         properties.source = request.source;
@@ -665,10 +883,7 @@ async function handleRenderedRoll(request) {
         title = `${request.title} (${request.character})`
     }
     for (let [roll_name, roll, flags] of request.damage_rolls) {
-        if (typeof (roll) === "string")
-            properties[roll_name] = roll
-        else
-            properties[roll_name] = convertRollToText(request.whisper, roll);
+        properties[roll_name] = convertRollToText(request.whisper, roll);
     }
     if (Object.keys(request.total_damages).length > 0)
         properties["Totals"] = "";
@@ -676,37 +891,21 @@ async function handleRenderedRoll(request) {
     for (let [key, roll] of Object.entries(request.total_damages))
         properties["Total " + key] = convertRollToText(request.whisper, roll);
 
-    const buttons = {}
-    if (request.buttons) {
-        for (let button in request.buttons) {
-            const id = `beyond20-rendered-roll-button-${Math.random()}`;
-            buttons[id] = request.buttons[button];
-            properties[button] = `[Click](!${id})`;
-        }
+    let rollDamages = null;
+    const originalRequest = request.request;
+    if (originalRequest.rollAttack && !originalRequest.rollDamage) {
+        rollDamages = `beyond20-rendered-roll-button-${Math.random()}`;
+        properties["Roll Damages"] = `[Click](!${rollDamages})`;
     }
     let message = createTable(request, title, properties);
-    if (request.request.type === "initiative" && settings["initiative-tracker"]) {
+    if (originalRequest.type === "initiative" && settings["initiative-tracker"]) {
         const initiative = request.attack_rolls.find((roll) => !roll.discarded);
         if (initiative)
             message += `  [[${initiative.total} &{tracker}]]`;
     }
     postChatMessage(message, request.character);
-    for (let button in buttons) {
-        let a = null;
-        let timeout = 20;
-        while (timeout > 0) {
-            a = $(`a[href='!${button}']`);
-            // Yeay for crappy code.
-            // Wait until the link appears in chat
-            if (a.length > 0)
-                break;
-            a = null;
-            await new Promise(r => setTimeout(r, 500));
-            timeout--;
-        }
-        if (!a) continue;
-        a.attr("href", "!");
-        a.click(ev => buttons[button]());
+    if (rollDamages) {
+        hookRollDamages(rollDamages, request);
     }
 }
 
@@ -751,14 +950,22 @@ function handleMessage(request, sender, sendResponse) {
                 conditions = request.character.conditions.concat([`Exhausted (Level ${request.character.exhaustion})`]);
             }
 
-            // We can't use window.is_gm because it's  !available to the content script;
+            // We can't use window.is_gm because it's not available to the content script
             const is_gm = $("#textchat .message.system").text().includes("The player link for this campaign is");
-            const em_command = is_gm ? "/emas " : "/em ";
+            let em_command = `/emas "${character_name}" `;
+            if (!is_gm) {
+                // Add character name only if we can't speak as them
+                const availableAs = Array.from(speakingas.children).map(c => c.text.toLowerCase())
+                if (availableAs.includes(character_name.toLowerCase()))
+                    em_command = "/em ";
+                else
+                    em_command = `/em | ${character_name} `;
+            }
             let message = "";
             if (conditions.length == 0) {
-                message = em_command + character_name + " has no active condition";
+                message = em_command + "has no active conditions";
             } else {
-                message = em_command + character_name + " is : " + conditions.join(", ");
+                message = em_command + "is: " + conditions.join(", ");
             }
             postChatMessage(message, character_name);
         }
@@ -770,48 +977,9 @@ function handleMessage(request, sender, sendResponse) {
         }
         const isOGL = $("#isOGL").val() === "1";
         if (settings["roll20-template"] === "default" || !isOGL) {
-            request.sendMessage = true;
             return roll_renderer.handleRollRequest(request);
         }
-        let custom_roll_dice = "";
-        if (request.character.type == "Character")
-            custom_roll_dice = request.character.settings["custom-roll-dice"] || "";
-        if (request.type == "skill") {
-            roll = rollSkill(request, custom_roll_dice);
-        } else if (request.type == "ability") {
-            roll = rollAbility(request, custom_roll_dice);
-        } else if (request.type == "saving-throw") {
-            roll = rollSavingThrow(request, custom_roll_dice);
-        } else if (request.type == "initiative") {
-            roll = rollInitiative(request, custom_roll_dice);
-        } else if (request.type == "hit-dice") {
-            roll = rollHitDice(request);
-        } else if (request.type == "item") {
-            roll = rollItem(request, custom_roll_dice);
-        } else if (["feature", "trait", "action"].includes(request.type)) {
-            roll = rollTrait(request);
-        } else if (request.type == "death-save") {
-            roll = rollDeathSave(request, custom_roll_dice);
-        } else if (request.type == "attack") {
-            roll = rollAttack(request, custom_roll_dice);
-        } else if (request.type == "spell-card") {
-            roll = rollSpellCard(request);
-        } else if (request.type == "spell-attack") {
-            roll = rollSpellAttack(request, custom_roll_dice);
-        } else {
-            // 'custom' || anything unexpected;
-            const mod = request.modifier != undefined ? request.modifier : request.roll;
-            const rname = request.name != undefined ? request.name : request.type;
-            roll = template(request, "simple", {
-                "charname": request.character.name,
-                "rname": rname,
-                "mod": mod,
-                "r1": subRolls(request.roll),
-                "normal": 1
-            });
-        }
-        const character_name = request.whisper == WhisperType.HIDE_NAMES ? "???" : request.character.name;
-        postChatMessage(roll, character_name);
+        handleRoll(request);
     } else if (request.action == "rendered-roll") {
         handleRenderedRoll(request);
     } else if (request.action === "update-combat") {

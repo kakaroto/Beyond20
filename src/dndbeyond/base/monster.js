@@ -145,12 +145,12 @@ class Monster extends CharacterBase {
                     const abbr = parts[0];
                     const mod = parts.slice(1).join(" ");
                     this._saves[abbr] = mod;
-                    if (add_dice) {
-                        data.append(abbr + " " + mod);
-                        addIconButton(this, () => this.rollSavingThrow(abbr), data, { append: true });
-                        if (saves.length > this._saves.length)
-                            data.append(", ");
-                    }
+                    if (!add_dice)
+                        continue;
+                    data.append(abbr + " " + mod);
+                    addIconButton(this, () => this.rollSavingThrow(abbr), data, { append: true });
+                    if (saves.length > Object.keys(this._saves).length)
+                        data.append(", ");
                 }
             } else if (label == "Skills") {
                 const skills = value.split(", ");
@@ -286,29 +286,38 @@ class Monster extends CharacterBase {
         const damages = [];
         const damage_types = [];
         for (let dmg of damage_matches) {
-            // Skip any damage that starts wit "DC" because of "DC 13 saving throw || take damage" which could match.;
-            // A lookbehind would be a simple solution here but rapydscript doesn't let me.;
-            // Also skip "target reduced to 0 hit points by this damage" from demon-grinder vehicle.;
+            // Skip any damage that starts wit "DC" because of "DC 13 saving throw or take damage" which could match.
+            // A lookbehind would be a simple solution here but rapydscript doesn't let me.
+            // Also skip "target reduced to 0 hit points by this damage" from demon-grinder vehicle.
             if (dmg[1] == "DC " || dmg[4] == "hit points by this") {
                 continue;
             }
             const damage = dmg[3] || dmg[2];
-            damages.push(damage.replace("plus", "+"));
-            damage_types.push(dmg[4]);
+            // Make sure we did match a damage ('  some damage' would match the regexp, but there is no value)
+            if (damage) {
+                damages.push(damage.replace("plus", "+"));
+                damage_types.push(dmg[4]);
+            }
         }
         let save = null;
         const m = hit.match(/DC ([0-9]+) (.*?) saving throw/)
+        let preDCDamages = damages.length;
         if (m) {
             save = [m[2], m[1]];
+            preDCDamages = damage_matches.reduce((total, match) => {
+                if (match.index < m.index)
+                    total++;
+                return total
+            }, 0);
         } else {
             const m2 = hit.match(/escape DC ([0-9]+)/);
-            if (m)
-                save = ["Escape", m[1]];
+            if (m2)
+                save = ["Escape", m2[1]];
         }
 
         if (damages.length == 0 && save === null)
             return null;
-        return [damages, damage_types, save];
+        return [damages, damage_types, save, preDCDamages];
     }
 
     buildAttackRoll(name, description) {
@@ -316,7 +325,9 @@ class Monster extends CharacterBase {
             "name": name,
             "preview": this._avatar,
             "attack-source": "monster-action",
-            "description": description
+            "description": description,
+            "rollAttack": true,
+            "rollDamage": this.getGlobalSetting("auto-roll-damage", true),
         }
 
         const attackInfo = this.parseAttackInfo(description);
@@ -332,11 +343,11 @@ class Monster extends CharacterBase {
         const hitInfo = this.parseHitInfo(description);
         //console.log("Hit info for ", name, hitInfo);
         if (hitInfo) {
-            const [damages, damage_types, save] = hitInfo;
+            const [damages, damage_types, save, toCrit] = hitInfo;
             if (damages.length > 0) {
                 roll_properties["damages"] = damages;
                 roll_properties["damage-types"] = damage_types;
-                const crits = damagesToCrits(this, damages, damage_types);
+                const crits = damagesToCrits(this, damages.slice(0, toCrit), damage_types.slice(0, toCrit));
                 const crit_damages = [];
                 const crit_damage_types = [];
                 for (let [i, dmg] of crits.entries()) {
@@ -372,7 +383,8 @@ class Monster extends CharacterBase {
                 const roll_properties = this.buildAttackRoll(action_name, description);
                 if (roll_properties) {
                     const id = addRollButton(this, () => {
-                        sendRoll(this, "attack", "1d20" + roll_properties["to-hit"], roll_properties)
+                        const roll_properties = this.buildAttackRoll(action_name, description);
+                        sendRoll(this, "attack", "1d20" + (roll_properties["to-hit"] || ""), roll_properties)
                     }, block, {small: true, before: true, image: true, text: action_name});
                     $("#" + id).css({ "float": "", "text-align": "", "margin-top": "15px" });
                 }

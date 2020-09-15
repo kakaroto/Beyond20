@@ -1,12 +1,14 @@
 
 class Roll20Displayer {
-    async sendMessage(request, title, html, buttons, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
+    sendMessage(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
+        return this.postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);
+    }
+    postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
         const req = {
             action: "rendered-roll",
             request,
             title,
             html,
-            buttons,
             character,
             whisper,
             play_sound,
@@ -21,6 +23,7 @@ class Roll20Displayer {
         }
         handleRenderedRoll(req);
     }
+    
     displayError(message) {
         alertify.error(message);
     }

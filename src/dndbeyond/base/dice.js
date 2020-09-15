@@ -9,7 +9,7 @@ class DNDBDisplayer {
         this._error = null;
     }
 
-    postHTML(request, title, html, buttons, character, whisper, play_sound, attack_rolls, damage_rolls) {
+    postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
         let content = "<div class='beyond20-dice-roller'>";
         if (this._error) {
             content += "<div class='beyond20-roller-error'>" +
@@ -32,19 +32,20 @@ class DNDBDisplayer {
             const roll = $(event.currentTarget).find(".beyond20-roll-formula").text();
             dndbeyondDiceRoller.rollDice(request, title, roll);
         });
-        element.find(".beyond20-chat-button").on('click', (event) => {
-            const button = $(event.currentTarget).text();
-            buttons[button]();
+        element.find(".beyond20-button-roll-damages").on('click', (event) => {
+            request.rollAttack = false;
+            request.rollDamage = true;
+            request.rollCritical = attack_rolls.some(r => !r.discarded && r["critical-success"])
+            dndbeyondDiceRoller.handleRollRequest(request);
         });
     }
 
-    async sendMessage(request, title, html, buttons, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
+    async sendMessage(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
         const req = {
             action: "rendered-roll",
             request,
             title,
             html,
-            buttons,
             character,
             whisper,
             play_sound,
@@ -75,13 +76,8 @@ class DNDBRoller {
     }
     async resolveRolls(name, rolls) {
         if (dndbeyondDiceRoller._settings['use-digital-dice'] && DigitalDice.isEnabled()) {
-            const dice = [];
-            for (let roll of rolls) {
-                dice.push(...roll.dice);
-            }
-            const digital = new DigitalDice(name, dice);
-            await digital.roll();
-            rolls.forEach(roll => roll.calculateTotal());
+            const digital = new DigitalDice(name, rolls);
+            return digital.roll();
         } else {
             return Promise.all(rolls.map(roll => roll.roll()))
         }
@@ -103,8 +99,10 @@ dndbeyondDiceRoller.handleRollError = (request, error) => {
     dndbeyondDiceRoller._displayer.setError(error);
     if (request.action === "rendered-roll") {
         return dndbeyondDiceRoller._displayer.postHTML(request.request, request.title,
-            request.html, request.buttons, request.character, request.whisper,
-            request.play_sound);
+            request.html, request.character, request.whisper,
+            request.play_sound, request.source, request.attributes, 
+            request.description, request.attack_rolls, request.roll_info, 
+            request.damage_rolls, request.total_damages, request.open);
     }
     request['original-whisper'] = request.whisper;
     request.whisper = WhisperType.NO;

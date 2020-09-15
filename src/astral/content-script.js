@@ -459,7 +459,7 @@ function displayAvatar(request) {
     return {
         icon: 'home-1',
         color: '#FFFFFF',
-        title: request.character.name,
+        title: request.character.name || request.name,
         message: `![${request.name}](${request.character.avatar})`
     };
 }
@@ -531,6 +531,13 @@ function handleMessage(request, sender, sendResponse) {
             roll = rollSpellAttack(request, custom_roll_dice);
         } else if (request.type == "avatar") {
             roll = displayAvatar(request);
+        } else if (request.type == "chat-message") {
+            roll = { 
+                icon: 'roman-helmet', 
+                color: '#FFFFFF',
+                title: request.name,
+                message: subRolls(request.message)
+            };
         } else {            
             roll = {
                 icon: 'home-1',

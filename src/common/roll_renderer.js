@@ -60,7 +60,7 @@ class Beyond20RollRenderer {
             [RollType.SUPER_ADVANTAGE]: "Super Advantage",
             [RollType.SUPER_DISADVANTAGE]: "Super Disadvantage"
         }
-        const order = [RollType.DOUBLE, RollType.NORMAL, RollType.ADVANTAGE, RollType.DISADVANTAGE, RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE];
+        const order = [RollType.NORMAL, RollType.ADVANTAGE, RollType.DISADVANTAGE, RollType.DOUBLE, RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE];
         return parseInt(await this.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order));
     }
 
@@ -194,28 +194,10 @@ class Beyond20RollRenderer {
 
     async postDescription(request, title, source, attributes, description, attack_rolls = [], roll_info = [], damage_rolls = [], open = false) {
         let play_sound = false;
-        let buttons = {}
 
         if (request.whisper == WhisperType.HIDE_NAMES) {
             description = null;
             title = "???";
-        }
-        // Handle the case where you don't want to auto-roll damages;
-        if (damage_rolls.length > 0 && attack_rolls.length > 0 && !this._settings["auto-roll-damage"]) {
-            const roll_damages_args = {
-                damages: damage_rolls,
-                reroll: false
-            };
-            buttons = {
-                "Roll Damages": async () => {
-                    let damages = roll_damages_args.damages;
-                    if (roll_damages_args.reroll)
-                        damages = await this.rerollDamages(damages);
-                    roll_damages_args.reroll = true;
-                    this.postDescription(request, title, source, attributes, description, [], [], damages);
-                }
-            }
-            damage_rolls = [];
         }
 
         let html = '<div class="beyond20-message">';
@@ -322,8 +304,8 @@ class Beyond20RollRenderer {
             html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
         }
 
-        for (let button in buttons)
-            html += '<button class="beyond20-chat-button">' + button + '</button>';
+        if (request.rollAttack && !request.rollDamage)
+            html += '<button class="beyond20-button-roll-damages">Roll Damages</button>';
 
         html += "</div>";
         const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
@@ -334,9 +316,9 @@ class Beyond20RollRenderer {
         });
 
         if (request.sendMessage && this._displayer.sendMessage)
-            this._displayer.sendMessage(request, title, html, buttons, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
+            this._displayer.sendMessage(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
         else
-            this._displayer.postHTML(request, title, html, buttons, character, request.whisper, play_sound, attack_rolls, damage_rolls);
+            this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);
 
         if (attack_rolls.length > 0) {
             return attack_rolls.find((r) => !r.isDiscarded());
@@ -347,6 +329,17 @@ class Beyond20RollRenderer {
         } else {
             return null;
         }
+    }
+
+    postMessage(request, title, message) {
+        const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
+        if (request.whisper == WhisperType.HIDE_NAMES)
+            title = "???";
+        if (request.sendMessage && this._displayer.sendMessage)
+            this._displayer.sendMessage(request, title, message, character, request.whisper, false, '', {}, '', [], [], [], [], true);
+        else
+            this._displayer.postHTML(request, title, message, character, request.whisper, false, '', {}, '', [], [], [], [], true);
+
     }
 
     createRoll(dice, data) {
@@ -517,7 +510,7 @@ class Beyond20RollRenderer {
         const damage_rolls = [];
         const all_rolls = [];
         let is_critical = false;
-        if (request["to-hit"] !== undefined) {
+        if (request.rollAttack && request["to-hit"] !== undefined) {
             const custom = custom_roll_dice == "" ? "" : (" + " + custom_roll_dice);
             const to_hit_mod = " + " + request["to-hit"] + custom;
             const {advantage, rolls} = await this.getToHit(request, request.name, to_hit_mod)
@@ -526,7 +519,7 @@ class Beyond20RollRenderer {
             all_rolls.push(...rolls);
         }
 
-        if (request.damages !== undefined) {
+        if (request.rollDamage && request.damages !== undefined) {
             const damages = request.damages;
             const damage_types = request["damage-types"];
             const critical_damages = request["critical-damages"];
@@ -644,10 +637,15 @@ class Beyond20RollRenderer {
                 }
             }
 
-            if (to_hit.length > 0)
-                this.processToHitAdvantage(to_hit_advantage, to_hit)
-            const critical_limit = request["critical-limit"] || 20;
-            is_critical = this.isCriticalHitD20(to_hit, critical_limit);
+            // If rolling the attack, check for critical hit, otherwise, use argument.
+            if (request.rollAttack) {
+                if (to_hit.length > 0)
+                    this.processToHitAdvantage(to_hit_advantage, to_hit)
+                const critical_limit = request["critical-limit"] || 20;
+                is_critical = this.isCriticalHitD20(to_hit, critical_limit);
+            } else {
+                is_critical = request.rollCritical;
+            }
             if (is_critical) {
                 const critical_damage_rolls = []
                 for (let i = 0; i < (critical_damages.length); i++) {
@@ -814,6 +812,8 @@ class Beyond20RollRenderer {
             return this.rollSpellCard(request);
         } else if (request.type == "spell-attack") {
             return this.rollSpellAttack(request, custom_roll_dice);
+        } else if (request.type == "chat-message") {
+            return this.postMessage(request, request.name, request.message);
         } else {
             // 'custom' || anything unexpected;
             const mod = request.modifier || request.roll;
