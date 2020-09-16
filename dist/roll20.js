@@ -1735,6 +1735,16 @@ class Beyond20RollRenderer {
     setSettings(settings) {
         this._settings = settings;
     }
+    _mergeSettings(data) {
+        // Catch the mergeSettings since roll renderer could be called from a page script
+        // which wouldn't have access to the chrome.storage APIs
+        try {
+            mergeSettings(data, (settings) => {
+                this.setSettings(settings);
+                chrome.runtime.sendMessage({ "action": "settings", "type": "general", "settings": settings });
+            });
+        } catch (err) {}
+    }
 
     async queryGeneric(title, question, choices, select_id = "generic-query", order, selection) {
         let html = `<form><div class="beyond20-form-row"><label>${question}</label><select id="${select_id}" name="${select_id}">`;
@@ -1769,7 +1779,7 @@ class Beyond20RollRenderer {
         const lastQuery = this._settings["last-advantage-query"];
         const advantage = parseInt(await this.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order, lastQuery));
         if (lastQuery != advantage) {
-            mergeSettings({ "last-advantage-query": advantage })
+            this._mergeSettings({ "last-advantage-query": advantage })
         }
         return advantage;
     }
@@ -1784,7 +1794,7 @@ class Beyond20RollRenderer {
         const lastQuery = this._settings["last-whisper-query"];
         const whisper = parseInt(await dndbeyondDiceRoller.queryGeneric(title, "Select whisper mode : ", choices, "whisper-mode", null, lastQuery));
         if (lastQuery != whisper) {
-            mergeSettings({ "last-whisper-query": whisper })
+            this._mergeSettings({ "last-whisper-query": whisper })
         }
         return whisper;
     }
