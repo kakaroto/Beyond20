@@ -78,7 +78,6 @@ class FVTTDisplayer {
                 const pool = new DicePool({rolls: fvttRolls}).evaluate();
                 const pool_roll = Roll.create(pool.formula);
                 pool_roll.terms = [pool];
-                pool_roll._dice = pool.dice;
                 pool_roll.results = [pool.total];
                 pool_roll._total = pool.total;
                 pool_roll._rolled = true;
