@@ -1238,6 +1238,22 @@ function injectRollToSpellAttack() {
     }
 }
 
+function injectRollToSnippets() {
+    const groups = $(`.ct-actions .ct-actions-list .ct-actions-list__activatable .ct-feature-snippet,
+                        .ct-features .ct-class-detail .ct-feature-snippet,
+                        .ct-features .ct-race-detail .ct-feature-snippet,
+                        .ct-features .ct-feats-detail .ct-feature-snippet`);
+
+    for (let group of groups.toArray()) {
+        const snippet = $(group);
+        if (snippet.hasClass("beyond20-rolls-added"))
+                continue;
+        snippet.addClass("beyond20-rolls-added");
+        const name = snippet.find(".ct-feature-snippet__heading")[0].childNodes[0].textContent.trim();
+        checkAndInjectDiceToRolls(snippet.find(".ct-feature-snippet__content"), name);
+    }
+}
+
 function injectSettingsButton() {
     if ($(".ct-beyond20-settings").length > 0)
         return;
@@ -1527,6 +1543,7 @@ function documentModified(mutations, observer) {
 
     character.updateInfo();
     injectRollToSpellAttack();
+    injectRollToSnippets();
     injectSettingsButton();
     activateQuickRolls();
 
