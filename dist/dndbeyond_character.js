@@ -3077,14 +3077,16 @@ async function sendRoll(character, rollType, fallback, args) {
     let is_monster = character.type() == "Monster" || character.type() == "Vehicle";
     if (is_monster && whisper_monster != WhisperType.NO)
         whisper = whisper_monster;
-    if (whisper === WhisperType.QUERY)
-        whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
     advantage = parseInt(character.getGlobalSetting("roll-type", RollType.NORMAL));
     if (args["advantage"] == RollType.OVERRIDE_ADVANTAGE)
         args["advantage"] = advantage == RollType.SUPER_ADVANTAGE ? RollType.SUPER_ADVANTAGE : RollType.ADVANTAGE;
     if (args["advantage"] == RollType.OVERRIDE_DISADVANTAGE)
         args["advantage"] = advantage == RollType.SUPER_DISADVANTAGE ? RollType.SUPER_DISADVANTAGE : RollType.DISADVANTAGE;
 
+    if (whisper === WhisperType.QUERY)
+        whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
+    if (advantage == RollType.QUERY)
+        advantage = await dndbeyondDiceRoller.queryAdvantage(args.name || rollType);
     // Default advantage/whisper would get overriden if (they are part of provided args;
     req = {
         action: "roll",
