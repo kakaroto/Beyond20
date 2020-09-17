@@ -58,22 +58,27 @@ const getHeaders = async () => ({
 const getRoom = () => location.pathname.split('/')[2];
 
 const getRoomData = async () => await (await fetch(
-    `https://app.astraltabletop.com/api/game/${getRoom()}/`, 
+    `${location.origin}/api/game/${getRoom()}/`, 
     {
         method: "GET", 
         headers: await getHeaders()
     }
 )).json();
 
+const characterCache = [];
+
 const getCharacters = async () => (await getRoomData()).characters;
 
 const getCharacter = async (name) => {
-    const characters = await getCharacters();
-    const char = characters.find(c => c.displayName === name);
+    let characters = characterCache;
+    let char = characters.find(c => c.displayName === name);
+    if (char) return char.id;
+    characters = await getCharacters();
+    char = characters.find(c => c.displayName === name);
     return char ? char.id : undefined;
 }
 
-const getReactData = () => JSON.parse(document.querySelector("#BEYOND20_NEXT_DATA").innerText);
+const getReactData = () => __NEXT_DATA__;
 
 const getUser = () => getReactData().props.pageProps.user;
 

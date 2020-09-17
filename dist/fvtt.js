@@ -55,7 +55,7 @@ function injectPageScript(url) {
     const s = document.createElement('script');
     s.src = url;
     s.charset = "UTF-8";
-    s.onload = () => s.remove();
+    // s.onload = () => s.remove();
     (document.head || document.documentElement).appendChild(s);
 }
 

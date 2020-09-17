@@ -55,7 +55,7 @@ function injectPageScript(url) {
     const s = document.createElement('script');
     s.src = url;
     s.charset = "UTF-8";
-    s.onload = () => s.remove();
+    // s.onload = () => s.remove();
     (document.head || document.documentElement).appendChild(s);
 }
 
@@ -1265,136 +1265,12 @@ options_list["discord-channels"]["createHTMLElement"] = createDiscordChannelsSet
 options_list["discord-channels"]["set"] = setDiscordChannelsSetting;
 options_list["discord-channels"]["get"] = getDiscordChannelsSetting;
 
-const tokenCache = {
-    access: null,
-    apiKey: null,
-    refresh: null,
-    expires: null
-};
-
-const _getTokenFromDb = () => new Promise((resolve, reject) => {
-    const req = indexedDB.open("firebaseLocalStorageDb", 1);
-    console.log("Created db req", req)
-    req.onsuccess = (event) => {
-        const db = req.result;
-        const trans = db.transaction("firebaseLocalStorage", IDBTransaction.READ)
-        const objStore = trans.objectStore("firebaseLocalStorage");
-
-        const cursorReq = objStore.openCursor();
-
-        cursorReq.onsuccess = (event) => {
-            console.log("Create cursor req", cursorReq.result)
-            resolve(cursorReq.result.value.value.stsTokenManager);
-        };
-    }
-
-    req.onerror = reject;
-});
-
-const getAccessToken = async () => {
-    if (!tokenCache.expires) {
-        const tokenData = await _getTokenFromDb();
-
-        tokenCache.access = tokenData.accessToken;
-        tokenCache.apiKey = tokenData.apiKey;
-        tokenCache.expires = tokenData.expirationTime;
-        tokenCache.refresh = tokenData.refreshToken;
-    } else if (tokenCache.expires < Date.now()) {
-        const tokenData = await (await fetch('https://securetoken.googleapis.com/v1/token?key=' + tokenCache.apiKey, {
-            method: 'POST',
-            headers: {'content-type': 'application/x-www-form-urlencoded'},
-            body: 'grant_type=refresh_token&refresh_token=' + tokenCache.refresh,
-        })).json();
-        
-        tokenCache.access = tokenData.access_token;
-        tokenCache.refresh = tokenData.refresh_token;
-        const tokenInfo = jwt_decode(tokenCache.access);
-
-        // Multipling by 1000 for miliseconds
-        tokenData.expires = tokenInfo.exp * 1000; 
-    }
-
-    return tokenCache.access;
-}
-
-const getHeaders = async () => ({ 
-    'x-authorization': `Bearer ${await getAccessToken()}`, 
-    'content-type': 'application/json'
-});
-
-const getRoom = () => location.pathname.split('/')[2];
-
-const getRoomData = async () => await (await fetch(
-    `https://app.astraltabletop.com/api/game/${getRoom()}/`, 
-    {
-        method: "GET", 
-        headers: await getHeaders()
-    }
-)).json();
-
-const getCharacters = async () => (await getRoomData()).characters;
-
-const getCharacter = async (name) => {
-    const characters = await getCharacters();
-    const char = characters.find(c => c.displayName === name);
-    return char ? char.id : undefined;
-}
-
-const getReactData = () => JSON.parse(document.querySelector("#BEYOND20_NEXT_DATA").innerText);
-
-const getUser = () => getReactData().props.pageProps.user;
-
-const getDungeonMasters = () => getReactData().props.pageProps.data.game.gameMasters;
-
-
 async function postChatMessage({characterName, message, color, icon, title, whisper}) {
-    const user = getUser().uid;
-    const room = getRoom();
-    const token = await getAccessToken();
-    const character = await getCharacter(characterName);
-
-    const recipients = whisper ? Object.fromEntries(getDungeonMasters().map(key => [key, true])) : undefined
-    
-    return fetch(location.origin + `/api/game/${room}/chat`, {
-        method: "PUT",
-        body: JSON.stringify({
-            text: message,
-            color, 
-            icon, 
-            user, 
-            character, 
-            title: character ? title : `${title} (${characterName})`,
-            hidden: whisper,
-            recipients
-        }),
-        headers: {
-            'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
-        }
-    });
+    sendCustomEvent("AstralChatMessage", [characterName, message, color, icon, title, whisper]);
 }
 
 async function updateHpBar(characterName, hp, maxHp, tempHp) {
-    const room = getRoom();
-    const token = await getAccessToken();
-    const character = await getCharacter(characterName);
-    if (!character) {
-        console.error(`No character found with name ${characterName}`)
-        return
-    }
-    return fetch(location.origin + `/api/game/${room}/character/${character}`, {
-        method: "PATCH",
-        body: JSON.stringify({
-            character: {
-                updateAt: Date.now(),
-                attributeBarMax: maxHp + tempHp,
-                attributeBarCurrent: hp + tempHp,
-
-            }
-        }),
-        headers: {
-            'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
-        }
-    });
+    sendCustomEvent("AstralUpdateHPBar", [characterName, hp, maxHp, tempHp]);
 }
 
 function formatPlusMod(custom_roll_dice) {
@@ -1423,6 +1299,8 @@ function parseDescription(request, description, {
 } = {}) {
     // Trim lines
     description = description.split('\n').map(s => s.trim()).join('\n');
+    // Trim leading empty lines
+    description = description.replace(/$[\n]*/m, match => "");
 
     if (!settings["subst-vtt"])
         return description;
@@ -1434,7 +1312,7 @@ function parseDescription(request, description, {
     } else {
         description = formatSeparateParagraphsInDescription(description);
     }
-    if (bolded) description = formatBoldedSectionInDescription(description);
+    // if (bolded) description = formatBoldedSectionInDescription(description);
     const replaceCB = (dice, modifier) => {
         return dice == "" ? modifier : `${dice}${modifier} (!!(${dice}${modifier}))`;
     }
@@ -1465,11 +1343,10 @@ ${rolls.map(([key, value]) => {
 `;
 }
 
+const matchTable = new RegExp(/(^\n\n([^\n\r]+)\n([^\n\r]+)\n\n\n\n$)(^\n([^\n\r]+)\n([^\n\r]+)\n\n$)+/m);
+const matchHead = new RegExp(/(^\n\n([^\n\r]+)\n([^\n\r]+)\n\n\n\n$)/m);
+const matchRow = new RegExp(/(^\n([^\n\r]+)\n([^\n\r]+)\n\n$)/m);
 function formatTableInDescription(description) {
-    const matchTable = new RegExp(/(^\n\n([^\n\r]+)\n([^\n\r]+)\n\n\n\n$)(^\n([^\n\r]+)\n([^\n\r]+)\n\n$)+/m);
-    const matchHead = new RegExp(/(^\n\n([^\n\r]+)\n([^\n\r]+)\n\n\n\n$)/m);
-    const matchRow = new RegExp(/(^\n([^\n\r]+)\n([^\n\r]+)\n\n$)/m);
-
     return description.replace(matchTable, (match) => {
         let [_1, _2, firstHead, secondHead] = reMatchAll(matchHead, match)[0];
         
@@ -1486,32 +1363,47 @@ ${rows.join('\n')}
     })
 }
 
+const notesRegex = /Notes: [^\n]*/g;
 function formatNotesInDescription(description) {
-    return description.replace(/Notes: [^\n]*/g, (match) => `_${match}_`);
+    return description.replace(notesRegex, (match) => `_${match}_`);
 }
 
-function formatBoldedSectionInDescription(description) {
-    return description.replace(/([^\n\.])*\.\&nbsp\;/g, match => `\n**${match}**`)
-}
+// Regex doesn't apply anymore, no way to detect bolded section without arbitrary length check.
+// const boldedSectionRegex = /([^\n\.])*\.\&nbsp\;/g;
+// function formatBoldedSectionInDescription(description) {
+//     return description.replace(boldedSectionRegex, match => `\n**${match}**`)
+// }
 
+const bulletListRegex = /^(?!\|)(([^\n\r]+)\n)+([^\n\r]+)/gm;
 function formatBulletListsInDescription(description) {
-    return description.replace(/^(?!\|)(([^\n\r]+)\n)+([^\n\r]+)/gm, match => {
+    // Short-circuit in case the description has no whitespace formatting so it doesn't become only a bullet list.
+    if (description.match(bulletListRegex) == description) return formatSeparateParagraphsInDescription(description);
+
+    return description.replace(bulletListRegex, match => {
+        // Short-circuit in case the match is at the start of the description, this isually fixes formatting for feats and magic items.
+        if (description.indexOf(match) == 0) {
+            return formatSeparateParagraphsInDescription(match);
+        }
         return match.split('\n').map(r => `* ${r}`).join('\n');
     })
 }
 
+const separateParagraphsRegex = /^(?!\|)(([^\n\r]+)\n)+([^\n\r]+)/gm;
 function formatSeparateParagraphsInDescription(description) {
-    return description.replace(/^(?!\|)(([^\n\r]+)\n)+([^\n\r]+)/gm, match => {
+    return description.replace(separateParagraphsRegex, match => {
         return match.split('\n').join('\n\n');
     })
 }
 
 const advantageMap = {
     [RollType.NORMAL]: (name, roll) => [name, roll],
+    [RollType.QUERY]: (name, roll) => [name, roll],
     [RollType.DOUBLE]: (name, roll) => [`${name} (Double Roll)`, `${roll} ${roll}`],
     [RollType.THRICE]: (name, roll) => [`${name} (Triple Roll)`, `${roll} ${roll} ${roll}`],
     [RollType.ADVANTAGE]: (name, roll) => [`${name} (Advantage)`, `${roll} ${roll}`],
     [RollType.DISADVANTAGE]: (name, roll) => [`${name} (Disadvantage)`, `${roll} ${roll}`],
+    [RollType.OVERRIDE_ADVANTAGE]: (name, roll) => [`${name} (Advantage)`, `${roll} ${roll}`],
+    [RollType.OVERRIDE_DISADVANTAGE]: (name, roll) => [`${name} (Disadvantage)`, `${roll} ${roll}`],
     [RollType.SUPER_ADVANTAGE]: (name, roll) => [`${name} (Super Advantage)`, `${roll} ${roll} ${roll}`],
     [RollType.SUPER_DISADVANTAGE]: (name, roll) => [`${name} (Super Disadvantage)`, `${roll} ${roll} ${roll}`],
 }
@@ -1697,9 +1589,9 @@ function rollSpellCard(request) {
     let higherDesc = null;
     if (higher > 0) {
         higherDesc = parseDescription(request, description.slice(higher + "At Higher Levels. ".length));
-        description = parseDescription(request, description.slice(0, higher - 1), {bulletList: false});
+        description = description.slice(0, higher - 1);
     }
-
+    description = parseDescription(request, description);
     return {
         icon: "torch",
         color: "#BD10E0",
@@ -1816,7 +1708,6 @@ function displayAvatar(request) {
 function updateSettings(new_settings = null) {
     if (new_settings) {
         settings = new_settings;
-        roll_renderer.setSettings(settings);
     } else {
         getStoredSettings((saved_settings) => {
             settings = saved_settings;

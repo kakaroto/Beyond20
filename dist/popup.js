@@ -1,6 +1,6 @@
 ROLL20_URL = "*://app.roll20.net/editor/";
 FVTT_URL = "*://*/game";
-ASTRAL_URL = "*://app.astraltabletop.com/play/*";
+ASTRAL_URL =  "*://*.astraltabletop.com/play/*";
 DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
 DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
 DNDBEYOND_ENCOUNTERS_URL = "*://*.dndbeyond.com/my-encounters";
@@ -101,7 +101,7 @@ function injectPageScript(url) {
     const s = document.createElement('script');
     s.src = url;
     s.charset = "UTF-8";
-    s.onload = () => s.remove();
+    // s.onload = () => s.remove();
     (document.head || document.documentElement).appendChild(s);
 }
 

@@ -11,7 +11,7 @@
 		"*://app.roll20.net/editor/",
 		"*://*.dndbeyond.com/*",
 		"*://*.forge-vtt.com/game",
-		"*://app.astraltabletop.com/play/*"
+		"*://*.astraltabletop.com/play/*"
 	],
 	"icons": {
 		"16": "images/icons/icon16.png",
@@ -187,7 +187,7 @@
 		},
 		{
 			"matches": [
-				"*://app.astraltabletop.com/play/*"
+				"*://*.astraltabletop.com/play/*"
 			],
 			"css": [
 				"libs/css/alertify.css",
