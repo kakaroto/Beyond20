@@ -34,7 +34,7 @@ class FVTTDisplayer {
         }
         const rollMode = this._whisperToRollMode(whisper);
         if (["gmroll", "blindroll"].includes(rollMode)) {
-            data["whisper"] = ChatMessage.getWhisperIDs("GM");
+            data["whisper"] = (ChatMessage.getWhisperIDs || ChatMessage.getWhisperRecipients)("GM");
             data['type'] = MESSAGE_TYPES.WHISPER;
             if (rollMode == "blindroll")
                 data["blind"] = true;
@@ -78,7 +78,6 @@ class FVTTDisplayer {
                 const pool = new DicePool({rolls: fvttRolls}).evaluate();
                 const pool_roll = Roll.create(pool.formula);
                 pool_roll.terms = [pool];
-                pool_roll._dice = pool.dice;
                 pool_roll.results = [pool.total];
                 pool_roll._total = pool.total;
                 pool_roll._rolled = true;

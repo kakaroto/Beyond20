@@ -1,10 +1,3 @@
-/*
-from utils import replaceRolls;
-from settings import RollType, WhisperType;
-from dndbeyond_discord import postToDiscord;
-import math;
-*/
-
 class DAMAGE_FLAGS {
     static get MESSAGE() { return 0; }
     static get REGULAR() { return 1; }
@@ -30,16 +23,26 @@ class Beyond20RollRenderer {
     setSettings(settings) {
         this._settings = settings;
     }
+    _mergeSettings(data) {
+        // Catch the mergeSettings since roll renderer could be called from a page script
+        // which wouldn't have access to the chrome.storage APIs
+        try {
+            mergeSettings(data, (settings) => {
+                this.setSettings(settings);
+                chrome.runtime.sendMessage({ "action": "settings", "type": "general", "settings": settings });
+            });
+        } catch (err) {}
+    }
 
-    async queryGeneric(title, question, choices, select_id = "generic-query", order) {
+    async queryGeneric(title, question, choices, select_id = "generic-query", order, selection) {
         let html = `<form><div class="beyond20-form-row"><label>${question}</label><select id="${select_id}" name="${select_id}">`;
 
         if (!order)
             order = Object.keys(choices);
         for (let [i, option] of order.entries()) {
-            const selected = i == 0 ? " selected" : "";
+            const isSelected = (selection && selection == option) || (!selection && i === 0);
             const value = choices[option] || option;
-            html += `<option value="${option}"${selected}>${value}</option>`;
+            html += `<option value="${option}"${isSelected ? " selected" : ""}>${value}</option>`;
         }
         html += `;</select></div></form>`;
         return new Promise((resolve) => {
@@ -61,7 +64,12 @@ class Beyond20RollRenderer {
             [RollType.SUPER_DISADVANTAGE]: "Super Disadvantage"
         }
         const order = [RollType.NORMAL, RollType.ADVANTAGE, RollType.DISADVANTAGE, RollType.DOUBLE, RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE];
-        return parseInt(await this.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order));
+        const lastQuery = this._settings["last-advantage-query"];
+        const advantage = parseInt(await this.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order, lastQuery));
+        if (lastQuery != advantage) {
+            this._mergeSettings({ "last-advantage-query": advantage })
+        }
+        return advantage;
     }
 
     async queryWhisper(title, monster) {
@@ -71,7 +79,12 @@ class Beyond20RollRenderer {
         }
         if (monster)
             choices[WhisperType.HIDE_NAMES] = "Hide Monster and Attack Name";
-        return parseInt(await dndbeyondDiceRoller.queryGeneric(title, "Select whisper mode : ", choices, "whisper-mode"));
+        const lastQuery = this._settings["last-whisper-query"];
+        const whisper = parseInt(await dndbeyondDiceRoller.queryGeneric(title, "Select whisper mode : ", choices, "whisper-mode", null, lastQuery));
+        if (lastQuery != whisper) {
+            this._mergeSettings({ "last-whisper-query": whisper })
+        }
+        return whisper;
     }
 
     async getToHit(request, title, modifier = "", data = {}) {

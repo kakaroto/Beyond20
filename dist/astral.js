@@ -473,6 +473,18 @@ const options_list = {
         "hidden": true,
         "default": false
     },
+    "last-whisper-query": {
+        "description": "Last user selection for query whispers",
+        "type": "int",
+        "hidden": true,
+        "default": WhisperType.NO
+    },
+    "last-advantage-query": {
+        "description": "Last user selection for query roll type",
+        "type": "int",
+        "hidden": true,
+        "default": RollType.NORMAL
+    },
 
     "sync-combat-tracker": {
         "title": "Synchronize the Combat Tracker with the VTT",
@@ -1408,8 +1420,10 @@ const advantageMap = {
     [RollType.SUPER_DISADVANTAGE]: (name, roll) => [`${name} (Super Disadvantage)`, `${roll} ${roll} ${roll}`],
 }
 
+const defaultRoll = (name, roll) => [name, roll];
+
 function advantageRoll(request, name, roll) {
-    return advantageMap[request.advantage](name, roll) || [name, roll]
+    return (advantageMap[request.advantage] || defaultRoll)(name, roll);
 }
 
 function generateRoll(d20, rolls, prefix="") {

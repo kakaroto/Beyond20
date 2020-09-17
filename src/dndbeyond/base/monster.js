@@ -156,8 +156,8 @@ class Monster extends CharacterBase {
                 const skills = value.split(", ");
                 for (let skill of skills) {
                     const parts = skill.split(" ");
-                    const name = parts[0];
-                    const mod = parts.slice(1).join(" ");
+                    const name = parts.slice(0, -1).join(" ");
+                    const mod = parts.slice(-1)[0];
                     this._skills[name] = mod;
                 }
                 if (!add_dice)

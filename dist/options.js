@@ -473,6 +473,18 @@ const options_list = {
         "hidden": true,
         "default": false
     },
+    "last-whisper-query": {
+        "description": "Last user selection for query whispers",
+        "type": "int",
+        "hidden": true,
+        "default": WhisperType.NO
+    },
+    "last-advantage-query": {
+        "description": "Last user selection for query roll type",
+        "type": "int",
+        "hidden": true,
+        "default": RollType.NORMAL
+    },
 
     "sync-combat-tracker": {
         "title": "Synchronize the Combat Tracker with the VTT",
