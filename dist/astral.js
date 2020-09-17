@@ -1277,79 +1277,41 @@ options_list["discord-channels"]["createHTMLElement"] = createDiscordChannelsSet
 options_list["discord-channels"]["set"] = setDiscordChannelsSetting;
 options_list["discord-channels"]["get"] = getDiscordChannelsSetting;
 
-async function postChatMessage({characterName, message, color, icon, title, whisper}) {
-    sendCustomEvent("AstralChatMessage", [characterName, message, color, icon, title, whisper]);
-}
-
-async function updateHpBar(characterName, hp, maxHp, tempHp) {
-    sendCustomEvent("AstralUpdateHPBar", [characterName, hp, maxHp, tempHp]);
-}
-
-function formatPlusMod(custom_roll_dice) {
-    const prefix = custom_roll_dice && !["+", "-", "?", ""].includes(custom_roll_dice.trim()[0]) ? " + " : "";
-    return prefix + (custom_roll_dice || "").replace(/([0-9]*d[0-9]+)/, "$1cs0cf0");;
-}
-
-function subRolls(text, overrideCB = null) {
-    let replaceCB = overrideCB;
+const decorations = {
+    "skill": ["#7ED321", "bunker-soldier-standing"],
+    "ability": ["#4A90E2", "coin-star"],
+    "saving-throw": [ "#F5A623",  "report-problem-triangle"],
+    "initiative": ["#7ED321", "arrow-down-9"],
+    "hit-dice": ["#D0021B", "heart-beat"],
+    "death-save": ["#FFFFFF", "skull-2"],
+    "attack": ["#D0021B", "knife"],
+    "spell-card": ["#BD10E0", "torch"],
+    "spell-attack": ["#BD10E0", "torch"],
+    "feature": ["#50E3C2", "pyramid-eye"],
+    "trait": ["#50E3C2", "pyramid-eye"], 
+    "action": ["#50E3C2", "pyramid-eye"],
+    "item": ["#50E3C2", "pyramid-eye"],
     
-    if (!overrideCB) {
-        replaceCB = (dice, modifier) => {
-            return dice == "" ? modifier : `!!(${dice}${formatPlusMod(modifier)})`;
-        }
-    }
-
-    const result = replaceRolls(text, replaceCB);
-    return result.replace(/\]\](\s*\+\s*)\[\[/g, '$1')
 }
 
-function parseDescription(request, description, {
-    bulletList = true,
-    notes = true,
-    tables = true,
-    bolded = true
-} = {}) {
-    // Trim lines
-    description = description.split('\n').map(s => s.trim()).join('\n');
-    // Trim leading empty lines
-    description = description.replace(/$[\n]*/m, match => "");
+const transformDecoration = (decoration) => ({
+    icon: decoration[1],
+    color: decoration[0]
+});
 
-    if (!settings["subst-vtt"])
-        return description;
-        
-    if (notes) description = formatNotesInDescription(description);
-    if (tables) description = formatTableInDescription(description);
-    if (bulletList) {
-        description = formatBulletListsInDescription(description);
-    } else {
-        description = formatSeparateParagraphsInDescription(description);
-    }
-    // if (bolded) description = formatBoldedSectionInDescription(description);
-    const replaceCB = (dice, modifier) => {
-        return dice == "" ? modifier : `${dice}${modifier} (!!(${dice}${modifier}))`;
-    }
-    return subRolls(description, replaceCB);
+const getDecoration = (type) => type in decorations ? transformDecoration(decorations[type]) : {
+    color: '#FFFFFF', icon: "home-1"
 }
 
-function subDamageRolls(text) {
-    return subRolls(text, (dice, modifier) => {
-        const prefix = settings["auto-roll-damage"] ? "!" : "!!";
-        return dice == "" ? modifier : `${prefix}(${dice}${formatPlusMod(modifier)})`;
-    });
-}
-
-function damagesToRolls(damages, damage_types, crits, crit_types) {
-    return [
-        ...damages.map((value, index) => [damage_types[index], subDamageRolls(value)]),
-        ...crits.map((value, index) => ["Crit " + crit_types[index], subDamageRolls(value)])
-    ];
-}
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
 function template(rolls, col1 = "Name", col2 = "Roll") {
     return `| ${col1} | ${col2} |
 | :--- | :--- |
 ${rolls.map(([key, value]) => {
-    return `| ${key} | ${value} |`
+    return `| ${capitalizeFirstLetter(key)} | ${value} |`
 }).join('\n')}    
 
 `;
@@ -1407,6 +1369,75 @@ function formatSeparateParagraphsInDescription(description) {
     })
 }
 
+function formatPlusMod(custom_roll_dice) {
+    const prefix = custom_roll_dice && !["+", "-", "?", ""].includes(custom_roll_dice.trim()[0]) ? " + " : "";
+    return prefix + (custom_roll_dice || "").replace(/([0-9]*d[0-9]+)/, "$1cs0cf0");;
+}
+
+function subRolls(text, overrideCB = null) {
+    let replaceCB = overrideCB;
+    
+    if (!overrideCB) {
+        replaceCB = (dice, modifier) => {
+            return dice == "" ? modifier : `!!(${dice}${formatPlusMod(modifier)})`;
+        }
+    }
+
+    const result = replaceRolls(text, replaceCB);
+    return result.replace(/\]\](\s*\+\s*)\[\[/g, '$1')
+}
+
+function parseDescription(request, description, {
+    bulletList = true,
+    notes = true,
+    tables = true,
+    bolded = true
+} = {}) {
+    // Trim lines
+    description = description.split('\n').map(s => s.trim()).join('\n');
+    // Trim leading empty lines
+    description = description.replace(/$[\n]*/m, match => "");
+
+    if (!settings["subst-vtt"])
+        return description;
+        
+    if (notes) description = formatNotesInDescription(description);
+    if (tables) description = formatTableInDescription(description);
+    if (bulletList) {
+        description = formatBulletListsInDescription(description);
+    } else {
+        description = formatSeparateParagraphsInDescription(description);
+    }
+    // if (bolded) description = formatBoldedSectionInDescription(description);
+    const replaceCB = (dice, modifier) => {
+        return dice == "" ? modifier : `${dice}${modifier} (!!(${dice}${modifier}))`;
+    }
+    return subRolls(description, replaceCB);
+}
+
+async function postChatMessage({characterName, message, color, icon, title, whisper}) {
+    sendCustomEvent("AstralChatMessage", [{characterName, message, color, icon, title, whisper}]);
+}
+
+async function updateHpBar(characterName, hp, maxHp, tempHp) {
+    sendCustomEvent("AstralUpdateHPBar", [{characterName, hp, maxHp, tempHp}]);
+}
+
+
+function subDamageRolls(text) {
+    return subRolls(text, (dice, modifier) => {
+        const prefix = settings["auto-roll-damage"] ? "!" : "!!";
+        return dice == "" ? modifier : `${prefix}(${dice}${formatPlusMod(modifier)})`;
+    });
+}
+
+function damagesToRolls(damages, damage_types, crits, crit_types) {
+    return [
+        ...damages.map((value, index) => [damage_types[index], subDamageRolls(value)]),
+        ...crits.map((value, index) => ["Crit " + crit_types[index], subDamageRolls(value)])
+    ];
+}
+
 const advantageMap = {
     [RollType.NORMAL]: (name, roll) => [name, roll],
     [RollType.QUERY]: (name, roll) => [name, roll],
@@ -1452,8 +1483,6 @@ function rollSkill(request, custom_roll_dice = "") {
 
         const roll = `!(${d20}${formatPlusMod(prof_val)}${formatPlusMod(custom_roll_dice)})`;
         return {
-            icon: "bunker-soldier-standing",
-            color: "#7ED321",
             title: request.skill + " Skill Check",
             message: template([advantageRoll(request, "Skill Check", generateRoll(d20, [prof_val, custom_roll_dice]))])
         }
@@ -1465,8 +1494,6 @@ function rollSkill(request, custom_roll_dice = "") {
 
         
         return {
-            icon: "bunker-soldier-standing",
-            color: "#7ED321",
             title: request.skill + " Skill Check",
             message: template([advantageRoll(request, "Skill Check", generateRoll(d20, [request.modifier, custom_roll_dice]))])
         }
@@ -1475,8 +1502,6 @@ function rollSkill(request, custom_roll_dice = "") {
 
 function rollAbility(request, custom_roll_dice = "") {
     return {
-        icon: "coin-star",
-        color: "#4A90E2",
         title: request.ability + " Ability Check",
         message:  template([advantageRoll(request, "Ability Check",  generateRoll("d20", [request.modifier, custom_roll_dice]))])
     }
@@ -1484,8 +1509,6 @@ function rollAbility(request, custom_roll_dice = "") {
 
 function rollSavingThrow(request, custom_roll_dice = "") {
     return {
-        icon: "report-problem-triangle",
-        color: "#F5A623",
         title: request.ability + " Saving Throw",
         message:  template([advantageRoll(request, "Saving Throw",  generateRoll("d20", [request.modifier, custom_roll_dice]))])
     }
@@ -1493,8 +1516,6 @@ function rollSavingThrow(request, custom_roll_dice = "") {
 
 function rollInitiative(request, custom_roll_dice = "") {
     return {
-        icon: "arrow-down-9",
-        color: "#7ED321",
         title: "Initiative",
         message:  template([
             ["Initiative",  generateRoll("d20", [request.initiative, custom_roll_dice], 'i')]
@@ -1504,8 +1525,6 @@ function rollInitiative(request, custom_roll_dice = "") {
 
 function rollHitDice(request) {
     return {
-        icon: "heart-beat",
-        color: "#D0021B",
         title: "Hit Dice" + (request.multiclass ? `(${request.class})` : ""),
         message:  template([
             ["Hit Points", `!(${request["hit-dice"]})`]
@@ -1515,8 +1534,6 @@ function rollHitDice(request) {
 
 function rollDeathSave(request, custom_roll_dice = "") {
     return {
-        icon: "skull-2",
-        color: "#FFFFFF",
         title: "Death Saving Throw",
         message:  template([
             ["Normal", generateRoll('d20', [custom_roll_dice])]
@@ -1546,8 +1563,6 @@ function rollTrait(request) {
     }
 
     return {
-        icon: "pyramid-eye",
-        color: "#50E3C2",
         title: request.name,
         message: `_**Source:** ${source}_
 
@@ -1579,8 +1594,6 @@ function rollAttack(request, custom_roll_dice = "") {
     }
 
     return {
-        icon: "knife",
-        color: "#D0021B",
         title: request.name,
         message: template(rolls)
     }
@@ -1607,8 +1620,6 @@ function rollSpellCard(request) {
     }
     description = parseDescription(request, description);
     return {
-        icon: "torch",
-        color: "#BD10E0",
         title: request.name,
         message: `${template(rolls)}
 
@@ -1701,8 +1712,6 @@ function rollSpellAttack(request, custom_roll_dice) {
     }
 
     return {
-        icon: "torch",
-        color: "#BD10E0",
         title: request.name,
         message: template(rolls) + (request.name === "Chaos Bolt" ? "\n\n### Damage Type Table\n\n" + template(["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"].map((v, index) => {
             return [index + 1, v];
@@ -1712,8 +1721,6 @@ function rollSpellAttack(request, custom_roll_dice) {
 
 function displayAvatar(request) {
     return {
-        icon: 'home-1',
-        color: '#FFFFFF',
         title: request.character.name || request.name,
         message: `![${request.name}](${request.character.avatar})`
     };
@@ -1728,7 +1735,6 @@ function updateSettings(new_settings = null) {
         });
     }
 }
-
 
 function handleMessage(request, sender, sendResponse) {
     console.log("Got message : ", request);
@@ -1787,22 +1793,18 @@ function handleMessage(request, sender, sendResponse) {
             roll = displayAvatar(request);
         } else if (request.type == "chat-message") {
             roll = { 
-                icon: 'roman-helmet', 
-                color: '#FFFFFF',
                 title: request.name,
                 message: subRolls(request.message)
             };
         } else {            
             roll = {
-                icon: 'home-1',
-                color: '#FFFFFF',
                 title: request.name,
                 message: subRolls(request.roll)
             }
         }
-        postChatMessage({ ...roll, characterName: request.character.name, whisper: request.whisper == WhisperType.YES });
+        postChatMessage({ ...roll, ...getDecoration(request.type), characterName: request.character.name, whisper: request.whisper == WhisperType.YES });
     } else if (request.action == "rendered-roll") {
-        console.warn("rendered-roll not supported in astral vtt");
+        sendCustomEvent("AstralRenderedRoll", [request]);
     } else if (request.action === "update-combat") {
         console.warn("update-combat not supported in astral vtt");
     }
@@ -1812,5 +1814,7 @@ chrome.runtime.onMessage.addListener(handleMessage);
 updateSettings();
 chrome.runtime.sendMessage({ "action": "activate-icon" });
 chrome.runtime.sendMessage({ "action": "register-astral-tab" });
+injectPageScript(chrome.runtime.getURL("libs/alertify.min.js"));
+injectPageScript(chrome.runtime.getURL("libs/jquery-3.4.1.min.js"));
 injectPageScript(chrome.runtime.getURL('dist/astral_script.js'));
 sendCustomEvent("disconnect");
