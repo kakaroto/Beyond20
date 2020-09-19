@@ -55,7 +55,7 @@ function injectPageScript(url) {
     const s = document.createElement('script');
     s.src = url;
     s.charset = "UTF-8";
-    // s.onload = () => s.remove();
+    s.onload = () => s.remove();
     (document.head || document.documentElement).appendChild(s);
 }
 
@@ -2632,7 +2632,7 @@ const tokenCache = {
 
 const _getTokenFromDb = () => new Promise((resolve, reject) => {
     const req = indexedDB.open("firebaseLocalStorageDb", 1);
-    console.log("Created db req", req)
+
     req.onsuccess = (event) => {
         const db = req.result;
         const trans = db.transaction("firebaseLocalStorage", IDBTransaction.READ)
@@ -2641,13 +2641,19 @@ const _getTokenFromDb = () => new Promise((resolve, reject) => {
         const cursorReq = objStore.openCursor();
 
         cursorReq.onsuccess = (event) => {
-            console.log("Create cursor req", cursorReq.result)
-            resolve(cursorReq.result.value.value.stsTokenManager);
+            if (cursorReq.result.value && cursorReq.result.value.value && cursorReq.result.value.value.stsTokenManager) {
+                resolve(cursorReq.result.value.value.stsTokenManager);
+            }
+            reject(event);
         };
+
+        cursorReq.onerror = reject;
     }
 
     req.onerror = reject;
 });
+
+const jwtDecode = (token) => JSON.parse(atob(token.split(".")[1]));
 
 const getAccessToken = async () => {
     if (!tokenCache.expires) {
@@ -2657,7 +2663,7 @@ const getAccessToken = async () => {
         tokenCache.apiKey = tokenData.apiKey;
         tokenCache.expires = tokenData.expirationTime;
         tokenCache.refresh = tokenData.refreshToken;
-    } else if (tokenCache.expires < Date.now()) {
+    } else if (tokenCache.expires - 60 * 1000 < Date.now()) {
         const tokenData = await (await fetch('https://securetoken.googleapis.com/v1/token?key=' + tokenCache.apiKey, {
             method: 'POST',
             headers: {'content-type': 'application/x-www-form-urlencoded'},
@@ -2666,7 +2672,7 @@ const getAccessToken = async () => {
         
         tokenCache.access = tokenData.access_token;
         tokenCache.refresh = tokenData.refresh_token;
-        const tokenInfo = jwt_decode(tokenCache.access);
+        const tokenInfo = jwtDecode(tokenCache.access);
 
         // Multipling by 1000 for miliseconds
         tokenData.expires = tokenInfo.exp * 1000; 
@@ -2897,6 +2903,8 @@ function parseDescription(request, description, {
     return subRolls(description, replaceCB);
 }
 
+let chatIframe;
+
 function setReactElementValue(element, value) {
     const valueSetter = Object.getOwnPropertyDescriptor(element, 'value').set;
     const prototype = Object.getPrototypeOf(element);
@@ -3080,8 +3088,6 @@ registered_events.push(addCustomEventListener("AstralUpdateHPBar", updateHpBar))
 registered_events.push(addCustomEventListener("AstralChatMessage", postChatMessage));
 registered_events.push(addCustomEventListener("AstralRenderedRoll", handleRenderedRoll));
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
-
-let chatIframe;
 
 function trySetDOMListeners() {
     if (window.$ && $("div[data-id=chat] iframe").length > 0) {

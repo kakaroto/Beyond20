@@ -1,3 +1,5 @@
+let chatIframe;
+
 function setReactElementValue(element, value) {
     const valueSetter = Object.getOwnPropertyDescriptor(element, 'value').set;
     const prototype = Object.getPrototypeOf(element);
@@ -181,8 +183,6 @@ registered_events.push(addCustomEventListener("AstralUpdateHPBar", updateHpBar))
 registered_events.push(addCustomEventListener("AstralChatMessage", postChatMessage));
 registered_events.push(addCustomEventListener("AstralRenderedRoll", handleRenderedRoll));
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
-
-let chatIframe;
 
 function trySetDOMListeners() {
     if (window.$ && $("div[data-id=chat] iframe").length > 0) {
