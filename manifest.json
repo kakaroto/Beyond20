@@ -198,7 +198,6 @@
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"libs/jwt-decode.min.js",
 				"dist/astral.js"
 			]
 		}
