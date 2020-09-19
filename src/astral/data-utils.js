@@ -71,15 +71,22 @@ const getRoomData = async () => await (await fetch(
     }
 )).json();
 
-const characterCache = [];
+let characterCache = [];
+let _skipRefreshCache = false;
 
-const getCharacters = async () => (await getRoomData()).characters;
+const refreshCharacters = async () => {
+    characterCache = (await getRoomData()).characters
+    return characterCache;
+};
 
 const getCharacter = async (name) => {
     let characters = characterCache;
     let char = characters.find(c => c.displayName === name);
     if (char) return char.id;
-    characters = await getCharacters();
+
+    if (_skipRefreshCache) return null;
+
+    characters = await refreshCharacters();
     char = characters.find(c => c.displayName === name);
     return char ? char.id : undefined;
 }

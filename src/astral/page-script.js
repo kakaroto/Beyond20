@@ -173,6 +173,112 @@ async function updateHpBar({characterName, hp, maxHp, tempHp}) {
     });
 }
 
+async function openCombatTab() {
+    return new Promise((resolve, reject) => {
+        const combatTabButton = $('li[data-tab="combat"] > a > span');
+        if (!combatTabButton.hasClass("is-active")) combatTabButton.click();
+        resolve();
+    })
+}
+
+async function getCombatTab() {
+    return new Promise((resolve, reject) => {
+        const findIframe = () => {
+            if ($("div[data-id=combat] iframe").length > 0) {
+                resolve($("div[data-id=combat] iframe").contents());
+            } else {
+                requestAnimationFrame(findIframe);
+            }
+        }
+        findIframe();
+    })
+}
+
+async function resetCombat() {
+    return new Promise((resolve, reject) => {
+        const findResetButton = async () => {
+            const combatTab = await getCombatTab();
+            const resetCombatButton = combatTab.find('button[data-id="reset-combat"]');
+
+            if (resetCombatButton.length > 0) {
+                resetCombatButton.click();
+                requestAnimationFrame(() => {
+                    resetCombatButton.click();
+                    const isCombatActorsEmpty = () => {
+                        const children = combatTab.find('.combat-actors').children();
+                        if (children.length == 1 && children.hasClass('empty')) {
+                            resolve()
+                        } else {
+                            requestAnimationFrame(isCombatActorsEmpty);
+                        }
+                    }
+                    requestAnimationFrame(isCombatActorsEmpty);
+                });
+            } else {
+                requestAnimationFrame(findResetButton);
+            }
+        }
+        findResetButton();        
+    });
+}
+
+async function startCombat() {
+    const room = getRoom();
+    const token = await getAccessToken();
+    return fetch(location.origin + `/api/game/${room}/combat`, {
+        method: "POST",
+        headers: {
+            'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
+        }
+    });
+}
+
+async function addCharacterToCombat({name, initiative}, weight) {
+    let character = await getCharacter(name);
+    if (!character) {
+        character = `custom-${Math.random().toString(36).substr(2, 6)}`
+    }
+
+    return fetch(location.origin + `/api/game/${getRoom()}/combat/actor/${character}`, {
+        method: "PUT",
+        body: JSON.stringify({
+            displayName: name, 
+            id: character,
+            visible: true, 
+            initiative,
+            weight
+        }),
+        headers: {
+            'x-authorization': `Bearer ${await getAccessToken()}`, 'content-type': 'application/json'
+        }
+    })
+}
+
+async function nextTurn() {
+    return fetch(location.origin + `/api/game/${getRoom()}/combat/turn`, {
+        method: "DELETE",
+        headers: {
+            'x-authorization': `Bearer ${await getAccessToken()}`, 'content-type': 'application/json'
+        }
+    })
+}
+
+async function updateCombat(request) {
+    await openCombatTab();
+    await resetCombat();
+    await startCombat();
+    await refreshCharacters();
+    _skipRefreshCache = true;
+    await Promise.all(request.combat.map((actor, i) => addCharacterToCombat(actor, request.combat.length - i)));
+    _skipRefreshCache = false;
+    await nextTurn();
+    for (let actor of request.combat) {
+        if (actor.turn) break;
+        await nextTurn();
+    }
+
+}
+
 function disconnectAllEvents() {
     for (let event of registered_events)
         document.removeEventListener(...event);
@@ -182,6 +288,8 @@ var registered_events = [];
 registered_events.push(addCustomEventListener("AstralUpdateHPBar", updateHpBar));
 registered_events.push(addCustomEventListener("AstralChatMessage", postChatMessage));
 registered_events.push(addCustomEventListener("AstralRenderedRoll", handleRenderedRoll));
+registered_events.push(addCustomEventListener("AstralUpdateSettings", updateSettings));
+registered_events.push(addCustomEventListener("AstralUpdateCombat", updateCombat));
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
 
 function trySetDOMListeners() {
@@ -198,3 +306,4 @@ function trySetDOMListeners() {
 }
 
 trySetDOMListeners();
+updateSettings();

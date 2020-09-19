@@ -324,6 +324,7 @@ function handleMessage(request, sender, sendResponse) {
     if (request.action == "settings") {
         if (request.type == "general")
             updateSettings(request.settings);
+            sendCustomEvent("AstralUpdateSettings", [request.settings]);
     } else if (request.action == "open-options") {
         alertFullSettings();
     } else if (request.action == "hp-update") {
@@ -389,7 +390,7 @@ function handleMessage(request, sender, sendResponse) {
     } else if (request.action == "rendered-roll") {
         sendCustomEvent("AstralRenderedRoll", [request]);
     } else if (request.action === "update-combat") {
-        console.warn("update-combat not supported in astral vtt");
+        sendCustomEvent("AstralUpdateCombat", [request]);
     }
 }
 

@@ -1294,6 +1294,19 @@ const decorations = {
     
 }
 
+var settings = getDefaultSettings();
+
+function updateSettings(new_settings = null) {
+    if (new_settings) {
+        settings = new_settings;
+        roll_renderer.setSettings(settings);
+    } else {
+        getStoredSettings((saved_settings) => {
+            settings = saved_settings;
+        });
+    }
+}
+
 const transformDecoration = (decoration) => ({
     icon: decoration[1],
     color: decoration[0]
@@ -1741,6 +1754,7 @@ function handleMessage(request, sender, sendResponse) {
     if (request.action == "settings") {
         if (request.type == "general")
             updateSettings(request.settings);
+            sendCustomEvent("AstralUpdateSettings", [request.settings]);
     } else if (request.action == "open-options") {
         alertFullSettings();
     } else if (request.action == "hp-update") {
@@ -1806,7 +1820,7 @@ function handleMessage(request, sender, sendResponse) {
     } else if (request.action == "rendered-roll") {
         sendCustomEvent("AstralRenderedRoll", [request]);
     } else if (request.action === "update-combat") {
-        console.warn("update-combat not supported in astral vtt");
+        sendCustomEvent("AstralUpdateCombat", [request]);
     }
 }
 

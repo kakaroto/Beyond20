@@ -15,6 +15,19 @@ const decorations = {
     
 }
 
+var settings = getDefaultSettings();
+
+function updateSettings(new_settings = null) {
+    if (new_settings) {
+        settings = new_settings;
+        roll_renderer.setSettings(settings);
+    } else {
+        getStoredSettings((saved_settings) => {
+            settings = saved_settings;
+        });
+    }
+}
+
 const transformDecoration = (decoration) => ({
     icon: decoration[1],
     color: decoration[0]
