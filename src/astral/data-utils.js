@@ -61,7 +61,8 @@ const getHeaders = async () => ({
     'content-type': 'application/json'
 });
 
-const getRoom = () => location.pathname.split('/')[2];
+// Added check to fix beta issues
+const getRoom = () => location.pathname.startsWith('/play/game') ? new URLSearchParams(location.search).get('id') : location.pathname.split('/')[2];
 
 const getRoomData = async () => await (await fetch(
     `${location.origin}/api/game/${getRoom()}/`, 
@@ -75,7 +76,7 @@ let characterCache = [];
 let _skipRefreshCache = false;
 
 const refreshCharacters = async () => {
-    characterCache = (await getRoomData()).characters
+    characterCache = (await getRoomData()).characters || [];
     return characterCache;
 };
 

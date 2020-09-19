@@ -2686,7 +2686,8 @@ const getHeaders = async () => ({
     'content-type': 'application/json'
 });
 
-const getRoom = () => location.pathname.split('/')[2];
+// Added check to fix beta issues
+const getRoom = () => location.pathname.startsWith('/play/game') ? new URLSearchParams(location.search).get('id') : location.pathname.split('/')[2];
 
 const getRoomData = async () => await (await fetch(
     `${location.origin}/api/game/${getRoom()}/`, 
@@ -2700,7 +2701,7 @@ let characterCache = [];
 let _skipRefreshCache = false;
 
 const refreshCharacters = async () => {
-    characterCache = (await getRoomData()).characters
+    characterCache = (await getRoomData()).characters || [];
     return characterCache;
 };
 
@@ -2951,14 +2952,16 @@ async function speakAs(characterName) {
         charListButton.click();
 
         requestAnimationFrame(() => {
-            const charItems = Array.from(chatIframe.find("form [role='menuitem']"));
-            const charItem = charItems.find(item => item.firstChild.firstChild.innerText == characterName);
-            if (charItem) {
-                charItem.click();
-            } else {
-                charListButton.click();
-            }
-            resolve();
+            try {
+                const charItems = Array.from(chatIframe.find("form [role='menuitem']"));
+                const charItem = charItems.find(item => item.firstChild.firstChild.innerText == characterName);
+                if (charItem) {
+                    charItem.click();
+                } else {
+                    charListButton.click();
+                }
+                resolve(); 
+            } catch { reject(); } 
         })
     });
 }
@@ -3062,40 +3065,48 @@ async function postChatMessage({characterName, message, color, icon, title, whis
             }
         });
     } catch (e) {
-        console.warn(e);
-        message = `**${title}**\n\n` + message;
+        console.error(e);
+        try {
+            message = `**${title}**\n\n` + message;
 
-        if (message.length > 2048) {
-            message = message.slice(0, 2045) + '...';
+            if (message.length > 2048) {
+                message = message.slice(0, 2045) + '...';
+            }
+            
+            await speakAs(characterName);
+            sendChatText(message);
+        } catch (e) {
+            console.error(e);
         }
-        
-        await speakAs(characterName);
-        sendChatText(message);
     }
 }
 
 async function updateHpBar({characterName, hp, maxHp, tempHp}) {
-    const room = getRoom();
-    const token = await getAccessToken();
-    const character = await getCharacter(characterName);
-    if (!character) {
-        console.error(`No character found with name ${characterName}`)
-        return
-    }
-    return fetch(location.origin + `/api/game/${room}/character/${character}`, {
-        method: "PATCH",
-        body: JSON.stringify({
-            character: {
-                updateAt: Date.now(),
-                attributeBarMax: maxHp + tempHp,
-                attributeBarCurrent: hp + tempHp,
-
-            }
-        }),
-        headers: {
-            'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
+    try {
+        const room = getRoom();
+        const token = await getAccessToken();
+        const character = await getCharacter(characterName);
+        if (!character) {
+            console.warn(`No character found with name ${characterName}`)
+            return
         }
-    });
+        return fetch(location.origin + `/api/game/${room}/character/${character}`, {
+            method: "PATCH",
+            body: JSON.stringify({
+                character: {
+                    updateAt: Date.now(),
+                    attributeBarMax: maxHp + tempHp,
+                    attributeBarCurrent: hp + tempHp,
+
+                }
+            }),
+            headers: {
+                'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
+            }
+        });
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 async function openCombatTab() {
@@ -3231,4 +3242,3 @@ function trySetDOMListeners() {
 }
 
 trySetDOMListeners();
-updateSettings();
