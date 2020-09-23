@@ -1238,7 +1238,13 @@ function injectRollToSpellAttack() {
             $(".ct-beyond20-spell-attack").on('click', (event) => {
                 const name = $(event.currentTarget).attr("x-beyond20-name");
                 const mod = $(event.currentTarget).attr("x-beyond20-modifier");
-                sendRollWithCharacter("custom", "1d20" + mod, { "name": name, "modifier": "1d20" + mod });
+                sendRollWithCharacter("spell-attack", "1d20" + mod, {
+                    name: name,
+                    "to-hit": mod,
+                    rollAttack: true,
+                    description: "Spell Attack",
+                    components: ""
+                });
             });
         }
     }
