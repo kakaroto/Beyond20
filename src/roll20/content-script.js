@@ -883,7 +883,14 @@ async function handleRenderedRoll(request) {
         title = `${request.title} (${request.character})`
     }
     for (let [roll_name, roll, flags] of request.damage_rolls) {
-        properties[roll_name] = convertRollToText(request.whisper, roll);
+        if (properties[roll_name] === undefined) {
+            properties[roll_name] = convertRollToText(request.whisper, roll);
+        } else {
+            // Could have multiple damages of the same type.
+            let suffix = 2;
+            while (properties[`${roll_name} (${suffix})`] !== undefined) suffix++;
+            properties[`${roll_name} (${suffix})`] = convertRollToText(request.whisper, roll);
+        }
     }
     if (Object.keys(request.total_damages).length > 0)
         properties["Totals"] = "";
