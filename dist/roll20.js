@@ -2044,7 +2044,7 @@ class Beyond20RollRenderer {
             html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
         }
 
-        if (request.rollAttack && !request.rollDamage)
+        if (damage_rolls.length > 0 && request.rollAttack && !request.rollDamage)
             html += '<button class="beyond20-button-roll-damages">Roll Damages</button>';
 
         html += "</div>";
@@ -3439,7 +3439,7 @@ async function handleOGLRenderedRoll(request) {
         if (initiative)
             atk_props["initiative"] = `[[${initiative.total} &{tracker}]]`;
     }
-    if (originalRequest.rollAttack && !originalRequest.rollDamage) {
+    if (damage_rolls.length > 0 && originalRequest.rollAttack && !originalRequest.rollDamage) {
         rollDamages = `beyond20-rendered-roll-button-${Math.random()}`;
         atk_props["rname"]  = `[${request.title}](!${rollDamages})`;
     }
@@ -3581,7 +3581,7 @@ async function handleRenderedRoll(request) {
 
     let rollDamages = null;
     const originalRequest = request.request;
-    if (originalRequest.rollAttack && !originalRequest.rollDamage) {
+    if (damage_rolls.length > 0 && originalRequest.rollAttack && !originalRequest.rollDamage) {
         rollDamages = `beyond20-rendered-roll-button-${Math.random()}`;
         properties["Roll Damages"] = `[Click](!${rollDamages})`;
     }
