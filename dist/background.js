@@ -720,6 +720,12 @@ const character_settings = {
         "description": "Activate your Bladesong and make your weapon sing with magic",
         "type": "bool",
         "default": false
+    },
+    "fey-wanderer-dreadful-strikes": {
+        "title": "Fey Wanderer: Dreadful Strikes",
+        "description": "Imbue your weapons and deal psychic damage to your the minds of your enemies.",
+        "type": "bool",
+        "default": false
     }
 }
 

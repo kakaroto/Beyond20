@@ -305,6 +305,12 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             }
         }
 
+        // FIXME: UA content, Ranger Fey Wanderer Feature, may need to be removed or corrected later
+        if (character.hasClassFeature("Dreadful Strikes") && character.getSetting("fey-wanderer-dreadful-strikes")) {
+            damages.push("1d6");
+            damage_types.push("Dreadful Strikes");
+        }
+
         if (properties["Attack Type"] == "Melee" &&
             character.hasClassFeature("Improved Divine Smite") &&
             character.getSetting("paladin-improved-divine-smite", true)) {
