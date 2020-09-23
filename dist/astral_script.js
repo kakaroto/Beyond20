@@ -3048,7 +3048,7 @@ async function postChatMessage({characterName, message, color, icon, title, whis
             message = message.slice(0, 2045) + '...';
         }
         
-        return fetch(location.origin + `/api/game/${room}/chat`, {
+        return await fetch(location.origin + `/api/game/${room}/chat`, {
             method: "PUT",
             body: JSON.stringify({
                 text: message,

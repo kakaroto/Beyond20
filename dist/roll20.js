@@ -3594,6 +3594,16 @@ function injectSettingsButton() {
     img.onclick = alertQuickSettings;
 }
 
+function updateSettings(new_settings = null) {
+    if (new_settings) {
+        settings = new_settings;
+        roll_renderer.setSettings(settings);
+    } else {
+        getStoredSettings((saved_settings) => {
+            settings = saved_settings;
+        });
+    }
+}
 
 function handleMessage(request, sender, sendResponse) {
     console.log("Got message : ", request);
