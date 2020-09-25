@@ -5783,9 +5783,9 @@ function deactivateQuickRolls() {
     const spells = $(".ct-spells-spell .ct-spells-spell__action,.ddbc-spells-spell .ddbc-spells-spell__action");
     const spells_to_hit = $(".ct-spells-spell .ct-spells-spell__tohit .integrated-dice__container, .ddbc-spells-spell .ddbc-spells-spell__tohit .integrated-dice__container");
     const spells_damage = $(".ct-spells-spell .ct-spells-spell__damage .integrated-dice__container, .ddc-spells-spell .ddc-spells-spell__damage .integrated-dice__container");
-    let initiative = $(".ct-initiative-box__value .integrated-dice__container");
+    let initiative = $(".ct-initiative-box__value .integrated-dice__container, .ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value .integrated-dice__container");
     if (initiative.length === 0)
-        initiative = $(".ct-initiative-box__value .ddbc-signed-number");
+        initiative = $(".ct-initiative-box__value .ddbc-signed-number, .ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value .ddbc-signed-number");
     deactivateTooltipListeners(initiative);
     deactivateTooltipListeners(abilities);
     deactivateTooltipListeners(saving_throws);
@@ -5846,7 +5846,7 @@ function activateQuickRolls() {
         return;
 
     activateTooltipListeners(initiative, 'up', beyond20_tooltip, (el) => {
-        el.closest(".ct-initiative-box__value").trigger('click');
+        el.closest(".ct-initiative-box__value, .ct-combat-mobile__extra-value").trigger('click');
         if ($(".ct-initiative-pane").length)
             execute("ct-initiative-pane");
         else
