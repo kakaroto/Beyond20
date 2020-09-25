@@ -5944,13 +5944,27 @@ function activateQuickRolls() {
     const activateQRSpell = (spell, force_to_hit_only, force_damages_only) => {
         spell = $(spell);
         activateTooltipListeners(spell, spell.hasClass('integrated-dice__container') ? 'up' : 'right', beyond20_tooltip, (el) => {
-            const name = el.closest(".ct-spells-spell,.ddbc-spells-spell")
-                .find(".ct-spell-name,.ddbc-spell-name")
-                .trigger('click').text();
+            const name_element = el.closest(".ct-spells-spell,.ddbc-spells-spell")
+                .find(".ct-spell-name,.ddbc-spell-name");
+            const name = name_element.trigger('click').text();
             // If same item, clicking will be a noop && it won't modify the document;
             const pane_name = $(".ct-spell-pane .ct-sidebar__heading .ct-spell-name,.ct-spell-pane .ct-sidebar__heading .ddbc-spell-name").text();
             if (name == pane_name) {
-                execute("ct-spell-pane", force_to_hit_only, force_damages_only);
+                // For spells, check the spell level. DNDB doesn't switch to the right level when clicking the spell if
+                // it's already the right spell (but wrong level)
+                const castas = $(".ct-spell-caster__casting-level-current").text()
+                const level = el.closest(".ct-content-group").find(".ct-content-group__header-content").text();
+                const pane_level = castas === "" ? "Cantrip" : `${castas} Level`;
+                if (pane_level.toLowerCase() === level.toLowerCase()) {
+                    execute("ct-spell-pane", force_to_hit_only, force_damages_only);
+                } else {
+                    // Trigger a click elsewhere to cause the sidepanel to change and then force it again to display the right level spell
+                    $(".ddbc-character-tidbits__menu-callout").trigger('click');
+                    name_element.trigger('click');
+                    quick_roll_force_attack = force_to_hit_only;
+                    quick_roll_force_damge = force_damages_only;
+                    quick_roll = true;
+                }
             } else {
                 quick_roll_force_attack = force_to_hit_only;
                 quick_roll_force_damge = force_damages_only;
