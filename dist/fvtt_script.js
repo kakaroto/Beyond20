@@ -2666,7 +2666,7 @@ class FVTTDisplayer {
         }
         const rollMode = this._whisperToRollMode(whisper);
         if (["gmroll", "blindroll"].includes(rollMode)) {
-            data["whisper"] = (ChatMessage.getWhisperIDs || ChatMessage.getWhisperRecipients)("GM");
+            data["whisper"] = (ChatMessage.getWhisperRecipients || ChatMessage.getWhisperIDs).call(ChatMessage, "GM");
             data['type'] = MESSAGE_TYPES.WHISPER;
             if (rollMode == "blindroll")
                 data["blind"] = true;
