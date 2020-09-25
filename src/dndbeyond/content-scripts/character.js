@@ -1155,7 +1155,7 @@ function injectRollButton(paneClass) {
             }
         }
 
-        $(".ct-spell-caster__casting-action > button,.ddbc-spell-caster__casting-action > button").on('click', (event) => {
+        $(".ct-spell-caster__casting-action > button,.ddbc-spell-caster__casting-action > button").off('click').on('click', (event) => {
             execute(paneClass);
         });
     } else if (paneClass == "ct-reset-pane") {
