@@ -5723,6 +5723,8 @@ function injectSettingsButton() {
 }
 
 var quick_roll = false;
+var quick_roll_force_attack = false;
+var quick_roll_force_damage = false;
 var quick_roll_timeout = 0;
 
 function deactivateTooltipListeners(el) {
@@ -5919,10 +5921,13 @@ function activateQuickRolls() {
             }
             const pane_name = pane.find(".ct-sidebar__heading").text();
 
-            if (name == pane_name)
+            if (name == pane_name) {
                 execute(paneClass, force_to_hit_only, force_damages_only);
-            else
+            } else {
+                quick_roll_force_attack = force_to_hit_only;
+                quick_roll_force_damge = force_damages_only;
                 quick_roll = true;
+            }
         });
     }
 
@@ -5944,10 +5949,13 @@ function activateQuickRolls() {
                 .trigger('click').text();
             // If same item, clicking will be a noop && it won't modify the document;
             const pane_name = $(".ct-spell-pane .ct-sidebar__heading .ct-spell-name,.ct-spell-pane .ct-sidebar__heading .ddbc-spell-name").text();
-            if (name == pane_name)
+            if (name == pane_name) {
                 execute("ct-spell-pane", force_to_hit_only, force_damages_only);
-            else
+            } else {
+                quick_roll_force_attack = force_to_hit_only;
+                quick_roll_force_damge = force_damages_only;
                 quick_roll = true;
+            }
         });
     }
     for (let spell of spells.toArray()) {
@@ -5964,7 +5972,9 @@ function activateQuickRolls() {
 function executeQuickRoll(paneClass) {
     quick_roll_timeout = 0;
     console.log("EXECUTING QUICK ROLL!");
-    execute(paneClass);
+    execute(paneClass, quick_roll_force_attack, quick_roll_force_damage);
+    quick_roll_force_attack = false;
+    quick_roll_force_damage = false;
     quick_roll = false;
 }
 
