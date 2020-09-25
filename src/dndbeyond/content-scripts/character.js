@@ -1399,7 +1399,8 @@ function activateQuickRolls() {
         beyond20_tooltip.css({
             "position": "absolute",
             "background": `url("${chrome.extension.getURL("images/quick-roll-background.png")}") 50% center no-repeat transparent`,
-            "background-size": "contain"
+            "background-size": "contain",
+            "z-index": "20"
         });
         beyond20_tooltip.off('mouseenter').off('mouseleave').on('mouseleave', (e) => {
             if (quickRollHideId)
