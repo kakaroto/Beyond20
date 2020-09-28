@@ -670,7 +670,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         if (damages.length > 0 &&
             character.hasClassFeature("Arcane Firearm") &&
             character.getSetting("artificer-arcane-firearm", false) &&
-            spell_source == "Artificer") {
+            spell_source.includes("Artificer")) {
             damages.push("1d8");
             damage_types.push("Arcane Firearm");
         }
