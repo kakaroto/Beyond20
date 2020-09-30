@@ -4065,10 +4065,18 @@ class Character extends CharacterBase {
         if (this._level === null) {
             const level = $(".ddbc-character-progression-summary__level");
             const xp = $(".ddbc-character-progression-summary__xp-bar .ddbc-xp-bar__item--cur .ddbc-xp-bar__label");
-            if (level.length > 0)
+            if (level.length > 0) {
                 this._level = level.text().replace("Level ", "");
-            else if (xp.length > 0)
-                this._level = xp.text().replace("LVL ", "");
+            } else if (xp.length > 0) {
+                this._level = xp.text().replace("LVL ", "").trim();
+                if (this._level === "19") {
+                    // With XP progress, a level 20 will have their XP bar from 19 to 20 with progression full, since it can't show 20->21
+                    const xp_data = $(".ddbc-character-progression-summary__xp-bar .ddbc-character-progression-summary__xp-data").text();
+                    if (xp_data === "355,000 / 355,000 XP") {
+                        this._level = "20";
+                    }
+                }
+            }
         }
         if (this._proficiency === null) {
             this._proficiency = $(".ct-proficiency-bonus-box__value,.ddbc-proficiency-bonus-box__value").text();
