@@ -2835,6 +2835,10 @@ async function addInitiativeToCombat(roll) {
 function handleRoll(request) {
     console.log("Received roll request ", request);
 
+    // The hook would return "false" to stop propagation, meaning that it was handled
+    const handledNatively = Hooks.call("beyond20Request", request);
+    if (handledNatively === false) return;
+
     if (request.type == "initiative")
         rollInitiative(request);
     else if (request.type == "avatar")
