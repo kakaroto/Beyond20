@@ -2228,7 +2228,7 @@ class Beyond20RollRenderer {
                 const dragons_breath_type = await this.queryDamageType(request.name, damage_choices);
                 damages.splice(0, 0, damage_choices[dragons_breath_type]);
                 damage_types.splice(0, 0, dragons_breath_type);
-            } else if (request.name == "Chaos Bolt") {
+            } else if (request.name.includes("Chaos Bolt")) {
                 let base_damage = null;
                 let crit_damage = null;
                 for (let dmgtype of ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]) {
@@ -2289,7 +2289,7 @@ class Beyond20RollRenderer {
             await this._roller.resolveRolls(request.name, all_rolls)
             
             //Moved after the new resolveRolls so it can access the roll results
-            if (request.name == "Chaos Bolt") {
+            if (request.name.includes("Chaos Bolt")) {
                 for (let [i, dmg_roll] of damage_rolls.entries()) {
                     const [dmg_type, roll, flags] = dmg_roll;
                     if (dmg_type == "Chaotic energy Damage" && roll.dice[0].faces == 8) {
@@ -5150,7 +5150,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         if (damages.length > 0 &&
             character.hasClassFeature("Arcane Firearm") &&
             character.getSetting("artificer-arcane-firearm", false) &&
-            spell_source == "Artificer") {
+            spell_source.includes("Artificer")) {
             damages.push("1d8");
             damage_types.push("Arcane Firearm");
         }

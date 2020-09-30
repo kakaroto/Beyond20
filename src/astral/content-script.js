@@ -228,7 +228,7 @@ function rollSpellAttack(request, custom_roll_dice) {
             damages.splice(0, 0, dragons_breath_damage);
             damage_types.splice(0, 0, "Breath Damage");
             rolls.push(["Choose Damage", ["Acid", "Cold", "Fire", "Lightning", "Poison"].join(', ')])
-        } else if (request.name === "Chaos Bolt") {
+        } else if (request.name.includes("Chaos Bolt")) {
             let base_damage = null;
             let crit_damage = null;
             for (let dmgtype of ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]) {
@@ -257,7 +257,7 @@ function rollSpellAttack(request, custom_roll_dice) {
 
     return {
         title: request.name,
-        message: template(rolls) + (request.name === "Chaos Bolt" ? "\n\n### Damage Type Table\n\n" + template(["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"].map((v, index) => {
+        message: template(rolls) + (request.name.includes("Chaos Bolt") ? "\n\n### Damage Type Table\n\n" + template(["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"].map((v, index) => {
             return [index + 1, v];
         }), "d8", "Damage Type") : "")
     };

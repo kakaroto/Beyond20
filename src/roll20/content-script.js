@@ -488,7 +488,7 @@ function rollSpellAttack(request, custom_roll_dice) {
             dragons_breath_type += "}";
             damages.splice(0, 0, dragons_breath_damage);
             damage_types.splice(0, 0, dragons_breath_type);
-        } else if (request.name === "Chaos Bolt") {
+        } else if (request.name.includes("Chaos Bolt")) {
             let base_damage = null;
             let crit_damage = null;
             for (let dmgtype of ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]) {
