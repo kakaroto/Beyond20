@@ -96,15 +96,8 @@ function rollDeathSave(request, custom_roll_dice = "") {
     }
 }
 
-function rollItem(request, custom_roll_dice = "") {
-    const source = request["item-type"].trim().toLowerCase();
-    if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools"))) && request.character.abilities && request.character.abilities.length > 0) {
-        const ret = rollTrait(request);
-        ret.message += "\n" + template([advantageRoll(request, request.name, generateRoll(request.d20 || "1d20", custom_roll_dice))])
-        return ret;
-    } else {
-        return rollTrait(request);
-    }
+function rollItem(request) {
+    return rollTrait(request);
 }
 
 function rollTrait(request) {
@@ -334,7 +327,7 @@ function handleMessage(request, sender, sendResponse) {
         } else if (request.type == "hit-dice") {
             roll = rollHitDice(request);
         } else if (request.type == "item") {
-            roll = rollItem(request, custom_roll_dice);
+            roll = rollItem(request);
         } else if (["feature", "trait", "action"].includes(request.type)) {
             roll = rollTrait(request);
         } else if (request.type == "death-save") {

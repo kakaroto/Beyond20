@@ -2142,43 +2142,7 @@ class Beyond20RollRenderer {
         return this.rollD20(request, "Death Saving Throw", { "custom_dice": custom_roll_dice });
     }
 
-    rollItem(request, custom_roll_dice = "") {
-        const source = request["item-type"].trim().toLowerCase();
-        if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools")) || request.tags.includes("Instrument")) && request.character.abilities && request.character.abilities.length > 0) {
-            const proficiencies = {}
-            proficiencies["None"] = 0;
-            proficiencies["Half Proficient"] = Math.floor(request.character.proficiency / 2);
-            proficiencies["Proficient"] = request.character.proficiency;
-            proficiencies["Expert"] = request.character.proficiency * 2;
-            const d20 = request.d20 || "1d20";
-            const formula = d20 + " + @ability + @proficiency + @custom_dice";
-            let html = '<form>';
-            html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>';
-            html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';
-            const modifiers = {}
-            for (let ability of request.character.abilities) {
-                html += '<option value="' + ability[0] + '">' + ability[0] + '</option>';
-                modifiers[ability[0]] = ability[3];
-            }
-            html += "</select></div>";
-            html += '<div class="beyond20-form-row"><label>Select Proficiency</label><select name="proficiency">';
-            for (let prof in proficiencies) {
-                html += '<option value="' + prof + '">' + prof + '</option>';
-            }
-            html += "</select></div>";
-            html += '</form>';
-            this._prompter.prompt("Using a tool", html, request.name).then((html) => {
-                if (html) {
-                    const ability = html.find('[name="ability"]').val();
-                    const mod = modifiers[ability];
-                    const proficiency = html.find('[name="proficiency"]').val();
-                    const prof_value = proficiencies[proficiency];
-                    const data = { "ability": mod, "proficiency": prof_value, "custom_dice": custom_roll_dice }
-                    this.rollD20(request, request.name + "(" + ability + ")", data);
-                }
-            }
-            );
-        }
+    rollItem(request) {
         return this.rollTrait(request);
     }
 
@@ -2506,7 +2470,7 @@ class Beyond20RollRenderer {
         } else if (request.type == "hit-dice") {
             return this.rollHitDice(request);
         } else if (request.type == "item") {
-            return this.rollItem(request, custom_roll_dice);
+            return this.rollItem(request);
         } else if (["feature", "trait", "action"].includes(request.type)) {
             return this.rollTrait(request);
         } else if (request.type == "death-save") {
@@ -2961,28 +2925,8 @@ function rollDeathSave(request, custom_roll_dice = "") {
     });
 }
 
-function rollItem(request, custom_roll_dice = "") {
-    const source = request["item-type"].trim().toLowerCase();
-    if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools")) || request.tags.includes("Instrument")) && request.character.abilities && request.character.abilities.length > 0) {
-        let modifier = "?{Choose Ability";
-        // [name, abbr, value, mod];
-        for (let ability of request.character.abilities)
-            modifier += "|" + ability[0] + ", " + ability[3];
-        modifier += "}";
-        const proficiency = request.character.proficiency;
-        const half_proficiency = "+[[floor(" + proficiency + " / 2)]]";
-        const expertise = "+[[" + proficiency + " * 2]]";
-        const prof = "?{Select Proficiency|None,+0|Half-Proficient," + half_proficiency + "|Profient," + proficiency + "|Expert," + expertise + "}";
-        return rollTrait(request) + "\n" +
-            template(request, "simple", {
-                "charname": request.character.name,
-                "rname": request.name,
-                "mod": format_plus_mod(modifier) + format_plus_mod(prof) + format_plus_mod(custom_roll_dice),
-                "r1": genRoll(request.d20 || "1d20", { "ABILITY": modifier, "PROF": prof, "CUSTOM": custom_roll_dice })
-            });
-    } else {
-        return rollTrait(request);
-    }
+function rollItem(request) {
+    return rollTrait(request);
 }
 
 function rollTrait(request) {
@@ -3288,7 +3232,7 @@ async function handleRoll(request) {
     } else if (request.type == "hit-dice") {
         roll = rollHitDice(request);
     } else if (request.type == "item") {
-        roll = rollItem(request, custom_roll_dice);
+        roll = rollItem(request);
     } else if (["feature", "trait", "action"].includes(request.type)) {
         roll = rollTrait(request);
     } else if (request.type == "death-save") {
