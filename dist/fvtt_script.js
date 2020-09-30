@@ -1820,19 +1820,21 @@ class Beyond20RollRenderer {
         if (advantage == RollType.QUERY)
             advantage = await this.queryAdvantage(title);
 
+        const d20 = request.d20 || "1d20";
+
         if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {
-            const roll_1 = this.createRoll("1d20" + modifier, data);
-            const roll_2 = this.createRoll("1d20" + modifier, data);
+            const roll_1 = this.createRoll(d20 + modifier, data);
+            const roll_2 = this.createRoll(d20 + modifier, data);
 
             return {advantage, rolls: [roll_1, roll_2]};
         } else if ([RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE].includes(advantage)) {
-            const roll_1 = this.createRoll("1d20" + modifier, data);
-            const roll_2 = this.createRoll("1d20" + modifier, data);
-            const roll_3 = this.createRoll("1d20" + modifier, data);
+            const roll_1 = this.createRoll(d20 + modifier, data);
+            const roll_2 = this.createRoll(d20 + modifier, data);
+            const roll_3 = this.createRoll(d20 + modifier, data);
 
             return {advantage, rolls: [roll_1, roll_2, roll_3]};
         } else { // advantage == RollType.NORMAL
-            return {advantage, rolls: [this.createRoll("1d20" + modifier, data)]};
+            return {advantage, rolls: [this.createRoll(d20 + modifier, data)]};
         }
     }
     processToHitAdvantage(advantage, rolls) {
@@ -2129,7 +2131,8 @@ class Beyond20RollRenderer {
                 if (request.reliableTalent)
                     d20_modifier = "min10";
             }
-            const formula = "1d20 + @ability " + (prof != "" ? " + @" + prof : "") + " + @custom_dice";
+            const d20 = request.d20 || "1d20";
+            const formula = d20 + " + @ability " + (prof != "" ? " + @" + prof : "") + " + @custom_dice";
             let html = '<form>';
             html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>';
             html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';
@@ -2190,7 +2193,8 @@ class Beyond20RollRenderer {
             proficiencies["Half Proficient"] = Math.floor(request.character.proficiency / 2);
             proficiencies["Proficient"] = request.character.proficiency;
             proficiencies["Expert"] = request.character.proficiency * 2;
-            const formula = "1d20 + @ability + @proficiency + @custom_dice";
+            const d20 = request.d20 || "1d20";
+            const formula = d20 + " + @ability + @proficiency + @custom_dice";
             let html = '<form>';
             html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>';
             html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';

@@ -62,7 +62,7 @@ function rollSkill(request, custom_roll_dice = "") {
             prof_val += `${request.character.proficiency} * 2`;
             reliableTalent = request.reliableTalent;
         }
-        const d20 = reliableTalent ? "1d20min10" : "1d20";
+        const d20 = reliableTalent ? "1d20min10" : request.d20 || "1d20";
 
         const roll = `!(${d20}${formatPlusMod(prof_val)}${formatPlusMod(custom_roll_dice)})`;
         return {
@@ -71,7 +71,7 @@ function rollSkill(request, custom_roll_dice = "") {
         }
         
     } else {
-        let d20 = request.reliableTalent ? "1d20min10" : "1d20";
+        let d20 = request.reliableTalent ? "1d20min10" : request.d20 || "1d20";
         if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
             d20 = "1d20min10";
 
@@ -86,14 +86,14 @@ function rollSkill(request, custom_roll_dice = "") {
 function rollAbility(request, custom_roll_dice = "") {
     return {
         title: request.ability + " Ability Check",
-        message:  template([advantageRoll(request, "Ability Check",  generateRoll("d20", [request.modifier, custom_roll_dice]))])
+        message:  template([advantageRoll(request, "Ability Check",  generateRoll(request.d20 || "1d20", [request.modifier, custom_roll_dice]))])
     }
 }
 
 function rollSavingThrow(request, custom_roll_dice = "") {
     return {
         title: request.ability + " Saving Throw",
-        message:  template([advantageRoll(request, "Saving Throw",  generateRoll("d20", [request.modifier, custom_roll_dice]))])
+        message:  template([advantageRoll(request, "Saving Throw",  generateRoll(request.d20 || "1d20", [request.modifier, custom_roll_dice]))])
     }
 }
 
@@ -101,7 +101,7 @@ function rollInitiative(request, custom_roll_dice = "") {
     return {
         title: "Initiative",
         message:  template([
-            ["Initiative",  generateRoll("d20", [request.initiative, custom_roll_dice], 'i')]
+            ["Initiative",  generateRoll(request.d20 || "1d20", [request.initiative, custom_roll_dice], 'i')]
         ])
     }
 }
@@ -119,7 +119,7 @@ function rollDeathSave(request, custom_roll_dice = "") {
     return {
         title: "Death Saving Throw",
         message:  template([
-            ["Normal", generateRoll('d20', [custom_roll_dice])]
+            ["Normal", generateRoll(request.d20 || "1d20", [custom_roll_dice])]
         ])
     }
 }
@@ -128,7 +128,7 @@ function rollItem(request, custom_roll_dice = "") {
     const source = request["item-type"].trim().toLowerCase();
     if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools"))) && request.character.abilities && request.character.abilities.length > 0) {
         const ret = rollTrait(request);
-        ret.message += "\n" + template([advantageRoll(request, request.name, generateRoll("d20", custom_roll_dice))])
+        ret.message += "\n" + template([advantageRoll(request, request.name, generateRoll(request.d20 || "1d20", custom_roll_dice))])
         return ret;
     } else {
         return rollTrait(request);
@@ -157,7 +157,7 @@ ${ parseDescription(request, request.description)}
 function rollAttack(request, custom_roll_dice = "") {
     let rolls = [];
     if (request["to-hit"] !== undefined) {
-        rolls.push(advantageRoll(request, "To Hit", generateRoll(`1d20cr>=${request["critical-limit"] || 20}`, [request["to-hit"], custom_roll_dice])))
+        rolls.push(advantageRoll(request, "To Hit", generateRoll(`${request.d20 || "1d20"}cr>=${request["critical-limit"] || 20}`, [request["to-hit"], custom_roll_dice])))
     }
     
     if (request["save-dc"] !== undefined) {
@@ -230,7 +230,7 @@ function rollSpellAttack(request, custom_roll_dice) {
     }
       
     if (request["to-hit"] !== undefined) {
-        rolls.push(advantageRoll(request, "To Hit", generateRoll(`1d20cr>=${request["critical-limit"] || 20}`, [request["to-hit"], custom_roll_dice])))
+        rolls.push(advantageRoll(request, "To Hit", generateRoll(`${request.d20 || "1d20"}cr>=${request["critical-limit"] || 20}`, [request["to-hit"], custom_roll_dice])))
     }
 
     if (request.damages !== undefined) {
