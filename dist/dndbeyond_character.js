@@ -5766,8 +5766,9 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
             callback(el);
         });
         el.off('click').on('click', (e) => {
-            if ($(e.currentTarget).hasClass('integrated-dice__container') || $(e.currentTarget).find(".integrated-dice__container").length > 0)
+            if ($(e.currentTarget).hasClass('integrated-dice__container') || $(e.currentTarget).find(".integrated-dice__container").length > 0) {
                 e.stopPropagation();
+            }
             callback(el);
         })
     }).on('mouseleave', (e) => {
@@ -5779,7 +5780,10 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
 }
 
 function deactivateQuickRolls() {
-    const abilities = $(".ct-ability-summary .ct-ability-summary__secondary,.ddbc-ability-summary .ddbc-ability-summary__secondary");
+    let abilities = $(".ddbc-ability-summary .ddbc-ability-summary__primary .integrated-dice__container");
+    // If digital dice are disabled, look up where the modifier is
+    if (abilities.length === 0)
+        abilities = $(".ddbc-ability-summary .ddbc-ability-summary__secondary .ddbc-signed-number, .ddbc-ability-summary .ddbc-ability-summary__primary .ddbc-signed-number");
     const saving_throws = $(".ct-saving-throws-summary__ability .ct-saving-throws-summary__ability-modifier,.ddbc-saving-throws-summary__ability .ddbc-saving-throws-summary__ability-modifier");
     const skills = $(".ct-skills .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__col--modifier");
     const actions = $(".ct-combat-attack .ct-combat-attack__icon,.ddbc-combat-attack .ddbc-combat-attack__icon");
