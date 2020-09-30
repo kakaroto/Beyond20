@@ -4227,8 +4227,13 @@ class Character extends CharacterBase {
 
     updateFeatures() {
         let update = false;
+        // Use classes instead of level because using XP method, you could reach the higher level before you level up
+        const last_classes = this.getSetting("last-features-classes", "");
+        const current_classes = $(".ddbc-character-summary__classes").text();
+        let updated_features_list = false;
         const class_detail = $(".ct-features .ct-classes-detail");
         if (class_detail.length > 0) {
+            updated_features_list = true;
             this._class_features = this.featureDetailsToList(class_detail, "Class Features");
             if (!isListEqual(this._class_features, this.getSetting("class-features", []))) {
                 console.log("New class feature");
@@ -4308,6 +4313,10 @@ class Character extends CharacterBase {
             this._spell_saves = this.getSetting("spell_saves", {});
             this._spell_attacks = this.getSetting("spell_attacks", {});
         }
+        if (updated_features_list && last_classes !== current_classes) {
+            update = true;
+        }
+        this._features_needs_refresh = current_classes && !updated_features_list && last_classes !== current_classes;
 
         if (this._settings && update) {
             this.mergeCharacterSettings({
@@ -4317,7 +4326,8 @@ class Character extends CharacterBase {
                 "actions": this._actions,
                 "spell_modifiers": this._spell_modifiers,
                 "spell_saves": this._spell_saves,
-                "spell_attacks": this._spell_attacks
+                "spell_attacks": this._spell_attacks,
+                "last-features-classes": updated_features_list ? current_classes : last_classes
             });
         }
     }
@@ -6011,6 +6021,10 @@ function documentModified(mutations, observer) {
     injectRollToSnippets();
     injectSettingsButton();
     activateQuickRolls();
+    if (character._features_needs_refresh && !character._features_refresh_warning_displayed) {
+        character._features_refresh_warning_displayed = true;
+        alertify.alert("This is a new or recently leveled-up character sheet and Beyond20 needs to parse its information. <br/>Please select the <strong>'Features &amp; Traits'</strong> panel for Beyond20 to parse this character's features and populate the character-specific options.");
+    }
 
     const pane = $(".ct-sidebar__pane-content > div");
     if (pane.length > 0) {
