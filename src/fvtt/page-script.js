@@ -143,11 +143,28 @@ class FVTTRoll extends Beyond20BaseRoll {
     }
 
     get dice() {
-        return this._roll.dice;
+        // 0.7.x Dice Roll API is different
+        if (isNewerVersion(game.data.version, "0.7")) {
+            return this._roll.dice.map(d => {
+                return {
+                    faces: d.faces,
+                    formula: d.formula,
+                    total: d.total,
+                    rolls: d.results.map(r => ({discarded: r.discarded, roll: r.result}))
+                }
+            });
+        } else {
+            return this._roll.dice;
+        }
     }
 
     get parts() {
-        return this._roll.parts;
+        // 0.7.x Dice Roll API is different
+        if (isNewerVersion(game.data.version, "0.7")) {
+            return this._roll.terms;
+        } else {
+            return this._roll.parts;
+        }
     }
 
     getTooltip() {
