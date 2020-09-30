@@ -163,6 +163,9 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
     const item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name")[0].firstChild.textContent;
     const item_type = $(".ct-item-detail__intro").text();
     const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
+    const source = item_type.trim().toLowerCase();
+    const is_tool = source === "tool, common" || (source === "gear, common" && item_name.endsWith("Tools"));
+    const is_instrument =  item_tags.includes("Instrument");
     const description = descriptionToString(".ct-item-detail__description");
     if (!force_display && Object.keys(properties).includes("Damage")) {
         const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
@@ -453,64 +456,60 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             character.mergeCharacterSettings({ "rogue-assassinate": false });
         }
         sendRollWithCharacter("attack", damages[0], roll_properties);
-    } else {
-        const source = item_type.trim().toLowerCase();
-        if ((source === "tool, common" || (source === "gear, common" && item_name.endsWith("Tools")) ||
-            item_tags.includes("Instrument")) && character._abilities.length > 0) {
-            const proficiencies = {}
-            proficiencies["None"] = 0;
-            proficiencies["Half Proficient"] = Math.floor(character._proficiency / 2);
-            proficiencies["Proficient"] = parseInt(character._proficiency);
-            proficiencies["Expert"] = character._proficiency * 2;
-            const formula = "1d20 + @ability + @proficiency + @custom_dice";
-            let html = '<form>';
-            html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>';
-            html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';
-            const modifiers = {}
-            for (let ability of character._abilities) {
-                html += '<option value="' + ability[0] + '">' + ability[0] + '</option>';
-                modifiers[ability[0]] = ability[3];
-            }
-            html += "</select></div>";
-            html += '<div class="beyond20-form-row"><label>Select Proficiency</label><select name="proficiency">';
-            for (let prof in proficiencies) {
-                html += '<option value="' + prof + '">' + prof + '</option>';
-            }
-            html += "</select></div>";
-            html += '</form>';
-            dndbeyondDiceRoller._prompter.prompt("Using a tool", html, item_name).then((html) => {
-                if (html) {
-                    const ability = html.find('[name="ability"]').val();
-                    const proficiency = html.find('[name="proficiency"]').val();
-                    const prof_val = proficiencies[proficiency];
-                    const modifier = prof_val ? `${modifiers[ability]}${prof_val > 0 ? ' +' : ' -'}${prof_val}` : modifiers[ability];
-                    const roll_properties = {
-                        "skill": item_name,
-                        "ability": ability,
-                        "modifier": modifier,
-                        "proficiency": proficiency
-                    }
-                    if (ability == "STR" &&
-                        ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-                            (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
-                        roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-                    }
-                    // Set Reliable Talent flag if character has the feature and skill is proficient/expertise or a custom skill that needs to be queried
-                    if (character.hasClassFeature("Reliable Talent") && ["Proficiency", "Expertise"].includes(proficiency))
-                        roll_properties["reliableTalent"] = true;
-                    if (character.hasClassFeature("Silver Tongue"))
-                        roll_properties["silverTongue"] = true;
-                    sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
-                }
-            });
-        } else {
-            sendRollWithCharacter("item", 0, {
-                "name": item_name,
-                "description": description,
-                "item-type": item_type,
-                "tags": item_tags
-            });
+    } else if (!force_display && (is_tool || is_instrument) && character._abilities.length > 0) {
+        const proficiencies = {}
+        proficiencies["None"] = 0;
+        proficiencies["Half Proficient"] = Math.floor(character._proficiency / 2);
+        proficiencies["Proficient"] = parseInt(character._proficiency);
+        proficiencies["Expert"] = character._proficiency * 2;
+        const formula = "1d20 + @ability + @proficiency + @custom_dice";
+        let html = '<form>';
+        html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>';
+        html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';
+        const modifiers = {}
+        for (let ability of character._abilities) {
+            html += '<option value="' + ability[0] + '">' + ability[0] + '</option>';
+            modifiers[ability[0]] = ability[3];
         }
+        html += "</select></div>";
+        html += '<div class="beyond20-form-row"><label>Select Proficiency</label><select name="proficiency">';
+        for (let prof in proficiencies) {
+            html += '<option value="' + prof + '">' + prof + '</option>';
+        }
+        html += "</select></div>";
+        html += '</form>';
+        dndbeyondDiceRoller._prompter.prompt("Using a tool", html, item_name).then((html) => {
+            if (html) {
+                const ability = html.find('[name="ability"]').val();
+                const proficiency = html.find('[name="proficiency"]').val();
+                const prof_val = proficiencies[proficiency];
+                const modifier = prof_val ? `${modifiers[ability]}${prof_val > 0 ? ' +' : ' -'}${prof_val}` : modifiers[ability];
+                const roll_properties = {
+                    "skill": item_name,
+                    "ability": ability,
+                    "modifier": modifier,
+                    "proficiency": proficiency
+                }
+                if (ability == "STR" &&
+                    ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
+                        (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
+                    roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+                }
+                // Set Reliable Talent flag if character has the feature and skill is proficient/expertise or a custom skill that needs to be queried
+                if (character.hasClassFeature("Reliable Talent") && ["Proficiency", "Expertise"].includes(proficiency))
+                    roll_properties["reliableTalent"] = true;
+                if (character.hasClassFeature("Silver Tongue"))
+                    roll_properties["silverTongue"] = true;
+                sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
+            }
+        });
+    } else {
+        sendRollWithCharacter("item", 0, {
+            "name": item_name,
+            "description": description,
+            "item-type": item_type,
+            "tags": item_tags
+        });
     }
 }
 
@@ -1181,7 +1180,16 @@ function injectRollButton(paneClass) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true });
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
         } else {
-            addDisplayButtonEx(paneClass, ".ct-sidebar__heading", { append: false, small: false });
+            const item_type = $(".ct-item-detail__intro").text().trim().toLowerCase();
+            const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
+            const is_tool = item_type === "tool, common" || (item_type === "gear, common" && item_name.endsWith("Tools"));
+            const is_instrument =  item_tags.includes("Instrument");
+            if (is_tool || is_instrument) {
+                addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true, text: `Use ${is_tool? "Tool" : "Instrument"}` });
+                addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
+            } else {
+                addDisplayButtonEx(paneClass, ".ct-sidebar__heading", { append: false, small: false });
+            }
             addRollButtonEx(paneClass, ".ct-item-detail__actions", { small: true, append: true, image: false });
         }
     } else if (paneClass == "ct-infusion-choice-pane") {
