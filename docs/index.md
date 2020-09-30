@@ -8,20 +8,17 @@ Head over to the [Screenshots](screenshots) page to see it in action.
 
 Seriously, what more can you ask for? :-)
 
-# Testimonials 
+# A ⭐⭐⭐⭐⭐ extension
 
-Here's what people have to say about Beyond20 (You can also check out reviews on the [Chrome Webstore](https://chrome.google.com/webstore/detail/beyond-20/gnblbpbepfbfmoobegdogkglpbhcjofh/reviews) and [Mozilla Add-ons](https://addons.mozilla.org/en-US/firefox/addon/beyond-20/reviews/) page).
+Beyond20 has over 200,000 users (as of August 2020) and a 5 star rating. Everybody loves the extension, and for good reason!
 
-{% include_relative donations.html %}
+You can check out all the reviews on the [Chrome Webstore](https://chrome.google.com/webstore/detail/beyond-20/gnblbpbepfbfmoobegdogkglpbhcjofh/reviews) and [Mozilla Add-ons](https://addons.mozilla.org/en-US/firefox/addon/beyond-20/reviews/) page, as well as the comments people leave when sending rations on [Ko-fi](https://ko-fi.com/kakaroto).
 
-All user notes when making a donation are included as anonymous testimonials. If you don't want your note included here or you are ok with your name not being anonymized, just [let me know](https://discord.gg/ZAasSVS).
 
 If you find Beyond20 useful to you and it helps you in your games, please consider supporting me, either on [Patreon](https://patreon.com/kakaroto), [Github](https://github.com/sponsors/kakaroto) or [Ko-fi](https://ko-fi.com/kakaroto).
 
 <div style="inline">
 {% include_relative buttons/patreon.html %} &nbsp;&nbsp;
-
-{% include_relative buttons/github.html %} &nbsp;&nbsp;
 
 {% include_relative buttons/kofi.html %}
 </div>
