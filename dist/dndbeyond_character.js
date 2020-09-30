@@ -2112,10 +2112,7 @@ class Beyond20RollRenderer {
 
     async rollSkill(request, custom_roll_dice = "") {
         const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-        let d20_modifier = request.reliableTalent ? "min10" : "";
-        if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
-            d20_modifier = "min10";
-        return this.rollD20(request, request.skill + "(" + request.modifier + ")", data, d20_modifier);
+        return this.rollD20(request, request.skill + "(" + request.modifier + ")", data);
     }
 
     rollAbility(request, custom_roll_dice = "") {
@@ -4449,11 +4446,13 @@ async function rollSkillCheck(paneClass) {
     if (skill_name == "Acrobatics" && character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false)) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
-    // Set Reliable Talent flag if character has the feature and skill is proficient/expertise or a custom skill that needs to be queried
-    if (character.hasClassFeature("Reliable Talent") && (["Proficiency", "Expertise"].includes(proficiency) || ability === "--"))
-        roll_properties["reliableTalent"] = true;
-    if (character.hasClassFeature("Silver Tongue"))
-        roll_properties["silverTongue"] = true;
+    roll_properties.d20 = "1d20";
+    // Set Reliable Talent flag if character has the feature and skill is proficient/expertise
+    if (character.hasClassFeature("Reliable Talent") && ["Proficiency", "Expertise"].includes(proficiency))
+        roll_properties.d20 = "1d20min10";
+    // Set Silver Tongue if Deception or Persuasion
+    if (character.hasClassFeature("Silver Tongue") && (skill_name === "Deception" || skill_name === "Persuasion"))
+        roll_properties.d20 = "1d20min10";
     sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 
@@ -4871,11 +4870,10 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                         (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
                     roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
                 }
-                // Set Reliable Talent flag if character has the feature and skill is proficient/expertise or a custom skill that needs to be queried
+                roll_properties.d20 = "1d20";
+                // Set Reliable Talent flag if character has the feature and skill is proficient/expertise
                 if (character.hasClassFeature("Reliable Talent") && ["Proficiency", "Expertise"].includes(proficiency))
-                    roll_properties["reliableTalent"] = true;
-                if (character.hasClassFeature("Silver Tongue"))
-                    roll_properties["silverTongue"] = true;
+                    roll_properties.d20 = "1d20min10";
                 sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
             }
         });

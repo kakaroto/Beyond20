@@ -2112,10 +2112,7 @@ class Beyond20RollRenderer {
 
     async rollSkill(request, custom_roll_dice = "") {
         const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-        let d20_modifier = request.reliableTalent ? "min10" : "";
-        if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
-            d20_modifier = "min10";
-        return this.rollD20(request, request.skill + "(" + request.modifier + ")", data, d20_modifier);
+        return this.rollD20(request, request.skill + "(" + request.modifier + ")", data);
     }
 
     rollAbility(request, custom_roll_dice = "") {
@@ -2656,6 +2653,8 @@ function escapeRoll20Macro(text) {
 }
 
 function genRoll(dice, modifiers = {}) {
+    dice = dice.replace(/ro<=([0-9]+)/, "ro<$1");
+    dice = dice.replace(/(^|\s)+([^\s]+)min([0-9]+)/g, "$1{$2, 0d0 + $3}kh1");
     let roll = "[[" + dice;
     for (let m in modifiers) {
         let mod = modifiers[m];
@@ -2679,8 +2678,6 @@ function subRolls(text, damage_only = false, overrideCB = null) {
     let replaceCB = overrideCB;
     if (!overrideCB) {
         replaceCB = (dice, modifier) => {
-            dice = dice.replace(/ro<=([0-9]+)/, "ro<$1");
-            dice = dice.replace(/(^|\s)+([^\s]+)min([0-9]+)/g, "$1{$2, 0d0 + $3}kh1");
             if (damage_only && dice == "")
                 return dice + modifier;
             const dice_formula = (dice === "" ? "1d20" : dice) + modifier;
@@ -2696,8 +2693,6 @@ function subDescriptionRolls(request, description) {
     if (!settings["subst-vtt"])
         return description;
     const replaceCB = (dice, modifier) => {
-        dice = dice.replace(/ro<=([0-9]+)/, "ro<$1");
-        dice = dice.replace(/(^|\s)+([^\s]+)min([0-9]+)/g, "$1{$2, 0d0 + $3}kh1");
         const roll = (dice == "" ? "1d20" : dice) + modifier;
         const roll_template = template(request, "simple",
             {
@@ -2834,14 +2829,11 @@ function rollAvatarDisplay(request) {
 
 function rollSkill(request, custom_roll_dice = "") {
     let modifier = request.modifier;
-    let d20 = request.reliableTalent ? "{1d20, 0d0 + 10}kh1" : request.d20 || "1d20";
-    if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
-        d20 = "{1d20, 0d0 + 10}kh1";
     return template(request, "simple", {
         "charname": request.character.name,
         "rname": request.skill,
         "mod": modifier + format_plus_mod(custom_roll_dice),
-        "r1": genRoll(d20, { [request.ability]: modifier, "CUSTOM": custom_roll_dice })
+        "r1": genRoll(request.d20 || "1d20", { [request.ability]: modifier, "CUSTOM": custom_roll_dice })
     });
 }
 

@@ -2113,10 +2113,7 @@ class Beyond20RollRenderer {
 
     async rollSkill(request, custom_roll_dice = "") {
         const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-        let d20_modifier = request.reliableTalent ? "min10" : "";
-        if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
-            d20_modifier = "min10";
-        return this.rollD20(request, request.skill + "(" + request.modifier + ")", data, d20_modifier);
+        return this.rollD20(request, request.skill + "(" + request.modifier + ")", data);
     }
 
     rollAbility(request, custom_roll_dice = "") {

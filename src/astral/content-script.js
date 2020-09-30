@@ -45,13 +45,9 @@ function generateRoll(d20, rolls, prefix="") {
 }
 
 function rollSkill(request, custom_roll_dice = "") {
-    let d20 = request.reliableTalent ? "1d20min10" : request.d20 || "1d20";
-    if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
-        d20 = "1d20min10";
-    
     return {
         title: request.skill + " Skill Check",
-        message: template([advantageRoll(request, "Skill Check", generateRoll(d20, [request.modifier, custom_roll_dice]))])
+        message: template([advantageRoll(request, "Skill Check", generateRoll(request.d20 || "1d20", [request.modifier, custom_roll_dice]))])
     }
 }
 
