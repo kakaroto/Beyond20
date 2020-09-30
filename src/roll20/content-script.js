@@ -758,7 +758,7 @@ async function handleOGLRenderedRoll(request) {
         if (initiative)
             atk_props["initiative"] = `[[${initiative.total} &{tracker}]]`;
     }
-    if (damage_rolls.length > 0 && originalRequest.rollAttack && !originalRequest.rollDamage) {
+    if (request.damage_rolls.length > 0 && originalRequest.rollAttack && !originalRequest.rollDamage) {
         rollDamages = `beyond20-rendered-roll-button-${Math.random()}`;
         atk_props["rname"]  = `[${request.title}](!${rollDamages})`;
     }
