@@ -179,7 +179,14 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 const isBrutal = character.hasClassFeature("Brutal Critical");
                 const isSavage = character.hasRacialTrait("Savage Attacks");
                 if (highest_dice != 0) {
-                    crit_damages.push(`${brutal}d${highest_dice}`);
+                    let brutal_dmg = `${brutal}d${highest_dice}`
+                    // Apply great weapon fighting to brutal damage dice
+                    if (character.hasClassFeature("Fighting Style: Great Weapon Fighting") &&
+                        properties["Attack Type"] == "Melee" &&
+                        (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
+                        brutal_dmg += "ro<=2"
+                    }
+                    crit_damages.push(brutal_dmg);
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
                 } else if (rule == CriticalRules.HOMEBREW_MAX) {
                     crit_damages.push(`${homebrew_max_damage}`);
