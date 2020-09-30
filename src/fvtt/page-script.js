@@ -215,6 +215,7 @@ function popAvatar(request) {
         "title": (request.whisper !== WhisperType.NO) ? "???" : request.character.name,
         "entity": { "type": "User", "id": game.user.id }
     }).render(true).shareImage(true);
+    roll_renderer.displayAvatarToDiscord(request);
 }
 
 async function addInitiativeToCombat(roll) {

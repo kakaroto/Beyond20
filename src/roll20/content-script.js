@@ -977,6 +977,7 @@ function handleMessage(request, sender, sendResponse) {
         }
     } else if (request.action == "roll") {
         if (request.type == "avatar") {
+            roll_renderer.displayAvatarToDiscord(request);
             roll = rollAvatarDisplay(request);
             const character_name = request.whisper !== WhisperType.NO ? "???" : request.character.name;
             return postChatMessage(roll, character_name);

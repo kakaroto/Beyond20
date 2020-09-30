@@ -2516,12 +2516,15 @@ class Beyond20RollRenderer {
 
     displayAvatar(request) {
         const character = (request.whisper !== WhisperType.NO) ? "???" : request.character.name;
-        const discordChannel = getDiscordChannel(this._settings, request.character)
+        this._displayer.postHTML(request, request.name, `<img src='${request.character.avatar}' width='100%'>`, {}, character, false, false);
+        this.displayAvatarToDiscord(request);
+    }
+    displayAvatarToDiscord(request) {
+        const discordChannel = getDiscordChannel(this._settings, request.character);
         postToDiscord(discordChannel ? discordChannel.secret : "", request, request.name, "", {}, "", [], [], [], [], false).then((error) => {
             if (error)
                 this._displayer.displayError("Beyond20 Discord Integration: " + error);
         });
-        this._displayer.postHTML(request, request.name, `<img src='${request.character.avatar}' width='100%'>`, {}, character, false, false);
     }
 
     handleRollRequest(request) {
@@ -2847,6 +2850,7 @@ function popAvatar(request) {
         "title": (request.whisper !== WhisperType.NO) ? "???" : request.character.name,
         "entity": { "type": "User", "id": game.user.id }
     }).render(true).shareImage(true);
+    roll_renderer.displayAvatarToDiscord(request);
 }
 
 async function addInitiativeToCombat(roll) {

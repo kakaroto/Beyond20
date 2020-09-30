@@ -2515,12 +2515,15 @@ class Beyond20RollRenderer {
 
     displayAvatar(request) {
         const character = (request.whisper !== WhisperType.NO) ? "???" : request.character.name;
-        const discordChannel = getDiscordChannel(this._settings, request.character)
+        this._displayer.postHTML(request, request.name, `<img src='${request.character.avatar}' width='100%'>`, {}, character, false, false);
+        this.displayAvatarToDiscord(request);
+    }
+    displayAvatarToDiscord(request) {
+        const discordChannel = getDiscordChannel(this._settings, request.character);
         postToDiscord(discordChannel ? discordChannel.secret : "", request, request.name, "", {}, "", [], [], [], [], false).then((error) => {
             if (error)
                 this._displayer.displayError("Beyond20 Discord Integration: " + error);
         });
-        this._displayer.postHTML(request, request.name, `<img src='${request.character.avatar}' width='100%'>`, {}, character, false, false);
     }
 
     handleRollRequest(request) {
@@ -3658,6 +3661,7 @@ function handleMessage(request, sender, sendResponse) {
         }
     } else if (request.action == "roll") {
         if (request.type == "avatar") {
+            roll_renderer.displayAvatarToDiscord(request);
             roll = rollAvatarDisplay(request);
             const character_name = request.whisper !== WhisperType.NO ? "???" : request.character.name;
             return postChatMessage(roll, character_name);
