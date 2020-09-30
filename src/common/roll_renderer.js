@@ -93,21 +93,25 @@ class Beyond20RollRenderer {
             advantage = await this.queryAdvantage(title);
 
         const d20 = request.d20 || "1d20";
-
+        let rolls = [];
         if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {
             const roll_1 = this.createRoll(d20 + modifier, data);
             const roll_2 = this.createRoll(d20 + modifier, data);
+            roll_1.setCriticalFaces(20);
+            roll_2.setCriticalFaces(20);
 
-            return {advantage, rolls: [roll_1, roll_2]};
+            rolls = [roll_1, roll_2];
         } else if ([RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE].includes(advantage)) {
             const roll_1 = this.createRoll(d20 + modifier, data);
             const roll_2 = this.createRoll(d20 + modifier, data);
             const roll_3 = this.createRoll(d20 + modifier, data);
 
-            return {advantage, rolls: [roll_1, roll_2, roll_3]};
+            rolls = [roll_1, roll_2, roll_3];
         } else { // advantage == RollType.NORMAL
-            return {advantage, rolls: [this.createRoll(d20 + modifier, data)]};
+            rolls.push(this.createRoll(d20 + modifier, data));
         }
+        rolls.forEach(r => r.setCriticalFaces(20));
+        return {advantage, rolls};
     }
     processToHitAdvantage(advantage, rolls) {
         if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {

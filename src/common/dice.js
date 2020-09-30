@@ -5,6 +5,7 @@ class Beyond20BaseRoll {
         this._data = data;
         this._fail_limit = null;
         this._critical_limit = null;
+        this._critical_faces = null;
         this._discarded = false;
         this._total = 0;
     }
@@ -50,6 +51,11 @@ class Beyond20BaseRoll {
     setFailLimit(limit) {
         this._fail_limit = limit;
     }
+    // Ignore all dice that don't have these faces when checking for a crit
+    // Hacky trick for custom dice in d20 rolls
+    setCriticalFaces(faces) {
+        this._critical_faces = faces;
+    }
     checkRollForCrits(cb) {
         for (let die of this.dice) {
             for (let r of die.rolls) {
@@ -65,6 +71,7 @@ class Beyond20BaseRoll {
 
     isCriticalHit() {
         return this.checkRollForCrits((faces, value) => {
+            if (this._critical_faces !== null && this._critical_faces !== faces) return false;
             const limit = this._critical_limit === null ? faces : this._critical_limit;
             return value >= limit;
         }
@@ -73,6 +80,7 @@ class Beyond20BaseRoll {
 
     isCriticalFail() {
         return this.checkRollForCrits((faces, value) => {
+            if (this._critical_faces !== null && this._critical_faces !== faces) return false;
             const limit = this._fail_limit === null ? 1 : this._fail_limit;
             return value <= limit;
         }
