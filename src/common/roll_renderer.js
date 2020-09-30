@@ -384,53 +384,11 @@ class Beyond20RollRenderer {
     }
 
     async rollSkill(request, custom_roll_dice = "") {
-        // Custom skill;
-        if (request.ability == "--" && request.character.abilities.length > 0) {
-            let prof = "";
-            let prof_val = "";
-            let d20_modifier = ""
-            if (request.proficiency == "Proficiency") {
-                prof = "proficiency";
-                prof_val = request.character.proficiency;
-                if (request.reliableTalent)
-                    d20_modifier = "min10";
-            } else if (request.proficiency == "Half Proficiency") {
-                prof = "half_proficiency";
-                prof_val += Math.floor(request.character.proficiency / 2);
-            } else if (request.proficiency == "Expertise") {
-                prof = "expertise";
-                prof_val += request.character.proficiency * 2;
-                if (request.reliableTalent)
-                    d20_modifier = "min10";
-            }
-            const d20 = request.d20 || "1d20";
-            const formula = d20 + " + @ability " + (prof != "" ? " + @" + prof : "") + " + @custom_dice";
-            let html = '<form>';
-            html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>';
-            html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';
-            const modifiers = {};
-            for (let ability of request.character.abilities) {
-                html += '<option value="' + ability[0] + '">' + ability[0] + '</option>';
-                modifiers[ability[0]] = ability[3];
-            }
-            html += "</select></div>";
-            html += '</form>';
-            html = await this._prompter.prompt("Custom Skill", html, request.skill);
-            if (html) {
-                const ability = html.find('[name="ability"]').val();
-                let mod = modifiers[ability];
-                if (request.modifier != "--" && request.modifier != "+0")
-                    mod += request.modifier;
-                const data = { "ability": mod, "prof": prof_val, "custom_dice": custom_roll_dice }
-                this.rollD20(request, request.skill + "(" + ability + ")", data, d20_modifier);
-            }
-        } else {
-            const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-            let d20_modifier = request.reliableTalent ? "min10" : "";
-            if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
-                d20_modifier = "min10";
-            return this.rollD20(request, request.skill + "(" + request.modifier + ")", data, d20_modifier);
-        }
+        const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
+        let d20_modifier = request.reliableTalent ? "min10" : "";
+        if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
+            d20_modifier = "min10";
+        return this.rollD20(request, request.skill + "(" + request.modifier + ")", data, d20_modifier);
     }
 
     rollAbility(request, custom_roll_dice = "") {

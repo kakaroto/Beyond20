@@ -224,49 +224,15 @@ function rollAvatarDisplay(request) {
 
 function rollSkill(request, custom_roll_dice = "") {
     let modifier = request.modifier;
-    // Custom skill;
-    if (request.ability === "--" && request.character.abilities.length > 0) {
-        modifier = "?{Choose Ability";
-        // [name, abbr, value, mod];
-        let magic = "";
-        if (request.modifier != "--" && request.modifier != "+0")
-            magic = request.modifier;
-        for (let ability of request.character.abilities)
-            modifier += "|" + ability[0] + ", " + ability[3] + magic;
-        modifier += "}";
-        let prof = "";
-        let prof_val = "";
-        let reliableTalent = false;
-        if (request.proficiency === "Proficiency") {
-            prof = "PROF";
-            prof_val += request.character.proficiency;
-            reliableTalent = request.reliableTalent;
-        } else if (request.proficiency === "Half Proficiency") {
-            prof = "HALF-PROFICIENCY";
-            prof_val += "+[[floor(" + request.character.proficiency + " / 2)]]";
-        } else if (request.proficiency === "Expertise") {
-            prof = "EXPERTISE";
-            prof_val += "+[[" + request.character.proficiency + " * 2]]";
-            reliableTalent = request.reliableTalent;
-        }
-        const d20 = reliableTalent ? "{1d20, 0d0 + 10}kh1" : request.d20 || "1d20";
-        return template(request, "simple", {
-            "charname": request.character.name,
-            "rname": request.skill,
-            "mod": format_plus_mod(modifier) + format_plus_mod(prof_val) + format_plus_mod(custom_roll_dice),
-            "r1": genRoll(d20, { "--": modifier, [prof]: prof_val, "CUSTOM": custom_roll_dice })
-        });
-    } else {
-        let d20 = request.reliableTalent ? "{1d20, 0d0 + 10}kh1" : request.d20 || "1d20";
-        if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
-            d20 = "{1d20, 0d0 + 10}kh1";
-        return template(request, "simple", {
-            "charname": request.character.name,
-            "rname": request.skill,
-            "mod": modifier + format_plus_mod(custom_roll_dice),
-            "r1": genRoll(d20, { [request.ability]: modifier, "CUSTOM": custom_roll_dice })
-        });
-    }
+    let d20 = request.reliableTalent ? "{1d20, 0d0 + 10}kh1" : request.d20 || "1d20";
+    if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
+        d20 = "{1d20, 0d0 + 10}kh1";
+    return template(request, "simple", {
+        "charname": request.character.name,
+        "rname": request.skill,
+        "mod": modifier + format_plus_mod(custom_roll_dice),
+        "r1": genRoll(d20, { [request.ability]: modifier, "CUSTOM": custom_roll_dice })
+    });
 }
 
 function rollAbility(request, custom_roll_dice = "") {

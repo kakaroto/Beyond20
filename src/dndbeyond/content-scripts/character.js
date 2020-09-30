@@ -8,11 +8,49 @@ function sendRollWithCharacter(rollType, fallback, args) {
 }
 
 
-function rollSkillCheck(paneClass) {
+async function rollSkillCheck(paneClass) {
     const skill_name = $("." + paneClass + "__header-name").text();
-    const ability = $("." + paneClass + "__header-ability").text();
-    const modifier = $("." + paneClass + "__header-modifier").text();
+    let ability = $("." + paneClass + "__header-ability").text();
+    let modifier = $("." + paneClass + "__header-modifier").text();
     const proficiency = $("." + paneClass + "__header-icon .ct-tooltip,." + paneClass + "__header-icon .ddbc-tooltip").attr("data-original-title");
+
+    
+    if (ability == "--" && character._abilities.length > 0) {
+        let prof = "";
+        let prof_val = "";
+        if (proficiency == "Proficiency") {
+            prof = "proficiency";
+            prof_val = parseInt(character._proficiency);
+        } else if (proficiency == "Half Proficiency") {
+            prof = "half_proficiency";
+            prof_val += Math.floor(character._proficiency / 2);
+        } else if (proficiency == "Expertise") {
+            prof = "expertise";
+            prof_val += character._proficiency * 2;
+        }
+        const formula = "1d20 + @ability " + (prof != "" ? " + @" + prof : "") + " + @custom_dice";
+        let html = '<form>';
+        html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>';
+        html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';
+        const modifiers = {};
+        for (let ability of character._abilities) {
+            html += '<option value="' + ability[0] + '">' + ability[0] + '</option>';
+            modifiers[ability[0]] = ability[3];
+        }
+        html += "</select></div>";
+        html += '</form>';
+        html = await dndbeyondDiceRoller._prompter.prompt("Custom Skill", html, skill_name);
+        if (html) {
+            ability = html.find('[name="ability"]').val();
+            let mod = modifiers[ability];
+            if (prof_val)
+                mod += `${prof_val > 0 ? '+' : '-'}${prof_val}`;
+            // In case of magical bonus
+            if (modifier != "--" && modifier != "+0")
+                mod += modifier;
+            modifier = mod;
+        }
+    }
     //console.log("Skill " + skill_name + "(" + ability + ") : " + modifier);
     const roll_properties = {
         "skill": skill_name,
