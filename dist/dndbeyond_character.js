@@ -4377,6 +4377,12 @@ function sendRollWithCharacter(rollType, fallback, args) {
     const preview = $(".ct-sidebar__header-preview > div").css('background-image');
     if (preview && preview.startsWith("url("))
         args.preview = preview.slice(5, -2);
+    // Add halfling luck
+    if (character.hasRacialTrait("Lucky") && ["skill", "ability", "saving-throw", "death-save",
+        "initiative", "attack", "spell-attack"].includes(rollType)) {
+        args.d20 = args.d20 || "1d20";
+        args.d20 += "ro<=1";
+    }
     sendRoll(character, rollType, fallback, args);
 }
 
