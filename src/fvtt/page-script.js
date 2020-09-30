@@ -167,8 +167,10 @@ class FVTTRoll extends Beyond20BaseRoll {
         }
     }
 
-    getTooltip() {
-        return this._roll.getTooltip();
+    async getTooltip() {
+        const tooltip = await this._roll.getTooltip();
+        // Automatically expand the roll details in the tooltip
+        return tooltip.replace(/<div class="dice-tooltip">/g, `<div class="dice-tooltip" style="display: block;">`)
     }
 
     async roll() {

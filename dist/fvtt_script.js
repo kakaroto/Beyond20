@@ -1398,7 +1398,7 @@ class Beyond20BaseRoll {
         throw new Error("NotImplemented");
     }
 
-    getTooltip() {
+    async getTooltip() {
         throw new Error("NotImplemented");
     }
 
@@ -1700,7 +1700,7 @@ class DNDBRoll extends Beyond20BaseRoll {
         this._total = Math.round(this._total * 100) / 100;
     }
 
-    getTooltip() {
+    async getTooltip() {
         let tooltip = "<div class='beyond20-roll-tooltip'>";
         for (let part of this._parts) {
             if (part instanceof DNDBDice) {
@@ -2725,8 +2725,10 @@ class FVTTRoll extends Beyond20BaseRoll {
         }
     }
 
-    getTooltip() {
-        return this._roll.getTooltip();
+    async getTooltip() {
+        const tooltip = await this._roll.getTooltip();
+        // Automatically expand the roll details in the tooltip
+        return tooltip.replace(/<div class="dice-tooltip">/g, `<div class="dice-tooltip" style="display: block;">`)
     }
 
     async roll() {

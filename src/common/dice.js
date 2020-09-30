@@ -25,7 +25,7 @@ class Beyond20BaseRoll {
         throw new Error("NotImplemented");
     }
 
-    getTooltip() {
+    async getTooltip() {
         throw new Error("NotImplemented");
     }
 
@@ -327,7 +327,7 @@ class DNDBRoll extends Beyond20BaseRoll {
         this._total = Math.round(this._total * 100) / 100;
     }
 
-    getTooltip() {
+    async getTooltip() {
         let tooltip = "<div class='beyond20-roll-tooltip'>";
         for (let part of this._parts) {
             if (part instanceof DNDBDice) {
