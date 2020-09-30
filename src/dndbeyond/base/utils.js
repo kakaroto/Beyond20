@@ -220,8 +220,6 @@ async function sendRoll(character, rollType, fallback, args) {
         advantage: advantage,
         whisper: whisper
     }
-    if (character.getGlobalSetting("weapon-force-critical", false))
-        req["critical-limit"] = 1;
     for (let key in args)
         req[key] = args[key];
     if (key_modifiers.shift)
@@ -230,6 +228,8 @@ async function sendRoll(character, rollType, fallback, args) {
         req["advantage"] = RollType.DISADVANTAGE;
     else if (key_modifiers.alt)
         req["advantage"] = RollType.NORMAL;
+    if (character.getGlobalSetting("weapon-force-critical", false))
+        req["critical-limit"] = 1;
 
     if (character.getGlobalSetting("use-digital-dice", false) && DigitalDice.isEnabled()) {
         req.sendMessage = true;
