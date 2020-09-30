@@ -891,6 +891,16 @@ function displayAction(paneClass) {
     });
 }
 
+function displayInfusion() {
+    const infusion = $(".ct-sidebar__heading").text();
+    const description = descriptionToString(".ct-infusion-choice-pane__description");
+    sendRollWithCharacter("trait", 0, {
+        "name": infusion,
+        "description": description,
+        "item-type": "Infusion",
+    });
+}
+
 function handleCustomText(paneClass) {
     const customRolls = {
         before: [],
@@ -954,6 +964,8 @@ function displayPanel(paneClass) {
     console.log("Beyond20: Displaying panel : " + paneClass);
     if (paneClass == "ct-item-pane")
         displayItem();
+    else if (paneClass == "ct-infusion-choice-pane")
+        displayInfusion();
     else if (paneClass == "ct-spell-pane")
         displaySpell();
     else if (["ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane"].includes(paneClass))
@@ -1083,6 +1095,15 @@ function injectRollButton(paneClass) {
             addDisplayButtonEx(paneClass, ".ct-sidebar__heading", { append: false, small: false });
             addRollButtonEx(paneClass, ".ct-item-detail__actions", { small: true, append: true, image: false });
         }
+    } else if (paneClass == "ct-infusion-choice-pane") {
+        const infusion_name = $(".ct-infusion-choice-pane .ct-sidebar__heading").text();
+        if (isRollButtonAdded() && infusion_name == lastItemName)
+            return;
+        lastItemName = infusion_name;
+        removeRollButtons();
+
+        checkAndInjectDiceToRolls(".ct-infusion-choice-pane__description", infusion_name);
+        addDisplayButtonEx(paneClass, ".ct-sidebar__heading", { append: false, small: false });
     } else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass)) {
         if (isRollButtonAdded())
             return;
