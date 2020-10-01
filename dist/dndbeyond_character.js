@@ -680,6 +680,12 @@ const character_settings = {
         "description": "Imbue your weapons and deal psychic damage to your the minds of your enemies.",
         "type": "bool",
         "default": false
+    },
+    "champion-remarkable-athlete": {
+        "title": "Champion Fighter: Remarkable Athlete",
+        "description": "Add Remarkable Athlete bonus to Strength/Dexterity/Constitution ability checks",
+        "type": "bool",
+        "default": true
     }
 }
 
@@ -4491,11 +4497,19 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
     const ability = ability_abbreviations[ability_name];
     let modifier = $("." + paneClass + "__modifier .ct-signed-number,." + paneClass + "__modifier .ddbc-signed-number").text();
 
-    if (rollType == "ability" && character.hasClassFeature("Jack of All Trades") &&
-        character.getSetting("bard-joat", false)) {
-        const JoaT = Math.floor(character._proficiency / 2);
-        modifier = parseInt(modifier) + JoaT;
-        modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+    if (rollType == "ability") {
+        // Remarkable Athelete and Jack of All Trades don't stack, we give priority to RA instead of JoaT because
+        // it's rounded up instead of rounded down.
+        if (character.hasClassFeature("Remarkable Athlete") && character.getSetting("champion-remarkable-athlete", false) &&
+            ["STR","DEX", "CON"].includes(ability)) {
+            const remarkable_athlete_mod = Math.ceil(character._proficiency / 2);
+            modifier = parseInt(modifier) + remarkable_athlete_mod;
+            modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+        } else if (character.hasClassFeature("Jack of All Trades") && character.getSetting("bard-joat", false)) {
+            const JoaT = Math.floor(character._proficiency / 2);
+            modifier = parseInt(modifier) + JoaT;
+            modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+        }
     }
 
     const roll_properties = {

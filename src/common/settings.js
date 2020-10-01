@@ -512,6 +512,12 @@ const character_settings = {
         "description": "Imbue your weapons and deal psychic damage to your the minds of your enemies.",
         "type": "bool",
         "default": false
+    },
+    "champion-remarkable-athlete": {
+        "title": "Champion Fighter: Remarkable Athlete",
+        "description": "Add Remarkable Athlete bonus to Strength/Dexterity/Constitution ability checks",
+        "type": "bool",
+        "default": true
     }
 }
 
