@@ -4425,8 +4425,8 @@ async function rollSkillCheck(paneClass) {
         html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';
         const modifiers = {};
         for (let ability of character._abilities) {
-            html += '<option value="' + ability[0] + '">' + ability[0] + '</option>';
-            modifiers[ability[0]] = ability[3];
+            html += '<option value="' + ability[1] + '">' + ability[0] + '</option>';
+            modifiers[ability[1]] = ability[3];
         }
         html += "</select></div>";
         html += '</form>';
@@ -4877,8 +4877,8 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
         html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';
         const modifiers = {}
         for (let ability of character._abilities) {
-            html += '<option value="' + ability[0] + '">' + ability[0] + '</option>';
-            modifiers[ability[0]] = ability[3];
+            html += '<option value="' + ability[1] + '">' + ability[0] + '</option>';
+            modifiers[ability[1]] = ability[3];
         }
         html += "</select></div>";
         html += '<div class="beyond20-form-row"><label>Select Proficiency</label><select name="proficiency">';
