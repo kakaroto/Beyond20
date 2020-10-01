@@ -521,7 +521,7 @@ const character_settings = {
     },
     "artificer-alchemical-savant": {
         "title": "Artificer: Use Alchemical Savant",
-        "description": "Use an Alchemical Savant for your Artificer spells. Deals extra damage equal to Intelligence Modifier",
+        "description": "Use your Alchemist's supplies as spellcasting focus, dealing extra damage or healing equal to your Intelligence Modifier",
         "type": "bool",
         "default": false
     }
