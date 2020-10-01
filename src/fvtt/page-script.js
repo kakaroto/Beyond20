@@ -266,7 +266,7 @@ function handleRoll(request) {
     console.log("Received roll request ", request);
 
     // The hook would return "false" to stop propagation, meaning that it was handled
-    const handledNatively = Hooks.call("beyond20Request", request);
+    const handledNatively = Hooks.call("beyond20Request", request.action, request);
     if (handledNatively === false) return;
 
     if (request.type == "initiative")
@@ -278,6 +278,10 @@ function handleRoll(request) {
 }
 function handleRenderedRoll(request) {
     console.log("Received rendered roll request ", request);
+    // The hook would return "false" to stop propagation, meaning that it was handled
+    const handledNatively = Hooks.call("beyond20Request", request.action, request);
+    if (handledNatively === false) return;
+
     roll_renderer._displayer.postHTML(request.request, request.title,
         request.html, request.character, request.whisper, 
         request.play_sound, request.source, request.attributes, 
