@@ -582,6 +582,12 @@ const character_settings = {
         "type": "string",
         "default": ""
     },
+    "custom-critical-limit": {
+        "title": "Custom Critical limit",
+        "description": "Set a custom threshold for the critical hit limit (if using homebrew magical items)",
+        "type": "string",
+        "default": ""
+    },
     "rogue-sneak-attack": {
         "title": "Rogue: Sneak Attack",
         "description": "Send Sneak Attack damage with each attack roll",
@@ -1436,6 +1442,8 @@ function populateCharacter(response) {
         e = createHTMLOption("custom-roll-dice", false, character_settings);
         options.append(e);
         e = createHTMLOption("custom-damage-dice", false, character_settings);
+        options.append(e);
+        e = createHTMLOption("custom-critical-limit", false, character_settings);
         options.append(e);
         if (Object.keys(response.classes).includes("Rogue")) {
             e = createHTMLOption("rogue-sneak-attack", false, character_settings);

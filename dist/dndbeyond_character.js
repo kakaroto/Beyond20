@@ -536,6 +536,12 @@ const character_settings = {
         "type": "string",
         "default": ""
     },
+    "custom-critical-limit": {
+        "title": "Custom Critical limit",
+        "description": "Set a custom threshold for the critical hit limit (if using homebrew magical items)",
+        "type": "string",
+        "default": ""
+    },
     "rogue-sneak-attack": {
         "title": "Rogue: Sneak Attack",
         "description": "Send Sneak Attack damage with each attack roll",
@@ -4876,6 +4882,12 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
         roll_properties["item-type"] = item_type;
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
+        const custom_critical_limit = parseInt(character.getSetting("custom-critical-limit", ""))
+        if (custom_critical_limit) {
+            roll_properties["critical-limit"] = custom_critical_limit;
+            if (to_hit !== null)
+                roll_properties["name"] += ` (CRIT${custom_critical_limit})`;
+        }
 
         // Asssassinate: consider all rolls as critical;
         if (character.hasClassFeature("Assassinate") &&
@@ -5104,6 +5116,13 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
 
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
+
+        const custom_critical_limit = parseInt(character.getSetting("custom-critical-limit", ""))
+        if (custom_critical_limit) {
+            roll_properties["critical-limit"] = custom_critical_limit;
+            if (to_hit !== null)
+                roll_properties["name"] += ` (CRIT${custom_critical_limit})`;
+        }
 
         // Asssassinate: consider all rolls as critical;
         if (character.hasClassFeature("Assassinate") &&
@@ -5336,6 +5355,12 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
 
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
+        const custom_critical_limit = parseInt(character.getSetting("custom-critical-limit", ""))
+        if (custom_critical_limit) {
+            roll_properties["critical-limit"] = custom_critical_limit;
+            if (to_hit !== null)
+                roll_properties["name"] += ` (CRIT${custom_critical_limit})`;
+        }
 
         const spell_properties = {
             "level-school": level,

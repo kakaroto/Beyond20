@@ -582,6 +582,12 @@ const character_settings = {
         "type": "string",
         "default": ""
     },
+    "custom-critical-limit": {
+        "title": "Custom Critical limit",
+        "description": "Set a custom threshold for the critical hit limit (if using homebrew magical items)",
+        "type": "string",
+        "default": ""
+    },
     "rogue-sneak-attack": {
         "title": "Rogue: Sneak Attack",
         "description": "Send Sneak Attack damage with each attack roll",

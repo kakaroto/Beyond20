@@ -94,6 +94,8 @@ function populateCharacter(response) {
         options.append(e);
         e = createHTMLOption("custom-damage-dice", false, character_settings);
         options.append(e);
+        e = createHTMLOption("custom-critical-limit", false, character_settings);
+        options.append(e);
         if (Object.keys(response.classes).includes("Rogue")) {
             e = createHTMLOption("rogue-sneak-attack", false, character_settings);
             options.append(e);
