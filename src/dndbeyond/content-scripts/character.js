@@ -48,13 +48,13 @@ async function rollSkillCheck(paneClass) {
         html = await dndbeyondDiceRoller._prompter.prompt("Custom Skill", html, skill_name);
         if (html) {
             ability = html.find('[name="ability"]').val();
-            let mod = modifiers[ability];
+            let mod = parseInt(modifiers[ability]);
             if (prof_val)
-                mod += `${prof_val > 0 ? '+' : '-'}${prof_val}`;
+                mod += prof_val;
             // In case of magical bonus
             if (modifier != "--" && modifier != "+0")
-                mod += modifier;
-            modifier = mod;
+                mod += parseInt(modifier);
+            modifier = mod >= 0 ? `+${mod}` : `-${mod}`;
         }
     }
     //console.log("Skill " + skill_name + "(" + ability + ") : " + modifier);
@@ -86,6 +86,17 @@ async function rollSkillCheck(paneClass) {
     // Set Silver Tongue if Deception or Persuasion
     if (character.hasClassFeature("Silver Tongue") && (skill_name === "Deception" || skill_name === "Persuasion"))
         roll_properties.d20 = "1d20min10";
+    
+    if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
+        const min = character.getAbility("STR").score - parseInt(modifier);
+        // Check against reliable talent or silver tongue (should be an impossible state)
+        const min10 = roll_properties.d20 === "1d20min10";
+        if (min10 && min > 10) {
+            roll_properties.d20 = `1d20min${min}`
+        } else if (!min10) {
+            roll_properties.d20 = `1d20min${min}`
+        }
+    }
     sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 
@@ -98,7 +109,8 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
     if (rollType == "ability" && character.hasClassFeature("Jack of All Trades") &&
         character.getSetting("bard-joat", false)) {
         const JoaT = Math.floor(character._proficiency / 2);
-        modifier += " + " + JoaT;
+        modifier = parseInt(modifier) + JoaT;
+        modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
     }
 
     const roll_properties = {
@@ -111,6 +123,10 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
             (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+    }
+    if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
+        const min = character.getAbility("STR").score - parseInt(modifier);
+        roll_properties.d20 = `1d20min${min}`
     }
     sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
 }
