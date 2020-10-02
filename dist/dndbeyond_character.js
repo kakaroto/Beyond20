@@ -4468,9 +4468,14 @@ async function rollSkillCheck(paneClass) {
         "proficiency": proficiency
     }
     if(character.getGlobalSetting("roll-type", RollType.NORMAL) != RollType.QUERY) {
-        if($("." + paneClass + "__dice-adjustment ." + paneClass + "__dice-adjustment-icon .ddbc-tooltip").attr("data-original-title") === "Advantage"){
+        const skill_badge_adv = $("." + paneClass + "__dice-adjustments .ddbc-advantage-icon").length > 0;
+        const skill_badge_disadv = $("." + paneClass + "__dice-adjustments .ddbc-disadvantage-icon").length > 0;
+
+        if (skill_badge_adv && skill_badge_disadv) {
+            roll_properties["advantage"] = RollType.QUERY;
+        } else if (skill_badge_adv) {
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-        } else if ($("." + paneClass + "__dice-adjustment ." + paneClass + "__dice-adjustment-icon .ddbc-tooltip").attr("data-original-title") === "Disadvantage"){
+        } else if (skill_badge_disadv) {
             roll_properties["advantage"] = RollType.OVERRIDE_DISADVANTAGE;
         }
     }
