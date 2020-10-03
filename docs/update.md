@@ -68,7 +68,7 @@ v2.2
 * **Feature**: Add support for Halfling Luck feature
 * **Feature**: Add support for Fey Wanderer's Dreadful Strikes (by [@Aeristoka](https://github.com/Aeristoka))
 * **Feature**: Add support for Barbarian's Indomitable Might (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for Rogue's Remarkable Athlete (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for fighter's Remarkable Athlete (by [@Aeristoka](https://github.com/Aeristoka))
 * **Feature**: Add support for Alchemist Artificer's Alchemical Savant (by [@Aeristoka](https://github.com/Aeristoka))
 * **Feature**: Add support for Artificer's Armorer Power Armor attacks (by [@Aeristoka](https://github.com/Aeristoka))
 * **Feature**: Add support for Oath of Conquest: Invincible Conqueror (by [@Aeristoka](https://github.com/Aeristoka))
@@ -90,11 +90,11 @@ v2.2
 * **Bugfix**: Fix parsing of skills with spaces ('Sleight of hand', 'Animal Handling') in a monster stat block
 * **Bugfix**: Fix display of damages in Roll20 when using the roll renderer, for multiple damages of the same type
 * **Bugfix**: Do not add a "Roll Damages" button if auto-roll-damages is disabled but the attack has no damages
-* **Bugfix**: Add support for Paladin's Improved Divine Smite when used with Polarm Master Bonus Attack (by [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Fix Polarm Master Bonus Attack not applying for Tavern Brawler Strikes (by [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Fix Polarm Master Bonus Attack not applying Paladin's Improved Divine Smite (by [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Fix Polarm Master Bonus Attack not applying Great Weapon Fighting rerolls (by [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Fix Polarm Master Bonus Attack not applying for Tavern Brawler Strikes (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Add support for Paladin's Improved Divine Smite when used with Polearm Master Bonus Attack (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix Polearm Master Bonus Attack not applying for Tavern Brawler Strikes (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix Polearm Master Bonus Attack not applying Paladin's Improved Divine Smite (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix Polearm Master Bonus Attack not applying Great Weapon Fighting rerolls (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix Polearm Master Bonus Attack not applying for Tavern Brawler Strikes (by [@Aeristoka](https://github.com/Aeristoka))
 * **Bugfix**: Fix parsing of character level when using XP-based progression (by [@Aeristoka](https://github.com/Aeristoka))
 * **Bugfix**: Fix Discord logo overlapping over the settings description (by [@John-Paul-R](https://github.com/John-Paul-R))
 * **Bugfix**: Fix popup content overlapping the header in the quick settings dialog (by [@John-Paul-R](https://github.com/John-Paul-R))

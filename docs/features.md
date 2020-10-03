@@ -104,6 +104,7 @@ This list may not always be up to date... I kind of lost track of everything the
 * Fighter: Maneuvers
 * Fighter: Improved Critical and Superior Critical (Champion)
 * Fighter: Rune Knight's Giant Might (UA)
+* Fighter: Remarkable Athlete
 * Fighting Style: Great Weapon Fighting
 * Paladin: Legendary Strike (UA)
 * Paladin: Improved Divine Smite
@@ -117,7 +118,6 @@ This list may not always be up to date... I kind of lost track of everything the
 * Rogue: Sneak Attack
 * Rogue: Assassinate
 * Rogue: Reliable Talent
-* Rogue: Remarkable Athlete
 * Sorcerer: Elemental Affinity
 * Warlock: Hexblade's Curse
 * Half-Orc: Savage Attacks
