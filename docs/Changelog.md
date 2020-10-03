@@ -1,3 +1,80 @@
+v2.2
+===
+
+* **Feature**: Add support for Astral Tabletop (by [@adriangaro](https://github.com/adriangaro))
+* **Feature**: Add support for rolling instruments as tools (by [@John-Paul-R](https://github.com/John-Paul-R))
+* **Feature**: Add ability to roll attack and damage separately from the quick-rolls area
+* **Feature**: *Roll20*: Add ability to use the OGL sheet when rolling with Digital Dice enabled
+* **Feature**: Improve the Digital Dice notification to show only the first full roll with modifiers
+* **Feature**: Add an alert to the user to remind them to visit the Features & Traits page when the sheet is new or after a level up
+* **Feature**: Add a setting for overriding the critical limit on attacks (for magical/homebrew items that grant that ability)
+* **Feature**: Add "Roll Twice" as an option when querying the user for the roll type
+* **Feature**: Set the "Normal Roll" as the first/default option when query the user for the roll type
+* **Feature**: Show indicator of adv/disadv when rolling initiative as it rolls as a single formula
+* **Feature**: Add support for displaying an Artificer's infusions
+* **Feature**: Add support for displaying the background feature to VTT
+* **Feature**: Add Beyond20 dice icons to roll from the action/feature snippets directly
+* **Feature**: Move the user query for advantage/disadvantage roll to the D&D Beyond page
+* **Feature**: Move the user query for custom skills to the D&D Beyond page
+* **Feature**: Move the user query for rolling tools and instruments to the D&D Beyond page
+* **Feature**: Add a "Use Tool" and "Use Instrument" button for tools and instrument items
+* **Feature**: Save the last choice made by the user in the whisper/advantage query dialogs
+* **Feature**: Add abilility to send custom chat messages/macros to VTT when doing a roll (by [@John-Paul-R](https://github.com/John-Paul-R))
+* **Feature**: Roll the Spell Attack as a full attack instead of a custom d20 modifier. Allows use of the advantage settings
+* **Feature**: Add the ability to switch the D&D Beyond sidebar to the selected spell's level when clicking on a spell which is the same as the one already displayed, but at a different level
+* **Feature**: Add support for Halfling Luck feature
+* **Feature**: Add support for Fey Wanderer's Dreadful Strikes (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Barbarian's Indomitable Might (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Rogue's Remarkable Athlete (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Alchemist Artificer's Alchemical Savant (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Artificer's Armorer Power Armor attacks (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Oath of Conquest: Invincible Conqueror (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Wildfire Druid: Enhanced Bond (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for conditionally enabling the Divine Fury class feature
+* **Feature**: *FVTT*: Add support for Foundry VTT 0.7.x
+* **Feature**: *FVTT*: Call a hook with the roll request data to let modules handle intercept and handle the roll instead (to allow for native rolls)
+* **Bugfix**: Fix rolling spells multiple times when using the cast button after changing the spell level
+* **Bugfix**: Don't query for roll type when rolling initiative with "roll twice" set, and instead only add the first result to tracker
+* **Bugfix**: Fix the Display Avatar option not sending the avatar to discord when rolling to Roll20/FVTT at the same time
+* **Bugfix**: Fix detecting the character's level when they've reached level 20 on XP progression, as the XP bar gets filled instead of showing level 20
+* **Bugfix**: When digital dice are enabled, move the quick roll area for abilities to the digital dice button
+* **Bugfix**: Set the quick roll area to the correct section of the sheet when the sheet is configured to show the modifier in the primary abilities box
+* **Bugfix**: Add quick roll to the initiative button in mobile layout
+* **Bugfix**: Don't roll crit damage on conditional damage of a monster statblock that applies on a saving throw
+* **Bugfix**: Fix detecting the Escape DC for attacks from monster stat blocks
+* **Bugfix**: Fix rolls with invalid modifier for attacks in monster stat blocks that do not have a to-hit value
+* **Bugfix**: Fix the missing comma separating saving throws in a monster stat block after Beyond20 adds its dice
+* **Bugfix**: Fix parsing of skills with spaces ('Sleight of hand', 'Animal Handling') in a monster stat block
+* **Bugfix**: Fix display of damages in Roll20 when using the roll renderer, for multiple damages of the same type
+* **Bugfix**: Do not add a "Roll Damages" button if auto-roll-damages is disabled but the attack has no damages
+* **Bugfix**: Add support for Paladin's Improved Divine Smite when used with Polarm Master Bonus Attack (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix Polarm Master Bonus Attack not applying for Tavern Brawler Strikes (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix Polarm Master Bonus Attack not applying Paladin's Improved Divine Smite (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix Polarm Master Bonus Attack not applying Great Weapon Fighting rerolls (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix Polarm Master Bonus Attack not applying for Tavern Brawler Strikes (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix parsing of character level when using XP-based progression (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix Discord logo overlapping over the settings description (by [@John-Paul-R](https://github.com/John-Paul-R))
+* **Bugfix**: Fix popup content overlapping the header in the quick settings dialog (by [@John-Paul-R](https://github.com/John-Paul-R))
+* **Bugfix**: Fix item description not properly replacing all html entities (by [@John-Paul-R](https://github.com/John-Paul-R))
+* **Bugfix**: Fix quick roll notification being shifted down if a banner is shown on D&D Beyond site
+* **Bugfix**: Fix monster parsing when an attack has no damage
+* **Bugfix**: Use local storage for storing settings, which should fix settings not saving for some users
+* **Bugfix**: Hide the character's name in conditions display if it appears twice when the player speaks as the character (by [@macmaxbh](https://github.com/macmaxbh))
+* **Bugfix**: Fix "Force Critical" not working for characters with Improved Critical feature
+* **Bugfix**: Apply Great Weapon Fighting to brutal damage dice
+* **Bugfix**: *FVTT*: Fix updating token health for Simple Worldbuilding System
+* **Bugfix**: *FVTT*: Only update tokens HP for tokens that the user owns
+* **Bugfix**: *FVTT*: Fix detection of critical hits on 0.7.x
+* **Bugfix**: *FVTT*: Force the dice details in the tooltips to be auto expanded
+* **Bugfix**: Prevent custom dice from affecting the critical failure/critical success state of attack rolls
+* **Bugfix**: Fix "Artificer Chaos Bolt" and Izzet Engineer background and spell sources not being detected correctly (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix handle of special features that depend on an ability being used, when doing a custom skill or tool roll
+* **Bugfix**: Fix Advantage/Disadvantage badges on skills not being applied anymore (by [@Aeristoka](https://github.com/Aeristoka))
+* **Misc**: Improve FAQ about using Beyond20 with Foundry VTT (by [@shadow7412](https://github.com/shadow7412))
+* **Misc**: *FVTT*: Do not use Foundry VTT 0.7.x deprecated APIs based on the running version
+* **Misc**: Remove testimonials from site's main page and add link to reviews instead
+* **Misc**: Add banner/ad for [The Forge](https://forge-vtt.com) to the main site
+
 v2.1.1
 ===
 * **Feature**: Add synchronization of D&D Beyond's combat tracker with Roll20's Combat tracker (By [@shadow7412](https://github.com/shadow7412))
