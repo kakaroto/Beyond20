@@ -546,10 +546,10 @@ function rollSpellAttack(request, custom_roll_dice) {
     }
     if (settings["roll20-spell-description-display"] === true) {
         if (settings["components-display"] === "all") {
-            properties["desc"] += "\r\n\r\nDescription: " + request.description;
+            properties["desc"] += "\n\nDescription: " + request.description;
         } else if (settings["components-display"] === "material") {
             if (properties["desc"] != undefined) {
-                properties["desc"] += "\r\n\r\nDescription: " + request.description;
+                properties["desc"] += "\n\nDescription: " + request.description;
             } else {
                 properties["desc"] = "Description: " + request.description;
             }
