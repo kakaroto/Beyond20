@@ -2,6 +2,7 @@ v2.2
 ===
 
 Hi again, it's time to drop another massive Beyond20 update!
+
 This update has been brewing for a while, and every day for the last month, I thought I'd finally be ready to release it, but there was always something taking up my time, or some new issue that needed to be fixed first. I felt bad, because I thought this overdue update wasn't going to amount to much, as I've been too busy spending most of my time working on [The Forge](https://forge-vtt.com/?referral=beyond20), but it turns out I was wrong, and this update is **massive**. It has 73 items in its changelog, over 30% more than the previous 2.0 release, making it the biggest release yet! It's hard to believe it!
 
 Enough chit chat, let's get down to business. This release has a lot of bugfixes, taking care of all the small issues that you may have had, as well as a bunch of quality of life improvements all over the place, I'll let you discover it all through the [Changelog](/Changelog#v22). There are a couple of big features coming in this update, most notably, the support for [Astral Tabletop](https://www.astraltabletop.com) which was contributed by [@adriangaro](https://github.com/adriangaro), who did an amazing job with it. We also now have a much better integration with the D&D Beyond digital dice, as you can finally roll attack and damages separately, as well as see the nice OGL sheet template output on Roll20.
