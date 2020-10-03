@@ -13,13 +13,7 @@ Thank you all for your support!
 
 # Known issues
 
-Some issues are known to me and are being worked on, others might be caused by a new feature that was just added in the latest update and I'm facepalming at not catching it before I made the release. 
-
 {% include_relative known_issues.md %}
-
-Head over to the [github issue tracker](https://github.com/kakaroto/Beyond20/issues) to see the full list of currently known issues.
-
-If you find an issue that isn't in the list, I'd appreciate you letting me know about it (either by [creating one](https://github.com/kakaroto/Beyond20/issues/new), or by reaching out to me over on [Discord](https://discord.gg/ZAasSVS)!
 
 # Release Notes
 
