@@ -1,3 +1,17 @@
+v2.2.1
+===
+
+* **Feature**: Make the quick roll tooltip stay longer after hover to more easily interact with it
+* **Bugfix**: *Roll20*: Fix issue preventing rolls from appearing on Roll20 when the character sheet template isn't OGL
+* **Bugfix**: Fix missing "Roll Damages" button when auto-roll-damages is disabeld
+* **Bugfix**: Fix issue preventing damage-only rolls from working if auto-roll-damages was disabled
+* **Bugfix**: Fix a possible crash when rolling an attack that has no damage
+* **Bugfix**: Fix the roll formula being incorrect when having both Reliable Talent/Silver Tongue class feature and Halfling Luck
+* **Bugfix**: Do not bind the quick roll area to the versatile damage digital dice button as it can be confusing
+* **Bugfix**: Move the quick roll tooltip to appear on the left/right for the to-hit and damage roll areas to avoid overlapping with D&D Beyond's tooltip for damage type
+* **Bugfix**: Fix Elemental Adept class feature rolling an incorrect damage formula when the spell includes static modifiers
+* **Bugfix**: *Roll20*: Fix the independent to-hit and damage rolls rolling the full attack on Roll20 with digital dice disabled
+* **Bugfix**: *Roll20*: Fix possible race condition with chrome extensions that may prevent proper detection of OGL sheet template use in a campaign
 
 v2.2
 ===

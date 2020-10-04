@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.2
+Congratulations! Beyond20 was just updated to the latest version : v2.2.1
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -16,6 +16,9 @@ Thank you all for your support!
 {% include_relative known_issues.md %}
 
 # Release Notes
+
+* [v2.2](#v22)
+* [v2.2.1](#v221)
 
 v2.2
 ===
@@ -33,6 +36,14 @@ As you have noticed, there are quite a few contributors who have helped make thi
 If you find Beyond20 useful and it helps you run your games more smoothly, please consider [supporting](/rations) me and Beyond20. Alternatively, I'd invite you all to check out [The Forge](https://forge-vtt.com/?referral=beyond20), my hosting service for Foundry VTT which makes it super easy to get started playing on the best Virtual Tabletop that exists.
 
 Thank you, and, as usual, happy rolling!
+
+
+v2.2.1
+===
+
+Apologies for this update coming one day after [v2.2](#v22), but there were some critical issues that were affecting a large number of users and I had to make this bugfix release available as soon as possible. I apparently rolled a natural 1 on my perception check and bugs sneaked past me! If you're just tuning in, ignore me and go read the v2.2 release notes directly :)
+
+This small bugfix release fixes a critical bug that made rolls not work on Roll20 anymore for those not using the OGL sheet, as well as a few issues that had to do with the "auto roll damages" option and rolling to-hit and damages separately. You'll find more details on the v2.2.1 changelog.
 
 
 ---
@@ -117,6 +128,21 @@ v2.2
 * **Misc**: *FVTT*: Do not use Foundry VTT 0.7.x deprecated APIs based on the running version
 * **Misc**: Remove testimonials from site's main page and add link to reviews instead
 * **Misc**: Add banner/ad for [The Forge](https://forge-vtt.com) to the main site
+
+v2.2.1
+===
+
+* **Feature**: Make the quick roll tooltip stay longer after hover to more easily interact with it
+* **Bugfix**: *Roll20*: Fix issue preventing rolls from appearing on Roll20 when the character sheet template isn't OGL
+* **Bugfix**: Fix missing "Roll Damages" button when auto-roll-damages is disabeld
+* **Bugfix**: Fix issue preventing damage-only rolls from working if auto-roll-damages was disabled
+* **Bugfix**: Fix a possible crash when rolling an attack that has no damage
+* **Bugfix**: Fix the roll formula being incorrect when having both Reliable Talent/Silver Tongue class feature and Halfling Luck
+* **Bugfix**: Do not bind the quick roll area to the versatile damage digital dice button as it can be confusing
+* **Bugfix**: Move the quick roll tooltip to appear on the left/right for the to-hit and damage roll areas to avoid overlapping with D&D Beyond's tooltip for damage type
+* **Bugfix**: Fix Elemental Adept class feature rolling an incorrect damage formula when the spell includes static modifiers
+* **Bugfix**: *Roll20*: Fix the independent to-hit and damage rolls rolling the full attack on Roll20 with digital dice disabled
+* **Bugfix**: *Roll20*: Fix possible race condition with chrome extensions that may prevent proper detection of OGL sheet template use in a campaign
 
 ---
 

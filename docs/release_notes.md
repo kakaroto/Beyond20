@@ -1,3 +1,10 @@
+v2.2.1
+===
+
+Apologies for this update coming one day after v2.2, but there were some critical issues that were affecting a large number of users and I had to make this bugfix release available as soon as possible. I apparently rolled a natural 1 on my perception check and bugs sneaked past me! If you're just tuning in, ignore me and go read the v2.2 release notes directly :)
+
+This small bugfix release fixes a critical bug that made rolls not work on Roll20 anymore for those not using the OGL sheet, as well as a few issues that had to do with the "auto roll damages" option and rolling to-hit and damages separately. You'll find more details on the v2.2.1 changelog.
+
 v2.2
 ===
 
