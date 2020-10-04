@@ -698,7 +698,7 @@ async function handleOGLRenderedRoll(request) {
         if (initiative)
             atk_props["initiative"] = `[[${initiative.total} &{tracker}]]`;
     }
-    if (request.damage_rolls.length > 0 && originalRequest.rollAttack && !originalRequest.rollDamage) {
+    if (originalRequest.damages.length > 0 && originalRequest.rollAttack && !originalRequest.rollDamage) {
         rollDamages = `beyond20-rendered-roll-button-${Math.random()}`;
         atk_props["rname"]  = `[${request.title}](!${rollDamages})`;
     }
@@ -840,7 +840,7 @@ async function handleRenderedRoll(request) {
 
     let rollDamages = null;
     const originalRequest = request.request;
-    if (request.damage_rolls.length > 0 && originalRequest.rollAttack && !originalRequest.rollDamage) {
+    if (originalRequest.damages.length > 0 && originalRequest.rollAttack && !originalRequest.rollDamage) {
         rollDamages = `beyond20-rendered-roll-button-${Math.random()}`;
         properties["Roll Damages"] = `[Click](!${rollDamages})`;
     }
