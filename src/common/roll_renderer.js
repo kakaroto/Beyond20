@@ -323,7 +323,8 @@ class Beyond20RollRenderer {
             html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
         }
 
-        if (request.damages.length > 0 && request.rollAttack && !request.rollDamage)
+        if (request.damages && request.damages.length > 0 && 
+            request.rollAttack && !request.rollDamage)
             html += '<button class="beyond20-button-roll-damages">Roll Damages</button>';
 
         html += "</div>";
