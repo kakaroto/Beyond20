@@ -6171,7 +6171,9 @@ function activateQuickRolls() {
 
     const activateQRSpell = (spell, force_to_hit_only, force_damages_only) => {
         spell = $(spell);
-        activateTooltipListeners(spell, spell.hasClass('integrated-dice__container') ? 'up' : 'right', beyond20_tooltip, (el) => {
+        // To the right for attack and damage, to the left for to hit
+        const position = force_to_hit_only ? 'left' : 'right';
+        activateTooltipListeners(spell, position, beyond20_tooltip, (el) => {
             const name_element = el.closest(".ct-spells-spell,.ddbc-spells-spell")
                 .find(".ct-spell-name,.ddbc-spell-name");
             const name = name_element.trigger('click').text();
