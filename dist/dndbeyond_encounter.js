@@ -1686,7 +1686,7 @@ class DNDBRoll extends Beyond20BaseRoll {
                 last_sign = mergeSigns(match[1]);
                 if (last_sign)
                     this._parts.push(last_sign);
-                const part = new DNDBDice(...match.slice(2, 4));
+                const part = new DNDBDice(...match.slice(2, 5));
                 this._parts.push(part);
                 last_sign = "+";
             } else {
