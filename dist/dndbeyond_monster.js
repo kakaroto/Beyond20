@@ -1664,22 +1664,42 @@ class DNDBRoll extends Beyond20BaseRoll {
         formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/g, "r$1$2");
         super(formula, data);
         this._parts = [];
+        let last_sign = null;
         for (let key in data)
             formula = formula.replace('@' + key, data[key]);
         const parts = formula.split(/(?=[+-])/);
+        const mergeSigns = (sign) => {
+            if (!sign) return last_sign;
+            if (!last_sign) return sign;
+            if (sign === last_sign) return "+";
+            return "-";
+        }
         for (let part of parts) {
             part = part.trim();
-            let match = part.match(/([0-9]*)d([0-9]+)(.*)/);
+            if (["+", "-"].includes(part)) {
+                last_sign = mergeSigns(part);
+                continue;
+            }
+            // Match dice formulas
+            let match = part.match(/([+-])?\s*([0-9]*)d([0-9]+)(.*)/);
             if (match) {
-                const part = new DNDBDice(...match.slice(1, 4));
+                last_sign = mergeSigns(match[1]);
+                if (last_sign)
+                    this._parts.push(last_sign);
+                const part = new DNDBDice(...match.slice(2, 4));
                 this._parts.push(part);
+                last_sign = "+";
             } else {
+                // Match numeric values
                 match = part.match(/([+-])?\s*([0-9\.]+)/);
                 if (match) {
                     try {
-                        const sign = match[1] || "";
-                        const part = parseFloat(sign + match[2]);
+                        last_sign = mergeSigns(match[1]);
+                        if (last_sign)
+                            this._parts.push(last_sign);
+                        const part = parseFloat(match[2]);
                         this._parts.push(part);
+                        last_sign = "+";
                     } catch (err) { }
                 }
             }
@@ -1695,7 +1715,7 @@ class DNDBRoll extends Beyond20BaseRoll {
         let first = true;
         for (let part of this._parts) {
             if (!first)
-                formula += " + ";
+                formula += " ";
             first = false;
             if (part instanceof DNDBDice)
                 formula += part.formula;
@@ -1727,11 +1747,20 @@ class DNDBRoll extends Beyond20BaseRoll {
     }
     calculateTotal() {
         this._total = 0;
+        let add = true;
         for (let part of this._parts) {
             if (part instanceof DNDBDice) {
-                this._total += part.total;
+                if (add)
+                    this._total += part.total;
+                else
+                    this._total -= part.total;
+            } else if (["+", "-"].includes(part)) {
+                add = (part === "+");
             } else {
-                this._total += part;
+                if (add)
+                    this._total += part;
+                else
+                    this._total -= part;
             }
         }
         this._total = Math.round(this._total * 100) / 100;
