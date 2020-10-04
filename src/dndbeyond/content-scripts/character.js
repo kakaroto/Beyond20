@@ -1577,7 +1577,7 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
     }).on('mouseleave', (e) => {
         if (quickRollHideId)
             clearTimeout(quickRollHideId);
-        quickRollHideId = setTimeout(() => tooltip.hide(), 100);
+        quickRollHideId = setTimeout(() => tooltip.hide(), 250);
     });
     el.addClass("beyond20-quick-roll-area");
 }
@@ -1717,7 +1717,9 @@ function activateQuickRolls() {
 
     const activateQRAction = (action, force_to_hit_only, force_damages_only) => {
         action = $(action);
-        activateTooltipListeners(action, action.hasClass('integrated-dice__container') ? 'up' : 'right', beyond20_tooltip, (el) => {
+        // To the right for attack and damage, to the left for to hit
+        const position = force_to_hit_only ? 'left' : 'right';
+        activateTooltipListeners(action, position, beyond20_tooltip, (el) => {
             const name = el.closest(".ct-combat-attack,.ddbc-combat-attack")
                 .find(".ct-combat-attack__name .ct-combat-attack__label,.ddbc-combat-attack__name .ddbc-combat-attack__label")
                 .trigger('click').text();
