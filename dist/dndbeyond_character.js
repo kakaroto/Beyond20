@@ -5296,7 +5296,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         for (let elementalAdept of elementalAdepts) {
             for (let i = 0; i < damages.length; i++) {
                 if (damage_types[i] === elementalAdept) {
-                    damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)([^\s]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
+                    damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
                         return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min2`).join(" + ") + mods;
                     });
                 }
