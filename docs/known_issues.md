@@ -1,3 +1,5 @@
-- Cannot separate to-hit and damage dice (disabled "auto roll damages" option) when using the Digital Dice.
-- Quick roll tooltip have their positions shifted if there is an ad banner ("Get the Mythic Dice Set" for example) at the top of the D&D Beyond page
-- Conditional Advantage/Disadvantage badges on skill checks will override the roll type setting (Use Alt to force a regular roll)
+Some issues are already known and being worked on.
+
+To check the latest list of known issues or feature suggestions, you can head to the [github issue tracker](https://github.com/kakaroto/Beyond20/issues).
+
+If you find an issue that isn't in the list (check the closed ones for the next milestone too), I'd appreciate you letting me know about it (either by [creating one](https://github.com/kakaroto/Beyond20/issues/new), or by reaching out to me over on [Discord](https://discord.gg/ZAasSVS)!

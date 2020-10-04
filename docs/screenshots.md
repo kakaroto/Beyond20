@@ -1,4 +1,4 @@
-### Note: These videos and most of the images are almost a year old, the extension has evolved immensely since then, but I always lack the time to update the images here.
+### Note: These videos and most of the images are over a year old, the extension has evolved immensely since then, but I always lack the time to update the images and videos here.
 ### Please keep that in mind and if anyone is willing to make new and nicer videos and/or screenshots, let me know.
 
 I've made a [video tour](https://www.youtube.com/watch?v=QRyB7qPEyKw) of all the features of Beyond20 v0.1.

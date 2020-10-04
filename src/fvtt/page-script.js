@@ -129,7 +129,7 @@ class FVTTDisplayer {
 class FVTTRoll extends Beyond20BaseRoll {
     constructor(formula, data = {}) {
         formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/g, "r$1$2");
-        formula = formula.replace(/(^|\s)+([^\s]+)min([0-9]+)/g, "$1{$2, $3}kh1");
+        formula = formula.replace(/(^|\s)+([^\s]+)min([0-9]+)([^\s]*)/g, "$1{$2$4, $3}kh1");
         super(formula, data);
         this._roll = new Roll(formula, data)
     }
@@ -143,15 +143,34 @@ class FVTTRoll extends Beyond20BaseRoll {
     }
 
     get dice() {
-        return this._roll.dice;
+        // 0.7.x Dice Roll API is different
+        if (isNewerVersion(game.data.version, "0.7")) {
+            return this._roll.dice.map(d => {
+                return {
+                    faces: d.faces,
+                    formula: d.formula,
+                    total: d.total,
+                    rolls: d.results.map(r => ({discarded: r.discarded, roll: r.result}))
+                }
+            });
+        } else {
+            return this._roll.dice;
+        }
     }
 
     get parts() {
-        return this._roll.parts;
+        // 0.7.x Dice Roll API is different
+        if (isNewerVersion(game.data.version, "0.7")) {
+            return this._roll.terms;
+        } else {
+            return this._roll.parts;
+        }
     }
 
-    getTooltip() {
-        return this._roll.getTooltip();
+    async getTooltip() {
+        const tooltip = await this._roll.getTooltip();
+        // Automatically expand the roll details in the tooltip
+        return tooltip.replace(/<div class="dice-tooltip">/g, `<div class="dice-tooltip" style="display: block;">`)
     }
 
     async roll() {
@@ -215,6 +234,7 @@ function popAvatar(request) {
         "title": (request.whisper !== WhisperType.NO) ? "???" : request.character.name,
         "entity": { "type": "User", "id": game.user.id }
     }).render(true).shareImage(true);
+    roll_renderer.displayAvatarToDiscord(request);
 }
 
 async function addInitiativeToCombat(roll) {
@@ -245,6 +265,10 @@ async function addInitiativeToCombat(roll) {
 function handleRoll(request) {
     console.log("Received roll request ", request);
 
+    // The hook would return "false" to stop propagation, meaning that it was handled
+    const handledNatively = Hooks.call("beyond20Request", request.action, request);
+    if (handledNatively === false) return;
+
     if (request.type == "initiative")
         rollInitiative(request);
     else if (request.type == "avatar")
@@ -254,6 +278,10 @@ function handleRoll(request) {
 }
 function handleRenderedRoll(request) {
     console.log("Received rendered roll request ", request);
+    // The hook would return "false" to stop propagation, meaning that it was handled
+    const handledNatively = Hooks.call("beyond20Request", request.action, request);
+    if (handledNatively === false) return;
+
     roll_renderer._displayer.postHTML(request.request, request.title,
         request.html, request.character, request.whisper, 
         request.play_sound, request.source, request.attributes, 

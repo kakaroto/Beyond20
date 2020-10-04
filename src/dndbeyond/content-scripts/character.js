@@ -4,15 +4,59 @@ function sendRollWithCharacter(rollType, fallback, args) {
     const preview = $(".ct-sidebar__header-preview > div").css('background-image');
     if (preview && preview.startsWith("url("))
         args.preview = preview.slice(5, -2);
+    // Add halfling luck
+    if (character.hasRacialTrait("Lucky") && ["skill", "ability", "saving-throw", "death-save",
+        "initiative", "attack", "spell-attack"].includes(rollType)) {
+        args.d20 = args.d20 || "1d20";
+        args.d20 += "ro<=1";
+    }
     sendRoll(character, rollType, fallback, args);
 }
 
 
-function rollSkillCheck(paneClass) {
+async function rollSkillCheck(paneClass) {
     const skill_name = $("." + paneClass + "__header-name").text();
-    const ability = $("." + paneClass + "__header-ability").text();
-    const modifier = $("." + paneClass + "__header-modifier").text();
+    let ability = $("." + paneClass + "__header-ability").text();
+    let modifier = $("." + paneClass + "__header-modifier").text();
     const proficiency = $("." + paneClass + "__header-icon .ct-tooltip,." + paneClass + "__header-icon .ddbc-tooltip").attr("data-original-title");
+
+    
+    if (ability == "--" && character._abilities.length > 0) {
+        let prof = "";
+        let prof_val = "";
+        if (proficiency == "Proficiency") {
+            prof = "proficiency";
+            prof_val = parseInt(character._proficiency);
+        } else if (proficiency == "Half Proficiency") {
+            prof = "half_proficiency";
+            prof_val += Math.floor(character._proficiency / 2);
+        } else if (proficiency == "Expertise") {
+            prof = "expertise";
+            prof_val += character._proficiency * 2;
+        }
+        const formula = "1d20 + @ability " + (prof != "" ? " + @" + prof : "") + " + @custom_dice";
+        let html = '<form>';
+        html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>';
+        html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';
+        const modifiers = {};
+        for (let ability of character._abilities) {
+            html += '<option value="' + ability[1] + '">' + ability[0] + '</option>';
+            modifiers[ability[1]] = ability[3];
+        }
+        html += "</select></div>";
+        html += '</form>';
+        html = await dndbeyondDiceRoller._prompter.prompt("Custom Skill", html, skill_name);
+        if (html) {
+            ability = html.find('[name="ability"]').val();
+            let mod = parseInt(modifiers[ability]);
+            if (prof_val)
+                mod += prof_val;
+            // In case of magical bonus
+            if (modifier != "--" && modifier != "+0")
+                mod += parseInt(modifier);
+            modifier = mod >= 0 ? `+${mod}` : `-${mod}`;
+        }
+    }
     //console.log("Skill " + skill_name + "(" + ability + ") : " + modifier);
     const roll_properties = {
         "skill": skill_name,
@@ -21,9 +65,14 @@ function rollSkillCheck(paneClass) {
         "proficiency": proficiency
     }
     if(character.getGlobalSetting("roll-type", RollType.NORMAL) != RollType.QUERY) {
-        if($("." + paneClass + "__dice-adjustment ." + paneClass + "__dice-adjustment-icon .ddbc-tooltip").attr("data-original-title") === "Advantage"){
+        const skill_badge_adv = $("." + paneClass + "__dice-adjustments .ddbc-advantage-icon").length > 0;
+        const skill_badge_disadv = $("." + paneClass + "__dice-adjustments .ddbc-disadvantage-icon").length > 0;
+
+        if (skill_badge_adv && skill_badge_disadv) {
+            roll_properties["advantage"] = RollType.QUERY;
+        } else if (skill_badge_adv) {
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-        } else if ($("." + paneClass + "__dice-adjustment ." + paneClass + "__dice-adjustment-icon .ddbc-tooltip").attr("data-original-title") === "Disadvantage"){
+        } else if (skill_badge_disadv) {
             roll_properties["advantage"] = RollType.OVERRIDE_DISADVANTAGE;
         }
     }
@@ -35,11 +84,24 @@ function rollSkillCheck(paneClass) {
     if (skill_name == "Acrobatics" && character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false)) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
-    // Set Reliable Talent flag if character has the feature and skill is proficient/expertise or a custom skill that needs to be queried
-    if (character.hasClassFeature("Reliable Talent") && (["Proficiency", "Expertise"].includes(proficiency) || ability === "--"))
-        roll_properties["reliableTalent"] = true;
-    if (character.hasClassFeature("Silver Tongue"))
-        roll_properties["silverTongue"] = true;
+    roll_properties.d20 = "1d20";
+    // Set Reliable Talent flag if character has the feature and skill is proficient/expertise
+    if (character.hasClassFeature("Reliable Talent") && ["Proficiency", "Expertise"].includes(proficiency))
+        roll_properties.d20 = "1d20min10";
+    // Set Silver Tongue if Deception or Persuasion
+    if (character.hasClassFeature("Silver Tongue") && (skill_name === "Deception" || skill_name === "Persuasion"))
+        roll_properties.d20 = "1d20min10";
+    
+    if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
+        const min = character.getAbility("STR").score - parseInt(modifier);
+        // Check against reliable talent or silver tongue (should be an impossible state)
+        const min10 = roll_properties.d20 === "1d20min10";
+        if (min10 && min > 10) {
+            roll_properties.d20 = `1d20min${min}`
+        } else if (!min10) {
+            roll_properties.d20 = `1d20min${min}`
+        }
+    }
     sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 
@@ -49,10 +111,19 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
     const ability = ability_abbreviations[ability_name];
     let modifier = $("." + paneClass + "__modifier .ct-signed-number,." + paneClass + "__modifier .ddbc-signed-number").text();
 
-    if (rollType == "ability" && character.hasClassFeature("Jack of All Trades") &&
-        character.getSetting("bard-joat", false)) {
-        const JoaT = Math.floor(character._proficiency / 2);
-        modifier += " + " + JoaT;
+    if (rollType == "ability") {
+        // Remarkable Athelete and Jack of All Trades don't stack, we give priority to RA instead of JoaT because
+        // it's rounded up instead of rounded down.
+        if (character.hasClassFeature("Remarkable Athlete") && character.getSetting("champion-remarkable-athlete", false) &&
+            ["STR","DEX", "CON"].includes(ability)) {
+            const remarkable_athlete_mod = Math.ceil(character._proficiency / 2);
+            modifier = parseInt(modifier) + remarkable_athlete_mod;
+            modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+        } else if (character.hasClassFeature("Jack of All Trades") && character.getSetting("bard-joat", false)) {
+            const JoaT = Math.floor(character._proficiency / 2);
+            modifier = parseInt(modifier) + JoaT;
+            modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+        }
     }
 
     const roll_properties = {
@@ -65,6 +136,10 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
             (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+    }
+    if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
+        const min = character.getAbility("STR").score - parseInt(modifier);
+        roll_properties.d20 = `1d20min${min}`
     }
     sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
 }
@@ -125,6 +200,9 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
     const item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name")[0].firstChild.textContent;
     const item_type = $(".ct-item-detail__intro").text();
     const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
+    const source = item_type.trim().toLowerCase();
+    const is_tool = source === "tool, common" || (source === "gear, common" && item_name.endsWith("Tools"));
+    const is_instrument =  item_tags.includes("Instrument");
     const description = descriptionToString(".ct-item-detail__description");
     if (!force_display && Object.keys(properties).includes("Damage")) {
         const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
@@ -378,6 +456,9 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             critical_limit = 19;
         if (character.hasClassFeature("Improved Critical"))
             critical_limit = 19;
+        if (character.hasClassFeature("Invincible Conqueror") &&
+            character.getSetting("paladin-invincible-conqueror", false))
+            critical_limit = 19;
         if (character.hasClassFeature("Superior Critical"))
             critical_limit = 18;
 
@@ -406,6 +487,12 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
         roll_properties["item-type"] = item_type;
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
+        const custom_critical_limit = parseInt(character.getSetting("custom-critical-limit", ""))
+        if (custom_critical_limit) {
+            roll_properties["critical-limit"] = custom_critical_limit;
+            if (to_hit !== null)
+                roll_properties["name"] += ` (CRIT${custom_critical_limit})`;
+        }
 
         // Asssassinate: consider all rolls as critical;
         if (character.hasClassFeature("Assassinate") &&
@@ -415,6 +502,52 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             character.mergeCharacterSettings({ "rogue-assassinate": false });
         }
         sendRollWithCharacter("attack", damages[0], roll_properties);
+    } else if (!force_display && (is_tool || is_instrument) && character._abilities.length > 0) {
+        const proficiencies = {}
+        proficiencies["None"] = 0;
+        proficiencies["Half Proficient"] = Math.floor(character._proficiency / 2);
+        proficiencies["Proficient"] = parseInt(character._proficiency);
+        proficiencies["Expert"] = character._proficiency * 2;
+        const formula = "1d20 + @ability + @proficiency + @custom_dice";
+        let html = '<form>';
+        html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>';
+        html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';
+        const modifiers = {}
+        for (let ability of character._abilities) {
+            html += '<option value="' + ability[1] + '">' + ability[0] + '</option>';
+            modifiers[ability[1]] = ability[3];
+        }
+        html += "</select></div>";
+        html += '<div class="beyond20-form-row"><label>Select Proficiency</label><select name="proficiency">';
+        for (let prof in proficiencies) {
+            html += '<option value="' + prof + '">' + prof + '</option>';
+        }
+        html += "</select></div>";
+        html += '</form>';
+        dndbeyondDiceRoller._prompter.prompt("Using a tool", html, item_name).then((html) => {
+            if (html) {
+                const ability = html.find('[name="ability"]').val();
+                const proficiency = html.find('[name="proficiency"]').val();
+                const prof_val = proficiencies[proficiency];
+                const modifier = prof_val ? `${modifiers[ability]}${prof_val > 0 ? ' +' : ' -'}${prof_val}` : modifiers[ability];
+                const roll_properties = {
+                    "skill": item_name,
+                    "ability": ability,
+                    "modifier": modifier,
+                    "proficiency": proficiency
+                }
+                if (ability == "STR" &&
+                    ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
+                        (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
+                    roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+                }
+                roll_properties.d20 = "1d20";
+                // Set Reliable Talent flag if character has the feature and skill is proficient/expertise
+                if (character.hasClassFeature("Reliable Talent") && ["Proficiency", "Expertise"].includes(proficiency))
+                    roll_properties.d20 = "1d20min10";
+                sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
+            }
+        });
     } else {
         sendRollWithCharacter("item", 0, {
             "name": item_name,
@@ -492,11 +625,15 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         }
         if (action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
             || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
-            || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons")) {
+            || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons")
+            || action_name.includes("Thunder Gauntlets") || action_name.includes("Lightning Launcher")) {
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
                 critical_limit = 19;
             if (character.hasClassFeature("Improved Critical"))
+                critical_limit = 19;
+            if (character.hasClassFeature("Invincible Conqueror") &&
+                character.getSetting("paladin-invincible-conqueror", false))
                 critical_limit = 19;
             if (character.hasClassFeature("Superior Critical"))
                 critical_limit = 18;
@@ -588,6 +725,13 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
 
+        const custom_critical_limit = parseInt(character.getSetting("custom-critical-limit", ""))
+        if (custom_critical_limit) {
+            roll_properties["critical-limit"] = custom_critical_limit;
+            if (to_hit !== null)
+                roll_properties["name"] += ` (CRIT${custom_critical_limit})`;
+        }
+
         // Asssassinate: consider all rolls as critical;
         if (character.hasClassFeature("Assassinate") &&
             character.getSetting("rogue-assassinate", false)) {
@@ -670,9 +814,34 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         if (damages.length > 0 &&
             character.hasClassFeature("Arcane Firearm") &&
             character.getSetting("artificer-arcane-firearm", false) &&
-            spell_source == "Artificer") {
+            spell_source.includes("Artificer")) {
             damages.push("1d8");
             damage_types.push("Arcane Firearm");
+        }
+
+        if (character.hasClassFeature("Alchemical Savant") &&
+            character.getSetting("artificer-alchemical-savant", false) &&
+            damages.length) {
+            for (let i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Acid" || damage_types[i] === "Fire" ||
+                    damage_types[i] === "Necrotic" || damage_types[i] === "Poison") {
+                    damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
+                    damage_types.push("Alchemical Savant");
+                    break;
+                }
+            }
+        }
+
+        if (character.hasClassFeature("Enhanced Bond") &&
+            character.getSetting("wildfire-spirit-enhanced-bond", false) &&
+            damages.length > 0) {
+            for (let i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Fire") {
+                    damages.push("1d8");
+                    damage_types.push("Enhanced Bond");
+                    break;
+                }
+            }
         }
 
         //Handle Flames of Phlegethos
@@ -711,7 +880,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         for (let elementalAdept of elementalAdepts) {
             for (let i = 0; i < damages.length; i++) {
                 if (damage_types[i] === elementalAdept) {
-                    damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)([^\s]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
+                    damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
                         return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min2`).join(" + ") + mods;
                     });
                 }
@@ -728,6 +897,28 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             if (dmg.length > 0) {
                 damages.push(dmg);
                 damage_types.push("Healing");
+            }
+        }
+
+        if (character.hasClassFeature("Alchemical Savant") &&
+            character.getSetting("artificer-alchemical-savant", false)) {
+            for (let i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Healing") {
+                    damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
+                    damage_types.push("Alchemical Savant Healing");
+                    break;
+                }
+            }
+        }
+        
+        if (character.hasClassFeature("Enhanced Bond") &&
+            character.getSetting("wildfire-spirit-enhanced-bond", false)) {
+            for (let i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Healing") {
+                    damages.push("1d8");
+                    damage_types.push("Enhanced Bond Healing");
+                    break;
+                }
             }
         }
 
@@ -795,6 +986,12 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
 
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
+        const custom_critical_limit = parseInt(character.getSetting("custom-critical-limit", ""))
+        if (custom_critical_limit) {
+            roll_properties["critical-limit"] = custom_critical_limit;
+            if (to_hit !== null)
+                roll_properties["name"] += ` (CRIT${custom_critical_limit})`;
+        }
 
         const spell_properties = {
             "level-school": level,
@@ -891,6 +1088,16 @@ function displayAction(paneClass) {
     });
 }
 
+function displayInfusion() {
+    const infusion = $(".ct-sidebar__heading").text();
+    const description = descriptionToString(".ct-infusion-choice-pane__description");
+    sendRollWithCharacter("trait", 0, {
+        "name": infusion,
+        "description": description,
+        "item-type": "Infusion",
+    });
+}
+
 function handleCustomText(paneClass) {
     const customRolls = {
         before: [],
@@ -954,6 +1161,8 @@ function displayPanel(paneClass) {
     console.log("Beyond20: Displaying panel : " + paneClass);
     if (paneClass == "ct-item-pane")
         displayItem();
+    else if (paneClass == "ct-infusion-choice-pane")
+        displayInfusion();
     else if (paneClass == "ct-spell-pane")
         displaySpell();
     else if (["ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane"].includes(paneClass))
@@ -1080,9 +1289,27 @@ function injectRollButton(paneClass) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true });
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
         } else {
-            addDisplayButtonEx(paneClass, ".ct-sidebar__heading", { append: false, small: false });
+            const item_type = $(".ct-item-detail__intro").text().trim().toLowerCase();
+            const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
+            const is_tool = item_type === "tool, common" || (item_type === "gear, common" && item_name.endsWith("Tools"));
+            const is_instrument =  item_tags.includes("Instrument");
+            if (is_tool || is_instrument) {
+                addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true, text: `Use ${is_tool? "Tool" : "Instrument"}` });
+                addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
+            } else {
+                addDisplayButtonEx(paneClass, ".ct-sidebar__heading", { append: false, small: false });
+            }
             addRollButtonEx(paneClass, ".ct-item-detail__actions", { small: true, append: true, image: false });
         }
+    } else if (paneClass == "ct-infusion-choice-pane") {
+        const infusion_name = $(".ct-infusion-choice-pane .ct-sidebar__heading").text();
+        if (isRollButtonAdded() && infusion_name == lastItemName)
+            return;
+        lastItemName = infusion_name;
+        removeRollButtons();
+
+        checkAndInjectDiceToRolls(".ct-infusion-choice-pane__description", infusion_name);
+        addDisplayButtonEx(paneClass, ".ct-sidebar__heading", { append: false, small: false });
     } else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass)) {
         if (isRollButtonAdded())
             return;
@@ -1342,25 +1569,29 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
             callback(el);
         });
         el.off('click').on('click', (e) => {
-            if ($(e.currentTarget).hasClass('integrated-dice__container') || $(e.currentTarget).find(".integrated-dice__container").length > 0)
+            if ($(e.currentTarget).hasClass('integrated-dice__container') || $(e.currentTarget).find(".integrated-dice__container").length > 0) {
                 e.stopPropagation();
+            }
             callback(el);
         })
     }).on('mouseleave', (e) => {
         if (quickRollHideId)
             clearTimeout(quickRollHideId);
-        quickRollHideId = setTimeout(() => tooltip.hide(), 100);
+        quickRollHideId = setTimeout(() => tooltip.hide(), 250);
     });
     el.addClass("beyond20-quick-roll-area");
 }
 
 function deactivateQuickRolls() {
-    const abilities = $(".ct-ability-summary .ct-ability-summary__secondary,.ddbc-ability-summary .ddbc-ability-summary__secondary");
+    let abilities = $(".ddbc-ability-summary .ddbc-ability-summary__primary .integrated-dice__container");
+    // If digital dice are disabled, look up where the modifier is
+    if (abilities.length === 0)
+        abilities = $(".ddbc-ability-summary .ddbc-ability-summary__secondary .ddbc-signed-number, .ddbc-ability-summary .ddbc-ability-summary__primary .ddbc-signed-number");
     const saving_throws = $(".ct-saving-throws-summary__ability .ct-saving-throws-summary__ability-modifier,.ddbc-saving-throws-summary__ability .ddbc-saving-throws-summary__ability-modifier");
     const skills = $(".ct-skills .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__col--modifier");
     const actions = $(".ct-combat-attack .ct-combat-attack__icon,.ddbc-combat-attack .ddbc-combat-attack__icon");
     const actions_to_hit = $(".ddbc-combat-attack .ddbc-combat-attack__tohit .integrated-dice__container");
-    const actions_damage = $(".ddbc-combat-attack .ddbc-combat-attack__damage .integrated-dice__container");
+    const actions_damage = $(".ddbc-combat-attack .ddbc-combat-attack__damage .integrated-dice__container:first-of-type");
     const spells = $(".ct-spells-spell .ct-spells-spell__action,.ddbc-spells-spell .ddbc-spells-spell__action");
     const spells_to_hit = $(".ct-spells-spell .ct-spells-spell__tohit .integrated-dice__container, .ddbc-spells-spell .ddbc-spells-spell__tohit .integrated-dice__container");
     const spells_damage = $(".ct-spells-spell .ct-spells-spell__damage .integrated-dice__container, .ddc-spells-spell .ddc-spells-spell__damage .integrated-dice__container");
@@ -1486,7 +1717,9 @@ function activateQuickRolls() {
 
     const activateQRAction = (action, force_to_hit_only, force_damages_only) => {
         action = $(action);
-        activateTooltipListeners(action, action.hasClass('integrated-dice__container') ? 'up' : 'right', beyond20_tooltip, (el) => {
+        // To the right for attack and damage, to the left for to hit
+        const position = force_to_hit_only ? 'left' : 'right';
+        activateTooltipListeners(action, position, beyond20_tooltip, (el) => {
             const name = el.closest(".ct-combat-attack,.ddbc-combat-attack")
                 .find(".ct-combat-attack__name .ct-combat-attack__label,.ddbc-combat-attack__name .ddbc-combat-attack__label")
                 .trigger('click').text();
@@ -1522,7 +1755,9 @@ function activateQuickRolls() {
 
     const activateQRSpell = (spell, force_to_hit_only, force_damages_only) => {
         spell = $(spell);
-        activateTooltipListeners(spell, spell.hasClass('integrated-dice__container') ? 'up' : 'right', beyond20_tooltip, (el) => {
+        // To the right for attack and damage, to the left for to hit
+        const position = force_to_hit_only ? 'left' : 'right';
+        activateTooltipListeners(spell, position, beyond20_tooltip, (el) => {
             const name_element = el.closest(".ct-spells-spell,.ddbc-spells-spell")
                 .find(".ct-spell-name,.ddbc-spell-name");
             const name = name_element.trigger('click').text();
@@ -1583,6 +1818,10 @@ function documentModified(mutations, observer) {
     injectRollToSnippets();
     injectSettingsButton();
     activateQuickRolls();
+    if (character._features_needs_refresh && !character._features_refresh_warning_displayed) {
+        character._features_refresh_warning_displayed = true;
+        alertify.alert("This is a new or recently leveled-up character sheet and Beyond20 needs to parse its information. <br/>Please select the <strong>'Features &amp; Traits'</strong> panel for Beyond20 to parse this character's features and populate the character-specific options.");
+    }
 
     const pane = $(".ct-sidebar__pane-content > div");
     if (pane.length > 0) {

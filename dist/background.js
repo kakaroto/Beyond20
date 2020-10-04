@@ -582,6 +582,12 @@ const character_settings = {
         "type": "string",
         "default": ""
     },
+    "custom-critical-limit": {
+        "title": "Custom Critical limit",
+        "description": "Set a custom threshold for the critical hit limit (if using homebrew magical items)",
+        "type": "string",
+        "default": ""
+    },
     "rogue-sneak-attack": {
         "title": "Rogue: Sneak Attack",
         "description": "Send Sneak Attack damage with each attack roll",
@@ -724,6 +730,30 @@ const character_settings = {
     "fey-wanderer-dreadful-strikes": {
         "title": "Fey Wanderer: Dreadful Strikes",
         "description": "Imbue your weapons and deal psychic damage to your the minds of your enemies.",
+        "type": "bool",
+        "default": false
+    },
+    "champion-remarkable-athlete": {
+        "title": "Champion Fighter: Remarkable Athlete",
+        "description": "Add Remarkable Athlete bonus to Strength/Dexterity/Constitution ability checks",
+        "type": "bool",
+        "default": true
+    },
+    "artificer-alchemical-savant": {
+        "title": "Artificer: Use Alchemical Savant",
+        "description": "Use your Alchemist's supplies as spellcasting focus, dealing extra damage or healing equal to your Intelligence Modifier",
+        "type": "bool",
+        "default": true
+    },
+    "paladin-invincible-conqueror": {
+        "title": "Paladin: Oath of Conquest: Invincible Conqueror",
+        "description": "You can harness extraordinary martial prowess for 1 minute.",
+        "type": "bool",
+        "default": false
+    },
+    "wildfire-spirit-enhanced-bond": {
+        "title": "Wildfire Spirit: Enhanced Bond",
+        "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
         "type": "bool",
         "default": false
     }

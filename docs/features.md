@@ -1,13 +1,15 @@
 # Virtual Tabletops supported
 * [Roll 20](https://roll20.net)
 * [Foundry VTT](https://foundryvtt.com)
+* [Astral Tabletop](https://www.astraltabletop.com)
 * [Discord Integration](https://discord.com) -- [Instructions](/discord)
 * Beyond 20 Integrated Dice Roller
 * D&D Beyond Digital Dice Integration
 
 # Feature list
 
-See the [Screenshots](screenshots) page for a video tour of all the features listed here.
+See the [Screenshots](screenshots) page for a video tour of some of the features listed here.
+This list may not always be up to date... I kind of lost track of everything the extension does....
 
 ## Character Sheet
 * Ability checks
@@ -57,6 +59,7 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 
 ## Vehicles
 * Ability checks
+* Attacks
 
 ## Spell Compendium Pages
 * Dice formulas from description
@@ -84,8 +87,12 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Feat: Polearm Master
 * Aasimar: Radiant Soul
 * Artificer: Arcane Firearm
+* Artificer: Alchemical Savant
+* Artificer: Armorer Power Armor
 * Barbarian: Rage
 * Barbarian: Brutal Critical
+* Barbarian: Indomitable Might
+* Barbarian: Divine Fury
 * Bard: Blade Flourish
 * Bard: Psychic Blades
 * Bard: Jack of All Trades
@@ -93,23 +100,28 @@ See the [Screenshots](screenshots) page for a video tour of all the features lis
 * Cleric: Disciple of Life (Life domain)
 * Cleric: Divine Strike
 * Cleric: Supreme Healing
+* Druid: Enhanced Bond
 * Fighter: Maneuvers
 * Fighter: Improved Critical and Superior Critical (Champion)
 * Fighter: Rune Knight's Giant Might (UA)
+* Fighter: Remarkable Athlete
 * Fighting Style: Great Weapon Fighting
 * Paladin: Legendary Strike (UA)
 * Paladin: Improved Divine Smite
+* Paladin: Invincible Conqueror
 * Ranger: Dread Ambusher
 * Ranger: Colossus Slayer
 * Ranger: Planar Warrior
 * Ranger: Slayer's Prey
 * Ranger: Gathered Swarm
+* Ranger: Fey Wanderer's Dreadful Strikes
 * Rogue: Sneak Attack
 * Rogue: Assassinate
 * Rogue: Reliable Talent
 * Sorcerer: Elemental Affinity
 * Warlock: Hexblade's Curse
 * Half-Orc: Savage Attacks
+* Halfling: Luck
 
 # Special Spells supported
 * Chromatic Orb: Macro to ask which damage type to use

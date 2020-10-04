@@ -45,55 +45,23 @@ function generateRoll(d20, rolls, prefix="") {
 }
 
 function rollSkill(request, custom_roll_dice = "") {
-    // Custom skill;
-    if (request.ability === "--" && request.character.abilities.length > 0) {
-        let prof = "";
-        let prof_val = "";
-        let reliableTalent = false;
-        if (request.proficiency === "Proficiency") {
-            prof = "PROF";
-            prof_val += request.character.proficiency;
-            reliableTalent = request.reliableTalent;
-        } else if (request.proficiency === "Half Proficiency") {
-            prof = "HALF-PROFICIENCY";
-            prof_val += "floor(" + request.character.proficiency + " / 2)";
-        } else if (request.proficiency === "Expertise") {
-            prof = "EXPERTISE";
-            prof_val += `${request.character.proficiency} * 2`;
-            reliableTalent = request.reliableTalent;
-        }
-        const d20 = reliableTalent ? "1d20min10" : "1d20";
-
-        const roll = `!(${d20}${formatPlusMod(prof_val)}${formatPlusMod(custom_roll_dice)})`;
-        return {
-            title: request.skill + " Skill Check",
-            message: template([advantageRoll(request, "Skill Check", generateRoll(d20, [prof_val, custom_roll_dice]))])
-        }
-        
-    } else {
-        let d20 = request.reliableTalent ? "1d20min10" : "1d20";
-        if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
-            d20 = "1d20min10";
-
-        
-        return {
-            title: request.skill + " Skill Check",
-            message: template([advantageRoll(request, "Skill Check", generateRoll(d20, [request.modifier, custom_roll_dice]))])
-        }
+    return {
+        title: request.skill + " Skill Check",
+        message: template([advantageRoll(request, "Skill Check", generateRoll(request.d20 || "1d20", [request.modifier, custom_roll_dice]))])
     }
 }
 
 function rollAbility(request, custom_roll_dice = "") {
     return {
         title: request.ability + " Ability Check",
-        message:  template([advantageRoll(request, "Ability Check",  generateRoll("d20", [request.modifier, custom_roll_dice]))])
+        message:  template([advantageRoll(request, "Ability Check",  generateRoll(request.d20 || "1d20", [request.modifier, custom_roll_dice]))])
     }
 }
 
 function rollSavingThrow(request, custom_roll_dice = "") {
     return {
         title: request.ability + " Saving Throw",
-        message:  template([advantageRoll(request, "Saving Throw",  generateRoll("d20", [request.modifier, custom_roll_dice]))])
+        message:  template([advantageRoll(request, "Saving Throw",  generateRoll(request.d20 || "1d20", [request.modifier, custom_roll_dice]))])
     }
 }
 
@@ -101,7 +69,7 @@ function rollInitiative(request, custom_roll_dice = "") {
     return {
         title: "Initiative",
         message:  template([
-            ["Initiative",  generateRoll("d20", [request.initiative, custom_roll_dice], 'i')]
+            ["Initiative",  generateRoll(request.d20 || "1d20", [request.initiative, custom_roll_dice], 'i')]
         ])
     }
 }
@@ -119,20 +87,13 @@ function rollDeathSave(request, custom_roll_dice = "") {
     return {
         title: "Death Saving Throw",
         message:  template([
-            ["Normal", generateRoll('d20', [custom_roll_dice])]
+            ["Normal", generateRoll(request.d20 || "1d20", [custom_roll_dice])]
         ])
     }
 }
 
-function rollItem(request, custom_roll_dice = "") {
-    const source = request["item-type"].trim().toLowerCase();
-    if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools"))) && request.character.abilities && request.character.abilities.length > 0) {
-        const ret = rollTrait(request);
-        ret.message += "\n" + template([advantageRoll(request, request.name, generateRoll("d20", custom_roll_dice))])
-        return ret;
-    } else {
-        return rollTrait(request);
-    }
+function rollItem(request) {
+    return rollTrait(request);
 }
 
 function rollTrait(request) {
@@ -157,7 +118,7 @@ ${ parseDescription(request, request.description)}
 function rollAttack(request, custom_roll_dice = "") {
     let rolls = [];
     if (request["to-hit"] !== undefined) {
-        rolls.push(advantageRoll(request, "To Hit", generateRoll(`1d20cr>=${request["critical-limit"] || 20}`, [request["to-hit"], custom_roll_dice])))
+        rolls.push(advantageRoll(request, "To Hit", generateRoll(`${request.d20 || "1d20"}cr>=${request["critical-limit"] || 20}`, [request["to-hit"], custom_roll_dice])))
     }
     
     if (request["save-dc"] !== undefined) {
@@ -230,7 +191,7 @@ function rollSpellAttack(request, custom_roll_dice) {
     }
       
     if (request["to-hit"] !== undefined) {
-        rolls.push(advantageRoll(request, "To Hit", generateRoll(`1d20cr>=${request["critical-limit"] || 20}`, [request["to-hit"], custom_roll_dice])))
+        rolls.push(advantageRoll(request, "To Hit", generateRoll(`${request.d20 || "1d20"}cr>=${request["critical-limit"] || 20}`, [request["to-hit"], custom_roll_dice])))
     }
 
     if (request.damages !== undefined) {
@@ -267,7 +228,7 @@ function rollSpellAttack(request, custom_roll_dice) {
             damages.splice(0, 0, dragons_breath_damage);
             damage_types.splice(0, 0, "Breath Damage");
             rolls.push(["Choose Damage", ["Acid", "Cold", "Fire", "Lightning", "Poison"].join(', ')])
-        } else if (request.name === "Chaos Bolt") {
+        } else if (request.name.includes("Chaos Bolt")) {
             let base_damage = null;
             let crit_damage = null;
             for (let dmgtype of ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]) {
@@ -296,7 +257,7 @@ function rollSpellAttack(request, custom_roll_dice) {
 
     return {
         title: request.name,
-        message: template(rolls) + (request.name === "Chaos Bolt" ? "\n\n### Damage Type Table\n\n" + template(["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"].map((v, index) => {
+        message: template(rolls) + (request.name.includes("Chaos Bolt") ? "\n\n### Damage Type Table\n\n" + template(["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"].map((v, index) => {
             return [index + 1, v];
         }), "d8", "Damage Type") : "")
     };
@@ -362,7 +323,7 @@ function handleMessage(request, sender, sendResponse) {
         } else if (request.type == "hit-dice") {
             roll = rollHitDice(request);
         } else if (request.type == "item") {
-            roll = rollItem(request, custom_roll_dice);
+            roll = rollItem(request);
         } else if (["feature", "trait", "action"].includes(request.type)) {
             roll = rollTrait(request);
         } else if (request.type == "death-save") {

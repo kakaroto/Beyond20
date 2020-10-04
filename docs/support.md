@@ -40,11 +40,7 @@ The [FAQ](faq) page is a good resource in case you have an issue that may have a
 
 ## Known Issues
 
-Some issues are already known and being worked on.
-
 {% include_relative known_issues.md %}
-
-To check the latest list of known issues or feature suggestions, you can head to the [github issue tracker](https://github.com/kakaroto/Beyond20/issues).
 
 ## Release Notes
 

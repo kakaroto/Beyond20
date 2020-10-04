@@ -94,6 +94,8 @@ function populateCharacter(response) {
         options.append(e);
         e = createHTMLOption("custom-damage-dice", false, character_settings);
         options.append(e);
+        e = createHTMLOption("custom-critical-limit", false, character_settings);
+        options.append(e);
         if (Object.keys(response.classes).includes("Rogue")) {
             e = createHTMLOption("rogue-sneak-attack", false, character_settings);
             options.append(e);
@@ -102,8 +104,12 @@ function populateCharacter(response) {
             e = createHTMLOption("cleric-disciple-life", false, character_settings);
             options.append(e);
         }
-        if (Object.keys(response.classes).includes("Bard")) {
+        if (response["class-features"].includes("Jack of All Trade")) {
             e = createHTMLOption("bard-joat", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Remarkable Athlete")) {
+            e = createHTMLOption("champion-remarkable-athlete", false, character_settings);
             options.append(e);
         }
         if (response["feats"].includes("Sharpshooter")) {
@@ -189,6 +195,18 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Dreadful Strikes")) {
             e = createHTMLOption("fey-wanderer-dreadful-strikes", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Alchemical Savant")) {
+            e = createHTMLOption("artificer-alchemical-savant", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Invincible Conqueror")) {
+            e = createHTMLOption("paladin-invincible-conqueror", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Enhanced Bond")) {
+            e = createHTMLOption("wildfire-spirit-enhanced-bond", false, character_settings);
             options.append(e);
         }
 

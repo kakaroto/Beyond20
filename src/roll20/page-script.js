@@ -73,7 +73,7 @@ registered_events.push(addCustomEventListener("CombatTracker", updateCombatTrack
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
 
 // Hack for VTT ES making every script load before Roll20 loads
-if (window.$ !== undefined)
+if (window.$ !== undefined && typeof(customcharsheet_html) !== "undefined")
     checkForOGL();
 else
-    window.addEventListener("DOMContentLoaded", checkForOGL);
+    window.addEventListener("DOMContentLoaded", () => setTimeout(checkForOGL, 1000));

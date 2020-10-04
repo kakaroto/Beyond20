@@ -582,6 +582,12 @@ const character_settings = {
         "type": "string",
         "default": ""
     },
+    "custom-critical-limit": {
+        "title": "Custom Critical limit",
+        "description": "Set a custom threshold for the critical hit limit (if using homebrew magical items)",
+        "type": "string",
+        "default": ""
+    },
     "rogue-sneak-attack": {
         "title": "Rogue: Sneak Attack",
         "description": "Send Sneak Attack damage with each attack roll",
@@ -724,6 +730,30 @@ const character_settings = {
     "fey-wanderer-dreadful-strikes": {
         "title": "Fey Wanderer: Dreadful Strikes",
         "description": "Imbue your weapons and deal psychic damage to your the minds of your enemies.",
+        "type": "bool",
+        "default": false
+    },
+    "champion-remarkable-athlete": {
+        "title": "Champion Fighter: Remarkable Athlete",
+        "description": "Add Remarkable Athlete bonus to Strength/Dexterity/Constitution ability checks",
+        "type": "bool",
+        "default": true
+    },
+    "artificer-alchemical-savant": {
+        "title": "Artificer: Use Alchemical Savant",
+        "description": "Use your Alchemist's supplies as spellcasting focus, dealing extra damage or healing equal to your Intelligence Modifier",
+        "type": "bool",
+        "default": true
+    },
+    "paladin-invincible-conqueror": {
+        "title": "Paladin: Oath of Conquest: Invincible Conqueror",
+        "description": "You can harness extraordinary martial prowess for 1 minute.",
+        "type": "bool",
+        "default": false
+    },
+    "wildfire-spirit-enhanced-bond": {
+        "title": "Wildfire Spirit: Enhanced Bond",
+        "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
         "type": "bool",
         "default": false
     }
@@ -1425,6 +1455,8 @@ function populateCharacter(response) {
         options.append(e);
         e = createHTMLOption("custom-damage-dice", false, character_settings);
         options.append(e);
+        e = createHTMLOption("custom-critical-limit", false, character_settings);
+        options.append(e);
         if (Object.keys(response.classes).includes("Rogue")) {
             e = createHTMLOption("rogue-sneak-attack", false, character_settings);
             options.append(e);
@@ -1433,8 +1465,12 @@ function populateCharacter(response) {
             e = createHTMLOption("cleric-disciple-life", false, character_settings);
             options.append(e);
         }
-        if (Object.keys(response.classes).includes("Bard")) {
+        if (response["class-features"].includes("Jack of All Trade")) {
             e = createHTMLOption("bard-joat", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Remarkable Athlete")) {
+            e = createHTMLOption("champion-remarkable-athlete", false, character_settings);
             options.append(e);
         }
         if (response["feats"].includes("Sharpshooter")) {
@@ -1520,6 +1556,18 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Dreadful Strikes")) {
             e = createHTMLOption("fey-wanderer-dreadful-strikes", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Alchemical Savant")) {
+            e = createHTMLOption("artificer-alchemical-savant", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Invincible Conqueror")) {
+            e = createHTMLOption("paladin-invincible-conqueror", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Enhanced Bond")) {
+            e = createHTMLOption("wildfire-spirit-enhanced-bond", false, character_settings);
             options.append(e);
         }
 

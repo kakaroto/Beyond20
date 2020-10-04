@@ -67,10 +67,18 @@ class Character extends CharacterBase {
         if (this._level === null) {
             const level = $(".ddbc-character-progression-summary__level");
             const xp = $(".ddbc-character-progression-summary__xp-bar .ddbc-xp-bar__item--cur .ddbc-xp-bar__label");
-            if (level.length > 0)
+            if (level.length > 0) {
                 this._level = level.text().replace("Level ", "");
-            else if (xp.length > 0)
-                this._level = xp.text().replace("LVL ", "");
+            } else if (xp.length > 0) {
+                this._level = xp.text().replace("LVL ", "").trim();
+                if (this._level === "19") {
+                    // With XP progress, a level 20 will have their XP bar from 19 to 20 with progression full, since it can't show 20->21
+                    const xp_data = $(".ddbc-character-progression-summary__xp-bar .ddbc-character-progression-summary__xp-data").text();
+                    if (xp_data === "355,000 / 355,000 XP") {
+                        this._level = "20";
+                    }
+                }
+            }
         }
         if (this._proficiency === null) {
             this._proficiency = $(".ct-proficiency-bonus-box__value,.ddbc-proficiency-bonus-box__value").text();
@@ -119,9 +127,10 @@ class Character extends CharacterBase {
             }
             this._abilities.push([name, abbr, value, modifier]);
         }
-        if (this._settings)
+        if (this._settings) {
             this.updateHP();
-        this.updateFeatures();
+            this.updateFeatures();
+        }
     }
 
     updateHP() {
@@ -229,8 +238,13 @@ class Character extends CharacterBase {
 
     updateFeatures() {
         let update = false;
+        // Use classes instead of level because using XP method, you could reach the higher level before you level up
+        const last_classes = this.getSetting("last-features-classes", "");
+        const current_classes = $(".ddbc-character-summary__classes").text();
+        let updated_features_list = false;
         const class_detail = $(".ct-features .ct-classes-detail");
         if (class_detail.length > 0) {
+            updated_features_list = true;
             this._class_features = this.featureDetailsToList(class_detail, "Class Features");
             if (!isListEqual(this._class_features, this.getSetting("class-features", []))) {
                 console.log("New class feature");
@@ -310,6 +324,10 @@ class Character extends CharacterBase {
             this._spell_saves = this.getSetting("spell_saves", {});
             this._spell_attacks = this.getSetting("spell_attacks", {});
         }
+        if (updated_features_list && last_classes !== current_classes) {
+            update = true;
+        }
+        this._features_needs_refresh = current_classes && !updated_features_list && last_classes !== current_classes;
 
         if (this._settings && update) {
             this.mergeCharacterSettings({
@@ -319,7 +337,8 @@ class Character extends CharacterBase {
                 "actions": this._actions,
                 "spell_modifiers": this._spell_modifiers,
                 "spell_saves": this._spell_saves,
-                "spell_attacks": this._spell_attacks
+                "spell_attacks": this._spell_attacks,
+                "last-features-classes": updated_features_list ? current_classes : last_classes
             });
         }
     }

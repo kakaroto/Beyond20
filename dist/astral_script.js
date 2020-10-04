@@ -536,6 +536,12 @@ const character_settings = {
         "type": "string",
         "default": ""
     },
+    "custom-critical-limit": {
+        "title": "Custom Critical limit",
+        "description": "Set a custom threshold for the critical hit limit (if using homebrew magical items)",
+        "type": "string",
+        "default": ""
+    },
     "rogue-sneak-attack": {
         "title": "Rogue: Sneak Attack",
         "description": "Send Sneak Attack damage with each attack roll",
@@ -678,6 +684,30 @@ const character_settings = {
     "fey-wanderer-dreadful-strikes": {
         "title": "Fey Wanderer: Dreadful Strikes",
         "description": "Imbue your weapons and deal psychic damage to your the minds of your enemies.",
+        "type": "bool",
+        "default": false
+    },
+    "champion-remarkable-athlete": {
+        "title": "Champion Fighter: Remarkable Athlete",
+        "description": "Add Remarkable Athlete bonus to Strength/Dexterity/Constitution ability checks",
+        "type": "bool",
+        "default": true
+    },
+    "artificer-alchemical-savant": {
+        "title": "Artificer: Use Alchemical Savant",
+        "description": "Use your Alchemist's supplies as spellcasting focus, dealing extra damage or healing equal to your Intelligence Modifier",
+        "type": "bool",
+        "default": true
+    },
+    "paladin-invincible-conqueror": {
+        "title": "Paladin: Oath of Conquest: Invincible Conqueror",
+        "description": "You can harness extraordinary martial prowess for 1 minute.",
+        "type": "bool",
+        "default": false
+    },
+    "wildfire-spirit-enhanced-bond": {
+        "title": "Wildfire Spirit: Enhanced Bond",
+        "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
         "type": "bool",
         "default": false
     }
@@ -1377,6 +1407,7 @@ class Beyond20BaseRoll {
         this._data = data;
         this._fail_limit = null;
         this._critical_limit = null;
+        this._critical_faces = null;
         this._discarded = false;
         this._total = 0;
     }
@@ -1397,7 +1428,7 @@ class Beyond20BaseRoll {
         throw new Error("NotImplemented");
     }
 
-    getTooltip() {
+    async getTooltip() {
         throw new Error("NotImplemented");
     }
 
@@ -1422,6 +1453,11 @@ class Beyond20BaseRoll {
     setFailLimit(limit) {
         this._fail_limit = limit;
     }
+    // Ignore all dice that don't have these faces when checking for a crit
+    // Hacky trick for custom dice in d20 rolls
+    setCriticalFaces(faces) {
+        this._critical_faces = faces;
+    }
     checkRollForCrits(cb) {
         for (let die of this.dice) {
             for (let r of die.rolls) {
@@ -1437,6 +1473,7 @@ class Beyond20BaseRoll {
 
     isCriticalHit() {
         return this.checkRollForCrits((faces, value) => {
+            if (this._critical_faces !== null && this._critical_faces !== faces) return false;
             const limit = this._critical_limit === null ? faces : this._critical_limit;
             return value >= limit;
         }
@@ -1445,6 +1482,7 @@ class Beyond20BaseRoll {
 
     isCriticalFail() {
         return this.checkRollForCrits((faces, value) => {
+            if (this._critical_faces !== null && this._critical_faces !== faces) return false;
             const limit = this._fail_limit === null ? 1 : this._fail_limit;
             return value <= limit;
         }
@@ -1626,22 +1664,42 @@ class DNDBRoll extends Beyond20BaseRoll {
         formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/g, "r$1$2");
         super(formula, data);
         this._parts = [];
+        let last_sign = null;
         for (let key in data)
             formula = formula.replace('@' + key, data[key]);
         const parts = formula.split(/(?=[+-])/);
+        const mergeSigns = (sign) => {
+            if (!sign) return last_sign;
+            if (!last_sign) return sign;
+            if (sign === last_sign) return "+";
+            return "-";
+        }
         for (let part of parts) {
             part = part.trim();
-            let match = part.match(/([0-9]*)d([0-9]+)(.*)/);
+            if (["+", "-"].includes(part)) {
+                last_sign = mergeSigns(part);
+                continue;
+            }
+            // Match dice formulas
+            let match = part.match(/([+-])?\s*([0-9]*)d([0-9]+)(.*)/);
             if (match) {
-                const part = new DNDBDice(...match.slice(1, 4));
+                last_sign = mergeSigns(match[1]);
+                if (last_sign)
+                    this._parts.push(last_sign);
+                const part = new DNDBDice(...match.slice(2, 5));
                 this._parts.push(part);
+                last_sign = "+";
             } else {
+                // Match numeric values
                 match = part.match(/([+-])?\s*([0-9\.]+)/);
                 if (match) {
                     try {
-                        const sign = match[1] || "";
-                        const part = parseFloat(sign + match[2]);
+                        last_sign = mergeSigns(match[1]);
+                        if (last_sign)
+                            this._parts.push(last_sign);
+                        const part = parseFloat(match[2]);
                         this._parts.push(part);
+                        last_sign = "+";
                     } catch (err) { }
                 }
             }
@@ -1657,7 +1715,7 @@ class DNDBRoll extends Beyond20BaseRoll {
         let first = true;
         for (let part of this._parts) {
             if (!first)
-                formula += " + ";
+                formula += " ";
             first = false;
             if (part instanceof DNDBDice)
                 formula += part.formula;
@@ -1689,17 +1747,26 @@ class DNDBRoll extends Beyond20BaseRoll {
     }
     calculateTotal() {
         this._total = 0;
+        let add = true;
         for (let part of this._parts) {
             if (part instanceof DNDBDice) {
-                this._total += part.total;
+                if (add)
+                    this._total += part.total;
+                else
+                    this._total -= part.total;
+            } else if (["+", "-"].includes(part)) {
+                add = (part === "+");
             } else {
-                this._total += part;
+                if (add)
+                    this._total += part;
+                else
+                    this._total -= part;
             }
         }
         this._total = Math.round(this._total * 100) / 100;
     }
 
-    getTooltip() {
+    async getTooltip() {
         let tooltip = "<div class='beyond20-roll-tooltip'>";
         for (let part of this._parts) {
             if (part instanceof DNDBDice) {
@@ -1819,20 +1886,26 @@ class Beyond20RollRenderer {
         if (advantage == RollType.QUERY)
             advantage = await this.queryAdvantage(title);
 
+        const d20 = request.d20 || "1d20";
+        let rolls = [];
         if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {
-            const roll_1 = this.createRoll("1d20" + modifier, data);
-            const roll_2 = this.createRoll("1d20" + modifier, data);
+            const roll_1 = this.createRoll(d20 + modifier, data);
+            const roll_2 = this.createRoll(d20 + modifier, data);
+            roll_1.setCriticalFaces(20);
+            roll_2.setCriticalFaces(20);
 
-            return {advantage, rolls: [roll_1, roll_2]};
+            rolls = [roll_1, roll_2];
         } else if ([RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE].includes(advantage)) {
-            const roll_1 = this.createRoll("1d20" + modifier, data);
-            const roll_2 = this.createRoll("1d20" + modifier, data);
-            const roll_3 = this.createRoll("1d20" + modifier, data);
+            const roll_1 = this.createRoll(d20 + modifier, data);
+            const roll_2 = this.createRoll(d20 + modifier, data);
+            const roll_3 = this.createRoll(d20 + modifier, data);
 
-            return {advantage, rolls: [roll_1, roll_2, roll_3]};
+            rolls = [roll_1, roll_2, roll_3];
         } else { // advantage == RollType.NORMAL
-            return {advantage, rolls: [this.createRoll("1d20" + modifier, data)]};
+            rolls.push(this.createRoll(d20 + modifier, data));
         }
+        rolls.forEach(r => r.setCriticalFaces(20));
+        return {advantage, rolls};
     }
     processToHitAdvantage(advantage, rolls) {
         if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {
@@ -2044,7 +2117,8 @@ class Beyond20RollRenderer {
             html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
         }
 
-        if (damage_rolls.length > 0 && request.rollAttack && !request.rollDamage)
+        if (request.damages && request.damages.length > 0 && 
+            request.rollAttack && !request.rollDamage)
             html += '<button class="beyond20-button-roll-damages">Roll Damages</button>';
 
         html += "</div>";
@@ -2109,52 +2183,8 @@ class Beyond20RollRenderer {
     }
 
     async rollSkill(request, custom_roll_dice = "") {
-        // Custom skill;
-        if (request.ability == "--" && request.character.abilities.length > 0) {
-            let prof = "";
-            let prof_val = "";
-            let d20_modifier = ""
-            if (request.proficiency == "Proficiency") {
-                prof = "proficiency";
-                prof_val = request.character.proficiency;
-                if (request.reliableTalent)
-                    d20_modifier = "min10";
-            } else if (request.proficiency == "Half Proficiency") {
-                prof = "half_proficiency";
-                prof_val += Math.floor(request.character.proficiency / 2);
-            } else if (request.proficiency == "Expertise") {
-                prof = "expertise";
-                prof_val += request.character.proficiency * 2;
-                if (request.reliableTalent)
-                    d20_modifier = "min10";
-            }
-            const formula = "1d20 + @ability " + (prof != "" ? " + @" + prof : "") + " + @custom_dice";
-            let html = '<form>';
-            html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>';
-            html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';
-            const modifiers = {};
-            for (let ability of request.character.abilities) {
-                html += '<option value="' + ability[0] + '">' + ability[0] + '</option>';
-                modifiers[ability[0]] = ability[3];
-            }
-            html += "</select></div>";
-            html += '</form>';
-            html = await this._prompter.prompt("Custom Skill", html, request.skill);
-            if (html) {
-                const ability = html.find('[name="ability"]').val();
-                let mod = modifiers[ability];
-                if (request.modifier != "--" && request.modifier != "+0")
-                    mod += request.modifier;
-                const data = { "ability": mod, "prof": prof_val, "custom_dice": custom_roll_dice }
-                this.rollD20(request, request.skill + "(" + ability + ")", data, d20_modifier);
-            }
-        } else {
-            const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-            let d20_modifier = request.reliableTalent ? "min10" : "";
-            if (request.silverTongue && (request.skill === "Deception" || request.skill === "Persuasion"))
-                d20_modifier = "min10";
-            return this.rollD20(request, request.skill + "(" + request.modifier + ")", data, d20_modifier);
-        }
+        const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
+        return this.rollD20(request, request.skill + "(" + request.modifier + ")", data);
     }
 
     rollAbility(request, custom_roll_dice = "") {
@@ -2181,42 +2211,7 @@ class Beyond20RollRenderer {
         return this.rollD20(request, "Death Saving Throw", { "custom_dice": custom_roll_dice });
     }
 
-    rollItem(request, custom_roll_dice = "") {
-        const source = request["item-type"].trim().toLowerCase();
-        if ((source === "tool, common" || (source === "gear, common" && request.name.endsWith("Tools")) || request.tags.includes("Instrument")) && request.character.abilities && request.character.abilities.length > 0) {
-            const proficiencies = {}
-            proficiencies["None"] = 0;
-            proficiencies["Half Proficient"] = Math.floor(request.character.proficiency / 2);
-            proficiencies["Proficient"] = request.character.proficiency;
-            proficiencies["Expert"] = request.character.proficiency * 2;
-            const formula = "1d20 + @ability + @proficiency + @custom_dice";
-            let html = '<form>';
-            html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>';
-            html += '<div class="beyond20-form-row"><label>Select Ability</label><select name="ability">';
-            const modifiers = {}
-            for (let ability of request.character.abilities) {
-                html += '<option value="' + ability[0] + '">' + ability[0] + '</option>';
-                modifiers[ability[0]] = ability[3];
-            }
-            html += "</select></div>";
-            html += '<div class="beyond20-form-row"><label>Select Proficiency</label><select name="proficiency">';
-            for (let prof in proficiencies) {
-                html += '<option value="' + prof + '">' + prof + '</option>';
-            }
-            html += "</select></div>";
-            html += '</form>';
-            this._prompter.prompt("Using a tool", html, request.name).then((html) => {
-                if (html) {
-                    const ability = html.find('[name="ability"]').val();
-                    const mod = modifiers[ability];
-                    const proficiency = html.find('[name="proficiency"]').val();
-                    const prof_value = proficiencies[proficiency];
-                    const data = { "ability": mod, "proficiency": prof_value, "custom_dice": custom_roll_dice }
-                    this.rollD20(request, request.name + "(" + ability + ")", data);
-                }
-            }
-            );
-        }
+    rollItem(request) {
         return this.rollTrait(request);
     }
 
@@ -2293,7 +2288,7 @@ class Beyond20RollRenderer {
                 const dragons_breath_type = await this.queryDamageType(request.name, damage_choices);
                 damages.splice(0, 0, damage_choices[dragons_breath_type]);
                 damage_types.splice(0, 0, dragons_breath_type);
-            } else if (request.name == "Chaos Bolt") {
+            } else if (request.name.includes("Chaos Bolt")) {
                 let base_damage = null;
                 let crit_damage = null;
                 for (let dmgtype of ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]) {
@@ -2333,7 +2328,7 @@ class Beyond20RollRenderer {
                 all_rolls.push(roll);
                 const dmg_type = damage_types[i];
                 let damage_flags = DAMAGE_FLAGS.REGULAR;
-                if (["Healing", "Disciple of Life", "Temp HP"].includes(dmg_type)) {
+                if (["Healing", "Disciple of Life", "Temp HP", "Alchemical Savant Healing", "Enhanced Bond Healing"].includes(dmg_type)) {
                     damage_flags = DAMAGE_FLAGS.HEALING;
                 } else if (i == 0) {
                     damage_flags = DAMAGE_FLAGS.REGULAR;
@@ -2354,7 +2349,7 @@ class Beyond20RollRenderer {
             await this._roller.resolveRolls(request.name, all_rolls)
             
             //Moved after the new resolveRolls so it can access the roll results
-            if (request.name == "Chaos Bolt") {
+            if (request.name.includes("Chaos Bolt")) {
                 for (let [i, dmg_roll] of damage_rolls.entries()) {
                     const [dmg_type, roll, flags] = dmg_roll;
                     if (dmg_type == "Chaotic energy Damage" && roll.dice[0].faces == 8) {
@@ -2393,7 +2388,7 @@ class Beyond20RollRenderer {
                     critical_damage_rolls.push(roll);
                     const dmg_type = critical_damage_types[i];
                     let damage_flags = DAMAGE_FLAGS.REGULAR;
-                    if (["Healing", "Disciple of Life", "Temp HP"].includes(dmg_type)) {
+                    if (["Healing", "Disciple of Life", "Temp HP", "Alchemical Savant Healing", "Enhanced Bond Healing"].includes(dmg_type)) {
                         damage_flags = DAMAGE_FLAGS.HEALING;
                     } else if (i == 0) {
                         damage_flags = DAMAGE_FLAGS.REGULAR;
@@ -2515,12 +2510,15 @@ class Beyond20RollRenderer {
 
     displayAvatar(request) {
         const character = (request.whisper !== WhisperType.NO) ? "???" : request.character.name;
-        const discordChannel = getDiscordChannel(this._settings, request.character)
+        this._displayer.postHTML(request, request.name, `<img src='${request.character.avatar}' width='100%'>`, {}, character, false, false);
+        this.displayAvatarToDiscord(request);
+    }
+    displayAvatarToDiscord(request) {
+        const discordChannel = getDiscordChannel(this._settings, request.character);
         postToDiscord(discordChannel ? discordChannel.secret : "", request, request.name, "", {}, "", [], [], [], [], false).then((error) => {
             if (error)
                 this._displayer.displayError("Beyond20 Discord Integration: " + error);
         });
-        this._displayer.postHTML(request, request.name, `<img src='${request.character.avatar}' width='100%'>`, {}, character, false, false);
     }
 
     handleRollRequest(request) {
@@ -2541,7 +2539,7 @@ class Beyond20RollRenderer {
         } else if (request.type == "hit-dice") {
             return this.rollHitDice(request);
         } else if (request.type == "item") {
-            return this.rollItem(request, custom_roll_dice);
+            return this.rollItem(request);
         } else if (["feature", "trait", "action"].includes(request.type)) {
             return this.rollTrait(request);
         } else if (request.type == "death-save") {

@@ -106,8 +106,8 @@ function buildAttackRoll(character, attack_source, name, description, properties
         "name": name,
         "attack-source": attack_source,
         "description": description,
-        "rollAttack": !force_damages_only,
-        "rollDamage": !force_to_hit_only && character.getGlobalSetting("auto-roll-damage", true),
+        "rollAttack": force_to_hit_only || !force_damages_only,
+        "rollDamage": force_damages_only || (!force_to_hit_only && character.getGlobalSetting("auto-roll-damage", true)),
         "rollCritical": false
     }
     if (to_hit !== null)
@@ -179,7 +179,14 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 const isBrutal = character.hasClassFeature("Brutal Critical");
                 const isSavage = character.hasRacialTrait("Savage Attacks");
                 if (highest_dice != 0) {
-                    crit_damages.push(`${brutal}d${highest_dice}`);
+                    let brutal_dmg = `${brutal}d${highest_dice}`
+                    // Apply great weapon fighting to brutal damage dice
+                    if (character.hasClassFeature("Fighting Style: Great Weapon Fighting") &&
+                        properties["Attack Type"] == "Melee" &&
+                        (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
+                        brutal_dmg += "ro<=2"
+                    }
+                    crit_damages.push(brutal_dmg);
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
                 } else if (rule == CriticalRules.HOMEBREW_MAX) {
                     crit_damages.push(`${homebrew_max_damage}`);
@@ -220,8 +227,6 @@ async function sendRoll(character, rollType, fallback, args) {
         advantage: advantage,
         whisper: whisper
     }
-    if (character.getGlobalSetting("weapon-force-critical", false))
-        req["critical-limit"] = 1;
     for (let key in args)
         req[key] = args[key];
     if (key_modifiers.shift)
@@ -230,6 +235,8 @@ async function sendRoll(character, rollType, fallback, args) {
         req["advantage"] = RollType.DISADVANTAGE;
     else if (key_modifiers.alt)
         req["advantage"] = RollType.NORMAL;
+    if (character.getGlobalSetting("weapon-force-critical", false))
+        req["critical-limit"] = 1;
 
     if (character.getGlobalSetting("use-digital-dice", false) && DigitalDice.isEnabled()) {
         req.sendMessage = true;
