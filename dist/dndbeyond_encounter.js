@@ -2991,8 +2991,8 @@ function buildAttackRoll(character, attack_source, name, description, properties
         "name": name,
         "attack-source": attack_source,
         "description": description,
-        "rollAttack": !force_damages_only,
-        "rollDamage": !force_to_hit_only && character.getGlobalSetting("auto-roll-damage", true),
+        "rollAttack": force_to_hit_only || !force_damages_only,
+        "rollDamage": force_damages_only || (!force_to_hit_only && character.getGlobalSetting("auto-roll-damage", true)),
         "rollCritical": false
     }
     if (to_hit !== null)
