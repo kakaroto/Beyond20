@@ -2988,7 +2988,7 @@ function rollAttack(request, custom_roll_dice = "") {
     }
     let template_type = "atkdmg";
     let dmg_props = {}
-    if (request["to-hit"] !== undefined) {
+    if (request.rollAttack && request["to-hit"] !== undefined) {
         let d20_roll = request.d20 || "1d20";
         if (request["critical-limit"])
             d20_roll += "cs>" + request["critical-limit"];
@@ -3018,8 +3018,13 @@ function rollAttack(request, custom_roll_dice = "") {
         dmg_props["saveattr"] = request["save-ability"];
         dmg_props["savedc"] = request["save-dc"];
     }
-
-    if (request.damages !== undefined && request["to-hit"] !== undefined && !settings["auto-roll-damage"]) {
+    if (request.rollDamage && !request.rollAttack) {
+        template_type = "dmg";
+        dmg_props["charname"] = request.character.name;
+        dmg_props["rname"] = request.name;
+    }
+    if (request.damages && request.damages.length > 0 && 
+        request["to-hit"] !== undefined && !request.rollDamage) {
         template_type = "atk";
         dmg_props["charname"] = request.character.name;
         dmg_props["rname"] = request.name;
@@ -3093,7 +3098,7 @@ function rollSpellAttack(request, custom_roll_dice) {
     }
     let template_type = "atkdmg";
     let dmg_props = {}
-    if (request["to-hit"] !== undefined) {
+    if (request.rollAttack && request["to-hit"] !== undefined) {
         let d20_roll = request.d20 || "1d20";
         if (request["critical-limit"])
             d20_roll += "cs>" + request["critical-limit"];
@@ -3190,7 +3195,13 @@ function rollSpellAttack(request, custom_roll_dice) {
         }
     }
 
-    if (request.damages !== undefined && request["to-hit"] !== undefined && !settings["auto-roll-damage"]) {
+    if (request.rollDamage && !request.rollAttack) {
+        template_type = "dmg";
+        dmg_props["charname"] = request.character.name;
+        dmg_props["rname"] = request.name;
+    }
+    if (request.damages && request.damages.length > 0 &&
+        request["to-hit"] !== undefined && !request.rollDamage) {
         template_type = "atk";
         dmg_props["charname"] = request.character.name;
         dmg_props["rname"] = request.name;
@@ -3207,8 +3218,7 @@ function rollSpellAttack(request, custom_roll_dice) {
             properties[key] = dmg_props[key];
     }
 
-    roll = template(request, template_type, properties);
-    return roll;
+    return template(request, template_type, properties);
 }
 
 function convertRollToText(whisper, roll, standout=false) {
