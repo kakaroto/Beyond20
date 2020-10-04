@@ -1591,7 +1591,7 @@ function deactivateQuickRolls() {
     const skills = $(".ct-skills .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__col--modifier");
     const actions = $(".ct-combat-attack .ct-combat-attack__icon,.ddbc-combat-attack .ddbc-combat-attack__icon");
     const actions_to_hit = $(".ddbc-combat-attack .ddbc-combat-attack__tohit .integrated-dice__container");
-    const actions_damage = $(".ddbc-combat-attack .ddbc-combat-attack__damage .integrated-dice__container");
+    const actions_damage = $(".ddbc-combat-attack .ddbc-combat-attack__damage .integrated-dice__container:first-of-type");
     const spells = $(".ct-spells-spell .ct-spells-spell__action,.ddbc-spells-spell .ddbc-spells-spell__action");
     const spells_to_hit = $(".ct-spells-spell .ct-spells-spell__tohit .integrated-dice__container, .ddbc-spells-spell .ddbc-spells-spell__tohit .integrated-dice__container");
     const spells_damage = $(".ct-spells-spell .ct-spells-spell__damage .integrated-dice__container, .ddc-spells-spell .ddc-spells-spell__damage .integrated-dice__container");
