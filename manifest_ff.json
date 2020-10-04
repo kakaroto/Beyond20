@@ -43,6 +43,7 @@
         "images/*",
         "libs/alertify.min.js",
         "libs/jquery-3.4.1.min.js",
+		"libs/lz-string.min.js",
 		"dist/roll20_script.js",
 		"dist/fvtt_script.js",
 		"dist/astral_script.js",
@@ -203,6 +204,7 @@
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
+				"libs/lz-string.min.js",
 				"dist/astral.js"
 			]
 		}

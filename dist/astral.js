@@ -1326,8 +1326,8 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-function template(rolls, col1 = "Name", col2 = "Roll") {
-    return `| ${col1} | ${col2} |
+function template(rolls) {
+    return `| | |
 | :--- | :--- |
 ${rolls.map(([key, value]) => {
     return `| ${capitalizeFirstLetter(key)} | ${value} |`
@@ -1836,5 +1836,6 @@ chrome.runtime.sendMessage({ "action": "activate-icon" });
 chrome.runtime.sendMessage({ "action": "register-astral-tab" });
 injectPageScript(chrome.runtime.getURL("libs/alertify.min.js"));
 injectPageScript(chrome.runtime.getURL("libs/jquery-3.4.1.min.js"));
+injectPageScript(chrome.runtime.getURL("libs/lz-string.min.js"));
 injectPageScript(chrome.runtime.getURL('dist/astral_script.js'));
 sendCustomEvent("disconnect");

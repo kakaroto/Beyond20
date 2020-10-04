@@ -2729,7 +2729,7 @@ const getUser = () => getReactData().props.pageProps.user;
 
 const getDungeonMasters = () => getReactData().props.pageProps.data.game.gameMasters;
 
-
+const isGM = () => getDungeonMasters().includes(getUser());
 
 class AstralDisplayer {
     sendMessage(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
@@ -2822,8 +2822,8 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-function template(rolls, col1 = "Name", col2 = "Roll") {
-    return `| ${col1} | ${col2} |
+function template(rolls) {
+    return `| | |
 | :--- | :--- |
 ${rolls.map(([key, value]) => {
     return `| ${capitalizeFirstLetter(key)} | ${value} |`
@@ -2932,6 +2932,34 @@ function parseDescription(request, description, {
 
 let chatIframe;
 
+$.fn.watch = function(property, callback) {
+    return $(this).each(function() {
+        var self = this;
+        var old_property_val = this[property];
+        var timer;
+ 
+        function watch() {
+           if($(self).data(property + '-watch-abort') == true) {
+              timer = clearInterval(timer);
+              $(self).data(property + '-watch-abort', null);
+              return;
+           }
+ 
+           if(self[property] != old_property_val) {
+              old_property_val = self[property];
+              callback.call(self);
+           }
+        }
+        timer = setInterval(watch, 700);
+    });
+ };
+ 
+ $.fn.unwatch = function(property) {
+    return $(this).each(function() {
+        $(this).data(property + '-watch-abort', true);
+    });
+ };
+
 function setReactElementValue(element, value) {
     const valueSetter = Object.getOwnPropertyDescriptor(element, 'value').set;
     const prototype = Object.getPrototypeOf(element);
@@ -2972,22 +3000,6 @@ async function speakAs(characterName) {
     });
 }
 
-async function hookRollDamages(rollDamages, request) {
-    const originalRequest = request.request;
-    let a = null;
-    let timeout = 50;
-
-    // couldn't use a similar approach to roll20 due to React recreating the `a` elements, as such resorted to jQuery
-    chatIframe.on('click', `a[href='#${rollDamages}']`, (ev) => {
-        ev.preventDefault();
-        originalRequest.rollAttack = false;
-        originalRequest.rollDamage = true;
-        originalRequest.rollCritical = request.attack_rolls.some(r => !r.discarded && r["critical-success"])
-        roll_renderer.handleRollRequest(originalRequest);
-    })
-}
-
-
 function convertRollToText(roll, standout=false) {
     if (typeof (roll) === "string")
         return roll;
@@ -2999,18 +3011,32 @@ function convertRollToText(roll, standout=false) {
     return result;
 };
 
+function stripRequestForAttackRoll(request) {
+    request.character = {
+        name: request.character.name,
+        type: request.character.type,
+        settings: request.character.settings
+    };
+    request.description = "";
+    request.properties = undefined;
+    request['item-type'] = undefined;
+    request.range = undefined;
+    request.preview = undefined;
+}
+
 
 async function handleRenderedRoll(request) {
+    const originalRequest = request.request;
     const rolls = [];
-    if (request.source)
+    if (!originalRequest.rollDamage && request.source)
         rolls.push(["Source", request.source]);
-    if (Object.keys(request.attributes).length) {
+    if (!originalRequest.rollDamage && Object.keys(request.attributes).length) {
         rolls.push(...Object.entries(request.attributes));
     }
-    if (request.open)
-        rolls.push(["Description", parseDescription(request.description)]);
-
-    rolls.push(...request.roll_info);
+    if (!originalRequest.rollDamage && request.roll_info){
+        // the split is needed to remove some dupicate entries some which are 'Components' and 'Components: '
+        rolls.push(...request.roll_info.filter(([name, info]) => !request.attributes[name.split(": ")[0]]));
+    }
 
     let title = request.title;
     if (request.attack_rolls.length > 0) {
@@ -3025,9 +3051,14 @@ async function handleRenderedRoll(request) {
     rolls.push(...Object.entries(request.total_damages).map(([key, roll]) => ["Total " + key, convertRollToText(roll)]));
 
     let rollDamages = null;
-    const originalRequest = request.request;
     if (originalRequest.rollAttack && !originalRequest.rollDamage) {
-        rollDamages = `beyond20-rendered-roll-button-${Math.random()}`;
+        originalRequest.rollAttack = false;
+        originalRequest.rollDamage = true;
+        originalRequest.rollCritical = request.attack_rolls.some(r => !r.discarded && r["critical-success"]);
+        // Stripping out unrelated data for the roll
+        stripRequestForAttackRoll(originalRequest);
+        // Compressing and stripping the request to reduce the encoded version as much as possible to not exceed 2048 chars
+        rollDamages = `b20-rr-${LZString.compressToEncodedURIComponent(JSON.stringify(originalRequest))}`;
         rolls.push(["Roll Damages", `[\`Click\`](#${rollDamages})`]);
     }
     if (originalRequest.type === "initiative" && settings["initiative-tracker"]) {
@@ -3036,10 +3067,16 @@ async function handleRenderedRoll(request) {
            rolls.push(["Initiative", `i!(d0cr=1fr=1 + ${initiative.total})`]);
     }
     let message = template(rolls);
-    await postChatMessage({characterName: request.character, message, ...getDecoration(request.request.type), title, whisper: request.whisper == WhisperType.YES });
-    if (rollDamages) {
-        await hookRollDamages(rollDamages, request);
+
+    
+    if (!originalRequest.rollDamage && request.open && request.description) {
+        message = `${message}
+        
+
+${parseDescription(request, request.description)}`
     }
+
+    await postChatMessage({characterName: request.character, message, ...getDecoration(request.request.type), title, whisper: request.whisper == WhisperType.YES });
 }
 
 async function postChatMessage({characterName, message, color, icon, title, whisper}) {
@@ -3226,6 +3263,15 @@ function disconnectAllEvents() {
         document.removeEventListener(...event);
 }
 
+
+function addRollHook() {
+    chatIframe.on('click', `a[href*='#b20-rr-']`, (ev) => {
+        ev.preventDefault();
+        console.log(ev);
+        roll_renderer.handleRollRequest(JSON.parse(LZString.decompressFromEncodedURIComponent(ev.currentTarget.hash.split('#b20-rr-')[1])));
+    })
+}
+
 var registered_events = [];
 registered_events.push(addCustomEventListener("AstralUpdateHPBar", updateHpBar));
 registered_events.push(addCustomEventListener("AstralChatMessage", postChatMessage));
@@ -3237,11 +3283,14 @@ registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents)
 function trySetDOMListeners() {
     if (window.$ && $("div[data-id=chat] iframe").length > 0) {
         chatIframe = $("div[data-id=chat] iframe").contents();
-        
-        // Added this since previews links will not work and they open a new tab
-        chatIframe.on('click', `a[href*='#beyond20-rendered-roll-button-']`, (ev) => {
-            ev.preventDefault();
+        addRollHook();
+        $("div[data-id=chat] iframe").watch('contentDocument', function() {
+            console.log(this);
+            chatIframe = $(this).contents();
+            addRollHook();
         })
+       
+        
     } else {
         setTimeout(trySetDOMListeners, 1000);
     }

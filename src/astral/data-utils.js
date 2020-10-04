@@ -98,3 +98,4 @@ const getUser = () => getReactData().props.pageProps.user;
 
 const getDungeonMasters = () => getReactData().props.pageProps.data.game.gameMasters;
 
+const isGM = () => getDungeonMasters().includes(getUser());

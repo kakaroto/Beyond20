@@ -41,8 +41,8 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-function template(rolls, col1 = "Name", col2 = "Roll") {
-    return `| ${col1} | ${col2} |
+function template(rolls) {
+    return `| | |
 | :--- | :--- |
 ${rolls.map(([key, value]) => {
     return `| ${capitalizeFirstLetter(key)} | ${value} |`

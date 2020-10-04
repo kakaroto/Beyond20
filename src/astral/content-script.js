@@ -400,5 +400,6 @@ chrome.runtime.sendMessage({ "action": "activate-icon" });
 chrome.runtime.sendMessage({ "action": "register-astral-tab" });
 injectPageScript(chrome.runtime.getURL("libs/alertify.min.js"));
 injectPageScript(chrome.runtime.getURL("libs/jquery-3.4.1.min.js"));
+injectPageScript(chrome.runtime.getURL("libs/lz-string.min.js"));
 injectPageScript(chrome.runtime.getURL('dist/astral_script.js'));
 sendCustomEvent("disconnect");
