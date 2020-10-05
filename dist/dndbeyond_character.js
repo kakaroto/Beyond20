@@ -4586,6 +4586,18 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
         const min = character.getAbility("STR").score - parseInt(modifier);
         roll_properties.d20 = `1d20min${min}`
     }
+    // Wizard Bladesong Concentration Check Bonus
+    if (character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false) &&
+        rollType == "saving-throw" && ability == "CON") {
+        // Using confirm because the parent function is not async
+        if (confirm('Your Bladesong whispers: "Is this a Concentration Check?"')) {
+            const intelligence = character.getAbility("INT") || {mod: 0};
+            const mod = Math.max((parseInt(intelligence.mod) || 0), 1);
+            modifier = parseInt(modifier) + mod;
+            modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+            roll_properties["modifier"] = modifier;
+        }
+    }
     sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
 }
 
