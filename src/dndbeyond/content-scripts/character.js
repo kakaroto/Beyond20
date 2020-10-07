@@ -1832,7 +1832,7 @@ function documentModified(mutations, observer) {
     activateQuickRolls();
     if (character._features_needs_refresh && !character._features_refresh_warning_displayed) {
         character._features_refresh_warning_displayed = true;
-        alertify.alert("This is a new or recently leveled-up character sheet and Beyond20 needs to parse its information. <br/>Please select the <strong>'Features &amp; Traits'</strong> panel for Beyond20 to parse this character's features and populate the character-specific options.");
+        alertify.alert("This is a new or recently leveled-up character sheet and Beyond20 needs to parse its information. <br/>Please select the <strong>'Features &amp; Traits'</strong> panel on your DnDBeyond Character Sheet for Beyond20 to parse this character's features and populate the character-specific options.");
     }
 
     const pane = $(".ct-sidebar__pane-content > div");
