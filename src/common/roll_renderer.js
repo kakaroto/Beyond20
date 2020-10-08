@@ -556,6 +556,8 @@ class Beyond20RollRenderer {
                         if (dmg_dice == "0") {
                             damages.splice(dmgIndex, 1);
                             damage_types.splice(dmgIndex, 1);
+                            critical_damages.splice(dmgIndex, 1);
+                            critical_damage_types.splice(dmgIndex, 1);
                         }
                     }
                 }
