@@ -57,7 +57,7 @@ The HP syncing needs to be enabled in your settings (see [first question](#can-b
 
 Ask your GM to create a new character if you don't already have one.
 
-In the character sheet tab, if it asks you how you want to create the character select "Edit Sheet directly". Alternatively, if you do not want to use a character sheet in Roll20, add the "hp" and "temp_hp" (these are case sensitive!) attributes to your character.
+In the character sheet tab, if it asks you how you want to create the character select "Edit Sheet directly". Alternatively, if you do not want to use a character sheet in Roll20, add the "hp" and "hp_temp" (these are case sensitive!) attributes to your character.
 
 Set any value to these attributes (such as 0). A GM will need to link these attributes to your token bars by editing the token linked to the character.
 
