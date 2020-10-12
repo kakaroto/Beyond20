@@ -17,6 +17,7 @@ You can also check out the [changelog](Changelog) for recent fixes or additions 
 * [Why can't others see my rolls properly in Foundry VTT?](#why-cant-others-see-my-rolls-properly-in-foundry-vtt)
 * [How can I enable Discord integration?](#how-can-i-enable-discord-integration)
 * [Why doesn't Beyond20 allow me to make a melee attack with my magic staffs?](#why-doesnt-beyond20-allow-me-to-make-a-melee-attack-with-my-magic-staffs)
+* [Is auto-roll-damages broken?](#is-auto-roll-damages-broken)
 
 ---
 
@@ -159,3 +160,15 @@ The best way to avoid this issue is to add a Quarterstaff to your equipment (don
 As an example, you can have your Staff of Healing for healing purposes, and a Quarterstaff with the custom name "Staff of Healing(Melee)" for when you want to use it for attacks.
 
 See [this issue](https://github.com/kakaroto/Beyond20/issues/111) for more details.
+
+### Is auto-roll-damages broken?
+
+No, if you are clicking the To-Hit digital dice button in D&D Beyond, it will only roll the To-Hit, as expected, if you are clicking on the Damage digital dice button, it will only roll the Damages, as expected.
+
+If you have auto-roll-damages option enabled and want to roll both, you need to click on the attack icon itself (to the left of the action name) as it's always been before we added hooks to the digital dice buttons.
+
+![image](https://user-images.githubusercontent.com/27990/95795649-e034bb00-0cb8-11eb-93f1-494a75fcb5d6.png)
+
+In the 2.1 release, yes, it was rolling both to-hit and damages (regardless of any setting) when you clicked on the digital dice buttons of an attack, and **that was a bug** which was fixed in the 2.2 release.
+
+
