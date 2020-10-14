@@ -576,7 +576,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
     const action_name = $(".ct-sidebar__heading").text();
     const action_parent = $(".ct-sidebar__header-parent").text();
     const description = descriptionToString(".ct-action-detail__description");
-    const to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
+    let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
 
     if (action_name == "Superiority Dice" || action_parent == "Maneuvers") {
         const fighter_level = character.getClassLevel("Fighter");
@@ -634,6 +634,14 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.
         if (action_name.includes("Polearm Master - Bonus Attack") && character.hasClassFeature("Fighting Style: Great Weapon Fighting")) {
             damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
+        }
+        if (to_hit !== null && 
+            character.getSetting("great-weapon-master", false) &&
+            action_name.includes("Polearm Master - Bonus Attack")) {
+            to_hit += " - 5";
+            damages.push("10");
+            damage_types.push("Weapon Master");
+            character.mergeCharacterSettings({ "great-weapon-master": false });
         }
         if (action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
             || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
