@@ -167,7 +167,7 @@ No, if you are clicking the To-Hit digital dice button in D&D Beyond, it will on
 
 If you have auto-roll-damages option enabled and want to roll both, you need to click on the attack icon itself (to the left of the action name) as it's always been before we added hooks to the digital dice buttons.
 
-![image](https://user-images.githubusercontent.com/27990/95795649-e034bb00-0cb8-11eb-93f1-494a75fcb5d6.png)
+![image](images/faq-quick-rolls-attack.png)
 
 In the 2.1 release, yes, it was rolling both to-hit and damages (regardless of any setting) when you clicked on the digital dice buttons of an attack, and **that was a bug** which was fixed in the 2.2 release.
 
