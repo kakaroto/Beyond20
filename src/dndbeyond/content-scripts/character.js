@@ -303,7 +303,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 let damage_type = properties["Damage Type"] || "";
                 let versatile_damage = value.find(".ct-item-detail__versatile-damage,.ddbc-item-detail__versatile-damage").text().slice(1, -1);
                 if (damages.length == 0 &&
-                    character.hasClassFeature("Fighting Style: Great Weapon Fighting") &&
+                    (character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&
                     properties["Attack Type"] == "Melee" &&
                     (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
                     if (versatile_damage != "") {
@@ -349,7 +349,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                         if (dmg_info != "")
                             dmg_type += "(" + dmg_info + ")";
 
-                        if (character.hasClassFeature("Fighting Style: Great Weapon Fighting") &&
+                        if ((character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&
                             properties["Attack Type"] == "Melee" &&
                             (properties["Properties"].includes("Two-Handed") ||
                                 (properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice", "both") === "two")))
@@ -786,7 +786,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             character.getSetting("warlock-hexblade-curse", false))
             critical_limit = 19;
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.
-        if (action_name.includes("Polearm Master - Bonus Attack") && character.hasClassFeature("Fighting Style: Great Weapon Fighting")) {
+        if (action_name.includes("Polearm Master - Bonus Attack") && (character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true))) {
             damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
         }
         if (to_hit !== null && 

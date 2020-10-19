@@ -343,17 +343,21 @@ class Character extends CharacterBase {
         }
     }
 
-    hasClassFeature(name) {
-        return this._class_features.includes(name);
+    hasClassFeature(name, substring=false) {
+        if (substring) return this._class_features.some(f => f.includes(name));
+        else return this._class_features.includes(name);
     }
-    hasRacialTrait(name) {
-        return this._racial_traits.includes(name);
+    hasRacialTrait(name, substring=false) {
+        if (substring) return this._racial_traits.some(f => f.includes(name));
+        else return this._racial_traits.includes(name);
     }
-    hasFeat(name) {
-        return this._feats.includes(name);
+    hasFeat(name, substring=false) {
+        if (substring) return this._feats.some(f => f.includes(name));
+        else return this._feats.includes(name);
     }
-    hasAction(name) {
-        return this._actions.includes(name);
+    hasAction(name, substring=false) {
+        if (substring) return this._actions.some(f => f.includes(name));
+        else return this._actions.includes(name);
     }
     getClassLevel(name) {
         return this._classes[name] || 0;
