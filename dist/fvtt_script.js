@@ -2621,14 +2621,26 @@ class Beyond20RollRenderer {
             }
 
             // Ranger Ability Support;
+            let dmg_dice = "0";
             for (let [dmgIndex, dmgType] of damage_types.entries()) {
                 if (dmgType == "Colossus Slayer") {
                     const dmg = damages[dmgIndex].toString();
                     if (dmg) {
-                        const dmg_dice = await this.queryGeneric(request.name, `Add ${dmgType} damage ?`, { "0": "No", [dmg]: "Yes" }, "dmg_dice", ["0", dmg]);
+                        dmg_dice = await this.queryGeneric(request.name, `Add ${dmgType} damage ?`, { "0": "No", [dmg]: "Yes" }, "dmg_dice", ["0", dmg]);
                         if (dmg_dice == "0") {
                             damages.splice(dmgIndex, 1);
                             damage_types.splice(dmgIndex, 1);
+                        }
+                    }
+                }
+            }
+
+            for (let [dmgIndex, dmgType] of critical_damage_types.entries()) {
+                if (dmgType == "Colossus Slayer") {
+                    const dmg = critical_damages[dmgIndex].toString();
+                    if (dmg) {
+                        // dmg_dice = await this.queryGeneric(request.name, `Add ${dmgType} damage ?`, { "0": "No", [dmg]: "Yes" }, "dmg_dice", ["0", dmg]);
+                        if (dmg_dice == "0") {
                             critical_damages.splice(dmgIndex, 1);
                             critical_damage_types.splice(dmgIndex, 1);
                         }
