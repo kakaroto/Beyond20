@@ -2639,7 +2639,6 @@ class Beyond20RollRenderer {
                 if (dmgType == "Colossus Slayer") {
                     const dmg = critical_damages[dmgIndex].toString();
                     if (dmg) {
-                        // dmg_dice = await this.queryGeneric(request.name, `Add ${dmgType} damage ?`, { "0": "No", [dmg]: "Yes" }, "dmg_dice", ["0", dmg]);
                         if (dmg_dice == "0") {
                             critical_damages.splice(dmgIndex, 1);
                             critical_damage_types.splice(dmgIndex, 1);
