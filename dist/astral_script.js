@@ -2645,16 +2645,19 @@ const _getTokenFromDb = () => new Promise((resolve, reject) => {
         const cursorReq = objStore.openCursor();
 
         cursorReq.onsuccess = (event) => {
+            while (!cursorReq.result.key.startsWith("firebase:authUser")) {
+                cursorReq.result.continue();
+            }
             if (cursorReq.result.value && cursorReq.result.value.value && cursorReq.result.value.value.stsTokenManager) {
                 resolve(cursorReq.result.value.value.stsTokenManager);
             }
-            reject(event);
+            reject(new Error("Unable to aquire authentication token from DB"));
         };
 
-        cursorReq.onerror = reject;
+        cursorReq.onerror = () => reject(new Error("Unable to aquire authentication token from DB"));
     }
 
-    req.onerror = reject;
+    req.onerror = () => reject(new Error("Unable to aquire authentication token from DB"));
 });
 
 const jwtDecode = (token) => JSON.parse(atob(token.split(".")[1]));
@@ -2993,7 +2996,7 @@ async function speakAs(characterName) {
                     charListButton.click();
                 }
                 resolve(); 
-            } catch { reject(); } 
+            } catch { reject(new Error("Unable to set `speak as` character.")); } 
         })
     });
 }
@@ -3004,8 +3007,8 @@ function convertRollToText(roll, standout=false) {
     const total = String(roll.total || 0);
     const prefix = (standout && !roll.discarded) ? '`' : '';
     const suffix = (standout && !roll.discarded) ? '`' : '';
-    let critfail = `1d0cr=${roll['critical-success'] ? '0' : '1'}fr=${roll['critical-failure'] ? '0' : '1'}`;
-    let result = `${prefix}!(${critfail}${formatPlusMod(total)})${suffix}`;
+    let critfail = `1d[${total}]cr=${roll['critical-success'] ? '1' : '0'}fr=${roll['critical-failure'] ? '1' : '0'}`;
+    let result = `${prefix}!(${critfail})${suffix}`;
     return result;
 };
 
@@ -3025,7 +3028,7 @@ function stripRequestForAttackRoll(request) {
 
 async function handleRenderedRoll(request) {
     const originalRequest = request.request;
-    const rolls = [];
+    let rolls = [];
     if (!originalRequest.rollDamage && request.source)
         rolls.push(["Source", request.source]);
     if (!originalRequest.rollDamage && Object.keys(request.attributes).length) {
@@ -3062,14 +3065,14 @@ async function handleRenderedRoll(request) {
     if (originalRequest.type === "initiative" && settings["initiative-tracker"]) {
         const initiative = request.attack_rolls.find((roll) => !roll.discarded);
         if (initiative)
-           rolls.push(["Initiative", `i!(d0cr=1fr=1 + ${initiative.total})`]);
+            rolls = [["Initiative", `i!(d0cr=1fr=1 + ${initiative.total})`]]
     }
     let message = template(rolls);
 
     
     if (!originalRequest.rollDamage && request.open && request.description) {
         message = `${message}
-        
+
 
 ${parseDescription(request, request.description)}`
     }
@@ -3086,6 +3089,7 @@ async function postChatMessage({characterName, message, color, icon, title, whis
 
         const recipients = whisper ? Object.fromEntries(getDungeonMasters().map(key => [key, true])) : undefined;
         if (message.length > 2048) {
+            console.warn(`Trimming message due to length exceeding 2048 characters. Initial message length is: ${message.length}.`)
             message = message.slice(0, 2045) + '...';
         }
         
@@ -3106,15 +3110,18 @@ async function postChatMessage({characterName, message, color, icon, title, whis
             }
         });
     } catch (e) {
-        console.error(e);
+        console.warn("Failed to send chat message for the following reason: ", e);
+        console.warn("Reverting to sending chat message using the chat input.")
+
         try {
             message = `**${title}**\n\n` + message;
 
             if (message.length > 2048) {
                 message = message.slice(0, 2045) + '...';
             }
-            
-            await speakAs(characterName);
+
+            try { await speakAs(characterName); } catch (e) {}
+
             sendChatText(message);
         } catch (e) {
             console.error(e);
@@ -3128,7 +3135,7 @@ async function updateHpBar({characterName, hp, maxHp, tempHp}) {
         const token = await getAccessToken();
         const character = await getCharacter(characterName);
         if (!character) {
-            console.warn(`No character found with name ${characterName}`)
+            console.warn(`Couldn't update the character hp due to the following reason: No character found with name ${characterName}`)
             return
         }
         return fetch(location.origin + `/api/game/${room}/character/${character}`, {
@@ -3146,7 +3153,7 @@ async function updateHpBar({characterName, hp, maxHp, tempHp}) {
             }
         });
     } catch (e) {
-        console.error(e);
+        console.error(`Couldn't update the character hp due to the following reason: `, e);
     }
 }
 
@@ -3200,44 +3207,56 @@ async function resetCombat() {
 }
 
 async function startCombat() {
-    const room = getRoom();
-    const token = await getAccessToken();
-    return fetch(location.origin + `/api/game/${room}/combat`, {
-        method: "POST",
-        headers: {
-            'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
-        }
-    });
+    try {
+        const room = getRoom();
+        const token = await getAccessToken();
+        return fetch(location.origin + `/api/game/${room}/combat`, {
+            method: "POST",
+            headers: {
+                'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
+            }
+        });
+    } catch (e) {
+        console.error("Couldn't start combat due to the following reason: ", e);
+    }
 }
 
 async function addCharacterToCombat({name, initiative}, weight) {
-    let character = await getCharacter(name);
-    if (!character) {
-        character = `custom-${Math.random().toString(36).substr(2, 6)}`
-    }
-
-    return fetch(location.origin + `/api/game/${getRoom()}/combat/actor/${character}`, {
-        method: "PUT",
-        body: JSON.stringify({
-            displayName: name, 
-            id: character,
-            visible: true, 
-            initiative,
-            weight
-        }),
-        headers: {
-            'x-authorization': `Bearer ${await getAccessToken()}`, 'content-type': 'application/json'
+    try {
+        let character = await getCharacter(name);
+        if (!character) {
+            character = `custom-${Math.random().toString(36).substr(2, 6)}`
         }
-    })
+
+        return fetch(location.origin + `/api/game/${getRoom()}/combat/actor/${character}`, {
+            method: "PUT",
+            body: JSON.stringify({
+                displayName: name, 
+                id: character,
+                visible: true, 
+                initiative,
+                weight
+            }),
+            headers: {
+                'x-authorization': `Bearer ${await getAccessToken()}`, 'content-type': 'application/json'
+            }
+        })
+    } catch (e) {
+        console.error("Couldn't add character to combat due to the following reason: ", e);
+    }
 }
 
 async function nextTurn() {
-    return fetch(location.origin + `/api/game/${getRoom()}/combat/turn`, {
-        method: "DELETE",
-        headers: {
-            'x-authorization': `Bearer ${await getAccessToken()}`, 'content-type': 'application/json'
-        }
-    })
+    try {
+        return fetch(location.origin + `/api/game/${getRoom()}/combat/turn`, {
+            method: "DELETE",
+            headers: {
+                'x-authorization': `Bearer ${await getAccessToken()}`, 'content-type': 'application/json'
+            }
+        })
+    } catch (e) {
+        console.error("Couldn't switch to next turn due to the following reason: ", e);
+    }
 }
 
 async function updateCombat(request) {

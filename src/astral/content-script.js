@@ -349,7 +349,11 @@ function handleMessage(request, sender, sendResponse) {
         }
         postChatMessage({ ...roll, ...getDecoration(request.type), characterName: request.character.name, whisper: request.whisper == WhisperType.YES });
     } else if (request.action == "rendered-roll") {
-        sendCustomEvent("AstralRenderedRoll", [request]);
+        if (request.attack_rolls.length == 0 && request.damage_rolls.length == 0 ) {
+            handleMessage(request.request, sender, sendResponse);
+        } else {
+            sendCustomEvent("AstralRenderedRoll", [request]);
+        }
     } else if (request.action === "update-combat") {
         sendCustomEvent("AstralUpdateCombat", [request]);
     }
