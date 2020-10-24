@@ -141,6 +141,18 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
         const min = character.getAbility("STR").score - parseInt(modifier);
         roll_properties.d20 = `1d20min${min}`
     }
+    // Wizard Bladesong Concentration Check Bonus
+    if (character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false) &&
+        rollType == "saving-throw" && ability == "CON") {
+        // Using confirm because the parent function is not async
+        if (confirm('Your Bladesong whispers: "Is this a Concentration Check?"')) {
+            const intelligence = character.getAbility("INT") || {mod: 0};
+            const mod = Math.max((parseInt(intelligence.mod) || 0), 1);
+            modifier = parseInt(modifier) + mod;
+            modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+            roll_properties["modifier"] = modifier;
+        }
+    }
     sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
 }
 
@@ -564,7 +576,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
     const action_name = $(".ct-sidebar__heading").text();
     const action_parent = $(".ct-sidebar__header-parent").text();
     const description = descriptionToString(".ct-action-detail__description");
-    const to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
+    let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
 
     if (action_name == "Superiority Dice" || action_parent == "Maneuvers") {
         const fighter_level = character.getClassLevel("Fighter");
@@ -622,6 +634,14 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.
         if (action_name.includes("Polearm Master - Bonus Attack") && character.hasClassFeature("Fighting Style: Great Weapon Fighting")) {
             damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
+        }
+        if (to_hit !== null && 
+            character.getSetting("great-weapon-master", false) &&
+            action_name.includes("Polearm Master - Bonus Attack")) {
+            to_hit += " - 5";
+            damages.push("10");
+            damage_types.push("Weapon Master");
+            character.mergeCharacterSettings({ "great-weapon-master": false });
         }
         if (action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
             || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
@@ -1820,7 +1840,7 @@ function documentModified(mutations, observer) {
     activateQuickRolls();
     if (character._features_needs_refresh && !character._features_refresh_warning_displayed) {
         character._features_refresh_warning_displayed = true;
-        alertify.alert("This is a new or recently leveled-up character sheet and Beyond20 needs to parse its information. <br/>Please select the <strong>'Features &amp; Traits'</strong> panel for Beyond20 to parse this character's features and populate the character-specific options.");
+        alertify.alert("This is a new or recently leveled-up character sheet and Beyond20 needs to parse its information. <br/>Please select the <strong>'Features &amp; Traits'</strong> panel on your DnDBeyond Character Sheet for Beyond20 to parse this character's features and populate the character-specific options.");
     }
 
     const pane = $(".ct-sidebar__pane-content > div");
