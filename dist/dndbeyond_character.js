@@ -2620,31 +2620,31 @@ class Beyond20RollRenderer {
             }
 
             // Ranger Ability Support;
-            let dmg_dice = "0";
-            for (let [dmgIndex, dmgType] of damage_types.entries()) {
-                if (dmgType == "Colossus Slayer") {
-                    const dmg = damages[dmgIndex].toString();
-                    if (dmg) {
-                        dmg_dice = await this.queryGeneric(request.name, `Add ${dmgType} damage ?`, { "0": "No", [dmg]: "Yes" }, "dmg_dice", ["0", dmg]);
-                        if (dmg_dice == "0") {
-                            damages.splice(dmgIndex, 1);
-                            damage_types.splice(dmgIndex, 1);
-                        }
-                    }
-                }
-            }
+            // let dmg_dice = "0";
+            // for (let [dmgIndex, dmgType] of damage_types.entries()) {
+            //     if (dmgType == "Colossus Slayer") {
+            //         const dmg = damages[dmgIndex].toString();
+            //         if (dmg) {
+            //             dmg_dice = await this.queryGeneric(request.name, `Add ${dmgType} damage ?`, { "0": "No", [dmg]: "Yes" }, "dmg_dice", ["0", dmg]);
+            //             if (dmg_dice == "0") {
+            //                 damages.splice(dmgIndex, 1);
+            //                 damage_types.splice(dmgIndex, 1);
+            //             }
+            //         }
+            //     }
+            // }
 
-            for (let [dmgIndex, dmgType] of critical_damage_types.entries()) {
-                if (dmgType == "Colossus Slayer") {
-                    const dmg = critical_damages[dmgIndex].toString();
-                    if (dmg) {
-                        if (dmg_dice == "0") {
-                            critical_damages.splice(dmgIndex, 1);
-                            critical_damage_types.splice(dmgIndex, 1);
-                        }
-                    }
-                }
-            }
+            // for (let [dmgIndex, dmgType] of critical_damage_types.entries()) {
+            //     if (dmgType == "Colossus Slayer") {
+            //         const dmg = critical_damages[dmgIndex].toString();
+            //         if (dmg) {
+            //             if (dmg_dice == "0") {
+            //                 critical_damages.splice(dmgIndex, 1);
+            //                 critical_damage_types.splice(dmgIndex, 1);
+            //             }
+            //         }
+            //     }
+            // }
 
             const has_versatile = damage_types.length > 1 && damage_types[1].includes("Two-Handed");
             for (let i = 0; i < (damages.length); i++) {
@@ -5295,8 +5295,12 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 character.mergeCharacterSettings({ "ranger-dread-ambusher": false });
             }
             if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer")) {
-                damages.push("1d8");
-                damage_types.push("Colossus Slayer");
+                // alertify.confirm("Colossus Slayer: Hunter's Prey", "Is the enemy you're targeting below its Hit Point Maximum?", function(){ alertify.success('Yes')}
+                    // , function(){ alertify.error('No')})
+                if (confirm("Colossus Slayer: Is the enemy you're targeting missing health?")) {
+                    damages.push("1d8");
+                    damage_types.push("Colossus Slayer");
+                }
             }
             if (character.hasClassFeature("Slayer’s Prey") &&
                 character.getSetting("ranger-slayers-prey", false)) {

@@ -420,8 +420,12 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 character.mergeCharacterSettings({ "ranger-dread-ambusher": false });
             }
             if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer")) {
-                damages.push("1d8");
-                damage_types.push("Colossus Slayer");
+                // alertify.confirm("Colossus Slayer: Hunter's Prey", "Is the enemy you're targeting below its Hit Point Maximum?", function(){ alertify.success('Yes')}
+                    // , function(){ alertify.error('No')})
+                if (confirm("Colossus Slayer: Is the enemy you're targeting missing health?")) {
+                    damages.push("1d8");
+                    damage_types.push("Colossus Slayer");
+                }
             }
             if (character.hasClassFeature("Slayer’s Prey") &&
                 character.getSetting("ranger-slayers-prey", false)) {
