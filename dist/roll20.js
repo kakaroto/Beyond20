@@ -2619,33 +2619,6 @@ class Beyond20RollRenderer {
                 damages[0] = damages[0].replace("d8", ttd_dice);
             }
 
-            // Ranger Ability Support;
-            // let dmg_dice = "0";
-            // for (let [dmgIndex, dmgType] of damage_types.entries()) {
-            //     if (dmgType == "Colossus Slayer") {
-            //         const dmg = damages[dmgIndex].toString();
-            //         if (dmg) {
-            //             dmg_dice = await this.queryGeneric(request.name, `Add ${dmgType} damage ?`, { "0": "No", [dmg]: "Yes" }, "dmg_dice", ["0", dmg]);
-            //             if (dmg_dice == "0") {
-            //                 damages.splice(dmgIndex, 1);
-            //                 damage_types.splice(dmgIndex, 1);
-            //             }
-            //         }
-            //     }
-            // }
-
-            // for (let [dmgIndex, dmgType] of critical_damage_types.entries()) {
-            //     if (dmgType == "Colossus Slayer") {
-            //         const dmg = critical_damages[dmgIndex].toString();
-            //         if (dmg) {
-            //             if (dmg_dice == "0") {
-            //                 critical_damages.splice(dmgIndex, 1);
-            //                 critical_damage_types.splice(dmgIndex, 1);
-            //             }
-            //         }
-            //     }
-            // }
-
             const has_versatile = damage_types.length > 1 && damage_types[1].includes("Two-Handed");
             for (let i = 0; i < (damages.length); i++) {
                 const roll = this._roller.roll(damages[i]);
@@ -3354,12 +3327,6 @@ function rollAttack(request, custom_roll_dice = "") {
         const damage_types = request["damage-types"];
         const crit_damages = request["critical-damages"];
         const crit_damage_types = request["critical-damage-types"];
-
-        // Ranger Ability Support;
-        for (let [dmgIndex, dmgType] of damage_types.entries()) {
-            if (damage_types[dmgIndex] == "Colossus Slayer")
-                damages[dmgIndex] = ROLL20_ADD_GENERIC_DAMAGE_DMG_QUERY.replace(/%dmgType%/, damage_types[dmgIndex]).replace(/%dmg%/, damages[dmgIndex]);
-        }
 
         dmg_props = damagesToRollProperties(damages, damage_types, crit_damages, crit_damage_types);
     }

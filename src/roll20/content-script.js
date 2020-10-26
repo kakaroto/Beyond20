@@ -352,12 +352,6 @@ function rollAttack(request, custom_roll_dice = "") {
         const crit_damages = request["critical-damages"];
         const crit_damage_types = request["critical-damage-types"];
 
-        // Ranger Ability Support;
-        for (let [dmgIndex, dmgType] of damage_types.entries()) {
-            if (damage_types[dmgIndex] == "Colossus Slayer")
-                damages[dmgIndex] = ROLL20_ADD_GENERIC_DAMAGE_DMG_QUERY.replace(/%dmgType%/, damage_types[dmgIndex]).replace(/%dmg%/, damages[dmgIndex]);
-        }
-
         dmg_props = damagesToRollProperties(damages, damage_types, crit_damages, crit_damage_types);
     }
     if (request.range !== undefined)

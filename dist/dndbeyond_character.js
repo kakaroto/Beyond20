@@ -2619,33 +2619,6 @@ class Beyond20RollRenderer {
                 damages[0] = damages[0].replace("d8", ttd_dice);
             }
 
-            // Ranger Ability Support;
-            // let dmg_dice = "0";
-            // for (let [dmgIndex, dmgType] of damage_types.entries()) {
-            //     if (dmgType == "Colossus Slayer") {
-            //         const dmg = damages[dmgIndex].toString();
-            //         if (dmg) {
-            //             dmg_dice = await this.queryGeneric(request.name, `Add ${dmgType} damage ?`, { "0": "No", [dmg]: "Yes" }, "dmg_dice", ["0", dmg]);
-            //             if (dmg_dice == "0") {
-            //                 damages.splice(dmgIndex, 1);
-            //                 damage_types.splice(dmgIndex, 1);
-            //             }
-            //         }
-            //     }
-            // }
-
-            // for (let [dmgIndex, dmgType] of critical_damage_types.entries()) {
-            //     if (dmgType == "Colossus Slayer") {
-            //         const dmg = critical_damages[dmgIndex].toString();
-            //         if (dmg) {
-            //             if (dmg_dice == "0") {
-            //                 critical_damages.splice(dmgIndex, 1);
-            //                 critical_damage_types.splice(dmgIndex, 1);
-            //             }
-            //         }
-            //     }
-            // }
-
             const has_versatile = damage_types.length > 1 && damage_types[1].includes("Two-Handed");
             for (let i = 0; i < (damages.length); i++) {
                 const roll = this._roller.roll(damages[i]);
@@ -5099,7 +5072,7 @@ function rollHitDie(multiclass, index) {
     });
 }
 
-function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, spell_group = null) {
+async function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false) {
     const prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
     const properties = propertyListToDict(prop_list);
     properties["Properties"] = properties["Properties"] || "";
@@ -5295,9 +5268,9 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 character.mergeCharacterSettings({ "ranger-dread-ambusher": false });
             }
             if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer")) {
-                // alertify.confirm("Colossus Slayer: Hunter's Prey", "Is the enemy you're targeting below its Hit Point Maximum?", function(){ alertify.success('Yes')}
-                    // , function(){ alertify.error('No')})
-                if (confirm("Colossus Slayer: Is the enemy you're targeting missing health?")) {
+                let use_colossus_slayer = "0";
+                use_colossus_slayer = await dndbeyondDiceRoller.queryGeneric("Colossus Slayer: Hunter's Prey", "Is the enemy you're targeting below its Hit Point Maximum?", { "0": "No", "1": "Yes" }, "use_colossus_slayer", ["0", "1"]);
+                if (use_colossus_slayer === "1") {
                     damages.push("1d8");
                     damage_types.push("Colossus Slayer");
                 }
