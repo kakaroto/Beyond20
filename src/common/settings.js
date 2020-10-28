@@ -545,7 +545,7 @@ const character_settings = {
     },
     "paladin-sacred-weapon": {
         "title": "Oath of Devotion: Sacred Weapon",
-        "description": "Add your Charisma Modifier to attack rolls",
+        "description": "Your charisma and deity guide your attacks",
         "type": "bool",
         "default": false
     },
