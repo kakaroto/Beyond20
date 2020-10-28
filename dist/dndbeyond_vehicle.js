@@ -716,7 +716,7 @@ const character_settings = {
         "description": "Your charisma and deity guide your attacks",
         "type": "bool",
         "default": false
-    },
+    }
 }
 
 function getStorage() {
