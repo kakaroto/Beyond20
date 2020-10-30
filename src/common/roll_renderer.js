@@ -334,11 +334,12 @@ class Beyond20RollRenderer {
             if (discord_error != undefined)
                 this._displayer.displayError("Beyond20 Discord Integration: " + discord_error);
         });
+        const hideResults = request.whisper === WhisperType.YES && this._settings['hide-results-on-whisper'];
 
         if (request.sendMessage && this._displayer.sendMessage)
             this._displayer.sendMessage(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
         else
-            this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);
+            !hideResults && this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);
 
         if (attack_rolls.length > 0) {
             return attack_rolls.find((r) => !r.isDiscarded());

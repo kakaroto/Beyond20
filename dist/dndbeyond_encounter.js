@@ -236,6 +236,13 @@ const options_list = {
         }
     },
 
+    "whisper-hide-results": {
+        "title": "Hide roll results on DDB",
+        "description": "Hides the dialog that show the roll results on DDB when using whisper",
+        "type": "bool",
+        "default": false
+    },
+
     "roll-type": {
         "short": "Type of Roll",
         "title": "Type of Roll (Advantange/Disadvantage)",
@@ -2128,11 +2135,12 @@ class Beyond20RollRenderer {
             if (discord_error != undefined)
                 this._displayer.displayError("Beyond20 Discord Integration: " + discord_error);
         });
+        const hideResult = request.whisper === WhisperType.YES && this._settings['whisper-hide-results'];
 
         if (request.sendMessage && this._displayer.sendMessage)
             this._displayer.sendMessage(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
         else
-            this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);
+            !hideResult && this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);
 
         if (attack_rolls.length > 0) {
             return attack_rolls.find((r) => !r.isDiscarded());

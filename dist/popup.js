@@ -282,6 +282,13 @@ const options_list = {
         }
     },
 
+    "whisper-hide-results": {
+        "title": "Hide roll results on DDB",
+        "description": "Hides the dialog that show the roll results on DDB when using whisper",
+        "type": "bool",
+        "default": false
+    },
+
     "roll-type": {
         "short": "Type of Roll",
         "title": "Type of Roll (Advantange/Disadvantage)",
