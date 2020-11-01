@@ -68,9 +68,9 @@ const options_list = {
         }
     },
 
-    "hide-results-on-whisper": {
-        "title": "Hide roll results on D&D Beyond",
-        "description": "Don't show the roll results on D&D Beyond when using whisper",
+    "hide-results-on-whisper-to-discord": {
+        "title": "Hide roll results on D&D Beyond when whispering to Discord",
+        "description": "Don't show the roll results on D&D Beyond when using whisper and sending results to \"D&D Beyond Dice Roller & Discord\"",
         "type": "bool",
         "default": false
     },

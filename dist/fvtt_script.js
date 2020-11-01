@@ -237,9 +237,9 @@ const options_list = {
         }
     },
 
-    "whisper-hide-results": {
-        "title": "Hide roll results on DDB",
-        "description": "Hides the dialog that show the roll results on DDB when using whisper",
+    "hide-results-on-whisper-to-discord": {
+        "title": "Hide roll results on D&D Beyond when whispering to Discord",
+        "description": "Don't show the roll results on D&D Beyond when using whisper and sending results to \"D&D Beyond Dice Roller & Discord\"",
         "type": "bool",
         "default": false
     },
@@ -1314,6 +1314,7 @@ function getDiscordChannel(settings, character) {
     return channels.find(c => c.active);
 }
 
+
 options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting;
 options_list["vtt-tab"]["set"] = setVTTTabSetting;
 options_list["vtt-tab"]["get"] = getVTTTabSetting;
@@ -2136,12 +2137,20 @@ class Beyond20RollRenderer {
             if (discord_error != undefined)
                 this._displayer.displayError("Beyond20 Discord Integration: " + discord_error);
         });
-        const hideResult = request.whisper === WhisperType.YES && this._settings['whisper-hide-results'];
+
+        // Hide the dialog showing the roll result on DDB when whispering to Discord (if the setting is on)
+        // Allowing the simulation of Fantasy Ground's 'Dice Tower' feature.
+        const isWhispering = request.whisper === WhisperType.YES;
+        const isSendingResultToDiscordOnly = this._settings["vtt-tab"] && this._settings["vtt-tab"].vtt === "dndbeyond";
+        const shouldHideResultsOnWhispersToDiscord = this._settings["hide-results-on-whisper-to-discord"];
+
+        const canPostHTML = !isWhispering || !isSendingResultToDiscordOnly || !shouldHideResultsOnWhispersToDiscord;
 
         if (request.sendMessage && this._displayer.sendMessage)
             this._displayer.sendMessage(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
-        else
-            !hideResult && this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);
+        else if (canPostHTML) {
+            this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);
+        }
 
         if (attack_rolls.length > 0) {
             return attack_rolls.find((r) => !r.isDiscarded());
