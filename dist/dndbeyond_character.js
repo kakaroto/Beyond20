@@ -710,6 +710,12 @@ const character_settings = {
         "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
         "type": "bool",
         "default": false
+    },
+    "paladin-sacred-weapon": {
+        "title": "Oath of Devotion: Sacred Weapon",
+        "description": "Your charisma and deity guide your attacks",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -4791,6 +4797,11 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damages.push("10");
             damage_types.push("Weapon Master");
             character.mergeCharacterSettings({ "great-weapon-master": false });
+        }
+        if (to_hit !== null && 
+            character.getSetting("paladin-sacred-weapon", false)) {
+            const charisma_attack_mod =  Math.max(character.getAbility("CHA").mod, 1);
+            to_hit += "+" + charisma_attack_mod;
         }
         if (character.getSetting("bloodhunter-crimson-rite", false) &&
             character.hasClassFeature("Crimson Rite")) {

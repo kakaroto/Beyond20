@@ -756,6 +756,12 @@ const character_settings = {
         "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
         "type": "bool",
         "default": false
+    },
+    "paladin-sacred-weapon": {
+        "title": "Oath of Devotion: Sacred Weapon",
+        "description": "Your charisma and deity guide your attacks",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -1568,6 +1574,10 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Enhanced Bond")) {
             e = createHTMLOption("wildfire-spirit-enhanced-bond", false, character_settings);
+            options.append(e);
+        }
+        if (response["actions"].includes("Channel Divinity: Sacred Weapon")) {
+            e = createHTMLOption("paladin-sacred-weapon", false, character_settings);
             options.append(e);
         }
 
