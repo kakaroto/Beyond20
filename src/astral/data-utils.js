@@ -16,16 +16,19 @@ const _getTokenFromDb = () => new Promise((resolve, reject) => {
         const cursorReq = objStore.openCursor();
 
         cursorReq.onsuccess = (event) => {
+            while (!cursorReq.result.key.startsWith("firebase:authUser")) {
+                cursorReq.result.continue();
+            }
             if (cursorReq.result.value && cursorReq.result.value.value && cursorReq.result.value.value.stsTokenManager) {
                 resolve(cursorReq.result.value.value.stsTokenManager);
             }
-            reject(event);
+            reject(new Error("Unable to aquire authentication token from DB"));
         };
 
-        cursorReq.onerror = reject;
+        cursorReq.onerror = () => reject(new Error("Unable to aquire authentication token from DB"));
     }
 
-    req.onerror = reject;
+    req.onerror = () => reject(new Error("Unable to aquire authentication token from DB"));
 });
 
 const jwtDecode = (token) => JSON.parse(atob(token.split(".")[1]));
@@ -98,3 +101,4 @@ const getUser = () => getReactData().props.pageProps.user;
 
 const getDungeonMasters = () => getReactData().props.pageProps.data.game.gameMasters;
 
+const isGM = () => getDungeonMasters().includes(getUser());

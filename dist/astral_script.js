@@ -2645,16 +2645,19 @@ const _getTokenFromDb = () => new Promise((resolve, reject) => {
         const cursorReq = objStore.openCursor();
 
         cursorReq.onsuccess = (event) => {
+            while (!cursorReq.result.key.startsWith("firebase:authUser")) {
+                cursorReq.result.continue();
+            }
             if (cursorReq.result.value && cursorReq.result.value.value && cursorReq.result.value.value.stsTokenManager) {
                 resolve(cursorReq.result.value.value.stsTokenManager);
             }
-            reject(event);
+            reject(new Error("Unable to aquire authentication token from DB"));
         };
 
-        cursorReq.onerror = reject;
+        cursorReq.onerror = () => reject(new Error("Unable to aquire authentication token from DB"));
     }
 
-    req.onerror = reject;
+    req.onerror = () => reject(new Error("Unable to aquire authentication token from DB"));
 });
 
 const jwtDecode = (token) => JSON.parse(atob(token.split(".")[1]));
@@ -2727,7 +2730,7 @@ const getUser = () => getReactData().props.pageProps.user;
 
 const getDungeonMasters = () => getReactData().props.pageProps.data.game.gameMasters;
 
-
+const isGM = () => getDungeonMasters().includes(getUser());
 
 class AstralDisplayer {
     sendMessage(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
@@ -2820,8 +2823,8 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-function template(rolls, col1 = "Name", col2 = "Roll") {
-    return `| ${col1} | ${col2} |
+function template(rolls) {
+    return `| | |
 | :--- | :--- |
 ${rolls.map(([key, value]) => {
     return `| ${capitalizeFirstLetter(key)} | ${value} |`
@@ -2930,6 +2933,34 @@ function parseDescription(request, description, {
 
 let chatIframe;
 
+$.fn.watch = function(property, callback) {
+    return $(this).each(function() {
+        var self = this;
+        var old_property_val = this[property];
+        var timer;
+ 
+        function watch() {
+           if($(self).data(property + '-watch-abort') == true) {
+              timer = clearInterval(timer);
+              $(self).data(property + '-watch-abort', null);
+              return;
+           }
+ 
+           if(self[property] != old_property_val) {
+              old_property_val = self[property];
+              callback.call(self);
+           }
+        }
+        timer = setInterval(watch, 700);
+    });
+ };
+ 
+ $.fn.unwatch = function(property) {
+    return $(this).each(function() {
+        $(this).data(property + '-watch-abort', true);
+    });
+ };
+
 function setReactElementValue(element, value) {
     const valueSetter = Object.getOwnPropertyDescriptor(element, 'value').set;
     const prototype = Object.getPrototypeOf(element);
@@ -2965,26 +2996,10 @@ async function speakAs(characterName) {
                     charListButton.click();
                 }
                 resolve(); 
-            } catch { reject(); } 
+            } catch { reject(new Error("Unable to set `speak as` character.")); } 
         })
     });
 }
-
-async function hookRollDamages(rollDamages, request) {
-    const originalRequest = request.request;
-    let a = null;
-    let timeout = 50;
-
-    // couldn't use a similar approach to roll20 due to React recreating the `a` elements, as such resorted to jQuery
-    chatIframe.on('click', `a[href='#${rollDamages}']`, (ev) => {
-        ev.preventDefault();
-        originalRequest.rollAttack = false;
-        originalRequest.rollDamage = true;
-        originalRequest.rollCritical = request.attack_rolls.some(r => !r.discarded && r["critical-success"])
-        roll_renderer.handleRollRequest(originalRequest);
-    })
-}
-
 
 function convertRollToText(roll, standout=false) {
     if (typeof (roll) === "string")
@@ -2992,23 +3007,37 @@ function convertRollToText(roll, standout=false) {
     const total = String(roll.total || 0);
     const prefix = (standout && !roll.discarded) ? '`' : '';
     const suffix = (standout && !roll.discarded) ? '`' : '';
-    let critfail = `1d0cr=${roll['critical-success'] ? '0' : '1'}fr=${roll['critical-failure'] ? '0' : '1'}`;
-    let result = `${prefix}!(${critfail}${formatPlusMod(total)})${suffix}`;
+    let critfail = `1d[${total}]cr=${roll['critical-success'] ? '1' : '0'}fr=${roll['critical-failure'] ? '1' : '0'}`;
+    let result = `${prefix}!(${critfail})${suffix}`;
     return result;
 };
 
+function stripRequestForAttackRoll(request) {
+    request.character = {
+        name: request.character.name,
+        type: request.character.type,
+        settings: request.character.settings
+    };
+    request.description = "";
+    request.properties = undefined;
+    request['item-type'] = undefined;
+    request.range = undefined;
+    request.preview = undefined;
+}
+
 
 async function handleRenderedRoll(request) {
-    const rolls = [];
-    if (request.source)
+    const originalRequest = request.request;
+    let rolls = [];
+    if (!originalRequest.rollDamage && request.source)
         rolls.push(["Source", request.source]);
-    if (Object.keys(request.attributes).length) {
+    if (!originalRequest.rollDamage && Object.keys(request.attributes).length) {
         rolls.push(...Object.entries(request.attributes));
     }
-    if (request.open)
-        rolls.push(["Description", parseDescription(request.description)]);
-
-    rolls.push(...request.roll_info);
+    if (!originalRequest.rollDamage && request.roll_info){
+        // the split is needed to remove some dupicate entries some which are 'Components' and 'Components: '
+        rolls.push(...request.roll_info.filter(([name, info]) => !request.attributes[name.split(": ")[0]]));
+    }
 
     let title = request.title;
     if (request.attack_rolls.length > 0) {
@@ -3023,21 +3052,32 @@ async function handleRenderedRoll(request) {
     rolls.push(...Object.entries(request.total_damages).map(([key, roll]) => ["Total " + key, convertRollToText(roll)]));
 
     let rollDamages = null;
-    const originalRequest = request.request;
     if (originalRequest.rollAttack && !originalRequest.rollDamage) {
-        rollDamages = `beyond20-rendered-roll-button-${Math.random()}`;
+        originalRequest.rollAttack = false;
+        originalRequest.rollDamage = true;
+        originalRequest.rollCritical = request.attack_rolls.some(r => !r.discarded && r["critical-success"]);
+        // Stripping out unrelated data for the roll
+        stripRequestForAttackRoll(originalRequest);
+        // Compressing and stripping the request to reduce the encoded version as much as possible to not exceed 2048 chars
+        rollDamages = `b20-rr-${LZString.compressToEncodedURIComponent(JSON.stringify(originalRequest))}`;
         rolls.push(["Roll Damages", `[\`Click\`](#${rollDamages})`]);
     }
     if (originalRequest.type === "initiative" && settings["initiative-tracker"]) {
         const initiative = request.attack_rolls.find((roll) => !roll.discarded);
         if (initiative)
-           rolls.push(["Initiative", `i!(d0cr=1fr=1 + ${initiative.total})`]);
+            rolls = [["Initiative", `i!(d0cr=1fr=1 + ${initiative.total})`]]
     }
     let message = template(rolls);
-    await postChatMessage({characterName: request.character, message, ...getDecoration(request.request.type), title, whisper: request.whisper == WhisperType.YES });
-    if (rollDamages) {
-        await hookRollDamages(rollDamages, request);
+
+    
+    if (!originalRequest.rollDamage && request.open && request.description) {
+        message = `${message}
+
+
+${parseDescription(request, request.description)}`
     }
+
+    await postChatMessage({characterName: request.character, message, ...getDecoration(request.request.type), title, whisper: request.whisper == WhisperType.YES });
 }
 
 async function postChatMessage({characterName, message, color, icon, title, whisper}) {
@@ -3049,6 +3089,7 @@ async function postChatMessage({characterName, message, color, icon, title, whis
 
         const recipients = whisper ? Object.fromEntries(getDungeonMasters().map(key => [key, true])) : undefined;
         if (message.length > 2048) {
+            console.warn(`Trimming message due to length exceeding 2048 characters. Initial message length is: ${message.length}.`)
             message = message.slice(0, 2045) + '...';
         }
         
@@ -3069,15 +3110,18 @@ async function postChatMessage({characterName, message, color, icon, title, whis
             }
         });
     } catch (e) {
-        console.error(e);
+        console.warn("Failed to send chat message for the following reason: ", e);
+        console.warn("Reverting to sending chat message using the chat input.")
+
         try {
             message = `**${title}**\n\n` + message;
 
             if (message.length > 2048) {
                 message = message.slice(0, 2045) + '...';
             }
-            
-            await speakAs(characterName);
+
+            try { await speakAs(characterName); } catch (e) {}
+
             sendChatText(message);
         } catch (e) {
             console.error(e);
@@ -3091,7 +3135,7 @@ async function updateHpBar({characterName, hp, maxHp, tempHp}) {
         const token = await getAccessToken();
         const character = await getCharacter(characterName);
         if (!character) {
-            console.warn(`No character found with name ${characterName}`)
+            console.warn(`Couldn't update the character hp due to the following reason: No character found with name ${characterName}`)
             return
         }
         return fetch(location.origin + `/api/game/${room}/character/${character}`, {
@@ -3109,7 +3153,7 @@ async function updateHpBar({characterName, hp, maxHp, tempHp}) {
             }
         });
     } catch (e) {
-        console.error(e);
+        console.error(`Couldn't update the character hp due to the following reason: `, e);
     }
 }
 
@@ -3163,44 +3207,56 @@ async function resetCombat() {
 }
 
 async function startCombat() {
-    const room = getRoom();
-    const token = await getAccessToken();
-    return fetch(location.origin + `/api/game/${room}/combat`, {
-        method: "POST",
-        headers: {
-            'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
-        }
-    });
+    try {
+        const room = getRoom();
+        const token = await getAccessToken();
+        return fetch(location.origin + `/api/game/${room}/combat`, {
+            method: "POST",
+            headers: {
+                'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
+            }
+        });
+    } catch (e) {
+        console.error("Couldn't start combat due to the following reason: ", e);
+    }
 }
 
 async function addCharacterToCombat({name, initiative}, weight) {
-    let character = await getCharacter(name);
-    if (!character) {
-        character = `custom-${Math.random().toString(36).substr(2, 6)}`
-    }
-
-    return fetch(location.origin + `/api/game/${getRoom()}/combat/actor/${character}`, {
-        method: "PUT",
-        body: JSON.stringify({
-            displayName: name, 
-            id: character,
-            visible: true, 
-            initiative,
-            weight
-        }),
-        headers: {
-            'x-authorization': `Bearer ${await getAccessToken()}`, 'content-type': 'application/json'
+    try {
+        let character = await getCharacter(name);
+        if (!character) {
+            character = `custom-${Math.random().toString(36).substr(2, 6)}`
         }
-    })
+
+        return fetch(location.origin + `/api/game/${getRoom()}/combat/actor/${character}`, {
+            method: "PUT",
+            body: JSON.stringify({
+                displayName: name, 
+                id: character,
+                visible: true, 
+                initiative,
+                weight
+            }),
+            headers: {
+                'x-authorization': `Bearer ${await getAccessToken()}`, 'content-type': 'application/json'
+            }
+        })
+    } catch (e) {
+        console.error("Couldn't add character to combat due to the following reason: ", e);
+    }
 }
 
 async function nextTurn() {
-    return fetch(location.origin + `/api/game/${getRoom()}/combat/turn`, {
-        method: "DELETE",
-        headers: {
-            'x-authorization': `Bearer ${await getAccessToken()}`, 'content-type': 'application/json'
-        }
-    })
+    try {
+        return fetch(location.origin + `/api/game/${getRoom()}/combat/turn`, {
+            method: "DELETE",
+            headers: {
+                'x-authorization': `Bearer ${await getAccessToken()}`, 'content-type': 'application/json'
+            }
+        })
+    } catch (e) {
+        console.error("Couldn't switch to next turn due to the following reason: ", e);
+    }
 }
 
 async function updateCombat(request) {
@@ -3224,6 +3280,15 @@ function disconnectAllEvents() {
         document.removeEventListener(...event);
 }
 
+
+function addRollHook() {
+    chatIframe.on('click', `a[href*='#b20-rr-']`, (ev) => {
+        ev.preventDefault();
+        console.log(ev);
+        roll_renderer.handleRollRequest(JSON.parse(LZString.decompressFromEncodedURIComponent(ev.currentTarget.hash.split('#b20-rr-')[1])));
+    })
+}
+
 var registered_events = [];
 registered_events.push(addCustomEventListener("AstralUpdateHPBar", updateHpBar));
 registered_events.push(addCustomEventListener("AstralChatMessage", postChatMessage));
@@ -3235,11 +3300,14 @@ registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents)
 function trySetDOMListeners() {
     if (window.$ && $("div[data-id=chat] iframe").length > 0) {
         chatIframe = $("div[data-id=chat] iframe").contents();
-        
-        // Added this since previews links will not work and they open a new tab
-        chatIframe.on('click', `a[href*='#beyond20-rendered-roll-button-']`, (ev) => {
-            ev.preventDefault();
+        addRollHook();
+        $("div[data-id=chat] iframe").watch('contentDocument', function() {
+            console.log(this);
+            chatIframe = $(this).contents();
+            addRollHook();
         })
+       
+        
     } else {
         setTimeout(trySetDOMListeners, 1000);
     }

@@ -1356,8 +1356,8 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-function template(rolls, col1 = "Name", col2 = "Roll") {
-    return `| ${col1} | ${col2} |
+function template(rolls) {
+    return `| | |
 | :--- | :--- |
 ${rolls.map(([key, value]) => {
     return `| ${capitalizeFirstLetter(key)} | ${value} |`
@@ -1815,7 +1815,11 @@ function handleMessage(request, sender, sendResponse) {
         }
         postChatMessage({ ...roll, ...getDecoration(request.type), characterName: request.character.name, whisper: request.whisper == WhisperType.YES });
     } else if (request.action == "rendered-roll") {
-        sendCustomEvent("AstralRenderedRoll", [request]);
+        if (request.attack_rolls.length == 0 && request.damage_rolls.length == 0 ) {
+            handleMessage(request.request, sender, sendResponse);
+        } else {
+            sendCustomEvent("AstralRenderedRoll", [request]);
+        }
     } else if (request.action === "update-combat") {
         sendCustomEvent("AstralUpdateCombat", [request]);
     }
@@ -1827,5 +1831,6 @@ chrome.runtime.sendMessage({ "action": "activate-icon" });
 chrome.runtime.sendMessage({ "action": "register-astral-tab" });
 injectPageScript(chrome.runtime.getURL("libs/alertify.min.js"));
 injectPageScript(chrome.runtime.getURL("libs/jquery-3.4.1.min.js"));
+injectPageScript(chrome.runtime.getURL("libs/lz-string.min.js"));
 injectPageScript(chrome.runtime.getURL('dist/astral_script.js'));
 sendCustomEvent("disconnect");
