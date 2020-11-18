@@ -92,6 +92,13 @@ async function rollSkillCheck(paneClass) {
     if (character.hasClassFeature("Silver Tongue") && (skill_name === "Deception" || skill_name === "Persuasion"))
         roll_properties.d20 = "1d20min10";
     
+    // Fey Wanderer Ranger - Otherworldly Glamour
+    if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
+        modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
+        modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+        roll_properties.modifier = modifier;
+    }
+
     if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
         const min = character.getAbility("STR").score - parseInt(modifier);
         // Check against reliable talent or silver tongue (should be an impossible state)
@@ -152,6 +159,11 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
             modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
             roll_properties["modifier"] = modifier;
         }
+    }
+    if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
+        modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
+        modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+        roll_properties["modifier"] = modifier;
     }
     sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
 }
