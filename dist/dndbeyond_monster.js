@@ -722,6 +722,12 @@ const character_settings = {
         "description": "Deal an extra 1d8 damage on damaging cantrips and weapon attacks",
         "type": "bool",
         "default": true
+    },
+    "sorcerer-trance-of-order": {
+        "title": "Sorcerer: Trance of Order",
+        "description": "Align your conciousness to the calculations of Mechanus. You enter a heightened state.",
+        "type": "bool",
+        "default": true
     }
 }
 

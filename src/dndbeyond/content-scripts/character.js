@@ -92,6 +92,10 @@ async function rollSkillCheck(paneClass) {
     if (character.hasClassFeature("Silver Tongue") && (skill_name === "Deception" || skill_name === "Persuasion"))
         roll_properties.d20 = "1d20min10";
     
+    // Sorcerer: Clockwork Soul - Trance of Order
+    if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
+    
     // Fey Wanderer Ranger - Otherworldly Glamour
     if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
         modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
@@ -165,6 +169,10 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
         modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
         roll_properties["modifier"] = modifier;
     }
+    // Sorcerer: Clockwork Soul - Trance of Order
+    if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
+
     sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
 }
 
@@ -538,6 +546,10 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
             character.mergeCharacterSettings({ "rogue-assassinate": false });
         }
+        // Sorcerer: Clockwork Soul - Trance of Order
+        if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
+
         sendRollWithCharacter("attack", damages[0], roll_properties);
     } else if (!force_display && (is_tool || is_instrument) && character._abilities.length > 0) {
         const proficiencies = {}
@@ -581,6 +593,9 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 roll_properties.d20 = "1d20";
                 // Set Reliable Talent flag if character has the feature and skill is proficient/expertise
                 if (character.hasClassFeature("Reliable Talent") && ["Proficiency", "Expertise"].includes(proficiency))
+                    roll_properties.d20 = "1d20min10";
+                // Sorcerer: Clockwork Soul - Trance of Order
+                if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
                     roll_properties.d20 = "1d20min10";
                 sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
             }
@@ -791,6 +806,9 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
             character.mergeCharacterSettings({ "rogue-assassinate": false });
         }
+        // Sorcerer: Clockwork Soul - Trance of Order
+        if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
         sendRollWithCharacter("attack", damages[0], roll_properties);
     } else {
         sendRollWithCharacter("action", 0, {
@@ -1074,6 +1092,9 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
             character.mergeCharacterSettings({ "rogue-assassinate": false });
         }
+        // Sorcerer: Clockwork Soul - Trance of Order
+        if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
 
         sendRollWithCharacter("spell-attack", damages[0] || "", roll_properties);
     } else {

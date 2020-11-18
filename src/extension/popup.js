@@ -217,6 +217,10 @@ function populateCharacter(response) {
             e = createHTMLOption("cleric-blessed-strikes", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Trance of Order")) {
+            e = createHTMLOption("sorcerer-trance-of-order", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }
