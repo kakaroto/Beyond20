@@ -181,7 +181,8 @@ function populateCharacter(response) {
             e = createHTMLOption("cleric-divine-strike", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Psychic Blades")) {
+        if (response["class-features"].includes("Psychic Blades") &&
+            Object.keys(response.classes).includes("Bard")) {
             e = createHTMLOption("bard-psychic-blades", false, character_settings);
             options.append(e);
         }

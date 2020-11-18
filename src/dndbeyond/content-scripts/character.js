@@ -435,7 +435,8 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
         }
         // Bard's Psychic blades;
         if (character.hasClassFeature("Psychic Blades") &&
-            character.getSetting("bard-psychic-blades", false)) {
+            character.getSetting("bard-psychic-blades", false) &&
+            character.hasClass("Bard")) {
             const bard_level = character.getClassLevel("Bard");
             let blades_dmg = "2d6";
             if (bard_level < 5)
