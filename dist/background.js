@@ -762,6 +762,12 @@ const character_settings = {
         "description": "Your charisma and deity guide your attacks",
         "type": "bool",
         "default": false
+    },
+    "cleric-blessed-strikes": {
+        "title": "Cleric: Blessed Strikes",
+        "description": "Deal an extra 1d8 damage on damaging cantrips and weapon attacks",
+        "type": "bool",
+        "default": true
     }
 }
 

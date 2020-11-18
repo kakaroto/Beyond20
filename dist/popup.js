@@ -762,6 +762,12 @@ const character_settings = {
         "description": "Your charisma and deity guide your attacks",
         "type": "bool",
         "default": false
+    },
+    "cleric-blessed-strikes": {
+        "title": "Cleric: Blessed Strikes",
+        "description": "Deal an extra 1d8 damage on damaging cantrips and weapon attacks",
+        "type": "bool",
+        "default": true
     }
 }
 
@@ -1579,6 +1585,9 @@ function populateCharacter(response) {
         }
         if (response["actions"].includes("Channel Divinity: Sacred Weapon")) {
             e = createHTMLOption("paladin-sacred-weapon", false, character_settings);
+        }
+        if (response["class-features"].includes("Blessed Strikes")) {
+            e = createHTMLOption("cleric-blessed-strikes", false, character_settings);
             options.append(e);
         }
 

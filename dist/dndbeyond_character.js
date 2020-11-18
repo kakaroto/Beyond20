@@ -716,6 +716,12 @@ const character_settings = {
         "description": "Your charisma and deity guide your attacks",
         "type": "bool",
         "default": false
+    },
+    "cleric-blessed-strikes": {
+        "title": "Cleric: Blessed Strikes",
+        "description": "Deal an extra 1d8 damage on damaging cantrips and weapon attacks",
+        "type": "bool",
+        "default": true
     }
 }
 
@@ -4896,6 +4902,12 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damages.push(cleric_level < 14 ? "1d8" : "2d8");
             damage_types.push("Divine Strike");
         }
+        // Cleric Blessed strikes
+        if (character.hasClassFeature("Blessed Strikes") &&
+            character.getSetting("cleric-blessed-strikes", false)) {
+            damages.push("1d8");
+            damage_types.push("Blessed Strikes");
+        }
         // Bard's Psychic blades;
         if (character.hasClassFeature("Psychic Blades") &&
             character.getSetting("bard-psychic-blades", false) &&
@@ -5191,6 +5203,13 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
                 damages.push("1d8");
                 damage_types.push("Radiant");
             }
+
+            // Cleric Blessed Strikes
+            if (character.hasClassFeature("Blessed Strikes") &&
+            character.getSetting("cleric-blessed-strikes", false)) {
+            damages.push("1d8");
+            damage_types.push("Blessed Strikes");
+        }
         }
 
         //Protector Aasimar: Radiant Soul Damage
@@ -5320,6 +5339,14 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
                     break;
                 }
             }
+        }
+        
+        //Cleric Blessed Strikes
+        if (character.hasClassFeature("Blessed Strikes") &&
+            character.getSetting("cleric-blessed-strikes", false) &&
+            level.includes("Cantrip")) {
+            damages.push("1d8");
+            damage_types.push("Blessed Strikes");
         }
 
         if (character.hasClassFeature("Enhanced Bond") &&
