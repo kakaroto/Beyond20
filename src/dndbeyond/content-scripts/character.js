@@ -699,7 +699,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             }
             if (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giants-might", false)) {
                 const fighter_level = character.getClassLevel("Fighter");
-                damages.push(fighter_level < 10 ? "1d6" : "1d8");
+                damages.push(fighter_level < 10 ? "1d6" : (fighter_level < 18 ? "1d8" : "1d10"));
                 damage_types.push("Giant’s Might");
             }
             if (character.getSetting("bloodhunter-crimson-rite", false) &&
