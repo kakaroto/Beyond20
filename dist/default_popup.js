@@ -728,7 +728,7 @@ const character_settings = {
         "title": "Sorcerer: Trance of Order",
         "description": "Align your conciousness to the calculations of Mechanus. You enter a heightened state.",
         "type": "bool",
-        "default": true
+        "default": false
     }
 }
 
