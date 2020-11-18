@@ -627,9 +627,9 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
-    "fighter-giant-might": {
-        "title": "Fighter: Giant Might",
-        "description": "Activate Giant Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
+    "fighter-giants-might": {
+        "title": "Fighter: Giant’s Might",
+        "description": "Activate Giant’s Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
         "type": "bool",
         "default": false
     },
@@ -4529,7 +4529,7 @@ async function rollSkillCheck(paneClass) {
     }
     if (ability == "STR" &&
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-            (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
+            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giants-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
     if (skill_name == "Acrobatics" && character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false)) {
@@ -4585,7 +4585,7 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
 
     if (ability == "STR" &&
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-            (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
+            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giants-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
     if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
@@ -4870,11 +4870,11 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damages.push(character._proficiency);
             damage_types.push("Hexblade's Curse");
         }
-        // Fighter's Giant Might;
-        if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)) {
+        // Fighter: Giant’s Might;
+        if (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giants-might", false)) {
             const fighter_level = character.getClassLevel("Fighter");
-            damages.push(fighter_level < 10 ? "1d6" : "1d8");
-            damage_types.push("Giant Might");
+            damages.push(fighter_level < 10 ? "1d6" : (fighter_level < 18 ? "1d8" : "1d10"));
+            damage_types.push("Giant’s Might");
         }
         // Cleric's Divine Strike;
         if (character.hasClassFeature("Divine Strike") &&
@@ -5006,7 +5006,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 }
                 if (ability == "STR" &&
                     ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-                        (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
+                        (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giants-might", false)))) {
                     roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
                 }
                 roll_properties.d20 = "1d20";
@@ -5134,10 +5134,10 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
                 damages.push(`1d6+${Math.floor(barbarian_level / 2)}`);
                 damage_types.push("Divine Fury");
             }
-            if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)) {
+            if (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giants-might", false)) {
                 const fighter_level = character.getClassLevel("Fighter");
                 damages.push(fighter_level < 10 ? "1d6" : "1d8");
-                damage_types.push("Giant Might");
+                damage_types.push("Giant’s Might");
             }
             if (character.getSetting("bloodhunter-crimson-rite", false) &&
             character.hasClassFeature("Crimson Rite")) {

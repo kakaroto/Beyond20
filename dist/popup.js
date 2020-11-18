@@ -673,9 +673,9 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
-    "fighter-giant-might": {
-        "title": "Fighter: Giant Might",
-        "description": "Activate Giant Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
+    "fighter-giants-might": {
+        "title": "Fighter: Giant’s Might",
+        "description": "Activate Giant’s Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
         "type": "bool",
         "default": false
     },
@@ -1536,8 +1536,8 @@ function populateCharacter(response) {
             e = createHTMLOption("rogue-assassinate", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Giant Might")) {
-            e = createHTMLOption("fighter-giant-might", false, character_settings);
+        if (response["class-features"].includes("Giant’s Might")) {
+            e = createHTMLOption("fighter-giants-might", false, character_settings);
             options.append(e);
         }
         if (response["class-features"].includes("Arcane Firearm")) {
