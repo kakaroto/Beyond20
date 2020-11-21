@@ -420,12 +420,8 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                 character.mergeCharacterSettings({ "ranger-dread-ambusher": false });
             }
             if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer")) {
-                let use_colossus_slayer = "0";
-                use_colossus_slayer = await dndbeyondDiceRoller.queryGeneric("Colossus Slayer: Hunter's Prey", "Is the enemy you're targeting below its Hit Point Maximum?", { "0": "No", "1": "Yes" }, "use_colossus_slayer", ["0", "1"]);
-                if (use_colossus_slayer === "1") {
-                    damages.push("1d8");
-                    damage_types.push("Colossus Slayer");
-                }
+                damages.push("1d8");
+                damage_types.push("Colossus Slayer");
             }
             if (character.hasClassFeature("Slayer’s Prey") &&
                 character.getSetting("ranger-slayers-prey", false)) {
