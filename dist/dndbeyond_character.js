@@ -728,6 +728,12 @@ const character_settings = {
         "description": "Align your conciousness to the calculations of Mechanus. You enter a heightened state.",
         "type": "bool",
         "default": false
+    },
+    "druid-symbiotic-entity": {
+        "title": "Circle of Spores: Symbiotic Entity",
+        "description": "Your symbiotic entity lends its power to your melee weapon strikes.",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -4953,6 +4959,13 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             const mod = parseInt(intelligence.mod) || 0;
             damages.push(String(Math.max(mod, 1)));
             damage_types.push("Bladesong");
+        }
+
+        // Druid: Circle of Spores - Symbiotic Entity
+        if (character.hasClassFeature("Symbiotic Entity") && character.getSetting("druid-symbiotic-entity", false) &&
+            properties["Attack Type"] === "Melee") {
+                damages.push("1d6");
+                damage_types.push("Symbiotic Entity");
         }
 
         let critical_limit = 20;

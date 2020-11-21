@@ -774,6 +774,12 @@ const character_settings = {
         "description": "Align your conciousness to the calculations of Mechanus. You enter a heightened state.",
         "type": "bool",
         "default": false
+    },
+    "druid-symbiotic-entity": {
+        "title": "Circle of Spores: Symbiotic Entity",
+        "description": "Your symbiotic entity lends its power to your melee weapon strikes.",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -1598,6 +1604,10 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Trance of Order")) {
             e = createHTMLOption("sorcerer-trance-of-order", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Symbiotic Entity")) {
+            e = createHTMLOption("druid-symbiotic-entity", false, character_settings);
             options.append(e);
         }
 

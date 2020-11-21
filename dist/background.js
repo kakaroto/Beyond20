@@ -774,6 +774,12 @@ const character_settings = {
         "description": "Align your conciousness to the calculations of Mechanus. You enter a heightened state.",
         "type": "bool",
         "default": false
+    },
+    "druid-symbiotic-entity": {
+        "title": "Circle of Spores: Symbiotic Entity",
+        "description": "Your symbiotic entity lends its power to your melee weapon strikes.",
+        "type": "bool",
+        "default": false
     }
 }
 

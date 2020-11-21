@@ -221,6 +221,10 @@ function populateCharacter(response) {
             e = createHTMLOption("sorcerer-trance-of-order", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Symbiotic Entity")) {
+            e = createHTMLOption("druid-symbiotic-entity", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }

@@ -492,6 +492,13 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damage_types.push("Bladesong");
         }
 
+        // Druid: Circle of Spores - Symbiotic Entity
+        if (character.hasClassFeature("Symbiotic Entity") && character.getSetting("druid-symbiotic-entity", false) &&
+            properties["Attack Type"] === "Melee") {
+                damages.push("1d6");
+                damage_types.push("Symbiotic Entity");
+        }
+
         let critical_limit = 20;
         if (character.hasAction("Channel Divinity: Legendary Strike") &&
             character.getSetting("paladin-legendary-strike", false))
