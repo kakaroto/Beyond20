@@ -4968,6 +4968,12 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 damage_types.push("Symbiotic Entity");
         }
 
+        // Warlock: Genie Patron - Genie's Wrath
+        if (character.hasClassFeature("Genie’s Vessel")) {
+            damages.push(character._proficiency);
+            damage_types.push("Genie's Wrath");
+        }
+
         let critical_limit = 20;
         if (character.hasAction("Channel Divinity: Legendary Strike") &&
             character.getSetting("paladin-legendary-strike", false))
@@ -5253,6 +5259,12 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             damage_types.push("Radiant Soul");
         }
 
+        // Warlock: Genie Patron - Genie's Wrath
+        if (character.hasClassFeature("Genie’s Vessel")) {
+            damages.push(character._proficiency);
+            damage_types.push("Genie's Wrath");
+        }
+
         const roll_properties = buildAttackRoll(character,
             "action",
             action_name,
@@ -5474,6 +5486,12 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
                     break;
                 }
             }
+        }
+
+        // Warlock: Genie Patron - Genie's Wrath
+        if (character.hasClassFeature("Genie’s Vessel") && to_hit != null) {
+            damages.push(character._proficiency);
+            damage_types.push("Genie's Wrath");
         }
 
         // We can then add temp healing types;
