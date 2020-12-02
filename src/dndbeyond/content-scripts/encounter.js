@@ -1,7 +1,7 @@
 console.log("Beyond20: D&D Beyond Encounter module loaded.");
 
 var settings = getDefaultSettings();
-var last_monster_name = "";
+var last_monster_name = null;
 var last_combat = null;
 var character = null;
 
@@ -12,19 +12,22 @@ function documentModified(mutations, observer) {
         return;
     }
 
-    DigitalDiceManager.updateNotifications();
     const monster = $(".encounter-details-monster-summary-info-panel,.encounter-details__content-section--monster-stat-block,.combat-tracker-page__content-section--monster-stat-block,.monster-details-modal__body");
     const monster_name = monster.find(".mon-stat-block__name").text();
     if (settings["sync-combat-tracker"]) {
         updateCombatTracker();
     }
     console.log("Doc modified, new mon : ", monster_name, " !=? ", last_monster_name);
-    if (monster_name == last_monster_name)
-        return;
-    last_monster_name = monster_name;
-    removeRollButtons();
-    character = new Monster("Monster", null, settings);
-    character.parseStatBlock(monster);
+    if (monster_name !== last_monster_name) {
+        last_monster_name = monster_name;
+        removeRollButtons();
+        character = new Monster("Monster", null, settings);
+        character.parseStatBlock(monster);
+    }
+    const customRoll = DigitalDiceManager.updateNotifications();
+    if (customRoll) {
+        dndbeyondDiceRoller.sendCustomDigitalDice(character, customRoll);
+    }
 }
 
 function updateCombatTracker() {

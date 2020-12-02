@@ -219,7 +219,7 @@ async function sendRoll(character, rollType, fallback, args) {
     if (advantage == RollType.QUERY)
         advantage = await dndbeyondDiceRoller.queryAdvantage(args.name || rollType);
     // Default advantage/whisper would get overriden if (they are part of provided args;
-    req = {
+    const req = {
         action: "roll",
         character: character.getDict(),
         type: rollType,

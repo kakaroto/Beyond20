@@ -19,18 +19,27 @@ class DigitalDice {
         }
         this._notificationId = null;
     }
+    get name() {
+        return this._name;
+    }
+    get rolls() {
+        return this._rolls;
+    }
     async roll() {
         return DigitalDiceManager.rollDigitalDice(this);
     }
-    async parseNotification(myId) {
+    /**
+     * 
+     * @param {String} myId        Notification ID for parsing the results of this roll
+     * @param {Boolean} passive    If set, do not modify the notification and calculate the total right away
+     */
+    parseNotification(myId, passive=false) {
         this._notificationId = myId;
 
         const result = $(`#${myId} .dice_result`);
         this._myId = myId;
         this._myResult = result;
         
-        result.find(".dice_result__info__title .dice_result__info__rolldetail").text("Beyond 20: ")
-        result.find(".dice_result__info__title .dice_result__rolltype").text(this._name);
         const breakdown = result.find(".dice_result__info__results .dice_result__info__breakdown").text();
         const dicenotation = result.find(".dice_result__info__dicenotation").text();
 
@@ -50,7 +59,15 @@ class DigitalDice {
                 }
             }
         }
-
+        if (passive) {
+            this._dice.forEach(dice => dice.calculateTotal());
+            this._rolls.forEach(roll => roll.calculateTotal());
+        } else {
+            result.find(".dice_result__info__title .dice_result__info__rolldetail").text("Beyond 20: ")
+            result.find(".dice_result__info__title .dice_result__rolltype").text(this._name);
+        }
+    }
+    async handleCompletedRoll() {
         for (let dice of this._dice)
             await dice.handleModifiers();
         this._rolls.forEach(roll => roll.calculateTotal());
@@ -92,13 +109,16 @@ class DigitalDiceManager {
         const newNotification = notifications.find(n => !this._notificationIds.includes(n))
         this._notificationIds = notifications;
         if (!newNotification) return;
-        this._handleNewNotification(newNotification);
+        return this._handleNewNotification(newNotification);
     }
     static _handleNewNotification(notification) {
         const pendingRoll = this._pendingRolls.shift();
-        if (!pendingRoll) return; // TODO
+        if (!pendingRoll) {
+            return this._parseCustomRoll(notification);
+        }
         const [roll, resolver] = pendingRoll;
-        roll.parseNotification(notification).then(resolver);
+        roll.parseNotification(notification)
+        roll.handleCompletedRoll().then(resolver);
         if (this._pendingRolls.length > 0) {
             const nextRoll = this._pendingRolls[0][0];
             this._submitRoll(nextRoll);
@@ -121,6 +141,14 @@ class DigitalDiceManager {
         if (diceRolled > 0) {
             this._makeRoll();
         }
+    }
+    static _parseCustomRoll(notification) {
+        const name = $(`#${notification} .dice_result .dice_result__info__title`).text();
+        const formula = $(`#${notification} .dice_result .dice_result__info__dicenotation`).text();
+        const roll = new DNDBRoll(formula)
+        const digitalRoll = new DigitalDice(name, [roll])
+        digitalRoll.parseNotification(notification, true);
+        return digitalRoll;
     }
 }
 DigitalDiceManager._pendingRolls = [];

@@ -1642,6 +1642,10 @@ class DNDBDice {
         // Restore drop/keep case.includes(amount) of rerolls;
         this._dk.amount = dk_amount;
 
+        return this.calculateTotal();
+    }
+    calculateTotal() {
+        
         // Accumulate total based on non discarded rolls;
         this._total = this._rolls.reduce((acc, roll) => {
             return acc + (roll.discarded ? 0 : roll.roll);
@@ -2196,6 +2200,26 @@ class Beyond20RollRenderer {
         const roll = this.createRoll(dice, data);
         await this._roller.resolveRolls(title, [roll]);
         return this.postDescription(request, title, null, {}, null, [roll]);
+    }
+    async sendCustomDigitalDice(character, digitalRoll) {
+        let whisper = parseInt(character.getGlobalSetting("whisper-type", WhisperType.NO));
+        const whisper_monster = parseInt(character.getGlobalSetting("whisper-type-monsters", WhisperType.YES));
+        let is_monster = character.type() == "Monster" || character.type() == "Vehicle";
+        if (is_monster && whisper_monster != WhisperType.NO)
+            whisper = whisper_monster;
+        if (whisper === WhisperType.QUERY)
+            whisper = await this.queryWhisper(args.name || rollType, is_monster);
+        // Default advantage/whisper would get overriden if (they are part of provided args;
+        const request = {
+            action: "roll",
+            character: character.getDict(),
+            type: "custom",
+            roll: digitalRoll.rolls[0].formula,
+            advantage: RollType.NORMAL,
+            whisper: whisper,
+            sendMessage: true
+        }
+        return this.postDescription(request, digitalRoll.name, null, {}, null, digitalRoll.rolls);
     }
 
     async rollD20(request, title, data, modifier="") {

@@ -226,6 +226,10 @@ class DNDBDice {
         // Restore drop/keep case.includes(amount) of rerolls;
         this._dk.amount = dk_amount;
 
+        return this.calculateTotal();
+    }
+    calculateTotal() {
+        
         // Accumulate total based on non discarded rolls;
         this._total = this._rolls.reduce((acc, roll) => {
             return acc + (roll.discarded ? 0 : roll.roll);

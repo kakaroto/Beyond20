@@ -1838,7 +1838,6 @@ function documentModified(mutations, observer) {
         return;
     }
 
-    DigitalDiceManager.updateNotifications();
     character.updateInfo();
     injectRollToSpellAttack();
     injectRollToSnippets();
@@ -1849,6 +1848,12 @@ function documentModified(mutations, observer) {
         alertify.alert("This is a new or recently leveled-up character sheet and Beyond20 needs to parse its information. <br/>Please select the <strong>'Features &amp; Traits'</strong> panel on your DnDBeyond Character Sheet for Beyond20 to parse this character's features and populate the character-specific options.");
     }
 
+
+    const customRoll = DigitalDiceManager.updateNotifications();
+    if (customRoll) {
+        dndbeyondDiceRoller.sendCustomDigitalDice(character, customRoll);
+    }
+    
     const pane = $(".ct-sidebar__pane-content > div");
     if (pane.length > 0) {
         for (let div = 0; div < pane.length; div++) {
