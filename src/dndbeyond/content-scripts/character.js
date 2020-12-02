@@ -1838,6 +1838,7 @@ function documentModified(mutations, observer) {
         return;
     }
 
+    DigitalDiceManager.updateNotifications();
     character.updateInfo();
     injectRollToSpellAttack();
     injectRollToSnippets();

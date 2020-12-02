@@ -238,7 +238,7 @@ async function sendRoll(character, rollType, fallback, args) {
     if (character.getGlobalSetting("weapon-force-critical", false))
         req["critical-limit"] = 1;
 
-    if (character.getGlobalSetting("use-digital-dice", false) && DigitalDice.isEnabled()) {
+    if (character.getGlobalSetting("use-digital-dice", false) && DigitalDiceManager.isEnabled()) {
         req.sendMessage = true;
         dndbeyondDiceRoller.handleRollRequest(req);
     } else {

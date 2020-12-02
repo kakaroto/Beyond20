@@ -12,6 +12,7 @@ function documentModified(mutations, observer) {
         return;
     }
 
+    DigitalDiceManager.updateNotifications();
     const monster = $(".encounter-details-monster-summary-info-panel,.encounter-details__content-section--monster-stat-block,.combat-tracker-page__content-section--monster-stat-block,.monster-details-modal__body");
     const monster_name = monster.find(".mon-stat-block__name").text();
     if (settings["sync-combat-tracker"]) {

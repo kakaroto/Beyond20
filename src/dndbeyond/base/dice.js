@@ -75,7 +75,7 @@ class DNDBRoller {
         return new DNDBRoll(formula, data);
     }
     async resolveRolls(name, rolls) {
-        if (dndbeyondDiceRoller._settings['use-digital-dice'] && DigitalDice.isEnabled()) {
+        if (dndbeyondDiceRoller._settings['use-digital-dice'] && DigitalDiceManager.isEnabled()) {
             const digital = new DigitalDice(name, rolls);
             return digital.roll();
         } else {

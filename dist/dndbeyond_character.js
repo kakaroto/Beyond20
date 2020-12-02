@@ -2669,48 +2669,13 @@ class DigitalDice {
                 this._rolls.push(...fakeRoll.dice[0]._rolls);
             }
         }
-        this._notificationIds = this._getNotificationIds();
-    }
-
-    clear() {
-        $(".dice-toolbar__dropdown-die").click()
-    }
-    clearResults() {
-        $(".dice_notification_controls__clear").click()
-    }
-    rollDice(amount, type) {
-        const dice = $(`.dice-die-button[data-dice="${type}"]`)
-        for (let i = 0; i < amount; i++)
-            dice.click()
-        return amount || 0;
-    }
-    _makeRoll() {
-        this._notificationIds = this._getNotificationIds();
-        $(".dice-toolbar__roll").click();
-    }
-    static isEnabled() {
-        const toolbar = $(".dice-toolbar");
-        return toolbar.length > 0;
+        this._notificationId = null;
     }
     async roll() {
-        this.clear();
-        let diceRolled = 0;
-        for (let dice of this._dice)
-            diceRolled += this.rollDice(dice.amount, `d${dice.faces}`);
-        if (diceRolled > 0) {
-            this._makeRoll();
-            return this.result();
-        }
+        return DigitalDiceManager.rollDigitalDice(this);
     }
-    _getNotificationIds() {
-        const notifications = $(".noty_bar").toArray();
-        return notifications.map(n => n.id);
-    }
-    lookForResult() {
-        const notifications = this._getNotificationIds();
-        const myId = notifications.find(n => !this._notificationIds.includes(n))
-        console.log("Found my results : ", myId)
-        if (!myId) return false;
+    async parseNotification(myId) {
+        this._notificationId = myId;
 
         const result = $(`#${myId} .dice_result`);
         this._myId = myId;
@@ -2737,21 +2702,81 @@ class DigitalDice {
                 }
             }
         }
-        this._notificationIds = notifications;
-        return true;
-    }
-    async result() {
-        while (!this.lookForResult())
-            await new Promise(r => setTimeout(r, 500));
+
         for (let dice of this._dice)
             await dice.handleModifiers();
         this._rolls.forEach(roll => roll.calculateTotal());
         
         this._myResult.find(".dice_result__total-result").text(this._rolls[0].total);
         this._myResult.find(".dice_result__info__results .dice_result__info__breakdown").text(this._rolls[0].formula)
-        this._myResult.find(".dice_result__info__dicenotation").text(`${this._rolls.length} roll${this._rolls.length > 1 ? 's' : ''} sent to VTT`).prepend(E.img({ src: chrome.extension.getURL("images/icons/icon32.png") }))
+        this._myResult.find(".dice_result__info__dicenotation").text(`${this._rolls.length} roll${this._rolls.length > 1 ? 's' : ''} sent to VTT`)
+            .prepend(E.img({ src: chrome.extension.getURL("images/icons/icon32.png") }))
+    }
+
+}
+
+class DigitalDiceManager {
+    static clear() {
+        $(".dice-toolbar__dropdown-die").click()
+    }
+    static clearResults() {
+        $(".dice_notification_controls__clear").click()
+    }
+    static rollDice(amount, type) {
+        const dice = $(`.dice-die-button[data-dice="${type}"]`)
+        for (let i = 0; i < amount; i++)
+            dice.click()
+        return amount || 0;
+    }
+    static _makeRoll() {
+        $(".dice-toolbar__roll").click();
+    }
+    static isEnabled() {
+        const toolbar = $(".dice-toolbar");
+        return toolbar.length > 0;
+    }
+    static _getNotificationIds() {
+        const notifications = $(".noty_bar").toArray();
+        return notifications.map(n => n.id);
+    }
+    static updateNotifications() {
+        const notifications = this._getNotificationIds();
+        const newNotification = notifications.find(n => !this._notificationIds.includes(n))
+        this._notificationIds = notifications;
+        if (!newNotification) return;
+        this._handleNewNotification(newNotification);
+    }
+    static _handleNewNotification(notification) {
+        const pendingRoll = this._pendingRolls.shift();
+        if (!pendingRoll) return; // TODO
+        const [roll, resolver] = pendingRoll;
+        roll.parseNotification(notification).then(resolver);
+        if (this._pendingRolls.length > 0) {
+            const nextRoll = this._pendingRolls[0][0];
+            this._submitRoll(nextRoll);
+        }
+    }
+    static async rollDigitalDice(roll) {
+        let resolver = null;
+        const promise = new Promise(r => resolver = r);
+        this._pendingRolls.push([roll, resolver]);
+        if (this._pendingRolls.length === 1) {
+            this._submitRoll(roll);
+        }
+        return promise;
+    }
+    static _submitRoll(roll) {
+        this.clear();
+        let diceRolled = 0;
+        for (let dice of roll._dice)
+            diceRolled += this.rollDice(dice.amount, `d${dice.faces}`);
+        if (diceRolled > 0) {
+            this._makeRoll();
+        }
     }
 }
+DigitalDiceManager._pendingRolls = [];
+DigitalDiceManager._notificationIds = DigitalDiceManager._getNotificationIds()
 /*
 from roll_renderer import Beyond20RollRenderer, Beyond20BaseRoll;
 from settings import getDefaultSettings, WhisperType;
@@ -2829,7 +2854,7 @@ class DNDBRoller {
         return new DNDBRoll(formula, data);
     }
     async resolveRolls(name, rolls) {
-        if (dndbeyondDiceRoller._settings['use-digital-dice'] && DigitalDice.isEnabled()) {
+        if (dndbeyondDiceRoller._settings['use-digital-dice'] && DigitalDiceManager.isEnabled()) {
             const digital = new DigitalDice(name, rolls);
             return digital.roll();
         } else {
@@ -3175,7 +3200,7 @@ async function sendRoll(character, rollType, fallback, args) {
     if (character.getGlobalSetting("weapon-force-critical", false))
         req["critical-limit"] = 1;
 
-    if (character.getGlobalSetting("use-digital-dice", false) && DigitalDice.isEnabled()) {
+    if (character.getGlobalSetting("use-digital-dice", false) && DigitalDiceManager.isEnabled()) {
         req.sendMessage = true;
         dndbeyondDiceRoller.handleRollRequest(req);
     } else {
@@ -6306,6 +6331,7 @@ function documentModified(mutations, observer) {
         return;
     }
 
+    DigitalDiceManager.updateNotifications();
     character.updateInfo();
     injectRollToSpellAttack();
     injectRollToSnippets();
