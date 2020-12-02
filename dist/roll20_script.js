@@ -226,7 +226,8 @@ function updateCombatTracker(combat) {
 
 
 function checkForOGL() {
-    const isOGL = atob(customcharsheet_html).includes(`<rolltemplate class="sheet-rolltemplate-simple">`);
+    const templates = customcharsheet_data.rolltemplates || {};
+    const isOGL = ["simple", "atk", "atkdmg", "dmg", "spell", "traits"].every(template => !!templates[template]);
     $("#isOGL").remove();
     document.body.append($(`<input type="hidden" value="${isOGL ? 1 : 0}" name="isOGL" id="isOGL">`)[0]);
 }
@@ -242,7 +243,7 @@ registered_events.push(addCustomEventListener("CombatTracker", updateCombatTrack
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
 
 // Hack for VTT ES making every script load before Roll20 loads
-if (window.$ !== undefined && typeof(customcharsheet_html) !== "undefined")
+if (window.$ !== undefined && typeof(customcharsheet_data) !== "undefined")
     checkForOGL();
 else
     window.addEventListener("DOMContentLoaded", () => setTimeout(checkForOGL, 1000));
