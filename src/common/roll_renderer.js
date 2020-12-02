@@ -335,10 +335,19 @@ class Beyond20RollRenderer {
                 this._displayer.displayError("Beyond20 Discord Integration: " + discord_error);
         });
 
+        // Hide the dialog showing the roll result on DDB when whispering to Discord (if the setting is on)
+        // Allowing the simulation of Fantasy Ground's 'Dice Tower' feature.
+        const isWhispering = request.whisper === WhisperType.YES;
+        const isSendingResultToDiscordOnly = this._settings["vtt-tab"] && this._settings["vtt-tab"].vtt === "dndbeyond";
+        const shouldHideResultsOnWhispersToDiscord = this._settings["hide-results-on-whisper-to-discord"];
+
+        const canPostHTML = !isWhispering || !isSendingResultToDiscordOnly || !shouldHideResultsOnWhispersToDiscord;
+
         if (request.sendMessage && this._displayer.sendMessage)
             this._displayer.sendMessage(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
-        else
+        else if (canPostHTML) {
             this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);
+        }
 
         if (attack_rolls.length > 0) {
             return attack_rolls.find((r) => !r.isDiscarded());

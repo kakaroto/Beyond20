@@ -236,6 +236,13 @@ const options_list = {
         }
     },
 
+    "hide-results-on-whisper-to-discord": {
+        "title": "Hide roll results on D&D Beyond when whispering to Discord",
+        "description": "Don't show the roll results on D&D Beyond when using whisper and sending results to \"D&D Beyond Dice Roller & Discord\"",
+        "type": "bool",
+        "default": false
+    },
+
     "roll-type": {
         "short": "Type of Roll",
         "title": "Type of Roll (Advantange/Disadvantage)",
@@ -1311,6 +1318,7 @@ function getDiscordChannel(settings, character) {
         return channels;
     return channels.find(c => c.active);
 }
+
 
 options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting;
 options_list["vtt-tab"]["set"] = setVTTTabSetting;
