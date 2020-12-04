@@ -3835,7 +3835,7 @@ class Monster extends CharacterBase {
         if (hit_idx > 0)
             hit = description.slice(hit_idx);
         // Using match with global modifier then map to regular match because RegExp.matchAll isn't available on every browser
-        const damage_regexp = new RegExp(/([\w]* )(?:([0-9]+))?(?: *\(?([0-9]*d[0-9]+(?:\s*[-+]\s*[0-9]+)?(?: plus [^\)]+)?)\)?)? ([\w ]+?) damage/)
+        const damage_regexp = new RegExp(/([\w]* )(?:(\d+)[^d])?(?: *\(?(\d*d\d+(?:\s*[-+]\s*\d+)?(?: plus [^\)]+)?)\)?)? ([\w ]+?) damage/)
         const damage_matches = reMatchAll(damage_regexp, hit) || [];
         const damages = [];
         const damage_types = [];
