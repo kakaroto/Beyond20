@@ -1140,9 +1140,13 @@ function handleCustomText(paneClass) {
     // Look for all the roll orders
     for (const rollOrder of rollOrderTypes) {
         // Use global, multiline and dotall flags
-        const regexp = new RegExp(`\\[\\[${rollOrder}\\]\\]\\s*(.+?)\\s*\\[\\[/${rollOrder}\\]\\]`, "gms");
-        const matches = [...notes.matchAll(regexp), ...description.matchAll(regexp)];
-        customRolls[rollOrder] = matches.map(([match, content]) => content)
+        try {
+            const regexp = new RegExp(`\\[\\[${rollOrder}\\]\\]\\s*(.+?)\\s*\\[\\[/${rollOrder}\\]\\]`, "gms");
+            const matches = [...notes.matchAll(regexp), ...description.matchAll(regexp)];
+            customRolls[rollOrder] = matches.map(([match, content]) => content)
+        } catch (err) {
+            // Ignore errors that might be caused by DOTALL regexp flag not being supported by the browser
+        }
     }
     
     return customRolls;
