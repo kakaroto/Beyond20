@@ -3442,6 +3442,20 @@ function buildAttackRoll(character, attack_source, name, description, properties
                     crit_damage_types.push(damage_types[i]);
                 }
             }
+            if (character.hasFeat("Piercer")) {
+                const piercer_feat_regex = /[0-9]+/g;
+                for (i = 0; i < damage_types.length; i++) {
+                    if (damage_types[i].includes("Piercing")){
+                        let piercer_damage_array = [damages[i]];
+                        let piercer_damage = damagesToCrits(character, piercer_damage_array);
+                        if (piercer_damage[0].length > 0) {    
+                            piercer_damage[0].replace(piercer_feat_regex,1);
+                            crit_damages.push(piercer_damage[0]);
+                            crit_damage_types.push("Piercer Feat");
+                        }
+                    }
+                }
+            }
             if (brutal > 0) {
                 const rule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
                 let highest_dice = 0;
