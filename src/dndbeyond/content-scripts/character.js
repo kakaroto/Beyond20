@@ -846,10 +846,11 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
 
         if (character.hasClassFeature("Alchemical Savant") &&
             character.getSetting("artificer-alchemical-savant", false) &&
-            damages.length) {
+            damages.length > 0) {
+            const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
             for (let i = 0; i < damages.length; i++){
-                if (damage_types[i] === "Acid" || damage_types[i] === "Fire" ||
-                    damage_types[i] === "Necrotic" || damage_types[i] === "Poison") {
+                if ((damage_types[i] === "Acid" || damage_types[i] === "Fire" || damage_types[i] === "Necrotic" || damage_types[i] === "Poison") &&
+                    alchemical_savant_regex.test(damages[i])) {
                     damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
                     damage_types.push("Alchemical Savant");
                     break;
@@ -927,8 +928,9 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
 
         if (character.hasClassFeature("Alchemical Savant") &&
             character.getSetting("artificer-alchemical-savant", false)) {
+            const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
             for (let i = 0; i < damages.length; i++){
-                if (damage_types[i] === "Healing") {
+                if (damage_types[i] === "Healing" && alchemical_savant_regex.test(damages[i])) {
                     damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
                     damage_types.push("Alchemical Savant Healing");
                     break;
