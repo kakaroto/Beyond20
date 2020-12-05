@@ -17,9 +17,9 @@ function postChatMessage(message, character = null) {
     let set_speakingas = true;
     const old_as = speakingas.value;
     if (character) {
-        character = character.toLowerCase();
+        character = character.toLowerCase().trim();
         for (let i = 0; i < (speakingas.children.length); i++) {
-            if (speakingas.children[i].text.toLowerCase() === character) {
+            if (speakingas.children[i].text.toLowerCase().trim() === character) {
                 speakingas.children[i].selected = true;
                 set_speakingas = false;
                 break;
