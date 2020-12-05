@@ -801,8 +801,7 @@ async function handleOGLRenderedRoll(request) {
         }
         message += template(request, "dmg", dmg_props) + "\n";
     }
-    const character_name = request.whisper == WhisperType.HIDE_NAMES ? "???" : request.character.name;
-    postChatMessage(message, character_name);
+    postChatMessage(message, request.character);
 
     if (rollDamages) {
         hookRollDamages(rollDamages, request);
