@@ -204,7 +204,7 @@ function rollHitDie(multiclass, index) {
     });
 }
 
-function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false) {
+function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, spell_group = null) {
     const prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
     const properties = propertyListToDict(prop_list);
     properties["Properties"] = properties["Properties"] || "";
@@ -289,6 +289,20 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     }
                 }
                 break;
+            }
+        }
+        // If clicking on a spell group within a item (Green flame blade, Booming blade), then add the additional damages from that spell
+        if (spell_group) {
+            const group_name = $(spell_group).find(".ct-item-detail__spell-damage-group-name").text();
+            
+            const spell_damages = $(spell_group).find(".ct-item-detail__spell-damage-group-item");
+            for (let j = 0; j < spell_damages.length; j++) {
+                let dmg = spell_damages.eq(j).find(".ddbc-damage__value").text();
+                let dmg_type = spell_damages.eq(j).find(".ddbc-tooltip").attr("data-original-title");
+                if (dmg != "") {
+                    damages.push(dmg);
+                    damage_types.push(`${dmg_type} (${group_name})`);
+                }
             }
         }
 
@@ -1152,7 +1166,7 @@ function handleCustomText(paneClass) {
     return customRolls;
 }
 
-function execute(paneClass, force_to_hit_only = false, force_damages_only = false) {
+function execute(paneClass, {force_to_hit_only = false, force_damages_only = false, spell_group=null}={}) {
     console.log("Beyond20: Executing panel : " + paneClass, force_to_hit_only, force_damages_only);
     const rollCustomText = (customTextList) => {
         for (const customText of customTextList) {
@@ -1177,7 +1191,7 @@ function execute(paneClass, force_to_hit_only = false, force_damages_only = fals
         else if (paneClass == "ct-initiative-pane")
             rollInitiative();
         else if (paneClass == "ct-item-pane")
-            rollItem(false, force_to_hit_only, force_damages_only);
+            rollItem(false, force_to_hit_only, force_damages_only, spell_group);
         else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
             rollAction(paneClass, force_to_hit_only, force_damages_only);
         else if (paneClass == "ct-spell-pane")
@@ -1319,6 +1333,11 @@ function injectRollButton(paneClass) {
         if (Object.keys(properties).includes("Damage")) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true });
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
+            const spell_damage_groups = $(".ct-item-pane .ct-item-detail__spell-damage-group");
+            for (const group of spell_damage_groups.toArray()) {
+                const header = $(group).find(".ct-item-detail__spell-damage-group-header");
+                addRollButton(character, () => execute(paneClass, {spell_group: group}), header, {small: true, append: true});
+            }
         } else {
             const item_type = $(".ct-item-detail__intro").text().trim().toLowerCase();
             const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
@@ -1765,7 +1784,7 @@ function activateQuickRolls() {
             const pane_name = pane.find(".ct-sidebar__heading").text();
 
             if (name == pane_name) {
-                execute(paneClass, force_to_hit_only, force_damages_only);
+                execute(paneClass, {force_to_hit_only, force_damages_only});
             } else {
                 quick_roll_force_attack = force_to_hit_only;
                 quick_roll_force_damge = force_damages_only;
@@ -1801,7 +1820,7 @@ function activateQuickRolls() {
                 const level = el.closest(".ct-content-group").find(".ct-content-group__header-content").text();
                 const pane_level = castas === "" ? "Cantrip" : `${castas} Level`;
                 if (pane_level.toLowerCase() === level.toLowerCase()) {
-                    execute("ct-spell-pane", force_to_hit_only, force_damages_only);
+                    execute("ct-spell-pane", {force_to_hit_only, force_damages_only});
                 } else {
                     // Trigger a click elsewhere to cause the sidepanel to change and then force it again to display the right level spell
                     $(".ddbc-character-tidbits__menu-callout").trigger('click');
@@ -1831,7 +1850,7 @@ function activateQuickRolls() {
 function executeQuickRoll(paneClass) {
     quick_roll_timeout = 0;
     console.log("EXECUTING QUICK ROLL!");
-    execute(paneClass, quick_roll_force_attack, quick_roll_force_damage);
+    execute(paneClass, {force_to_hit_only: quick_roll_force_attack, force_damages_only: quick_roll_force_damage});
     quick_roll_force_attack = false;
     quick_roll_force_damage = false;
     quick_roll = false;
