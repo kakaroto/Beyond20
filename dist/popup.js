@@ -787,6 +787,12 @@ const character_settings = {
         "description": "Your symbiotic entity lends its power to your melee weapon strikes.",
         "type": "bool",
         "default": false
+    },
+    "eldritch-invocation-lifedinker": {
+        "title": "Eldritch Invocation: Lifedrinker",
+        "description": "Your pact weapon drips with necrotic energry, lending extra damage to your strikes",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -1617,6 +1623,10 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Symbiotic Entity")) {
             e = createHTMLOption("druid-symbiotic-entity", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Eldritch Invocations: Lifedrinker")) {
+            e = createHTMLOption("eldritch-invocation-lifedinker", false, character_settings);
             options.append(e);
         }
 

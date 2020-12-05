@@ -787,6 +787,12 @@ const character_settings = {
         "description": "Your symbiotic entity lends its power to your melee weapon strikes.",
         "type": "bool",
         "default": false
+    },
+    "eldritch-invocation-lifedinker": {
+        "title": "Eldritch Invocation: Lifedrinker",
+        "description": "Your pact weapon drips with necrotic energry, lending extra damage to your strikes",
+        "type": "bool",
+        "default": false
     }
 }
 

@@ -225,6 +225,10 @@ function populateCharacter(response) {
             e = createHTMLOption("druid-symbiotic-entity", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Eldritch Invocations: Lifedrinker")) {
+            e = createHTMLOption("eldritch-invocation-lifedinker", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }
