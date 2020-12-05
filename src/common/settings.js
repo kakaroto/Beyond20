@@ -1016,6 +1016,7 @@ function createDiscordChannelsCombobox(name, description, title, dropdown_option
             attributes['data-action'] = option.action;
         if (option.secret !== undefined)
             attributes['data-secret'] = option.secret;
+        attributes.style = "overflow: hidden; text-overflow: ellipsis;";
         options.push(E.li(attributes, E.a({ href: "#" }, name)));
     }
     for (let p of description_p)
@@ -1029,8 +1030,8 @@ function createDiscordChannelsCombobox(name, description, title, dropdown_option
             E.h4({ class: "select" }, title),
             ...description_p,
             E.div({ class: "button-group" },
-                E.a({ id: name, class: "input select beyond20-option-input", href: "" }, dropdown_options[0].name),
-                E.ul({ class: "dropdown-menu" },
+                E.a({ id: name, class: "input select beyond20-option-input", href: "", style: "overflow: hidden; text-overflow: ellipsis;" }, dropdown_options[0].name),
+                E.ul({ class: "dropdown-menu", style: "max-width: 300px;" },
                     ...options),
                 E.i({ id: `${name}--icon`, class: "icon select" })
             )
