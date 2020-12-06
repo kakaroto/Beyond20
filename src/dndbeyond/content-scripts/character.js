@@ -78,7 +78,7 @@ async function rollSkillCheck(paneClass) {
     }
     if (ability == "STR" &&
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-            (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
+            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
     if (skill_name == "Acrobatics" && character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false)) {
@@ -92,6 +92,17 @@ async function rollSkillCheck(paneClass) {
     if (character.hasClassFeature("Silver Tongue") && (skill_name === "Deception" || skill_name === "Persuasion"))
         roll_properties.d20 = "1d20min10";
     
+    // Sorcerer: Clockwork Soul - Trance of Order
+    if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
+    
+    // Fey Wanderer Ranger - Otherworldly Glamour
+    if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
+        modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
+        modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+        roll_properties.modifier = modifier;
+    }
+
     if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
         const min = character.getAbility("STR").score - parseInt(modifier);
         // Check against reliable talent or silver tongue (should be an impossible state)
@@ -134,7 +145,7 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
 
     if (ability == "STR" &&
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-            (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
+            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
     if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
@@ -153,6 +164,15 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
             roll_properties["modifier"] = modifier;
         }
     }
+    if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
+        modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
+        modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+        roll_properties["modifier"] = modifier;
+    }
+    // Sorcerer: Clockwork Soul - Trance of Order
+    if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
+
     sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
 }
 
@@ -414,9 +434,10 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             }
         }
 
-        // FIXME: UA content, Ranger Fey Wanderer Feature, may need to be removed or corrected later
+        // Ranger: Fey Wanderer - Dreadful Strikes
         if (character.hasClassFeature("Dreadful Strikes") && character.getSetting("fey-wanderer-dreadful-strikes")) {
-            damages.push("1d6");
+            const ranger_level = character.getClassLevel("Ranger");
+            damages.push(ranger_level < 11 ? "1d4" : "1d6");
             damage_types.push("Dreadful Strikes");
         }
 
@@ -433,11 +454,11 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damages.push(character._proficiency);
             damage_types.push("Hexblade's Curse");
         }
-        // Fighter's Giant Might;
-        if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)) {
+        // Fighter: Giant’s Might;
+        if (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)) {
             const fighter_level = character.getClassLevel("Fighter");
-            damages.push(fighter_level < 10 ? "1d6" : "1d8");
-            damage_types.push("Giant Might");
+            damages.push(fighter_level < 10 ? "1d6" : (fighter_level < 18 ? "1d8" : "1d10"));
+            damage_types.push("Giant’s Might");
         }
         // Cleric's Divine Strike;
         if (character.hasClassFeature("Divine Strike") &&
@@ -446,9 +467,16 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damages.push(cleric_level < 14 ? "1d8" : "2d8");
             damage_types.push("Divine Strike");
         }
+        // Cleric Blessed strikes
+        if (character.hasClassFeature("Blessed Strikes") &&
+            character.getSetting("cleric-blessed-strikes", false)) {
+            damages.push("1d8");
+            damage_types.push("Blessed Strikes");
+        }
         // Bard's Psychic blades;
         if (character.hasClassFeature("Psychic Blades") &&
-            character.getSetting("bard-psychic-blades", false)) {
+            character.getSetting("bard-psychic-blades", false) &&
+            character.hasClass("Bard")) {
             const bard_level = character.getClassLevel("Bard");
             let blades_dmg = "2d6";
             if (bard_level < 5)
@@ -476,6 +504,19 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             const mod = parseInt(intelligence.mod) || 0;
             damages.push(String(Math.max(mod, 1)));
             damage_types.push("Bladesong");
+        }
+
+        // Druid: Circle of Spores - Symbiotic Entity
+        if (character.hasClassFeature("Symbiotic Entity") && character.getSetting("druid-symbiotic-entity", false) &&
+            properties["Attack Type"] === "Melee") {
+                damages.push("1d6");
+                damage_types.push("Symbiotic Entity");
+        }
+
+        // Warlock: Genie Patron - Genie's Wrath
+        if (character.hasClassFeature("Genie’s Vessel")) {
+            damages.push(character._proficiency);
+            damage_types.push("Genie's Wrath");
         }
 
         let critical_limit = 20;
@@ -532,6 +573,10 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
             character.mergeCharacterSettings({ "rogue-assassinate": false });
         }
+        // Sorcerer: Clockwork Soul - Trance of Order
+        if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
+
         sendRollWithCharacter("attack", damages[0], roll_properties);
     } else if (!force_display && (is_tool || is_instrument) && character._abilities.length > 0) {
         const proficiencies = {}
@@ -569,12 +614,15 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 }
                 if (ability == "STR" &&
                     ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-                        (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
+                        (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
                     roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
                 }
                 roll_properties.d20 = "1d20";
                 // Set Reliable Talent flag if character has the feature and skill is proficient/expertise
                 if (character.hasClassFeature("Reliable Talent") && ["Proficiency", "Expertise"].includes(proficiency))
+                    roll_properties.d20 = "1d20min10";
+                // Sorcerer: Clockwork Soul - Trance of Order
+                if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
                     roll_properties.d20 = "1d20min10";
                 sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
             }
@@ -697,10 +745,10 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
                 damages.push(`1d6+${Math.floor(barbarian_level / 2)}`);
                 damage_types.push("Divine Fury");
             }
-            if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)) {
+            if (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)) {
                 const fighter_level = character.getClassLevel("Fighter");
-                damages.push(fighter_level < 10 ? "1d6" : "1d8");
-                damage_types.push("Giant Might");
+                damages.push(fighter_level < 10 ? "1d6" : (fighter_level < 18 ? "1d8" : "1d10"));
+                damage_types.push("Giant’s Might");
             }
             if (character.getSetting("bloodhunter-crimson-rite", false) &&
             character.hasClassFeature("Crimson Rite")) {
@@ -740,6 +788,13 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
                 damages.push("1d8");
                 damage_types.push("Radiant");
             }
+
+            // Cleric Blessed Strikes
+            if (character.hasClassFeature("Blessed Strikes") &&
+            character.getSetting("cleric-blessed-strikes", false)) {
+                damages.push("1d8");
+                damage_types.push("Blessed Strikes");
+            }
         }
 
         //Protector Aasimar: Radiant Soul Damage
@@ -747,6 +802,12 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             character.getSetting("protector-aasimar-radiant-soul", false)) {
             damages.push(character._level);
             damage_types.push("Radiant Soul");
+        }
+
+        // Warlock: Genie Patron - Genie's Wrath
+        if (character.hasClassFeature("Genie’s Vessel")) {
+            damages.push(character._proficiency);
+            damage_types.push("Genie's Wrath");
         }
 
         const roll_properties = buildAttackRoll(character,
@@ -778,6 +839,9 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
             character.mergeCharacterSettings({ "rogue-assassinate": false });
         }
+        // Sorcerer: Clockwork Soul - Trance of Order
+        if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
         sendRollWithCharacter("attack", damages[0], roll_properties);
     } else {
         sendRollWithCharacter("action", 0, {
@@ -871,6 +935,14 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
                 }
             }
         }
+        
+        //Cleric Blessed Strikes
+        if (character.hasClassFeature("Blessed Strikes") &&
+            character.getSetting("cleric-blessed-strikes", false) &&
+            level.includes("Cantrip")) {
+            damages.push("1d8");
+            damage_types.push("Blessed Strikes");
+        }
 
         if (character.hasClassFeature("Enhanced Bond") &&
             character.getSetting("wildfire-spirit-enhanced-bond", false) &&
@@ -961,6 +1033,12 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
                     break;
                 }
             }
+        }
+
+        // Warlock: Genie Patron - Genie's Wrath
+        if (character.hasClassFeature("Genie’s Vessel") && to_hit != null) {
+            damages.push(character._proficiency);
+            damage_types.push("Genie's Wrath");
         }
 
         // We can then add temp healing types;
@@ -1055,6 +1133,9 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
             character.mergeCharacterSettings({ "rogue-assassinate": false });
         }
+        // Sorcerer: Clockwork Soul - Trance of Order
+        if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
 
         sendRollWithCharacter("spell-attack", damages[0] || "", roll_properties);
     } else {

@@ -681,8 +681,8 @@ const character_settings = {
         "default": false
     },
     "fighter-giant-might": {
-        "title": "Fighter: Giant Might",
-        "description": "Activate Giant Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
+        "title": "Fighter: Giant’s Might",
+        "description": "Activate Giant’s Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
         "type": "bool",
         "default": false
     },
@@ -767,6 +767,24 @@ const character_settings = {
     "paladin-sacred-weapon": {
         "title": "Oath of Devotion: Sacred Weapon",
         "description": "Your charisma and deity guide your attacks",
+        "type": "bool",
+        "default": false
+    },
+    "cleric-blessed-strikes": {
+        "title": "Cleric: Blessed Strikes",
+        "description": "Deal an extra 1d8 damage on damaging cantrips and weapon attacks",
+        "type": "bool",
+        "default": true
+    },
+    "sorcerer-trance-of-order": {
+        "title": "Sorcerer: Trance of Order",
+        "description": "Align your conciousness to the calculations of Mechanus. You enter a heightened state.",
+        "type": "bool",
+        "default": false
+    },
+    "druid-symbiotic-entity": {
+        "title": "Circle of Spores: Symbiotic Entity",
+        "description": "Your symbiotic entity lends its power to your melee weapon strikes.",
         "type": "bool",
         "default": false
     }
@@ -1545,7 +1563,7 @@ function populateCharacter(response) {
             e = createHTMLOption("rogue-assassinate", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Giant Might")) {
+        if (response["class-features"].includes("Giant’s Might")) {
             e = createHTMLOption("fighter-giant-might", false, character_settings);
             options.append(e);
         }
@@ -1557,7 +1575,8 @@ function populateCharacter(response) {
             e = createHTMLOption("cleric-divine-strike", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Psychic Blades")) {
+        if (response["class-features"].includes("Psychic Blades") &&
+            Object.keys(response.classes).includes("Bard")) {
             e = createHTMLOption("bard-psychic-blades", false, character_settings);
             options.append(e);
         }
@@ -1587,6 +1606,17 @@ function populateCharacter(response) {
         }
         if (response["actions"].includes("Channel Divinity: Sacred Weapon")) {
             e = createHTMLOption("paladin-sacred-weapon", false, character_settings);
+        }
+        if (response["class-features"].includes("Blessed Strikes")) {
+            e = createHTMLOption("cleric-blessed-strikes", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Trance of Order")) {
+            e = createHTMLOption("sorcerer-trance-of-order", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Symbiotic Entity")) {
+            e = createHTMLOption("druid-symbiotic-entity", false, character_settings);
             options.append(e);
         }
 

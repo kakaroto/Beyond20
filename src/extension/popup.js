@@ -169,7 +169,7 @@ function populateCharacter(response) {
             e = createHTMLOption("rogue-assassinate", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Giant Might")) {
+        if (response["class-features"].includes("Giant’s Might")) {
             e = createHTMLOption("fighter-giant-might", false, character_settings);
             options.append(e);
         }
@@ -181,7 +181,8 @@ function populateCharacter(response) {
             e = createHTMLOption("cleric-divine-strike", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Psychic Blades")) {
+        if (response["class-features"].includes("Psychic Blades") &&
+            Object.keys(response.classes).includes("Bard")) {
             e = createHTMLOption("bard-psychic-blades", false, character_settings);
             options.append(e);
         }
@@ -211,6 +212,17 @@ function populateCharacter(response) {
         }
         if (response["actions"].includes("Channel Divinity: Sacred Weapon")) {
             e = createHTMLOption("paladin-sacred-weapon", false, character_settings);
+        }
+        if (response["class-features"].includes("Blessed Strikes")) {
+            e = createHTMLOption("cleric-blessed-strikes", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Trance of Order")) {
+            e = createHTMLOption("sorcerer-trance-of-order", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Symbiotic Entity")) {
+            e = createHTMLOption("druid-symbiotic-entity", false, character_settings);
             options.append(e);
         }
 

@@ -635,8 +635,8 @@ const character_settings = {
         "default": false
     },
     "fighter-giant-might": {
-        "title": "Fighter: Giant Might",
-        "description": "Activate Giant Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
+        "title": "Fighter: Giant’s Might",
+        "description": "Activate Giant’s Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
         "type": "bool",
         "default": false
     },
@@ -721,6 +721,24 @@ const character_settings = {
     "paladin-sacred-weapon": {
         "title": "Oath of Devotion: Sacred Weapon",
         "description": "Your charisma and deity guide your attacks",
+        "type": "bool",
+        "default": false
+    },
+    "cleric-blessed-strikes": {
+        "title": "Cleric: Blessed Strikes",
+        "description": "Deal an extra 1d8 damage on damaging cantrips and weapon attacks",
+        "type": "bool",
+        "default": true
+    },
+    "sorcerer-trance-of-order": {
+        "title": "Sorcerer: Trance of Order",
+        "description": "Align your conciousness to the calculations of Mechanus. You enter a heightened state.",
+        "type": "bool",
+        "default": false
+    },
+    "druid-symbiotic-entity": {
+        "title": "Circle of Spores: Symbiotic Entity",
+        "description": "Your symbiotic entity lends its power to your melee weapon strikes.",
         "type": "bool",
         "default": false
     }
