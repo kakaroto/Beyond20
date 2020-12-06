@@ -170,7 +170,7 @@ function populateCharacter(response) {
             options.append(e);
         }
         if (response["class-features"].includes("Giant’s Might")) {
-            e = createHTMLOption("fighter-giants-might", false, character_settings);
+            e = createHTMLOption("fighter-giant-might", false, character_settings);
             options.append(e);
         }
         if (response["class-features"].includes("Arcane Firearm")) {

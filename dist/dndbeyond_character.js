@@ -4547,7 +4547,7 @@ async function rollSkillCheck(paneClass) {
     }
     if (ability == "STR" &&
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giants-might", false)))) {
+            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
     if (skill_name == "Acrobatics" && character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false)) {
@@ -4614,7 +4614,7 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
 
     if (ability == "STR" &&
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giants-might", false)))) {
+            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
     if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
@@ -4910,7 +4910,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damage_types.push("Hexblade's Curse");
         }
         // Fighter: Giant’s Might;
-        if (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giants-might", false)) {
+        if (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)) {
             const fighter_level = character.getClassLevel("Fighter");
             damages.push(fighter_level < 10 ? "1d6" : (fighter_level < 18 ? "1d8" : "1d10"));
             damage_types.push("Giant’s Might");
@@ -5069,7 +5069,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 }
                 if (ability == "STR" &&
                     ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-                        (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giants-might", false)))) {
+                        (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
                     roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
                 }
                 roll_properties.d20 = "1d20";
@@ -5200,7 +5200,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
                 damages.push(`1d6+${Math.floor(barbarian_level / 2)}`);
                 damage_types.push("Divine Fury");
             }
-            if (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giants-might", false)) {
+            if (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)) {
                 const fighter_level = character.getClassLevel("Fighter");
                 damages.push(fighter_level < 10 ? "1d6" : (fighter_level < 18 ? "1d8" : "1d10"));
                 damage_types.push("Giant’s Might");
