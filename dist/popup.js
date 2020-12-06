@@ -673,7 +673,7 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
-    "fighter-giants-might": {
+    "fighter-giant-might": {
         "title": "Fighter: Giant’s Might",
         "description": "Activate Giant’s Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
         "type": "bool",

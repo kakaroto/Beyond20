@@ -627,7 +627,7 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
-    "fighter-giants-might": {
+    "fighter-giant-might": {
         "title": "Fighter: Giant’s Might",
         "description": "Activate Giant’s Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
         "type": "bool",
@@ -5247,9 +5247,9 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             // Cleric Blessed Strikes
             if (character.hasClassFeature("Blessed Strikes") &&
             character.getSetting("cleric-blessed-strikes", false)) {
-            damages.push("1d8");
-            damage_types.push("Blessed Strikes");
-        }
+                damages.push("1d8");
+                damage_types.push("Blessed Strikes");
+            }
         }
 
         //Protector Aasimar: Radiant Soul Damage

@@ -778,9 +778,9 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             // Cleric Blessed Strikes
             if (character.hasClassFeature("Blessed Strikes") &&
             character.getSetting("cleric-blessed-strikes", false)) {
-            damages.push("1d8");
-            damage_types.push("Blessed Strikes");
-        }
+                damages.push("1d8");
+                damage_types.push("Blessed Strikes");
+            }
         }
 
         //Protector Aasimar: Radiant Soul Damage
