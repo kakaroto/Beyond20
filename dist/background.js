@@ -1626,7 +1626,7 @@ function onMessage(request, sender, sendResponse) {
     } else if (request.action == "get-current-tab") {
         sendResponse(sender.tab)
     } else if (request.action == "forward") {
-        chrome.tabs.sendMessage(request.tab, request.message, sendResponse)
+        chrome.tabs.sendMessage(request.tab, request.message, {frameId: 0}, sendResponse)
         return true
     }
     return false

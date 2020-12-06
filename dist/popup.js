@@ -1394,7 +1394,7 @@ options_list["discord-channels"]["get"] = getDiscordChannelsSetting;
 
 function sendMessageToTab(tab_id, message, callback) {
     if (chrome.tabs) {
-        chrome.tabs.sendMessage(tab_id, message, callback);
+        chrome.tabs.sendMessage(tab_id, message, {frameId: 0}, callback);
     } else {
         chrome.runtime.sendMessage({ "action": "forward", "tab": tab_id, "message": message }, callback);
     }
