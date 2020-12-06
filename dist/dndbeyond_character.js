@@ -5738,7 +5738,15 @@ function displayFeature(paneClass) {
     const name = $(".ct-sidebar__heading").text();
     const source = $(".ct-sidebar__header-parent").text();
     const source_type = source_types[paneClass];
-    const description = descriptionToString(".ct-snippet__content,.ddbc-snippet__content");
+    let description = descriptionToString(`.${paneClass} .ct-snippet__content,.ddbc-snippet__content`);
+    const choices = $(`.${paneClass} .ct-feature-snippet__choices .ct-feature-snippet__choice`);
+    if (choices.length > 0) {
+        description += "\n";
+        for (const choice of choices.toArray()) {
+            const choiceText = descriptionToString(choice);
+            description = `${description}\n> ${choiceText}`;
+        }
+    }
     sendRollWithCharacter("feature", 0, {
         "name": name,
         "source": source,
