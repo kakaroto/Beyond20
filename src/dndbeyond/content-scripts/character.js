@@ -1917,6 +1917,10 @@ function handleMessage(request, sender, sendResponse) {
         if (request.type == "general") {
             updateSettings(request.settings);
         } else if (request.type == "character" && request.id == character._id) {
+            if (character._settings && request.settings["last-features-classes"] &&
+                character._settings["last-features-classes"] !== request.settings["last-features-classes"]) {
+                alertify.success("Character's class features parsed successfully.");
+            }
             character.updateSettings(request.settings);
         } else {
             console.log("Ignoring character settings, for ID: ", request.id);
