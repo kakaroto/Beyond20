@@ -155,10 +155,12 @@ class Monster extends CharacterBase {
             } else if (label == "Skills") {
                 const skills = value.split(", ");
                 for (let skill of skills) {
-                    const parts = skill.split(" ");
-                    const name = parts.slice(0, -1).join(" ");
-                    const mod = parts.slice(-1)[0];
-                    this._skills[name] = mod;
+                    const match = skill.match(/(.+?)([+-]?)\s*([0-9]+)/);
+                    if (match) {
+                        const name = match[1].trim();
+                        const mod = `${match[2] || "+"}${match[3]}`;
+                        this._skills[name] = mod;
+                    }
                 }
                 if (!add_dice)
                     continue;
