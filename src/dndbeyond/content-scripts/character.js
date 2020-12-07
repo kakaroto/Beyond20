@@ -386,6 +386,12 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             const charisma_attack_mod =  Math.max(character.getAbility("CHA").mod, 1);
             to_hit += "+" + charisma_attack_mod;
         }
+        if (to_hit !== null && 
+            character.getSetting("eldritch-invocation-lifedinker", false)) {
+            const charisma_damage_mod =  Math.max(character.getAbility("CHA").mod, 1);
+            damages.push(`${charisma_damage_mod}`);
+            damage_types.push("Lifedrinker");
+        }
         if (character.getSetting("bloodhunter-crimson-rite", false) &&
             character.hasClassFeature("Crimson Rite")) {
             const bloodhunter_level = character.getClassLevel("Blood Hunter");

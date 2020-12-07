@@ -741,6 +741,12 @@ const character_settings = {
         "description": "Your symbiotic entity lends its power to your melee weapon strikes.",
         "type": "bool",
         "default": false
+    },
+    "eldritch-invocation-lifedinker": {
+        "title": "Eldritch Invocation: Lifedrinker",
+        "description": "Your pact weapon drips with necrotic energy, lending extra damage to your strikes",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -4950,6 +4956,12 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             character.getSetting("paladin-sacred-weapon", false)) {
             const charisma_attack_mod =  Math.max(character.getAbility("CHA").mod, 1);
             to_hit += "+" + charisma_attack_mod;
+        }
+        if (to_hit !== null && 
+            character.getSetting("eldritch-invocation-lifedinker", false)) {
+            const charisma_damage_mod =  Math.max(character.getAbility("CHA").mod, 1);
+            damages.push(`${charisma_damage_mod}`);
+            damage_types.push("Lifedrinker");
         }
         if (character.getSetting("bloodhunter-crimson-rite", false) &&
             character.hasClassFeature("Crimson Rite")) {
