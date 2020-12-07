@@ -1361,9 +1361,11 @@ let key_bindings = {
 
 const BINDING_NAMES = {
     "": "Click to configure hotkey",
-    advantage: "Roll with Advantage",
-    disadvantage: "Roll with Disadvantage",
     normal_roll: "Normal Roll",
+    advantage: "Roll with Advantage",
+    super_advantage: "Roll with Super Advantage",
+    disadvantage: "Roll with Disadvantage",
+    super_disadvantage: "Roll with Super Disadvantage",
     whisper: "Whisper Rolls",
     dont_whisper: "Don't Whisper Rolls",
     whisper_hide_names: "Hide Monster Name & Attack",

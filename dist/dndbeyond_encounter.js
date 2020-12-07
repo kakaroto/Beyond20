@@ -1360,9 +1360,11 @@ let key_bindings = {
 
 const BINDING_NAMES = {
     "": "Click to configure hotkey",
-    advantage: "Roll with Advantage",
-    disadvantage: "Roll with Disadvantage",
     normal_roll: "Normal Roll",
+    advantage: "Roll with Advantage",
+    super_advantage: "Roll with Super Advantage",
+    disadvantage: "Roll with Disadvantage",
+    super_disadvantage: "Roll with Super Disadvantage",
     whisper: "Whisper Rolls",
     dont_whisper: "Don't Whisper Rolls",
     whisper_hide_names: "Hide Monster Name & Attack",
@@ -3468,6 +3470,10 @@ async function sendRoll(character, rollType, fallback, args) {
         req["advantage"] = RollType.ADVANTAGE;
     else if (key_modifiers.disadvantage)
         req["advantage"] = RollType.DISADVANTAGE;
+    if (key_modifiers.super_advantage)
+        req["advantage"] = RollType.SUPER_ADVANTAGE;
+    else if (key_modifiers.super_disadvantage)
+        req["advantage"] = RollType.SUPER_DISADVANTAGE;
     else if (key_modifiers.normal_roll)
         req["advantage"] = RollType.NORMAL;
 

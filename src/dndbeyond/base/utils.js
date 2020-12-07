@@ -229,6 +229,10 @@ async function sendRoll(character, rollType, fallback, args) {
         req["advantage"] = RollType.ADVANTAGE;
     else if (key_modifiers.disadvantage)
         req["advantage"] = RollType.DISADVANTAGE;
+    if (key_modifiers.super_advantage)
+        req["advantage"] = RollType.SUPER_ADVANTAGE;
+    else if (key_modifiers.super_disadvantage)
+        req["advantage"] = RollType.SUPER_DISADVANTAGE;
     else if (key_modifiers.normal_roll)
         req["advantage"] = RollType.NORMAL;
 
