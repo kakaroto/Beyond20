@@ -298,6 +298,8 @@ var last_character_used = null;
 function updateRollTypeButtonClasses(character) {
     const button_roll_type_classes = "beyond20-roll-type-double beyond20-roll-type-query beyond20-roll-type-thrice beyond20-roll-type-advantage beyond20-roll-type-disadvantage beyond20-roll-type-super-advantage beyond20-roll-type-super-disadvantage";
     const rolltype_class = getRollTypeButtonClass(character || last_character_used);
+    if (character)
+        last_character_used = character;
     $(".ct-beyond20-roll .ct-beyond20-roll-button,.beyond20-quick-roll-tooltip").removeClass(button_roll_type_classes).addClass(rolltype_class);
     const icon20 = getBadgeIconFromClass(rolltype_class, "20");
     const icon32 = getBadgeIconFromClass(rolltype_class, "32");
