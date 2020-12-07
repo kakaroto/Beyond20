@@ -175,6 +175,14 @@ const options_list = {
         "default": "roll20"
     },
 
+    "hotkeys-bindings": {
+        "title": "Define custom hotkeys",
+        "description": "Set custom hotkeys for controlling Beyond20's behavior.",
+        "type": "special",
+        "default": null
+        // callbacks will be added after the functions are defined
+    },
+
     "roll20-template": {
         "title": "Roll20 Character Sheet Setting",
         "description": "Select the Character Sheet Template that you use in Roll20\n" +
@@ -1176,6 +1184,189 @@ function getDiscordChannel(settings, character) {
     return channels.find(c => c.active);
 }
 
+let key_bindings = {
+    Shift: "advantage",
+    Control: "disadvantage",
+    Alt: "normal_roll"
+};
+
+const BINDING_NAMES = {
+    "": "Click to configure hotkey",
+    advantage: "Roll with Advantage",
+    disadvantage: "Roll with Disadvantage",
+    normal_roll: "Normal Roll",
+}
+
+function configureHotKey(bindings, bindings_div, html, key) {
+    const alert = $(`
+        <div>
+            Press a key to register the new hotkey.
+        </div>
+    `);
+    if (key) {
+        alert.append($(`<div>Current key is : <strong>${key}</strong></div>`));
+    }
+    let newKey = null;
+    const $window = $(window);
+    const onKeydown = (event) => {
+        $window.off('keydown', null, onKeydown);
+        if (key !== event.key && bindings[event.key] !== undefined) {
+            alertify.warning("Hotkey already in use");
+            dialog.close();
+            return;
+        }
+        newKey = event.key;
+        const actions = $(`
+            <div>
+                <div>
+                    Select the action to perform when <strong>${newKey}</strong> is pressed :
+                </div>
+                <select>
+                    <option value="">None</option>
+                </select>
+            </div>
+        `)
+        const select = actions.find("select");
+        for (const action in BINDING_NAMES) {
+            if (!action) continue;
+            select.append($(`
+                <option value="${action}" ${bindings[key] === action ? "selected": ""}>${BINDING_NAMES[action]}</option>
+            `));
+        }
+        alert.empty().append(actions)
+    };
+    const onOK = () => {
+        $window.off('keydown', null, onKeydown);
+        if (!newKey) return;
+        let action = alert.find("select").val() || "";
+        html.remove();
+        delete bindings[key];
+        bindings[newKey] = action;
+        addHotKeyToUI(bindings, bindings_div, newKey);
+    }
+    const onCancel = () => {
+        $window.off('keydown', null, onKeydown);
+    };
+    $window.on('keydown', onKeydown);
+    if (alertify.Beyond20HotkeyConfirm === undefined)
+        alertify.dialog('Beyond20HotkeyConfirm', function () { return {}; }, false, "confirm");
+    const dialog = alertify.Beyond20HotkeyConfirm('Configure Hotkey', alert[0], () => onOK(), () => onCancel());
+}
+
+function addHotKeyToUI(bindings, bindings_div, key) {
+    const binding_name = BINDING_NAMES[bindings[key]] || bindings[key];
+    const html = $(`
+        <div style="border-bottom: 1px grey solid; display: flex; justify-content: space-between;">
+            <div class="hotkey-event" style="cursor: pointer; flex-shrink: 1; padding: 5px; font-weight: bold;">${key || ""}</div>
+            <div class="hotkey-action" style="cursor: pointer; overflow: hidden; text-overflow: ellipsis; text-align: center; padding: 5px; flex-grow: 1;">${binding_name}</div>
+            <i class="icon marka marka-set marka-icon-times delete-hotkey" style="width:15px;height:15px; margin: 5px; flex-shrink: 1;">
+                <i style="background-color:rgb(0, 0, 0)"></i>
+                <i style="background-color:rgb(0, 0, 0)"></i>
+            </i>
+        </div>
+    `);
+    html.find(".delete-hotkey").click(ev => {
+        html.remove();
+        delete bindings[key];
+        if (Object.keys(bindings).length == 0) {
+            bindings_div.find(".no-bindings").show();
+            bindings_div.find(".bindings-header").css({display: "none"});
+        }
+    });
+    html.find(".hotkey-event, .hotkey-action").click(ev => {
+        configureHotKey(bindings, bindings_div, html, key);
+    });
+    bindings_div.append(html);
+}
+
+function openHotkeyManager(button) {
+    console.log("Hotkeys manager");
+    let bindings = null;
+    try {
+        bindings = JSON.parse(button.attr("data-bindings"));
+    } catch (err) {}
+    // Use defaults if value is invalid or never set
+    if (!bindings)
+        bindings = {...key_bindings};
+
+    const manager = $(`
+    <div class="hotkeys-manager">
+        <div class="key-bindings">
+            <div class="bindings-header" style="border: 1px grey solid; border-radius: 5px; display: none; justify-content: space-between">
+                <div style="flex-shrink: 1; padding: 5px; font-weight: bold;">Hotkey</div>
+                <div style="flex-grow: 1; padding: 5px; text-align: center; font-weight: bold;">Action</div>
+                <div style="flex-shrink: 1; padding: 5px; font-weight: bold;">Delete</div>
+            </div>
+            <span class="no-bindings">No key bindings configured.</span>
+        </div>
+        <div class="save">
+            <button class="btn add-hotkey">Add new Hotkey</button>
+        </div>
+    </div>
+    `)
+    const bindings_div = manager.find(".key-bindings");
+    const add_button = manager.find("button.add-hotkey");
+    for (const key in bindings) {
+        addHotKeyToUI(bindings, bindings_div, key);
+    }
+    if (Object.keys(bindings).length > 0) {
+        bindings_div.find(".no-bindings").hide();
+        bindings_div.find(".bindings-header").css({display: "flex"});
+    }
+    add_button.click(ev => {
+        if (bindings[null] !== undefined) return;
+        bindings[null] = "";
+        addHotKeyToUI(bindings, bindings_div, null);
+    });
+
+    alertify.confirm('Beyond20 Hotkey Manager', manager[0], () => {
+        delete bindings[null];
+        button.attr("data-bindings", JSON.stringify(bindings));
+        button.trigger("change");
+    }, () => {});
+
+}
+function createHotkeysSetting(name, short) {
+    const opt = options_list[name];
+    const description_p = opt.description.split("\n").map(desc => E.p({}, desc));
+    for (let p of description_p)
+        p.classList.add("select");
+
+    const setting = E.li({
+        id: "beyond20-option-hotkeys-bindings",
+        class: "list-group-item beyond20-option beyond20-option-bool" 
+    },
+        E.label({ class: "list-content", for: name },
+            E.h4({}, opt.title),
+            ...description_p,
+            E.div({ class: "save button-group" },
+                E.button({ id: name, name, class: "beyond20-option-input btn", type: "button", "data-bindings": "" }, "Set Hotkeys"),
+            )
+        )
+    );
+    const button = $(setting).find("button");
+    button.click(ev => {
+        ev.stopPropagation();
+        ev.preventDefault();
+        openHotkeyManager(button);
+    });
+
+    return setting;
+}
+function setHotkeysSetting(name, settings) {
+    let val = settings[name];
+    const button = $(`#${name}`);
+    button.attr("data-bindings", JSON.stringify(val));
+}
+function getHotkeysSetting(name) {
+    const button = $(`#${name}`);
+    try {
+        return JSON.parse(button.attr("data-bindings"));
+    } catch (err) {
+        // Fallback on current settings or on default
+        return {...key_bindings};
+    }
+}
 
 options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting;
 options_list["vtt-tab"]["set"] = setVTTTabSetting;
@@ -1183,3 +1374,6 @@ options_list["vtt-tab"]["get"] = getVTTTabSetting;
 options_list["discord-channels"]["createHTMLElement"] = createDiscordChannelsSetting;
 options_list["discord-channels"]["set"] = setDiscordChannelsSetting;
 options_list["discord-channels"]["get"] = getDiscordChannelsSetting;
+options_list["hotkeys-bindings"]["createHTMLElement"] = createHotkeysSetting;
+options_list["hotkeys-bindings"]["set"] = setHotkeysSetting;
+options_list["hotkeys-bindings"]["get"] = getHotkeysSetting;

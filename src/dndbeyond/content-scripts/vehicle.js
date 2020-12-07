@@ -20,6 +20,8 @@ function updateSettings(new_settings = null) {
         settings = new_settings;
         if (character)
             character.setGlobalSettings(settings);
+        if (settings['hotkeys-bindings'])
+            key_bindings = settings['hotkeys-bindings'];
     } else {
         getStoredSettings((saved_settings) => {
             updateSettings(saved_settings);
