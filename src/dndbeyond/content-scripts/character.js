@@ -273,10 +273,10 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
 
                 if (versatile_damage != "") {
                     const versatile_choice = character.getSetting("versatile-choice", "both");
-                    if (versatile_choice == "one") {
+                    if (versatile_choice == "one" || key_modifiers.versatile_one_handed) {
                         damages.push(damage);
                         damage_types.push(damage_type);
-                    } else if (versatile_choice == "two") {
+                    } else if (versatile_choice == "two" || key_modifiers.versatile_two_handed) {
                         damages.push(versatile_damage);
                         damage_types.push(damage_type);
                     } else {

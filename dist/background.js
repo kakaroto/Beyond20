@@ -1414,6 +1414,8 @@ const BINDING_NAMES = {
     whisper: "Whisper Rolls",
     dont_whisper: "Don't Whisper Rolls",
     whisper_hide_names: "Hide Monster Name & Attack",
+    versatile_one_handed: "Use Versatile Weapon One-handed",
+    versatile_two_handed: "Use Versatile Weapon Two-handed"
 }
 
 function configureHotKey(bindings, bindings_div, html, key) {
