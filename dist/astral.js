@@ -1402,10 +1402,20 @@ function configureHotKey(bindings, bindings_div, html, key) {
             </div>
         `)
         const select = actions.find("select");
+        select.append($(`<optgroup label="Override Global Settings">`));
         for (const action in BINDING_NAMES) {
             if (!action) continue;
             select.append($(`
                 <option value="${action}" ${bindings[key] === action ? "selected": ""}>${BINDING_NAMES[action]}</option>
+            `));
+        }
+        select.append($(`<optgroup label="Temporarily toggle Character-Specific setting">`));
+        for (const name in character_settings) {
+            const option = character_settings[name];
+            const action = `option-${name}`;
+            if (option.hidden || option.type !== "bool") continue;
+            select.append($(`
+                <option value="${action}" ${bindings[key] === action ? "selected": ""}>${option.title}</option>
             `));
         }
         alert.empty().append(actions)
@@ -1429,7 +1439,10 @@ function configureHotKey(bindings, bindings_div, html, key) {
 }
 
 function addHotKeyToUI(bindings, bindings_div, key) {
-    const binding_name = BINDING_NAMES[bindings[key]] || bindings[key];
+    let binding_name = BINDING_NAMES[bindings[key]] || bindings[key];
+    if (binding_name.startsWith("option-") && character_settings[binding_name.slice("option-".length)]) {
+        binding_name = character_settings[binding_name.slice("option-".length)].title;
+    }
     const html = $(`
         <div style="border-bottom: 1px grey solid; display: flex; justify-content: space-between;">
             <div class="hotkey-event" style="cursor: pointer; flex-shrink: 1; padding: 5px; font-weight: bold;">${key || ""}</div>

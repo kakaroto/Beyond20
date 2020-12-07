@@ -22,10 +22,8 @@ class CharacterBase {
     getSetting(key, default_value = "", settings = null) {
         if (settings === null)
             settings = this._settings;
-        if (settings && settings[key] !== undefined) {
-            return settings[key];
-        }
-        return default_value;
+        const value = (settings && settings[key] !== undefined) ? settings[key] : default_value;
+        return key_modifiers[`option-${key}`] ? !value : value;
     }
 
     getGlobalSetting(key, default_value = "") {
