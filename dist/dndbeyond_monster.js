@@ -1363,6 +1363,9 @@ const BINDING_NAMES = {
     advantage: "Roll with Advantage",
     disadvantage: "Roll with Disadvantage",
     normal_roll: "Normal Roll",
+    whisper: "Whisper Rolls",
+    dont_whisper: "Don't Whisper Rolls",
+    whisper_hide_names: "Hide Monster Name & Attack",
 }
 
 function configureHotKey(bindings, bindings_div, html, key) {
@@ -3467,6 +3470,13 @@ async function sendRoll(character, rollType, fallback, args) {
         req["advantage"] = RollType.DISADVANTAGE;
     else if (key_modifiers.normal_roll)
         req["advantage"] = RollType.NORMAL;
+
+    if (key_modifiers.whisper)
+        req.whisper = WhisperType.YES;
+    else if (key_modifiers.dont_whisper)
+        req.whisper = WhisperType.NO;
+    else if (is_monster && key_modifiers.whisper_hide_names)
+        req.whisper = WhisperType.HIDE_NAMES;
 
         
     if (req.whisper === WhisperType.QUERY)

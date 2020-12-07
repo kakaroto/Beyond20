@@ -1409,6 +1409,9 @@ const BINDING_NAMES = {
     advantage: "Roll with Advantage",
     disadvantage: "Roll with Disadvantage",
     normal_roll: "Normal Roll",
+    whisper: "Whisper Rolls",
+    dont_whisper: "Don't Whisper Rolls",
+    whisper_hide_names: "Hide Monster Name & Attack",
 }
 
 function configureHotKey(bindings, bindings_div, html, key) {

@@ -232,6 +232,13 @@ async function sendRoll(character, rollType, fallback, args) {
     else if (key_modifiers.normal_roll)
         req["advantage"] = RollType.NORMAL;
 
+    if (key_modifiers.whisper)
+        req.whisper = WhisperType.YES;
+    else if (key_modifiers.dont_whisper)
+        req.whisper = WhisperType.NO;
+    else if (is_monster && key_modifiers.whisper_hide_names)
+        req.whisper = WhisperType.HIDE_NAMES;
+
         
     if (req.whisper === WhisperType.QUERY)
         req.whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
