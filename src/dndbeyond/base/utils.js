@@ -214,10 +214,6 @@ async function sendRoll(character, rollType, fallback, args) {
     if (args["advantage"] == RollType.OVERRIDE_DISADVANTAGE)
         args["advantage"] = advantage == RollType.SUPER_DISADVANTAGE ? RollType.SUPER_DISADVANTAGE : RollType.DISADVANTAGE;
 
-    if (whisper === WhisperType.QUERY)
-        whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
-    if (advantage == RollType.QUERY)
-        advantage = await dndbeyondDiceRoller.queryAdvantage(args.name || rollType);
     // Default advantage/whisper would get overriden if (they are part of provided args;
     const req = {
         action: "roll",
@@ -235,6 +231,12 @@ async function sendRoll(character, rollType, fallback, args) {
         req["advantage"] = RollType.DISADVANTAGE;
     else if (key_modifiers.alt)
         req["advantage"] = RollType.NORMAL;
+
+        
+    if (req.whisper === WhisperType.QUERY)
+        req.whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
+    if (req.advantage === RollType.QUERY)
+        req.advantage = await dndbeyondDiceRoller.queryAdvantage(args.name || rollType);
     if (character.getGlobalSetting("weapon-force-critical", false))
         req["critical-limit"] = 1;
 
