@@ -225,11 +225,11 @@ async function sendRoll(character, rollType, fallback, args) {
     }
     for (let key in args)
         req[key] = args[key];
-    if (key_modifiers.shift)
+    if (key_modifiers.advantage)
         req["advantage"] = RollType.ADVANTAGE;
-    else if (key_modifiers.ctrl)
+    else if (key_modifiers.disadvantage)
         req["advantage"] = RollType.DISADVANTAGE;
-    else if (key_modifiers.alt)
+    else if (key_modifiers.normal_roll)
         req["advantage"] = RollType.NORMAL;
 
         
@@ -265,11 +265,11 @@ function getRollTypeButtonClass(character) {
     let advantage = RollType.NORMAL;
     if (character)
         advantage = parseInt(character.getGlobalSetting("roll-type", RollType.NORMAL));
-    if (key_modifiers.shift)
+    if (key_modifiers.advantage)
         advantage = RollType.ADVANTAGE;
-    else if (key_modifiers.ctrl)
+    else if (key_modifiers.disadvantage)
         advantage = RollType.DISADVANTAGE;
-    else if (key_modifiers.alt)
+    else if (key_modifiers.normal_roll)
         advantage = RollType.NORMAL;
 
     if (advantage == RollType.DOUBLE)

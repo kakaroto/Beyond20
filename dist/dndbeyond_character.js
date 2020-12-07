@@ -3016,22 +3016,30 @@ alertify.set("alert", "title", "Beyond 20");
 alertify.set("notifier", "position", "top-center");
 
 
-const key_modifiers = {"alt": false, "ctrl": false, "shift": false}
-checkKeyModifiers = (event) => {
+const key_modifiers = {
+    advantage: false,
+    disadvantage: false,
+    normal_roll: false
+};
+const key_bindings = {
+    Shift: "advantage",
+    Control: "disadvantage",
+    Alt: "normal_roll"
+};
+const checkKeyModifiers = (event) => {
     if (event.originalEvent.repeat) return;
-    needsUpdate = Object.values(key_modifiers).some((v) => v);
-    key_modifiers.ctrl = event.ctrlKey || event.metaKey;
-    key_modifiers.shift = event.shiftKey;
-    key_modifiers.alt = event.altKey;
-    needsUpdate = needsUpdate || Object.values(key_modifiers).some((v) => v);
-    if (needsUpdate)
+    const oldValue = key_modifiers.advantage << 0 | key_modifiers.disadvantage << 1 | key_modifiers.normal_roll << 2;
+    const modifier = key_bindings[event.key];
+    if (modifier)
+        key_modifiers[modifier] = event.type === "keydown";
+    const newValue = key_modifiers.advantage << 0 | key_modifiers.disadvantage << 1 | key_modifiers.normal_roll << 2;
+    if (oldValue !== newValue)
         updateRollTypeButtonClasses();
 }
-resetKeyModifiers = (event) => {
-    needsUpdate = Object.values(key_modifiers).some((v) => v);
-    key_modifiers.ctrl = false;
-    key_modifiers.shift = false;
-    key_modifiers.alt = false;
+const resetKeyModifiers = (event) => {
+    const needsUpdate = key_modifiers.advantage || key_modifiers.disadvantage || key_modifiers.normal_roll;
+    for (const key in key_modifiers)
+        key_modifiers[key] = false;
     if (needsUpdate)
         updateRollTypeButtonClasses();
 }
@@ -3264,11 +3272,11 @@ async function sendRoll(character, rollType, fallback, args) {
     }
     for (let key in args)
         req[key] = args[key];
-    if (key_modifiers.shift)
+    if (key_modifiers.advantage)
         req["advantage"] = RollType.ADVANTAGE;
-    else if (key_modifiers.ctrl)
+    else if (key_modifiers.disadvantage)
         req["advantage"] = RollType.DISADVANTAGE;
-    else if (key_modifiers.alt)
+    else if (key_modifiers.normal_roll)
         req["advantage"] = RollType.NORMAL;
 
         
@@ -3304,11 +3312,11 @@ function getRollTypeButtonClass(character) {
     let advantage = RollType.NORMAL;
     if (character)
         advantage = parseInt(character.getGlobalSetting("roll-type", RollType.NORMAL));
-    if (key_modifiers.shift)
+    if (key_modifiers.advantage)
         advantage = RollType.ADVANTAGE;
-    else if (key_modifiers.ctrl)
+    else if (key_modifiers.disadvantage)
         advantage = RollType.DISADVANTAGE;
-    else if (key_modifiers.alt)
+    else if (key_modifiers.normal_roll)
         advantage = RollType.NORMAL;
 
     if (advantage == RollType.DOUBLE)

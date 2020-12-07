@@ -1,20 +1,28 @@
 
-const key_modifiers = {"alt": false, "ctrl": false, "shift": false}
-checkKeyModifiers = (event) => {
+const key_modifiers = {
+    advantage: false,
+    disadvantage: false,
+    normal_roll: false
+};
+const key_bindings = {
+    Shift: "advantage",
+    Control: "disadvantage",
+    Alt: "normal_roll"
+};
+const checkKeyModifiers = (event) => {
     if (event.originalEvent.repeat) return;
-    needsUpdate = Object.values(key_modifiers).some((v) => v);
-    key_modifiers.ctrl = event.ctrlKey || event.metaKey;
-    key_modifiers.shift = event.shiftKey;
-    key_modifiers.alt = event.altKey;
-    needsUpdate = needsUpdate || Object.values(key_modifiers).some((v) => v);
-    if (needsUpdate)
+    const oldValue = key_modifiers.advantage << 0 | key_modifiers.disadvantage << 1 | key_modifiers.normal_roll << 2;
+    const modifier = key_bindings[event.key];
+    if (modifier)
+        key_modifiers[modifier] = event.type === "keydown";
+    const newValue = key_modifiers.advantage << 0 | key_modifiers.disadvantage << 1 | key_modifiers.normal_roll << 2;
+    if (oldValue !== newValue)
         updateRollTypeButtonClasses();
 }
-resetKeyModifiers = (event) => {
-    needsUpdate = Object.values(key_modifiers).some((v) => v);
-    key_modifiers.ctrl = false;
-    key_modifiers.shift = false;
-    key_modifiers.alt = false;
+const resetKeyModifiers = (event) => {
+    const needsUpdate = key_modifiers.advantage || key_modifiers.disadvantage || key_modifiers.normal_roll;
+    for (const key in key_modifiers)
+        key_modifiers[key] = false;
     if (needsUpdate)
         updateRollTypeButtonClasses();
 }
