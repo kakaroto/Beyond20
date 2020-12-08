@@ -576,13 +576,13 @@ const character_settings = {
         "default": true
     },
     "sharpshooter": {
-        "title": "Fighter: Sharpshooter (Apply to next roll only)",
+        "title": "Feat: Sharpshooter (Apply to next roll only)",
         "description": "Apply Sharpshooter -5 penalty to roll and +10 to damage",
         "type": "bool",
         "default": false
     },
     "great-weapon-master": {
-        "title": "Great Weapon Master Feat (Apply to next roll only)",
+        "title": "Feat: Great Weapon Master (Apply to next roll only)",
         "description": "Apply Great Weapon Master -5 penalty to roll and +10 to damage",
         "type": "bool",
         "default": false
@@ -595,7 +595,7 @@ const character_settings = {
     },
 
     "barbarian-rage": {
-        "title": "Rage: You are raging, ARRGGHHHHHH",
+        "title": "Barbarian: Rage! You are raging, ARRGGHHHHHH",
         "description": "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws",
         "type": "bool",
         "default": false
