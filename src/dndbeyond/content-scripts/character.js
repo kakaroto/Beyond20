@@ -2017,7 +2017,7 @@ function handleMessage(request, sender, sendResponse) {
         } else if (request.type == "character" && request.id == character._id) {
             if (character._settings && request.settings["last-features-classes"] &&
                 character._settings["last-features-classes"] !== request.settings["last-features-classes"]) {
-                alertify.success("Character's class features parsed successfully.");
+                alertify.success("Beyond20: Character's class features parsed successfully.");
             }
             character.updateSettings(request.settings);
         } else {
