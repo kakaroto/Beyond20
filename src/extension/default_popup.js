@@ -4,8 +4,16 @@ from utils import isFVTT, injectPageScript;
 */
 
 function createOptionList() {
-    $("main").prepend(E.ul({ class: "list-group beyond20-options" }, createHTMLOptionEx("donate", options_list["donate"], true)));
-    $(".beyond20-options").append(
+    $("main").prepend(E.ul({ class: "list-group beyond20-options" }));
+    const options = $(".beyond20-options");
+    options.append(createHTMLOptionEx("default-popup", {
+        "title": "Not a D&D Beyond or VTT page",
+        "description": "Open a D&D Beyond character sheet and try again.\n"  +
+                        "VTT and Character specific options will be available from their respective pages.",
+        "type": "info"
+    }));
+    options.append(createHTMLOptionEx("donate", options_list["donate"], true));
+    options.append(
         E.li({ class: "list-group-item beyond20-option" },
             E.a({ id: "openOptions", class: "list-content", href: '#' },
                 E.h4({}, "Beyond20 Options")
