@@ -4872,7 +4872,7 @@ function sendRollWithCharacter(rollType, fallback, args) {
         args.d20 = args.d20 || "1d20";
         args.d20 += "ro<=1";
     }
-    sendRoll(character, rollType, fallback, args);
+    return sendRoll(character, rollType, fallback, args);
 }
 
 
@@ -4975,7 +4975,7 @@ async function rollSkillCheck(paneClass) {
             roll_properties.d20 = `1d20min${min}`
         }
     }
-    sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
+    return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 
 function rollAbilityOrSavingThrow(paneClass, rollType) {
@@ -5035,7 +5035,7 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
     if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
 
-    sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
+    return sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
 }
 
 function rollAbilityCheck() {
@@ -5069,7 +5069,7 @@ function rollInitiative() {
     const roll_properties = { "initiative": initiative }
     if (advantage)
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-    sendRollWithCharacter("initiative", "1d20" + initiative, roll_properties);
+    return sendRollWithCharacter("initiative", "1d20" + initiative, roll_properties);
 }
 
 
@@ -5079,7 +5079,7 @@ function rollHitDie(multiclass, index) {
     const class_name = hitdie.find(".ct-reset-pane__hitdie-heading-class").text();
     const text = hitdie.find(".ct-reset-pane__hitdie-heading").text();
     const die = text.split("Hit Die: ")[1].split(" ")[0];
-    sendRollWithCharacter("hit-dice", die, {
+    return sendRollWithCharacter("hit-dice", die, {
         "class": class_name,
         "multiclass": multiclass,
         "hit-dice": die
@@ -5447,7 +5447,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
 
-        sendRollWithCharacter("attack", damages[0], roll_properties);
+        return sendRollWithCharacter("attack", damages[0], roll_properties);
     } else if (!force_display && (is_tool || is_instrument) && character._abilities.length > 0) {
         const proficiencies = {}
         proficiencies["None"] = 0;
@@ -5494,11 +5494,11 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 // Sorcerer: Clockwork Soul - Trance of Order
                 if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
                     roll_properties.d20 = "1d20min10";
-                sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
+                return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
             }
         });
     } else {
-        sendRollWithCharacter("item", 0, {
+        return sendRollWithCharacter("item", 0, {
             "name": item_name,
             "description": description,
             "item-type": item_type,
@@ -5522,7 +5522,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             superiority_die += " + " + character.getAbility("DEX").mod;
         else if (action_name === "Rally")
             superiority_die += " + " + character.getAbility("CHA").mod;
-        sendRollWithCharacter("custom", superiority_die, {
+        return sendRollWithCharacter("custom", superiority_die, {
             "name": action_name,
             "description": description,
             "modifier": superiority_die
@@ -5530,7 +5530,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
     } else if (action_name == "Bardic Inspiration" || action_parent == "Blade Flourish") {
         const bard_level = character.getClassLevel("Bard");
         inspiration_die = bard_level < 5 ? "1d6" : (bard_level < 10 ? "1d8" : (bard_level < 15 ? "1d10" : "1d12"));
-        sendRollWithCharacter("custom", inspiration_die, {
+        return sendRollWithCharacter("custom", inspiration_die, {
             "name": action_name,
             "description": description,
             "modifier": inspiration_die
@@ -5712,9 +5712,9 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
-        sendRollWithCharacter("attack", damages[0], roll_properties);
+        return sendRollWithCharacter("attack", damages[0], roll_properties);
     } else {
-        sendRollWithCharacter("action", 0, {
+        return sendRollWithCharacter("action", 0, {
             "name": action_name,
             "description": description
         });
@@ -6007,7 +6007,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
 
-        sendRollWithCharacter("spell-attack", damages[0] || "", roll_properties);
+        return sendRollWithCharacter("spell-attack", damages[0] || "", roll_properties);
     } else {
         const roll_properties = {
             "name": spell_name,
@@ -6022,7 +6022,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         }
         if (castas != "" && !level.startsWith(castas))
             roll_properties["cast-at"] = castas;
-        sendRollWithCharacter("spell-card", 0, roll_properties);
+        return sendRollWithCharacter("spell-card", 0, roll_properties);
     }
 }
 
@@ -6052,7 +6052,7 @@ function displayFeature(paneClass) {
             description = `${description}\n> ${choiceText}`;
         }
     }
-    sendRollWithCharacter("feature", 0, {
+    return sendRollWithCharacter("feature", 0, {
         "name": name,
         "source": source,
         "source-type": source_type,
@@ -6063,7 +6063,7 @@ function displayFeature(paneClass) {
 function displayTrait() {
     const trait = $(".ct-sidebar__heading").text();
     const description = descriptionToString(".ct-trait-pane__input");
-    sendRollWithCharacter("trait", 0, {
+    return sendRollWithCharacter("trait", 0, {
         "name": trait,
         "description": description
     });
@@ -6072,7 +6072,7 @@ function displayTrait() {
 function displayBackground() {
     const background = $(".ct-sidebar__heading").text();
     const description = descriptionToString(".ct-background-pane__description > p");
-    sendRollWithCharacter("trait", 0, {
+    return sendRollWithCharacter("trait", 0, {
         name: background,
         source: "Bakground",
         description: description
@@ -6082,7 +6082,7 @@ function displayBackground() {
 function displayAction(paneClass) {
     const action_name = $(".ct-sidebar__heading").text();
     const description = descriptionToString(".ct-action-detail__description");
-    sendRollWithCharacter("action", 0, {
+    return sendRollWithCharacter("action", 0, {
         "name": action_name,
         "description": description
     });
@@ -6091,7 +6091,7 @@ function displayAction(paneClass) {
 function displayInfusion() {
     const infusion = $(".ct-sidebar__heading").text();
     const description = descriptionToString(".ct-infusion-choice-pane__description");
-    sendRollWithCharacter("trait", 0, {
+    return sendRollWithCharacter("trait", 0, {
         "name": infusion,
         "description": description,
         "item-type": "Infusion",
@@ -6125,11 +6125,11 @@ function handleCustomText(paneClass) {
     return customRolls;
 }
 
-function execute(paneClass, {force_to_hit_only = false, force_damages_only = false, spell_group=null}={}) {
+async function execute(paneClass, {force_to_hit_only = false, force_damages_only = false, spell_group=null}={}) {
     console.log("Beyond20: Executing panel : " + paneClass, force_to_hit_only, force_damages_only);
-    const rollCustomText = (customTextList) => {
+    const rollCustomText = async (customTextList) => {
         for (const customText of customTextList) {
-            sendRollWithCharacter("chat-message", 0, {
+            await sendRollWithCharacter("chat-message", 0, {
                 name: "",
                 message: customText
             });
@@ -6137,46 +6137,46 @@ function execute(paneClass, {force_to_hit_only = false, force_damages_only = fal
      };
      
     const customTextRolls = handleCustomText(paneClass);
-    rollCustomText(customTextRolls.before);
+    await rollCustomText(customTextRolls.before);
     if (customTextRolls.replace.length > 0) {
-        rollCustomText(customTextRolls.replace);
+        await rollCustomText(customTextRolls.replace);
     } else {
         if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
-            rollSkillCheck(paneClass);
+            await rollSkillCheck(paneClass);
         else if (paneClass == "ct-ability-pane")
-            rollAbilityCheck();
+            await rollAbilityCheck();
         else if (paneClass == "ct-ability-saving-throws-pane")
-            rollSavingThrow();
+            await rollSavingThrow();
         else if (paneClass == "ct-initiative-pane")
-            rollInitiative();
+            await rollInitiative();
         else if (paneClass == "ct-item-pane")
-            rollItem(false, force_to_hit_only, force_damages_only, spell_group);
+            await rollItem(false, force_to_hit_only, force_damages_only, spell_group);
         else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
-            rollAction(paneClass, force_to_hit_only, force_damages_only);
+            await rollAction(paneClass, force_to_hit_only, force_damages_only);
         else if (paneClass == "ct-spell-pane")
-            rollSpell(false, force_to_hit_only, force_damages_only);
+            await rollSpell(false, force_to_hit_only, force_damages_only);
         else
-            displayPanel(paneClass);
+            await displayPanel(paneClass);
     }
-    rollCustomText(customTextRolls.after);
+    await rollCustomText(customTextRolls.after);
 }
 
 function displayPanel(paneClass) {
     console.log("Beyond20: Displaying panel : " + paneClass);
     if (paneClass == "ct-item-pane")
-        displayItem();
+        return displayItem();
     else if (paneClass == "ct-infusion-choice-pane")
-        displayInfusion();
+        return displayInfusion();
     else if (paneClass == "ct-spell-pane")
-        displaySpell();
+        return displaySpell();
     else if (["ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane"].includes(paneClass))
-        displayFeature(paneClass);
+        return displayFeature(paneClass);
     else if (paneClass == "ct-trait-pane")
-        displayTrait();
+        return displayTrait();
     else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
-        displayAction(paneClass);
+        return displayAction(paneClass);
     else if (paneClass == "ct-background-pane")
-        displayBackground();
+        return displayBackground();
     else
         alertify.alert("Not recognizing the currently open sidebar");
 }
