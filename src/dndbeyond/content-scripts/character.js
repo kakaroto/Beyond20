@@ -364,6 +364,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
         }
         if (to_hit !== null && 
             character.getSetting("sharpshooter", false) &&
+            character.hasFeat("Sharpshooter") &&
             properties["Attack Type"] == "Ranged" &&
             properties["Proficient"] == "Yes") {
             to_hit += " - 5";
@@ -373,6 +374,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
         }
         if (to_hit !== null && 
             character.getSetting("great-weapon-master", false) &&
+            character.hasFeat("Great Weapon Master") &&
             properties["Attack Type"] == "Melee" &&
             properties["Properties"].includes("Heavy") &&
             properties["Proficient"] == "Yes") {
