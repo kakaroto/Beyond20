@@ -5072,7 +5072,7 @@ function rollHitDie(multiclass, index) {
     });
 }
 
-async function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false) {
+function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, spell_group = null) {
     const prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
     const properties = propertyListToDict(prop_list);
     properties["Properties"] = properties["Properties"] || "";
