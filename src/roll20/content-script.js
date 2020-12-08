@@ -544,7 +544,10 @@ function rollSpellAttack(request, custom_roll_dice) {
             }
         }
     }
-
+    if (settings["roll20-spell-description-display"] === true) {
+		properties["desc"] = properties["desc"] ? properties["desc"] + "\n\n" : "";
+		properties["desc"] += `\n\nDescription: ${request.description}`;
+    }
     if (request.rollDamage && !request.rollAttack) {
         template_type = "dmg";
         dmg_props["charname"] = request.character.name;

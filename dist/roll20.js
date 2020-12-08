@@ -422,6 +422,13 @@ const options_list = {
         "choices": { "all": "All components", "material": "Only material components", "none": "Do not display anything" }
     },
 
+    "roll20-spell-description-display": {
+        "title": "Display Spell Descriptions in spell attacks",
+        "description": "When doing a spell attack, display the spells full description (Roll20 only toggle)",
+        "type": "bool",
+        "default": false
+    },
+
     "component-prefix": {
         "title": "Component Prefix",
         "description": "Prefix to the components display of a spell attack.\nIf displaying material components only, you may want to set it to 'Materials used :' for example",
@@ -3534,7 +3541,10 @@ function rollSpellAttack(request, custom_roll_dice) {
             }
         }
     }
-
+    if (settings["roll20-spell-description-display"] === true) {
+		properties["desc"] = properties["desc"] ? properties["desc"] + "\n\n" : "";
+		properties["desc"] += `\n\nDescription: ${request.description}`;
+    }
     if (request.rollDamage && !request.rollAttack) {
         template_type = "dmg";
         dmg_props["charname"] = request.character.name;
