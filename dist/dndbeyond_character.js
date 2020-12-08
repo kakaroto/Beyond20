@@ -5105,6 +5105,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
     const item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name")[0].firstChild.textContent;
     const item_type = $(".ct-item-detail__intro").text();
     const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
+    const item_customizations = $(".ct-item-pane .ct-item-detail__class-customize-item .ddbc-checkbox--is-enabled .ddbc-checkbox__label").toArray().map(e => e.textContent);
     const source = item_type.trim().toLowerCase();
     const is_tool = source === "tool, common" || (source === "gear, common" && item_name.endsWith("Tools"));
     const is_instrument =  item_tags.includes("Instrument");
@@ -5449,6 +5450,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             force_to_hit_only,
             force_damages_only);
         roll_properties["item-type"] = item_type;
+        roll_properties["item-customizations"] = item_customizations;
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
         const custom_critical_limit = parseInt(character.getSetting("custom-critical-limit", ""))
