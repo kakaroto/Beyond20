@@ -18,6 +18,14 @@ If you don't even have 2 minutes to spend watching that, then here are some scre
 
 ![up](images/up-arrow.png){:height="16px"} This shows Beyond20 (v0.3) running on Firefox and sending rolls to Foundry VTT. Notice the roll details showing as a tooltip on mouse hover, spell cards and weapon descriptions are expandable/collapsable in attacks as well.
 
+[![s1](images/screenshots/digital-dice-crit.gif)](images/screenshots/digital-dice-crit.gif)
+
+![up](images/up-arrow.png){:height="16px"} Beyond20 supports integration with D&D Beyond's Digital Dice. See it in action here!
+
+[![s1](images/screenshots/beyond20-hotkeys.gif)](images/screenshots/beyond20-hotkeys.gif)
+
+![up](images/up-arrow.png){:height="16px"} A high level of customization lets you control exactly how your rolls are handled, and you can even set hotkeys to enable and disable specific options or character specific class features.
+
 [![s2](images/screenshots/spell-cast.png)](images/screenshots/spell-cast.png)
 
 ![up](images/up-arrow.png){:height="16px"} This shows how a spell card is displayed in Roll20 as well as an attack spell beingcast :
