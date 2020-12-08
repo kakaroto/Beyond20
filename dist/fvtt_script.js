@@ -1403,19 +1403,21 @@ function configureHotKey(bindings, bindings_div, html, key) {
             </div>
         `)
         const select = actions.find("select");
-        select.append($(`<optgroup label="Override Global Settings">`));
+        let group = $(`<optgroup label="Override Global Settings"></optgroup>`);
+        select.append(group);
         for (const action in BINDING_NAMES) {
             if (!action) continue;
-            select.append($(`
+            group.append($(`
                 <option value="${action}" ${bindings[key] === action ? "selected": ""}>${BINDING_NAMES[action]}</option>
             `));
         }
-        select.append($(`<optgroup label="Temporarily toggle Character-Specific setting">`));
+        group = $(`<optgroup label="Temporarily toggle Character-Specific setting"></optgroup>`)
+        select.append(group);
         for (const name in character_settings) {
             const option = character_settings[name];
             const action = `option-${name}`;
             if (option.hidden || option.type !== "bool") continue;
-            select.append($(`
+            group.append($(`
                 <option value="${action}" ${bindings[key] === action ? "selected": ""}>${option.title}</option>
             `));
         }
