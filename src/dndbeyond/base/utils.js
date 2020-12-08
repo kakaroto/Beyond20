@@ -208,6 +208,10 @@ async function sendRoll(character, rollType, fallback, args) {
     let is_monster = character.type() == "Monster" || character.type() == "Vehicle";
     if (is_monster && whisper_monster != WhisperType.NO)
         whisper = whisper_monster;
+    // Let the spell card display appear uncensored
+    if (rollType === "spell-card" && whisper === WhisperType.HIDE_NAMES)
+        whisper = WhisperType.NO;
+
     advantage = parseInt(character.getGlobalSetting("roll-type", RollType.NORMAL));
     if (args["advantage"] == RollType.OVERRIDE_ADVANTAGE)
         args["advantage"] = advantage == RollType.SUPER_ADVANTAGE ? RollType.SUPER_ADVANTAGE : RollType.ADVANTAGE;
