@@ -545,17 +545,8 @@ function rollSpellAttack(request, custom_roll_dice) {
         }
     }
     if (settings["roll20-spell-description-display"] === true) {
-        if (settings["components-display"] === "all") {
-            properties["desc"] += "\n\nDescription: " + request.description;
-        } else if (settings["components-display"] === "material") {
-            if (properties["desc"] != undefined) {
-                properties["desc"] += "\n\nDescription: " + request.description;
-            } else {
-                properties["desc"] = "Description: " + request.description;
-            }
-        } else {
-            properties["desc"] = "Description: " + request.description;
-        }
+		properties["desc"] = properties["desc"] ? properties["desc"] + "\n\n" : "";
+		properties["desc"] += `\n\nDescription: ${request.description}`;
     }
     if (request.rollDamage && !request.rollAttack) {
         template_type = "dmg";
