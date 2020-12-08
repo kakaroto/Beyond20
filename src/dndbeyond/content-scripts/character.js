@@ -553,6 +553,17 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     brutal += 1;
             }
         }
+
+        //Artificer Battlemaster Arcane Jolt
+        // TODO: Implement for Steel Defender at later date
+        if (damages.length > 0 &&
+            character.hasClassFeature("Arcane Jolt") &&
+            character.getSetting("artificer-arcane-jolt", false) &&
+            item_type.indexOf(", Common") === -1) {
+            damages.push(character._level < 15 ? "2d6" : "4d6");
+            damage_types.push("Arcane Jolt");
+        }
+
         const roll_properties = buildAttackRoll(character,
             "item",
             item_name,
