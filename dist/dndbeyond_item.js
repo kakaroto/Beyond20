@@ -3008,10 +3008,12 @@ class DigitalDice {
             await dice.handleModifiers();
         this._rolls.forEach(roll => roll.calculateTotal());
         
-        this._myResult.find(".dice_result__total-result").text(this._rolls[0].total);
-        this._myResult.find(".dice_result__info__results .dice_result__info__breakdown").text(this._rolls[0].formula)
-        this._myResult.find(".dice_result__info__dicenotation").text(`${this._rolls.length} roll${this._rolls.length > 1 ? 's' : ''} sent to VTT`)
-            .prepend(E.img({ src: chrome.extension.getURL("images/icons/icon32.png") }))
+        if (this._myResult) {
+            this._myResult.find(".dice_result__total-result").text(this._rolls[0].total);
+            this._myResult.find(".dice_result__info__results .dice_result__info__breakdown").text(this._rolls[0].formula)
+            this._myResult.find(".dice_result__info__dicenotation").text(`${this._rolls.length} roll${this._rolls.length > 1 ? 's' : ''} sent to VTT`)
+                .prepend(E.img({ src: chrome.extension.getURL("images/icons/icon32.png") }))
+        }
     }
 
 }
@@ -3048,12 +3050,16 @@ class DigitalDiceManager {
         return this._handleNewNotification(newNotification);
     }
     static _handleNewNotification(notification) {
-        const pendingRoll = this._pendingRolls.shift();
+        const pendingRoll = this._pendingRolls[0];
         if (!pendingRoll) {
             return this._parseCustomRoll(notification);
         }
         const [roll, resolver] = pendingRoll;
         roll.parseNotification(notification)
+        this._finishPendingRoll();
+    }
+    static _finishPendingRoll() {
+        const [roll, resolver] = this._pendingRolls.shift()
         roll.handleCompletedRoll().then(resolver);
         if (this._pendingRolls.length > 0) {
             const nextRoll = this._pendingRolls[0][0];
@@ -3076,6 +3082,9 @@ class DigitalDiceManager {
             diceRolled += this.rollDice(dice.amount, `d${dice.faces}`);
         if (diceRolled > 0) {
             this._makeRoll();
+        } else {
+            this.clear();
+            this._finishPendingRoll()
         }
     }
     static _parseCustomRoll(notification) {
