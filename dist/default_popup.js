@@ -423,13 +423,6 @@ const options_list = {
         "choices": { "all": "All components", "material": "Only material components", "none": "Do not display anything" }
     },
 
-    "roll20-spell-description-display": {
-        "title": "Display Spell Descriptions in spell attacks",
-        "description": "When doing a spell attack, display the spells full description (Roll20 only toggle)",
-        "type": "bool",
-        "default": false
-    },
-
     "component-prefix": {
         "title": "Component Prefix",
         "description": "Prefix to the components display of a spell attack.\nIf displaying material components only, you may want to set it to 'Materials used :' for example",
@@ -740,7 +733,6 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
-<<<<<<< HEAD
     "cleric-blessed-strikes": {
         "title": "Cleric: Blessed Strikes",
         "description": "Deal an extra 1d8 damage on damaging cantrips and weapon attacks",
@@ -762,11 +754,12 @@ const character_settings = {
     "eldritch-invocation-lifedinker": {
         "title": "Eldritch Invocation: Lifedrinker",
         "description": "Your pact weapon drips with necrotic energy, lending extra damage to your strikes",
-=======
+        "type": "bool",
+        "default": false
+    },
     "artificer-arcane-jolt": {
         "title": "Artificer: Use Arcane Jolt",
         "description": "Apply an Arcane Jolt to you or your Steel Defender's Weapon Attacks. Deals extra 2d6 damage, or 4d6 at Artificer Level 15+",
->>>>>>> 820de29 (Implement Artificer: Battlesmith Arcane Jolt)
         "type": "bool",
         "default": false
     }
