@@ -3922,6 +3922,9 @@ function handleMessage(request, sender, sendResponse) {
             roll = rollAvatarDisplay(request);
             const character_name = request.whisper !== WhisperType.NO ? "???" : request.character.name;
             return postChatMessage(roll, character_name);
+        } else if (request.type == "chat-message") {
+            const character_name = request.whisper == WhisperType.HIDE_NAMES ? "???" : request.character.name;
+            return postChatMessage(request.message, character_name);
         }
         const isOGL = $("#isOGL").val() === "1";
         if (settings["roll20-template"] === "default" || !isOGL) {
