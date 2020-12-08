@@ -4319,7 +4319,7 @@ class Monster extends CharacterBase {
             let action = $(block).find(this._base + "__action-station-block-content " + this._base + "__attribute-value");
             if (action_name == "" && action.length == 0) {
                 action_name = $(block).find(this._base + "-action-station__heading").text();
-                action = $(block).find(this._base + "-action-station__action");
+                action = $(block).find(this._base + "__action");
             }
             handleAction(action_name, block, action);
         }
