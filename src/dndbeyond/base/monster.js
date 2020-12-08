@@ -64,7 +64,7 @@ class Monster extends CharacterBase {
             this._avatar = avatar[0].href;
             const avatarImg = $(".details-aside .image");
             if (avatarImg)
-                addRollButton(this, () => this.displayAvatar(), avatarImg, { small: true, image: true, text: "Display in VTT" });
+                addDisplayButton(() => this.displayAvatar(), avatarImg, { small: false, image: true });
         }
         const attributes = stat_block.find(`${base}__attributes ${base}__attribute`);
         for (let attr of attributes.toArray()) {
