@@ -226,7 +226,7 @@ function populateCharacter(response) {
             options.append(e);
         }
         if (response["class-features"].includes("Eldritch Invocations: Lifedrinker")) {
-            e = createHTMLOption("eldritch-invocation-lifedinker", false, character_settings);
+            e = createHTMLOption("eldritch-invocation-lifedrinker", false, character_settings);
             options.append(e);
         }
         if (response["class-features"].includes("Arcane Jolt")) {

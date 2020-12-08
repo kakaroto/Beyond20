@@ -803,7 +803,7 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
-    "eldritch-invocation-lifedinker": {
+    "eldritch-invocation-lifedrinker": {
         "title": "Eldritch Invocation: Lifedrinker",
         "description": "Your pact weapon drips with necrotic energy, lending extra damage to your strikes",
         "type": "bool",
@@ -1874,7 +1874,7 @@ function populateCharacter(response) {
             options.append(e);
         }
         if (response["class-features"].includes("Eldritch Invocations: Lifedrinker")) {
-            e = createHTMLOption("eldritch-invocation-lifedinker", false, character_settings);
+            e = createHTMLOption("eldritch-invocation-lifedrinker", false, character_settings);
             options.append(e);
         }
         if (response["class-features"].includes("Arcane Jolt")) {

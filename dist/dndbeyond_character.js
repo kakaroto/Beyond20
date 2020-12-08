@@ -757,7 +757,7 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
-    "eldritch-invocation-lifedinker": {
+    "eldritch-invocation-lifedrinker": {
         "title": "Eldritch Invocation: Lifedrinker",
         "description": "Your pact weapon drips with necrotic energy, lending extra damage to your strikes",
         "type": "bool",
@@ -5264,7 +5264,8 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             to_hit += "+" + charisma_attack_mod;
         }
         if (to_hit !== null && 
-            character.getSetting("eldritch-invocation-lifedinker", false)) {
+            character.getSetting("eldritch-invocation-lifedrinker", false) &&
+            item_customizations.includes("Pact Weapon")) {
             const charisma_damage_mod =  Math.max(character.getAbility("CHA").mod, 1);
             damages.push(`${charisma_damage_mod}`);
             damage_types.push("Lifedrinker");

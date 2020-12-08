@@ -758,7 +758,7 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
-    "eldritch-invocation-lifedinker": {
+    "eldritch-invocation-lifedrinker": {
         "title": "Eldritch Invocation: Lifedrinker",
         "description": "Your pact weapon drips with necrotic energy, lending extra damage to your strikes",
         "type": "bool",
