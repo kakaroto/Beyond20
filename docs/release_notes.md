@@ -1,3 +1,29 @@
+v2.3.0
+===
+
+Hi everyone!
+
+I'm really happy with this new Beyond20 release, as I finally implemented a frequently requested and one of the most postponed features in the history of Beyond20: Custom Hotkeys!
+
+Let's start with the boring part: Bugfixes, bugfixes and as always, more bugfixes. The most important one is the fact that last week, Roll20 changed something in the way their website works and it broke the detection of the OGL sheet, causing the rolls to use the default sheet template (the purple box) which isn't a fan favorite. This is now, of course, fixed. Also worth noting, is the improved and more stable support for Astral Tabletop by `@adriangaro`.
+
+The new feature that got me the most excited about though is the new hotkeys manager. You can now go to Beyond20's options and configure custom hotkeys for anything you may want. Other than the usual Shift/Ctrl/Alt to do rolls with advantage/disadvantage/normal, you can now set a hotkey for enabling or disabling whispers, for using your versatile weapons one-handed or two-handed, for adding custom dice to your rolls, or to toggle any of your character specific features!
+
+![s1](images/screenshots/beyond20-hotkeys.gif)
+
+A couple of other features that I'm happy to finally see added is the support to send to the VTT custom rolls from D&D Beyond's Digital Dice roller, as well as the ability to roll weapon attacks with spells that add damages to it (such as Greenflame Blade and Booming Blade).
+
+As always, `@Aeristoka` has been hard at work implementing support for all the new special class features and feats from the D&D rule books, and we now support all the new content from Tasha's Cauldron of Everything as well.
+
+Thanks to everyone who submitted bug reports, who suggested feature requests, those who contributed to the project with their own pull requests (`@Aeristoka`, `@adriangaro`, `@rispig`, `@flangelier` and `@Kvalyr`) as well as those who answer questions and offer tech support to others in our [Discord server](https://discord.gg/ZAasSVS).
+
+A big thank you as well to all my [Patrons](https://patreon.com/kakaroto) as well as those who sent their support via [ko-fi or github](/rations), and for all the encouragement I received over the past few months. You keep motivating me to continue supporting this amazing software that I love, despite my perpetually full schedule.
+
+For anyone who was interested in trying out [Foundry VTT](https://foundryvtt.com), but you've been put off by the initial license purchase requirement, one of the recent features I added to [The Forge](https://forge-vtt.com/?referral=beyond20) is the ability to try out and explore Foundry and all of its features before buying it, so head over to The Forge, and click the "Try Foundry Now" button to give it a try with a temporary license so you can see how amazing Foundry is, before you buy it. Then when you do, I'd appreciate it if you also used [The Forge](https://forge-vtt.com/?referral=beyond20) for your hosting services :)
+
+Enjoy this release, and happy dice rolling!
+
+
 v2.2.1
 ===
 
