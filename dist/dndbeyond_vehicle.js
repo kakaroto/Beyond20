@@ -1369,7 +1369,17 @@ const BINDING_NAMES = {
     dont_whisper: "Don't Whisper Rolls",
     whisper_hide_names: "Hide Monster Name & Attack",
     versatile_one_handed: "Use Versatile Weapon One-handed",
-    versatile_two_handed: "Use Versatile Weapon Two-handed"
+    versatile_two_handed: "Use Versatile Weapon Two-handed",
+    custom_add_d4: "Custom modifier: + 1d4 (Bless/Guidance)",
+    custom_sub_d4: "Custom modifier: - 1d4 (Bane)",
+    custom_add_d6: "Custom modifier: + 1d6",
+    custom_sub_d6: "Custom modifier: - 1d6",
+    custom_add_d8: "Custom modifier: + 1d8",
+    custom_sub_d8: "Custom modifier: - 1d8",
+    custom_add_d10: "Custom modifier: + 1d10",
+    custom_sub_d10: "Custom modifier: - 1d10",
+    custom_add_d12: "Custom modifier: + 1d12",
+    custom_sub_d12: "Custom modifier: - 1d12",
 }
 
 function configureHotKey(bindings, bindings_div, html, key) {
@@ -1406,6 +1416,11 @@ function configureHotKey(bindings, bindings_div, html, key) {
         select.append(group);
         for (const action in BINDING_NAMES) {
             if (!action) continue;
+            if (action === "custom_add_d4") {
+                // Switch group once we get to the custom roll modifiers
+                group = $(`<optgroup label="Apply custom roll modifier"></optgroup>`);
+                select.append(group);
+            }
             group.append($(`
                 <option value="${action}" ${bindings[key] === action ? "selected": ""}>${BINDING_NAMES[action]}</option>
             `));
@@ -3499,6 +3514,29 @@ async function sendRoll(character, rollType, fallback, args) {
     else if (is_monster && key_modifiers.whisper_hide_names)
         req.whisper = WhisperType.HIDE_NAMES;
 
+    // Add custom roll modifiers from hotkeys
+    if (req.character.settings && req.character.settings) {
+        if (key_modifiers.custom_add_d4)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d4";
+        if (key_modifiers.custom_sub_d4)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d4";
+        if (key_modifiers.custom_add_d6)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d6";
+        if (key_modifiers.custom_sub_d6)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d6";
+        if (key_modifiers.custom_add_d8)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d8";
+        if (key_modifiers.custom_sub_d8)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d8";
+        if (key_modifiers.custom_add_d10)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d10";
+        if (key_modifiers.custom_sub_d10)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d10";
+        if (key_modifiers.custom_add_d12)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d12";
+        if (key_modifiers.custom_sub_d12)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d12";
+    }
         
     if (req.whisper === WhisperType.QUERY)
         req.whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);

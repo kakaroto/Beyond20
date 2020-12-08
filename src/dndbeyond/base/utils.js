@@ -243,6 +243,29 @@ async function sendRoll(character, rollType, fallback, args) {
     else if (is_monster && key_modifiers.whisper_hide_names)
         req.whisper = WhisperType.HIDE_NAMES;
 
+    // Add custom roll modifiers from hotkeys
+    if (req.character.settings && req.character.settings) {
+        if (key_modifiers.custom_add_d4)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d4";
+        if (key_modifiers.custom_sub_d4)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d4";
+        if (key_modifiers.custom_add_d6)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d6";
+        if (key_modifiers.custom_sub_d6)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d6";
+        if (key_modifiers.custom_add_d8)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d8";
+        if (key_modifiers.custom_sub_d8)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d8";
+        if (key_modifiers.custom_add_d10)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d10";
+        if (key_modifiers.custom_sub_d10)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d10";
+        if (key_modifiers.custom_add_d12)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d12";
+        if (key_modifiers.custom_sub_d12)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d12";
+    }
         
     if (req.whisper === WhisperType.QUERY)
         req.whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
