@@ -52,10 +52,10 @@ class DNDBDisplayer {
             source,
             attributes,
             description,
-            attack_rolls: attack_rolls.map(r => r.toJSON ? r.toJSON() : r),
+            attack_rolls,
             roll_info,
-            damage_rolls: damage_rolls.map(([l, r, f]) => r.toJSON() ? [l, r.toJSON(), f] : [l, r, f]),
-            total_damages: Object.fromEntries(Object.entries(total_damages).map(([k, v]) => [k, v.toJSON ? v.toJSON() : v])),
+            damage_rolls,
+            total_damages,
             open
         }
         console.log("Sending message: ", req);
