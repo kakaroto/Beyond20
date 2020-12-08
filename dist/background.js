@@ -1528,6 +1528,7 @@ function addHotKeyToUI(bindings, bindings_div, key) {
         configureHotKey(bindings, bindings_div, html, key);
     });
     bindings_div.append(html);
+    return html;
 }
 
 function openHotkeyManager(button) {
@@ -1567,7 +1568,10 @@ function openHotkeyManager(button) {
     add_button.click(ev => {
         if (bindings[null] !== undefined) return;
         bindings[null] = "";
-        addHotKeyToUI(bindings, bindings_div, null);
+        const html = addHotKeyToUI(bindings, bindings_div, null);
+        bindings_div.find(".no-bindings").hide();
+        bindings_div.find(".bindings-header").css({display: "flex"});
+        configureHotKey(bindings, bindings_div, html, null)
     });
 
     alertify.confirm('Beyond20 Hotkey Manager', manager[0], () => {
