@@ -396,23 +396,185 @@ const character_settings = {
         "type": "string",
         "default": ""
     },
-    "rogue-sneak-attack": {
-        "title": "Rogue: Sneak Attack",
-        "description": "Send Sneak Attack damage with each attack roll",
+    "artificer-alchemical-savant": {
+        "title": "Artificer: Alchemist: Alchemical Savant",
+        "description": "Use your Alchemist's supplies as spellcasting focus, dealing extra damage or healing equal to your Intelligence Modifier",
         "type": "bool",
         "default": true
     },
-    "cleric-disciple-life": {
-        "title": "Cleric: Disciple of Life",
-        "description": "Send Disciple of Life healing bonus",
+    "artificer-arcane-firearm": {
+        "title": "Artificer: Artillerist: Use Arcane Firearm",
+        "description": "Use an Arcane Firearm for your Artificer spells. Deals extra 1d8 damage",
         "type": "bool",
-        "default": true
+        "default": false
+    },
+    "artificer-arcane-jolt": {
+        "title": "Artificer: Battle Smith: Arcane Jolt",
+        "description": "Apply an Arcane Jolt to you or your Steel Defender's Weapon Attacks. Deals extra 2d6 damage, or 4d6 at Artificer Level 15+",
+        "type": "bool",
+        "default": false
     },
     "bard-joat": {
         "title": "Bard: Jack of All Trades",
         "description": "Add JoaT bonus to raw ability checks",
         "type": "bool",
         "default": true
+    },
+    "bard-psychic-blades": {
+        "title": "Bard: College of Whispers: Psychic Blades",
+        "description": "Use your Bardic Inspiration to deal extra psychic damage (Apply to next roll only)",
+        "type": "bool",
+        "default": false
+    },
+    "barbarian-rage": {
+        "title": "Barbarian: Rage! You are raging, ARRGGHHHHHH",
+        "description": "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws",
+        "type": "bool",
+        "default": false
+    },
+    "barbarian-divine-fury": {
+        "title": "Barbarian: Path of the Zealot: Divine Fury",
+        "description": "Add Divine Fury damage to your attack (when raging)",
+        "type": "bool",
+        "default": true
+    },
+    "bloodhunter-crimson-rite": {
+        "title": "Bloodhunter: Crimson Rite",
+        "description": "Add Crimson Rite damage",
+        "type": "bool",
+        "default": false
+    },
+    "cleric-blessed-strikes": {
+        "title": "Cleric: Blessed Strikes",
+        "description": "Deal an extra 1d8 damage on damaging cantrips and weapon attacks",
+        "type": "bool",
+        "default": true
+    },
+    "cleric-divine-strike": {
+        "title": "Cleric: Divine Strike",
+        "description": "Deal an extra 1d8 (2d8 at level 14) damage to weapon attacks",
+        "type": "bool",
+        "default": true
+    },
+    "cleric-disciple-life": {
+        "title": "Cleric: Life Domain: Disciple of Life",
+        "description": "Send Disciple of Life healing bonus",
+        "type": "bool",
+        "default": true
+    },
+    "druid-symbiotic-entity": {
+        "title": "Druid: Circle of Spores: Symbiotic Entity",
+        "description": "Your symbiotic entity lends its power to your melee weapon strikes.",
+        "type": "bool",
+        "default": false
+    },
+    "wildfire-spirit-enhanced-bond": {
+        "title": "Druid: Circle of Wildfire: Enhanced Bond",
+        "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
+        "type": "bool",
+        "default": false
+    },
+    "champion-remarkable-athlete": {
+        "title": "Fighter: Champion: Remarkable Athlete",
+        "description": "Add Remarkable Athlete bonus to Strength/Dexterity/Constitution ability checks",
+        "type": "bool",
+        "default": true
+    },
+    "fighter-giant-might": {
+        "title": "Fighter: Rune Knight: Giant’s Might",
+        "description": "Activate Giant’s Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
+        "type": "bool",
+        "default": false
+    },
+    "paladin-improved-divine-smite": {
+        "title": "Paladin: Improved Divine Smite",
+        "description": "Roll an extra 1d8 radiant damage whenever you hit with a melee weapon",
+        "type": "bool",
+        "default": true
+    },
+    "paladin-sacred-weapon": {
+        "title": "Paladin: Oath of Devotion: Sacred Weapon",
+        "description": "Your charisma and deity guide your attacks",
+        "type": "bool",
+        "default": false
+    },
+    "paladin-legendary-strike": {
+        "title": "Paladin: Oath of Heroism: Legendary Strike",
+        "description": "Channel Divinity and score critical hits on rolls of 19 and 20",
+        "type": "bool",
+        "default": false
+    },
+    "paladin-invincible-conqueror": {
+        "title": "Paladin: Oath of Conquest: Invincible Conqueror",
+        "description": "You can harness extraordinary martial prowess for 1 minute.",
+        "type": "bool",
+        "default": false
+    },
+    "fey-wanderer-dreadful-strikes": {
+        "title": "Ranger: Fey Wanderer: Dreadful Strikes",
+        "description": "Imbue your weapons and deal psychic damage to your the minds of your enemies.",
+        "type": "bool",
+        "default": false
+    },
+    "ranger-dread-ambusher": {
+        "title": "Ranger: Gloom Stalker: Dread Ambusher",
+        "description": "Add Dread Ambusher attack 1d8 extra damage",
+        "type": "bool",
+        "default": false
+    },
+    "ranger-planar-warrior": {
+        "title": "Ranger: Horizon Walker: Planar Warrior",
+        "description": "Use your Planar Warrior ability to deal extra Force damage",
+        "type": "bool",
+        "default": false
+    },
+    "ranger-slayers-prey": {
+        "title": "Ranger: Monster Slayer: Slayer's Prey",
+        "description": "Use your Slayer's Prey ability and add 1d6 damage to your target",
+        "type": "bool",
+        "default": false
+    },
+    "ranger-gathered-swarm": {
+        "title": "Ranger: Swarmkeeper: Gathered Swarm",
+        "description": "Use your Gathered Swarm ability to add extra Force damage to your weapon attacks",
+        "type": "bool",
+        "default": false
+    },
+    "rogue-sneak-attack": {
+        "title": "Rogue: Sneak Attack",
+        "description": "Send Sneak Attack damage with each attack roll",
+        "type": "bool",
+        "default": true
+    },
+    "rogue-assassinate": {
+        "title": "Rogue: Assassin: Assassinate surprise attack (Apply to next roll only)",
+        "description": "Roll with advantage and roll critical damage dice",
+        "type": "bool",
+        "default": false
+    },
+    "sorcerer-trance-of-order": {
+        "title": "Sorcerer: Clockwork Soul: Trance of Order",
+        "description": "Align your conciousness to the calculations of Mechanus. You enter a heightened state.",
+        "type": "bool",
+        "default": false
+    },
+    "warlock-hexblade-curse": {
+        "title": "Warlock: The Hexblade: Hexblade's Curse",
+        "description": "Apply the Hexblade's Curse extra damage on attack rolls and score critical hits on rolls of 19 and 20",
+        "type": "bool",
+        "default": false
+    },
+    "eldritch-invocation-lifedrinker": {
+        "title": "Warlock: Eldritch Invocation: Lifedrinker",
+        "description": "Your pact weapon drips with necrotic energy, lending extra damage to your strikes",
+        "type": "bool",
+        "default": false
+    },
+    "wizard-bladesong": {
+        "title": "Wizard: Bladesinger: Bladesong",
+        "description": "Activate your Bladesong and make your weapon sing with magic",
+        "type": "bool",
+        "default": false
     },
     "sharpshooter": {
         "title": "Feat: Sharpshooter (Apply to next roll only)",
@@ -432,172 +594,9 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
-
-    "barbarian-rage": {
-        "title": "Barbarian: Rage! You are raging, ARRGGHHHHHH",
-        "description": "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws",
-        "type": "bool",
-        "default": false
-    },
-    "barbarian-divine-fury": {
-        "title": "Barbarian: Divine Fury",
-        "description": "Add Divine Fury damage to your attack (when raging)",
-        "type": "bool",
-        "default": true
-    },
-    "bloodhunter-crimson-rite": {
-        "title": "Bloodhunter: Crimson Rite",
-        "description": "Add Crimson Rite damage",
-        "type": "bool",
-        "default": false
-    },
-    "ranger-dread-ambusher": {
-        "title": "Ranger: Dread Ambusher",
-        "description": "Add Dread Ambusher attack 1d8 extra damage",
-        "type": "bool",
-        "default": false
-    },
-    "paladin-legendary-strike": {
-        "title": "Paladin: Legendary Strike",
-        "description": "Channel Divinity and score critical hits on rolls of 19 and 20",
-        "type": "bool",
-        "default": false
-    },
-    "paladin-improved-divine-smite": {
-        "title": "Paladin: Improved Divine Smite",
-        "description": "Roll an extra 1d8 radiant damage whenever you hit with a melee weapon",
-        "type": "bool",
-        "default": true
-    },
-    "warlock-hexblade-curse": {
-        "title": "Warlock: Hexblade's Curse",
-        "description": "Apply the Hexblade's Curse extra damage on attack rolls and score critical hits on rolls of 19 and 20",
-        "type": "bool",
-        "default": false
-    },
-    "rogue-assassinate": {
-        "title": "Rogue: Assassinate surprise attack (Apply to next roll only)",
-        "description": "Roll with advantage and roll critical damage dice",
-        "type": "bool",
-        "default": false
-    },
-    "fighter-giant-might": {
-        "title": "Fighter: Giant’s Might",
-        "description": "Activate Giant’s Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
-        "type": "bool",
-        "default": false
-    },
-    "artificer-arcane-firearm": {
-        "title": "Artificer: Use Arcane Firearm",
-        "description": "Use an Arcane Firearm for your Artificer spells. Deals extra 1d8 damage",
-        "type": "bool",
-        "default": false
-    },
-    "cleric-divine-strike": {
-        "title": "Cleric: Divine Strike",
-        "description": "Deal an extra 1d8 (2d8 at level 14) damage to weapon attacks",
-        "type": "bool",
-        "default": true
-    },
-    "bard-psychic-blades": {
-        "title": "Bard: Psychic Blades",
-        "description": "Use your Bardic Inspiration to deal extra psychic damage (Apply to next roll only)",
-        "type": "bool",
-        "default": false
-    },
-    "ranger-planar-warrior": {
-        "title": "Ranger: Planar Warrior",
-        "description": "Use your Planar Warrior ability to deal extra Force damage",
-        "type": "bool",
-        "default": false
-    },
-    "ranger-slayers-prey": {
-        "title": "Ranger: Slayer's Prey",
-        "description": "Use your Slayer's Prey ability and add 1d6 damage to your target",
-        "type": "bool",
-        "default": false
-    },
-    "ranger-gathered-swarm": {
-        "title": "Ranger: Gathered Swarm",
-        "description": "Use your Gathered Swarm ability to add extra Force damage to your weapon attacks",
-        "type": "bool",
-        "default": false
-    },
     "protector-aasimar-radiant-soul": {
         "title": "Protector Aasimar: Radiant Soul",
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
-        "type": "bool",
-        "default": false
-    },
-    "wizard-bladesong": {
-        "title": "Wizard: Bladesong",
-        "description": "Activate your Bladesong and make your weapon sing with magic",
-        "type": "bool",
-        "default": false
-    },
-    "fey-wanderer-dreadful-strikes": {
-        "title": "Fey Wanderer: Dreadful Strikes",
-        "description": "Imbue your weapons and deal psychic damage to your the minds of your enemies.",
-        "type": "bool",
-        "default": false
-    },
-    "champion-remarkable-athlete": {
-        "title": "Champion Fighter: Remarkable Athlete",
-        "description": "Add Remarkable Athlete bonus to Strength/Dexterity/Constitution ability checks",
-        "type": "bool",
-        "default": true
-    },
-    "artificer-alchemical-savant": {
-        "title": "Artificer: Use Alchemical Savant",
-        "description": "Use your Alchemist's supplies as spellcasting focus, dealing extra damage or healing equal to your Intelligence Modifier",
-        "type": "bool",
-        "default": true
-    },
-    "paladin-invincible-conqueror": {
-        "title": "Paladin: Oath of Conquest: Invincible Conqueror",
-        "description": "You can harness extraordinary martial prowess for 1 minute.",
-        "type": "bool",
-        "default": false
-    },
-    "wildfire-spirit-enhanced-bond": {
-        "title": "Wildfire Spirit: Enhanced Bond",
-        "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
-        "type": "bool",
-        "default": false
-    },
-    "paladin-sacred-weapon": {
-        "title": "Oath of Devotion: Sacred Weapon",
-        "description": "Your charisma and deity guide your attacks",
-        "type": "bool",
-        "default": false
-    },
-    "cleric-blessed-strikes": {
-        "title": "Cleric: Blessed Strikes",
-        "description": "Deal an extra 1d8 damage on damaging cantrips and weapon attacks",
-        "type": "bool",
-        "default": true
-    },
-    "sorcerer-trance-of-order": {
-        "title": "Sorcerer: Trance of Order",
-        "description": "Align your conciousness to the calculations of Mechanus. You enter a heightened state.",
-        "type": "bool",
-        "default": false
-    },
-    "druid-symbiotic-entity": {
-        "title": "Circle of Spores: Symbiotic Entity",
-        "description": "Your symbiotic entity lends its power to your melee weapon strikes.",
-        "type": "bool",
-        "default": false
-    },
-    "eldritch-invocation-lifedrinker": {
-        "title": "Eldritch Invocation: Lifedrinker",
-        "description": "Your pact weapon drips with necrotic energy, lending extra damage to your strikes",
-        "type": "bool",
-        "default": false
-    },
-    "artificer-arcane-jolt": {
-        "title": "Artificer: Use Arcane Jolt",
-        "description": "Apply an Arcane Jolt to you or your Steel Defender's Weapon Attacks. Deals extra 2d6 damage, or 4d6 at Artificer Level 15+",
         "type": "bool",
         "default": false
     }
