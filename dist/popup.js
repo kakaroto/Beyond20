@@ -1486,7 +1486,8 @@ function configureHotKey(bindings, bindings_div, html, key) {
         }
         group = $(`<optgroup label="Temporarily toggle Character-Specific setting"></optgroup>`)
         select.append(group);
-        for (const name in character_settings) {
+        for (const [name, value] of Object.entries(character_settings).sort()) {
+        //for (const name in character_settings) {
             const option = character_settings[name];
             const action = `option-${name}`;
             if (option.hidden || option.type !== "bool") continue;
