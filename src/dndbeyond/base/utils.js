@@ -358,6 +358,33 @@ function updateRollTypeButtonClasses(character) {
     $(".beyond20-quick-roll-tooltip .beyond20-quick-roll-icon").attr("src", icon32);
 }
 
+function updateToggles() {
+    let modifiers = "";
+    for (key in key_modifiers){
+        const modifier = key_modifiers[key];
+        if (modifier !== false) {
+            let ability = character_settings[key.replace('option-','')];
+            if (ability !== undefined) {
+                modifiers += "<li>" + ability.title + "</li>";
+            } else {
+                ability = BINDING_NAMES[key];
+                if (ability !== undefined){
+                    modifiers += "<li>" + ability + "</li>";
+                } else {
+                    modifiers += "<li>" + key + "</li>";
+                }
+            }
+        }
+    }
+
+    if (modifiers !== ""){
+        $('#b20-abilities').removeClass('beyond20-abilities-hid');
+        $('#b20-abilities-pop').html("<ul>" + modifiers + "</ul>");
+    } else {
+        $('#b20-abilities').addClass('beyond20-abilities-hid');
+    }
+}
+
 
 const button_class = "ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button";
 const button_class_small = button_class + " character-button-small";
@@ -513,5 +540,9 @@ function beyond20SendMessageFailure(character, response) {
     } else if (response.error) {
         alertify.error("<strong>Beyond 20 : </strong>" + response.error);
     }
+    for (const key in key_modifiers)
+        key_modifiers[key] = false;
+    updateRollTypeButtonClasses();
+    updateToggles();
 }
 

@@ -162,3 +162,26 @@
 .ddbc-box-background {
     pointer-events: none;
 }
+
+.beyond20-abilities-ind {
+   margin: 5px;
+   cursor: pointer;
+}
+
+.beyond20-abilities-hid {
+    display: none;
+}
+
+.beyond20-abilities-list {
+    min-width: 300px;
+    /* min-height: 200px; */
+    background-color: rgb(62, 111, 143);
+    z-index: 1000;
+    position: absolute;
+    border: 1px solid gray;
+    padding: 10px;
+}
+
+.beyond20-abilities-mobi {
+    right: 10px;
+}
