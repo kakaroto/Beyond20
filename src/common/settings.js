@@ -386,7 +386,8 @@ const character_settings = {
     },
     "custom-damage-dice": {
         "title": "Custom Damage dice formula bonus",
-        "description": "Add custom dice to damage rolls (Magic Weapon, Elemental Weapon, Green-flame Blade, etc..). Use a comma to separate multiple independent rolls.",
+        "description": "Add custom dice to damage rolls (Magic Weapon, Elemental Weapon, Green-flame Blade, etc..). Use a comma to separate multiple " +
+            "independent rolls.\nFor macros including commas inside the formula, preceed each comma with \\",
         "type": "string",
         "default": ""
     },

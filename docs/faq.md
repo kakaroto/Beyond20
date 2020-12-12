@@ -102,6 +102,8 @@ Be aware that the roll bonus is applied to all rolls (ability checks, skill chec
 
 For example, if you want it to ask you if you want to apply the Bless bonus on every roll, you could set it to : `+?{Use Bless|Yes,1d4|No,0}`
 
+To use such macro in a damage bonus, preceed commas with `\`. For example: `?{Use Hex|Yes\,1d6|No\,0}`
+
 Of course, the use of such macros will only work on Roll 20, not on Foundry VTT or other.
 
 ### How can I use this non-standard spell or feature? 

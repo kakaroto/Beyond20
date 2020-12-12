@@ -329,7 +329,9 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
 
         const custom_damages = character.getSetting("custom-damage-dice", "");
         if (custom_damages.length > 0) {
-            for (let custom_damage of custom_damages.split(",")) {
+            // Split only on not escaped commas, then remove the escape character 
+            for (let custom_damage_delimited of custom_damages.split(/(?<!\\),/)) {
+                const custom_damage = custom_damage_delimited.replace(/\\,/g, ",");
                 if (custom_damage.includes(":")) {
                     const parts = custom_damage.split(":", 2);
                     damages.push(parts[1].trim());
@@ -703,7 +705,9 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
 
         const custom_damages = character.getSetting("custom-damage-dice", "");
         if (custom_damages.length > 0) {
-            for (let custom_damage of custom_damages.split(",")) {
+            // Split only on not escaped commas, then remove the escape character 
+            for (let custom_damage_delimited of custom_damages.split(/(?<!\\),/)) {
+                const custom_damage = custom_damage_delimited.replace(/\\,/g, ",");
                 if (custom_damage.includes(":")) {
                     const parts = custom_damage.split(":", 2);
                     damages.push(parts[1].trim());
@@ -1097,7 +1101,9 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
 
         const custom_damages = character.getSetting("custom-damage-dice", "");
         if (custom_damages.length > 0) {
-            for (let custom_damage of custom_damages.split(",")) {
+            // Split only on not escaped commas, then remove the escape character 
+            for (let custom_damage_delimited of custom_damages.split(/(?<!\\),/)) {
+                const custom_damage = custom_damage_delimited.replace(/\\,/g, ",");
                 if (custom_damage.includes(":")) {
                     const parts = custom_damage.split(":", 2);
                     damages.push(parts[1].trim());
