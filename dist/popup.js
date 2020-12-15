@@ -163,10 +163,10 @@ function alertSettings(url, title) {
 
 }
 function alertQuickSettings() {
-        alertSettings("popup.html", "Beyond 20 Quick Settings");
+    alertSettings("popup.html", "Beyond 20 Quick Settings");
 }
 function alertFullSettings() {
-        alertSettings("options.html", "Beyond 20 Settings");
+    alertSettings("options.html", "Beyond 20 Settings");
 }
 function showAbilities(){
     if (settings['hotkey-click'])

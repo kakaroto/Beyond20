@@ -117,10 +117,10 @@ function alertSettings(url, title) {
 
 }
 function alertQuickSettings() {
-        alertSettings("popup.html", "Beyond 20 Quick Settings");
+    alertSettings("popup.html", "Beyond 20 Quick Settings");
 }
 function alertFullSettings() {
-        alertSettings("options.html", "Beyond 20 Settings");
+    alertSettings("options.html", "Beyond 20 Settings");
 }
 function showAbilities(){
     if (settings['hotkey-click'])
@@ -3717,10 +3717,8 @@ function updateToggles() {
 
     $('#b20-abilities-pop').html("<div class='b20-dna'>" + dna + "</div><hr/><ul>" + modifiers + "</ul>");
     if (someSet){
-        //$('#b20-abilities').removeClass('beyond20-abilities-hid');
         $('#b20-button').addClass('beyond20-button-bg');
     } else {
-        //$('#b20-abilities').addClass('beyond20-abilities-hid');
         $('#b20-button').removeClass('beyond20-button-bg');
     }
 }
@@ -6626,7 +6624,6 @@ function injectSettingsButton() {
     let span_text = "Beyond 20";
     let mobiclass = "";
     let icon = chrome.extension.getURL("images/icons/badges/normal20.png");
-    //let icon2 = chrome.extension.getURL("images/icons/badges/abilities20.png");
     if (desktop_gap.length > 0) {
         button_type = "desktop";
         gap = desktop_gap;
@@ -6659,11 +6656,10 @@ function injectSettingsButton() {
     );
 
     gap.after(pbutton);
-    //$(pbutton).on('click', (event) => alert('click'));
     $(pbutton).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
     updateToggles();
 
-    $(document).off('click', '.b20-toggle');
+    $(document).off('click', '.b20-toggle'); //this removes all instances of this listener
     $(document).on('click', '.b20-toggle', function(){
         const hotkeyClick = settings['hotkey-click']; //true for clicking a key, false for holding a key
         if (!hotkeyClick)
@@ -6682,6 +6678,7 @@ function injectSettingsButton() {
         }
         key_modifiers[modifier] = newVal;
         updateToggles();
+        updateRollTypeButtonClasses();
     });
 
 }

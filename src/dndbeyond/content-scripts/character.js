@@ -1721,6 +1721,7 @@ function injectSettingsButton() {
         }
         key_modifiers[modifier] = newVal;
         updateToggles();
+        updateRollTypeButtonClasses();
     });
 
 }

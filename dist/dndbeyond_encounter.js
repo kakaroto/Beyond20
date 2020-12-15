@@ -117,10 +117,10 @@ function alertSettings(url, title) {
 
 }
 function alertQuickSettings() {
-        alertSettings("popup.html", "Beyond 20 Quick Settings");
+    alertSettings("popup.html", "Beyond 20 Quick Settings");
 }
 function alertFullSettings() {
-        alertSettings("options.html", "Beyond 20 Settings");
+    alertSettings("options.html", "Beyond 20 Settings");
 }
 function showAbilities(){
     if (settings['hotkey-click'])
@@ -3717,10 +3717,8 @@ function updateToggles() {
 
     $('#b20-abilities-pop').html("<div class='b20-dna'>" + dna + "</div><hr/><ul>" + modifiers + "</ul>");
     if (someSet){
-        //$('#b20-abilities').removeClass('beyond20-abilities-hid');
         $('#b20-button').addClass('beyond20-button-bg');
     } else {
-        //$('#b20-abilities').addClass('beyond20-abilities-hid');
         $('#b20-button').removeClass('beyond20-button-bg');
     }
 }
