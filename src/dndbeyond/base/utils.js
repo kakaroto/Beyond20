@@ -360,28 +360,42 @@ function updateRollTypeButtonClasses(character) {
 
 function updateToggles() {
     let modifiers = "";
-    for (key in key_modifiers){
-        const modifier = key_modifiers[key];
-        if (modifier !== false) {
+    let someSet = false;
+    const bindings = settings['hotkeys-bindings'];
+    const adn = ["disadvantage","normal_roll","advantage"]; 
+
+    //for adv/dis/norm, set up a special way to display them.
+    let dna = "<span class='b20-toggle' data-key='Control' style='float:left; font-weight: " + (key_modifiers['disadvantage'] ? "bold" : "normal") + " ' >Disadvtange</span>";  
+    dna += "<span class='b20-toggle' data-key='Alt' style='font-weight: " + (key_modifiers['normal_roll'] ? "bold" : "normal") + " ' >Normal</span>";  
+    dna += "<span class='b20-toggle' data-key='Shift' style='float:right; font-weight: " + (key_modifiers['advantage'] ? "bold" : "normal") + " ' >Advtange</span>";  
+
+    for (keyval in bindings){
+        let key = bindings[keyval];
+        let modifier = key_modifiers[key] === undefined ? false : key_modifiers[key];
+        let dna = "";
+        someSet |= modifier;
+        if (!adn.includes(key)){
             let ability = character_settings[key.replace('option-','')];
             if (ability !== undefined) {
-                modifiers += "<li>" + ability.title + "</li>";
+                ability = ability.title;
             } else {
-                ability = BINDING_NAMES[key];
-                if (ability !== undefined){
-                    modifiers += "<li>" + ability + "</li>";
-                } else {
-                    modifiers += "<li>" + key + "</li>";
-                }
+                ability = BINDING_NAMES[key] === undefined ? key : BINDING_NAMES[key];
             }
+            if (ability.length > 32)
+                ability = ability.substring(0, 31) + "...";
+
+            modifier = modifier == false ? '' : modifier;
+            modifiers += "<li class='b20-toggle' data-key='" + keyval + "'>" + ability + "<span style='float:right'>" + modifier + "</span></li>";
         }
     }
 
-    if (modifiers !== ""){
-        $('#b20-abilities').removeClass('beyond20-abilities-hid');
-        $('#b20-abilities-pop').html("<ul>" + modifiers + "</ul>");
+    $('#b20-abilities-pop').html("<div class='b20-dna'>" + dna + "</div><ul>" + modifiers + "</ul>");
+    if (someSet){
+        //$('#b20-abilities').removeClass('beyond20-abilities-hid');
+        $('#b20-button').addClass('beyond20-button-bg');
     } else {
-        $('#b20-abilities').addClass('beyond20-abilities-hid');
+        //$('#b20-abilities').addClass('beyond20-abilities-hid');
+        $('#b20-button').removeClass('beyond20-button-bg');
     }
 }
 
@@ -418,6 +432,7 @@ function addRollButton(character, callback, where, { small = false, append = fal
         "text-align": "center"
     });
     $(`#${id} button`).on('click', (event) => callback());
+
     return id;
 }
 

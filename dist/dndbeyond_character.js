@@ -117,17 +117,18 @@ function alertSettings(url, title) {
 
 }
 function alertQuickSettings() {
-    alertSettings("popup.html", "Beyond 20 Quick Settings");
+        alertSettings("popup.html", "Beyond 20 Quick Settings");
 }
 function alertFullSettings() {
-    alertSettings("options.html", "Beyond 20 Settings");
-
+        alertSettings("options.html", "Beyond 20 Settings");
 }
 function showAbilities(){
-    $('#b20-abilities-pop').removeClass('beyond20-abilities-hid');
+    if (settings['hotkey-click'])
+        $('#b20-abilities-pop').removeClass('beyond20-abilities-hid');
 }
 function hideAbilities(){
-    $('#b20-abilities-pop').addClass('beyond20-abilities-hid');
+    if (settings['hotkey-click'])
+        $('#b20-abilities-pop').addClass('beyond20-abilities-hid');
 }
 
 function isListEqual(list1, list2) {
@@ -3685,28 +3686,42 @@ function updateRollTypeButtonClasses(character) {
 
 function updateToggles() {
     let modifiers = "";
-    for (key in key_modifiers){
-        const modifier = key_modifiers[key];
-        if (modifier !== false) {
+    let someSet = false;
+    const bindings = settings['hotkeys-bindings'];
+    const adn = ["disadvantage","normal_roll","advantage"]; 
+
+    //for adv/dis/norm, set up a special way to display them.
+    let dna = "<span class='b20-toggle' data-key='Control' style='float:left; font-weight: " + (key_modifiers['disadvantage'] ? "bold" : "normal") + " ' >Disadvtange</span>";  
+    dna += "<span class='b20-toggle' data-key='Alt' style='font-weight: " + (key_modifiers['normal-roll'] ? "bold" : "normal") + " ' >Normal</span>";  
+    dna += "<span class='b20-toggle' data-key='Shift' style='float:right; font-weight: " + (key_modifiers['advantage'] ? "bold" : "normal") + " ' >Advtange</span>";  
+
+    for (keyval in bindings){
+        let key = bindings[keyval];
+        let modifier = key_modifiers[key] === undefined ? false : key_modifiers[key];
+        let dna = "";
+        someSet |= modifier;
+        if (!adn.includes(key)){
             let ability = character_settings[key.replace('option-','')];
             if (ability !== undefined) {
-                modifiers += "<li>" + ability.title + "</li>";
+                ability = ability.title;
             } else {
-                ability = BINDING_NAMES[key];
-                if (ability !== undefined){
-                    modifiers += "<li>" + ability + "</li>";
-                } else {
-                    modifiers += "<li>" + key + "</li>";
-                }
+                ability = BINDING_NAMES[key] === undefined ? key : BINDING_NAMES[key];
             }
+            if (ability.length > 32)
+                ability = ability.substring(0, 31) + "...";
+
+            modifier = modifier == false ? '' : modifier;
+            modifiers += "<li class='b20-toggle' data-key='" + keyval + "'>" + ability + "<span style='float:right'>" + modifier + "</span></li>";
         }
     }
 
-    if (modifiers !== ""){
-        $('#b20-abilities').removeClass('beyond20-abilities-hid');
-        $('#b20-abilities-pop').html("<ul>" + modifiers + "</ul>");
+    $('#b20-abilities-pop').html("<div class='b20-dna'>" + dna + "</div><ul>" + modifiers + "</ul>");
+    if (someSet){
+        //$('#b20-abilities').removeClass('beyond20-abilities-hid');
+        $('#b20-button').addClass('beyond20-button-bg');
     } else {
-        $('#b20-abilities').addClass('beyond20-abilities-hid');
+        //$('#b20-abilities').addClass('beyond20-abilities-hid');
+        $('#b20-button').removeClass('beyond20-button-bg');
     }
 }
 
@@ -3743,6 +3758,7 @@ function addRollButton(character, callback, where, { small = false, append = fal
         "text-align": "center"
     });
     $(`#${id} button`).on('click', (event) => callback());
+
     return id;
 }
 
@@ -6628,8 +6644,9 @@ function injectSettingsButton() {
         return;
     }
 
+
     const button = E.div({ class: "ct-character-header-" + button_type + "__group ct-character-header-" + button_type + "__group--beyond20" },
-        E.div({ class: "ct-character-header-" + button_type + "__button" },
+        E.div({ class: "ct-character-header-" + button_type + "__button", id: 'b20-button' },
             E.img({ class: "ct-beyond20-settings", src: icon }),
             E.span({ class: "ct-character-header-" + button_type + "__button-label" }, span_text)
         )
@@ -6637,16 +6654,45 @@ function injectSettingsButton() {
 
     gap.after(button);
     $(button).on('click', (event) => alertQuickSettings());
+    $(button).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
 
-    const abButton =  E.div({ class: "beyond20-abilities-ind beyond20-abilities-hid", id: "b20-abilities"},
-        E.img({ class: "", src: icon2 }),
+    const pbutton = E.div({ class: "ct-character-header-" + button_type + "__group ct-character-header-" + button_type + "__group--beyond20pop beyond-20-abilities-hid beyond20-parent" },
         E.div({ class: "beyond20-abilities-list beyond20-abilities-hid " + mobiclass, id: "b20-abilities-pop"})
     );
 
-    gap.after(abButton);
-    $(abButton).on('click', (event) => showAbilities());
-    $(abButton).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
+    gap.after(pbutton);
+    //$(pbutton).on('click', (event) => alert('click'));
+    $(pbutton).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
+    // const abButton =  E.div({ class: "beyond20-abilities-ind beyond20-abilities-hid", id: "b20-abilities"},
+    //     E.img({ class: "", src: icon2 }),
+    //     E.div({ class: "beyond20-abilities-list beyond20-abilities-hid " + mobiclass, id: "b20-abilities-pop"})
+    // );
+
+    // gap.after(abButton);
+    // $(abButton).on('click', (event) => showAbilities());
+    // $(abButton).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
     updateToggles();
+
+    $(document).on('click', '.b20-toggle', function(){
+        const hotkeyClick = settings['hotkey-click']; //true for clicking a key, false for holding a key
+        if (!hotkeyClick)
+            return;
+
+        const keyval = $(this).data('key');
+        const bindings = settings['hotkeys-bindings']; //true for clicking a key, false for holding a key
+
+        const modifier = bindings[keyval];
+        const newVal = !key_modifiers[modifier]; //key click modifies value
+        const adn = ["advantage","disadvantage","normal_roll"]; //need to reset roll adv/dis modifiers if another is toggled.
+        if (adn.includes(modifier)){
+            key_modifiers.advantage = false;
+            key_modifiers.disadvantage = false;
+            key_modifiers.normal_roll = false;
+        }
+        key_modifiers[modifier] = newVal;
+        updateToggles();
+    });
+
 }
 
 var quick_roll = false;

@@ -172,6 +172,18 @@
     display: none;
 }
 
+.beyond20-parent {
+    position: relative;
+}
+
+.beyond20-button-bg{
+    background-color:rgb(62, 111, 143);
+}
+.beyond20-button-bg:hover{
+    background-color:rgb(48, 88, 116) !important;
+}
+
+
 .beyond20-abilities-list {
     min-width: 300px;
     /* min-height: 200px; */
@@ -180,8 +192,25 @@
     position: absolute;
     border: 1px solid gray;
     padding: 10px;
+    /* bottom: 10px; */
+    top: 16px;
 }
 
 .beyond20-abilities-mobi {
-    right: 10px;
+    right: -32px;
+}
+.b20-toggle {
+    cursor: pointer;
+    border: 1px solid transparent;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+.b20-toggle:hover {
+    background-color:rgb(155, 208, 243);
+    border: 1px solid darkblue;
+}
+.b20-dna{
+    text-align: center;
+    display: block;
+    width: 100%;
 }

@@ -117,17 +117,18 @@ function alertSettings(url, title) {
 
 }
 function alertQuickSettings() {
-    alertSettings("popup.html", "Beyond 20 Quick Settings");
+        alertSettings("popup.html", "Beyond 20 Quick Settings");
 }
 function alertFullSettings() {
-    alertSettings("options.html", "Beyond 20 Settings");
-
+        alertSettings("options.html", "Beyond 20 Settings");
 }
 function showAbilities(){
-    $('#b20-abilities-pop').removeClass('beyond20-abilities-hid');
+    if (settings['hotkey-click'])
+        $('#b20-abilities-pop').removeClass('beyond20-abilities-hid');
 }
 function hideAbilities(){
-    $('#b20-abilities-pop').addClass('beyond20-abilities-hid');
+    if (settings['hotkey-click'])
+        $('#b20-abilities-pop').addClass('beyond20-abilities-hid');
 }
 
 function isListEqual(list1, list2) {

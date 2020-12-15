@@ -1685,8 +1685,9 @@ function injectSettingsButton() {
         return;
     }
 
+
     const button = E.div({ class: "ct-character-header-" + button_type + "__group ct-character-header-" + button_type + "__group--beyond20" },
-        E.div({ class: "ct-character-header-" + button_type + "__button" },
+        E.div({ class: "ct-character-header-" + button_type + "__button", id: 'b20-button' },
             E.img({ class: "ct-beyond20-settings", src: icon }),
             E.span({ class: "ct-character-header-" + button_type + "__button-label" }, span_text)
         )
@@ -1694,16 +1695,45 @@ function injectSettingsButton() {
 
     gap.after(button);
     $(button).on('click', (event) => alertQuickSettings());
+    $(button).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
 
-    const abButton =  E.div({ class: "beyond20-abilities-ind beyond20-abilities-hid", id: "b20-abilities"},
-        E.img({ class: "", src: icon2 }),
+    const pbutton = E.div({ class: "ct-character-header-" + button_type + "__group ct-character-header-" + button_type + "__group--beyond20pop beyond-20-abilities-hid beyond20-parent" },
         E.div({ class: "beyond20-abilities-list beyond20-abilities-hid " + mobiclass, id: "b20-abilities-pop"})
     );
 
-    gap.after(abButton);
-    $(abButton).on('click', (event) => showAbilities());
-    $(abButton).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
+    gap.after(pbutton);
+    //$(pbutton).on('click', (event) => alert('click'));
+    $(pbutton).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
+    // const abButton =  E.div({ class: "beyond20-abilities-ind beyond20-abilities-hid", id: "b20-abilities"},
+    //     E.img({ class: "", src: icon2 }),
+    //     E.div({ class: "beyond20-abilities-list beyond20-abilities-hid " + mobiclass, id: "b20-abilities-pop"})
+    // );
+
+    // gap.after(abButton);
+    // $(abButton).on('click', (event) => showAbilities());
+    // $(abButton).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
     updateToggles();
+
+    $(document).on('click', '.b20-toggle', function(){
+        const hotkeyClick = settings['hotkey-click']; //true for clicking a key, false for holding a key
+        if (!hotkeyClick)
+            return;
+
+        const keyval = $(this).data('key');
+        const bindings = settings['hotkeys-bindings']; //true for clicking a key, false for holding a key
+
+        const modifier = bindings[keyval];
+        const newVal = !key_modifiers[modifier]; //key click modifies value
+        const adn = ["advantage","disadvantage","normal_roll"]; //need to reset roll adv/dis modifiers if another is toggled.
+        if (adn.includes(modifier)){
+            key_modifiers.advantage = false;
+            key_modifiers.disadvantage = false;
+            key_modifiers.normal_roll = false;
+        }
+        key_modifiers[modifier] = newVal;
+        updateToggles();
+    });
+
 }
 
 var quick_roll = false;
