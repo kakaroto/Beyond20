@@ -1667,7 +1667,6 @@ function injectSettingsButton() {
     let span_text = "Beyond 20";
     let mobiclass = "";
     let icon = chrome.extension.getURL("images/icons/badges/normal20.png");
-    let icon2 = chrome.extension.getURL("images/icons/badges/abilities20.png");
     if (desktop_gap.length > 0) {
         button_type = "desktop";
         gap = desktop_gap;
@@ -1680,11 +1679,9 @@ function injectSettingsButton() {
         mobiclass = "beyond20-abilities-mobi";
         span_text = "\u00A0\u00A0"; // Add 2 non breaking spaces as padding;
         icon = chrome.extension.getURL("images/icons/badges/normal32.png");
-        icon2 = chrome.extension.getURL("images/icons/badges/abilities32.png");
     } else {
         return;
     }
-
 
     const button = E.div({ class: "ct-character-header-" + button_type + "__group ct-character-header-" + button_type + "__group--beyond20" },
         E.div({ class: "ct-character-header-" + button_type + "__button", id: 'b20-button' },
@@ -1702,18 +1699,10 @@ function injectSettingsButton() {
     );
 
     gap.after(pbutton);
-    //$(pbutton).on('click', (event) => alert('click'));
     $(pbutton).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
-    // const abButton =  E.div({ class: "beyond20-abilities-ind beyond20-abilities-hid", id: "b20-abilities"},
-    //     E.img({ class: "", src: icon2 }),
-    //     E.div({ class: "beyond20-abilities-list beyond20-abilities-hid " + mobiclass, id: "b20-abilities-pop"})
-    // );
-
-    // gap.after(abButton);
-    // $(abButton).on('click', (event) => showAbilities());
-    // $(abButton).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
     updateToggles();
 
+    $(document).off('click', '.b20-toggle'); //this removes all instances of this listener
     $(document).on('click', '.b20-toggle', function(){
         const hotkeyClick = settings['hotkey-click']; //true for clicking a key, false for holding a key
         if (!hotkeyClick)

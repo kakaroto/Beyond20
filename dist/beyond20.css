@@ -177,22 +177,23 @@
 }
 
 .beyond20-button-bg{
-    background-color:rgb(62, 111, 143);
+    /* background-color:rgb(62, 111, 143); */
+    background-color: rgb(95, 0, 0);
 }
 .beyond20-button-bg:hover{
-    background-color:rgb(48, 88, 116) !important;
+    /* background-color:rgb(48, 88, 116) !important; */
+    background-color: rgb(129, 22, 22) !important;
 }
 
 
 .beyond20-abilities-list {
     min-width: 300px;
-    /* min-height: 200px; */
-    background-color: rgb(62, 111, 143);
+    /* background-color: rgb(62, 111, 143); */
+    background-color: black;
     z-index: 1000;
     position: absolute;
-    border: 1px solid gray;
+    border: 1px solid rgb(95, 0, 0);
     padding: 10px;
-    /* bottom: 10px; */
     top: 16px;
 }
 
@@ -213,4 +214,8 @@
     text-align: center;
     display: block;
     width: 100%;
+}
+.b20-opt-sel {
+    font-weight: bold;
+    color: yellow;
 }

@@ -3691,9 +3691,9 @@ function updateToggles() {
     const adn = ["disadvantage","normal_roll","advantage"]; 
 
     //for adv/dis/norm, set up a special way to display them.
-    let dna = "<span class='b20-toggle' data-key='Control' style='float:left; font-weight: " + (key_modifiers['disadvantage'] ? "bold" : "normal") + " ' >Disadvtange</span>";  
-    dna += "<span class='b20-toggle' data-key='Alt' style='font-weight: " + (key_modifiers['normal-roll'] ? "bold" : "normal") + " ' >Normal</span>";  
-    dna += "<span class='b20-toggle' data-key='Shift' style='float:right; font-weight: " + (key_modifiers['advantage'] ? "bold" : "normal") + " ' >Advtange</span>";  
+    let dna = "<span class='b20-toggle " + (key_modifiers['disadvantage'] ? "b20-opt-sel" : "") + "' data-key='Control' style='float:left;' >Disadvantange</span>";  
+    dna += "<span class='b20-toggle " + (key_modifiers['normal_roll'] ? "b20-opt-sel" : "") + "' data-key='Alt' style='' >Normal</span>";  
+    dna += "<span class='b20-toggle " + (key_modifiers['advantage'] ? "b20-opt-sel" : "") + "' data-key='Shift' style='float:right;' >Advantange</span>";  
 
     for (keyval in bindings){
         let key = bindings[keyval];
@@ -3715,7 +3715,7 @@ function updateToggles() {
         }
     }
 
-    $('#b20-abilities-pop').html("<div class='b20-dna'>" + dna + "</div><ul>" + modifiers + "</ul>");
+    $('#b20-abilities-pop').html("<div class='b20-dna'>" + dna + "</div><hr/><ul>" + modifiers + "</ul>");
     if (someSet){
         //$('#b20-abilities').removeClass('beyond20-abilities-hid');
         $('#b20-button').addClass('beyond20-button-bg');

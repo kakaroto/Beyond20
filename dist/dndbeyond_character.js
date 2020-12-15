@@ -3691,9 +3691,9 @@ function updateToggles() {
     const adn = ["disadvantage","normal_roll","advantage"]; 
 
     //for adv/dis/norm, set up a special way to display them.
-    let dna = "<span class='b20-toggle' data-key='Control' style='float:left; font-weight: " + (key_modifiers['disadvantage'] ? "bold" : "normal") + " ' >Disadvtange</span>";  
-    dna += "<span class='b20-toggle' data-key='Alt' style='font-weight: " + (key_modifiers['normal-roll'] ? "bold" : "normal") + " ' >Normal</span>";  
-    dna += "<span class='b20-toggle' data-key='Shift' style='float:right; font-weight: " + (key_modifiers['advantage'] ? "bold" : "normal") + " ' >Advtange</span>";  
+    let dna = "<span class='b20-toggle " + (key_modifiers['disadvantage'] ? "b20-opt-sel" : "") + "' data-key='Control' style='float:left;' >Disadvantange</span>";  
+    dna += "<span class='b20-toggle " + (key_modifiers['normal_roll'] ? "b20-opt-sel" : "") + "' data-key='Alt' style='' >Normal</span>";  
+    dna += "<span class='b20-toggle " + (key_modifiers['advantage'] ? "b20-opt-sel" : "") + "' data-key='Shift' style='float:right;' >Advantange</span>";  
 
     for (keyval in bindings){
         let key = bindings[keyval];
@@ -3715,7 +3715,7 @@ function updateToggles() {
         }
     }
 
-    $('#b20-abilities-pop').html("<div class='b20-dna'>" + dna + "</div><ul>" + modifiers + "</ul>");
+    $('#b20-abilities-pop').html("<div class='b20-dna'>" + dna + "</div><hr/><ul>" + modifiers + "</ul>");
     if (someSet){
         //$('#b20-abilities').removeClass('beyond20-abilities-hid');
         $('#b20-button').addClass('beyond20-button-bg');
@@ -6626,7 +6626,7 @@ function injectSettingsButton() {
     let span_text = "Beyond 20";
     let mobiclass = "";
     let icon = chrome.extension.getURL("images/icons/badges/normal20.png");
-    let icon2 = chrome.extension.getURL("images/icons/badges/abilities20.png");
+    //let icon2 = chrome.extension.getURL("images/icons/badges/abilities20.png");
     if (desktop_gap.length > 0) {
         button_type = "desktop";
         gap = desktop_gap;
@@ -6639,11 +6639,9 @@ function injectSettingsButton() {
         mobiclass = "beyond20-abilities-mobi";
         span_text = "\u00A0\u00A0"; // Add 2 non breaking spaces as padding;
         icon = chrome.extension.getURL("images/icons/badges/normal32.png");
-        icon2 = chrome.extension.getURL("images/icons/badges/abilities32.png");
     } else {
         return;
     }
-
 
     const button = E.div({ class: "ct-character-header-" + button_type + "__group ct-character-header-" + button_type + "__group--beyond20" },
         E.div({ class: "ct-character-header-" + button_type + "__button", id: 'b20-button' },
@@ -6663,16 +6661,9 @@ function injectSettingsButton() {
     gap.after(pbutton);
     //$(pbutton).on('click', (event) => alert('click'));
     $(pbutton).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
-    // const abButton =  E.div({ class: "beyond20-abilities-ind beyond20-abilities-hid", id: "b20-abilities"},
-    //     E.img({ class: "", src: icon2 }),
-    //     E.div({ class: "beyond20-abilities-list beyond20-abilities-hid " + mobiclass, id: "b20-abilities-pop"})
-    // );
-
-    // gap.after(abButton);
-    // $(abButton).on('click', (event) => showAbilities());
-    // $(abButton).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
     updateToggles();
 
+    $(document).off('click', '.b20-toggle');
     $(document).on('click', '.b20-toggle', function(){
         const hotkeyClick = settings['hotkey-click']; //true for clicking a key, false for holding a key
         if (!hotkeyClick)
