@@ -5,12 +5,16 @@ const key_modifiers = {
     normal_roll: false
 };
 const checkKeyModifiers = (event) => {
-    if (event.originalEvent.repeat) return;
+    keyModifiers(event.type, event.key, event.originalEvent.repeat);
+}
+
+function keyModifiers(etype, key, repeat) {
+    if (repeat) return;
     const hotkeyClick = settings['hotkey-click']; //true for clicking a key, false for holding a key
-    if (hotkeyClick && event.type != "keyup") return;
+    if (hotkeyClick && etype != "keyup") return;
 
     const oldValue = key_modifiers.advantage << 0 | key_modifiers.disadvantage << 1 | key_modifiers.normal_roll << 2;
-    const modifier = (key_bindings || {})[event.key];
+    const modifier = (key_bindings || {})[key];
     if (modifier) {
         if (hotkeyClick){
             const newVal = !key_modifiers[modifier]; //key click modifies value
@@ -23,13 +27,14 @@ const checkKeyModifiers = (event) => {
             key_modifiers[modifier] = newVal;
             updateToggles();
         } else {
-            key_modifiers[modifier] = event.type === "keydown";
+            key_modifiers[modifier] = etype === "keydown";
         }
     }
     const newValue = key_modifiers.advantage << 0 | key_modifiers.disadvantage << 1 | key_modifiers.normal_roll << 2;
     if (oldValue !== newValue)
         updateRollTypeButtonClasses();
 }
+
 const resetKeyModifiers = (event) => {
     const needsUpdate = key_modifiers.advantage || key_modifiers.disadvantage || key_modifiers.normal_roll;
     for (const key in key_modifiers)

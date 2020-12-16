@@ -395,6 +395,11 @@ function updateToggles() {
     } else {
         $('#b20-button').removeClass('beyond20-button-bg');
     }
+
+    // $('.b20-toggle').off('click'); //this removes all instances of this listener
+    // $('.b20-toggle').on('click', function(){
+    //     keyModifiers('keyup', $(this).data('key'), false);
+    // });
 }
 
 

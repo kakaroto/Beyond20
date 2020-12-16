@@ -1704,24 +1704,7 @@ function injectSettingsButton() {
 
     $(document).off('click', '.b20-toggle'); //this removes all instances of this listener
     $(document).on('click', '.b20-toggle', function(){
-        const hotkeyClick = settings['hotkey-click']; //true for clicking a key, false for holding a key
-        if (!hotkeyClick)
-            return;
-
-        const keyval = $(this).data('key');
-        const bindings = settings['hotkeys-bindings']; //true for clicking a key, false for holding a key
-
-        const modifier = bindings[keyval];
-        const newVal = !key_modifiers[modifier]; //key click modifies value
-        const adn = ["advantage","disadvantage","normal_roll"]; //need to reset roll adv/dis modifiers if another is toggled.
-        if (adn.includes(modifier)){
-            key_modifiers.advantage = false;
-            key_modifiers.disadvantage = false;
-            key_modifiers.normal_roll = false;
-        }
-        key_modifiers[modifier] = newVal;
-        updateToggles();
-        updateRollTypeButtonClasses();
+        keyModifiers('keyup', $(this).data('key'), false);
     });
 
 }
