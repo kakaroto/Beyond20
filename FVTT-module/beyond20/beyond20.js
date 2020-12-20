@@ -34,31 +34,45 @@ class Beyond20 {
     
         return {name: request.character.name, flags: {}, img: request.character.avatar, data: actorData, items: []}
     }
+    static findToken(request) {
+        const name = request.character.name.toLowerCase().trim();
+        return canvas.tokens.placeables.find((t) => t.owner && t.name.toLowerCase().trim() == name);
+    }
     static getRollOptions(request) {
+        const d20 = request.d20 || "1d20";
         const rollMode = request.whisper === 0 ? "roll" : "gmroll";
+        const reliableTalent = d20.includes("min10"); // Also applies to silver tongue
+        const halflingLucky = d20.includes("ro<=1");
+        let advantageSettings = {};
         switch (request.advantage) {
             default:
             case 0: // NORMAL
             case 1: // DOUBLE
             case 5: // THRICE
-                return { fastForward: true, rollMode };
+                advantageSettings = {fastForward: true };
+                break;
             case 3: // ADVANTAGE
-                return { fastForward: true, advantage: true, rollMode };
+                advantageSettings = { fastForward: true, advantage: true };
+                break;
             case 6: // SUPER ADVANTAGE
-            return { fastForward: true, elvenAccuracy: true, advantage: true, rollMode };
+                advantageSettings = { fastForward: true, elvenAccuracy: true, advantage: true };
+                break;
             case 4: // DISADVANTAGE
             case 7: // SUPER DISADVANTAGE
-                return { fastForward: true, disadvantage: true, rollMode };
+                advantageSettings = { fastForward: true, disadvantage: true };
+                break;
             case 2: // QUERY
-                return {rollMode};
+                break;
         }
+        return { rollMode, reliableTalent, halflingLucky, ...advantageSettings }
     }
     
     static handleBeyond20Request(action, request) {
         if (action !== "roll") return;
         const actorData = this.createActorData(request);
+        const token = this.findToken(request);
         switch (request.type) {
-            case "skill":
+            case "skill": {
                 const SKILLS = {
                     "Acrobatics": "acr",
                     "Animal Handling": "ani",
@@ -86,10 +100,10 @@ class Beyond20 {
                     case "Not Proficient": 
                     default:
                         break;
-                    case "Half Proficient":
+                    case "Half Proficiency":
                         actorData.data.skills[skill].value = 0.5;
                         break;
-                    case "Proficient": 
+                    case "Proficiency": 
                         actorData.data.skills[skill].value = 1;
                         break;
                     case "Expertise": 
@@ -97,12 +111,68 @@ class Beyond20 {
                         break;
                 }
                 const calculated = actorData.data.abilities[request.ability.toLowerCase()].mod + actorData.data.skills[skill].value * actorData.data.attributes.prof;
+                const bonus = parseInt(request.modifier) - calculated;
                 actorData.data.skills[skill].mod = calculated;
-                actorData.data.bonuses.abilities.skill = parseInt(request.modifier) - calculated;
+                actorData.data.bonuses.abilities.skill = bonus;
     
                 const actor = new CONFIG.Actor.entityClass(actorData);
-                actor.rollSkill(skill, this.getRollOptions(request));
+                //actor.rollSkill(skill, );
+                
+                // Compose roll parts and data
+                const parts = ["@mod"];
+                const data = {mod: calculated};
+
+                // Skill check bonus
+                if ( bonus ) {
+                    data["skillBonus"] = bonus;
+                    parts.push("@skillBonus");
+                }
+                // Roll and return
+                const rollOptions = this.getRollOptions(request)
+                mergeObject(rollOptions, {
+                    parts: parts,
+                    data: data,
+                    title: game.i18n.format("DND5E.SkillPromptTitle", {skill: CONFIG.DND5E.skills[skill]}),
+                    messageData: {"flags.dnd5e.roll": {type: "skill", skill }}
+                });
+                rollOptions.speaker = ChatMessage.getSpeaker({actor: this, token: token});
+                game.dnd5e.dice.d20Roll(rollOptions);
                 return false;
+            }
+            case "saving-throw": {
+                const abl = request.ability.toLowerCase();
+                const mod = parseInt(request.modifier)
+                const proficient = mod >= actorData.data.abilities[abl].mod + actorData.data.attributes.prof;
+                const calculated = actorData.data.abilities[abl].mod + proficient * actorData.data.attributes.prof;
+                const bonus = mod - calculated;
+    
+                actorData.data.abilities[abl].proficient = proficient;
+                actorData.data.abilities[abl].save = calculated;
+                actorData.data.bonuses.abilities.save = bonus;
+                const actor = new CONFIG.Actor.entityClass(actorData);
+                //actor.rollSkill(skill, );
+                
+                // Compose roll parts and data
+                const parts = ["@mod"];
+                const data = {mod: calculated};
+
+                // Skill check bonus
+                if ( bonus ) {
+                    data["saveBonus"] = bonus;
+                    parts.push("@saveBonus");
+                }
+                // Roll and return
+                const rollOptions = this.getRollOptions(request)
+                mergeObject(rollOptions, {
+                    parts: parts,
+                    data: data,
+                    title: game.i18n.format("DND5E.SavePromptTitle", {ability: CONFIG.DND5E.abilities[abl]}),
+                    messageData: {"flags.dnd5e.roll": {type: "save", abl }}
+                });
+                rollOptions.speaker = ChatMessage.getSpeaker({actor: this, token: token});
+                game.dnd5e.dice.d20Roll(rollOptions);
+                return false;
+            }
             default:
                 break;
         }
