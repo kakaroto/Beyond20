@@ -6671,7 +6671,7 @@ function injectSettingsButton() {
 
     $(document).off('click', '.b20-toggle'); //this removes all instances of this listener
     $(document).on('click', '.b20-toggle', function(){
-        keyModifiers('keyup', $(this).data('key'), false);
+        keyModifiers('keydown', $(this).data('key'), false);
     });
 
 }
