@@ -116,7 +116,6 @@ class Beyond20 {
                 actorData.data.bonuses.abilities.skill = bonus;
     
                 const actor = new CONFIG.Actor.entityClass(actorData);
-                //actor.rollSkill(skill, );
                 
                 // Compose roll parts and data
                 const parts = ["@mod"];
@@ -135,7 +134,7 @@ class Beyond20 {
                     title: game.i18n.format("DND5E.SkillPromptTitle", {skill: CONFIG.DND5E.skills[skill]}),
                     messageData: {"flags.dnd5e.roll": {type: "skill", skill }}
                 });
-                rollOptions.speaker = ChatMessage.getSpeaker({actor: this, token: token});
+                rollOptions.speaker = ChatMessage.getSpeaker({actor: actor, token: token});
                 game.dnd5e.dice.d20Roll(rollOptions);
                 return false;
             }
@@ -150,13 +149,12 @@ class Beyond20 {
                 actorData.data.abilities[abl].save = calculated;
                 actorData.data.bonuses.abilities.save = bonus;
                 const actor = new CONFIG.Actor.entityClass(actorData);
-                //actor.rollSkill(skill, );
                 
                 // Compose roll parts and data
                 const parts = ["@mod"];
                 const data = {mod: calculated};
 
-                // Skill check bonus
+                // Saving throw bonus
                 if ( bonus ) {
                     data["saveBonus"] = bonus;
                     parts.push("@saveBonus");
@@ -169,7 +167,36 @@ class Beyond20 {
                     title: game.i18n.format("DND5E.SavePromptTitle", {ability: CONFIG.DND5E.abilities[abl]}),
                     messageData: {"flags.dnd5e.roll": {type: "save", abl }}
                 });
-                rollOptions.speaker = ChatMessage.getSpeaker({actor: this, token: token});
+                rollOptions.speaker = ChatMessage.getSpeaker({actor: actor, token: token});
+                game.dnd5e.dice.d20Roll(rollOptions);
+                return false;
+            }
+            case "ability": {
+                const abl = request.ability.toLowerCase();
+                const mod = parseInt(request.modifier)
+                const bonus = mod - actorData.data.abilities[abl].mod;
+    
+                actorData.data.bonuses.abilities.check = bonus;
+                const actor = new CONFIG.Actor.entityClass(actorData);
+                
+                // Compose roll parts and data
+                const parts = ["@mod"];
+                const data = {mod: actorData.data.abilities[abl].mod};
+
+                // Ability check bonus
+                if ( bonus ) {
+                    data["checkBonus"] = bonus;
+                    parts.push("@checkBonus");
+                }
+                // Roll and return
+                const rollOptions = this.getRollOptions(request)
+                mergeObject(rollOptions, {
+                    parts: parts,
+                    data: data,
+                    title: game.i18n.format("DND5E.AbilityPromptTitle", {ability: CONFIG.DND5E.abilities[abl]}),
+                    messageData: {"flags.dnd5e.roll": {type: "ability", abl }}
+                });
+                rollOptions.speaker = ChatMessage.getSpeaker({actor: actor, token: token});
                 game.dnd5e.dice.d20Roll(rollOptions);
                 return false;
             }
