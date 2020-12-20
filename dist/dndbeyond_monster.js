@@ -3296,7 +3296,7 @@ const checkKeyModifiers = (event) => {
 function keyModifiers(etype, key, repeat) {
     if (repeat) return;
     const hotkeyClick = settings['hotkey-click']; //true for clicking a key, false for holding a key
-    if (hotkeyClick && etype != "keyup") return;
+    if (hotkeyClick && etype != "keydown") return;
 
     const oldValue = key_modifiers.advantage << 0 | key_modifiers.disadvantage << 1 | key_modifiers.normal_roll << 2;
     const modifier = (key_bindings || {})[key];
