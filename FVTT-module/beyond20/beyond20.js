@@ -66,6 +66,52 @@ class Beyond20 {
         }
         return { rollMode, reliableTalent, halflingLucky, ...advantageSettings }
     }
+
+    static _advantageToD20(request) {
+        switch (request.advantage) {
+            default:
+            case 0: // NORMAL
+            case 1: // DOUBLE
+            case 2: // QUERY
+            case 5: // THRICE
+                return "1d20";
+            case 3: // ADVANTAGE
+                return "2d20kh1";
+            case 6: // SUPER ADVANTAGE
+                return "3d20kh1";
+            case 4: // DISADVANTAGE
+                return "2d20kl1";
+            case 7: // SUPER DISADVANTAGE
+                return "3d20kl1";
+        }
+    }
+
+    static async rollInitiative(request, tokens, combat) {
+        if (!combat) {
+            if (game.user.isGM) {
+                combat = await game.combats.object.create({scene: canvas.scene._id, active: true});
+            } else {
+                return null;
+            }
+        }
+        const mod = parseInt(request.initiative) || 0;
+        let formula = request.d20 || "1d20";
+        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/g, "r$1$2");
+        formula = formula.replace(/(^|\s)+([^\s]+)min([0-9]+)([^\s]*)/g, "$1{$2$4, $3}kh1");
+        formula = formula.replace(/1d20/g, this._advantageToD20(request));
+        formula += ` ${mod >= 0 ? '+' : ''} ${mod}`;
+
+        const createData = tokens.reduce((arr, t) => {
+        if ( t.inCombat ) return arr;
+        arr.push({tokenId: t.id, hidden: t.data.hidden || request.whisper});
+        return arr;
+        }, []);
+        if (createData.length) {
+            await combat.createEmbeddedEntity("Combatant", createData);
+        }
+        const combatants = tokens.map(t => combat.getCombatantByToken(t.id));
+        combat.rollInitiative(combatants.filter(c => !!c).map(c => c._id), {formula, messageOptions: this.getRollOptions(request)})
+    }
     
     static handleBeyond20Request(action, request) {
         if (action !== "roll") return;
@@ -198,6 +244,23 @@ class Beyond20 {
                 });
                 rollOptions.speaker = ChatMessage.getSpeaker({actor: actor, token: token});
                 game.dnd5e.dice.d20Roll(rollOptions);
+                return false;
+            }
+            case "initiative": {
+                const characterName = request.character.name.toLowerCase().trim();
+                const characterTokens = canvas.tokens.placeables.filter((t) => t.owner && t.name.toLowerCase().trim() == characterName);
+                const tokens = characterTokens.length > 0 ? characterTokens : canvas.tokens.controlled;
+                if (tokens.length === 0) {
+                    ui.notifications.warn("Beyond20: No tokens found to roll initiative for");
+                    return;
+                }
+                                    
+                let combat = game.combat;
+                if ( !combat  && !game.user.isGM && !canvas.scene ) {
+                    ui.notifications.warn(game.i18n.localize("COMBAT.NoneActive"));
+                    return;
+                }
+                this.rollInitiative(request, tokens, combat);
                 return false;
             }
             default:
