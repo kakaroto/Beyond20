@@ -10,7 +10,7 @@ class Beyond20 {
         return data;
     }
 
-    static createActorData(request) {
+    static async createActorData(request) {
         const type = request.character.type == "Character" ? "character" : "npc";
         // get default actor template
         const actorData = this._getDefaultTemplate('Actor', type);
@@ -41,9 +41,38 @@ class Beyond20 {
             actorData.spells[lvl].value = 1;
             actorData.spells[lvl].max = 1;
         }
+
+        if (!this._srdClasses) {
+            const compendium = game.packs.get("dnd5e.classes")
+            this._srdClasses = compendium ? await compendium.getIndex() : []
+        }
+        const classes = [];
+        for (const [cls, level] of Object.entries(request.character.classes)) {
+            const itemIdx = this._srdClasses.find(c => c.name.toLowerCase() == cls.toLowerCase());
+            let item = null;
+            if (itemIdx) {
+                const compendium = game.packs.get("dnd5e.classes")
+                item = compendium && await compendium.getEntry(itemIdx._id);
+            }
+            if (!item) {
+                item = {
+                    data: this._getDefaultTemplate('Item', 'class'),
+                    effects: [],
+                    flags: {},
+                    folder: null,
+                    img: request.character.avatar,
+                    name: cls,
+                    sort: 0,
+                    type: 'class'
+                };
+            }
+            item.name = cls;
+            item.data.levels = parseInt(level);
+            classes.push(item);
+        }
         
     
-        return {name: request.character.name, flags: {}, img: request.character.avatar, data: actorData, items: []}
+        return {name: request.character.name, type, flags: {}, img: request.character.avatar, data: actorData, items: [...classes]}
     }
     static createItemData(request) {
         let itemData = null;
@@ -159,15 +188,26 @@ class Beyond20 {
                 break;
             default:
                 itemData.range.value = parseInt(range) || 0;
-                itemData.range.units = range.includes("mile") ? "mi" : range.includes("mile") ? "ft" : "";
+                itemData.range.units = range.includes("mile") ? "mi" : range.includes("ft") ? "ft" : "";
                 break;
         }
         // TODO: Need aoe size from Beyond20 which isn't yet exported
-        switch (target) {
-            default:
-                itemData.target.value = parseInt(target) || 0;
-                itemData.target.units = target.includes("mile") ? "mi" : target.includes("mile") ? "ft" : "";
-                break;
+        if (target) {
+            itemData.target.value = parseInt(target) || 0;
+            itemData.target.units = target.includes("mile") ? "mi" : target.includes("ft") ? "ft" : "";
+            if (request.description.match(/\ssphere\s/i)) {
+                itemData.target.type = "sphere"
+            } else if (request.description.match(/\scone\s/i)) {
+                itemData.target.type = "cone"
+            } else if (request.description.match(/\scube\s/i)) {
+                itemData.target.type = "cube"
+            } else if (request.description.match(/\scylinder\s/i)) {
+                itemData.target.type = "cylinder"
+            } else if (request.description.match(/\sline\s/i)) {
+                itemData.target.type = "line"
+            } else if (request.description.match(/\square\s/i)) {
+                itemData.target.type = "square"
+            }
         }
 
         request.description = request.description.replace("At Higher Levels.", "<strong>At Higher Levels.</strong>");
@@ -266,7 +306,7 @@ class Beyond20 {
     }
 
     static async rollSkill(request) {
-        const actorData = this.createActorData(request);
+        const actorData = await this.createActorData(request);
         const token = this.findToken(request);
         
         const SKILLS = {
@@ -335,7 +375,7 @@ class Beyond20 {
     }
 
     static async rollSavingThrow(request) {
-        const actorData = this.createActorData(request);
+        const actorData = await this.createActorData(request);
         const token = this.findToken(request);
         
         const abl = request.ability.toLowerCase();
@@ -371,7 +411,7 @@ class Beyond20 {
     }
     
     static async rollAbility(request) {
-        const actorData = this.createActorData(request);
+        const actorData = await this.createActorData(request);
         const token = this.findToken(request);
         
         const abl = request.ability.toLowerCase();
@@ -403,13 +443,18 @@ class Beyond20 {
     }
 
     static async rollItems(request) {
-        const actorData = this.createActorData(request);
+        const actorData = await this.createActorData(request);
         const token = this.findToken(request);
 
         const item = this.createItemData(request);
         actorData.items.push(item);
         const actor = new CONFIG.Actor.entityClass(actorData, {token});
-        actor.items.entries.find(i => i.type === item.type && i.name === item.name).roll();
+        const actorItem = actor.items.entries.find(i => i.type === item.type && i.name === item.name);
+
+        const template = game.dnd5e.canvas.AbilityTemplate.fromItem(actorItem);
+        if ( template ) template.drawPreview();
+        const rollMode = request.whisper === 0 ? "roll" : "gmroll";
+        actorItem.displayCard({rollMode, createMessage: true});
     }
 
     static handleBeyond20Request(action, request) {
