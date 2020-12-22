@@ -224,7 +224,21 @@ class Beyond20 {
         }
     }
 
-    static async rollInitiative(request, tokens, combat) {
+    static async rollInitiative(request) {
+        const characterName = request.character.name.toLowerCase().trim();
+        const characterTokens = canvas.tokens.placeables.filter((t) => t.owner && t.name.toLowerCase().trim() == characterName);
+        const tokens = characterTokens.length > 0 ? characterTokens : canvas.tokens.controlled;
+        if (tokens.length === 0) {
+            ui.notifications.warn("Beyond20: No tokens found to roll initiative for");
+            return;
+        }
+                            
+        let combat = game.combat;
+        if ( !combat  && !game.user.isGM && !canvas.scene ) {
+            ui.notifications.warn(game.i18n.localize("COMBAT.NoneActive"));
+            return;
+        }
+
         if (!combat) {
             if (game.user.isGM) {
                 combat = await game.combats.object.create({scene: canvas.scene._id, active: true});
@@ -250,170 +264,178 @@ class Beyond20 {
         const combatants = tokens.map(t => combat.getCombatantByToken(t.id));
         combat.rollInitiative(combatants.filter(c => !!c).map(c => c._id), {formula, messageOptions: this.getRollOptions(request)})
     }
-    
-    static handleBeyond20Request(action, request) {
-        if (action !== "roll") return;
+
+    static async rollSkill(request) {
         const actorData = this.createActorData(request);
         const token = this.findToken(request);
+        
+        const SKILLS = {
+            "Acrobatics": "acr",
+            "Animal Handling": "ani",
+            "Arcana": "arc",
+            "Athletics": "ath",
+            "Deception": "dec",
+            "History": "his",
+            "Insight": "ins",
+            "Intimidation": "itm",
+            "Investigation": "inv",
+            "Medicine": "med",
+            "Nature": "nat",
+            "Perception": "prc",
+            "Performance": "prf",
+            "Persuasion": "per",
+            "Religion": "rel",
+            "Sleight of Hand": "slt",
+            "Stealth": "ste",
+            "Survival": "sur"
+        };
+        const skill = SKILLS[request.skill];
+        if (!skill) return;
+
+        switch (request.proficiency) {
+            case "Not Proficient": 
+            default:
+                break;
+            case "Half Proficiency":
+                actorData.data.skills[skill].value = 0.5;
+                break;
+            case "Proficiency": 
+                actorData.data.skills[skill].value = 1;
+                break;
+            case "Expertise": 
+                actorData.data.skills[skill].value = 2;
+                break;
+        }
+        const calculated = actorData.data.abilities[request.ability.toLowerCase()].mod + actorData.data.skills[skill].value * actorData.data.attributes.prof;
+        const bonus = parseInt(request.modifier) - calculated;
+        actorData.data.skills[skill].mod = calculated;
+        actorData.data.bonuses.abilities.skill = bonus;
+
+        const actor = new CONFIG.Actor.entityClass(actorData);
+        
+        // Compose roll parts and data
+        const parts = ["@mod"];
+        const data = {mod: calculated};
+
+        // Skill check bonus
+        if ( bonus ) {
+            data["skillBonus"] = bonus;
+            parts.push("@skillBonus");
+        }
+        // Roll and return
+        const rollOptions = this.getRollOptions(request)
+        mergeObject(rollOptions, {
+            parts: parts,
+            data: data,
+            title: game.i18n.format("DND5E.SkillPromptTitle", {skill: CONFIG.DND5E.skills[skill]}),
+            messageData: {"flags.dnd5e.roll": {type: "skill", skill }}
+        });
+        rollOptions.speaker = ChatMessage.getSpeaker({actor: actor, token: token});
+        game.dnd5e.dice.d20Roll(rollOptions);
+    }
+
+    static async rollSavingThrow(request) {
+        const actorData = this.createActorData(request);
+        const token = this.findToken(request);
+        
+        const abl = request.ability.toLowerCase();
+        const mod = parseInt(request.modifier)
+        const proficient = mod >= actorData.data.abilities[abl].mod + actorData.data.attributes.prof;
+        const calculated = actorData.data.abilities[abl].mod + proficient * actorData.data.attributes.prof;
+        const bonus = mod - calculated;
+
+        actorData.data.abilities[abl].proficient = proficient;
+        actorData.data.abilities[abl].save = calculated;
+        actorData.data.bonuses.abilities.save = bonus;
+        const actor = new CONFIG.Actor.entityClass(actorData);
+        
+        // Compose roll parts and data
+        const parts = ["@mod"];
+        const data = {mod: calculated};
+
+        // Saving throw bonus
+        if ( bonus ) {
+            data["saveBonus"] = bonus;
+            parts.push("@saveBonus");
+        }
+        // Roll and return
+        const rollOptions = this.getRollOptions(request)
+        mergeObject(rollOptions, {
+            parts: parts,
+            data: data,
+            title: game.i18n.format("DND5E.SavePromptTitle", {ability: CONFIG.DND5E.abilities[abl]}),
+            messageData: {"flags.dnd5e.roll": {type: "save", abl }}
+        });
+        rollOptions.speaker = ChatMessage.getSpeaker({actor: actor, token: token});
+        game.dnd5e.dice.d20Roll(rollOptions);
+    }
+    
+    static async rollAbility(request) {
+        const actorData = this.createActorData(request);
+        const token = this.findToken(request);
+        
+        const abl = request.ability.toLowerCase();
+        const mod = parseInt(request.modifier)
+        const bonus = mod - actorData.data.abilities[abl].mod;
+
+        actorData.data.bonuses.abilities.check = bonus;
+        const actor = new CONFIG.Actor.entityClass(actorData);
+        
+        // Compose roll parts and data
+        const parts = ["@mod"];
+        const data = {mod: actorData.data.abilities[abl].mod};
+
+        // Ability check bonus
+        if ( bonus ) {
+            data["checkBonus"] = bonus;
+            parts.push("@checkBonus");
+        }
+        // Roll and return
+        const rollOptions = this.getRollOptions(request)
+        mergeObject(rollOptions, {
+            parts: parts,
+            data: data,
+            title: game.i18n.format("DND5E.AbilityPromptTitle", {ability: CONFIG.DND5E.abilities[abl]}),
+            messageData: {"flags.dnd5e.roll": {type: "ability", abl }}
+        });
+        rollOptions.speaker = ChatMessage.getSpeaker({actor: actor, token: token});
+        game.dnd5e.dice.d20Roll(rollOptions);
+    }
+
+    static async rollItems(request) {
+        const actorData = this.createActorData(request);
+        const token = this.findToken(request);
+
+        const item = this.createItemData(request);
+        actorData.items.push(item);
+        const actor = new CONFIG.Actor.entityClass(actorData, {token});
+        actor.items.entries.find(i => i.type === item.type && i.name === item.name).roll();
+    }
+
+    static handleBeyond20Request(action, request) {
+        if (action !== "roll") return;
         switch (request.type) {
-            case "skill": {
-                const SKILLS = {
-                    "Acrobatics": "acr",
-                    "Animal Handling": "ani",
-                    "Arcana": "arc",
-                    "Athletics": "ath",
-                    "Deception": "dec",
-                    "History": "his",
-                    "Insight": "ins",
-                    "Intimidation": "itm",
-                    "Investigation": "inv",
-                    "Medicine": "med",
-                    "Nature": "nat",
-                    "Perception": "prc",
-                    "Performance": "prf",
-                    "Persuasion": "per",
-                    "Religion": "rel",
-                    "Sleight of Hand": "slt",
-                    "Stealth": "ste",
-                    "Survival": "sur"
-                };
-                const skill = SKILLS[request.skill];
-                if (!skill) return;
-    
-                switch (request.proficiency) {
-                    case "Not Proficient": 
-                    default:
-                        break;
-                    case "Half Proficiency":
-                        actorData.data.skills[skill].value = 0.5;
-                        break;
-                    case "Proficiency": 
-                        actorData.data.skills[skill].value = 1;
-                        break;
-                    case "Expertise": 
-                        actorData.data.skills[skill].value = 2;
-                        break;
-                }
-                const calculated = actorData.data.abilities[request.ability.toLowerCase()].mod + actorData.data.skills[skill].value * actorData.data.attributes.prof;
-                const bonus = parseInt(request.modifier) - calculated;
-                actorData.data.skills[skill].mod = calculated;
-                actorData.data.bonuses.abilities.skill = bonus;
-    
-                const actor = new CONFIG.Actor.entityClass(actorData);
-                
-                // Compose roll parts and data
-                const parts = ["@mod"];
-                const data = {mod: calculated};
-
-                // Skill check bonus
-                if ( bonus ) {
-                    data["skillBonus"] = bonus;
-                    parts.push("@skillBonus");
-                }
-                // Roll and return
-                const rollOptions = this.getRollOptions(request)
-                mergeObject(rollOptions, {
-                    parts: parts,
-                    data: data,
-                    title: game.i18n.format("DND5E.SkillPromptTitle", {skill: CONFIG.DND5E.skills[skill]}),
-                    messageData: {"flags.dnd5e.roll": {type: "skill", skill }}
-                });
-                rollOptions.speaker = ChatMessage.getSpeaker({actor: actor, token: token});
-                game.dnd5e.dice.d20Roll(rollOptions);
+            case "skill":
+                this.rollSkill(request);
                 return false;
-            }
-            case "saving-throw": {
-                const abl = request.ability.toLowerCase();
-                const mod = parseInt(request.modifier)
-                const proficient = mod >= actorData.data.abilities[abl].mod + actorData.data.attributes.prof;
-                const calculated = actorData.data.abilities[abl].mod + proficient * actorData.data.attributes.prof;
-                const bonus = mod - calculated;
-    
-                actorData.data.abilities[abl].proficient = proficient;
-                actorData.data.abilities[abl].save = calculated;
-                actorData.data.bonuses.abilities.save = bonus;
-                const actor = new CONFIG.Actor.entityClass(actorData);
-                
-                // Compose roll parts and data
-                const parts = ["@mod"];
-                const data = {mod: calculated};
-
-                // Saving throw bonus
-                if ( bonus ) {
-                    data["saveBonus"] = bonus;
-                    parts.push("@saveBonus");
-                }
-                // Roll and return
-                const rollOptions = this.getRollOptions(request)
-                mergeObject(rollOptions, {
-                    parts: parts,
-                    data: data,
-                    title: game.i18n.format("DND5E.SavePromptTitle", {ability: CONFIG.DND5E.abilities[abl]}),
-                    messageData: {"flags.dnd5e.roll": {type: "save", abl }}
-                });
-                rollOptions.speaker = ChatMessage.getSpeaker({actor: actor, token: token});
-                game.dnd5e.dice.d20Roll(rollOptions);
+            case "saving-throw":
+                this.rollSavingThrow(request);
                 return false;
-            }
-            case "ability": {
-                const abl = request.ability.toLowerCase();
-                const mod = parseInt(request.modifier)
-                const bonus = mod - actorData.data.abilities[abl].mod;
-    
-                actorData.data.bonuses.abilities.check = bonus;
-                const actor = new CONFIG.Actor.entityClass(actorData);
-                
-                // Compose roll parts and data
-                const parts = ["@mod"];
-                const data = {mod: actorData.data.abilities[abl].mod};
-
-                // Ability check bonus
-                if ( bonus ) {
-                    data["checkBonus"] = bonus;
-                    parts.push("@checkBonus");
-                }
-                // Roll and return
-                const rollOptions = this.getRollOptions(request)
-                mergeObject(rollOptions, {
-                    parts: parts,
-                    data: data,
-                    title: game.i18n.format("DND5E.AbilityPromptTitle", {ability: CONFIG.DND5E.abilities[abl]}),
-                    messageData: {"flags.dnd5e.roll": {type: "ability", abl }}
-                });
-                rollOptions.speaker = ChatMessage.getSpeaker({actor: actor, token: token});
-                game.dnd5e.dice.d20Roll(rollOptions);
+            case "ability":
+                this.rollAbility(request);
                 return false;
-            }
-            case "initiative": {
-                const characterName = request.character.name.toLowerCase().trim();
-                const characterTokens = canvas.tokens.placeables.filter((t) => t.owner && t.name.toLowerCase().trim() == characterName);
-                const tokens = characterTokens.length > 0 ? characterTokens : canvas.tokens.controlled;
-                if (tokens.length === 0) {
-                    ui.notifications.warn("Beyond20: No tokens found to roll initiative for");
-                    return;
-                }
-                                    
-                let combat = game.combat;
-                if ( !combat  && !game.user.isGM && !canvas.scene ) {
-                    ui.notifications.warn(game.i18n.localize("COMBAT.NoneActive"));
-                    return;
-                }
-                this.rollInitiative(request, tokens, combat);
+            case "initiative":
+                this.rollInitiative(request);
                 return false;
-            }
             case 'feature':
             case 'trait':
             case 'item':
             case 'attack':
             case 'action':
             case 'spell-attack':
-            case 'spell-card': {
-                const item = this.createItemData(request);
-                actorData.items = [item];
-                const actor = new CONFIG.Actor.entityClass(actorData, {token});
-                actor.items.entries[0].roll();
+            case 'spell-card':
+                this.rollItems(request);
                 return false;
-            }
             default:
                 break;
         }
