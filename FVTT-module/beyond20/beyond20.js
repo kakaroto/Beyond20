@@ -15,6 +15,9 @@ class Beyond20 {
         // get default actor template
         const actorData = this._getDefaultTemplate('Actor', type);
         
+        if (!["Character", "Monster", "Creature"].includes(request.character.type)) {
+            return {name: request.character.name || request.name, type, flags: {}, img: "icons/svg/mystery-man.svg", data: actorData, items: []}
+        }
         for (let ability of request.character.abilities) {
             const [name, abbr, score, mod] = ability;
             actorData.abilities[abbr.toLowerCase()] = {value: parseInt(score), mod: parseInt(mod)}
@@ -36,18 +39,13 @@ class Beyond20 {
         } else {
             actorData.attributes.prof = parseInt(request.character.proficiency)
         }
-        // Give at least 1 spell slot for all levels in case a spell is being cast
-        for (const lvl of Object.keys(actorData.spells)) {
-            actorData.spells[lvl].value = 1;
-            actorData.spells[lvl].max = 1;
-        }
 
         if (!this._srdClasses) {
             const compendium = game.packs.get("dnd5e.classes")
             this._srdClasses = compendium ? await compendium.getIndex() : []
         }
         const classes = [];
-        for (const [cls, level] of Object.entries(request.character.classes)) {
+        for (const [cls, level] of Object.entries(request.character.classes || {})) {
             const itemIdx = this._srdClasses.find(c => c.name.toLowerCase() == cls.toLowerCase());
             let item = null;
             if (itemIdx) {
@@ -213,6 +211,7 @@ class Beyond20 {
         request.description = request.description.replace("At Higher Levels.", "<strong>At Higher Levels.</strong>");
     }
     static findToken(request) {
+        if (!request.character.name) return null;
         const name = request.character.name.toLowerCase().trim();
         return canvas.tokens.placeables.find((t) => t.owner && t.name.toLowerCase().trim() == name);
     }
