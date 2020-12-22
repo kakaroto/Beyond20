@@ -459,6 +459,7 @@ class Beyond20 {
 
     static handleBeyond20Request(action, request) {
         if (action !== "roll") return;
+        if (!game.settings.get("beyond20", "nativeRolls")) return;
         switch (request.type) {
             case "skill":
                 this.rollSkill(request);
@@ -497,6 +498,14 @@ Hooks.on('ready', function () {
         scope: "client",
         config: true,
         default: true,
+        type: Boolean
+    });
+    game.settings.register("beyond20", "nativeRolls", {
+        name: "Use Foundry native rolls",
+        hint: "If enabled, will use Foundry native rolls instead of the Beyond20 roll renderer. Cannot work when D&D Beyond Digital Dice are enabled. All Beyond20 features may not be supported.",
+        scope: "client",
+        config: true,
+        default: false,
         type: Boolean
     });
     if (typeof (chrome) !== "undefined" && typeof (browser) === "undefined" && game.settings.get("beyond20", "notifyAtLoad") && document.title.startsWith("Foundry Virtual Tabletop")) {
