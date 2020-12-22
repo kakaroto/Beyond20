@@ -1,13 +1,19 @@
 
 
 class Beyond20 {
+
+    static _getDefaultTemplate(entityType, templateType) {
+        const data = duplicate(game.system.template[entityType][templateType]);
+        const templates = game.system.template[entityType][templateType].templates || [];
+        templates.forEach(template => mergeObject(data, game.system.template[entityType].templates[template])) 
+        delete data.templates;
+        return data;
+    }
+
     static createActorData(request) {
         const type = request.character.type == "Character" ? "character" : "npc";
         // get default actor template
-        const actorData = duplicate(game.system.template.Actor[type]);
-        const templates = game.system.template.Actor[type].templates || [];
-        templates.forEach(template => mergeObject(actorData, game.system.template.Actor.templates[template])) 
-        delete actorData.templates;
+        const actorData = this._getDefaultTemplate('Actor', type);
         
         for (let ability of request.character.abilities) {
             const [name, abbr, score, mod] = ability;
@@ -30,9 +36,141 @@ class Beyond20 {
         } else {
             actorData.attributes.prof = parseInt(request.character.proficiency)
         }
+        // Give at least 1 spell slot for all levels in case a spell is being cast
+        for (const lvl of Object.keys(actorData.spells)) {
+            actorData.spells[lvl].value = 1;
+            actorData.spells[lvl].max = 1;
+        }
         
     
         return {name: request.character.name, flags: {}, img: request.character.avatar, data: actorData, items: []}
+    }
+    static createItemData(request) {
+        let itemData = null;
+        let type = "feat";
+        switch (request.type) {
+            default:
+            case 'feature':
+                type = 'feat';
+                itemData = this._getDefaultTemplate('Item', type);
+                itemData.requirements = `${request.source}: ${request['source-type']}`;
+                break;
+            case 'trait':
+                type = 'feat';
+                itemData = this._getDefaultTemplate('Item', type);
+                break;
+            case 'item':
+                type = 'equipment';
+                itemData = this._getDefaultTemplate('Item', type);
+                itemData.rarity = request['item-type'];
+                break;
+            case 'action':
+                type = 'feat';
+                itemData = this._getDefaultTemplate('Item', type);
+                break;
+            case 'spell-card': 
+                type = 'spell';
+                itemData = this._getDefaultTemplate('Item', type);
+                this._fillSpellData(request, itemData);
+                break;
+            case 'spell-attack':
+                type = 'spell';
+                itemData = this._getDefaultTemplate('Item', type);
+                this._fillSpellData(request, itemData);
+                break;
+            case 'attack':
+                type = 'weapon';
+                itemData = this._getDefaultTemplate('Item', type);
+                break;
+        }
+        if (!itemData) {
+            itemData = this._getDefaultTemplate('Item', type);
+        }
+        itemData.source = "Beyond20";
+        itemData.description.value = request.description.replace(/\n/g, "</br>");
+        return {
+            data: itemData,
+            effects: [],
+            flags: {},
+            folder: null,
+            img: request.preview || request.character.avatar,
+            name: request.name,
+            sort: 0,
+            type: type
+        };
+    }
+
+    static _fillSpellData(request, itemData) {
+        const castingTime = request['casting-time'];
+        const cost = parseInt(castingTime) || "";
+        const activation = castingTime.slice(cost.toString().length).trim().toLowerCase();
+        itemData.activation.cost = cost;
+        itemData.activation.type = activation === "bonus action" ? "bonus" : activation;
+        
+        let components = request.components;
+        while (components != "") {
+            if (components[0] == "V") {
+                itemData.components.vocal = true;
+                components = components.slice(1);
+            } else if (components[0] == "S") {
+                itemData.components.somatic = true;
+                components = components.slice(1);
+            } else if (components[0] == "M") {
+                itemData.components.material = true;
+                itemData.materials.value = components.slice(2, -1);
+                components = "";
+            }
+            if (components.startsWith(", ")) {
+                components = components.slice(2);
+            }
+        }
+        itemData.components.concentration = request.concentration;
+        itemData.components.ritual = request.ritual;
+        
+        for (const [school, name] of Object.entries(CONFIG.DND5E.spellSchools)) {
+            if (request['level-school'].includes(name)) {
+                itemData.school = school;
+                break;
+            }
+        }
+        itemData.level = parseInt(request['cast-at'] || request['level-school']) || 0;
+        itemData.duration.value = parseInt(request.duration) || "";
+        itemData.duration.units = request.duration.slice(itemData.duration.value.toString().length).trim().toLowerCase();
+        if (itemData.duration.units === "instantaneous") itemData.duration.units = "inst";
+        const rangeMatch = request.range.match(/(?:^([^\/]+)\/(.+)$)|(?:(.*?) \((.*?)\))/)
+        let range = request.range;
+        let target = "";
+        if (rangeMatch) {
+            range = rangeMatch[1] || rangeMatch[3];
+            target = rangeMatch[2] || rangeMatch[4];
+        }
+        switch (range) {
+            case "Touch":
+                itemData.range.units = "touch";
+                break;
+            case "Sight":
+                itemData.range.units = "spec";
+                break;
+            case "Self":
+                itemData.range.units = "self";
+                break;
+            case "Unlimited":
+                itemData.range.units = "any";
+                break;
+            default:
+                itemData.range.value = parseInt(range) || 0;
+                itemData.range.units = range.includes("mile") ? "mi" : range.includes("mile") ? "ft" : "";
+                break;
+        }
+        // TODO: Need aoe size from Beyond20 which isn't yet exported
+        switch (target) {
+            default:
+                itemData.target.value = parseInt(target) || 0;
+                itemData.target.units = target.includes("mile") ? "mi" : target.includes("mile") ? "ft" : "";
+                break;
+        }
+
+        request.description = request.description.replace("At Higher Levels.", "<strong>At Higher Levels.</strong>");
     }
     static findToken(request) {
         const name = request.character.name.toLowerCase().trim();
@@ -261,6 +399,19 @@ class Beyond20 {
                     return;
                 }
                 this.rollInitiative(request, tokens, combat);
+                return false;
+            }
+            case 'feature':
+            case 'trait':
+            case 'item':
+            case 'attack':
+            case 'action':
+            case 'spell-attack':
+            case 'spell-card': {
+                const item = this.createItemData(request);
+                actorData.items = [item];
+                const actor = new CONFIG.Actor.entityClass(actorData, {token});
+                actor.items.entries[0].roll();
                 return false;
             }
             default:
