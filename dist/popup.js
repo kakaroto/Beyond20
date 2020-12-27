@@ -742,6 +742,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "ranger-colossus-slayer": {
+        "title": "Ranger: Hunter's Prey: Colossus Slayer (Apply to next roll only)",
+        "description": "Use your Colossus Slayer ability and add 1d8 damage to your target",
+        "type": "bool",
+        "default": false
+    },
     "ranger-slayers-prey": {
         "title": "Ranger: Monster Slayer: Slayer's Prey",
         "description": "Use your Slayer's Prey ability and add 1d6 damage to your target",
@@ -1790,6 +1796,11 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Planar Warrior")) {
             e = createHTMLOption("ranger-planar-warrior", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Hunter’s Prey: Colossus Slayer")) {
+            console.log('CS Class feature detected.');
+            e = createHTMLOption("ranger-colossus-slayer", false, character_settings);
             options.append(e);
         }
         if (response["class-features"].includes("Slayer’s Prey")) {

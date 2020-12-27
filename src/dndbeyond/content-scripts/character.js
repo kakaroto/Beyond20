@@ -240,6 +240,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
     if (!force_display && Object.keys(properties).includes("Damage")) {
         const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
         let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
+        let settings_to_change = {}
 
         if (to_hit === null)
             to_hit = findToHit(item_full_name, ".ct-combat-attack--item,.ddbc-combat-attack--item", ".ct-item-name,.ddbc-item-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
@@ -371,7 +372,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             to_hit += " - 5";
             damages.push("10");
             damage_types.push("Sharpshooter");
-            character.mergeCharacterSettings({ "sharpshooter": false });
+            settings_to_change["sharpshooter"] = false;
         }
         if (to_hit !== null && 
             character.getSetting("great-weapon-master", false) &&
@@ -382,7 +383,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             to_hit += " - 5";
             damages.push("10");
             damage_types.push("Weapon Master");
-            character.mergeCharacterSettings({ "great-weapon-master": false });
+            settings_to_change["great-weapon-master"] = false;
         }
         if (to_hit !== null && 
             character.getSetting("paladin-sacred-weapon", false)) {
@@ -419,11 +420,13 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             if (character.getSetting("ranger-dread-ambusher", false)) {
                 damages.push("1d8");
                 damage_types.push("Ambush");
-                character.mergeCharacterSettings({ "ranger-dread-ambusher": false });
+                settings_to_change["ranger-dread-ambusher"] = false;
             }
-            if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer")) {
+            if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer") &&
+                character.getSetting("ranger-colossus-slayer", false)) {
                 damages.push("1d8");
                 damage_types.push("Colossus Slayer");
+                settings_to_change["ranger-colossus-slayer"] = false; // Reset to off since CS only applies once per turn
             }
             if (character.hasClassFeature("Slayer’s Prey") &&
                 character.getSetting("ranger-slayers-prey", false)) {
@@ -499,7 +502,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 blades_dmg = "8d6"
             damages.push(blades_dmg);
             damage_types.push("Psychic");
-            character.mergeCharacterSettings({ "bard-psychic-blades": false });
+            settings_to_change["bard-psychic-blades"] = false;
         }
         //Protector Aasimar: Radiant Soul Damage
         if (character.hasRacialTrait("Radiant Soul") &&
@@ -588,16 +591,20 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 roll_properties["name"] += ` (CRIT${custom_critical_limit})`;
         }
 
-        // Asssassinate: consider all rolls as critical;
+        // Assassinate: consider all rolls as critical;
         if (character.hasClassFeature("Assassinate") &&
             character.getSetting("rogue-assassinate", false)) {
             roll_properties["critical-limit"] = 1;
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-            character.mergeCharacterSettings({ "rogue-assassinate": false });
+            settings_to_change["rogue-assassinate"] = false;
         }
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
+
+        // Apply batched updates to settings, if any:
+        if (Object.keys(settings_to_change).length > 0)
+            character.mergeCharacterSettings(settings_to_change);
 
         return sendRollWithCharacter("attack", damages[0], roll_properties);
     } else if (!force_display && (is_tool || is_instrument) && character._abilities.length > 0) {
