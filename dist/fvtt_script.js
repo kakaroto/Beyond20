@@ -3089,7 +3089,7 @@ class FVTTRoll extends Beyond20BaseRoll {
                     faces: d.faces,
                     formula: d.formula,
                     total: d.total,
-                    rolls: d.results.map(r => ({discarded: r.discarded, roll: r.result}))
+                    rolls: d.results.map(r => ({discarded: r.discarded || r.rerolled, roll: r.result}))
                 }
             });
         } else {
