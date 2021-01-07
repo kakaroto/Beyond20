@@ -113,6 +113,10 @@ async function rollSkillCheck(paneClass) {
             roll_properties.d20 = `1d20min${min}`
         }
     }
+
+    if (character.hasRacialTrait("Deductive Intuition") && (skill_name == "Investigation" || skill_name == "Insight")){
+        roll_properties.modifier += "+1d4";
+    }
     return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 
