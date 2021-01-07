@@ -4990,6 +4990,10 @@ async function rollSkillCheck(paneClass) {
     if (character.hasRacialTrait("Deductive Intuition") && (skill_name == "Investigation" || skill_name == "Insight")){
         roll_properties.modifier += "+1d4";
     }
+
+    if (character.hasRacialTrait("Windwright’s Intuition") && skill_name == "Acrobatics"){
+        roll_properties.modifier += "+1d4";
+    }
     return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 
@@ -5523,6 +5527,8 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 // Sorcerer: Clockwork Soul - Trance of Order
                 if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
                     roll_properties.d20 = "1d20min10";
+                if (character.hasRacialTrait("Windwright’s Intuition") && is_tool && item_name == "Navigator's Tools")
+                    roll_properties.modifier += "+1d4";
                 return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
             }
         });
