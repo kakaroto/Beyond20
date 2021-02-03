@@ -813,6 +813,12 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "charger-feat": {
+        "title": "Charger Feat - Extra Damage",
+        "description": "You charge into battle, lending weight to your blow!",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -1878,6 +1884,10 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Arcane Jolt")) {
             e = createHTMLOption("artificer-arcane-jolt", false, character_settings);
+            options.append(e);
+        }
+        if (response["feats"].includes("Charger")) {
+            e = createHTMLOption("charger-feat", false, character_settings);
             options.append(e);
         }
 

@@ -768,6 +768,12 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "charger-feat": {
+        "title": "Charger Feat - Extra Damage",
+        "description": "You charge into battle, lending weight to your blow!",
+        "type": "bool",
+        "default": false
     }
 }
 

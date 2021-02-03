@@ -767,6 +767,12 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "charger-feat": {
+        "title": "Charger Feat - Extra Damage",
+        "description": "You charge into battle, lending weight to your blow!",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -5431,6 +5437,15 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             }
         }
 
+        // Charger Feat
+        if (properties["Attack Type"] == "Melee") {
+            if (character.getSetting("charger-feat")) {
+                damages.push("+5");
+                damage_types.push("Charger Feat");
+                character.mergeCharacterSettings({ "charger-feat": false })
+            }
+        }
+
         //Artificer Battlemaster Arcane Jolt
         // TODO: Implement for Steel Defender at later date
         if (damages.length > 0 &&
@@ -5693,6 +5708,14 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             character.getSetting("cleric-blessed-strikes", false)) {
                 damages.push("1d8");
                 damage_types.push("Blessed Strikes");
+            }
+
+            // Charger Feat
+            // I don't love the action_name isn't "Lightning Launcher" here, but it removes code duplication of the containing if statement above, while keeping it Melee-only
+            if (character.getSetting("charger-feat") && !action_name.includes("Lightning Launcher")) {
+                damages.push("+5");
+                damage_types.push("Charger Feat");
+                character.mergeCharacterSettings({ "charger-feat": false })
             }
         }
 
