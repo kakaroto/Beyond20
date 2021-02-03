@@ -5705,6 +5705,12 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             damage_types.push("Genie's Wrath");
         }
 
+         // Circle of Spores - Symbiotic Entity
+         if (character.hasClassFeature("Symbiotic Entity") && character.getSetting("druid-symbiotic-entity", false) &&
+            action_name === "Halo of Spores") {
+            damages[0] = damages[0].replace(/1d/g, "2d");
+        }
+
         const roll_properties = buildAttackRoll(character,
             "action",
             action_name,
