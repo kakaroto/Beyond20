@@ -129,13 +129,11 @@ const updateResourceBar = async (characterData, barName, value, maxValue, color 
     Object.assign(bar, {
         leftEquation: value.toString(),
         rightEquation: maxValue.toString(),
-        ...(display ? {
-            display
-        } : {}),
-        ...(actualValue ? {
+        display,
+        ...(actualValue != null ? {
             leftValue: actualValue
         } : {}),
-        ...(actualMaxValue ? {
+        ...(actualMaxValue  != null ? {
             rightValue: actualMaxValue
         } : {}),
         ...(color && !bar.color ? { color } : {})

@@ -127,7 +127,7 @@ async function handleRenderedRoll(request) {
         stripRequestForAttackRoll(originalRequest);
         // Compressing and stripping the request to reduce the encoded version as much as possible to not exceed 2048 chars
         rollDamages = `b20-rr-${LZString.compressToEncodedURIComponent(JSON.stringify(originalRequest))}`;
-        rolls.push(["Roll Damages", `[\`Click\`](#${rollDamages})`]);
+        rolls.push(["Roll Damage", `[\`Click\`](#${rollDamages})`]);
     }
     if (originalRequest.type === "initiative" && settings["initiative-tracker"]) {
         const initiative = request.attack_rolls.find((roll) => !roll.discarded);
@@ -210,7 +210,7 @@ async function updateHpBar({characterName, hp, maxHp, tempHp}) {
         updateCustomAttribute(characterData, "HP_Current", hp);
         updateCustomAttribute(characterData, "HP_Temp", tempHp);
         if (settings['astral-control-hp-bar']) {
-            updateResourceBar(characterData, "hp", "HP_Current", "HP_Max", "48bb78");
+            updateResourceBar(characterData, "hp", "HP_Current", "HP_Max", "48bb78", hp, maxHp, true);
             updateResourceBar(characterData, "temphp", "HP_Temp", "HP_Temp", "48b3bb", tempHp, tempHp, tempHp != 0);
         }
         return fetch(location.origin + `/api/game/${room}/character/${character}`, {
