@@ -324,8 +324,9 @@ class Beyond20RollRenderer {
         }
 
         if (request.damages && request.damages.length > 0 && 
-            request.rollAttack && !request.rollDamage)
+            request.rollAttack && !request.rollDamage) {
             html += '<button class="beyond20-button-roll-damages">Roll Damages</button>';
+        }
 
         html += "</div>";
         const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
@@ -335,10 +336,22 @@ class Beyond20RollRenderer {
                 this._displayer.displayError("Beyond20 Discord Integration: " + discord_error);
         });
 
+        // Hide the dialog showing the roll result on DDB when whispering to Discord (if the setting is on)
+        // Allowing the simulation of Fantasy Ground's 'Dice Tower' feature.
+        const isWhispering = request.whisper === WhisperType.YES;
+        const isSendingResultToDiscordOnly = this._settings["vtt-tab"] && this._settings["vtt-tab"].vtt === "dndbeyond";
+        const shouldHideResultsOnWhispersToDiscord = this._settings["hide-results-on-whisper-to-discord"];
+
+        const canPostHTML = !isWhispering || !isSendingResultToDiscordOnly || !shouldHideResultsOnWhispersToDiscord;
+
+        const json_attack_rolls = attack_rolls.map(r => r.toJSON ? r.toJSON() : r);
+        const json_damage_rolls = damage_rolls.map(([l, r, f]) => r.toJSON ? [l, r.toJSON(), f] : [l, r, f]);
+        const json_total_damages = Object.fromEntries(Object.entries(total_damages).map(([k, v]) => [k, v.toJSON ? v.toJSON() : v]));
         if (request.sendMessage && this._displayer.sendMessage)
-            this._displayer.sendMessage(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open)
-        else
-            this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);
+            this._displayer.sendMessage(request, title, html, character, request.whisper, play_sound, source, attributes, description, json_attack_rolls, roll_info, json_damage_rolls, json_total_damages, open)
+        else if (canPostHTML) {
+            this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, json_attack_rolls, roll_info, json_damage_rolls, json_total_damages, open);
+        }
 
         if (attack_rolls.length > 0) {
             return attack_rolls.find((r) => !r.isDiscarded());
@@ -379,6 +392,26 @@ class Beyond20RollRenderer {
         const roll = this.createRoll(dice, data);
         await this._roller.resolveRolls(title, [roll]);
         return this.postDescription(request, title, null, {}, null, [roll]);
+    }
+    async sendCustomDigitalDice(character, digitalRoll) {
+        let whisper = parseInt(character.getGlobalSetting("whisper-type", WhisperType.NO));
+        const whisper_monster = parseInt(character.getGlobalSetting("whisper-type-monsters", WhisperType.YES));
+        let is_monster = character.type() == "Monster" || character.type() == "Vehicle";
+        if (is_monster && whisper_monster != WhisperType.NO)
+            whisper = whisper_monster;
+        if (whisper === WhisperType.QUERY)
+            whisper = await this.queryWhisper(args.name || rollType, is_monster);
+        // Default advantage/whisper would get overriden if (they are part of provided args;
+        const request = {
+            action: "roll",
+            character: character.getDict(),
+            type: "custom",
+            roll: digitalRoll.rolls[0].formula,
+            advantage: RollType.NORMAL,
+            whisper: whisper,
+            sendMessage: true
+        }
+        return this.postDescription(request, digitalRoll.name, null, {}, null, digitalRoll.rolls);
     }
 
     async rollD20(request, title, data, modifier="") {
@@ -512,20 +545,6 @@ class Beyond20RollRenderer {
             } else if (request.name == "Toll the Dead") {
                 const ttd_dice = await this.queryGeneric(request.name, "Is the target missing any of its hit points ?", { "d12": "Yes", "d8": "No" }, "ttd_dice", ["d12", "d8"]);
                 damages[0] = damages[0].replace("d8", ttd_dice);
-            }
-
-            // Ranger Ability Support;
-            for (let [dmgIndex, dmgType] of damage_types.entries()) {
-                if (dmgType == "Colossus Slayer") {
-                    const dmg = damages[dmgIndex].toString();
-                    if (dmg) {
-                        const dmg_dice = await this.queryGeneric(request.name, `Add ${dmgType} damage ?`, { "0": "No", [dmg]: "Yes" }, "dmg_dice", ["0", dmg]);
-                        if (dmg_dice == "0") {
-                            damages.splice(dmgIndex, 1);
-                            damage_types.splice(dmgIndex, 1);
-                        }
-                    }
-                }
             }
 
             const has_versatile = damage_types.length > 1 && damage_types[1].includes("Two-Handed");

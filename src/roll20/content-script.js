@@ -17,9 +17,9 @@ function postChatMessage(message, character = null) {
     let set_speakingas = true;
     const old_as = speakingas.value;
     if (character) {
-        character = character.toLowerCase();
+        character = character.toLowerCase().trim();
         for (let i = 0; i < (speakingas.children.length); i++) {
-            if (speakingas.children[i].text.toLowerCase() === character) {
+            if (speakingas.children[i].text.toLowerCase().trim() === character) {
                 speakingas.children[i].selected = true;
                 set_speakingas = false;
                 break;
@@ -352,12 +352,6 @@ function rollAttack(request, custom_roll_dice = "") {
         const crit_damages = request["critical-damages"];
         const crit_damage_types = request["critical-damage-types"];
 
-        // Ranger Ability Support;
-        for (let [dmgIndex, dmgType] of damage_types.entries()) {
-            if (damage_types[dmgIndex] == "Colossus Slayer")
-                damages[dmgIndex] = ROLL20_ADD_GENERIC_DAMAGE_DMG_QUERY.replace(/%dmgType%/, damage_types[dmgIndex]).replace(/%dmg%/, damages[dmgIndex]);
-        }
-
         dmg_props = damagesToRollProperties(damages, damage_types, crit_damages, crit_damage_types);
     }
     if (request.range !== undefined)
@@ -544,7 +538,10 @@ function rollSpellAttack(request, custom_roll_dice) {
             }
         }
     }
-
+    if (settings["roll20-spell-description-display"] === true) {
+		properties["desc"] = properties["desc"] ? properties["desc"] + "\n\n" : "";
+		properties["desc"] += `Description: ${request.description}`;
+    }
     if (request.rollDamage && !request.rollAttack) {
         template_type = "dmg";
         dmg_props["charname"] = request.character.name;
@@ -801,8 +798,7 @@ async function handleOGLRenderedRoll(request) {
         }
         message += template(request, "dmg", dmg_props) + "\n";
     }
-    const character_name = request.whisper == WhisperType.HIDE_NAMES ? "???" : request.character.name;
-    postChatMessage(message, character_name);
+    postChatMessage(message, request.character);
 
     if (rollDamages) {
         hookRollDamages(rollDamages, request);
@@ -933,6 +929,9 @@ function handleMessage(request, sender, sendResponse) {
             roll = rollAvatarDisplay(request);
             const character_name = request.whisper !== WhisperType.NO ? "???" : request.character.name;
             return postChatMessage(roll, character_name);
+        } else if (request.type == "chat-message") {
+            const character_name = request.whisper == WhisperType.HIDE_NAMES ? "???" : request.character.name;
+            return postChatMessage(request.message, character_name);
         }
         const isOGL = $("#isOGL").val() === "1";
         if (settings["roll20-template"] === "default" || !isOGL) {

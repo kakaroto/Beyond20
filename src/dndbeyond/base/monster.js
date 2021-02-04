@@ -64,7 +64,7 @@ class Monster extends CharacterBase {
             this._avatar = avatar[0].href;
             const avatarImg = $(".details-aside .image");
             if (avatarImg)
-                addRollButton(this, () => this.displayAvatar(), avatarImg, { small: true, image: true, text: "Display in VTT" });
+                addDisplayButton(() => this.displayAvatar(), avatarImg, { small: false, image: true });
         }
         const attributes = stat_block.find(`${base}__attributes ${base}__attribute`);
         for (let attr of attributes.toArray()) {
@@ -155,10 +155,12 @@ class Monster extends CharacterBase {
             } else if (label == "Skills") {
                 const skills = value.split(", ");
                 for (let skill of skills) {
-                    const parts = skill.split(" ");
-                    const name = parts.slice(0, -1).join(" ");
-                    const mod = parts.slice(-1)[0];
-                    this._skills[name] = mod;
+                    const match = skill.match(/(.+?)([+-]?)\s*([0-9]+)/);
+                    if (match) {
+                        const name = match[1].trim();
+                        const mod = `${match[2] || "+"}${match[3]}`;
+                        this._skills[name] = mod;
+                    }
                 }
                 if (!add_dice)
                     continue;
@@ -281,7 +283,7 @@ class Monster extends CharacterBase {
         if (hit_idx > 0)
             hit = description.slice(hit_idx);
         // Using match with global modifier then map to regular match because RegExp.matchAll isn't available on every browser
-        const damage_regexp = new RegExp(/([\w]* )(?:([0-9]+))?(?: *\(?([0-9]*d[0-9]+(?:\s*[-+]\s*[0-9]+)?(?: plus [^\)]+)?)\)?)? ([\w ]+?) damage/)
+        const damage_regexp = new RegExp(/([\w]* )(?:([0-9]+)[^d])?(?: *\(?([0-9]*d[0-9]+(?:\s*[-+]\s*[0-9]+)?(?: plus [^\)]+)?)\)?)? ([\w ]+?) damage/)
         const damage_matches = reMatchAll(damage_regexp, hit) || [];
         const damages = [];
         const damage_types = [];
@@ -451,7 +453,7 @@ class Monster extends CharacterBase {
             let action = $(block).find(this._base + "__action-station-block-content " + this._base + "__attribute-value");
             if (action_name == "" && action.length == 0) {
                 action_name = $(block).find(this._base + "-action-station__heading").text();
-                action = $(block).find(this._base + "-action-station__action");
+                action = $(block).find(this._base + "__action");
             }
             handleAction(action_name, block, action);
         }

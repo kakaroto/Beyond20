@@ -17,55 +17,29 @@ class DigitalDice {
                 this._rolls.push(...fakeRoll.dice[0]._rolls);
             }
         }
-        this._notificationIds = this._getNotificationIds();
+        this._notificationId = null;
     }
-
-    clear() {
-        $(".dice-toolbar__dropdown-die").click()
+    get name() {
+        return this._name;
     }
-    clearResults() {
-        $(".dice_notification_controls__clear").click()
-    }
-    rollDice(amount, type) {
-        const dice = $(`.dice-die-button[data-dice="${type}"]`)
-        for (let i = 0; i < amount; i++)
-            dice.click()
-        return amount || 0;
-    }
-    _makeRoll() {
-        this._notificationIds = this._getNotificationIds();
-        $(".dice-toolbar__roll").click();
-    }
-    static isEnabled() {
-        const toolbar = $(".dice-toolbar");
-        return toolbar.length > 0;
+    get rolls() {
+        return this._rolls;
     }
     async roll() {
-        this.clear();
-        let diceRolled = 0;
-        for (let dice of this._dice)
-            diceRolled += this.rollDice(dice.amount, `d${dice.faces}`);
-        if (diceRolled > 0) {
-            this._makeRoll();
-            return this.result();
-        }
+        return DigitalDiceManager.rollDigitalDice(this);
     }
-    _getNotificationIds() {
-        const notifications = $(".noty_bar").toArray();
-        return notifications.map(n => n.id);
-    }
-    lookForResult() {
-        const notifications = this._getNotificationIds();
-        const myId = notifications.find(n => !this._notificationIds.includes(n))
-        console.log("Found my results : ", myId)
-        if (!myId) return false;
+    /**
+     * 
+     * @param {String} myId        Notification ID for parsing the results of this roll
+     * @param {Boolean} passive    If set, do not modify the notification and calculate the total right away
+     */
+    parseNotification(myId, passive=false) {
+        this._notificationId = myId;
 
         const result = $(`#${myId} .dice_result`);
         this._myId = myId;
         this._myResult = result;
         
-        result.find(".dice_result__info__title .dice_result__info__rolldetail").text("Beyond 20: ")
-        result.find(".dice_result__info__title .dice_result__rolltype").text(this._name);
         const breakdown = result.find(".dice_result__info__results .dice_result__info__breakdown").text();
         const dicenotation = result.find(".dice_result__info__dicenotation").text();
 
@@ -85,18 +59,106 @@ class DigitalDice {
                 }
             }
         }
-        this._notificationIds = notifications;
-        return true;
+        if (passive) {
+            this._dice.forEach(dice => dice.calculateTotal());
+            this._rolls.forEach(roll => roll.calculateTotal());
+        } else {
+            result.find(".dice_result__info__title .dice_result__info__rolldetail").text("Beyond 20: ")
+            result.find(".dice_result__info__title .dice_result__rolltype").text(this._name);
+        }
     }
-    async result() {
-        while (!this.lookForResult())
-            await new Promise(r => setTimeout(r, 500));
+    async handleCompletedRoll() {
         for (let dice of this._dice)
             await dice.handleModifiers();
         this._rolls.forEach(roll => roll.calculateTotal());
         
-        this._myResult.find(".dice_result__total-result").text(this._rolls[0].total);
-        this._myResult.find(".dice_result__info__results .dice_result__info__breakdown").text(this._rolls[0].formula)
-        this._myResult.find(".dice_result__info__dicenotation").text(`${this._rolls.length} roll${this._rolls.length > 1 ? 's' : ''} sent to VTT`).prepend(E.img({ src: chrome.extension.getURL("images/icons/icon32.png") }))
+        if (this._myResult) {
+            this._myResult.find(".dice_result__total-result").text(this._rolls[0].total);
+            this._myResult.find(".dice_result__info__results .dice_result__info__breakdown").text(this._rolls[0].formula)
+            this._myResult.find(".dice_result__info__dicenotation").text(`${this._rolls.length} roll${this._rolls.length > 1 ? 's' : ''} sent to VTT`)
+                .prepend(E.img({ src: chrome.extension.getURL("images/icons/icon32.png") }))
+        }
+    }
+
+}
+
+class DigitalDiceManager {
+    static clear() {
+        $(".dice-toolbar__dropdown-die").click()
+    }
+    static clearResults() {
+        $(".dice_notification_controls__clear").click()
+    }
+    static rollDice(amount, type) {
+        const dice = $(`.dice-die-button[data-dice="${type}"]`)
+        for (let i = 0; i < amount; i++)
+            dice.click()
+        return amount || 0;
+    }
+    static _makeRoll() {
+        $(".dice-toolbar__roll").click();
+    }
+    static isEnabled() {
+        const toolbar = $(".dice-toolbar");
+        return toolbar.length > 0;
+    }
+    static _getNotificationIds() {
+        const notifications = $(".noty_bar").toArray();
+        return notifications.map(n => n.id);
+    }
+    static updateNotifications() {
+        const notifications = this._getNotificationIds();
+        const newNotification = notifications.find(n => !this._notificationIds.includes(n))
+        this._notificationIds = notifications;
+        if (!newNotification) return;
+        return this._handleNewNotification(newNotification);
+    }
+    static _handleNewNotification(notification) {
+        const pendingRoll = this._pendingRolls[0];
+        if (!pendingRoll) {
+            return this._parseCustomRoll(notification);
+        }
+        const [roll, resolver] = pendingRoll;
+        roll.parseNotification(notification)
+        this._finishPendingRoll();
+    }
+    static _finishPendingRoll() {
+        const [roll, resolver] = this._pendingRolls.shift()
+        roll.handleCompletedRoll().then(resolver);
+        if (this._pendingRolls.length > 0) {
+            const nextRoll = this._pendingRolls[0][0];
+            this._submitRoll(nextRoll);
+        }
+    }
+    static async rollDigitalDice(roll) {
+        let resolver = null;
+        const promise = new Promise(r => resolver = r);
+        this._pendingRolls.push([roll, resolver]);
+        if (this._pendingRolls.length === 1) {
+            this._submitRoll(roll);
+        }
+        return promise;
+    }
+    static _submitRoll(roll) {
+        this.clear();
+        let diceRolled = 0;
+        for (let dice of roll._dice)
+            diceRolled += this.rollDice(dice.amount, `d${dice.faces}`);
+        if (diceRolled > 0) {
+            this._makeRoll();
+        } else {
+            this.clear();
+            this._finishPendingRoll()
+        }
+    }
+    static _parseCustomRoll(notification) {
+        const name = $(`#${notification} .dice_result .dice_result__info__title`).text();
+        const formula = $(`#${notification} .dice_result .dice_result__info__dicenotation`).text();
+        const roll = new DNDBRoll(formula)
+        const digitalRoll = new DigitalDice(name, [roll])
+        digitalRoll.parseNotification(notification, true);
+        return digitalRoll;
     }
 }
+DigitalDiceManager._pendingRolls = [];
+DigitalDiceManager._notificationIds = DigitalDiceManager._getNotificationIds()

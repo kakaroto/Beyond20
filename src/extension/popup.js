@@ -1,6 +1,6 @@
 function sendMessageToTab(tab_id, message, callback) {
     if (chrome.tabs) {
-        chrome.tabs.sendMessage(tab_id, message, callback);
+        chrome.tabs.sendMessage(tab_id, message, {frameId: 0}, callback);
     } else {
         chrome.runtime.sendMessage({ "action": "forward", "tab": tab_id, "message": message }, callback);
     }
@@ -169,7 +169,7 @@ function populateCharacter(response) {
             e = createHTMLOption("rogue-assassinate", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Giant Might")) {
+        if (response["class-features"].includes("Giant’s Might")) {
             e = createHTMLOption("fighter-giant-might", false, character_settings);
             options.append(e);
         }
@@ -181,7 +181,8 @@ function populateCharacter(response) {
             e = createHTMLOption("cleric-divine-strike", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Psychic Blades")) {
+        if (response["class-features"].includes("Psychic Blades") &&
+            Object.keys(response.classes).includes("Bard")) {
             e = createHTMLOption("bard-psychic-blades", false, character_settings);
             options.append(e);
         }
@@ -207,6 +208,29 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Enhanced Bond")) {
             e = createHTMLOption("wildfire-spirit-enhanced-bond", false, character_settings);
+            options.append(e);
+        }
+        if (response["actions"].includes("Channel Divinity: Sacred Weapon")) {
+            e = createHTMLOption("paladin-sacred-weapon", false, character_settings);
+        }
+        if (response["class-features"].includes("Blessed Strikes")) {
+            e = createHTMLOption("cleric-blessed-strikes", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Trance of Order")) {
+            e = createHTMLOption("sorcerer-trance-of-order", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Symbiotic Entity")) {
+            e = createHTMLOption("druid-symbiotic-entity", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Eldritch Invocations: Lifedrinker")) {
+            e = createHTMLOption("eldritch-invocation-lifedrinker", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Arcane Jolt")) {
+            e = createHTMLOption("artificer-arcane-jolt", false, character_settings);
             options.append(e);
         }
 

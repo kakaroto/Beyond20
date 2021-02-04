@@ -154,6 +154,19 @@ function buildAttackRoll(character, attack_source, name, description, properties
                     crit_damage_types.push(damage_types[i]);
                 }
             }
+            if (character.hasFeat("Piercer")) {
+                for (let i = 0; i < damage_types.length; i++) {
+                    if (damage_types[i].includes("Piercing")){
+                        const piercer_damage = damagesToCrits(character, [damages[i]]);
+                        if (piercer_damage.length > 0 && piercer_damage[0] != "") {    
+                            piercer_damage[0] = piercer_damage[0].replace(/([0-9]+)d([0-9]+)/, '1d$2');
+                            crit_damages.push(piercer_damage[0]);
+                            crit_damage_types.push("Piercer Feat");
+                            break;
+                        }
+                    }
+                }
+            }
             if (brutal > 0) {
                 const rule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
                 let highest_dice = 0;
@@ -208,18 +221,18 @@ async function sendRoll(character, rollType, fallback, args) {
     let is_monster = character.type() == "Monster" || character.type() == "Vehicle";
     if (is_monster && whisper_monster != WhisperType.NO)
         whisper = whisper_monster;
+    // Let the spell card display appear uncensored
+    if (rollType === "spell-card" && whisper === WhisperType.HIDE_NAMES)
+        whisper = WhisperType.NO;
+
     advantage = parseInt(character.getGlobalSetting("roll-type", RollType.NORMAL));
     if (args["advantage"] == RollType.OVERRIDE_ADVANTAGE)
         args["advantage"] = advantage == RollType.SUPER_ADVANTAGE ? RollType.SUPER_ADVANTAGE : RollType.ADVANTAGE;
     if (args["advantage"] == RollType.OVERRIDE_DISADVANTAGE)
         args["advantage"] = advantage == RollType.SUPER_DISADVANTAGE ? RollType.SUPER_DISADVANTAGE : RollType.DISADVANTAGE;
 
-    if (whisper === WhisperType.QUERY)
-        whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
-    if (advantage == RollType.QUERY)
-        advantage = await dndbeyondDiceRoller.queryAdvantage(args.name || rollType);
     // Default advantage/whisper would get overriden if (they are part of provided args;
-    req = {
+    const req = {
         action: "roll",
         character: character.getDict(),
         type: rollType,
@@ -229,16 +242,56 @@ async function sendRoll(character, rollType, fallback, args) {
     }
     for (let key in args)
         req[key] = args[key];
-    if (key_modifiers.shift)
+    if (key_modifiers.advantage)
         req["advantage"] = RollType.ADVANTAGE;
-    else if (key_modifiers.ctrl)
+    else if (key_modifiers.disadvantage)
         req["advantage"] = RollType.DISADVANTAGE;
-    else if (key_modifiers.alt)
+    if (key_modifiers.super_advantage)
+        req["advantage"] = RollType.SUPER_ADVANTAGE;
+    else if (key_modifiers.super_disadvantage)
+        req["advantage"] = RollType.SUPER_DISADVANTAGE;
+    else if (key_modifiers.normal_roll)
         req["advantage"] = RollType.NORMAL;
+
+    if (key_modifiers.whisper)
+        req.whisper = WhisperType.YES;
+    else if (key_modifiers.dont_whisper)
+        req.whisper = WhisperType.NO;
+    else if (is_monster && key_modifiers.whisper_hide_names)
+        req.whisper = WhisperType.HIDE_NAMES;
+
+    // Add custom roll modifiers from hotkeys
+    if (req.character.settings && req.character.settings) {
+        if (key_modifiers.custom_add_d4)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d4";
+        if (key_modifiers.custom_sub_d4)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d4";
+        if (key_modifiers.custom_add_d6)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d6";
+        if (key_modifiers.custom_sub_d6)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d6";
+        if (key_modifiers.custom_add_d8)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d8";
+        if (key_modifiers.custom_sub_d8)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d8";
+        if (key_modifiers.custom_add_d10)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d10";
+        if (key_modifiers.custom_sub_d10)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d10";
+        if (key_modifiers.custom_add_d12)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d12";
+        if (key_modifiers.custom_sub_d12)
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d12";
+    }
+        
+    if (req.whisper === WhisperType.QUERY)
+        req.whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
+    if (req.advantage === RollType.QUERY)
+        req.advantage = await dndbeyondDiceRoller.queryAdvantage(args.name || rollType);
     if (character.getGlobalSetting("weapon-force-critical", false))
         req["critical-limit"] = 1;
 
-    if (character.getGlobalSetting("use-digital-dice", false) && DigitalDice.isEnabled()) {
+    if (character.getGlobalSetting("use-digital-dice", false) && DigitalDiceManager.isEnabled()) {
         req.sendMessage = true;
         dndbeyondDiceRoller.handleRollRequest(req);
     } else {
@@ -263,11 +316,11 @@ function getRollTypeButtonClass(character) {
     let advantage = RollType.NORMAL;
     if (character)
         advantage = parseInt(character.getGlobalSetting("roll-type", RollType.NORMAL));
-    if (key_modifiers.shift)
+    if (key_modifiers.advantage)
         advantage = RollType.ADVANTAGE;
-    else if (key_modifiers.ctrl)
+    else if (key_modifiers.disadvantage)
         advantage = RollType.DISADVANTAGE;
-    else if (key_modifiers.alt)
+    else if (key_modifiers.normal_roll)
         advantage = RollType.NORMAL;
 
     if (advantage == RollType.DOUBLE)
@@ -296,6 +349,8 @@ var last_character_used = null;
 function updateRollTypeButtonClasses(character) {
     const button_roll_type_classes = "beyond20-roll-type-double beyond20-roll-type-query beyond20-roll-type-thrice beyond20-roll-type-advantage beyond20-roll-type-disadvantage beyond20-roll-type-super-advantage beyond20-roll-type-super-disadvantage";
     const rolltype_class = getRollTypeButtonClass(character || last_character_used);
+    if (character)
+        last_character_used = character;
     $(".ct-beyond20-roll .ct-beyond20-roll-button,.beyond20-quick-roll-tooltip").removeClass(button_roll_type_classes).addClass(rolltype_class);
     const icon20 = getBadgeIconFromClass(rolltype_class, "20");
     const icon32 = getBadgeIconFromClass(rolltype_class, "32");

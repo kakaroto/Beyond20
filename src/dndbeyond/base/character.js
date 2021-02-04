@@ -377,7 +377,6 @@ class Character extends CharacterBase {
 
     mergeCharacterSettings(data, callback = null) {
         const cb = (settings) => {
-            this.updateSettings(settings);
             chrome.runtime.sendMessage({
                 "action": "settings",
                 "type": "character",

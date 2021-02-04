@@ -47,7 +47,8 @@ class FVTTDisplayer {
         // Build a dicePool, attach it to a Roll, then attach it to the ChatMessage
         // Then set ChatMessage type to "ROLL"
         if (attack_rolls.length > 0 || damage_rolls.length > 0) {
-            const rolls = [...attack_rolls, ...damage_rolls.map(d => d[1])];
+            const rolls = [...attack_rolls, ...damage_rolls.map(d =>d[1]).filter(r => !!r)];
+            // Transforms DNDBRolls -> FVTTRolls
             const fvttRolls = rolls.map(r => {
                 if (r instanceof FVTTRoll) { return r._roll; }
                 const dice = [];
@@ -150,7 +151,7 @@ class FVTTRoll extends Beyond20BaseRoll {
                     faces: d.faces,
                     formula: d.formula,
                     total: d.total,
-                    rolls: d.results.map(r => ({discarded: r.discarded, roll: r.result}))
+                    rolls: d.results.map(r => ({discarded: r.discarded || r.rerolled, roll: r.result}))
                 }
             });
         } else {

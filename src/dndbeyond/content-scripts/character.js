@@ -10,7 +10,7 @@ function sendRollWithCharacter(rollType, fallback, args) {
         args.d20 = args.d20 || "1d20";
         args.d20 += "ro<=1";
     }
-    sendRoll(character, rollType, fallback, args);
+    return sendRoll(character, rollType, fallback, args);
 }
 
 
@@ -78,7 +78,7 @@ async function rollSkillCheck(paneClass) {
     }
     if (ability == "STR" &&
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-            (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
+            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
     if (skill_name == "Acrobatics" && character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false)) {
@@ -92,6 +92,17 @@ async function rollSkillCheck(paneClass) {
     if (character.hasClassFeature("Silver Tongue") && (skill_name === "Deception" || skill_name === "Persuasion"))
         roll_properties.d20 = "1d20min10";
     
+    // Sorcerer: Clockwork Soul - Trance of Order
+    if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
+    
+    // Fey Wanderer Ranger - Otherworldly Glamour
+    if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
+        modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
+        modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+        roll_properties.modifier = modifier;
+    }
+
     if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
         const min = character.getAbility("STR").score - parseInt(modifier);
         // Check against reliable talent or silver tongue (should be an impossible state)
@@ -102,7 +113,7 @@ async function rollSkillCheck(paneClass) {
             roll_properties.d20 = `1d20min${min}`
         }
     }
-    sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
+    return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 
 function rollAbilityOrSavingThrow(paneClass, rollType) {
@@ -134,7 +145,7 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
 
     if (ability == "STR" &&
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-            (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
+            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
     if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
@@ -153,7 +164,16 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
             roll_properties["modifier"] = modifier;
         }
     }
-    sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
+    if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
+        modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
+        modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+        roll_properties["modifier"] = modifier;
+    }
+    // Sorcerer: Clockwork Soul - Trance of Order
+    if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
+
+    return sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
 }
 
 function rollAbilityCheck() {
@@ -187,7 +207,7 @@ function rollInitiative() {
     const roll_properties = { "initiative": initiative }
     if (advantage)
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-    sendRollWithCharacter("initiative", "1d20" + initiative, roll_properties);
+    return sendRollWithCharacter("initiative", "1d20" + initiative, roll_properties);
 }
 
 
@@ -197,14 +217,14 @@ function rollHitDie(multiclass, index) {
     const class_name = hitdie.find(".ct-reset-pane__hitdie-heading-class").text();
     const text = hitdie.find(".ct-reset-pane__hitdie-heading").text();
     const die = text.split("Hit Die: ")[1].split(" ")[0];
-    sendRollWithCharacter("hit-dice", die, {
+    return sendRollWithCharacter("hit-dice", die, {
         "class": class_name,
         "multiclass": multiclass,
         "hit-dice": die
     });
 }
 
-function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false) {
+function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, spell_group = null) {
     const prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
     const properties = propertyListToDict(prop_list);
     properties["Properties"] = properties["Properties"] || "";
@@ -212,6 +232,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
     const item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name")[0].firstChild.textContent;
     const item_type = $(".ct-item-detail__intro").text();
     const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
+    const item_customizations = $(".ct-item-pane .ct-item-detail__class-customize-item .ddbc-checkbox--is-enabled .ddbc-checkbox__label").toArray().map(e => e.textContent);
     const source = item_type.trim().toLowerCase();
     const is_tool = source === "tool, common" || (source === "gear, common" && item_name.endsWith("Tools"));
     const is_instrument =  item_tags.includes("Instrument");
@@ -253,10 +274,10 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
 
                 if (versatile_damage != "") {
                     const versatile_choice = character.getSetting("versatile-choice", "both");
-                    if (versatile_choice == "one") {
+                    if (versatile_choice == "one" || key_modifiers.versatile_one_handed) {
                         damages.push(damage);
                         damage_types.push(damage_type);
-                    } else if (versatile_choice == "two") {
+                    } else if (versatile_choice == "two" || key_modifiers.versatile_two_handed) {
                         damages.push(versatile_damage);
                         damage_types.push(damage_type);
                     } else {
@@ -289,6 +310,20 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     }
                 }
                 break;
+            }
+        }
+        // If clicking on a spell group within a item (Green flame blade, Booming blade), then add the additional damages from that spell
+        if (spell_group) {
+            const group_name = $(spell_group).find(".ct-item-detail__spell-damage-group-name").text();
+            
+            const spell_damages = $(spell_group).find(".ct-item-detail__spell-damage-group-item");
+            for (let j = 0; j < spell_damages.length; j++) {
+                let dmg = spell_damages.eq(j).find(".ddbc-damage__value").text();
+                let dmg_type = spell_damages.eq(j).find(".ddbc-tooltip").attr("data-original-title");
+                if (dmg != "") {
+                    damages.push(dmg);
+                    damage_types.push(`${dmg_type} (${group_name})`);
+                }
             }
         }
 
@@ -330,6 +365,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
         }
         if (to_hit !== null && 
             character.getSetting("sharpshooter", false) &&
+            character.hasFeat("Sharpshooter") &&
             properties["Attack Type"] == "Ranged" &&
             properties["Proficient"] == "Yes") {
             to_hit += " - 5";
@@ -339,6 +375,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
         }
         if (to_hit !== null && 
             character.getSetting("great-weapon-master", false) &&
+            character.hasFeat("Great Weapon Master") &&
             properties["Attack Type"] == "Melee" &&
             properties["Properties"].includes("Heavy") &&
             properties["Proficient"] == "Yes") {
@@ -346,6 +383,18 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damages.push("10");
             damage_types.push("Weapon Master");
             character.mergeCharacterSettings({ "great-weapon-master": false });
+        }
+        if (to_hit !== null && 
+            character.getSetting("paladin-sacred-weapon", false)) {
+            const charisma_attack_mod =  Math.max(character.getAbility("CHA").mod, 1);
+            to_hit += "+" + charisma_attack_mod;
+        }
+        if (to_hit !== null && 
+            character.getSetting("eldritch-invocation-lifedrinker", false) &&
+            item_customizations.includes("Pact Weapon")) {
+            const charisma_damage_mod =  Math.max(character.getAbility("CHA").mod, 1);
+            damages.push(`${charisma_damage_mod}`);
+            damage_types.push("Lifedrinker");
         }
         if (character.getSetting("bloodhunter-crimson-rite", false) &&
             character.hasClassFeature("Crimson Rite")) {
@@ -395,9 +444,10 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             }
         }
 
-        // FIXME: UA content, Ranger Fey Wanderer Feature, may need to be removed or corrected later
+        // Ranger: Fey Wanderer - Dreadful Strikes
         if (character.hasClassFeature("Dreadful Strikes") && character.getSetting("fey-wanderer-dreadful-strikes")) {
-            damages.push("1d6");
+            const ranger_level = character.getClassLevel("Ranger");
+            damages.push(ranger_level < 11 ? "1d4" : "1d6");
             damage_types.push("Dreadful Strikes");
         }
 
@@ -414,11 +464,11 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damages.push(character._proficiency);
             damage_types.push("Hexblade's Curse");
         }
-        // Fighter's Giant Might;
-        if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)) {
+        // Fighter: Giant’s Might;
+        if (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)) {
             const fighter_level = character.getClassLevel("Fighter");
-            damages.push(fighter_level < 10 ? "1d6" : "1d8");
-            damage_types.push("Giant Might");
+            damages.push(fighter_level < 10 ? "1d6" : (fighter_level < 18 ? "1d8" : "1d10"));
+            damage_types.push("Giant’s Might");
         }
         // Cleric's Divine Strike;
         if (character.hasClassFeature("Divine Strike") &&
@@ -427,9 +477,16 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damages.push(cleric_level < 14 ? "1d8" : "2d8");
             damage_types.push("Divine Strike");
         }
+        // Cleric Blessed strikes
+        if (character.hasClassFeature("Blessed Strikes") &&
+            character.getSetting("cleric-blessed-strikes", false)) {
+            damages.push("1d8");
+            damage_types.push("Blessed Strikes");
+        }
         // Bard's Psychic blades;
         if (character.hasClassFeature("Psychic Blades") &&
-            character.getSetting("bard-psychic-blades", false)) {
+            character.getSetting("bard-psychic-blades", false) &&
+            character.hasClass("Bard")) {
             const bard_level = character.getClassLevel("Bard");
             let blades_dmg = "2d6";
             if (bard_level < 5)
@@ -459,6 +516,19 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damage_types.push("Bladesong");
         }
 
+        // Druid: Circle of Spores - Symbiotic Entity
+        if (character.hasClassFeature("Symbiotic Entity") && character.getSetting("druid-symbiotic-entity", false) &&
+            properties["Attack Type"] === "Melee") {
+                damages.push("1d6");
+                damage_types.push("Symbiotic Entity");
+        }
+
+        // Warlock: Genie Patron - Genie's Wrath
+        if (character.hasClassFeature("Genie’s Vessel")) {
+            damages.push(character._proficiency);
+            damage_types.push("Genie's Wrath");
+        }
+
         let critical_limit = 20;
         if (character.hasAction("Channel Divinity: Legendary Strike") &&
             character.getSetting("paladin-legendary-strike", false))
@@ -485,6 +555,17 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     brutal += 1;
             }
         }
+
+        //Artificer Battlemaster Arcane Jolt
+        // TODO: Implement for Steel Defender at later date
+        if (damages.length > 0 &&
+            character.hasClassFeature("Arcane Jolt") &&
+            character.getSetting("artificer-arcane-jolt", false) &&
+            item_type.indexOf(", Common") === -1) {
+            damages.push(character._level < 15 ? "2d6" : "4d6");
+            damage_types.push("Arcane Jolt");
+        }
+
         const roll_properties = buildAttackRoll(character,
             "item",
             item_name,
@@ -497,6 +578,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             force_to_hit_only,
             force_damages_only);
         roll_properties["item-type"] = item_type;
+        roll_properties["item-customizations"] = item_customizations;
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
         const custom_critical_limit = parseInt(character.getSetting("custom-critical-limit", ""))
@@ -513,7 +595,11 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
             character.mergeCharacterSettings({ "rogue-assassinate": false });
         }
-        sendRollWithCharacter("attack", damages[0], roll_properties);
+        // Sorcerer: Clockwork Soul - Trance of Order
+        if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
+
+        return sendRollWithCharacter("attack", damages[0], roll_properties);
     } else if (!force_display && (is_tool || is_instrument) && character._abilities.length > 0) {
         const proficiencies = {}
         proficiencies["None"] = 0;
@@ -550,18 +636,21 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 }
                 if (ability == "STR" &&
                     ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-                        (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)))) {
+                        (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
                     roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
                 }
                 roll_properties.d20 = "1d20";
                 // Set Reliable Talent flag if character has the feature and skill is proficient/expertise
                 if (character.hasClassFeature("Reliable Talent") && ["Proficiency", "Expertise"].includes(proficiency))
                     roll_properties.d20 = "1d20min10";
-                sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
+                // Sorcerer: Clockwork Soul - Trance of Order
+                if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+                    roll_properties.d20 = "1d20min10";
+                return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
             }
         });
     } else {
-        sendRollWithCharacter("item", 0, {
+        return sendRollWithCharacter("item", 0, {
             "name": item_name,
             "description": description,
             "item-type": item_type,
@@ -585,7 +674,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             superiority_die += " + " + character.getAbility("DEX").mod;
         else if (action_name === "Rally")
             superiority_die += " + " + character.getAbility("CHA").mod;
-        sendRollWithCharacter("custom", superiority_die, {
+        return sendRollWithCharacter("custom", superiority_die, {
             "name": action_name,
             "description": description,
             "modifier": superiority_die
@@ -593,7 +682,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
     } else if (action_name == "Bardic Inspiration" || action_parent == "Blade Flourish") {
         const bard_level = character.getClassLevel("Bard");
         inspiration_die = bard_level < 5 ? "1d6" : (bard_level < 10 ? "1d8" : (bard_level < 15 ? "1d10" : "1d12"));
-        sendRollWithCharacter("custom", inspiration_die, {
+        return sendRollWithCharacter("custom", inspiration_die, {
             "name": action_name,
             "description": description,
             "modifier": inspiration_die
@@ -678,10 +767,10 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
                 damages.push(`1d6+${Math.floor(barbarian_level / 2)}`);
                 damage_types.push("Divine Fury");
             }
-            if (character.hasClassFeature("Giant Might") && character.getSetting("fighter-giant-might", false)) {
+            if (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)) {
                 const fighter_level = character.getClassLevel("Fighter");
-                damages.push(fighter_level < 10 ? "1d6" : "1d8");
-                damage_types.push("Giant Might");
+                damages.push(fighter_level < 10 ? "1d6" : (fighter_level < 18 ? "1d8" : "1d10"));
+                damage_types.push("Giant’s Might");
             }
             if (character.getSetting("bloodhunter-crimson-rite", false) &&
             character.hasClassFeature("Crimson Rite")) {
@@ -721,6 +810,13 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
                 damages.push("1d8");
                 damage_types.push("Radiant");
             }
+
+            // Cleric Blessed Strikes
+            if (character.hasClassFeature("Blessed Strikes") &&
+            character.getSetting("cleric-blessed-strikes", false)) {
+                damages.push("1d8");
+                damage_types.push("Blessed Strikes");
+            }
         }
 
         //Protector Aasimar: Radiant Soul Damage
@@ -728,6 +824,12 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             character.getSetting("protector-aasimar-radiant-soul", false)) {
             damages.push(character._level);
             damage_types.push("Radiant Soul");
+        }
+
+        // Warlock: Genie Patron - Genie's Wrath
+        if (character.hasClassFeature("Genie’s Vessel")) {
+            damages.push(character._proficiency);
+            damage_types.push("Genie's Wrath");
         }
 
         const roll_properties = buildAttackRoll(character,
@@ -759,9 +861,12 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
             character.mergeCharacterSettings({ "rogue-assassinate": false });
         }
-        sendRollWithCharacter("attack", damages[0], roll_properties);
+        // Sorcerer: Clockwork Soul - Trance of Order
+        if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
+        return sendRollWithCharacter("attack", damages[0], roll_properties);
     } else {
-        sendRollWithCharacter("action", 0, {
+        return sendRollWithCharacter("action", 0, {
             "name": action_name,
             "description": description
         });
@@ -841,15 +946,24 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
 
         if (character.hasClassFeature("Alchemical Savant") &&
             character.getSetting("artificer-alchemical-savant", false) &&
-            damages.length) {
+            damages.length > 0) {
+            const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
             for (let i = 0; i < damages.length; i++){
-                if (damage_types[i] === "Acid" || damage_types[i] === "Fire" ||
-                    damage_types[i] === "Necrotic" || damage_types[i] === "Poison") {
+                if ((damage_types[i] === "Acid" || damage_types[i] === "Fire" || damage_types[i] === "Necrotic" || damage_types[i] === "Poison") &&
+                    alchemical_savant_regex.test(damages[i])) {
                     damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
                     damage_types.push("Alchemical Savant");
                     break;
                 }
             }
+        }
+        
+        //Cleric Blessed Strikes
+        if (character.hasClassFeature("Blessed Strikes") &&
+            character.getSetting("cleric-blessed-strikes", false) &&
+            level.includes("Cantrip")) {
+            damages.push("1d8");
+            damage_types.push("Blessed Strikes");
         }
 
         if (character.hasClassFeature("Enhanced Bond") &&
@@ -922,8 +1036,9 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
 
         if (character.hasClassFeature("Alchemical Savant") &&
             character.getSetting("artificer-alchemical-savant", false)) {
+            const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
             for (let i = 0; i < damages.length; i++){
-                if (damage_types[i] === "Healing") {
+                if (damage_types[i] === "Healing" && alchemical_savant_regex.test(damages[i])) {
                     damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
                     damage_types.push("Alchemical Savant Healing");
                     break;
@@ -940,6 +1055,12 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
                     break;
                 }
             }
+        }
+
+        // Warlock: Genie Patron - Genie's Wrath
+        if (character.hasClassFeature("Genie’s Vessel") && to_hit != null) {
+            damages.push(character._proficiency);
+            damage_types.push("Genie's Wrath");
         }
 
         // We can then add temp healing types;
@@ -1034,8 +1155,11 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
             character.mergeCharacterSettings({ "rogue-assassinate": false });
         }
+        // Sorcerer: Clockwork Soul - Trance of Order
+        if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
+            roll_properties.d20 = "1d20min10";
 
-        sendRollWithCharacter("spell-attack", damages[0] || "", roll_properties);
+        return sendRollWithCharacter("spell-attack", damages[0] || "", roll_properties);
     } else {
         const roll_properties = {
             "name": spell_name,
@@ -1050,7 +1174,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         }
         if (castas != "" && !level.startsWith(castas))
             roll_properties["cast-at"] = castas;
-        sendRollWithCharacter("spell-card", 0, roll_properties);
+        return sendRollWithCharacter("spell-card", 0, roll_properties);
     }
 }
 
@@ -1071,8 +1195,16 @@ function displayFeature(paneClass) {
     const name = $(".ct-sidebar__heading").text();
     const source = $(".ct-sidebar__header-parent").text();
     const source_type = source_types[paneClass];
-    const description = descriptionToString(".ct-snippet__content,.ddbc-snippet__content");
-    sendRollWithCharacter("feature", 0, {
+    let description = descriptionToString(`.${paneClass} .ct-snippet__content,.ddbc-snippet__content`);
+    const choices = $(`.${paneClass} .ct-feature-snippet__choices .ct-feature-snippet__choice`);
+    if (choices.length > 0) {
+        description += "\n";
+        for (const choice of choices.toArray()) {
+            const choiceText = descriptionToString(choice);
+            description = `${description}\n> ${choiceText}`;
+        }
+    }
+    return sendRollWithCharacter("feature", 0, {
         "name": name,
         "source": source,
         "source-type": source_type,
@@ -1083,7 +1215,7 @@ function displayFeature(paneClass) {
 function displayTrait() {
     const trait = $(".ct-sidebar__heading").text();
     const description = descriptionToString(".ct-trait-pane__input");
-    sendRollWithCharacter("trait", 0, {
+    return sendRollWithCharacter("trait", 0, {
         "name": trait,
         "description": description
     });
@@ -1092,7 +1224,7 @@ function displayTrait() {
 function displayBackground() {
     const background = $(".ct-sidebar__heading").text();
     const description = descriptionToString(".ct-background-pane__description > p");
-    sendRollWithCharacter("trait", 0, {
+    return sendRollWithCharacter("trait", 0, {
         name: background,
         source: "Bakground",
         description: description
@@ -1102,7 +1234,7 @@ function displayBackground() {
 function displayAction(paneClass) {
     const action_name = $(".ct-sidebar__heading").text();
     const description = descriptionToString(".ct-action-detail__description");
-    sendRollWithCharacter("action", 0, {
+    return sendRollWithCharacter("action", 0, {
         "name": action_name,
         "description": description
     });
@@ -1111,7 +1243,7 @@ function displayAction(paneClass) {
 function displayInfusion() {
     const infusion = $(".ct-sidebar__heading").text();
     const description = descriptionToString(".ct-infusion-choice-pane__description");
-    sendRollWithCharacter("trait", 0, {
+    return sendRollWithCharacter("trait", 0, {
         "name": infusion,
         "description": description,
         "item-type": "Infusion",
@@ -1133,19 +1265,23 @@ function handleCustomText(paneClass) {
     // Look for all the roll orders
     for (const rollOrder of rollOrderTypes) {
         // Use global, multiline and dotall flags
-        const regexp = new RegExp(`\\[\\[${rollOrder}\\]\\]\\s*(.+?)\\s*\\[\\[/${rollOrder}\\]\\]`, "gms");
-        const matches = [...notes.matchAll(regexp), ...description.matchAll(regexp)];
-        customRolls[rollOrder] = matches.map(([match, content]) => content)
+        try {
+            const regexp = new RegExp(`\\[\\[${rollOrder}\\]\\]\\s*(.+?)\\s*\\[\\[/${rollOrder}\\]\\]`, "gms");
+            const matches = [...notes.matchAll(regexp), ...description.matchAll(regexp)];
+            customRolls[rollOrder] = matches.map(([match, content]) => content)
+        } catch (err) {
+            // Ignore errors that might be caused by DOTALL regexp flag not being supported by the browser
+        }
     }
     
     return customRolls;
 }
 
-function execute(paneClass, force_to_hit_only = false, force_damages_only = false) {
+async function execute(paneClass, {force_to_hit_only = false, force_damages_only = false, spell_group=null}={}) {
     console.log("Beyond20: Executing panel : " + paneClass, force_to_hit_only, force_damages_only);
-    const rollCustomText = (customTextList) => {
+    const rollCustomText = async (customTextList) => {
         for (const customText of customTextList) {
-            sendRollWithCharacter("chat-message", 0, {
+            await sendRollWithCharacter("chat-message", 0, {
                 name: "",
                 message: customText
             });
@@ -1153,46 +1289,46 @@ function execute(paneClass, force_to_hit_only = false, force_damages_only = fals
      };
      
     const customTextRolls = handleCustomText(paneClass);
-    rollCustomText(customTextRolls.before);
+    await rollCustomText(customTextRolls.before);
     if (customTextRolls.replace.length > 0) {
-        rollCustomText(customTextRolls.replace);
+        await rollCustomText(customTextRolls.replace);
     } else {
         if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
-            rollSkillCheck(paneClass);
+            await rollSkillCheck(paneClass);
         else if (paneClass == "ct-ability-pane")
-            rollAbilityCheck();
+            await rollAbilityCheck();
         else if (paneClass == "ct-ability-saving-throws-pane")
-            rollSavingThrow();
+            await rollSavingThrow();
         else if (paneClass == "ct-initiative-pane")
-            rollInitiative();
+            await rollInitiative();
         else if (paneClass == "ct-item-pane")
-            rollItem(false, force_to_hit_only, force_damages_only);
+            await rollItem(false, force_to_hit_only, force_damages_only, spell_group);
         else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
-            rollAction(paneClass, force_to_hit_only, force_damages_only);
+            await rollAction(paneClass, force_to_hit_only, force_damages_only);
         else if (paneClass == "ct-spell-pane")
-            rollSpell(false, force_to_hit_only, force_damages_only);
+            await rollSpell(false, force_to_hit_only, force_damages_only);
         else
-            displayPanel(paneClass);
+            await displayPanel(paneClass);
     }
-    rollCustomText(customTextRolls.after);
+    await rollCustomText(customTextRolls.after);
 }
 
 function displayPanel(paneClass) {
     console.log("Beyond20: Displaying panel : " + paneClass);
     if (paneClass == "ct-item-pane")
-        displayItem();
+        return displayItem();
     else if (paneClass == "ct-infusion-choice-pane")
-        displayInfusion();
+        return displayInfusion();
     else if (paneClass == "ct-spell-pane")
-        displaySpell();
+        return displaySpell();
     else if (["ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane"].includes(paneClass))
-        displayFeature(paneClass);
+        return displayFeature(paneClass);
     else if (paneClass == "ct-trait-pane")
-        displayTrait();
+        return displayTrait();
     else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
-        displayAction(paneClass);
+        return displayAction(paneClass);
     else if (paneClass == "ct-background-pane")
-        displayBackground();
+        return displayBackground();
     else
         alertify.alert("Not recognizing the currently open sidebar");
 }
@@ -1308,6 +1444,11 @@ function injectRollButton(paneClass) {
         if (Object.keys(properties).includes("Damage")) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true });
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
+            const spell_damage_groups = $(".ct-item-pane .ct-item-detail__spell-damage-group");
+            for (const group of spell_damage_groups.toArray()) {
+                const header = $(group).find(".ct-item-detail__spell-damage-group-header");
+                addRollButton(character, () => execute(paneClass, {spell_group: group}), header, {small: true, append: true});
+            }
         } else {
             const item_type = $(".ct-item-detail__intro").text().trim().toLowerCase();
             const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
@@ -1754,7 +1895,7 @@ function activateQuickRolls() {
             const pane_name = pane.find(".ct-sidebar__heading").text();
 
             if (name == pane_name) {
-                execute(paneClass, force_to_hit_only, force_damages_only);
+                execute(paneClass, {force_to_hit_only, force_damages_only});
             } else {
                 quick_roll_force_attack = force_to_hit_only;
                 quick_roll_force_damge = force_damages_only;
@@ -1790,7 +1931,7 @@ function activateQuickRolls() {
                 const level = el.closest(".ct-content-group").find(".ct-content-group__header-content").text();
                 const pane_level = castas === "" ? "Cantrip" : `${castas} Level`;
                 if (pane_level.toLowerCase() === level.toLowerCase()) {
-                    execute("ct-spell-pane", force_to_hit_only, force_damages_only);
+                    execute("ct-spell-pane", {force_to_hit_only, force_damages_only});
                 } else {
                     // Trigger a click elsewhere to cause the sidepanel to change and then force it again to display the right level spell
                     $(".ddbc-character-tidbits__menu-callout").trigger('click');
@@ -1820,7 +1961,7 @@ function activateQuickRolls() {
 function executeQuickRoll(paneClass) {
     quick_roll_timeout = 0;
     console.log("EXECUTING QUICK ROLL!");
-    execute(paneClass, quick_roll_force_attack, quick_roll_force_damage);
+    execute(paneClass, {force_to_hit_only: quick_roll_force_attack, force_damages_only: quick_roll_force_damage});
     quick_roll_force_attack = false;
     quick_roll_force_damage = false;
     quick_roll = false;
@@ -1843,6 +1984,12 @@ function documentModified(mutations, observer) {
         alertify.alert("This is a new or recently leveled-up character sheet and Beyond20 needs to parse its information. <br/>Please select the <strong>'Features &amp; Traits'</strong> panel on your DnDBeyond Character Sheet for Beyond20 to parse this character's features and populate the character-specific options.");
     }
 
+
+    const customRoll = DigitalDiceManager.updateNotifications();
+    if (customRoll) {
+        dndbeyondDiceRoller.sendCustomDigitalDice(character, customRoll);
+    }
+    
     const pane = $(".ct-sidebar__pane-content > div");
     if (pane.length > 0) {
         for (let div = 0; div < pane.length; div++) {
@@ -1866,12 +2013,13 @@ function updateSettings(new_settings = null) {
     if (new_settings) {
         settings = new_settings;
         character.setGlobalSettings(settings);
+        if (settings['hotkeys-bindings'])
+            key_bindings = settings['hotkeys-bindings'];
     } else {
         getStoredSettings((saved_settings) => {
             updateSettings(saved_settings);
             documentModified();
-        }
-        );
+        });
     }
 }
 
@@ -1881,6 +2029,10 @@ function handleMessage(request, sender, sendResponse) {
         if (request.type == "general") {
             updateSettings(request.settings);
         } else if (request.type == "character" && request.id == character._id) {
+            if (character._settings && request.settings["last-features-classes"] &&
+                character._settings["last-features-classes"] !== request.settings["last-features-classes"]) {
+                alertify.success("Beyond20: Character's class features parsed successfully.");
+            }
             character.updateSettings(request.settings);
         } else {
             console.log("Ignoring character settings, for ID: ", request.id);

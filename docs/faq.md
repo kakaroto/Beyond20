@@ -6,7 +6,7 @@ You can also check out the [changelog](Changelog) for recent fixes or additions 
 
 * [How can I use Beyond20 with Foundry VTT?](#how-can-i-use-beyond20-with-foundry-vtt)
 * [Can Beyond20 do '\<insert specific feature\>'?](#can-beyond20-do-insert-specific-feature)
-* [All I see in Roll20 is an empty message](#all-i-see-in-roll20-is-an-empty-message)
+* [Why are the Roll20 rolls sometimes displayed in a purple table instead of the nice output?](#why-are-the-roll20-rolls-sometimes-displayed-in-a-purple-table-instead-of-the-nice-output)
 * [My HP from D&D Beyond doesn't synchronize to my tokens](#my-hp-from-dd-beyond-doesnt-synchronize-to-my-tokens)
 * [I have a \<Class feature/Feat\> that the Features page says is supported but I don't see the option to use it](#i-have-a-class-featurefeat-that-the-features-page-says-is-supported-sharpshooter-feat-for-example-but-i-dont-see-the-option-to-use-it)
 * [Why doesn't it roll to hit when I click on my weapon attack?](#why-doesnt-it-roll-to-hit-when-i-click-on-my-weapon-attack)
@@ -18,6 +18,8 @@ You can also check out the [changelog](Changelog) for recent fixes or additions 
 * [How can I enable Discord integration?](#how-can-i-enable-discord-integration)
 * [Why doesn't Beyond20 allow me to make a melee attack with my magic staffs?](#why-doesnt-beyond20-allow-me-to-make-a-melee-attack-with-my-magic-staffs)
 * [Is auto-roll-damages broken?](#is-auto-roll-damages-broken)
+* [Can you add support for rolling from \<insert favorite character sheet website\>?](#can-you-add-support-for-rolling-from-insert-favorite-character-sheet-website)
+* [Can you add support for \<insert new VTT name\>?](#can-you-add-support-for-insert-new-vtt-name)
 
 ---
 
@@ -40,7 +42,7 @@ You can always check out the [Features](features) page to see if what you're loo
 You can also go to your browser's Extensions/Add-Ons page and open the options for Beyond20 that way. Note that the quick options popup will vary from the Roll20/Foundry VTT page to the character sheet or monster pages and some options might only be available for specific characters and not available in the full extension's options page.
 
 
-### All I see in Roll20 is an empty message
+### Why are the Roll20 rolls sometimes displayed in a purple table instead of the nice output?
 
 That's because the game in Roll20 is set up to use a character sheet template other than "D&D 5e By Roll20". 
 
@@ -88,17 +90,19 @@ If it's an issue, the best way to avoid it is to either disable 3D dice, or go t
 
 ### How can I add Bless/Guidance bonus or use Elemental Weapon?
 
-Since v0.2, you can add custom bonuses for rolls and damages on a per-character basis, simply open the quick settings popup (the "Beyond20" button you see in the top of the character sheet, next to the character name) and enter the value there.
+You can add custom bonuses for rolls and damages on a per-character basis, simply open the quick settings popup (the "Beyond20" button you see in the top of the character sheet, next to the character name) and enter the value there.
 
 In the case of [Bless](https://www.dndbeyond.com/spells/bless) or [Guidance](https://www.dndbeyond.com/spells/guidance) for example, you can enter in the roll bonus : `1d4`
 
-In the case of [Elemental Weapon](https://www.dndbeyond.com/spells/elemental-weapon), you can enter in the damage bonus: `1d4 + 1`
+Since v2.3, you can also assign a hotkey to toggle the bonus by going to "More Options" then click the "Set Hotkeys" button.
+
+In the case of [Elemental Weapon](https://www.dndbeyond.com/spells/elemental-weapon), you can enter `+ 1` in the custom roll modifier and `1d4 + 1` in the custom damage modifier.
 
 Be aware that the roll bonus is applied to all rolls (ability checks, skill checks, saving throws, weapon attacks, spell attacks, etc..) so if you want to have the option to use the bonus or not, you could use any of the Roll20 [Macros](https://wiki.roll20.net/Macros) or refer to the [Dice Reference](https://wiki.roll20.net/Dice_Reference) to have it be a bit more fancy.
 
 For example, if you want it to ask you if you want to apply the Bless bonus on every roll, you could set it to : `+?{Use Bless|Yes,1d4|No,0}`
 
-Of course, the use of such macros will only work on Roll 20, not on Foundry VTT.
+Of course, the use of such macros will only work on Roll 20, not on Foundry VTT or other.
 
 ### How can I use this non-standard spell or feature? 
 
@@ -171,4 +175,15 @@ If you have auto-roll-damages option enabled and want to roll both, you need to 
 
 In the 2.1 release, yes, it was rolling both to-hit and damages (regardless of any setting) when you clicked on the digital dice buttons of an attack, and **that was a bug** which was fixed in the 2.2 release.
 
+### Can you add support for rolling from &lt;insert favorite character sheet website&gt;?
+
+No. Beyond20 is exclusively a D&D Beyond extension and I have no plans or any willingness to add support to any other website which has D&D (or other TTRPG) character sheet support.
+
+### Can you add support for &lt;insert new VTT name&gt;?
+
+The answer is most probably no. While I used to have a policy of "If you can do the work and send me a PR, I will gladly review and merge it", I have recently changed my stance on this (and it has nothing to do with having my own [VTT hosting service](https://forge-vtt.com/)).
+
+The issue is that there is nearly one new VTT that comes out every week, and adding support for every possible VTT is too much. Even if someone else does the job and sends it as a PR (Pull Request), it would still involve a massive amount of code review, add a lot of complexity to the overall software, and require long term maintenance as well as an increase in tech support questions relating to that VTT which we wouldn't know how to answer.
+
+That being said, the answer isn't a definite no, it's a "most probably no". If the VTT is a major one, and not one of the dozen that are announced every month, if it has a large number of users and has enough polish and stability and isn't yet another "niche VTT", then contact me and if you are willing to implement support for it and provide the long term maintenance and tech support as well, then I'd be willing to merge it.
 
