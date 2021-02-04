@@ -451,13 +451,6 @@ const options_list = {
         // callbacks will be added after the functions are defined
     },
 
-    "astral-control-hp-bar": {
-        "title": "Control and sync Astral hp resource bars",
-        "description": "Beyond20 will control hp and temp hp resource bars and sync hp, it will use the first bar, the default one for hp, and the second one for temp hp.",
-        "type": "bool",
-        "default": true
-    },
-
     "discord-integration": {
         "title": "Discord Integration",
         "description": "You can get rolls sent to Discord by enabling Discord Integration!\n" +
@@ -3049,6 +3042,7 @@ const getCharacterData = async (id) => await (await fetch(
 )).json();
 
 const updateCustomAttribute = async (characterData, attrbiuteName, value) => {
+    if (!characterData.customAttributes)  characterData.customAttributes = [];
     let attr = characterData.customAttributes.find(attr => attr.name == attrbiuteName);
     if (!attr) {
         attr = {
@@ -3071,17 +3065,21 @@ const updateResourceBar = async (characterData, barName, value, maxValue, color 
         }
         characterData.resourceBars.push(bar);
     }
+    const extraData = {};
+    if (actualValue != null) {
+        extraData.leftValue = actualValue;
+    }
+    if (actualMaxValue != null) {
+        extraData.rightValue = actualMaxValue;
+    }
+    if (color && !bar.color) {
+        extraData.color = color;
+    }
     Object.assign(bar, {
         leftEquation: value.toString(),
         rightEquation: maxValue.toString(),
         display,
-        ...(actualValue != null ? {
-            leftValue: actualValue
-        } : {}),
-        ...(actualMaxValue  != null ? {
-            rightValue: actualMaxValue
-        } : {}),
-        ...(color && !bar.color ? { color } : {})
+        ...extraData
     })
 }
 
@@ -3503,10 +3501,10 @@ async function updateHpBar({characterName, hp, maxHp, tempHp}) {
         updateCustomAttribute(characterData, "HP_Max", maxHp);
         updateCustomAttribute(characterData, "HP_Current", hp);
         updateCustomAttribute(characterData, "HP_Temp", tempHp);
-        if (settings['astral-control-hp-bar']) {
-            updateResourceBar(characterData, "hp", "HP_Current", "HP_Max", "48bb78", hp, maxHp, true);
-            updateResourceBar(characterData, "temphp", "HP_Temp", "HP_Temp", "48b3bb", tempHp, tempHp, tempHp != 0);
-        }
+        // 48bb78 and 48b3bb represent the hex codes for the colors for the bars
+        updateResourceBar(characterData, "hp", "HP_Current", "HP_Max", "48bb78", hp, maxHp, true);
+        updateResourceBar(characterData, "temphp", "HP_Temp", "HP_Temp", "48b3bb", tempHp, tempHp, tempHp != 0);
+
         return fetch(location.origin + `/api/game/${room}/character/${character}`, {
             method: "PATCH",
             headers: {
@@ -3516,9 +3514,7 @@ async function updateHpBar({characterName, hp, maxHp, tempHp}) {
                 character: {
                     updateAt: Date.now(),
                     customAttributes: characterData.customAttributes,
-                    ...(settings['astral-control-hp-bar'] ? {
-                        resourceBars: characterData.resourceBars
-                    } : {})
+                    resourceBars: characterData.resourceBars
                 }
             }),
            

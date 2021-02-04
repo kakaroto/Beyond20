@@ -104,6 +104,7 @@ const getCharacterData = async (id) => await (await fetch(
 )).json();
 
 const updateCustomAttribute = async (characterData, attrbiuteName, value) => {
+    if (!characterData.customAttributes)  characterData.customAttributes = [];
     let attr = characterData.customAttributes.find(attr => attr.name == attrbiuteName);
     if (!attr) {
         attr = {
@@ -126,17 +127,21 @@ const updateResourceBar = async (characterData, barName, value, maxValue, color 
         }
         characterData.resourceBars.push(bar);
     }
+    const extraData = {};
+    if (actualValue != null) {
+        extraData.leftValue = actualValue;
+    }
+    if (actualMaxValue != null) {
+        extraData.rightValue = actualMaxValue;
+    }
+    if (color && !bar.color) {
+        extraData.color = color;
+    }
     Object.assign(bar, {
         leftEquation: value.toString(),
         rightEquation: maxValue.toString(),
         display,
-        ...(actualValue != null ? {
-            leftValue: actualValue
-        } : {}),
-        ...(actualMaxValue  != null ? {
-            rightValue: actualMaxValue
-        } : {}),
-        ...(color && !bar.color ? { color } : {})
+        ...extraData
     })
 }
 

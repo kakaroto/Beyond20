@@ -209,10 +209,10 @@ async function updateHpBar({characterName, hp, maxHp, tempHp}) {
         updateCustomAttribute(characterData, "HP_Max", maxHp);
         updateCustomAttribute(characterData, "HP_Current", hp);
         updateCustomAttribute(characterData, "HP_Temp", tempHp);
-        if (settings['astral-control-hp-bar']) {
-            updateResourceBar(characterData, "hp", "HP_Current", "HP_Max", "48bb78", hp, maxHp, true);
-            updateResourceBar(characterData, "temphp", "HP_Temp", "HP_Temp", "48b3bb", tempHp, tempHp, tempHp != 0);
-        }
+        // 48bb78 and 48b3bb represent the hex codes for the colors for the bars
+        updateResourceBar(characterData, "hp", "HP_Current", "HP_Max", "48bb78", hp, maxHp, true);
+        updateResourceBar(characterData, "temphp", "HP_Temp", "HP_Temp", "48b3bb", tempHp, tempHp, tempHp != 0);
+
         return fetch(location.origin + `/api/game/${room}/character/${character}`, {
             method: "PATCH",
             headers: {
@@ -222,9 +222,7 @@ async function updateHpBar({characterName, hp, maxHp, tempHp}) {
                 character: {
                     updateAt: Date.now(),
                     customAttributes: characterData.customAttributes,
-                    ...(settings['astral-control-hp-bar'] ? {
-                        resourceBars: characterData.resourceBars
-                    } : {})
+                    resourceBars: characterData.resourceBars
                 }
             }),
            
