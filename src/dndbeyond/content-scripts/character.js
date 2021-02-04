@@ -95,13 +95,6 @@ async function rollSkillCheck(paneClass) {
     // Sorcerer: Clockwork Soul - Trance of Order
     if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
-    
-    // Fey Wanderer Ranger - Otherworldly Glamour
-    if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
-        modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
-        modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
-        roll_properties.modifier = modifier;
-    }
 
     if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
         const min = character.getAbility("STR").score - parseInt(modifier);
@@ -164,6 +157,7 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
             roll_properties["modifier"] = modifier;
         }
     }
+    // Fey Wanderer Ranger - Otherworldly Glamour
     if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
         modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
         modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
