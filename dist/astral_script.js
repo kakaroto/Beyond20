@@ -429,6 +429,13 @@ const options_list = {
         // callbacks will be added after the functions are defined
     },
 
+    "astral-control-hp-bar": {
+        "title": "Control and sync Astral hp resource bars",
+        "description": "Beyond20 will control hp and temp hp resource bars and sync hp, it will use the first bar, the default one for hp, and the second one for temp hp.",
+        "type": "bool",
+        "default": true
+    },
+
     "discord-integration": {
         "title": "Discord Integration",
         "description": "You can get rolls sent to Discord by enabling Discord Integration!\n" +
@@ -2724,6 +2731,53 @@ const getCharacter = async (name) => {
     return char ? char.id : undefined;
 }
 
+const getCharacterData = async (id) => await (await fetch(
+    `${location.origin}/api/game/${getRoom()}/character/${id}`, 
+    {
+        method: "GET", 
+        headers: await getHeaders()
+    }
+)).json();
+
+const updateCustomAttribute = async (characterData, attrbiuteName, value) => {
+    let attr = characterData.customAttributes.find(attr => attr.name == attrbiuteName);
+    if (!attr) {
+        attr = {
+            name: attrbiuteName,
+            value: value.toString()
+        }
+        characterData.customAttributes.push(attr);
+        return;
+    }
+    attr.value = value.toString();
+}
+
+const updateResourceBar = async (characterData, barName, value, maxValue, color = null, actualValue = null, actualMaxValue = null, display = true) => {
+    let bar = characterData.resourceBars.find(attr => attr.label == barName);
+    if (!bar) {
+        bar = {
+            label: barName,
+            system: false,
+            color: color ? Number.parseInt(color, 16) : Math.floor(Math.random()*16777215)
+        }
+        characterData.resourceBars.push(bar);
+    }
+    Object.assign(bar, {
+        leftEquation: value.toString(),
+        rightEquation: maxValue.toString(),
+        ...(display ? {
+            display
+        } : {}),
+        ...(actualValue ? {
+            leftValue: actualValue
+        } : {}),
+        ...(actualMaxValue ? {
+            rightValue: actualMaxValue
+        } : {}),
+        ...(color && !bar.color ? { color } : {})
+    })
+}
+
 const getReactData = () => __NEXT_DATA__;
 
 const getUser = () => getReactData().props.pageProps.user;
@@ -3138,19 +3192,29 @@ async function updateHpBar({characterName, hp, maxHp, tempHp}) {
             console.warn(`Couldn't update the character hp due to the following reason: No character found with name ${characterName}`)
             return
         }
+        const characterData = await getCharacterData(character);
+        updateCustomAttribute(characterData, "HP_Max", maxHp);
+        updateCustomAttribute(characterData, "HP_Current", hp);
+        updateCustomAttribute(characterData, "HP_Temp", tempHp);
+        if (settings['astral-control-hp-bar']) {
+            updateResourceBar(characterData, "hp", "HP_Current", "HP_Max", "48bb78");
+            updateResourceBar(characterData, "temphp", "HP_Temp", "HP_Temp", "48b3bb", tempHp, tempHp, tempHp != 0);
+        }
         return fetch(location.origin + `/api/game/${room}/character/${character}`, {
             method: "PATCH",
+            headers: {
+                'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
+            },
             body: JSON.stringify({
                 character: {
                     updateAt: Date.now(),
-                    attributeBarMax: maxHp + tempHp,
-                    attributeBarCurrent: hp + tempHp,
-
+                    customAttributes: characterData.customAttributes,
+                    ...(settings['astral-control-hp-bar'] ? {
+                        resourceBars: characterData.resourceBars
+                    } : {})
                 }
             }),
-            headers: {
-                'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
-            }
+           
         });
     } catch (e) {
         console.error(`Couldn't update the character hp due to the following reason: `, e);
@@ -3284,7 +3348,6 @@ function disconnectAllEvents() {
 function addRollHook() {
     chatIframe.on('click', `a[href*='#b20-rr-']`, (ev) => {
         ev.preventDefault();
-        console.log(ev);
         roll_renderer.handleRollRequest(JSON.parse(LZString.decompressFromEncodedURIComponent(ev.currentTarget.hash.split('#b20-rr-')[1])));
     })
 }

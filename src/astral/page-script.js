@@ -205,19 +205,29 @@ async function updateHpBar({characterName, hp, maxHp, tempHp}) {
             console.warn(`Couldn't update the character hp due to the following reason: No character found with name ${characterName}`)
             return
         }
+        const characterData = await getCharacterData(character);
+        updateCustomAttribute(characterData, "HP_Max", maxHp);
+        updateCustomAttribute(characterData, "HP_Current", hp);
+        updateCustomAttribute(characterData, "HP_Temp", tempHp);
+        if (settings['astral-control-hp-bar']) {
+            updateResourceBar(characterData, "hp", "HP_Current", "HP_Max", "48bb78");
+            updateResourceBar(characterData, "temphp", "HP_Temp", "HP_Temp", "48b3bb", tempHp, tempHp, tempHp != 0);
+        }
         return fetch(location.origin + `/api/game/${room}/character/${character}`, {
             method: "PATCH",
+            headers: {
+                'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
+            },
             body: JSON.stringify({
                 character: {
                     updateAt: Date.now(),
-                    attributeBarMax: maxHp + tempHp,
-                    attributeBarCurrent: hp + tempHp,
-
+                    customAttributes: characterData.customAttributes,
+                    ...(settings['astral-control-hp-bar'] ? {
+                        resourceBars: characterData.resourceBars
+                    } : {})
                 }
             }),
-            headers: {
-                'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
-            }
+           
         });
     } catch (e) {
         console.error(`Couldn't update the character hp due to the following reason: `, e);
@@ -351,7 +361,6 @@ function disconnectAllEvents() {
 function addRollHook() {
     chatIframe.on('click', `a[href*='#b20-rr-']`, (ev) => {
         ev.preventDefault();
-        console.log(ev);
         roll_renderer.handleRollRequest(JSON.parse(LZString.decompressFromEncodedURIComponent(ev.currentTarget.hash.split('#b20-rr-')[1])));
     })
 }

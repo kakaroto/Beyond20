@@ -430,6 +430,13 @@ const options_list = {
         // callbacks will be added after the functions are defined
     },
 
+    "astral-control-hp-bar": {
+        "title": "Control and sync Astral hp resource bars",
+        "description": "Beyond20 will control hp and temp hp resource bars and sync hp, it will use the first bar, the default one for hp, and the second one for temp hp.",
+        "type": "bool",
+        "default": true
+    },
+
     "discord-integration": {
         "title": "Discord Integration",
         "description": "You can get rolls sent to Discord by enabling Discord Integration!\n" +
