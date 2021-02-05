@@ -767,6 +767,12 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "charger-feat": {
+        "title": "Charger Feat - Extra Damage (Apply to next roll only)",
+        "description": "You charge into battle, lending weight to your blow!",
+        "type": "bool",
+        "default": false
     }
 }
 
@@ -5431,6 +5437,14 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             }
         }
 
+        // Charger Feat
+        if (properties["Attack Type"] == "Melee" && character.hasFeat("Charger") &&
+            character.getSetting("charger-feat")) {
+            damages.push("+5");
+            damage_types.push("Charger Feat");
+            character.mergeCharacterSettings({ "charger-feat": false })
+        }
+
         //Artificer Battlemaster Arcane Jolt
         // TODO: Implement for Steel Defender at later date
         if (damages.length > 0 &&
@@ -5609,10 +5623,11 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             damage_types.push("Weapon Master");
             character.mergeCharacterSettings({ "great-weapon-master": false });
         }
-        if (action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
-            || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
-            || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons")
-            || action_name.includes("Thunder Gauntlets") || action_name.includes("Lightning Launcher")) {
+        const isMeleeAttack = action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
+        || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
+        || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons") 
+        || action_name.includes("Thunder Gauntlets");
+        if ( isMeleeAttack || action_name.includes("Lightning Launcher")) {
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
                 critical_limit = 19;
@@ -5694,6 +5709,14 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
                 damages.push("1d8");
                 damage_types.push("Blessed Strikes");
             }
+        }
+
+        // Charger Feat
+        // I don't love the action_name isn't "Lightning Launcher" here, but it removes code duplication of the containing if statement above, while keeping it Melee-only
+        if (isMeleeAttack && character.hasFeat("Charger") && character.getSetting("charger-feat")) {
+            damages.push("+5");
+            damage_types.push("Charger Feat");
+            character.mergeCharacterSettings({ "charger-feat": false })
         }
 
         //Protector Aasimar: Radiant Soul Damage

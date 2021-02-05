@@ -558,6 +558,14 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             }
         }
 
+        // Charger Feat
+        if (properties["Attack Type"] == "Melee" && character.hasFeat("Charger") &&
+            character.getSetting("charger-feat")) {
+            damages.push("+5");
+            damage_types.push("Charger Feat");
+            character.mergeCharacterSettings({ "charger-feat": false })
+        }
+
         //Artificer Battlemaster Arcane Jolt
         // TODO: Implement for Steel Defender at later date
         if (damages.length > 0 &&
@@ -736,10 +744,11 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             damage_types.push("Weapon Master");
             character.mergeCharacterSettings({ "great-weapon-master": false });
         }
-        if (action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
-            || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
-            || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons")
-            || action_name.includes("Thunder Gauntlets") || action_name.includes("Lightning Launcher")) {
+        const isMeleeAttack = action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
+        || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
+        || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons") 
+        || action_name.includes("Thunder Gauntlets");
+        if ( isMeleeAttack || action_name.includes("Lightning Launcher")) {
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
                 critical_limit = 19;
@@ -821,6 +830,13 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
                 damages.push("1d8");
                 damage_types.push("Blessed Strikes");
             }
+        }
+
+        // Charger Feat
+        if (isMeleeAttack && character.hasFeat("Charger") && character.getSetting("charger-feat")) {
+            damages.push("+5");
+            damage_types.push("Charger Feat");
+            character.mergeCharacterSettings({ "charger-feat": false })
         }
 
         //Protector Aasimar: Radiant Soul Damage
