@@ -815,7 +815,7 @@ const character_settings = {
         "default": false
     },
     "charger-feat": {
-        "title": "Charger Feat - Extra Damage",
+        "title": "Charger Feat - Extra Damage (Apply to next roll only)",
         "description": "You charge into battle, lending weight to your blow!",
         "type": "bool",
         "default": false
