@@ -598,7 +598,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 roll_properties["name"] += ` (CRIT${custom_critical_limit})`;
         }
 
-        // Asssassinate: consider all rolls as critical;
+        // Assassinate: consider all rolls as critical;
         if (character.hasClassFeature("Assassinate") &&
             character.getSetting("rogue-assassinate", false)) {
             roll_properties["critical-limit"] = 1;
