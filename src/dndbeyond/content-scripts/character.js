@@ -423,7 +423,8 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 damage_types.push("Ambush");
                 character.mergeCharacterSettings({ "ranger-dread-ambusher": false });
             }
-            if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer")) {
+            if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer") &&
+                character.getSetting("ranger-colossus-slayer", false)) {
                 damages.push("1d8");
                 damage_types.push("Colossus Slayer");
             }

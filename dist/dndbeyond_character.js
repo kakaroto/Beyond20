@@ -696,6 +696,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "ranger-colossus-slayer": {
+        "title": "Ranger: Hunter's Prey: Colossus Slayer",
+        "description": "Use your Colossus Slayer ability and add 1d8 damage to your target",
+        "type": "bool",
+        "default": true
+    },
     "ranger-slayers-prey": {
         "title": "Ranger: Monster Slayer: Slayer's Prey",
         "description": "Use your Slayer's Prey ability and add 1d6 damage to your target",
@@ -5302,7 +5308,8 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 damage_types.push("Ambush");
                 character.mergeCharacterSettings({ "ranger-dread-ambusher": false });
             }
-            if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer")) {
+            if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer") &&
+                character.getSetting("ranger-colossus-slayer", false)) {
                 damages.push("1d8");
                 damage_types.push("Colossus Slayer");
             }
@@ -5477,7 +5484,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 roll_properties["name"] += ` (CRIT${custom_critical_limit})`;
         }
 
-        // Asssassinate: consider all rolls as critical;
+        // Assassinate: consider all rolls as critical;
         if (character.hasClassFeature("Assassinate") &&
             character.getSetting("rogue-assassinate", false)) {
             roll_properties["critical-limit"] = 1;

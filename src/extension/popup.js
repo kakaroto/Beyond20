@@ -145,6 +145,10 @@ function populateCharacter(response) {
             e = createHTMLOption("ranger-planar-warrior", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Hunter’s Prey: Colossus Slayer")) {
+            e = createHTMLOption("ranger-colossus-slayer", false, character_settings);
+            options.append(e);
+        }
         if (response["class-features"].includes("Slayer’s Prey")) {
             e = createHTMLOption("ranger-slayers-prey", false, character_settings);
             options.append(e);
