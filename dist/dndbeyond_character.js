@@ -5618,6 +5618,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             }
         }
 
+        const settings_to_change = {}
         let brutal = 0;
         let critical_limit = 20;
         if (character.hasClassFeature("Hexblade’s Curse") &&
@@ -5633,7 +5634,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             to_hit += " - 5";
             damages.push("10");
             damage_types.push("Weapon Master");
-            character.mergeCharacterSettings({ "great-weapon-master": false });
+            settings_to_change["great-weapon-master"] = false;
         }
         const isMeleeAttack = action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
         || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
@@ -5727,7 +5728,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         if (isMeleeAttack && character.hasFeat("Charger") && character.getSetting("charger-feat")) {
             damages.push("+5");
             damage_types.push("Charger Feat");
-            character.mergeCharacterSettings({ "charger-feat": false })
+            settings_to_change["charger-feat"] = false;
         }
 
         //Protector Aasimar: Radiant Soul Damage
@@ -5776,11 +5777,16 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             character.getSetting("rogue-assassinate", false)) {
             roll_properties["critical-limit"] = 1;
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-            character.mergeCharacterSettings({ "rogue-assassinate": false });
+            settings_to_change["rogue-assassinate"] = false;
         }
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
+
+        // Apply batched updates to settings, if any:
+        if (Object.keys(settings_to_change).length > 0)
+            character.mergeCharacterSettings(settings_to_change);
+
         return sendRollWithCharacter("attack", damages[0], roll_properties);
     } else {
         return sendRollWithCharacter("action", 0, {
