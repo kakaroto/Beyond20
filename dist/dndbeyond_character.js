@@ -5712,7 +5712,6 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         }
 
         // Charger Feat
-        // I don't love the action_name isn't "Lightning Launcher" here, but it removes code duplication of the containing if statement above, while keeping it Melee-only
         if (isMeleeAttack && character.hasFeat("Charger") && character.getSetting("charger-feat")) {
             damages.push("+5");
             damage_types.push("Charger Feat");
