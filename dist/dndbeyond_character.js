@@ -5639,7 +5639,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         const isMeleeAttack = action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
         || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
         || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons") 
-        || action_name.includes("Thunder Gauntlets");
+        || action_name.includes("Thunder Gauntlets") || action_name.includes("Unarmed Fighting");
         if ( isMeleeAttack || action_name.includes("Lightning Launcher")) {
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
