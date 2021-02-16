@@ -1761,6 +1761,15 @@ function populateCharacter(response) {
         options.append(e);
         e = createHTMLOption("custom-critical-limit", false, character_settings);
         options.append(e);
+        if (response["racial-traits"].includes("Lucky")) {
+            e = createHTMLOption("halfling-lucky", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Brutal Critical") ||
+            response["racial-traits"].includes("Savage Attacks")) {
+            e = createHTMLOption("brutal-critical", false, character_settings);
+            options.append(e);
+        }
         if (Object.keys(response.classes).includes("Rogue")) {
             e = createHTMLOption("rogue-sneak-attack", false, character_settings);
             options.append(e);
@@ -1783,11 +1792,6 @@ function populateCharacter(response) {
         }
         if (response["feats"].includes("Great Weapon Master")) {
             e = createHTMLOption("great-weapon-master", false, character_settings);
-            options.append(e);
-        }
-        if (response["class-features"].includes("Brutal Critical") ||
-            response["racial-traits"].includes("Savage Attacks")) {
-            e = createHTMLOption("brutal-critical", false, character_settings);
             options.append(e);
         }
         if (response["class-features"].includes("Rage")) {
@@ -1904,10 +1908,6 @@ function populateCharacter(response) {
         }
         if (response["feats"].includes("Charger")) {
             e = createHTMLOption("charger-feat", false, character_settings);
-            options.append(e);
-        }
-        if (response["racial-traits"].includes("Lucky")) {
-            e = createHTMLOption("halfling-lucky", false, character_settings);
             options.append(e);
         }
 
