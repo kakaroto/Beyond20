@@ -825,6 +825,12 @@ const character_settings = {
         "description": "You charge into battle, lending weight to your blow!",
         "type": "bool",
         "default": false
+    },
+    "halfling-lucky": {
+        "title": "Halfling Lucky",
+        "description": "The luck of your people guides your steps",
+        "type": "bool",
+        "default": true
     }
 }
 
@@ -1898,6 +1904,10 @@ function populateCharacter(response) {
         }
         if (response["feats"].includes("Charger")) {
             e = createHTMLOption("charger-feat", false, character_settings);
+            options.append(e);
+        }
+        if (response["racial-traits"].includes("Lucky")) {
+            e = createHTMLOption("halfling-lucky", false, character_settings);
             options.append(e);
         }
 

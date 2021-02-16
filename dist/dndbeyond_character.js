@@ -779,6 +779,12 @@ const character_settings = {
         "description": "You charge into battle, lending weight to your blow!",
         "type": "bool",
         "default": false
+    },
+    "halfling-lucky": {
+        "title": "Halfling Lucky",
+        "description": "The luck of your people guides your steps",
+        "type": "bool",
+        "default": true
     }
 }
 
@@ -4890,7 +4896,7 @@ function sendRollWithCharacter(rollType, fallback, args) {
     if (preview && preview.startsWith("url("))
         args.preview = preview.slice(5, -2);
     // Add halfling luck
-    if (character.hasRacialTrait("Lucky") && ["skill", "ability", "saving-throw", "death-save",
+    if (character.hasRacialTrait("Lucky") && character.getSetting("halfling-lucky", false) && ["skill", "ability", "saving-throw", "death-save",
         "initiative", "attack", "spell-attack"].includes(rollType)) {
         args.d20 = args.d20 || "1d20";
         args.d20 += "ro<=1";
