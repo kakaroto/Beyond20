@@ -197,6 +197,7 @@ class CriticalRules {
     static get HOMEBREW_DOUBLE() { return 2 }
     static get HOMEBREW_MOD() { return 3; }
     static get HOMEBREW_REROLL() { return 4; }
+    static get HOMEBREW_D52CARDS() { return 5; }
 }
 
 // keys: [short, title, description, type, default];
@@ -309,7 +310,8 @@ const options_list = {
         "choices": {
             [CriticalRules.PHB.toString()]: "Standard PHB Rules (reroll dice)",
             [CriticalRules.HOMEBREW_MAX.toString()]: "Homebrew: Perfect rolls",
-            [CriticalRules.HOMEBREW_REROLL.toString()]: "Homebrew: Reroll all damages"
+            [CriticalRules.HOMEBREW_REROLL.toString()]: "Homebrew: Reroll all damages",
+            [CriticalRules.HOMEBREW_D52CARDS.toString()]: "Homebrew: D52 hit cards"
         }
     },
 
@@ -1555,7 +1557,7 @@ function createHotkeysSetting(name, short) {
 
     const setting = E.li({
         id: "beyond20-option-hotkeys-bindings",
-        class: "list-group-item beyond20-option beyond20-option-bool" 
+        class: "list-group-item beyond20-option beyond20-option-bool"
     },
         E.label({ class: "list-content", for: name },
             E.h4({}, opt.title),
@@ -1917,7 +1919,7 @@ class DNDBDice {
         return this.calculateTotal();
     }
     calculateTotal() {
-        
+
         // Accumulate total based on non discarded rolls;
         this._total = this._rolls.reduce((acc, roll) => {
             return acc + (roll.discarded ? 0 : roll.roll);
@@ -2407,7 +2409,7 @@ class Beyond20RollRenderer {
             html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
         }
 
-        if (request.damages && request.damages.length > 0 && 
+        if (request.damages && request.damages.length > 0 &&
             request.rollAttack && !request.rollDamage) {
             html += '<button class="beyond20-button-roll-damages">Roll Damages</button>';
         }
@@ -2653,10 +2655,10 @@ class Beyond20RollRenderer {
                     damage_rolls.push(["Healing", "Twice the Necrotic damage", DAMAGE_FLAGS.HEALING]);
                 }
             }
-        
+
 
             await this._roller.resolveRolls(request.name, all_rolls)
-            
+
             //Moved after the new resolveRolls so it can access the roll results
             if (request.name.includes("Chaos Bolt")) {
                 for (let [i, dmg_roll] of damage_rolls.entries()) {
@@ -2713,7 +2715,7 @@ class Beyond20RollRenderer {
             }
         } else {
             // If no damages, still need to resolve to hit rolls
-            
+
             await this._roller.resolveRolls(request.name, all_rolls)
             if (to_hit.length > 0)
                 this.processToHitAdvantage(to_hit_advantage, to_hit)
@@ -2967,7 +2969,7 @@ class DigitalDice {
         return DigitalDiceManager.rollDigitalDice(this);
     }
     /**
-     * 
+     *
      * @param {String} myId        Notification ID for parsing the results of this roll
      * @param {Boolean} passive    If set, do not modify the notification and calculate the total right away
      */
@@ -2977,7 +2979,7 @@ class DigitalDice {
         const result = $(`#${myId} .dice_result`);
         this._myId = myId;
         this._myResult = result;
-        
+
         const breakdown = result.find(".dice_result__info__results .dice_result__info__breakdown").text();
         const dicenotation = result.find(".dice_result__info__dicenotation").text();
 
@@ -3009,7 +3011,7 @@ class DigitalDice {
         for (let dice of this._dice)
             await dice.handleModifiers();
         this._rolls.forEach(roll => roll.calculateTotal());
-        
+
         if (this._myResult) {
             this._myResult.find(".dice_result__total-result").text(this._rolls[0].total);
             this._myResult.find(".dice_result__info__results .dice_result__info__breakdown").text(this._rolls[0].formula)
@@ -3202,8 +3204,8 @@ dndbeyondDiceRoller.handleRollError = (request, error) => {
     if (request.action === "rendered-roll") {
         return dndbeyondDiceRoller._displayer.postHTML(request.request, request.title,
             request.html, request.character, request.whisper,
-            request.play_sound, request.source, request.attributes, 
-            request.description, request.attack_rolls, request.roll_info, 
+            request.play_sound, request.source, request.attributes,
+            request.description, request.attack_rolls, request.roll_info,
             request.damage_rolls, request.total_damages, request.open);
     }
     request['original-whisper'] = request.whisper;
@@ -3366,6 +3368,9 @@ function findToHit(name_to_match, items_selector, name_selector, tohit_selector)
 function damagesToCrits(character, damages) {
     const crits = [];
     const rule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
+    if (rule == CriticalRules.HOMEBREW_D52CARDS) {
+      return crits;
+    }
     if (rule == CriticalRules.HOMEBREW_REROLL || rule == CriticalRules.HOMEBREW_MOD)
         return damages.slice();
     for (let damage of damages) {
@@ -3444,7 +3449,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 for (let i = 0; i < damage_types.length; i++) {
                     if (damage_types[i].includes("Piercing")){
                         const piercer_damage = damagesToCrits(character, [damages[i]]);
-                        if (piercer_damage.length > 0 && piercer_damage[0] != "") {    
+                        if (piercer_damage.length > 0 && piercer_damage[0] != "") {
                             piercer_damage[0] = piercer_damage[0].replace(/([0-9]+)d([0-9]+)/, '1d$2');
                             crit_damages.push(piercer_damage[0]);
                             crit_damage_types.push("Piercer Feat");
@@ -3569,7 +3574,7 @@ async function sendRoll(character, rollType, fallback, args) {
         if (key_modifiers.custom_sub_d12)
             req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d12";
     }
-        
+
     if (req.whisper === WhisperType.QUERY)
         req.whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
     if (req.advantage === RollType.QUERY)
@@ -4893,7 +4898,7 @@ async function rollSkillCheck(paneClass) {
     let modifier = $("." + paneClass + "__header-modifier").text();
     const proficiency = $("." + paneClass + "__header-icon .ct-tooltip,." + paneClass + "__header-icon .ddbc-tooltip").attr("data-original-title");
 
-    
+
     if (ability == "--" && character._abilities.length > 0) {
         let prof = "";
         let prof_val = "";
@@ -4964,11 +4969,11 @@ async function rollSkillCheck(paneClass) {
     // Set Silver Tongue if Deception or Persuasion
     if (character.hasClassFeature("Silver Tongue") && (skill_name === "Deception" || skill_name === "Persuasion"))
         roll_properties.d20 = "1d20min10";
-    
+
     // Sorcerer: Clockwork Soul - Trance of Order
     if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
-    
+
     // Fey Wanderer Ranger - Otherworldly Glamour
     if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
         modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
@@ -5188,7 +5193,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
         // If clicking on a spell group within a item (Green flame blade, Booming blade), then add the additional damages from that spell
         if (spell_group) {
             const group_name = $(spell_group).find(".ct-item-detail__spell-damage-group-name").text();
-            
+
             const spell_damages = $(spell_group).find(".ct-item-detail__spell-damage-group-item");
             for (let j = 0; j < spell_damages.length; j++) {
                 let dmg = spell_damages.eq(j).find(".ddbc-damage__value").text();
@@ -5236,7 +5241,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damages.push(`1d6+${Math.floor(barbarian_level / 2)}`);
             damage_types.push("Divine Fury");
         }
-        if (to_hit !== null && 
+        if (to_hit !== null &&
             character.getSetting("sharpshooter", false) &&
             character.hasFeat("Sharpshooter") &&
             properties["Attack Type"] == "Ranged" &&
@@ -5246,7 +5251,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damage_types.push("Sharpshooter");
             character.mergeCharacterSettings({ "sharpshooter": false });
         }
-        if (to_hit !== null && 
+        if (to_hit !== null &&
             character.getSetting("great-weapon-master", false) &&
             character.hasFeat("Great Weapon Master") &&
             properties["Attack Type"] == "Melee" &&
@@ -5257,12 +5262,12 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damage_types.push("Weapon Master");
             character.mergeCharacterSettings({ "great-weapon-master": false });
         }
-        if (to_hit !== null && 
+        if (to_hit !== null &&
             character.getSetting("paladin-sacred-weapon", false)) {
             const charisma_attack_mod =  Math.max(character.getAbility("CHA").mod, 1);
             to_hit += "+" + charisma_attack_mod;
         }
-        if (to_hit !== null && 
+        if (to_hit !== null &&
             character.getSetting("eldritch-invocation-lifedrinker", false) &&
             item_customizations.includes("Pact Weapon")) {
             const charisma_damage_mod =  Math.max(character.getAbility("CHA").mod, 1);
@@ -5597,7 +5602,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         if (action_name.includes("Polearm Master - Bonus Attack") && character.hasClassFeature("Fighting Style: Great Weapon Fighting")) {
             damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
         }
-        if (to_hit !== null && 
+        if (to_hit !== null &&
             character.getSetting("great-weapon-master", false) &&
             action_name.includes("Polearm Master - Bonus Attack")) {
             to_hit += " - 5";
@@ -5830,7 +5835,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
                 }
             }
         }
-        
+
         //Cleric Blessed Strikes
         if (character.hasClassFeature("Blessed Strikes") &&
             character.getSetting("cleric-blessed-strikes", false) &&
@@ -5918,7 +5923,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
                 }
             }
         }
-        
+
         if (character.hasClassFeature("Enhanced Bond") &&
             character.getSetting("wildfire-spirit-enhanced-bond", false)) {
             for (let i = 0; i < damages.length; i++){
@@ -6146,7 +6151,7 @@ function handleCustomText(paneClass) {
             // Ignore errors that might be caused by DOTALL regexp flag not being supported by the browser
         }
     }
-    
+
     return customRolls;
 }
 
@@ -6160,7 +6165,7 @@ async function execute(paneClass, {force_to_hit_only = false, force_damages_only
             });
         }
      };
-     
+
     const customTextRolls = handleCustomText(paneClass);
     await rollCustomText(customTextRolls.before);
     if (customTextRolls.replace.length > 0) {
@@ -6862,7 +6867,7 @@ function documentModified(mutations, observer) {
     if (customRoll) {
         dndbeyondDiceRoller.sendCustomDigitalDice(character, customRoll);
     }
-    
+
     const pane = $(".ct-sidebar__pane-content > div");
     if (pane.length > 0) {
         for (let div = 0; div < pane.length; div++) {

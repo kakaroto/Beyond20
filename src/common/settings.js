@@ -28,7 +28,8 @@ class CriticalRules {
     // Impossible to achieve with Roll20 && hard with RollRenderer because of brutal && other mods.;
     static get HOMEBREW_DOUBLE() { return 2 }
     static get HOMEBREW_MOD() { return 3; }
-    static get HOMEBREW_REROLL() { return 4; }
+    static get HOMEBREW_REROLL() { return 4; } 
+    static get HOMEBREW_D52CARDS() { return 5; }
 }
 
 // keys: [short, title, description, type, default];
@@ -141,7 +142,8 @@ const options_list = {
         "choices": {
             [CriticalRules.PHB.toString()]: "Standard PHB Rules (reroll dice)",
             [CriticalRules.HOMEBREW_MAX.toString()]: "Homebrew: Perfect rolls",
-            [CriticalRules.HOMEBREW_REROLL.toString()]: "Homebrew: Reroll all damages"
+            [CriticalRules.HOMEBREW_REROLL.toString()]: "Homebrew: Reroll all damages",
+            [CriticalRules.HOMEBREW_D52CARDS.toString()]: "Homebrew: D52 hit cards"
         }
     },
 

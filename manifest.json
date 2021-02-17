@@ -10,9 +10,14 @@
 		"*://beyond20.kicks-ass.org/roll",
 		"*://app.roll20.net/editor/",
 		"*://*.dndbeyond.com/*",
-		"*://*.forge-vtt.com/game",
+		"*://*/*game",
 		"*://*.astraltabletop.com/play/*"
 	],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "beyond20@kakaroto.homelinux.net"
+		}
+	},
 	"icons": {
 		"16": "images/icons/icon16.png",
 		"24": "images/icons/icon24.png",
@@ -26,8 +31,8 @@
 		"page": "options.html",
 		"open_in_tab": false
 	},
-	"browser_action": {
-		"default_popup": "default_popup.html",
+	"page_action": {
+		"default_popup": "popup.html",
         "default_icon": {
           "16": "images/icons/icon16.png",
           "24": "images/icons/icon24.png",
@@ -169,12 +174,13 @@
 			"js": [
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
-				"dist/roll20.js"
+				"dist/roll20.js",
+				"dist/d52cards.js"
 			]
 		},
 		{
 			"matches": [
-				"*://*.forge-vtt.com/game"
+				"*://*/*game"
 			],
 			"css": [
 				"libs/css/alertify.css",

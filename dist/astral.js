@@ -197,6 +197,7 @@ class CriticalRules {
     static get HOMEBREW_DOUBLE() { return 2 }
     static get HOMEBREW_MOD() { return 3; }
     static get HOMEBREW_REROLL() { return 4; }
+    static get HOMEBREW_D52CARDS() { return 5; }
 }
 
 // keys: [short, title, description, type, default];
@@ -309,7 +310,8 @@ const options_list = {
         "choices": {
             [CriticalRules.PHB.toString()]: "Standard PHB Rules (reroll dice)",
             [CriticalRules.HOMEBREW_MAX.toString()]: "Homebrew: Perfect rolls",
-            [CriticalRules.HOMEBREW_REROLL.toString()]: "Homebrew: Reroll all damages"
+            [CriticalRules.HOMEBREW_REROLL.toString()]: "Homebrew: Reroll all damages",
+            [CriticalRules.HOMEBREW_D52CARDS.toString()]: "Homebrew: D52 hit cards"
         }
     },
 
@@ -1555,7 +1557,7 @@ function createHotkeysSetting(name, short) {
 
     const setting = E.li({
         id: "beyond20-option-hotkeys-bindings",
-        class: "list-group-item beyond20-option beyond20-option-bool" 
+        class: "list-group-item beyond20-option beyond20-option-bool"
     },
         E.label({ class: "list-content", for: name },
             E.h4({}, opt.title),
@@ -1610,10 +1612,10 @@ const decorations = {
     "spell-card": ["#BD10E0", "torch"],
     "spell-attack": ["#BD10E0", "torch"],
     "feature": ["#50E3C2", "pyramid-eye"],
-    "trait": ["#50E3C2", "pyramid-eye"], 
+    "trait": ["#50E3C2", "pyramid-eye"],
     "action": ["#50E3C2", "pyramid-eye"],
     "item": ["#50E3C2", "pyramid-eye"],
-    
+
 }
 
 var settings = getDefaultSettings();
@@ -1647,7 +1649,7 @@ function template(rolls) {
 | :--- | :--- |
 ${rolls.map(([key, value]) => {
     return `| ${capitalizeFirstLetter(key)} | ${value} |`
-}).join('\n')}    
+}).join('\n')}
 
 `;
 }
@@ -1658,7 +1660,7 @@ const matchRow = new RegExp(/(^\n([^\n\r]+)\n([^\n\r]+)\n\n$)/m);
 function formatTableInDescription(description) {
     return description.replace(matchTable, (match) => {
         let [_1, _2, firstHead, secondHead] = reMatchAll(matchHead, match)[0];
-        
+
         const allMatches = reMatchAll(match, matchRow);
         // Skip first as it is matched by the matchHead too
         const rows = allMatches.map(match => `| ${match[2]} | ${match[3]} |`).slice(1);
@@ -1711,7 +1713,7 @@ function formatPlusMod(custom_roll_dice) {
 
 function subRolls(text, overrideCB = null) {
     let replaceCB = overrideCB;
-    
+
     if (!overrideCB) {
         replaceCB = (dice, modifier) => {
             return dice == "" ? modifier : `!!(${dice}${formatPlusMod(modifier)})`;
@@ -1735,7 +1737,7 @@ function parseDescription(request, description, {
 
     if (!settings["subst-vtt"])
         return description;
-        
+
     if (notes) description = formatNotesInDescription(description);
     if (tables) description = formatTableInDescription(description);
     if (bulletList) {
@@ -1872,14 +1874,14 @@ function rollAttack(request, custom_roll_dice = "") {
     if (request["to-hit"] !== undefined) {
         rolls.push(advantageRoll(request, "To Hit", generateRoll(`${request.d20 || "1d20"}cr>=${request["critical-limit"] || 20}`, [request["to-hit"], custom_roll_dice])))
     }
-    
+
     if (request["save-dc"] !== undefined) {
         rolls.push(["Save DC", `DC ${request["save-dc"]} ${request["save-ability"]}`]);
     }
 
     if (request.range !== undefined)
         rolls.push(["Range", request.range]);
-        
+
     if (request.damages !== undefined) {
         const damages = request.damages;
         const damage_types = request["damage-types"];
@@ -1922,7 +1924,7 @@ function rollSpellCard(request) {
 ${description}
 
 ${(higher > 0 ? "**At Higher Levels.** " + higherDesc : "" )}
-` 
+`
     }
 }
 
@@ -1941,7 +1943,7 @@ function rollSpellAttack(request, custom_roll_dice) {
     if (request["save-dc"] !== undefined) {
         rolls.push(["Save DC", `DC ${request["save-dc"]} ${request["save-ability"]}`]);
     }
-      
+
     if (request["to-hit"] !== undefined) {
         rolls.push(advantageRoll(request, "To Hit", generateRoll(`${request.d20 || "1d20"}cr>=${request["critical-limit"] || 20}`, [request["to-hit"], custom_roll_dice])))
     }
@@ -2003,7 +2005,7 @@ function rollSpellAttack(request, custom_roll_dice) {
         } else if (request.name === "Booming Blade") {
             damage_types[1] = damage_types[1] + " on Moving";
         }
-        
+
         rolls.push(...damagesToRolls(damages, damage_types, critical_damages, critical_damage_types))
     }
 
@@ -2060,7 +2062,7 @@ function handleMessage(request, sender, sendResponse) {
             postChatMessage({ characterName: request.character.name, message, icon: 'smiley-worry', color: '#F8E71C', title: 'Conditions', whisper: request.whisper == WhisperType.YES });
         }
     } else if (request.action == "roll") {
-        
+
         let custom_roll_dice = "";
         if (request.character.type == "Character")
             custom_roll_dice = request.character.settings["custom-roll-dice"] || "";
@@ -2089,11 +2091,11 @@ function handleMessage(request, sender, sendResponse) {
         } else if (request.type == "avatar") {
             roll = displayAvatar(request);
         } else if (request.type == "chat-message") {
-            roll = { 
+            roll = {
                 title: request.name,
                 message: subRolls(request.message)
             };
-        } else {            
+        } else {
             roll = {
                 title: request.name,
                 message: subRolls(request.roll)

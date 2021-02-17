@@ -197,6 +197,7 @@ class CriticalRules {
     static get HOMEBREW_DOUBLE() { return 2 }
     static get HOMEBREW_MOD() { return 3; }
     static get HOMEBREW_REROLL() { return 4; }
+    static get HOMEBREW_D52CARDS() { return 5; }
 }
 
 // keys: [short, title, description, type, default];
@@ -309,7 +310,8 @@ const options_list = {
         "choices": {
             [CriticalRules.PHB.toString()]: "Standard PHB Rules (reroll dice)",
             [CriticalRules.HOMEBREW_MAX.toString()]: "Homebrew: Perfect rolls",
-            [CriticalRules.HOMEBREW_REROLL.toString()]: "Homebrew: Reroll all damages"
+            [CriticalRules.HOMEBREW_REROLL.toString()]: "Homebrew: Reroll all damages",
+            [CriticalRules.HOMEBREW_D52CARDS.toString()]: "Homebrew: D52 hit cards"
         }
     },
 
@@ -1555,7 +1557,7 @@ function createHotkeysSetting(name, short) {
 
     const setting = E.li({
         id: "beyond20-option-hotkeys-bindings",
-        class: "list-group-item beyond20-option beyond20-option-bool" 
+        class: "list-group-item beyond20-option beyond20-option-bool"
     },
         E.label({ class: "list-content", for: name },
             E.h4({}, opt.title),
@@ -1917,7 +1919,7 @@ class DNDBDice {
         return this.calculateTotal();
     }
     calculateTotal() {
-        
+
         // Accumulate total based on non discarded rolls;
         this._total = this._rolls.reduce((acc, roll) => {
             return acc + (roll.discarded ? 0 : roll.roll);
@@ -2407,7 +2409,7 @@ class Beyond20RollRenderer {
             html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
         }
 
-        if (request.damages && request.damages.length > 0 && 
+        if (request.damages && request.damages.length > 0 &&
             request.rollAttack && !request.rollDamage) {
             html += '<button class="beyond20-button-roll-damages">Roll Damages</button>';
         }
@@ -2653,10 +2655,10 @@ class Beyond20RollRenderer {
                     damage_rolls.push(["Healing", "Twice the Necrotic damage", DAMAGE_FLAGS.HEALING]);
                 }
             }
-        
+
 
             await this._roller.resolveRolls(request.name, all_rolls)
-            
+
             //Moved after the new resolveRolls so it can access the roll results
             if (request.name.includes("Chaos Bolt")) {
                 for (let [i, dmg_roll] of damage_rolls.entries()) {
@@ -2713,7 +2715,7 @@ class Beyond20RollRenderer {
             }
         } else {
             // If no damages, still need to resolve to hit rolls
-            
+
             await this._roller.resolveRolls(request.name, all_rolls)
             if (to_hit.length > 0)
                 this.processToHitAdvantage(to_hit_advantage, to_hit)
@@ -2985,20 +2987,20 @@ const getAccessToken = async () => {
             headers: {'content-type': 'application/x-www-form-urlencoded'},
             body: 'grant_type=refresh_token&refresh_token=' + tokenCache.refresh,
         })).json();
-        
+
         tokenCache.access = tokenData.access_token;
         tokenCache.refresh = tokenData.refresh_token;
         const tokenInfo = jwtDecode(tokenCache.access);
 
         // Multipling by 1000 for miliseconds
-        tokenData.expires = tokenInfo.exp * 1000; 
+        tokenData.expires = tokenInfo.exp * 1000;
     }
 
     return tokenCache.access;
 }
 
-const getHeaders = async () => ({ 
-    'x-authorization': `Bearer ${await getAccessToken()}`, 
+const getHeaders = async () => ({
+    'x-authorization': `Bearer ${await getAccessToken()}`,
     'content-type': 'application/json'
 });
 
@@ -3006,9 +3008,9 @@ const getHeaders = async () => ({
 const getRoom = () => location.pathname.startsWith('/play/game') ? new URLSearchParams(location.search).get('id') : location.pathname.split('/')[2];
 
 const getRoomData = async () => await (await fetch(
-    `${location.origin}/api/game/${getRoom()}/`, 
+    `${location.origin}/api/game/${getRoom()}/`,
     {
-        method: "GET", 
+        method: "GET",
         headers: await getHeaders()
     }
 )).json();
@@ -3065,7 +3067,7 @@ class AstralDisplayer {
         }
         handleRenderedRoll(req);
     }
-    
+
     displayError(message) {
         alertify.error(message);
     }
@@ -3100,10 +3102,10 @@ const decorations = {
     "spell-card": ["#BD10E0", "torch"],
     "spell-attack": ["#BD10E0", "torch"],
     "feature": ["#50E3C2", "pyramid-eye"],
-    "trait": ["#50E3C2", "pyramid-eye"], 
+    "trait": ["#50E3C2", "pyramid-eye"],
     "action": ["#50E3C2", "pyramid-eye"],
     "item": ["#50E3C2", "pyramid-eye"],
-    
+
 }
 
 var settings = getDefaultSettings();
@@ -3137,7 +3139,7 @@ function template(rolls) {
 | :--- | :--- |
 ${rolls.map(([key, value]) => {
     return `| ${capitalizeFirstLetter(key)} | ${value} |`
-}).join('\n')}    
+}).join('\n')}
 
 `;
 }
@@ -3148,7 +3150,7 @@ const matchRow = new RegExp(/(^\n([^\n\r]+)\n([^\n\r]+)\n\n$)/m);
 function formatTableInDescription(description) {
     return description.replace(matchTable, (match) => {
         let [_1, _2, firstHead, secondHead] = reMatchAll(matchHead, match)[0];
-        
+
         const allMatches = reMatchAll(match, matchRow);
         // Skip first as it is matched by the matchHead too
         const rows = allMatches.map(match => `| ${match[2]} | ${match[3]} |`).slice(1);
@@ -3201,7 +3203,7 @@ function formatPlusMod(custom_roll_dice) {
 
 function subRolls(text, overrideCB = null) {
     let replaceCB = overrideCB;
-    
+
     if (!overrideCB) {
         replaceCB = (dice, modifier) => {
             return dice == "" ? modifier : `!!(${dice}${formatPlusMod(modifier)})`;
@@ -3225,7 +3227,7 @@ function parseDescription(request, description, {
 
     if (!settings["subst-vtt"])
         return description;
-        
+
     if (notes) description = formatNotesInDescription(description);
     if (tables) description = formatTableInDescription(description);
     if (bulletList) {
@@ -3247,14 +3249,14 @@ $.fn.watch = function(property, callback) {
         var self = this;
         var old_property_val = this[property];
         var timer;
- 
+
         function watch() {
            if($(self).data(property + '-watch-abort') == true) {
               timer = clearInterval(timer);
               $(self).data(property + '-watch-abort', null);
               return;
            }
- 
+
            if(self[property] != old_property_val) {
               old_property_val = self[property];
               callback.call(self);
@@ -3263,7 +3265,7 @@ $.fn.watch = function(property, callback) {
         timer = setInterval(watch, 700);
     });
  };
- 
+
  $.fn.unwatch = function(property) {
     return $(this).each(function() {
         $(this).data(property + '-watch-abort', true);
@@ -3274,7 +3276,7 @@ function setReactElementValue(element, value) {
     const valueSetter = Object.getOwnPropertyDescriptor(element, 'value').set;
     const prototype = Object.getPrototypeOf(element);
     const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, 'value').set;
-  
+
     if (valueSetter && valueSetter !== prototypeValueSetter) {
       prototypeValueSetter.call(element, value);
     } else {
@@ -3304,8 +3306,8 @@ async function speakAs(characterName) {
                 } else {
                     charListButton.click();
                 }
-                resolve(); 
-            } catch { reject(new Error("Unable to set `speak as` character.")); } 
+                resolve();
+            } catch { reject(new Error("Unable to set `speak as` character.")); }
         })
     });
 }
@@ -3352,7 +3354,7 @@ async function handleRenderedRoll(request) {
     if (request.attack_rolls.length > 0) {
         rolls.push([request.title, request.attack_rolls.map(roll => convertRollToText(roll, true)).join(" ")]);
     }
-    
+
     rolls.push(...request.damage_rolls.map(([roll_name, roll]) => [roll_name, convertRollToText(roll)]))
 
     if (Object.keys(request.total_damages).length > 0)
@@ -3378,7 +3380,7 @@ async function handleRenderedRoll(request) {
     }
     let message = template(rolls);
 
-    
+
     if (!originalRequest.rollDamage && request.open && request.description) {
         message = `${message}
 
@@ -3401,15 +3403,15 @@ async function postChatMessage({characterName, message, color, icon, title, whis
             console.warn(`Trimming message due to length exceeding 2048 characters. Initial message length is: ${message.length}.`)
             message = message.slice(0, 2045) + '...';
         }
-        
+
         return await fetch(location.origin + `/api/game/${room}/chat`, {
             method: "PUT",
             body: JSON.stringify({
                 text: message,
-                color, 
-                icon, 
-                user, 
-                character, 
+                color,
+                icon,
+                user,
+                character,
                 title: character || !characterName ? title : `${title} (${characterName})`,
                 hidden: whisper,
                 recipients
@@ -3511,7 +3513,7 @@ async function resetCombat() {
                 requestAnimationFrame(findResetButton);
             }
         }
-        findResetButton();        
+        findResetButton();
     });
 }
 
@@ -3540,9 +3542,9 @@ async function addCharacterToCombat({name, initiative}, weight) {
         return fetch(location.origin + `/api/game/${getRoom()}/combat/actor/${character}`, {
             method: "PUT",
             body: JSON.stringify({
-                displayName: name, 
+                displayName: name,
                 id: character,
-                visible: true, 
+                visible: true,
                 initiative,
                 weight
             }),
@@ -3615,8 +3617,8 @@ function trySetDOMListeners() {
             chatIframe = $(this).contents();
             addRollHook();
         })
-       
-        
+
+
     } else {
         setTimeout(trySetDOMListeners, 1000);
     }

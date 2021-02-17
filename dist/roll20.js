@@ -197,6 +197,7 @@ class CriticalRules {
     static get HOMEBREW_DOUBLE() { return 2 }
     static get HOMEBREW_MOD() { return 3; }
     static get HOMEBREW_REROLL() { return 4; }
+    static get HOMEBREW_D52CARDS() { return 5; }
 }
 
 // keys: [short, title, description, type, default];
@@ -309,7 +310,8 @@ const options_list = {
         "choices": {
             [CriticalRules.PHB.toString()]: "Standard PHB Rules (reroll dice)",
             [CriticalRules.HOMEBREW_MAX.toString()]: "Homebrew: Perfect rolls",
-            [CriticalRules.HOMEBREW_REROLL.toString()]: "Homebrew: Reroll all damages"
+            [CriticalRules.HOMEBREW_REROLL.toString()]: "Homebrew: Reroll all damages",
+            [CriticalRules.HOMEBREW_D52CARDS.toString()]: "Homebrew: D52 hit cards"
         }
     },
 
@@ -1555,7 +1557,7 @@ function createHotkeysSetting(name, short) {
 
     const setting = E.li({
         id: "beyond20-option-hotkeys-bindings",
-        class: "list-group-item beyond20-option beyond20-option-bool" 
+        class: "list-group-item beyond20-option beyond20-option-bool"
     },
         E.label({ class: "list-content", for: name },
             E.h4({}, opt.title),
@@ -1917,7 +1919,7 @@ class DNDBDice {
         return this.calculateTotal();
     }
     calculateTotal() {
-        
+
         // Accumulate total based on non discarded rolls;
         this._total = this._rolls.reduce((acc, roll) => {
             return acc + (roll.discarded ? 0 : roll.roll);
@@ -2407,7 +2409,7 @@ class Beyond20RollRenderer {
             html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
         }
 
-        if (request.damages && request.damages.length > 0 && 
+        if (request.damages && request.damages.length > 0 &&
             request.rollAttack && !request.rollDamage) {
             html += '<button class="beyond20-button-roll-damages">Roll Damages</button>';
         }
@@ -2653,10 +2655,10 @@ class Beyond20RollRenderer {
                     damage_rolls.push(["Healing", "Twice the Necrotic damage", DAMAGE_FLAGS.HEALING]);
                 }
             }
-        
+
 
             await this._roller.resolveRolls(request.name, all_rolls)
-            
+
             //Moved after the new resolveRolls so it can access the roll results
             if (request.name.includes("Chaos Bolt")) {
                 for (let [i, dmg_roll] of damage_rolls.entries()) {
@@ -2713,7 +2715,7 @@ class Beyond20RollRenderer {
             }
         } else {
             // If no damages, still need to resolve to hit rolls
-            
+
             await this._roller.resolveRolls(request.name, all_rolls)
             if (to_hit.length > 0)
                 this.processToHitAdvantage(to_hit_advantage, to_hit)
@@ -2961,7 +2963,7 @@ class Roll20Displayer {
         }
         handleRenderedRoll(req);
     }
-    
+
     displayError(message) {
         alertify.error(message);
     }
@@ -3355,7 +3357,7 @@ function rollAttack(request, custom_roll_dice = "") {
         dmg_props["charname"] = request.character.name;
         dmg_props["rname"] = request.name;
     }
-    if (request.damages && request.damages.length > 0 && 
+    if (request.damages && request.damages.length > 0 &&
         request["to-hit"] !== undefined && !request.rollDamage) {
         template_type = "atk";
         dmg_props["charname"] = request.character.name;
@@ -3787,7 +3789,6 @@ async function handleOGLRenderedRoll(request) {
         message += template(request, "dmg", dmg_props) + "\n";
     }
     postChatMessage(message, request.character);
-
     if (rollDamages) {
         hookRollDamages(rollDamages, request);
     }
@@ -3852,6 +3853,7 @@ async function handleRenderedRoll(request) {
     }
 }
 
+
 function injectSettingsButton() {
     const icon = chrome.extension.getURL("images/icons/icon32.png");
     let img = document.getElementById("beyond20-settings");
@@ -3891,7 +3893,6 @@ function handleMessage(request, sender, sendResponse) {
             } else {
                 conditions = request.character.conditions.concat([`Exhausted (Level ${request.character.exhaustion})`]);
             }
-
             // We can't use window.is_gm because it's not available to the content script
             const is_gm = $("#textchat .message.system").text().includes("The player link for this campaign is");
             let em_command = `/emas "${character_name}" `;
@@ -3927,11 +3928,84 @@ function handleMessage(request, sender, sendResponse) {
         }
         handleRoll(request);
     } else if (request.action == "rendered-roll") {
+        checkAndRenderD52Cards(request);
         handleRenderedRoll(request);
     } else if (request.action === "update-combat") {
         sendCustomEvent("CombatTracker", [request.combat]);
     }
 }
+
+async function checkAndRenderD52Cards(request) {
+  if (settings["critical-homebrew"] == CriticalRules.HOMEBREW_D52CARDS ) {
+    if (request.attack_rolls.length !== 'undefined' && request.attack_rolls.length > 0 ) {
+      for (const attack_roll in request.attack_rolls) {
+        if (request.attack_rolls[attack_roll]["critical-failure"]) {
+          console.log("fail");
+          d52Cards("fail");
+          renderD52Card(card, request.character, request.request["damage-types"]);
+        }
+        if (request.attack_rolls[attack_roll]["critical-success"]) {
+          console.log("success");
+          d52Cards("success");
+          renderD52Card(card, request.character, request.request["damage-types"]);
+        }
+      }
+    }
+  }
+}
+
+function renderD52Card(card, character, damageTypes) {
+  console.log("renderD52Card:", card, character, damageTypes);
+  text = '&{template:default}{{name='+character+' got crit '+card.type+'}}';
+  cardN = '{{Card Number = '+card.cardN+'}}'
+  let magicDamages = ["Acid",
+                      "Cold",
+                      "Fire",
+                      "Force",
+                      "Lightning",
+                      "Necrotic",
+                      "Poison",
+                      "Psychic",
+                      "Radiant",
+                      "Thunder"]
+  text = text + cardN;
+  if (damageTypes.includes(" Bludgeoning") || damageTypes.includes("Bludgeoning")) {
+    text = text +'{{Bludgeoning='+card.result.Bludgeoning+'}}';
+  }
+  if (damageTypes.includes(" Piercing") || damageTypes.includes("Piercing")) {
+    text = text +'{{Piercing='+card.result.Piercing+'}}';
+  }
+  if (damageTypes.includes(" Slashing") || damageTypes.includes("Slashing")) {
+    text = text +'{{Slashing='+card.result.Slashing+'}}';
+  }
+  if (damageTypes.some((val) => magicDamages.indexOf(val) !== -1)) {
+    text = text +'{{Magic='+card.result.Magic+'}}';
+  }
+  postChatMessage(text, character);
+}
+
+function d52Cards(type) {
+  if (type == "fail"){
+    randomCard = Math.floor(Math.random() * Math.floor(d52CardsFailData.length));
+    card = {"type": "Fail",
+              "result": d52CardsFailData[randomCard],
+              "cardN": randomCard + 1}
+    return card ;
+  }
+  if (type == "success"){
+    randomCard = Math.floor(Math.random() * Math.floor(d52CardsSuccessData.length));
+    card = {"type": "Success",
+              "result": d52CardsSuccessData[randomCard],
+              "cardN": randomCard + 1}
+    return card ;
+  }
+
+}
+
+
+
+
+
 
 chrome.runtime.onMessage.addListener(handleMessage);
 updateSettings();
