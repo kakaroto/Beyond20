@@ -5123,6 +5123,48 @@ function rollHitDie(multiclass, index) {
     });
 }
 
+/**
+ * Split a custom damages line on commas, while ignoring commas inside parenthesis/brackets/curly braces
+ * to allow Roll20 macros to work
+ * 
+ * @param {String} damages   The custom damages line
+ */
+function split_custom_damages(damages) {
+    // Single damage
+    if (!damages.includes(",")) return [damages];
+    // No parenthesis/brackets/curly braces, so split on the comma
+    if (!["(", "[", "{"].some(del => damages.includes(del))) return damages.split(",");
+
+    // Complex situation, actually parse the string
+    const result = [];
+    const delimiters = [];
+    let current_damage = "";
+    for (let i = 0; i < damages.length; i++) {
+        if (damages[i] === "(") {
+            delimiters.push(")");
+        } else if (damages[i] === "[") {
+            delimiters.push("]");
+        } else if (damages[i] === "{") {
+            delimiters.push("}");
+        }
+        if (delimiters.length === 0 && damages[i] === ",") {
+            current_damage = current_damage.trim();
+            if (current_damage) {
+                result.push(current_damage);
+                current_damage = "";
+            }
+            continue;
+        }
+        current_damage += damages[i];
+        if (delimiters.length > 0 && damages[i] === delimiters[delimiters.length - 1]) {
+            delimiters.pop();
+        }
+    }
+    current_damage = current_damage.trim();
+    if (current_damage) result.push(current_damage);
+    return result;
+}
+
 function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, spell_group = null) {
     const prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
     const properties = propertyListToDict(prop_list);
@@ -5233,7 +5275,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
 
         const custom_damages = character.getSetting("custom-damage-dice", "");
         if (custom_damages.length > 0) {
-            for (let custom_damage of custom_damages.split(",")) {
+            for (let custom_damage of split_custom_damages(custom_damages)) {
                 if (custom_damage.includes(":")) {
                     const parts = custom_damage.split(":", 2);
                     damages.push(parts[1].trim());
