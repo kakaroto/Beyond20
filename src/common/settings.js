@@ -1257,22 +1257,26 @@ function configureHotKey(bindings, bindings_div, html, key) {
         </div>
     `);
     if (key) {
-        alert.append($(`<div>Current key is : <strong>${key}</strong></div>`));
+        const keyName = key.replace(/^Key|^Digit/, "");
+        alert.append($(`<div>Current key is : <strong>${keyName}</strong></div>`));
     }
     let newKey = null;
     const $window = $(window);
     const onKeydown = (event) => {
         $window.off('keydown', null, onKeydown);
-        if (key !== event.key && bindings[event.key] !== undefined) {
+        console.log(key, event)
+        if ((key !== event.code && key !== event.key) &&
+            (bindings[event.code] !== undefined || bindings[event.key] !== undefined)) {
             alertify.warning("Hotkey already in use");
             dialog.close();
             return;
         }
-        newKey = event.key;
+        newKey = event.code;
+        const newKeyName = newKey.replace(/^Key|^Digit/, "");
         const actions = $(`
             <div>
                 <div>
-                    Select the action to perform when <strong>${newKey}</strong> is pressed :
+                    Select the action to perform when <strong>${newKeyName}</strong> is pressed :
                 </div>
                 <select>
                     <option value="">None</option>
@@ -1328,9 +1332,10 @@ function addHotKeyToUI(bindings, bindings_div, key) {
     if (binding_name.startsWith("option-") && character_settings[binding_name.slice("option-".length)]) {
         binding_name = character_settings[binding_name.slice("option-".length)].title;
     }
+    const keyName = (key || "").replace(/^Key|^Digit/, "");
     const html = $(`
         <div style="border-bottom: 1px grey solid; display: flex; justify-content: space-between;">
-            <div class="hotkey-event" style="cursor: pointer; flex-shrink: 1; padding: 5px; font-weight: bold;">${key || ""}</div>
+            <div class="hotkey-event" style="cursor: pointer; flex-shrink: 1; padding: 5px; font-weight: bold;">${keyName}</div>
             <div class="hotkey-action" style="cursor: pointer; overflow: hidden; text-overflow: ellipsis; text-align: center; padding: 5px; flex-grow: 1;">${binding_name}</div>
             <i class="icon marka marka-set marka-icon-times delete-hotkey" style="width:15px;height:15px; margin: 5px; flex-shrink: 1;">
                 <i style="background-color:rgb(0, 0, 0)"></i>

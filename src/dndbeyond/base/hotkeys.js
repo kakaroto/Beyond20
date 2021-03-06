@@ -7,7 +7,7 @@ const key_modifiers = {
 const checkKeyModifiers = (event) => {
     if (event.originalEvent.repeat) return;
     const oldValue = key_modifiers.advantage << 0 | key_modifiers.disadvantage << 1 | key_modifiers.normal_roll << 2;
-    const modifier = (key_bindings || {})[event.key];
+    const modifier = (key_bindings || {})[event.code] || (key_bindings || {})[event.key];
     if (modifier)
         key_modifiers[modifier] = event.type === "keydown";
     const newValue = key_modifiers.advantage << 0 | key_modifiers.disadvantage << 1 | key_modifiers.normal_roll << 2;
