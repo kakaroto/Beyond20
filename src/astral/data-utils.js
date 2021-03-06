@@ -95,6 +95,56 @@ const getCharacter = async (name) => {
     return char ? char.id : undefined;
 }
 
+const getCharacterData = async (id) => await (await fetch(
+    `${location.origin}/api/game/${getRoom()}/character/${id}`, 
+    {
+        method: "GET", 
+        headers: await getHeaders()
+    }
+)).json();
+
+const updateCustomAttribute = async (characterData, attrbiuteName, value) => {
+    if (!characterData.customAttributes)  characterData.customAttributes = [];
+    let attr = characterData.customAttributes.find(attr => attr.name == attrbiuteName);
+    if (!attr) {
+        attr = {
+            name: attrbiuteName,
+            value: value.toString()
+        }
+        characterData.customAttributes.push(attr);
+        return;
+    }
+    attr.value = value.toString();
+}
+
+const updateResourceBar = async (characterData, barName, value, maxValue, color = null, actualValue = null, actualMaxValue = null, display = true) => {
+    let bar = characterData.resourceBars.find(attr => attr.label == barName);
+    if (!bar) {
+        bar = {
+            label: barName,
+            system: false,
+            color: color ? Number.parseInt(color, 16) : Math.floor(Math.random()*16777215)
+        }
+        characterData.resourceBars.push(bar);
+    }
+    const extraData = {};
+    if (actualValue != null) {
+        extraData.leftValue = actualValue;
+    }
+    if (actualMaxValue != null) {
+        extraData.rightValue = actualMaxValue;
+    }
+    if (color && !bar.color) {
+        extraData.color = color;
+    }
+    Object.assign(bar, {
+        leftEquation: value.toString(),
+        rightEquation: maxValue.toString(),
+        display,
+        ...extraData
+    })
+}
+
 const getReactData = () => __NEXT_DATA__;
 
 const getUser = () => getReactData().props.pageProps.user;
