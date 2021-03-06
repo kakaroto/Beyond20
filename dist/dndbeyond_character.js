@@ -5173,11 +5173,15 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     damage_type = "Force";
 
                 if (versatile_damage != "") {
-                    const versatile_choice = character.getSetting("versatile-choice", "both");
-                    if (versatile_choice == "one" || key_modifiers.versatile_one_handed) {
+                    let versatile_choice = character.getSetting("versatile-choice", "both");
+                    if (key_modifiers.versatile_one_handed)
+                        versatile_choice = "one"
+                    if (key_modifiers.versatile_two_handed)
+                        versatile_choice = "two";
+                    if (versatile_choice == "one") {
                         damages.push(damage);
                         damage_types.push(damage_type);
-                    } else if (versatile_choice == "two" || key_modifiers.versatile_two_handed) {
+                    } else if (versatile_choice == "two") {
                         damages.push(versatile_damage);
                         damage_types.push(damage_type);
                     } else {
