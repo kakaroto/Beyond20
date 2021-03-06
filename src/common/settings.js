@@ -617,6 +617,12 @@ const character_settings = {
         "description": "You genie patron lends their wrath to your attacks.",
         "type": "bool",
         "default": true
+    },
+    "halfling-lucky": {
+        "title": "Halfling Lucky",
+        "description": "The luck of your people guides your steps",
+        "type": "bool",
+        "default": true
     }
 }
 
