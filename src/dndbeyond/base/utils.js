@@ -322,6 +322,10 @@ function getRollTypeButtonClass(character) {
         advantage = RollType.DISADVANTAGE;
     else if (key_modifiers.normal_roll)
         advantage = RollType.NORMAL;
+    else if (key_modifiers.super_advantage)
+        advantage = RollType.SUPER_ADVANTAGE;
+    else if (key_modifiers.super_disadvantage)
+        advantage = RollType.SUPER_DISADVANTAGE;
 
     if (advantage == RollType.DOUBLE)
         return "beyond20-roll-type-double";
