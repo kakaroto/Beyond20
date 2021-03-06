@@ -405,7 +405,7 @@ class Beyond20RollRenderer {
         const request = {
             action: "roll",
             character: character.getDict(),
-            type: "custom",
+            type: "digital-dice",
             roll: digitalRoll.rolls[0].formula,
             advantage: RollType.NORMAL,
             whisper: whisper,
