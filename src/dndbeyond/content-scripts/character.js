@@ -1833,7 +1833,7 @@ function deactivateQuickRolls() {
     if (abilities.length === 0)
         abilities = $(".ddbc-ability-summary .ddbc-ability-summary__secondary .ddbc-signed-number, .ddbc-ability-summary .ddbc-ability-summary__primary .ddbc-signed-number");
     const saving_throws = $(".ct-saving-throws-summary__ability .ct-saving-throws-summary__ability-modifier,.ddbc-saving-throws-summary__ability .ddbc-saving-throws-summary__ability-modifier");
-    const skills = $(".ct-skills .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__col--modifier");
+    const skills = $(".ct-skills .ct-skills__list .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__list .ddbc-skills__col--modifier");
     const actions = $(".ct-combat-attack .ct-combat-attack__icon,.ddbc-combat-attack .ddbc-combat-attack__icon");
     const actions_to_hit = $(".ddbc-combat-attack .ddbc-combat-attack__tohit .integrated-dice__container");
     const actions_damage = $(".ddbc-combat-attack .ddbc-combat-attack__damage .integrated-dice__container:first-of-type");
