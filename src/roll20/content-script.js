@@ -50,11 +50,11 @@ function genRoll(dice, modifiers = {}) {
     dice = dice.replace(/(^|\s)+([^\s]+)min([0-9]+)([^\s]*)/g, "$1{$2$4, 0d0 + $3}kh1");
     let roll = "[[" + dice;
     for (let m in modifiers) {
-        let mod = modifiers[m];
+        let mod = modifiers[m].trim();
         if (mod.length > 0) {
             if (m === "CUSTOM")
                 mod = mod.replace(/([0-9]*d[0-9]+)/, "$1cs0cf0");
-            if (mod[0] == '+' || mod[0] == '-' || mod[0] == '?' || mod[0] == '&') {
+            if (["+", "-", "?", "&"].includes(mod[0])) {
                 roll += " " + mod;
             } else {
                 roll += "+" + mod;
@@ -202,7 +202,7 @@ function template(request, name, properties) {
 }
 
 function format_plus_mod(custom_roll_dice) {
-    const prefix = custom_roll_dice && !["+", "-", "?", ""].includes(custom_roll_dice.trim()[0]) ? " + " : "";
+    const prefix = custom_roll_dice && !["+", "-", "?", "&", ""].includes(custom_roll_dice.trim()[0]) ? " + " : "";
     return prefix + (custom_roll_dice || "").replace(/([0-9]*d[0-9]+)/, "$1cs0cf0");;
 }
 
