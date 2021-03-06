@@ -2070,7 +2070,7 @@ function documentModified(mutations, observer) {
 
 
     const customRoll = DigitalDiceManager.updateNotifications();
-    if (customRoll) {
+    if (customRoll && settings['use-digital-dice']) {
         dndbeyondDiceRoller.sendCustomDigitalDice(character, customRoll);
     }
     
