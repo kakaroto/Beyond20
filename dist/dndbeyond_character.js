@@ -779,6 +779,12 @@ const character_settings = {
         "description": "You charge into battle, lending weight to your blow!",
         "type": "bool",
         "default": false
+    },
+    "genies-vessel": {
+        "title": "Genie's Vessel: Genie's Wrath - Extra Damage",
+        "description": "You genie patron lends their wrath to your attacks.",
+        "type": "bool",
+        "default": true
     }
 }
 
@@ -5413,7 +5419,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
         }
 
         // Warlock: Genie Patron - Genie's Wrath
-        if (character.hasClassFeature("Genie’s Vessel")) {
+        if (character.hasClassFeature("Genie’s Vessel") && character.getSetting("genies-vessel", false)) {
             damages.push(character._proficiency);
             damage_types.push("Genie's Wrath");
         }
@@ -5739,7 +5745,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         }
 
         // Warlock: Genie Patron - Genie's Wrath
-        if (character.hasClassFeature("Genie’s Vessel")) {
+        if (character.hasClassFeature("Genie’s Vessel") && character.getSetting("genies-vessel", false)) {
             damages.push(character._proficiency);
             damage_types.push("Genie's Wrath");
         }
@@ -5981,7 +5987,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         }
 
         // Warlock: Genie Patron - Genie's Wrath
-        if (character.hasClassFeature("Genie’s Vessel") && to_hit != null) {
+        if (character.hasClassFeature("Genie’s Vessel") && character.getSetting("genies-vessel", false) && to_hit != null) {
             damages.push(character._proficiency);
             damage_types.push("Genie's Wrath");
         }
