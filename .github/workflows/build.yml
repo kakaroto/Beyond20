@@ -1,0 +1,48 @@
+on:
+  push:
+    branches:
+      - master
+
+name: Build Beyond20 extension
+
+jobs:
+  build:
+    name: Upload Release Asset
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Install build dependencies
+        run: npm install
+      - name: Build Beyond20
+        run: npm run build
+
+      - name: Zip Chrome files
+        uses: papeloto/action-zip@v1
+        with:
+          files: build/chrome/
+          dest: chrome.zip
+        
+      - name: Zip Firefox files
+        uses: papeloto/action-zip@v1
+        with:
+          files: build/firefox/
+          dest: firefox.zip
+
+      # Update the 'latest' release
+      - name: Create Release
+        id: create_latest_release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          name: Latest
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: './chrome.zip,./firefox.zip'
+          tag: latest
