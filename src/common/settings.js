@@ -1221,9 +1221,11 @@ function getDiscordChannel(settings, character) {
 }
 
 let key_bindings = {
-    Shift: "advantage",
-    Control: "disadvantage",
-    Alt: "normal_roll"
+    LeftShift: "advantage",
+    LeftControl: "disadvantage",
+    RightShift: "super_advantage",
+    RightControl: "super_disadvantage",
+    LeftAlt: "normal_roll"
 };
 
 const BINDING_NAMES = {
