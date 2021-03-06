@@ -54,7 +54,7 @@ async function rollSkillCheck(paneClass) {
             // In case of magical bonus
             if (modifier != "--" && modifier != "+0")
                 mod += parseInt(modifier);
-            modifier = mod >= 0 ? `+${mod}` : `-${mod}`;
+            modifier = mod >= 0 ? `+${mod}` : `${mod}`;
         }
     }
     //console.log("Skill " + skill_name + "(" + ability + ") : " + modifier);
@@ -130,11 +130,11 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
             ["STR","DEX", "CON"].includes(ability)) {
             const remarkable_athlete_mod = Math.ceil(character._proficiency / 2);
             modifier = parseInt(modifier) + remarkable_athlete_mod;
-            modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+            modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
         } else if (character.hasClassFeature("Jack of All Trades") && character.getSetting("bard-joat", false)) {
             const JoaT = Math.floor(character._proficiency / 2);
             modifier = parseInt(modifier) + JoaT;
-            modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+            modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
         }
     }
 
@@ -161,14 +161,14 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
             const intelligence = character.getAbility("INT") || {mod: 0};
             const mod = Math.max((parseInt(intelligence.mod) || 0), 1);
             modifier = parseInt(modifier) + mod;
-            modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+            modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
             roll_properties["modifier"] = modifier;
         }
     }
     // Fey Wanderer Ranger - Otherworldly Glamour
     if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
         modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
-        modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+        modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
         roll_properties["modifier"] = modifier;
     }
     // Sorcerer: Clockwork Soul - Trance of Order
