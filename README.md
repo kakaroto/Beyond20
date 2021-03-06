@@ -37,7 +37,7 @@ You can then build the files using the command `npm run build`
 All you need is to load the extension from the source :
 
 0. If you already have Beyond20 installed from the Chrome or Firefox stores, disable it.
-1. Download the extension from [github](https://github.com/kakaroto/Beyond20/archive/master.zip)
+1. Download the extension for either [Chrome]https://github.com/kakaroto/Beyond20/releases/download/latest/chrome.zip) or [Firefox](https://github.com/kakaroto/Beyond20/releases/download/latest/firefox.zip)
 2. Extract the zip file in a directory of your choice
 
 ## Chrome
@@ -49,7 +49,6 @@ All you need is to load the extension from the source :
 
 ## Firefox
 
-3. Rename the file `manifest_ff.json` into `manifest.json` from the extension's directory
 4. Open "[about:debugging](about:debugging)" in Firefox
 5. Click "Load Temporary Add-on"
 6. Select the `manifest.json` file from the extension's directory
