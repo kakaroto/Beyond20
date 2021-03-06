@@ -194,7 +194,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 if (highest_dice != 0) {
                     let brutal_dmg = `${brutal}d${highest_dice}`
                     // Apply great weapon fighting to brutal damage dice
-                    if (character.hasClassFeature("Fighting Style: Great Weapon Fighting") &&
+                    if ((character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&
                         properties["Attack Type"] == "Melee" &&
                         (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
                         brutal_dmg += "ro<=2"
