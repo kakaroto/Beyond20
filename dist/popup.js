@@ -826,6 +826,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "genies-vessel": {
+        "title": "Genie's Vessel: Genie's Wrath - Extra Damage",
+        "description": "You genie patron lends their wrath to your attacks.",
+        "type": "bool",
+        "default": true
+    },
     "halfling-lucky": {
         "title": "Halfling Lucky",
         "description": "The luck of your people guides your steps",
@@ -1908,6 +1914,10 @@ function populateCharacter(response) {
         }
         if (response["feats"].includes("Charger")) {
             e = createHTMLOption("charger-feat", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Genie’s Vessel")) {
+            e = createHTMLOption("genies-vessel", false, character_settings);
             options.append(e);
         }
 

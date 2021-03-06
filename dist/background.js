@@ -826,6 +826,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "genies-vessel": {
+        "title": "Genie's Vessel: Genie's Wrath - Extra Damage",
+        "description": "You genie patron lends their wrath to your attacks.",
+        "type": "bool",
+        "default": true
+    },
     "halfling-lucky": {
         "title": "Halfling Lucky",
         "description": "The luck of your people guides your steps",
