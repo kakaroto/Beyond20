@@ -399,9 +399,10 @@ function setTitle() {
     const chatControls = $("#chat-controls");
     if (chatControls.length) {
         const title = document.getElementsByTagName("title")[0];
+        const worldTitle = game.world.title || game.world.data?.title || "";
         // Make sure the mutation gets triggerred if (we reload the extension;
         title.textContent = "Foundry Virtual Tabletop";
-        title.textContent = game.world.title + " • Foundry Virtual Tabletop";
+        title.textContent = worldTitle + " • Foundry Virtual Tabletop";
     } else {
         // Wait for the world and UI to be loaded;
         Hooks.once("renderChatLog", setTitle);
