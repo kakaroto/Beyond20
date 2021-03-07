@@ -47,6 +47,16 @@ class Beyond20 {
             actorData.attributes.prof = parseInt(request.character.proficiency)
         }
 
+        // Override spell slots so there's always one of each level 
+        for (let i = 1; i <= 9; i++) {
+            actorData.spells[`spell${i}`].override = 1;
+            actorData.spells[`spell${i}`].value = 1;
+            actorData.spells[`spell${i}`].max = 1;
+        }
+        // Create a spell level of `true` because of https://gitlab.com/foundrynet/dnd5e/-/issues/1025
+        actorData.spells[true] = {value: 1, max: 1, override: 1};
+
+        // Cache SRD classes compendium
         if (!this._srdClasses) {
             const compendium = game.packs.get("dnd5e.classes")
             this._srdClasses = compendium ? await compendium.getIndex() : []
@@ -79,6 +89,28 @@ class Beyond20 {
     
         return {...baseAttributes, img: request.character.avatar, data: actorData, items: [...classes]}
     }
+    static findToken(request) {
+        let token = null;
+        if (request.character.name) {
+            const name = request.character.name.toLowerCase().trim();
+            token = canvas.tokens.placeables.find((t) => t.owner && t.name.toLowerCase().trim() == name);
+        }
+        return token || canvas.tokens.controlled[0];
+    }
+    static createActor(request, data) {
+        const token = this.findToken(request);
+        const actor = new CONFIG.Actor.entityClass(data, {token});
+        // Need to override the update method because a spell will try to consume a slot automatically and will fail because the actor is
+        // temporary
+        actor.update = function (d) {
+            mergeObject(this._data, d, {diff: true});
+
+            // Trigger follow-up actions and return
+            this._onUpdate(d, {diff: true}, game.user.id);
+        }
+        return actor;
+    }
+
     static createItemData(request) {
         let itemData = null;
         let type = "feat";
@@ -101,7 +133,6 @@ class Beyond20 {
             case 'action':
                 type = 'feat';
                 itemData = this._getDefaultTemplate('Item', type);
-                // TODO
                 break;
             case 'spell-card': 
                 type = 'spell';
@@ -199,16 +230,21 @@ class Beyond20 {
             itemData.target.units = target.includes("mile") ? "mi" : target.includes("ft") ? "ft" : "";
             itemData.target.type = request['aoe-shape'].toLowerCase();
         }
+        if (request["save-dc"] !== undefined) {
+            const ability = (request["save-ability"] || "").toLowerCase();
+            itemData.actionType = "save";
+            itemData.save = {
+                ability: ability.slice(0, 3),
+                scaling: "flat",
+                dc: request["save-dc"],
+                value: request["save-dc"]
+            };
+        }
+
+        //const [attack_rolls, damage_rolls] = await this.buildAttackRolls(request, custom_roll_dice);
+
 
         request.description = request.description.replace("At Higher Levels.", "<strong>At Higher Levels.</strong>");
-    }
-    static findToken(request) {
-        let token = null;
-        if (request.character.name) {
-            const name = request.character.name.toLowerCase().trim();
-            token = canvas.tokens.placeables.find((t) => t.owner && t.name.toLowerCase().trim() == name);
-        }
-        return token || canvas.tokens.controlled[0];
     }
     static getRollOptions(request) {
         const d20 = request.d20 || "1d20";
@@ -345,7 +381,7 @@ class Beyond20 {
         actorData.data.skills[skill].mod = calculated;
         actorData.data.bonuses.abilities.skill = bonus;
 
-        const actor = new CONFIG.Actor.entityClass(actorData);
+        const actor = this.createActor(request, actorData);
         
         // Compose roll parts and data
         const parts = ["@mod"];
@@ -381,7 +417,7 @@ class Beyond20 {
         actorData.data.abilities[abl].proficient = proficient;
         actorData.data.abilities[abl].save = calculated;
         actorData.data.bonuses.abilities.save = bonus;
-        const actor = new CONFIG.Actor.entityClass(actorData);
+        const actor = this.createActor(request, actorData);
         
         // Compose roll parts and data
         const parts = ["@mod"];
@@ -413,7 +449,7 @@ class Beyond20 {
         const bonus = mod - actorData.data.abilities[abl].mod;
 
         actorData.data.bonuses.abilities.check = bonus;
-        const actor = new CONFIG.Actor.entityClass(actorData);
+        const actor = this.createActor(request, actorData)
         
         // Compose roll parts and data
         const parts = ["@mod"];
@@ -438,11 +474,10 @@ class Beyond20 {
 
     static async rollItems(request) {
         const actorData = await this.createActorData(request);
-        const token = this.findToken(request);
 
         const item = this.createItemData(request);
         actorData.items.push(item);
-        const actor = new CONFIG.Actor.entityClass(actorData, {token});
+        const actor = this.createActor(request, actorData);
         const actorItem = actor.items.entries.find(i => i.type === item.type && i.name === item.name);
 
         const template = game.dnd5e.canvas.AbilityTemplate.fromItem(actorItem);
