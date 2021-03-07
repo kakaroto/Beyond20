@@ -511,6 +511,10 @@ class Beyond20 {
         
         const roll = ['attack', 'spell-attack'].includes(request.type);
         actorItem[roll ? 'roll' : 'displayCard']({configureDialog: false, rollMode, createMessage: true});
+        /*actorItem.sheet.render(true);
+        console.log("*******************************")
+        console.log(actor.data);
+        console.log(actorItem.data);*/
     }
 
     static handleBeyond20Request(action, request) {
