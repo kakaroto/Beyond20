@@ -125,8 +125,13 @@ function rollAttack(request, custom_roll_dice = "") {
         rolls.push(["Save DC", `DC ${request["save-dc"]} ${request["save-ability"]}`]);
     }
 
-    if (request.range !== undefined)
+    if (request.range !== undefined) {
         rolls.push(["Range", request.range]);
+        if (request.aoe)
+            roll_info.push(["Area of Effect", request.aoe]);
+        if (request["aoe-shape"])
+            roll_info.push(["AoE Shape", request["aoe-shape"]]);
+    }
         
     if (request.damages !== undefined) {
         const damages = request.damages;
@@ -147,10 +152,12 @@ function rollSpellCard(request) {
     let rolls = [
         ["Level", request["cast-at"] !== undefined ? `${request["level-school"]} (Cast at ${request["cast-at"]} Level)` :  request["level-school"]],
         ["Components", request.components],
-        ["Range", request.range],
         ["Casting Time", request["casting-time"]],
         ["Duration", request.duration],
+        ["Range", request.range],
     ];
+    if (request.aoe) rolls.push(["Area of Effect", request.aoe]);
+    if (request["aoe-shape"]) rolls.push(["AoE Shape", request["aoe-shape"]]);
 
     if (request.ritual) rolls.push(["Ritual", "Yes"]);
     if (request.concentration) rolls.push(["Concentration", "Yes"])
@@ -178,11 +185,13 @@ function rollSpellAttack(request, custom_roll_dice) {
     let rolls = [
         ["Level", request["cast-at"] !== undefined ? `${request["level-school"]} (Cast at ${request["cast-at"]} Level)` :  request["level-school"]],
         ["Components", request.components],
-        ["Range", request.range],
         ["Casting Time", request["casting-time"]],
         ["Duration", request.duration],
+        ["Range", request.range],
     ];
 
+    if (request.aoe) rolls.push(["Area of Effect", request.aoe]);
+    if (request["aoe-shape"]) rolls.push(["AoE Shape", request["aoe-shape"]]);
     if (request.ritual) rolls.push(["Ritual", "Yes"]);
     if (request.concentration) rolls.push(["Concentration", "Yes"])
 
