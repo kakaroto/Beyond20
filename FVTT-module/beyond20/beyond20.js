@@ -143,12 +143,11 @@ class Beyond20 {
                 type = 'spell';
                 itemData = this._getDefaultTemplate('Item', type);
                 this._fillSpellData(request, itemData);
-                // TODO
                 break;
             case 'attack':
                 type = 'weapon';
                 itemData = this._getDefaultTemplate('Item', type);
-                // TODO
+                this._buildAttackData(request, itemData);
                 break;
         }
         if (!itemData) {
@@ -230,6 +229,13 @@ class Beyond20 {
             itemData.target.units = target.includes("mile") ? "mi" : target.includes("ft") ? "ft" : "";
             itemData.target.type = request['aoe-shape'].toLowerCase();
         }
+
+        this._buildAttackData(request, itemData);
+
+        request.description = request.description.replace("At Higher Levels.", "<strong>At Higher Levels.</strong>");
+    }
+
+    static _buildAttackData(request, itemData) {
         if (request["save-dc"] !== undefined) {
             const ability = (request["save-ability"] || "").toLowerCase();
             itemData.actionType = "save";
@@ -240,11 +246,30 @@ class Beyond20 {
                 value: request["save-dc"]
             };
         }
-
-        //const [attack_rolls, damage_rolls] = await this.buildAttackRolls(request, custom_roll_dice);
-
-
-        request.description = request.description.replace("At Higher Levels.", "<strong>At Higher Levels.</strong>");
+        if (request['to-hit'] !== undefined) {
+            if (request['attack-source'] === "spell") {
+                itemData.actionType = request['attack-type'] === "Melee" ? "msak" : "rsak";
+            } else {
+                itemData.actionType = request['attack-type'] === "Melee" ? "mwak" : "rwak";
+            }
+            // TODO: set the correct ability and magical bonus to match the to-hit value
+        }
+        if (request.damages) {
+            const damages = [];
+            for (let i = 0; i < request.damages.length; i++) {
+                let damage = request.damages[i];
+                let type = (request['damage-types'][i] || "").trim();;
+                if (CONFIG.DND5E.damageTypes[type.toLowerCase()]) {
+                    type = type.toLowerCase();
+                } else {
+                    // This fails because Foundry has a lot of trouble handling flavor text for a roll
+                    //damage = `{${damage}}[${type}]`;
+                    type = "";
+                }
+                damages.push([damage, type]);
+            }
+            itemData.damage.parts = damages;
+        }
     }
     static getRollOptions(request) {
         const d20 = request.d20 || "1d20";
