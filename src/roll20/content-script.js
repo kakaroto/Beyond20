@@ -354,8 +354,9 @@ function rollAttack(request, custom_roll_dice = "") {
 
         dmg_props = damagesToRollProperties(damages, damage_types, crit_damages, crit_damage_types);
     }
-    if (request.range !== undefined)
-        properties["range"] = request.range;
+    if (request.range !== undefined) {
+        properties["range"] = buildRangeString(request);
+    }
 
     if (request["save-dc"] !== undefined) {
         dmg_props["save"] = 1;
@@ -393,7 +394,7 @@ function rollSpellCard(request) {
         "charname": request.character.name,
         "name": request.name,
         "castingtime": request["casting-time"],
-        "range": request.range,
+        "range": buildRangeString(request),
         "duration": request.duration
     }
 
@@ -433,6 +434,15 @@ function rollSpellCard(request) {
     }
 
     return template(request, "spell", properties);
+}
+
+function buildRangeString(request) {
+    let range = request.range;
+    if (request.aoe) {
+        const shape = request['aoe-shape'] || "AoE";
+        range += ` (${shape} ${request.aoe})`;
+    }
+    return range;
 }
 
 function rollSpellAttack(request, custom_roll_dice) {
@@ -510,8 +520,9 @@ function rollSpellAttack(request, custom_roll_dice) {
         }
         dmg_props = damagesToRollProperties(damages, damage_types, critical_damages, critical_damage_types);
     }
-    if (request.range !== undefined)
-        properties["range"] = request.range;
+    if (request.range !== undefined) {
+        properties["range"] = buildRangeString(request);
+    }
     if (request["save-dc"] != undefined) {
         dmg_props["save"] = 1;
         dmg_props["saveattr"] = request["save-ability"];
@@ -712,7 +723,7 @@ async function handleOGLRenderedRoll(request) {
     }
 
     if (originalRequest.range !== undefined) {
-        atk_props["range"] = originalRequest.range;
+        atk_props["range"] = buildRangeString(originalRequest);
         atkType = "atkdmg";
     }
 
