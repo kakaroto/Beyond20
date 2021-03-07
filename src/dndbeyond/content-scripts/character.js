@@ -978,7 +978,14 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
     } else {
         concentration = false;
     }
-    let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;;
+    
+    // Find the icon with the AoE effect (<i class="i-aoe-sphere">) and convert it to a word
+    const range_shape = $(".ct-spell-pane .ddbc-property-list__property .ct-spell-detail__range-shape i");
+    const aoe_class = (range_shape.attr("class") || "").split(" ").find(c => c.startsWith("i-aoe-"));
+    // Remove class prefix and capitalize first letter
+    const aoe_shape = aoe_class ? aoe_class.replace(/^i-aoe-(.)/, (_, g) => g.toUpperCase()) : undefined;
+
+    let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
 
     if (to_hit === null)
         to_hit = findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
@@ -1209,6 +1216,14 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             force_to_hit_only,
             force_damages_only);
 
+        // If it's an AoE, then split the range property appropriately
+        if (aoe_shape) {
+            const [range, aoe] = properties["Range/Area"].split("/");
+            roll_properties['range'] = range;
+            roll_properties['aoe'] = aoe;
+            roll_properties['aoe-shape'] = aoe_shape;
+        }
+
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
         const custom_critical_limit = parseInt(character.getSetting("custom-critical-limit", ""))
@@ -1255,6 +1270,13 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             "components": (properties["Components"] || ""),
             "ritual": ritual,
             "description": description
+        }
+        // If it's an AoE, then split the range property appropriately
+        if (aoe_shape) {
+            const [range, aoe] = properties["Range/Area"].split("/");
+            roll_properties['range'] = range;
+            roll_properties['aoe'] = aoe;
+            roll_properties['aoe-shape'] = aoe_shape;
         }
         if (castas != "" && !level.startsWith(castas))
             roll_properties["cast-at"] = castas;
