@@ -14,9 +14,16 @@ class Beyond20 {
         const type = request.character.type == "Character" ? "character" : "npc";
         // get default actor template
         const actorData = this._getDefaultTemplate('Actor', type);
-        
+        const baseAttributes = {
+            name: request.character.name || request.name,
+            type,
+            flags: {},
+            permission: {
+                default: CONST.ENTITY_PERMISSIONS.OWNER
+            }
+        };
         if (!["Character", "Monster", "Creature"].includes(request.character.type)) {
-            return {name: request.character.name || request.name, type, flags: {}, img: "icons/svg/mystery-man.svg", data: actorData, items: []}
+            return {...baseAttributes, img: "icons/svg/mystery-man.svg", data: actorData, items: []}
         }
         for (let ability of request.character.abilities) {
             const [name, abbr, score, mod] = ability;
@@ -70,7 +77,7 @@ class Beyond20 {
         }
         
     
-        return {name: request.character.name, type, flags: {}, img: request.character.avatar, data: actorData, items: [...classes]}
+        return {...baseAttributes, img: request.character.avatar, data: actorData, items: [...classes]}
     }
     static createItemData(request) {
         let itemData = null;
@@ -94,6 +101,7 @@ class Beyond20 {
             case 'action':
                 type = 'feat';
                 itemData = this._getDefaultTemplate('Item', type);
+                // TODO
                 break;
             case 'spell-card': 
                 type = 'spell';
@@ -104,10 +112,12 @@ class Beyond20 {
                 type = 'spell';
                 itemData = this._getDefaultTemplate('Item', type);
                 this._fillSpellData(request, itemData);
+                // TODO
                 break;
             case 'attack':
                 type = 'weapon';
                 itemData = this._getDefaultTemplate('Item', type);
+                // TODO
                 break;
         }
         if (!itemData) {
@@ -164,13 +174,8 @@ class Beyond20 {
         itemData.duration.value = parseInt(request.duration) || "";
         itemData.duration.units = request.duration.slice(itemData.duration.value.toString().length).trim().toLowerCase();
         if (itemData.duration.units === "instantaneous") itemData.duration.units = "inst";
-        const rangeMatch = request.range.match(/(?:^([^\/]+)\/(.+)$)|(?:(.*?) \((.*?)\))/)
-        let range = request.range;
-        let target = "";
-        if (rangeMatch) {
-            range = rangeMatch[1] || rangeMatch[3];
-            target = rangeMatch[2] || rangeMatch[4];
-        }
+        const range = request.range;
+        const target = request.aoe;
         switch (range) {
             case "Touch":
                 itemData.range.units = "touch";
@@ -189,31 +194,21 @@ class Beyond20 {
                 itemData.range.units = range.includes("mile") ? "mi" : range.includes("ft") ? "ft" : "";
                 break;
         }
-        // TODO: Need aoe size from Beyond20 which isn't yet exported
         if (target) {
             itemData.target.value = parseInt(target) || 0;
             itemData.target.units = target.includes("mile") ? "mi" : target.includes("ft") ? "ft" : "";
-            if (request.description.match(/\ssphere\s/i)) {
-                itemData.target.type = "sphere"
-            } else if (request.description.match(/\scone\s/i)) {
-                itemData.target.type = "cone"
-            } else if (request.description.match(/\scube\s/i)) {
-                itemData.target.type = "cube"
-            } else if (request.description.match(/\scylinder\s/i)) {
-                itemData.target.type = "cylinder"
-            } else if (request.description.match(/\sline\s/i)) {
-                itemData.target.type = "line"
-            } else if (request.description.match(/\square\s/i)) {
-                itemData.target.type = "square"
-            }
+            itemData.target.type = request['aoe-shape'].toLowerCase();
         }
 
         request.description = request.description.replace("At Higher Levels.", "<strong>At Higher Levels.</strong>");
     }
     static findToken(request) {
-        if (!request.character.name) return null;
-        const name = request.character.name.toLowerCase().trim();
-        return canvas.tokens.placeables.find((t) => t.owner && t.name.toLowerCase().trim() == name);
+        let token = null;
+        if (request.character.name) {
+            const name = request.character.name.toLowerCase().trim();
+            token = canvas.tokens.placeables.find((t) => t.owner && t.name.toLowerCase().trim() == name);
+        }
+        return token || canvas.tokens.controlled[0];
     }
     static getRollOptions(request) {
         const d20 = request.d20 || "1d20";
@@ -453,7 +448,9 @@ class Beyond20 {
         const template = game.dnd5e.canvas.AbilityTemplate.fromItem(actorItem);
         if ( template ) template.drawPreview();
         const rollMode = request.whisper === 0 ? "roll" : "gmroll";
-        actorItem.displayCard({rollMode, createMessage: true});
+        
+        const roll = ['attack', 'spell-attack'].includes(request.type);
+        actorItem[roll ? 'roll' : 'displayCard']({configureDialog: false, rollMode, createMessage: true});
     }
 
     static handleBeyond20Request(action, request) {
