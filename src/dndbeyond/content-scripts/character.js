@@ -992,7 +992,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
     if (to_hit === null)
         to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit");
 
-    if (!force_display && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || temp_hp_modifiers.length > 0 || to_hit !== null)) {
+    if (!force_display && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || temp_hp_modifiers.length > 0 || to_hit !== null || properties["Attack/Save"] !== undefined)) {
         const damages = [];
         const damage_types = [];
         for (let modifier of damage_modifiers.toArray()) {
@@ -1614,7 +1614,7 @@ function injectRollButton(paneClass) {
         if (to_hit === null)
             to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit");
 
-        if (damages.length > 0 || healings.length > 0 || to_hit !== null) {
+        if (damages.length > 0 || healings.length > 0 || to_hit !== null || properties["Attack/Save"] !== undefined) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { text: "Cast on VTT", small: true });
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
         } else {
