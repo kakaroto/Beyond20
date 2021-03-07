@@ -670,10 +670,14 @@ class Beyond20RollRenderer {
     buildSpellCard(request) {
         const data = {
             "Casting Time": request["casting-time"],
-            "Range": request.range,
             "Duration": request.duration,
-            "Components": request.components
+            "Components": request.components,
+            "Range": request.range
         }
+        if (request["aoe"] !== undefined)
+            data["Area of Effect"] = request["aoe"];
+        if (request["aoe-shape"] !== undefined)
+            data["AoE Shape"] = request["aoe-shape"];
 
         let source = request["level-school"];
         if (request["cast-at"] !== undefined)
