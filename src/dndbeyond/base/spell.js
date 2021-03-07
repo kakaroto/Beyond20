@@ -29,7 +29,7 @@ class Spell {
 
         this.spell_name = body.find(title_selector).text().trim();
         this.casting_time = get_statblock(casting_time_label);
-        this.range = get_statblock(range_area_label);
+        this.range = get_statblock(range_area_label)
         this.components = get_statblock("components");
         this.duration = get_statblock("duration");
         this.description = body.find(description_selector).text().trim();
@@ -53,18 +53,20 @@ class Spell {
             this.description = this.description.slice(0, -1 * materials.length).trim();
             this.components = this.components.slice(0, -2) + materials.slice(4);
         }
-        const aoe = body.find(statblock_selector + "-item-range-area .aoe-size").text().trim();
+        const aoe = body.find(`${statblock_selector}-item-${range_area_label} .aoe-size`).text().trim();
         // If there's an AoE, process the second portion of the Range/Area to separate the two
         if (aoe != "") {
             this.range = this.range.slice(0, -1 * aoe.length).trim();
             // Remove parenthesis around the aoe range, and a possible '*' at the end 
             this.aoe = aoe.trim().replace(/^\(\s*|\s*\*?\)$/g, "");
             // Find the icon with the AoE effect (<i class="i-aoe-sphere">) and convert it to a word
-            const i = body.find(statblock_selector + "-item-range-area .aoe-size i");
+            const i = body.find(`${statblock_selector}-item-${range_area_label} .aoe-size i`);
             const aoeClass = (i.attr("class") || "").split(" ").find(c => c.startsWith("i-aoe-"));
             // Remove class prefix and capitalize first letter
             this.aoe_shape = aoeClass ? aoeClass.replace(/^i-aoe-(.)/, (_, g) => g.toUpperCase()) : undefined;
         }
+        // In case of a range with an extra span, remove all the spaces and indents/newlines (metor swarm)
+        this.range = this.range.replace(/\s+/g, " ");
     }
 
     display() {
