@@ -492,6 +492,12 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
+    "paladin-invincible-conqueror": {
+        "title": "Paladin: Oath of Conquest: Invincible Conqueror",
+        "description": "You can harness extraordinary martial prowess for 1 minute.",
+        "type": "bool",
+        "default": false
+    },
     "paladin-sacred-weapon": {
         "title": "Paladin: Oath of Devotion: Sacred Weapon",
         "description": "Your charisma and deity guide your attacks",
@@ -501,12 +507,6 @@ const character_settings = {
     "paladin-legendary-strike": {
         "title": "Paladin: Oath of Heroism: Legendary Strike",
         "description": "Channel Divinity and score critical hits on rolls of 19 and 20",
-        "type": "bool",
-        "default": false
-    },
-    "paladin-invincible-conqueror": {
-        "title": "Paladin: Oath of Conquest: Invincible Conqueror",
-        "description": "You can harness extraordinary martial prowess for 1 minute.",
         "type": "bool",
         "default": false
     },
@@ -553,7 +553,7 @@ const character_settings = {
         "default": true
     },
     "rogue-assassinate": {
-        "title": "Rogue: Assassin: Assassinate surprise attack (Apply to next roll only)",
+        "title": "Rogue: Assassin: Assassinate Surprise Attack (Apply to next roll only)",
         "description": "Roll with advantage and roll critical damage dice",
         "type": "bool",
         "default": false
@@ -564,15 +564,21 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
-    "warlock-hexblade-curse": {
-        "title": "Warlock: The Hexblade: Hexblade's Curse",
-        "description": "Apply the Hexblade's Curse extra damage on attack rolls and score critical hits on rolls of 19 and 20",
-        "type": "bool",
-        "default": false
-    },
     "eldritch-invocation-lifedrinker": {
         "title": "Warlock: Eldritch Invocation: Lifedrinker",
         "description": "Your pact weapon drips with necrotic energy, lending extra damage to your strikes",
+        "type": "bool",
+        "default": false
+    },
+    "genies-vessel": {
+        "title": "Warlock: The Genie: Genie's Wrath",
+        "description": "You genie patron lends their wrath to your attacks.",
+        "type": "bool",
+        "default": true
+    },
+    "warlock-hexblade-curse": {
+        "title": "Warlock: The Hexblade: Hexblade's Curse",
+        "description": "Apply the Hexblade's Curse extra damage on attack rolls and score critical hits on rolls of 19 and 20",
         "type": "bool",
         "default": false
     },
@@ -588,15 +594,21 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
-    "sharpshooter": {
-        "title": "Feat: Sharpshooter (Apply to next roll only)",
-        "description": "Apply Sharpshooter -5 penalty to roll and +10 to damage",
+    "charger-feat": {
+        "title": "Feat: Charger Extra Damage (Apply to next roll only)",
+        "description": "You charge into battle, lending weight to your blow!",
         "type": "bool",
         "default": false
     },
     "great-weapon-master": {
         "title": "Feat: Great Weapon Master (Apply to next roll only)",
         "description": "Apply Great Weapon Master -5 penalty to roll and +10 to damage",
+        "type": "bool",
+        "default": false
+    },
+    "sharpshooter": {
+        "title": "Feat: Sharpshooter (Apply to next roll only)",
+        "description": "Apply Sharpshooter -5 penalty to roll and +10 to damage",
         "type": "bool",
         "default": false
     },
@@ -607,25 +619,13 @@ const character_settings = {
         "default": true
     },
     "protector-aasimar-radiant-soul": {
-        "title": "Protector Aasimar: Radiant Soul",
+        "title": "Aasimar: Protector: Radiant Soul",
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
     },
-    "charger-feat": {
-        "title": "Charger Feat - Extra Damage (Apply to next roll only)",
-        "description": "You charge into battle, lending weight to your blow!",
-        "type": "bool",
-        "default": false
-    },
-    "genies-vessel": {
-        "title": "Genie's Vessel: Genie's Wrath - Extra Damage",
-        "description": "You genie patron lends their wrath to your attacks.",
-        "type": "bool",
-        "default": true
-    },
     "halfling-lucky": {
-        "title": "Halfling Lucky",
+        "title": "Halfling: Lucky",
         "description": "The luck of your people guides your steps",
         "type": "bool",
         "default": true
