@@ -582,6 +582,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "empowered-evocation": {
+        "title": "Wizard: Evocation Wizard: Empowered Evocation",
+        "description": "Your prowess in Evocation lends power to your Evocation spells",
+        "type": "bool",
+        "default": true
+    },
     "sharpshooter": {
         "title": "Feat: Sharpshooter (Apply to next roll only)",
         "description": "Apply Sharpshooter -5 penalty to roll and +10 to damage",

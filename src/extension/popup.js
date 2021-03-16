@@ -249,6 +249,10 @@ function populateCharacter(response) {
             e = createHTMLOption("genies-vessel", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Empowered Evocation")) {
+            e = createHTMLOption("empowered-evocation", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }

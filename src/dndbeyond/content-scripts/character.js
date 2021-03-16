@@ -1112,6 +1112,14 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             }
         }
 
+        // Evocation Wizard - Empowered Evocation
+        if (character.hasClassFeature("Empowered Evocation") &&
+            character.getSetting("empowered-evocation", false) &&
+            level.includes("Evocation")) {
+            damages.push(`${parseInt(character.getAbility("INT").mod)}`);
+            damage_types.push("Empowered Evocation");
+        }
+
         // We can then add healing types;
         for (let modifier of healing_modifiers.toArray()) {
             let dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
