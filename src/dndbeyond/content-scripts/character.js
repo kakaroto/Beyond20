@@ -489,7 +489,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             if (character.hasClassFeature("Gathered Swarm") &&
                 character.getSetting("ranger-gathered-swarm", false)) {
                 const ranger_level = character.getClassLevel("Ranger");
-                damages.push(ranger_level < 11 ? "1d6" : "2d6");
+                damages.push(ranger_level < 11 ? "1d6" : "1d8");
                 damage_types.push("Gathered Swarm");
             }
         }
@@ -915,7 +915,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         if (character.hasClassFeature("Gathered Swarm") &&
             character.getSetting("ranger-gathered-swarm", false)) {
             const ranger_level = character.getClassLevel("Ranger");
-            damages.push(ranger_level < 11 ? "1d6" : "2d6");
+            damages.push(ranger_level < 11 ? "1d6" : "1d8");
             damage_types.push("Gathered Swarm");
         }
 
@@ -1175,7 +1175,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             character.getSetting("ranger-gathered-swarm", false) &&
             to_hit !== null) {
             const ranger_level = character.getClassLevel("Ranger");
-            damages.push(ranger_level < 11 ? "1d6" : "2d6");
+            damages.push(ranger_level < 11 ? "1d6" : "1d8");
             damage_types.push("Gathered Swarm");
         }
 
