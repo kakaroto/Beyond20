@@ -542,7 +542,7 @@ const character_settings = {
     },
     "ranger-gathered-swarm": {
         "title": "Ranger: Swarmkeeper: Gathered Swarm",
-        "description": "Use your Gathered Swarm ability to add extra Force damage to your weapon attacks",
+        "description": "Use your Gathered Swarm ability to add extra Force damage to your attacks",
         "type": "bool",
         "default": false
     },
