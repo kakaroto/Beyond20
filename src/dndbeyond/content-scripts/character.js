@@ -486,6 +486,12 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 damages.push(ranger_level < 11 ? "1d8" : "2d8");
                 damage_types.push("Planar Warrior");
             }
+            if (character.hasClassFeature("Favored Foe") &&
+                character.getSetting("ranger-favored-foe", false)) {
+                const ranger_level = character.getClassLevel("Ranger");
+                damages.push(ranger_level < 6 ? "1d4" : ( ranger_level < 14 ? "1d6" : "1d8"));
+                damage_types.push("Favored Foe");
+            }
             if (character.hasClassFeature("Gathered Swarm") &&
                 character.getSetting("ranger-gathered-swarm", false)) {
                 const ranger_level = character.getClassLevel("Ranger");
@@ -905,6 +911,14 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             damage_types.push("Genie's Wrath");
         }
 
+        // Ranger - Favored Foe
+        if (character.hasClassFeature("Favored Foe") &&
+            character.getSetting("ranger-favored-foe", false)) {
+            const ranger_level = character.getClassLevel("Ranger");
+            damages.push(ranger_level < 6 ? "1d4" : ( ranger_level < 14 ? "1d6" : "1d8"));
+            damage_types.push("Favored Foe");
+        }
+
          // Circle of Spores - Symbiotic Entity
          if (character.hasClassFeature("Symbiotic Entity") && character.getSetting("druid-symbiotic-entity", false) &&
             action_name === "Halo of Spores") {
@@ -1110,6 +1124,15 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
                     });
                 }
             }
+        }
+
+        // Ranger - Favored Foe
+        if (character.hasClassFeature("Favored Foe") &&
+            character.getSetting("ranger-favored-foe", false) &&
+            to_hit !== null) {
+            const ranger_level = character.getClassLevel("Ranger");
+            damages.push(ranger_level < 6 ? "1d4" : ( ranger_level < 14 ? "1d6" : "1d8"));
+            damage_types.push("Favored Foe");
         }
 
         // Evocation Wizard - Empowered Evocation
