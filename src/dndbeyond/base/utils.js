@@ -167,6 +167,8 @@ function buildAttackRoll(character, attack_source, name, description, properties
                     }
                 }
             }
+            if (roll_properties.name === "Blade of Disaster")
+                crit_damages[0] = damagesToCrits(character, ["8d12"])[0];
             if (brutal > 0) {
                 const rule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
                 let highest_dice = 0;

@@ -1212,6 +1212,8 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         if (character.hasClassFeature("Hexblade’s Curse") &&
             character.getSetting("warlock-hexblade-curse", false))
             critical_limit = 19;
+        if (spell_full_name === "Blade of Disaster")
+            critical_limit = 18;
         const roll_properties = buildAttackRoll(character,
             "spell",
             spell_name,
