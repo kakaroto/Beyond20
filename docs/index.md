@@ -10,17 +10,11 @@ Seriously, what more can you ask for? :-)
 
 # A ⭐⭐⭐⭐⭐ extension
 
-Beyond20 has over 200,000 users (as of August 2020) and a 5 star rating. Everybody loves the extension, and for good reason!
+Beyond20 has over 300,000 users (as of March 2021) and a 5 star rating. Everybody loves the extension, and for good reason!
 
 You can check out all the reviews on the [Chrome Webstore](https://chrome.google.com/webstore/detail/beyond-20/gnblbpbepfbfmoobegdogkglpbhcjofh/reviews) and [Mozilla Add-ons](https://addons.mozilla.org/en-US/firefox/addon/beyond-20/reviews/) page, as well as the comments people leave when sending rations on [Ko-fi](https://ko-fi.com/kakaroto).
 
 
 If you find Beyond20 useful to you and it helps you in your games, please consider supporting me, either on [Patreon](https://patreon.com/kakaroto), [Github](https://github.com/sponsors/kakaroto) or [Ko-fi](https://ko-fi.com/kakaroto).
-
-<div style="inline">
-{% include_relative buttons/patreon.html %} &nbsp;&nbsp;
-
-{% include_relative buttons/kofi.html %}
-</div>
 
 Thank you!
