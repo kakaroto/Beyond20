@@ -364,16 +364,21 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
         // If clicking on a spell group within a item (Green flame blade, Booming blade), then add the additional damages from that spell
         if (spell_group) {
             const group_name = $(spell_group).find(".ct-item-detail__spell-damage-group-name").text();
-            
-            const spell_damages = $(spell_group).find(".ct-item-detail__spell-damage-group-item");
-            for (let j = 0; j < spell_damages.length; j++) {
-                let dmg = spell_damages.eq(j).find(".ddbc-damage__value").text();
-                let dmg_type = spell_damages.eq(j).find(".ddbc-tooltip").attr("data-original-title");
+            const group_origin = $(spell_group).find(".ddbc-data-origin-name").text();
+            const group_damages = $(spell_group).find(".ct-item-detail__spell-damage-group-item");
+            const spell_damages = [];
+            const spell_damage_types = [];
+            for (let j = 0; j < group_damages.length; j++) {
+                let dmg = group_damages.eq(j).find(".ddbc-damage__value").text();
+                let dmg_type = group_damages.eq(j).find(".ddbc-tooltip").attr("data-original-title");
                 if (dmg != "") {
-                    damages.push(dmg);
-                    damage_types.push(`${dmg_type} (${group_name})`);
+                    spell_damages.push(dmg);
+                    spell_damage_types.push(dmg_type);
                 }
             }
+            handleSpecialSpells(group_name, spell_damages, spell_damage_types, {spell_source: group_origin});
+            damages.push(...spell_damages);
+            damage_types.push(...spell_damage_types.map(t => `${t} (${group_name})`));
         }
 
         const custom_damages = character.getSetting("custom-damage-dice", "");
