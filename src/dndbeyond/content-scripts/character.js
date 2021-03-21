@@ -268,6 +268,13 @@ function split_custom_damages(damages) {
     return result;
 }
 
+function isItemATool(item_name, source) {
+    return source === "tool, common" ||
+        (source === "gear, common" && item_name.endsWith(" Tools")) ||
+        (source.includes("gear, common") && item_name.endsWith(" Kit")) ||
+        (source.includes("gear, common") && item_name.endsWith(" Supplies"));
+}
+
 function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, spell_group = null) {
     const prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
     const properties = propertyListToDict(prop_list);
@@ -278,7 +285,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
     const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
     const item_customizations = $(".ct-item-pane .ct-item-detail__class-customize-item .ddbc-checkbox--is-enabled .ddbc-checkbox__label").toArray().map(e => e.textContent);
     const source = item_type.trim().toLowerCase();
-    const is_tool = source === "tool, common" || (source === "gear, common" && item_name.endsWith("Tools"));
+    const is_tool = isItemATool(item_name, source);
     const is_instrument =  item_tags.includes("Instrument");
     const description = descriptionToString(".ct-item-detail__description");
     if (!force_display && Object.keys(properties).includes("Damage")) {
@@ -1626,7 +1633,7 @@ function injectRollButton(paneClass) {
         } else {
             const item_type = $(".ct-item-detail__intro").text().trim().toLowerCase();
             const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
-            const is_tool = item_type === "tool, common" || (item_type === "gear, common" && item_name.endsWith("Tools"));
+            const is_tool = isItemATool(item_name, item_type);
             const is_instrument =  item_tags.includes("Instrument");
             if (is_tool || is_instrument) {
                 addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true, text: `Use ${is_tool? "Tool" : "Instrument"}` });
