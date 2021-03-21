@@ -510,6 +510,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "ranger-favored-foe": {
+        "title": "Ranger: Favored Foe",
+        "description": "You mark an enemy and your attacks hurt them to an increased degree",
+        "type": "bool",
+        "default": false
+    },
     "fey-wanderer-dreadful-strikes": {
         "title": "Ranger: Fey Wanderer: Dreadful Strikes",
         "description": "Imbue your weapons and deal psychic damage to your the minds of your enemies.",

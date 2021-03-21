@@ -121,6 +121,10 @@ function populateCharacter(response) {
             e = createHTMLOption("champion-remarkable-athlete", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Favored Foe")) {
+            e = createHTMLOption("ranger-favored-foe", false, character_settings);
+            options.append(e);
+        }
         if (response["feats"].includes("Sharpshooter")) {
             e = createHTMLOption("sharpshooter", false, character_settings);
             options.append(e);
