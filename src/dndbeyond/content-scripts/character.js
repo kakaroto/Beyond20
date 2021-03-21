@@ -898,6 +898,12 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             settings_to_change["charger-feat"] = false;
         }
 
+        // Druid: Circle of Spores - Symbiotic Entity
+        if (isMeleeAttack && character.hasClassFeature("Symbiotic Entity") && character.getSetting("druid-symbiotic-entity", false)) {
+            damages.push("1d6");
+            damage_types.push("Symbiotic Entity");
+        }
+
         //Protector Aasimar: Radiant Soul Damage
         if (character.hasRacialTrait("Radiant Soul") &&
             character.getSetting("protector-aasimar-radiant-soul", false)) {
