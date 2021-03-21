@@ -495,7 +495,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             if (character.hasClassFeature("Gathered Swarm") &&
                 character.getSetting("ranger-gathered-swarm", false)) {
                 const ranger_level = character.getClassLevel("Ranger");
-                damages.push(ranger_level < 11 ? "1d6" : "2d6");
+                damages.push(ranger_level < 11 ? "1d6" : "1d8");
                 damage_types.push("Gathered Swarm");
             }
         }
@@ -925,6 +925,14 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             damages[0] = damages[0].replace(/1d/g, "2d");
         }
 
+        // Ranger - Gathered Swarm
+        if (character.hasClassFeature("Gathered Swarm") &&
+            character.getSetting("ranger-gathered-swarm", false)) {
+            const ranger_level = character.getClassLevel("Ranger");
+            damages.push(ranger_level < 11 ? "1d6" : "1d8");
+            damage_types.push("Gathered Swarm");
+        }
+
         const roll_properties = buildAttackRoll(character,
             "action",
             action_name,
@@ -1183,6 +1191,15 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         if (character.hasClassFeature("Genie’s Vessel") && character.getSetting("genies-vessel", false) && to_hit != null) {
             damages.push(character._proficiency);
             damage_types.push("Genie's Wrath");
+        }
+
+        // Ranger - Gathered Swarm
+        if (character.hasClassFeature("Gathered Swarm") &&
+            character.getSetting("ranger-gathered-swarm", false) &&
+            to_hit !== null) {
+            const ranger_level = character.getClassLevel("Ranger");
+            damages.push(ranger_level < 11 ? "1d6" : "1d8");
+            damage_types.push("Gathered Swarm");
         }
 
         // We can then add temp healing types;
