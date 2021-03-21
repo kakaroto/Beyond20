@@ -985,6 +985,153 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
     }
 }
 
+function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas}={}) {
+    // Handle special spells;
+    if (spell_name == "Absorb Elements") {
+        const dmg = damages[0];
+        damages.length = 0;
+        damage_types.length = 0;
+        damages.push(dmg);
+        damage_types.push("Triggering Type");
+    }
+
+    if (damages.length > 0 &&
+        character.hasClassFeature("Arcane Firearm") &&
+        character.getSetting("artificer-arcane-firearm", false) &&
+        spell_source.includes("Artificer")) {
+        damages.push("1d8");
+        damage_types.push("Arcane Firearm");
+    }
+
+    if (character.hasClassFeature("Alchemical Savant") &&
+        character.getSetting("artificer-alchemical-savant", false) &&
+        damages.length > 0) {
+        const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
+        for (let i = 0; i < damages.length; i++){
+            if ((damage_types[i] === "Acid" || damage_types[i] === "Fire" || damage_types[i] === "Necrotic" || damage_types[i] === "Poison") &&
+                alchemical_savant_regex.test(damages[i])) {
+                damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
+                damage_types.push("Alchemical Savant");
+                break;
+            }
+        }
+    }
+    
+    //Cleric Blessed Strikes
+    if (character.hasClassFeature("Blessed Strikes") &&
+        character.getSetting("cleric-blessed-strikes", false) &&
+        spell_level.includes("Cantrip")) {
+        damages.push("1d8");
+        damage_types.push("Blessed Strikes");
+    }
+
+    if (character.hasClassFeature("Enhanced Bond") &&
+        character.getSetting("wildfire-spirit-enhanced-bond", false) &&
+        damages.length > 0) {
+        for (let i = 0; i < damages.length; i++){
+            if (damage_types[i] === "Fire") {
+                damages.push("1d8");
+                damage_types.push("Enhanced Bond");
+                break;
+            }
+        }
+    }
+
+    //Handle Flames of Phlegethos
+    if (damages.length > 0 &&
+        character.hasFeat("Flames of Phlegethos")) {
+        for (i = 0; i < damages.length; i++) {
+            if (damage_types[i] === "Fire")
+                damages[i] = damages[i].replace(/[0-9]*d[0-9]+/g, "$&ro<=1");
+        }
+    }
+
+    // Check for Draconic Sorcerer's Elemental Affinity;
+    let elementalAffinity = null;
+    for (let feature of character._class_features) {
+        const match = feature.match("Elemental Affinity \\((.*)\\)");
+        if (match) {
+            elementalAffinity = match[1];
+            break;
+        }
+    }
+    const elementalAdepts = [];
+    for (let feature of character._feats) {
+        const match = feature.match("Elemental Adept \\((.*)\\)");
+        if (match) {
+            elementalAdepts.push(match[1]);
+        }
+    }
+    if (elementalAffinity && damage_types.includes(elementalAffinity)) {
+        for (let ability of character._abilities) {
+            if (ability[1] == "CHA" && ability[3] != "" && ability[3] != "0") {
+                damages.push(ability[3]);
+                damage_types.push(elementalAffinity + " (Elemental Affinity)");
+            }
+        }
+    }
+    for (let elementalAdept of elementalAdepts) {
+        for (let i = 0; i < damages.length; i++) {
+            if (damage_types[i] === elementalAdept) {
+                damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
+                    return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min2`).join(" + ") + mods;
+                });
+            }
+        }
+    }
+
+    // Evocation Wizard - Empowered Evocation
+    if (character.hasClassFeature("Empowered Evocation") &&
+        character.getSetting("empowered-evocation", false) &&
+        spell_level.includes("Evocation")) {
+        damages.push(`${parseInt(character.getAbility("INT").mod)}`);
+        damage_types.push("Empowered Evocation");
+    }
+
+
+}
+    
+function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas}={}) {
+    // Handle Disciple of life;
+    if (character.hasClassFeature("Disciple of Life") &&
+        character.getSetting("cleric-disciple-life", false)) {
+        const level = castas ? castas[0] : spell_level[0];
+        const discipleOfLife = 2 + parseInt(level);
+        damages.push(discipleOfLife.toString());
+        damage_types.push("Disciple of Life");
+    }
+    if (character.hasClassFeature("Supreme Healing")) {
+        for (let i = 0; i < damages.length; i++) {
+            if (damage_types[i] !== "Healing") continue;
+            damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)?/, (match, dice, faces) => {
+                return String(parseInt(dice || 1) * parseInt(faces));
+            });
+        }
+    }
+    if (character.hasClassFeature("Alchemical Savant") &&
+        character.getSetting("artificer-alchemical-savant", false)) {
+        const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
+        for (let i = 0; i < damages.length; i++){
+            if (damage_types[i] === "Healing" && alchemical_savant_regex.test(damages[i])) {
+                damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
+                damage_types.push("Alchemical Savant Healing");
+                break;
+            }
+        }
+    }
+    
+    if (character.hasClassFeature("Enhanced Bond") &&
+        character.getSetting("wildfire-spirit-enhanced-bond", false)) {
+        for (let i = 0; i < damages.length; i++){
+            if (damage_types[i] === "Healing") {
+                damages.push("1d8");
+                damage_types.push("Enhanced Bond Healing");
+                break;
+            }
+        }
+    }
+}
+
 function rollSpell(force_display = false, force_to_hit_only = false, force_damages_only = false) {
     const properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property,.ct-spell-pane .ddbc-property-list .ddbc-property-list__property"));
     //console.log("Properties are : " + String(properties));
@@ -1030,23 +1177,9 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             damage_types.push(dmgtype);
         }
 
-        // Handle special spells;
-        if (spell_name == "Absorb Elements") {
-            const dmg = damages[0];
-            damages.length = 0;
-            damage_types.length = 0;
-            damages.push(dmg);
-            damage_types.push("Triggering Type");
-        }
+        handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
 
-        //Protector Aasimar: Radiant Soul Damage
-        if (character.hasRacialTrait("Radiant Soul") &&
-            character.getSetting("protector-aasimar-radiant-soul", false)) {
-            damages.push(character._level);
-            damage_types.push("Radiant Soul");
-        }
-
-        // Hex blade's curse only applies if (there are damages;
+        // Hex blade's curse only applies if there are damages
         if (damages.length > 0 &&
             character.getSetting("warlock-hexblade-curse", false) &&
             character.hasClassFeature("Hexblade’s Curse") &&
@@ -1054,92 +1187,21 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             damages.push(character._proficiency);
             damage_types.push("Hexblade's Curse");
         }
-
-        if (damages.length > 0 &&
-            character.hasClassFeature("Arcane Firearm") &&
-            character.getSetting("artificer-arcane-firearm", false) &&
-            spell_source.includes("Artificer")) {
-            damages.push("1d8");
-            damage_types.push("Arcane Firearm");
+        // Protector Aasimar: Radiant Soul Damage
+        if (character.hasRacialTrait("Radiant Soul") &&
+            character.getSetting("protector-aasimar-radiant-soul", false)) {
+            damages.push(character._level);
+            damage_types.push("Radiant Soul");
         }
-
-        if (character.hasClassFeature("Alchemical Savant") &&
-            character.getSetting("artificer-alchemical-savant", false) &&
-            damages.length > 0) {
-            const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
-            for (let i = 0; i < damages.length; i++){
-                if ((damage_types[i] === "Acid" || damage_types[i] === "Fire" || damage_types[i] === "Necrotic" || damage_types[i] === "Poison") &&
-                    alchemical_savant_regex.test(damages[i])) {
-                    damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
-                    damage_types.push("Alchemical Savant");
-                    break;
-                }
-            }
+    
+        // Ranger - Gathered Swarm
+        if (character.hasClassFeature("Gathered Swarm") &&
+            character.getSetting("ranger-gathered-swarm", false) &&
+            to_hit !== null) {
+            const ranger_level = character.getClassLevel("Ranger");
+            damages.push(ranger_level < 11 ? "1d6" : "1d8");
+            damage_types.push("Gathered Swarm");
         }
-        
-        //Cleric Blessed Strikes
-        if (character.hasClassFeature("Blessed Strikes") &&
-            character.getSetting("cleric-blessed-strikes", false) &&
-            level.includes("Cantrip")) {
-            damages.push("1d8");
-            damage_types.push("Blessed Strikes");
-        }
-
-        if (character.hasClassFeature("Enhanced Bond") &&
-            character.getSetting("wildfire-spirit-enhanced-bond", false) &&
-            damages.length > 0) {
-            for (let i = 0; i < damages.length; i++){
-                if (damage_types[i] === "Fire") {
-                    damages.push("1d8");
-                    damage_types.push("Enhanced Bond");
-                    break;
-                }
-            }
-        }
-
-        //Handle Flames of Phlegethos
-        if (damages.length > 0 &&
-            character.hasFeat("Flames of Phlegethos")) {
-            for (i = 0; i < damages.length; i++) {
-                if (damage_types[i] === "Fire")
-                    damages[i] = damages[i].replace(/[0-9]*d[0-9]+/g, "$&ro<=1");
-            }
-        }
-
-        // Check for Draconic Sorcerer's Elemental Affinity;
-        let elementalAffinity = null;
-        for (let feature of character._class_features) {
-            const match = feature.match("Elemental Affinity \\((.*)\\)");
-            if (match) {
-                elementalAffinity = match[1];
-                break;
-            }
-        }
-        const elementalAdepts = [];
-        for (let feature of character._feats) {
-            const match = feature.match("Elemental Adept \\((.*)\\)");
-            if (match) {
-                elementalAdepts.push(match[1]);
-            }
-        }
-        if (elementalAffinity && damage_types.includes(elementalAffinity)) {
-            for (let ability of character._abilities) {
-                if (ability[1] == "CHA" && ability[3] != "" && ability[3] != "0") {
-                    damages.push(ability[3]);
-                    damage_types.push(elementalAffinity + " (Elemental Affinity)");
-                }
-            }
-        }
-        for (let elementalAdept of elementalAdepts) {
-            for (let i = 0; i < damages.length; i++) {
-                if (damage_types[i] === elementalAdept) {
-                    damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
-                        return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min2`).join(" + ") + mods;
-                    });
-                }
-            }
-        }
-
         // Ranger - Favored Foe
         if (character.hasClassFeature("Favored Foe") &&
             character.getSetting("ranger-favored-foe", false) &&
@@ -1149,15 +1211,14 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             damage_types.push("Favored Foe");
         }
 
-        // Evocation Wizard - Empowered Evocation
-        if (character.hasClassFeature("Empowered Evocation") &&
-            character.getSetting("empowered-evocation", false) &&
-            level.includes("Evocation")) {
-            damages.push(`${parseInt(character.getAbility("INT").mod)}`);
-            damage_types.push("Empowered Evocation");
+        // Warlock: Genie Patron - Genie's Wrath
+        if (character.hasClassFeature("Genie’s Vessel") && character.getSetting("genies-vessel", false) && to_hit != null) {
+            damages.push(character._proficiency);
+            damage_types.push("Genie's Wrath");
         }
+    
 
-        // We can then add healing types;
+        // We can then add healing types
         for (let modifier of healing_modifiers.toArray()) {
             let dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
             if (dmg.startsWith("Regain "))
@@ -1170,45 +1231,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             }
         }
 
-        if (character.hasClassFeature("Alchemical Savant") &&
-            character.getSetting("artificer-alchemical-savant", false)) {
-            const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
-            for (let i = 0; i < damages.length; i++){
-                if (damage_types[i] === "Healing" && alchemical_savant_regex.test(damages[i])) {
-                    damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
-                    damage_types.push("Alchemical Savant Healing");
-                    break;
-                }
-            }
-        }
-        
-        if (character.hasClassFeature("Enhanced Bond") &&
-            character.getSetting("wildfire-spirit-enhanced-bond", false)) {
-            for (let i = 0; i < damages.length; i++){
-                if (damage_types[i] === "Healing") {
-                    damages.push("1d8");
-                    damage_types.push("Enhanced Bond Healing");
-                    break;
-                }
-            }
-        }
-
-        // Warlock: Genie Patron - Genie's Wrath
-        if (character.hasClassFeature("Genie’s Vessel") && character.getSetting("genies-vessel", false) && to_hit != null) {
-            damages.push(character._proficiency);
-            damage_types.push("Genie's Wrath");
-        }
-
-        // Ranger - Gathered Swarm
-        if (character.hasClassFeature("Gathered Swarm") &&
-            character.getSetting("ranger-gathered-swarm", false) &&
-            to_hit !== null) {
-            const ranger_level = character.getClassLevel("Ranger");
-            damages.push(ranger_level < 11 ? "1d6" : "1d8");
-            damage_types.push("Gathered Swarm");
-        }
-
-        // We can then add temp healing types;
+        // We can then add temp healing types
         for (let modifier of temp_hp_modifiers.toArray()) {
             let dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
             if (dmg.startsWith("Regain "))
@@ -1220,24 +1243,8 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
                 damage_types.push("Temp HP");
             }
         }
-
-        // Handle Disciple of life;
-        if (healing_modifiers.length > 0 &&
-            character.hasClassFeature("Disciple of Life") &&
-            character.getSetting("cleric-disciple-life", false)) {
-            const spell_level = (castas != "") ? castas[0] : level[0];
-            const discipleOfLife = 2 + parseInt(spell_level);
-            damages.push(discipleOfLife.toString());
-            damage_types.push("Disciple of Life");
-        }
-        if (healing_modifiers.length > 0 &&
-            character.hasClassFeature("Supreme Healing")) {
-            for (let i = 0; i < damages.length; i++) {
-                if (damage_types[i] !== "Healing") continue;
-                damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)?/, (match, dice, faces) => {
-                    return String(parseInt(dice || 1) * parseInt(faces));
-                });
-            }
+        if (healing_modifiers.length > 0) {
+            handleSpecialHealingSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
         }
 
         const custom_damages = character.getSetting("custom-damage-dice", "");
