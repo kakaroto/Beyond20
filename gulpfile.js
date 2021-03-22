@@ -60,6 +60,10 @@ const SRC_FILES = {
         "src/astral/common.js",
         "src/astral/page-script.js"
     ],
+    sendingstone: [
+        ...ROLL_RENDERER_DEPS,
+        "src/sendingstone/content-script.js"
+    ],
     roll20: [
         ...ROLL_RENDERER_DEPS,
         "src/roll20/renderer.js",

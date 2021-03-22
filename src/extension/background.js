@@ -108,6 +108,23 @@ function sendMessageToFVTT(request, limit, failure = null) {
     }
 }
 
+function sendMessageToSendingStone(request, limit = null, failure = null) {
+    if (limit) {
+        const vtt = limit.vtt || "sendingstone"
+        if (vtt == "sendingstone") {
+            chrome.tabs.query({ "url": SENDINGSTONE_URL }, (tabs) => {
+                found = filterVTTTab(request, limit, tabs, sendingStoneTitle)
+                if (failure)
+                    failure(!found)
+            })
+        } else {
+            failure(true)
+        }
+    } else {
+        sendMessageTo(SENDINGSTONE_URL, request, failure = failure)
+    }
+}
+
 function sendMessageToBeyond(request) {
     sendMessageTo(DNDBEYOND_CHARACTER_URL, request)
     sendMessageTo(DNDBEYOND_MONSTER_URL, request)
@@ -204,6 +221,7 @@ function onMessage(request, sender, sendResponse) {
             sendMessageToRoll20(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "roll20", sendResponse))
             sendMessageToFVTT(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "fvtt", sendResponse))
             sendMessageToAstral(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "astral", sendResponse))
+            sendMessageToSendingStone(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "astral", sendResponse))
         }
         return true
     } else if (request.action == "settings") {
@@ -213,6 +231,7 @@ function onMessage(request, sender, sendResponse) {
         sendMessageToBeyond(request)
         sendMessageToFVTT(request)
         sendMessageToAstral(request)
+        sendMessageToSendingStone(request)
     } else if (request.action == "activate-icon") {
         // popup doesn't have sender.tab so we grab it from the request.
         const tab = request.tab || sender.tab;

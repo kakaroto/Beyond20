@@ -11,7 +11,8 @@
 		"*://app.roll20.net/editor/",
 		"*://*.dndbeyond.com/*",
 		"*://*.forge-vtt.com/game",
-		"*://*.astraltabletop.com/play/*"
+		"*://*.astraltabletop.com/play/*",
+		"*://*.sendingstone.com/room/*"
 	],
 	"icons": {
 		"16": "images/icons/icon16.png",
@@ -201,6 +202,14 @@
 				"libs/jquery-3.4.1.min.js",
 				"libs/lz-string.min.js",
 				"dist/astral.js"
+			]
+		},
+		{
+			"matches": [
+				"*://*.sendingstone.com/room/*"
+			],
+			"js": [
+				"dist/sendingstone.js"
 			]
 		}
 	]

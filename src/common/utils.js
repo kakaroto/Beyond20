@@ -101,6 +101,10 @@ function astralTitle(title) {
     return title.replace(" | Astral TableTop", "");
 }
 
+function sendingStoneTitle(title) {
+    return title.replace("SendingStone", "");
+}
+
 function urlMatches(url, matching) {
     return url.match(matching.replace(/\*/g, "[^]*")) !== null;
 }
