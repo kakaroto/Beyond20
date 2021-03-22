@@ -535,6 +535,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "ranger-colossus-slayer": {
+        "title": "Ranger: Hunter's Prey: Colossus Slayer",
+        "description": "Use your Colossus Slayer ability and add 1d8 damage to your target",
+        "type": "bool",
+        "default": true
+    },
     "ranger-slayers-prey": {
         "title": "Ranger: Monster Slayer: Slayer's Prey",
         "description": "Use your Slayer's Prey ability and add 1d6 damage to your target",
@@ -606,6 +612,24 @@ const character_settings = {
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
         "type": "bool",
         "default": false
+    },
+    "charger-feat": {
+        "title": "Charger Feat - Extra Damage (Apply to next roll only)",
+        "description": "You charge into battle, lending weight to your blow!",
+        "type": "bool",
+        "default": false
+    },
+    "genies-vessel": {
+        "title": "Genie's Vessel: Genie's Wrath - Extra Damage",
+        "description": "You genie patron lends their wrath to your attacks.",
+        "type": "bool",
+        "default": true
+    },
+    "halfling-lucky": {
+        "title": "Halfling Lucky",
+        "description": "The luck of your people guides your steps",
+        "type": "bool",
+        "default": true
     }
 }
 
@@ -1205,9 +1229,11 @@ function getDiscordChannel(settings, character) {
 }
 
 let key_bindings = {
-    Shift: "advantage",
-    Control: "disadvantage",
-    Alt: "normal_roll"
+    LeftShift: "advantage",
+    LeftControl: "disadvantage",
+    RightShift: "super_advantage",
+    RightControl: "super_disadvantage",
+    LeftAlt: "normal_roll"
 };
 
 const BINDING_NAMES = {
@@ -1220,6 +1246,7 @@ const BINDING_NAMES = {
     whisper: "Whisper Rolls",
     dont_whisper: "Don't Whisper Rolls",
     whisper_hide_names: "Hide Monster Name & Attack",
+    force_critical: "Force Critical Hit Attack",
     versatile_one_handed: "Use Versatile Weapon One-handed",
     versatile_two_handed: "Use Versatile Weapon Two-handed",
     custom_add_d4: "Custom modifier: + 1d4 (Bless/Guidance)",
@@ -1241,22 +1268,26 @@ function configureHotKey(bindings, bindings_div, html, key) {
         </div>
     `);
     if (key) {
-        alert.append($(`<div>Current key is : <strong>${key}</strong></div>`));
+        const keyName = key.replace(/^Key|^Digit/, "");
+        alert.append($(`<div>Current key is : <strong>${keyName}</strong></div>`));
     }
     let newKey = null;
     const $window = $(window);
     const onKeydown = (event) => {
         $window.off('keydown', null, onKeydown);
-        if (key !== event.key && bindings[event.key] !== undefined) {
+        console.log(key, event)
+        if ((key !== event.code && key !== event.key) &&
+            (bindings[event.code] !== undefined || bindings[event.key] !== undefined)) {
             alertify.warning("Hotkey already in use");
             dialog.close();
             return;
         }
-        newKey = event.key;
+        newKey = event.code;
+        const newKeyName = newKey.replace(/^Key|^Digit/, "");
         const actions = $(`
             <div>
                 <div>
-                    Select the action to perform when <strong>${newKey}</strong> is pressed :
+                    Select the action to perform when <strong>${newKeyName}</strong> is pressed :
                 </div>
                 <select>
                     <option value="">None</option>
@@ -1320,9 +1351,10 @@ function addHotKeyToUI(bindings, bindings_div, key) {
     if (binding_name.startsWith("option-") && character_settings[binding_name.slice("option-".length)]) {
         binding_name = character_settings[binding_name.slice("option-".length)].title;
     }
+    const keyName = (key || "").replace(/^Key|^Digit/, "");
     const html = $(`
         <div style="border-bottom: 1px grey solid; display: flex; justify-content: space-between;">
-            <div class="hotkey-event" style="cursor: pointer; flex-shrink: 1; padding: 5px; font-weight: bold;">${key || ""}</div>
+            <div class="hotkey-event" style="cursor: pointer; flex-shrink: 1; padding: 5px; font-weight: bold;">${keyName}</div>
             <div class="hotkey-action" style="cursor: pointer; overflow: hidden; text-overflow: ellipsis; text-align: center; padding: 5px; flex-grow: 1;">${binding_name}</div>
             <i class="icon marka marka-set marka-icon-times delete-hotkey" style="width:15px;height:15px; margin: 5px; flex-shrink: 1;">
                 <i style="background-color:rgb(0, 0, 0)"></i>

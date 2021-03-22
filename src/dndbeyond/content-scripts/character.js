@@ -5,7 +5,7 @@ function sendRollWithCharacter(rollType, fallback, args) {
     if (preview && preview.startsWith("url("))
         args.preview = preview.slice(5, -2);
     // Add halfling luck
-    if (character.hasRacialTrait("Lucky") && ["skill", "ability", "saving-throw", "death-save",
+    if (character.hasRacialTrait("Lucky") && character.getSetting("halfling-lucky", false) && ["skill", "ability", "saving-throw", "death-save",
         "initiative", "attack", "spell-attack"].includes(rollType)) {
         args.d20 = args.d20 || "1d20";
         args.d20 += "ro<=1";
@@ -54,7 +54,7 @@ async function rollSkillCheck(paneClass) {
             // In case of magical bonus
             if (modifier != "--" && modifier != "+0")
                 mod += parseInt(modifier);
-            modifier = mod >= 0 ? `+${mod}` : `-${mod}`;
+            modifier = mod >= 0 ? `+${mod}` : `${mod}`;
         }
     }
     //console.log("Skill " + skill_name + "(" + ability + ") : " + modifier);
@@ -95,13 +95,6 @@ async function rollSkillCheck(paneClass) {
     // Sorcerer: Clockwork Soul - Trance of Order
     if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
-    
-    // Fey Wanderer Ranger - Otherworldly Glamour
-    if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
-        modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
-        modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
-        roll_properties.modifier = modifier;
-    }
 
     if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
         const min = character.getAbility("STR").score - parseInt(modifier);
@@ -112,6 +105,14 @@ async function rollSkillCheck(paneClass) {
         } else if (!min10) {
             roll_properties.d20 = `1d20min${min}`
         }
+    }
+
+    if (character.hasRacialTrait("Deductive Intuition") && (skill_name == "Investigation" || skill_name == "Insight")){
+        roll_properties.modifier += "+1d4";
+    }
+
+    if (character.hasRacialTrait("Windwright’s Intuition") && skill_name == "Acrobatics"){
+        roll_properties.modifier += "+1d4";
     }
     return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
@@ -129,11 +130,11 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
             ["STR","DEX", "CON"].includes(ability)) {
             const remarkable_athlete_mod = Math.ceil(character._proficiency / 2);
             modifier = parseInt(modifier) + remarkable_athlete_mod;
-            modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+            modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
         } else if (character.hasClassFeature("Jack of All Trades") && character.getSetting("bard-joat", false)) {
             const JoaT = Math.floor(character._proficiency / 2);
             modifier = parseInt(modifier) + JoaT;
-            modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+            modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
         }
     }
 
@@ -160,13 +161,14 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
             const intelligence = character.getAbility("INT") || {mod: 0};
             const mod = Math.max((parseInt(intelligence.mod) || 0), 1);
             modifier = parseInt(modifier) + mod;
-            modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+            modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
             roll_properties["modifier"] = modifier;
         }
     }
+    // Fey Wanderer Ranger - Otherworldly Glamour
     if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
         modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
-        modifier = modifier >= 0 ? `+${modifier}` : `-${modifier}`;
+        modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
         roll_properties["modifier"] = modifier;
     }
     // Sorcerer: Clockwork Soul - Trance of Order
@@ -224,6 +226,48 @@ function rollHitDie(multiclass, index) {
     });
 }
 
+/**
+ * Split a custom damages line on commas, while ignoring commas inside parenthesis/brackets/curly braces
+ * to allow Roll20 macros to work
+ * 
+ * @param {String} damages   The custom damages line
+ */
+function split_custom_damages(damages) {
+    // Single damage
+    if (!damages.includes(",")) return [damages];
+    // No parenthesis/brackets/curly braces, so split on the comma
+    if (!["(", "[", "{"].some(del => damages.includes(del))) return damages.split(",");
+
+    // Complex situation, actually parse the string
+    const result = [];
+    const delimiters = [];
+    let current_damage = "";
+    for (let i = 0; i < damages.length; i++) {
+        if (damages[i] === "(") {
+            delimiters.push(")");
+        } else if (damages[i] === "[") {
+            delimiters.push("]");
+        } else if (damages[i] === "{") {
+            delimiters.push("}");
+        }
+        if (delimiters.length === 0 && damages[i] === ",") {
+            current_damage = current_damage.trim();
+            if (current_damage) {
+                result.push(current_damage);
+                current_damage = "";
+            }
+            continue;
+        }
+        current_damage += damages[i];
+        if (delimiters.length > 0 && damages[i] === delimiters[delimiters.length - 1]) {
+            delimiters.pop();
+        }
+    }
+    current_damage = current_damage.trim();
+    if (current_damage) result.push(current_damage);
+    return result;
+}
+
 function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, spell_group = null) {
     const prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
     const properties = propertyListToDict(prop_list);
@@ -240,6 +284,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
     if (!force_display && Object.keys(properties).includes("Damage")) {
         const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
         let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
+        const settings_to_change = {}
 
         if (to_hit === null)
             to_hit = findToHit(item_full_name, ".ct-combat-attack--item,.ddbc-combat-attack--item", ".ct-item-name,.ddbc-item-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
@@ -258,7 +303,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 let damage_type = properties["Damage Type"] || "";
                 let versatile_damage = value.find(".ct-item-detail__versatile-damage,.ddbc-item-detail__versatile-damage").text().slice(1, -1);
                 if (damages.length == 0 &&
-                    character.hasClassFeature("Fighting Style: Great Weapon Fighting") &&
+                    (character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&
                     properties["Attack Type"] == "Melee" &&
                     (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
                     if (versatile_damage != "") {
@@ -273,11 +318,15 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     damage_type = "Force";
 
                 if (versatile_damage != "") {
-                    const versatile_choice = character.getSetting("versatile-choice", "both");
-                    if (versatile_choice == "one" || key_modifiers.versatile_one_handed) {
+                    let versatile_choice = character.getSetting("versatile-choice", "both");
+                    if (key_modifiers.versatile_one_handed)
+                        versatile_choice = "one"
+                    if (key_modifiers.versatile_two_handed)
+                        versatile_choice = "two";
+                    if (versatile_choice == "one") {
                         damages.push(damage);
                         damage_types.push(damage_type);
-                    } else if (versatile_choice == "two" || key_modifiers.versatile_two_handed) {
+                    } else if (versatile_choice == "two") {
                         damages.push(versatile_damage);
                         damage_types.push(damage_type);
                     } else {
@@ -300,7 +349,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                         if (dmg_info != "")
                             dmg_type += "(" + dmg_info + ")";
 
-                        if (character.hasClassFeature("Fighting Style: Great Weapon Fighting") &&
+                        if ((character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&
                             properties["Attack Type"] == "Melee" &&
                             (properties["Properties"].includes("Two-Handed") ||
                                 (properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice", "both") === "two")))
@@ -329,7 +378,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
 
         const custom_damages = character.getSetting("custom-damage-dice", "");
         if (custom_damages.length > 0) {
-            for (let custom_damage of custom_damages.split(",")) {
+            for (let custom_damage of split_custom_damages(custom_damages)) {
                 if (custom_damage.includes(":")) {
                     const parts = custom_damage.split(":", 2);
                     damages.push(parts[1].trim());
@@ -371,7 +420,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             to_hit += " - 5";
             damages.push("10");
             damage_types.push("Sharpshooter");
-            character.mergeCharacterSettings({ "sharpshooter": false });
+            settings_to_change["sharpshooter"] = false;
         }
         if (to_hit !== null && 
             character.getSetting("great-weapon-master", false) &&
@@ -382,7 +431,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             to_hit += " - 5";
             damages.push("10");
             damage_types.push("Weapon Master");
-            character.mergeCharacterSettings({ "great-weapon-master": false });
+            settings_to_change["great-weapon-master"] = false;
         }
         if (to_hit !== null && 
             character.getSetting("paladin-sacred-weapon", false)) {
@@ -419,9 +468,10 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             if (character.getSetting("ranger-dread-ambusher", false)) {
                 damages.push("1d8");
                 damage_types.push("Ambush");
-                character.mergeCharacterSettings({ "ranger-dread-ambusher": false });
+                settings_to_change["ranger-dread-ambusher"] = false;
             }
-            if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer")) {
+            if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer") &&
+                character.getSetting("ranger-colossus-slayer", false)) {
                 damages.push("1d8");
                 damage_types.push("Colossus Slayer");
             }
@@ -499,7 +549,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 blades_dmg = "8d6"
             damages.push(blades_dmg);
             damage_types.push("Psychic");
-            character.mergeCharacterSettings({ "bard-psychic-blades": false });
+            settings_to_change["bard-psychic-blades"] = false;
         }
         //Protector Aasimar: Radiant Soul Damage
         if (character.hasRacialTrait("Radiant Soul") &&
@@ -524,7 +574,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
         }
 
         // Warlock: Genie Patron - Genie's Wrath
-        if (character.hasClassFeature("Genie’s Vessel")) {
+        if (character.hasClassFeature("Genie’s Vessel") && character.getSetting("genies-vessel", false)) {
             damages.push(character._proficiency);
             damage_types.push("Genie's Wrath");
         }
@@ -554,6 +604,14 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 if (character.hasRacialTrait("Savage Attacks"))
                     brutal += 1;
             }
+        }
+
+        // Charger Feat
+        if (properties["Attack Type"] == "Melee" && character.hasFeat("Charger") &&
+            character.getSetting("charger-feat")) {
+            damages.push("+5");
+            damage_types.push("Charger Feat");
+            settings_to_change["charger-feat"] = false;
         }
 
         //Artificer Battlemaster Arcane Jolt
@@ -588,16 +646,20 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 roll_properties["name"] += ` (CRIT${custom_critical_limit})`;
         }
 
-        // Asssassinate: consider all rolls as critical;
+        // Assassinate: consider all rolls as critical;
         if (character.hasClassFeature("Assassinate") &&
             character.getSetting("rogue-assassinate", false)) {
             roll_properties["critical-limit"] = 1;
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-            character.mergeCharacterSettings({ "rogue-assassinate": false });
+            settings_to_change["rogue-assassinate"] = false;
         }
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
+
+        // Apply batched updates to settings, if any:
+        if (Object.keys(settings_to_change).length > 0)
+            character.mergeCharacterSettings(settings_to_change);
 
         return sendRollWithCharacter("attack", damages[0], roll_properties);
     } else if (!force_display && (is_tool || is_instrument) && character._abilities.length > 0) {
@@ -646,6 +708,8 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 // Sorcerer: Clockwork Soul - Trance of Order
                 if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
                     roll_properties.d20 = "1d20min10";
+                if (character.hasRacialTrait("Windwright’s Intuition") && is_tool && item_name == "Navigator's Tools")
+                    roll_properties.modifier += "+1d4";
                 return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
             }
         });
@@ -715,13 +779,14 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             }
         }
 
+        const settings_to_change = {}
         let brutal = 0;
         let critical_limit = 20;
         if (character.hasClassFeature("Hexblade’s Curse") &&
             character.getSetting("warlock-hexblade-curse", false))
             critical_limit = 19;
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.
-        if (action_name.includes("Polearm Master - Bonus Attack") && character.hasClassFeature("Fighting Style: Great Weapon Fighting")) {
+        if (action_name.includes("Polearm Master - Bonus Attack") && (character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true))) {
             damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
         }
         if (to_hit !== null && 
@@ -730,12 +795,13 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             to_hit += " - 5";
             damages.push("10");
             damage_types.push("Weapon Master");
-            character.mergeCharacterSettings({ "great-weapon-master": false });
+            settings_to_change["great-weapon-master"] = false;
         }
-        if (action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
-            || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
-            || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons")
-            || action_name.includes("Thunder Gauntlets") || action_name.includes("Lightning Launcher")) {
+        const isMeleeAttack = action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
+        || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
+        || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons") 
+        || action_name.includes("Thunder Gauntlets") || action_name.includes("Unarmed Fighting");
+        if ( isMeleeAttack || action_name.includes("Lightning Launcher")) {
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
                 critical_limit = 19;
@@ -819,6 +885,13 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             }
         }
 
+        // Charger Feat
+        if (isMeleeAttack && character.hasFeat("Charger") && character.getSetting("charger-feat")) {
+            damages.push("+5");
+            damage_types.push("Charger Feat");
+            settings_to_change["charger-feat"] = false;
+        }
+
         //Protector Aasimar: Radiant Soul Damage
         if (character.hasRacialTrait("Radiant Soul") &&
             character.getSetting("protector-aasimar-radiant-soul", false)) {
@@ -827,9 +900,15 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         }
 
         // Warlock: Genie Patron - Genie's Wrath
-        if (character.hasClassFeature("Genie’s Vessel")) {
+        if (character.hasClassFeature("Genie’s Vessel") && character.getSetting("genies-vessel", false)) {
             damages.push(character._proficiency);
             damage_types.push("Genie's Wrath");
+        }
+
+         // Circle of Spores - Symbiotic Entity
+         if (character.hasClassFeature("Symbiotic Entity") && character.getSetting("druid-symbiotic-entity", false) &&
+            action_name === "Halo of Spores") {
+            damages[0] = damages[0].replace(/1d/g, "2d");
         }
 
         const roll_properties = buildAttackRoll(character,
@@ -859,11 +938,16 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             character.getSetting("rogue-assassinate", false)) {
             roll_properties["critical-limit"] = 1;
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-            character.mergeCharacterSettings({ "rogue-assassinate": false });
+            settings_to_change["rogue-assassinate"] = false;
         }
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
+
+        // Apply batched updates to settings, if any:
+        if (Object.keys(settings_to_change).length > 0)
+            character.mergeCharacterSettings(settings_to_change);
+
         return sendRollWithCharacter("attack", damages[0], roll_properties);
     } else {
         return sendRollWithCharacter("action", 0, {
@@ -894,14 +978,21 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
     } else {
         concentration = false;
     }
-    let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;;
+    
+    // Find the icon with the AoE effect (<i class="i-aoe-sphere">) and convert it to a word
+    const range_shape = $(".ct-spell-pane .ddbc-property-list__property .ct-spell-detail__range-shape i");
+    const aoe_class = (range_shape.attr("class") || "").split(" ").find(c => c.startsWith("i-aoe-"));
+    // Remove class prefix and capitalize first letter
+    const aoe_shape = aoe_class ? aoe_class.replace(/^i-aoe-(.)/, (_, g) => g.toUpperCase()) : undefined;
+
+    let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
 
     if (to_hit === null)
         to_hit = findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
     if (to_hit === null)
         to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit");
 
-    if (!force_display && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || temp_hp_modifiers.length > 0 || to_hit !== null)) {
+    if (!force_display && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || temp_hp_modifiers.length > 0 || to_hit !== null || properties["Attack/Save"] !== undefined)) {
         const damages = [];
         const damage_types = [];
         for (let modifier of damage_modifiers.toArray()) {
@@ -1058,7 +1149,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         }
 
         // Warlock: Genie Patron - Genie's Wrath
-        if (character.hasClassFeature("Genie’s Vessel") && to_hit != null) {
+        if (character.hasClassFeature("Genie’s Vessel") && character.getSetting("genies-vessel", false) && to_hit != null) {
             damages.push(character._proficiency);
             damage_types.push("Genie's Wrath");
         }
@@ -1125,6 +1216,14 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             force_to_hit_only,
             force_damages_only);
 
+        // If it's an AoE, then split the range property appropriately
+        if (aoe_shape) {
+            const [range, aoe] = properties["Range/Area"].split("/");
+            roll_properties['range'] = range;
+            roll_properties['aoe'] = aoe;
+            roll_properties['aoe-shape'] = aoe_shape;
+        }
+
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
         const custom_critical_limit = parseInt(character.getSetting("custom-critical-limit", ""))
@@ -1171,6 +1270,13 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             "components": (properties["Components"] || ""),
             "ritual": ritual,
             "description": description
+        }
+        // If it's an AoE, then split the range property appropriately
+        if (aoe_shape) {
+            const [range, aoe] = properties["Range/Area"].split("/");
+            roll_properties['range'] = range;
+            roll_properties['aoe'] = aoe;
+            roll_properties['aoe-shape'] = aoe_shape;
         }
         if (castas != "" && !level.startsWith(castas))
             roll_properties["cast-at"] = castas;
@@ -1508,7 +1614,7 @@ function injectRollButton(paneClass) {
         if (to_hit === null)
             to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit");
 
-        if (damages.length > 0 || healings.length > 0 || to_hit !== null) {
+        if (damages.length > 0 || healings.length > 0 || to_hit !== null || properties["Attack/Save"] !== undefined) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { text: "Cast on VTT", small: true });
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
         } else {
@@ -1769,7 +1875,7 @@ function deactivateQuickRolls() {
     if (abilities.length === 0)
         abilities = $(".ddbc-ability-summary .ddbc-ability-summary__secondary .ddbc-signed-number, .ddbc-ability-summary .ddbc-ability-summary__primary .ddbc-signed-number");
     const saving_throws = $(".ct-saving-throws-summary__ability .ct-saving-throws-summary__ability-modifier,.ddbc-saving-throws-summary__ability .ddbc-saving-throws-summary__ability-modifier");
-    const skills = $(".ct-skills .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__col--modifier");
+    const skills = $(".ct-skills .ct-skills__list .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__list .ddbc-skills__col--modifier");
     const actions = $(".ct-combat-attack .ct-combat-attack__icon,.ddbc-combat-attack .ddbc-combat-attack__icon");
     const actions_to_hit = $(".ddbc-combat-attack .ddbc-combat-attack__tohit .integrated-dice__container");
     const actions_damage = $(".ddbc-combat-attack .ddbc-combat-attack__damage .integrated-dice__container:first-of-type");
@@ -2006,7 +2112,7 @@ function documentModified(mutations, observer) {
 
 
     const customRoll = DigitalDiceManager.updateNotifications();
-    if (customRoll) {
+    if (customRoll && settings['use-digital-dice']) {
         dndbeyondDiceRoller.sendCustomDigitalDice(character, customRoll);
     }
     

@@ -50,11 +50,11 @@ function genRoll(dice, modifiers = {}) {
     dice = dice.replace(/(^|\s)+([^\s]+)min([0-9]+)([^\s]*)/g, "$1{$2$4, 0d0 + $3}kh1");
     let roll = "[[" + dice;
     for (let m in modifiers) {
-        let mod = modifiers[m];
+        let mod = modifiers[m].trim();
         if (mod.length > 0) {
             if (m === "CUSTOM")
                 mod = mod.replace(/([0-9]*d[0-9]+)/, "$1cs0cf0");
-            if (mod[0] == '+' || mod[0] == '-' || mod[0] == '?' || mod[0] == '&') {
+            if (["+", "-", "?", "&"].includes(mod[0])) {
                 roll += " " + mod;
             } else {
                 roll += "+" + mod;
@@ -202,7 +202,7 @@ function template(request, name, properties) {
 }
 
 function format_plus_mod(custom_roll_dice) {
-    const prefix = custom_roll_dice && !["+", "-", "?", ""].includes(custom_roll_dice.trim()[0]) ? " + " : "";
+    const prefix = custom_roll_dice && !["+", "-", "?", "&", ""].includes(custom_roll_dice.trim()[0]) ? " + " : "";
     return prefix + (custom_roll_dice || "").replace(/([0-9]*d[0-9]+)/, "$1cs0cf0");;
 }
 
@@ -354,8 +354,9 @@ function rollAttack(request, custom_roll_dice = "") {
 
         dmg_props = damagesToRollProperties(damages, damage_types, crit_damages, crit_damage_types);
     }
-    if (request.range !== undefined)
-        properties["range"] = request.range;
+    if (request.range !== undefined) {
+        properties["range"] = buildRangeString(request);
+    }
 
     if (request["save-dc"] !== undefined) {
         dmg_props["save"] = 1;
@@ -393,7 +394,7 @@ function rollSpellCard(request) {
         "charname": request.character.name,
         "name": request.name,
         "castingtime": request["casting-time"],
-        "range": request.range,
+        "range": buildRangeString(request),
         "duration": request.duration
     }
 
@@ -433,6 +434,15 @@ function rollSpellCard(request) {
     }
 
     return template(request, "spell", properties);
+}
+
+function buildRangeString(request) {
+    let range = request.range;
+    if (request.aoe) {
+        const shape = request['aoe-shape'] || "AoE";
+        range += ` (${shape} ${request.aoe})`;
+    }
+    return range;
 }
 
 function rollSpellAttack(request, custom_roll_dice) {
@@ -510,8 +520,9 @@ function rollSpellAttack(request, custom_roll_dice) {
         }
         dmg_props = damagesToRollProperties(damages, damage_types, critical_damages, critical_damage_types);
     }
-    if (request.range !== undefined)
-        properties["range"] = request.range;
+    if (request.range !== undefined) {
+        properties["range"] = buildRangeString(request);
+    }
     if (request["save-dc"] != undefined) {
         dmg_props["save"] = 1;
         dmg_props["saveattr"] = request["save-ability"];
@@ -712,7 +723,7 @@ async function handleOGLRenderedRoll(request) {
     }
 
     if (originalRequest.range !== undefined) {
-        atk_props["range"] = originalRequest.range;
+        atk_props["range"] = buildRangeString(originalRequest);
         atkType = "atkdmg";
     }
 

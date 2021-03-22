@@ -98,6 +98,8 @@ dndbeyondDiceRoller.setSettings(getDefaultSettings());
 dndbeyondDiceRoller.handleRollError = (request, error) => {
     dndbeyondDiceRoller._displayer.setError(error);
     if (request.action === "rendered-roll") {
+        // If it was a custom digital dice roll, then don't show it would be redundant
+        if (request.request.type === "digital-dice") return;
         return dndbeyondDiceRoller._displayer.postHTML(request.request, request.title,
             request.html, request.character, request.whisper,
             request.play_sound, request.source, request.attributes, 

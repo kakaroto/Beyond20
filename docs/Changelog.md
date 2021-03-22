@@ -11,7 +11,7 @@ v2.3.0
 * **Feature**: Allow queuing up of rolls when the Digital Dice are enabled so all rolls are executed
 * **Feature**: Add support for capturing and transferring digital dice rolled manually through D&D Beyond's interface
 * **Feature**: Add support for parsing the item customization options (Hex Weapon, Pact Weapon)
-* **Feature**: Display a class feature's choices (such as selected profiency or the Monastic Tradition) when displaying a feature to the VTT
+* **Feature**: Display a class feature's choices (such as selected proficiency or the Monastic Tradition) when displaying a feature to the VTT
 * **Feature**: Add option to hide from the player the results of a whispered roll that is sent to Discord (by [@rispig](https://github.com/rispig))
 * **Feature**: Add a notification when the class features are parsed so the user gets visual feedback when it's done
 * **Feature**: Wizard Bladesong: Support concentration constitution saves and adds the intelligence modifier (by [@Aeristoka](https://github.com/Aeristoka))
@@ -47,7 +47,7 @@ v2.3.0
 * **Bugfix**: Fix critical damages not being rolled with digital dice disabled and using Beyond20 roll renderer
 * **Bugfix**: Display the full spell card information from a monster page when using the "hide monster name" whisper name
 * **Bugfix**: Fix custom messages not working properly if the whisper or roll type setting is set to "always ask"
-* **Bugfix**: Fix unreliable support of Collossus slayer feat. Does not query anymore and is handled like Sneak Attack (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix unreliable support of Colossus slayer feat. Does not query anymore and is handled like Sneak Attack (by [@Aeristoka](https://github.com/Aeristoka))
 * **Bugfix**: *Roll20*: Fix rolls not being sent with the correct character "speaking as"
 * **Bugfix**: *Roll20*: Fix detection of some character names to speak rolls as by trimming leading and trailing spaces
 * **Bugfix**: *Roll20*: Fix custom chat messages not displaying correctly when using the Beyond20 roll renderer
@@ -58,7 +58,7 @@ v2.3.0
 * **Bugfix**: *Astral*: Changed rendered roll formulas in Astral using the syntax recommended by @Redmega. (by [@adriangaro](https://github.com/adriangaro))
 * **Bugfix**: *Astral*: Fixed some errors related to speak as character functionality. (by [@adriangaro](https://github.com/adriangaro))
 * **Misc**: Clarify the text for the "click the features and traits" alert on new character sheets (by [@Aeristoka](https://github.com/Aeristoka))
-* **Misc**: Remove the mention from the "send custom notes" feature information that falsly stated being supported on Roll20 only
+* **Misc**: Remove the mention from the "send custom notes" feature information that falsely stated being supported on Roll20 only
 * **Misc**: Rename the "Fighter: Sharpshooter" option to "Feat: Sharpshooter" to be more accurate
 * **Misc**: Rename the "Rage: You are raging" option to "Barbarian: Rage!" to be more in line with other options formatting
 * **Misc**: Add an information banner in the extension popup on non D&D Beyond and VTT pages to decrease confusion on how to use the extension
@@ -70,7 +70,7 @@ v2.2.1
 
 * **Feature**: Make the quick roll tooltip stay longer after hover to more easily interact with it
 * **Bugfix**: *Roll20*: Fix issue preventing rolls from appearing on Roll20 when the character sheet template isn't OGL
-* **Bugfix**: Fix missing "Roll Damages" button when auto-roll-damages is disabeld
+* **Bugfix**: Fix missing "Roll Damages" button when auto-roll-damages is disabled
 * **Bugfix**: Fix issue preventing damage-only rolls from working if auto-roll-damages was disabled
 * **Bugfix**: Fix a possible crash when rolling an attack that has no damage
 * **Bugfix**: Fix the roll formula being incorrect when having both Reliable Talent/Silver Tongue class feature and Halfling Luck
@@ -101,7 +101,7 @@ v2.2
 * **Feature**: Move the user query for rolling tools and instruments to the D&D Beyond page
 * **Feature**: Add a "Use Tool" and "Use Instrument" button for tools and instrument items
 * **Feature**: Save the last choice made by the user in the whisper/advantage query dialogs
-* **Feature**: Add abilility to send custom chat messages/macros to VTT when doing a roll (by [@John-Paul-R](https://github.com/John-Paul-R))
+* **Feature**: Add ability to send custom chat messages/macros to VTT when doing a roll (by [@John-Paul-R](https://github.com/John-Paul-R))
 * **Feature**: Roll the Spell Attack as a full attack instead of a custom d20 modifier. Allows use of the advantage settings
 * **Feature**: Add the ability to switch the D&D Beyond sidebar to the selected spell's level when clicking on a spell which is the same as the one already displayed, but at a different level
 * **Feature**: Add support for Halfling Luck feature
@@ -212,7 +212,7 @@ v2.0
 ===
 * **Feature**: Add integration with the D&D Beyond Digital Dice
 * **Feature**: Update the Beyond20 icon sets to make them more beautiful and usable at low resolutions. Icons provided by [Jerry Escandon](https://github.com/Jerryescandon)
-* **Feature**: *Discord*: Add a channel manager for Discord secret keys to allow easily switching channel destinationse](https://github.com/Brunhine))
+* **Feature**: *Discord*: Add a channel manager for Discord secret keys to allow easily switching channel destinations](https://github.com/Brunhine))
 * **Feature**: *Discord*: Add support for whispered rolls in the Discord integration
 * **Feature**: *Roll20*: Automatically check for character sheet template and display the roll according to the campaign setting
 * **Feature**: Add quick roll button to Initiative
@@ -241,7 +241,7 @@ v2.0
 * **Bugfix**: Fix some edge cases in roll formula formatting in ability descriptions (By [@Brunhine](https://github.com/Brunhine))
 * **Bugfix**: Fix Fighter's Giant Might class feature not scaling its dice properly at level 11 (By [@Aeristoka](https://github.com/Aeristoka))
 * **Bugfix**: Fix Cleric's Divine Strike to work for non melee weapons as well (By [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Fix handling of Great Weapon Fighting for the Polarm Master bonus action (By [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix handling of Great Weapon Fighting for the Polearm Master bonus action (By [@Aeristoka](https://github.com/Aeristoka))
 * **Bugfix**: Roll Sneak Attack damages on Psychic Blades action (By [@Aeristoka](https://github.com/Aeristoka))
 * **Bugfix**: Fix saving throws quick roll not working anymore (By [@kbuzsaki](https://github.com/kbuzsaki))
 * **Bugfix**: Do not display duplicate custom dice icons in the class features list
@@ -250,7 +250,7 @@ v2.0
 * **Bugfix**: Fix Cleric's Life Transference damage being wrongly calculated
 * **Bugfix**: Fix custom damage labels being ignored for spells and actions
 * **Bugfix**: Fix class feature descriptions not being properly displayed
-* **Bugfix**: Fix rolling tools from Equipement due to change in equipment type
+* **Bugfix**: Fix rolling tools from Equipment due to change in equipment type
 * **Bugfix**: *Roll20*: Prevent multiple dice rolls in a single formula from appearing as separate formulas
 * **Bugfix**: *Foundry VTT*: Fix add to initiative breaking with 0.6.0 release (By [@Aeristoka](https://github.com/Aeristoka))
 * **Bugfix**: *Foundry VTT*: Fix applying damage or healing to a token from a custom roll
@@ -320,7 +320,7 @@ v0.9
 
 * **Feature**: Add indicator on roll buttons to identify the roll type (advantage, disadvantage, roll twice, etc...)
 * **Feature**: Add synchronization of Temporary HP to tokens and character sheets in Roll20 and FVTT
-* **Feature**: Add support for HP and Temp HP synchornization for character sheet creatures from the Extra section
+* **Feature**: Add support for HP and Temp HP synchronization for character sheet creatures from the Extra section
 * **Feature**: Add a "Display to VTT" button on Equipment and Magic Items pages of D&D Beyond
 * **Feature**: Support rolling with Advantage when clicking with the Shift button pressed
 * **Feature**: Support rolling with Disadvantage when clicking with the Ctrl button pressed
@@ -369,7 +369,7 @@ v0.8
 * **Bugfix**: Fix inability to roll when opening the character sheet for the first time with a mobile or tablet layout
 * **Bugfix**: Fix duplication of the "Roll initiative" lines in stat blocks when switching monsters in the My Encounters page
 * **Bugfix**: Fix the spell name for concentration or ritual spells since the recent change to D&D Beyond content
-* **Bugfix**: Fix Great Weapong Fighting dice reroll being mistakenly applied on some two-handed non-melee weapons
+* **Bugfix**: Fix Great Weapon Fighting dice reroll being mistakenly applied on some two-handed non-melee weapons
 * **Bugfix**: Fix the spell level/school display missing spaces introduced in the recent code refactor of v0.7
 * **Bugfix**: Fix character action list not being properly cached which may lead to loss of character options on mobile
 * **Bugfix**: Fix parsing of stat block attacks for Clay Gladiator and Scout which had typos in the official D&D Beyond pages
@@ -438,7 +438,7 @@ v0.5
 - **Bugfix**: Roll damages even without a "To-Hit" for Custom Actions
 - **Bugfix**: *FVTT*: Clicking 'Roll Damages' when auto-roll damage is disabled will now re-roll the damage dice.
 - **Misc**: Decrease Chrome extension permissions and require manual activation for FVTT installations (See [Release Notes](release_notes#v05) for more information)
-- **Misc**: Replace all remaining occurences of "Roll20" with "VTT"
+- **Misc**: Replace all remaining occurrences of "Roll20" with "VTT"
 
 v0.4
 ===
@@ -449,7 +449,7 @@ v0.4
 - **Feature**: *FVTT*: Add support for the auto-roll damage option
 - **Feature**: *FVTT*: Nicer display output for rolls
 - **Feature**: Add "Roll20 Template" option in the Roll20 popup menu
-- **Bugfix**: Fix non-visible messages on Roll20 when using other tempaltes even if template is set to 'Other templates'
+- **Bugfix**: Fix non-visible messages on Roll20 when using other templates even if template is set to 'Other templates'
 - **Bugfix**: No need to roll critical damages for spells that have no 'to-hit'. Fixes 3d Dice rolls doubled on healing spells.
 - **Bugfix**: Fix spell attack dice disappearing
 - **Misc**: Remove the green/red on death saving throws above/below 10 as it was apparently confusing to players (might re-add as an option).
@@ -551,7 +551,7 @@ v0.0.4
 ===
 
 - **Feature:** Add support for other roll20 character sheet templates
-- **Bugfix:** Fix custom dice formulas gettings messed up if we change spell level casting
+- **Bugfix:** Fix custom dice formulas getting messed up if we change spell level casting
 
 v0.0.3
 ===

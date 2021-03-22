@@ -194,7 +194,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 if (highest_dice != 0) {
                     let brutal_dmg = `${brutal}d${highest_dice}`
                     // Apply great weapon fighting to brutal damage dice
-                    if (character.hasClassFeature("Fighting Style: Great Weapon Fighting") &&
+                    if ((character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&
                         properties["Attack Type"] == "Melee" &&
                         (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
                         brutal_dmg += "ro<=2"
@@ -288,7 +288,7 @@ async function sendRoll(character, rollType, fallback, args) {
         req.whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
     if (req.advantage === RollType.QUERY)
         req.advantage = await dndbeyondDiceRoller.queryAdvantage(args.name || rollType);
-    if (character.getGlobalSetting("weapon-force-critical", false))
+    if (character.getGlobalSetting("weapon-force-critical", false) || key_modifiers.force_critical)
         req["critical-limit"] = 1;
 
     if (character.getGlobalSetting("use-digital-dice", false) && DigitalDiceManager.isEnabled()) {
@@ -322,6 +322,10 @@ function getRollTypeButtonClass(character) {
         advantage = RollType.DISADVANTAGE;
     else if (key_modifiers.normal_roll)
         advantage = RollType.NORMAL;
+    else if (key_modifiers.super_advantage)
+        advantage = RollType.SUPER_ADVANTAGE;
+    else if (key_modifiers.super_disadvantage)
+        advantage = RollType.SUPER_DISADVANTAGE;
 
     if (advantage == RollType.DOUBLE)
         return "beyond20-roll-type-double";

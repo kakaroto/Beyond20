@@ -127,7 +127,7 @@ async function handleRenderedRoll(request) {
         stripRequestForAttackRoll(originalRequest);
         // Compressing and stripping the request to reduce the encoded version as much as possible to not exceed 2048 chars
         rollDamages = `b20-rr-${LZString.compressToEncodedURIComponent(JSON.stringify(originalRequest))}`;
-        rolls.push(["Roll Damages", `[\`Click\`](#${rollDamages})`]);
+        rolls.push(["Roll Damage", `[\`Click\`](#${rollDamages})`]);
     }
     if (originalRequest.type === "initiative" && settings["initiative-tracker"]) {
         const initiative = request.attack_rolls.find((roll) => !roll.discarded);
@@ -205,19 +205,27 @@ async function updateHpBar({characterName, hp, maxHp, tempHp}) {
             console.warn(`Couldn't update the character hp due to the following reason: No character found with name ${characterName}`)
             return
         }
+        const characterData = await getCharacterData(character);
+        updateCustomAttribute(characterData, "HP_Max", maxHp);
+        updateCustomAttribute(characterData, "HP_Current", hp);
+        updateCustomAttribute(characterData, "HP_Temp", tempHp);
+        // 48bb78 and 48b3bb represent the hex codes for the colors for the bars
+        updateResourceBar(characterData, "hp", "HP_Current", "HP_Max", "48bb78", hp, maxHp, true);
+        updateResourceBar(characterData, "temphp", "HP_Temp", "HP_Temp", "48b3bb", tempHp, tempHp, tempHp != 0);
+
         return fetch(location.origin + `/api/game/${room}/character/${character}`, {
             method: "PATCH",
+            headers: {
+                'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
+            },
             body: JSON.stringify({
                 character: {
                     updateAt: Date.now(),
-                    attributeBarMax: maxHp + tempHp,
-                    attributeBarCurrent: hp + tempHp,
-
+                    customAttributes: characterData.customAttributes,
+                    resourceBars: characterData.resourceBars
                 }
             }),
-            headers: {
-                'x-authorization': `Bearer ${token}`, 'content-type': 'application/json'
-            }
+           
         });
     } catch (e) {
         console.error(`Couldn't update the character hp due to the following reason: `, e);
@@ -351,7 +359,6 @@ function disconnectAllEvents() {
 function addRollHook() {
     chatIframe.on('click', `a[href*='#b20-rr-']`, (ev) => {
         ev.preventDefault();
-        console.log(ev);
         roll_renderer.handleRollRequest(JSON.parse(LZString.decompressFromEncodedURIComponent(ev.currentTarget.hash.split('#b20-rr-')[1])));
     })
 }

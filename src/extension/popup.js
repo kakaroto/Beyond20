@@ -96,6 +96,15 @@ function populateCharacter(response) {
         options.append(e);
         e = createHTMLOption("custom-critical-limit", false, character_settings);
         options.append(e);
+        if (response["racial-traits"].includes("Lucky")) {
+            e = createHTMLOption("halfling-lucky", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Brutal Critical") ||
+            response["racial-traits"].includes("Savage Attacks")) {
+            e = createHTMLOption("brutal-critical", false, character_settings);
+            options.append(e);
+        }
         if (Object.keys(response.classes).includes("Rogue")) {
             e = createHTMLOption("rogue-sneak-attack", false, character_settings);
             options.append(e);
@@ -120,11 +129,6 @@ function populateCharacter(response) {
             e = createHTMLOption("great-weapon-master", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Brutal Critical") ||
-            response["racial-traits"].includes("Savage Attacks")) {
-            e = createHTMLOption("brutal-critical", false, character_settings);
-            options.append(e);
-        }
         if (response["class-features"].includes("Rage")) {
             e = createHTMLOption("barbarian-rage", false, character_settings);
             options.append(e);
@@ -143,6 +147,10 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Planar Warrior")) {
             e = createHTMLOption("ranger-planar-warrior", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Hunter’s Prey: Colossus Slayer")) {
+            e = createHTMLOption("ranger-colossus-slayer", false, character_settings);
             options.append(e);
         }
         if (response["class-features"].includes("Slayer’s Prey")) {
@@ -231,6 +239,14 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Arcane Jolt")) {
             e = createHTMLOption("artificer-arcane-jolt", false, character_settings);
+            options.append(e);
+        }
+        if (response["feats"].includes("Charger")) {
+            e = createHTMLOption("charger-feat", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Genie’s Vessel")) {
+            e = createHTMLOption("genies-vessel", false, character_settings);
             options.append(e);
         }
 

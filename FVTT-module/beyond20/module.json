@@ -12,5 +12,5 @@
     "manifest": "https://raw.githubusercontent.com/kakaroto/Beyond20/master/FVTT-module/beyond20/module.json",
     "download": "https://raw.githubusercontent.com/kakaroto/Beyond20/fvtt-module-v1.2/FVTT-module/beyond20.zip",
     "minimumCoreVersion": "0.6.0",
-    "compatibleCoreVersion": "0.8.0"
+    "compatibleCoreVersion": "0.7.10"
 }

@@ -25,7 +25,7 @@ function documentModified(mutations, observer) {
         character.parseStatBlock(monster);
     }
     const customRoll = DigitalDiceManager.updateNotifications();
-    if (customRoll) {
+    if (customRoll && settings['use-digital-dice']) {
         dndbeyondDiceRoller.sendCustomDigitalDice(character, customRoll);
     }
 }

@@ -405,7 +405,7 @@ class Beyond20RollRenderer {
         const request = {
             action: "roll",
             character: character.getDict(),
-            type: "custom",
+            type: "digital-dice",
             roll: digitalRoll.rolls[0].formula,
             advantage: RollType.NORMAL,
             whisper: whisper,
@@ -656,8 +656,13 @@ class Beyond20RollRenderer {
         const [to_hit, damage_rolls] = await this.buildAttackRolls(request, custom_roll_dice);
 
         const data = {}
-        if (request.range !== undefined)
+        if (request.range !== undefined) {
             data["Range"] = request.range;
+            if (request.aoe)
+                data["Area of Effect"] = request.aoe;
+            if (request["aoe-shape"])
+                data["AoE Shape"] = request["aoe-shape"];
+        }
 
         const roll_info = [];
         if (request["save-dc"] != undefined)
@@ -670,10 +675,14 @@ class Beyond20RollRenderer {
     buildSpellCard(request) {
         const data = {
             "Casting Time": request["casting-time"],
-            "Range": request.range,
             "Duration": request.duration,
-            "Components": request.components
+            "Components": request.components,
+            "Range": request.range
         }
+        if (request["aoe"] !== undefined)
+            data["Area of Effect"] = request["aoe"];
+        if (request["aoe-shape"] !== undefined)
+            data["AoE Shape"] = request["aoe-shape"];
 
         let source = request["level-school"];
         if (request["cast-at"] !== undefined)
@@ -697,8 +706,13 @@ class Beyond20RollRenderer {
         const [source, data, description] = this.buildSpellCard(request);
 
         const roll_info = [];
-        if (request.range !== undefined)
+        if (request.range !== undefined) {
             roll_info.push(["Range", request.range]);
+            if (request.aoe)
+                roll_info.push(["Area of Effect", request.aoe]);
+            if (request["aoe-shape"])
+                roll_info.push(["AoE Shape", request["aoe-shape"]]);
+        }
 
         if (request["cast-at"] !== undefined)
             roll_info.push(["Cast at", request["cast-at"] + " Level"]);

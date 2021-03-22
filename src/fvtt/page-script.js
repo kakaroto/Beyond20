@@ -47,7 +47,8 @@ class FVTTDisplayer {
         // Build a dicePool, attach it to a Roll, then attach it to the ChatMessage
         // Then set ChatMessage type to "ROLL"
         if (attack_rolls.length > 0 || damage_rolls.length > 0) {
-            const rolls = [...attack_rolls, ...damage_rolls.map(d => d[1])];
+            const rolls = [...attack_rolls, ...damage_rolls.map(d =>d[1]).filter(r => !!r)];
+            // Transforms DNDBRolls -> FVTTRolls
             const fvttRolls = rolls.map(r => {
                 if (r instanceof FVTTRoll) { return r._roll; }
                 const dice = [];
@@ -398,9 +399,10 @@ function setTitle() {
     const chatControls = $("#chat-controls");
     if (chatControls.length) {
         const title = document.getElementsByTagName("title")[0];
-        // Make sure the mutation gets triggerred if (we reload the extension;
+        const worldTitle = game.world.title || game.world.data?.title || "";
+        // Make sure the mutation gets triggerred if we reload the extension
         title.textContent = "Foundry Virtual Tabletop";
-        title.textContent = game.world.title + " • Foundry Virtual Tabletop";
+        title.textContent = worldTitle + " • Foundry Virtual Tabletop";
     } else {
         // Wait for the world and UI to be loaded;
         Hooks.once("renderChatLog", setTitle);
