@@ -381,7 +381,8 @@ class Monster extends CharacterBase {
                 action_name = action_name.slice(0, -1);
             //console.log("Action name: ", action_name);
             if (add_dice) {
-                const description = descriptionToString(action);
+                let description = descriptionToString(action);
+                description = description.replace(/−/g, "-");
                 const roll_properties = this.buildAttackRoll(action_name, description);
                 if (roll_properties) {
                     const id = addRollButton(this, () => {
