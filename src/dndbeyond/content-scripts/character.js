@@ -1104,14 +1104,6 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
 }
     
 function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas}={}) {
-    // Handle Disciple of life;
-    if (character.hasClassFeature("Disciple of Life") &&
-        character.getSetting("cleric-disciple-life", false)) {
-        const level = castas ? castas[0] : spell_level[0];
-        const discipleOfLife = 2 + parseInt(level);
-        damages.push(discipleOfLife.toString());
-        damage_types.push("Disciple of Life");
-    }
     if (character.hasClassFeature("Supreme Healing")) {
         for (let i = 0; i < damages.length; i++) {
             if (damage_types[i] !== "Healing") continue;
