@@ -109,10 +109,6 @@ function populateCharacter(response) {
             e = createHTMLOption("rogue-sneak-attack", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Disciple of Life")) {
-            e = createHTMLOption("cleric-disciple-life", false, character_settings);
-            options.append(e);
-        }
         if (response["class-features"].includes("Jack of All Trade")) {
             e = createHTMLOption("bard-joat", false, character_settings);
             options.append(e);

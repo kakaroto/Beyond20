@@ -456,12 +456,6 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
-    "cleric-disciple-life": {
-        "title": "Cleric: Life Domain: Disciple of Life",
-        "description": "Send Disciple of Life healing bonus",
-        "type": "bool",
-        "default": true
-    },
     "druid-symbiotic-entity": {
         "title": "Druid: Circle of Spores: Symbiotic Entity",
         "description": "Your symbiotic entity lends its power to your melee weapon strikes.",
