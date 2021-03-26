@@ -383,7 +383,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     spell_damage_types.push(dmg_type);
                 }
             }
-            handleSpecialSpells(group_name, spell_damages, spell_damage_types, {spell_source: group_origin});
+            handleSpecialSpells(group_name, spell_damages, spell_damage_types, {spell_source: group_origin}, to_hit);
             damages.push(...spell_damages);
             damage_types.push(...spell_damage_types.map(t => `${t} (${group_name})`));
         }
@@ -401,55 +401,27 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 }
             }
         }
-        if (character.hasClass("Rogue") &&
-            character.getSetting("rogue-sneak-attack", false) &&
-            (properties["Attack Type"] == "Ranged" ||
-                properties["Properties"].includes("Finesse"))) {
-            const sneak_attack = Math.ceil(character._classes["Rogue"] / 2) + "d6";
-            damages.push(sneak_attack);
-            damage_types.push("Sneak Attack");
+
+        if (properties["Attack Type"] == "Melee") {
+            handleSpecialMeleeAttacks(damages, damage_types, properties, settings_to_change, to_hit);
         }
-        if (character.hasClassFeature("Rage") &&
-            character.getSetting("barbarian-rage", false) &&
-            properties["Attack Type"] == "Melee") {
-            const barbarian_level = character.getClassLevel("Barbarian");
-            const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
-            damages.push(String(rage_damage));
-            damage_types.push("Rage");
+
+        if (properties["Attack Type"] == "Ranged") {
+            handleSpecialRangedAttacks(damages, damage_types, properties, settings_to_change, to_hit);
         }
-        if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false) &&
-            character.getSetting("barbarian-divine-fury", true) && character.hasClassFeature("Divine Fury") &&
-            properties["Attack Type"] == "Melee") {
-            const barbarian_level = character.getClassLevel("Barbarian");
-            damages.push(`1d6+${Math.floor(barbarian_level / 2)}`);
-            damage_types.push("Divine Fury");
-        }
-        if (to_hit !== null && 
-            character.getSetting("sharpshooter", false) &&
-            character.hasFeat("Sharpshooter") &&
-            properties["Attack Type"] == "Ranged" &&
-            properties["Proficient"] == "Yes") {
-            to_hit += " - 5";
-            damages.push("10");
-            damage_types.push("Sharpshooter");
-            settings_to_change["sharpshooter"] = false;
-        }
-        if (to_hit !== null && 
-            character.getSetting("great-weapon-master", false) &&
-            character.hasFeat("Great Weapon Master") &&
-            properties["Attack Type"] == "Melee" &&
-            properties["Properties"].includes("Heavy") &&
-            properties["Proficient"] == "Yes") {
-            to_hit += " - 5";
-            damages.push("10");
-            damage_types.push("Weapon Master");
-            settings_to_change["great-weapon-master"] = false;
-        }
+
+        handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, to_hit);
+
+        // Should remain here, as they require a weapon you're holding
+        // -----------------------------------------------------------
+        // Paladin: Sacred Weapon
         if (to_hit !== null && 
             character.getSetting("paladin-sacred-weapon", false)) {
             const charisma_attack_mod =  Math.max(character.getAbility("CHA").mod, 1);
             to_hit += "+" + charisma_attack_mod;
         }
+
+        // Warlock: Eldritch Invocation: Lifedrinker
         if (to_hit !== null && 
             character.getSetting("eldritch-invocation-lifedrinker", false) &&
             item_customizations.includes("Pact Weapon")) {
@@ -457,6 +429,8 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damages.push(`${charisma_damage_mod}`);
             damage_types.push("Lifedrinker");
         }
+
+        // Bloodhunter: Crimson Rite
         if (character.getSetting("bloodhunter-crimson-rite", false) &&
             character.hasClassFeature("Crimson Rite")) {
             const bloodhunter_level = character.getClassLevel("Blood Hunter");
@@ -475,127 +449,17 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             }
         }
 
-        //Ranger abilities;
-        if (character.hasClass("Ranger")) {
-            if (character.getSetting("ranger-dread-ambusher", false)) {
-                damages.push("1d8");
-                damage_types.push("Ambush");
-                settings_to_change["ranger-dread-ambusher"] = false;
-            }
-            if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer") &&
-                character.getSetting("ranger-colossus-slayer", false)) {
-                damages.push("1d8");
-                damage_types.push("Colossus Slayer");
-            }
-            if (character.hasClassFeature("Slayer’s Prey") &&
-                character.getSetting("ranger-slayers-prey", false)) {
-                damages.push("1d6");
-                damage_types.push("Slayer’s Prey");
-            }
-            if (character.hasClassFeature("Planar Warrior") &&
-                character.getSetting("ranger-planar-warrior", false)) {
-                const ranger_level = character.getClassLevel("Ranger");
-                damages.push(ranger_level < 11 ? "1d8" : "2d8");
-                damage_types.push("Planar Warrior");
-            }
-            if (character.hasClassFeature("Favored Foe") &&
-                character.getSetting("ranger-favored-foe", false)) {
-                const ranger_level = character.getClassLevel("Ranger");
-                damages.push(ranger_level < 6 ? "1d4" : ( ranger_level < 14 ? "1d6" : "1d8"));
-                damage_types.push("Favored Foe");
-            }
-            if (character.hasClassFeature("Gathered Swarm") &&
-                character.getSetting("ranger-gathered-swarm", false)) {
-                const ranger_level = character.getClassLevel("Ranger");
-                damages.push(ranger_level < 11 ? "1d6" : "1d8");
-                damage_types.push("Gathered Swarm");
-            }
-        }
-
-        // Ranger: Fey Wanderer - Dreadful Strikes
-        if (character.hasClassFeature("Dreadful Strikes") && character.getSetting("fey-wanderer-dreadful-strikes")) {
-            const ranger_level = character.getClassLevel("Ranger");
-            damages.push(ranger_level < 11 ? "1d4" : "1d6");
-            damage_types.push("Dreadful Strikes");
-        }
-
-        if (properties["Attack Type"] == "Melee" &&
-            character.hasClassFeature("Improved Divine Smite") &&
-            character.getSetting("paladin-improved-divine-smite", true)) {
-            damages.push("1d8");
-            damage_types.push("Radiant");
-        }
+        //Artificer Battlemaster Arcane Jolt
+        // TODO: Implement for Steel Defender at later date
         if (damages.length > 0 &&
-            character.getSetting("warlock-hexblade-curse", false) &&
-            character.hasClassFeature("Hexblade’s Curse") &&
-            character._proficiency !== null) {
-            damages.push(character._proficiency);
-            damage_types.push("Hexblade's Curse");
+            character.hasClassFeature("Arcane Jolt") &&
+            character.getSetting("artificer-arcane-jolt", false) &&
+            item_type.indexOf(", Common") === -1) {
+            damages.push(character._level < 15 ? "2d6" : "4d6");
+            damage_types.push("Arcane Jolt");
         }
-        // Fighter: Giant’s Might;
-        if (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)) {
-            const fighter_level = character.getClassLevel("Fighter");
-            damages.push(fighter_level < 10 ? "1d6" : (fighter_level < 18 ? "1d8" : "1d10"));
-            damage_types.push("Giant’s Might");
-        }
-        // Cleric's Divine Strike;
-        if (character.hasClassFeature("Divine Strike") &&
-            character.getSetting("cleric-divine-strike", true)) {
-            const cleric_level = character.getClassLevel("Cleric");
-            damages.push(cleric_level < 14 ? "1d8" : "2d8");
-            damage_types.push("Divine Strike");
-        }
-        // Cleric Blessed strikes
-        if (character.hasClassFeature("Blessed Strikes") &&
-            character.getSetting("cleric-blessed-strikes", false)) {
-            damages.push("1d8");
-            damage_types.push("Blessed Strikes");
-        }
-        // Bard's Psychic blades;
-        if (character.hasClassFeature("Psychic Blades") &&
-            character.getSetting("bard-psychic-blades", false) &&
-            character.hasClass("Bard")) {
-            const bard_level = character.getClassLevel("Bard");
-            let blades_dmg = "2d6";
-            if (bard_level < 5)
-                blades_dmg = "2d6"
-            else if (bard_level < 10)
-                blades_dmg = "3d6"
-            else if (bard_level < 15)
-                blades_dmg = "5d6"
-            else
-                blades_dmg = "8d6"
-            damages.push(blades_dmg);
-            damage_types.push("Psychic");
-            settings_to_change["bard-psychic-blades"] = false;
-        }
-        //Protector Aasimar: Radiant Soul Damage
-        if (character.hasRacialTrait("Radiant Soul") &&
-            character.getSetting("protector-aasimar-radiant-soul", false)) {
-            damages.push(character._level);
-            damage_types.push("Radiant Soul");
-        }
-
-        // Wizard Bladesong
-        if (character.hasClassFeature("Song of Victory") && character.getSetting("wizard-bladesong", false)) {
-            const intelligence = character.getAbility("INT") || {mod: 0};
-            const mod = parseInt(intelligence.mod) || 0;
-            damages.push(String(Math.max(mod, 1)));
-            damage_types.push("Bladesong");
-        }
-
-        // Druid: Circle of Spores - Symbiotic Entity
-        if (character.hasClassFeature("Symbiotic Entity") && character.getSetting("druid-symbiotic-entity", false) &&
-            properties["Attack Type"] === "Melee") {
-                damages.push("1d6");
-                damage_types.push("Symbiotic Entity");
-        }
-
-        // Warlock: Genie Patron - Genie's Wrath
-        if (character.hasClassFeature("Genie’s Vessel") && character.getSetting("genies-vessel", false)) {
-            damages.push(character._proficiency);
-            damage_types.push("Genie's Wrath");
-        }
+        // ----------------------------------------------------------------
+        // End: Should remain here, as they require a weapon you're holding
 
         let critical_limit = 20;
         if (character.hasAction("Channel Divinity: Legendary Strike") &&
@@ -622,24 +486,6 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 if (character.hasRacialTrait("Savage Attacks"))
                     brutal += 1;
             }
-        }
-
-        // Charger Feat
-        if (properties["Attack Type"] == "Melee" && character.hasFeat("Charger") &&
-            character.getSetting("charger-feat")) {
-            damages.push("+5");
-            damage_types.push("Charger Feat");
-            settings_to_change["charger-feat"] = false;
-        }
-
-        //Artificer Battlemaster Arcane Jolt
-        // TODO: Implement for Steel Defender at later date
-        if (damages.length > 0 &&
-            character.hasClassFeature("Arcane Jolt") &&
-            character.getSetting("artificer-arcane-jolt", false) &&
-            item_type.indexOf(", Common") === -1) {
-            damages.push(character._level < 15 ? "2d6" : "4d6");
-            damage_types.push("Arcane Jolt");
         }
 
         const roll_properties = buildAttackRoll(character,
@@ -775,12 +621,6 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         if (Object.keys(properties).includes("Damage")) {
             damages.push(properties["Damage"]);
             damage_types.push(properties["Damage Type"] || "");
-            if (character.getSetting("warlock-hexblade-curse", false) &&
-                character.hasClassFeature("Hexblade’s Curse") &&
-                character._proficiency !== null) {
-                damages.push(character._proficiency);
-                damage_types.push("Hexblade's Curse");
-            }
         }
 
         const custom_damages = character.getSetting("custom-damage-dice", "");
@@ -807,19 +647,25 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         if (action_name.includes("Polearm Master - Bonus Attack") && (character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true))) {
             damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
         }
-        if (to_hit !== null && 
-            character.getSetting("great-weapon-master", false) &&
-            action_name.includes("Polearm Master - Bonus Attack")) {
-            to_hit += " - 5";
-            damages.push("10");
-            damage_types.push("Weapon Master");
-            settings_to_change["great-weapon-master"] = false;
-        }
+
         const isMeleeAttack = action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
         || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
         || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons") 
         || action_name.includes("Thunder Gauntlets") || action_name.includes("Unarmed Fighting");
-        if ( isMeleeAttack || action_name.includes("Lightning Launcher")) {
+        
+        const isRangedAttack = action_name.includes("Lightning Launcher");
+
+        if (isMeleeAttack) {
+            handleSpecialMeleeAttacks(damages, damage_types, properties, settings_to_change, to_hit, action_name);
+        }
+
+        if (isRangedAttack) {
+            handleSpecialRangedAttacks(damages, damage_types, properties, settings_to_change, to_hit, action_name);
+        }
+
+        handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, to_hit, action_name);
+        
+        if ( isMeleeAttack || isRangedAttack) {
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
                 critical_limit = 19;
@@ -839,23 +685,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
                 if (character.hasRacialTrait("Savage Attacks"))
                     brutal += 1;
             }
-            if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) {
-                const barbarian_level = character.getClassLevel("Barbarian");
-                const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
-                damages.push(String(rage_damage));
-                damage_types.push("Rage");
-            }
-            if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false) &&
-                character.getSetting("barbarian-divine-fury", true) && character.hasClassFeature("Divine Fury")) {
-                const barbarian_level = character.getClassLevel("Barbarian");
-                damages.push(`1d6+${Math.floor(barbarian_level / 2)}`);
-                damage_types.push("Divine Fury");
-            }
-            if (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)) {
-                const fighter_level = character.getClassLevel("Fighter");
-                damages.push(fighter_level < 10 ? "1d6" : (fighter_level < 18 ? "1d8" : "1d10"));
-                damage_types.push("Giant’s Might");
-            }
+
             if (character.getSetting("bloodhunter-crimson-rite", false) &&
             character.hasClassFeature("Crimson Rite")) {
                 const bloodhunter_level = character.getClassLevel("Blood Hunter");
@@ -873,82 +703,13 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
                     damage_types.push("Crimson Rite");
                 }
             }
-            if (action_name.includes("Psychic Blade")) {
-                if (character.hasClass("Rogue") &&
-                    character.getSetting("rogue-sneak-attack", false)) {
-                    const sneak_attack = Math.ceil(character._classes["Rogue"] / 2) + "d6";
-                    damages.push(sneak_attack);
-                    damage_types.push("Sneak Attack");
-                }
-            }
-            // Wizard: Bladesong
-            if (character.hasClassFeature("Song of Victory") && character.getSetting("wizard-bladesong", false)) {
-                const intelligence = character.getAbility("INT") || {mod: 0};
-                const mod = parseInt(intelligence.mod) || 0;
-                damages.push(String(Math.max(mod, 1)));
-                damage_types.push("Bladesong");
-            }
-
-            if (character.hasClassFeature("Improved Divine Smite") &&
-                character.getSetting("paladin-improved-divine-smite", true)) {
-                damages.push("1d8");
-                damage_types.push("Radiant");
-            }
-
-            // Cleric Blessed Strikes
-            if (character.hasClassFeature("Blessed Strikes") &&
-            character.getSetting("cleric-blessed-strikes", false)) {
-                damages.push("1d8");
-                damage_types.push("Blessed Strikes");
-            }
         }
 
-        // Charger Feat
-        if (isMeleeAttack && character.hasFeat("Charger") && character.getSetting("charger-feat")) {
-            damages.push("+5");
-            damage_types.push("Charger Feat");
-            settings_to_change["charger-feat"] = false;
-        }
-
-        // Druid: Circle of Spores - Symbiotic Entity
-        if (isMeleeAttack && character.hasClassFeature("Symbiotic Entity") && character.getSetting("druid-symbiotic-entity", false)) {
-            damages.push("1d6");
-            damage_types.push("Symbiotic Entity");
-        }
-
-        //Protector Aasimar: Radiant Soul Damage
-        if (character.hasRacialTrait("Radiant Soul") &&
-            character.getSetting("protector-aasimar-radiant-soul", false)) {
-            damages.push(character._level);
-            damage_types.push("Radiant Soul");
-        }
-
-        // Warlock: Genie Patron - Genie's Wrath
-        if (character.hasClassFeature("Genie’s Vessel") && character.getSetting("genies-vessel", false)) {
-            damages.push(character._proficiency);
-            damage_types.push("Genie's Wrath");
-        }
-
-        // Ranger - Favored Foe
-        if (character.hasClassFeature("Favored Foe") &&
-            character.getSetting("ranger-favored-foe", false)) {
-            const ranger_level = character.getClassLevel("Ranger");
-            damages.push(ranger_level < 6 ? "1d4" : ( ranger_level < 14 ? "1d6" : "1d8"));
-            damage_types.push("Favored Foe");
-        }
-
-         // Circle of Spores - Symbiotic Entity
-         if (character.hasClassFeature("Symbiotic Entity") && character.getSetting("druid-symbiotic-entity", false) &&
+        // Circle of Spores - Symbiotic Entity
+        if (character.hasClassFeature("Symbiotic Entity") &&
+        character.getSetting("druid-symbiotic-entity", false) &&
             action_name === "Halo of Spores") {
             damages[0] = damages[0].replace(/1d/g, "2d");
-        }
-
-        // Ranger - Gathered Swarm
-        if (character.hasClassFeature("Gathered Swarm") &&
-            character.getSetting("ranger-gathered-swarm", false)) {
-            const ranger_level = character.getClassLevel("Ranger");
-            damages.push(ranger_level < 11 ? "1d6" : "1d8");
-            damage_types.push("Gathered Swarm");
         }
 
         const roll_properties = buildAttackRoll(character,
@@ -997,56 +758,113 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
     }
 }
 
-function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas}={}) {
+function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas}={}, to_hit="") {
+    // Artificer
+    if (character.hasClass("Artificer")) {
+        // Artificer: Arcane Firearm
+        if (damages.length > 0 &&
+            character.hasClassFeature("Arcane Firearm") &&
+            character.getSetting("artificer-arcane-firearm", false) &&
+            spell_source.includes("Artificer")) {
+            damages.push("1d8");
+            damage_types.push("Arcane Firearm");
+        }
+
+        // Artificer: Alchemical Savant
+        if (character.hasClassFeature("Alchemical Savant") &&
+            character.getSetting("artificer-alchemical-savant", false) &&
+            damages.length > 0) {
+            const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
+            for (let i = 0; i < damages.length; i++){
+                if ((damage_types[i] === "Acid" || damage_types[i] === "Fire" || damage_types[i] === "Necrotic" || damage_types[i] === "Poison") &&
+                    alchemical_savant_regex.test(damages[i])) {
+                    damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
+                    damage_types.push("Alchemical Savant");
+                    break;
+                }
+            }
+        }
+    }
+
+    if (character.hasClass("Cleric")) {
+        //Cleric: Blessed Strikes
+        if (character.hasClassFeature("Blessed Strikes") &&
+        character.getSetting("cleric-blessed-strikes", false) &&
+        spell_level.includes("Cantrip")) {
+            damages.push("1d8");
+            damage_types.push("Blessed Strikes");
+        }
+    }
+    
+    if (character.hasClass("Druid")) {
+        // Druid: Wildfire Druid: Enhanced Bond
+        if (character.hasClassFeature("Enhanced Bond") &&
+        character.getSetting("wildfire-spirit-enhanced-bond", false) &&
+        damages.length > 0) {
+            for (let i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Fire") {
+                    damages.push("1d8");
+                    damage_types.push("Enhanced Bond");
+                    break;
+                }
+            }
+        }
+    }
+
+    if (character.hasClass("Ranger")) {
+        // Ranger - Favored Foe
+        if (character.hasClassFeature("Favored Foe") &&
+        character.getSetting("ranger-favored-foe", false) &&
+        to_hit !== null) {
+            const ranger_level = character.getClassLevel("Ranger");
+            damages.push(ranger_level < 6 ? "1d4" : ( ranger_level < 14 ? "1d6" : "1d8"));
+            damage_types.push("Favored Foe");
+        }
+        
+        // Ranger: Gathered Swarm
+        if (character.hasClassFeature("Gathered Swarm") &&
+            character.getSetting("ranger-gathered-swarm", false) &&
+            to_hit !== null) {
+            const ranger_level = character.getClassLevel("Ranger");
+            damages.push(ranger_level < 11 ? "1d6" : "1d8");
+            damage_types.push("Gathered Swarm");
+        }
+    }
+
+    if (character.hasClass("Warlock")) {
+        // Warlock: Genie Patron - Genie's Wrath
+        if (character.hasClassFeature("Genie’s Vessel") &&
+        character.getSetting("genies-vessel", false) && to_hit != null) {
+            damages.push(character._proficiency);
+            damage_types.push("Genie's Wrath");
+        }
+    }
+
+    if (character.hasClass("Wizard")) {
+        // Evocation Wizard - Empowered Evocation
+        if (character.hasClassFeature("Empowered Evocation") &&
+        character.getSetting("empowered-evocation", false) &&
+        spell_level.includes("Evocation")) {
+            damages.push(`${parseInt(character.getAbility("INT").mod)}`);
+            damage_types.push("Empowered Evocation");
+        }
+    }
+
+    // Protector Aasimar: Radiant Soul Damage
+    if (character.hasRacialTrait("Radiant Soul") &&
+    character.getSetting("protector-aasimar-radiant-soul", false)) {
+        damages.push(character._level);
+        damage_types.push("Radiant Soul");
+    }
+
     // Handle special spells;
+    // Absorb Elements
     if (spell_name == "Absorb Elements") {
         const dmg = damages[0];
         damages.length = 0;
         damage_types.length = 0;
         damages.push(dmg);
         damage_types.push("Triggering Type");
-    }
-
-    if (damages.length > 0 &&
-        character.hasClassFeature("Arcane Firearm") &&
-        character.getSetting("artificer-arcane-firearm", false) &&
-        spell_source.includes("Artificer")) {
-        damages.push("1d8");
-        damage_types.push("Arcane Firearm");
-    }
-
-    if (character.hasClassFeature("Alchemical Savant") &&
-        character.getSetting("artificer-alchemical-savant", false) &&
-        damages.length > 0) {
-        const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
-        for (let i = 0; i < damages.length; i++){
-            if ((damage_types[i] === "Acid" || damage_types[i] === "Fire" || damage_types[i] === "Necrotic" || damage_types[i] === "Poison") &&
-                alchemical_savant_regex.test(damages[i])) {
-                damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
-                damage_types.push("Alchemical Savant");
-                break;
-            }
-        }
-    }
-    
-    //Cleric Blessed Strikes
-    if (character.hasClassFeature("Blessed Strikes") &&
-        character.getSetting("cleric-blessed-strikes", false) &&
-        spell_level.includes("Cantrip")) {
-        damages.push("1d8");
-        damage_types.push("Blessed Strikes");
-    }
-
-    if (character.hasClassFeature("Enhanced Bond") &&
-        character.getSetting("wildfire-spirit-enhanced-bond", false) &&
-        damages.length > 0) {
-        for (let i = 0; i < damages.length; i++){
-            if (damage_types[i] === "Fire") {
-                damages.push("1d8");
-                damage_types.push("Enhanced Bond");
-                break;
-            }
-        }
     }
 
     //Handle Flames of Phlegethos
@@ -1092,15 +910,6 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
         }
     }
 
-    // Evocation Wizard - Empowered Evocation
-    if (character.hasClassFeature("Empowered Evocation") &&
-        character.getSetting("empowered-evocation", false) &&
-        spell_level.includes("Evocation")) {
-        damages.push(`${parseInt(character.getAbility("INT").mod)}`);
-        damage_types.push("Empowered Evocation");
-    }
-
-
 }
     
 function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas}={}) {
@@ -1132,6 +941,239 @@ function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {sp
                 damage_types.push("Enhanced Bond Healing");
                 break;
             }
+        }
+    }
+}
+
+function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, settings_to_change={}, to_hit, action_name="") {
+    if (character.hasClass("Barbarian")) {
+        // Barbarian: Rage
+        if (character.hasClassFeature("Rage") &&
+        character.getSetting("barbarian-rage", false)) {
+            const barbarian_level = character.getClassLevel("Barbarian");
+            const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
+            damages.push(String(rage_damage));
+            damage_types.push("Rage");
+        }
+    }
+
+    if (character.hasClass("Druid")) {
+        // Druid: Circle of Spores - Symbiotic Entity
+        if (character.hasClassFeature("Symbiotic Entity") &&
+        character.getSetting("druid-symbiotic-entity", false)) {
+                damages.push("1d6");
+                damage_types.push("Symbiotic Entity");
+        }
+    }
+
+    if (character.hasClass("Paladin")) {
+        //Paladin: Improved Divine Smite
+        if (properties["Attack Type"] == "Melee" &&
+            character.hasClassFeature("Improved Divine Smite") &&
+            character.getSetting("paladin-improved-divine-smite", true)) {
+            damages.push("1d8");
+            damage_types.push("Radiant");
+        }
+    }
+
+    if (character.hasClass("Wizard")) {
+        // Wizard: Bladesinging: Song of Victory
+        if (character.hasClassFeature("Song of Victory") &&
+        character.getSetting("wizard-bladesong", false)) {
+            const intelligence = character.getAbility("INT") || {mod: 0};
+            const mod = parseInt(intelligence.mod) || 0;
+            damages.push(String(Math.max(mod, 1)));
+            damage_types.push("Bladesong");
+        }
+    }
+
+    // Feats
+    // Great Weapon Master Feat
+    if (to_hit !== null && 
+        character.getSetting("great-weapon-master", false) &&
+        character.hasFeat("Great Weapon Master") &&
+        (properties["Properties"] && properties["Properties"].includes("Heavy") ||
+        action_name.includes("Polearm Master - Bonus Attack")) &&
+        properties["Proficient"] == "Yes") {
+        to_hit += " - 5";
+        damages.push("10");
+        damage_types.push("Great Weapon Master");
+        settings_to_change["great-weapon-master"] = false;
+    }
+
+    // Charger Feat
+    if (character.hasFeat("Charger") &&
+    character.getSetting("charger-feat")) {
+        damages.push("+5");
+        damage_types.push("Charger Feat");
+        settings_to_change["charger-feat"] = false;
+    }
+}
+
+function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, settings_to_change={}, to_hit, action_name="") {
+    // Feats
+    // Sharpshooter Feat
+    if (to_hit !== null && 
+        character.getSetting("sharpshooter", false) &&
+        character.hasFeat("Sharpshooter") &&
+        properties["Proficient"] == "Yes") {
+        to_hit += " - 5";
+        damages.push("10");
+        damage_types.push("Sharpshooter");
+        settings_to_change["sharpshooter"] = false;
+    }
+}
+
+function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, settings_to_change={}, to_hit, action_name="") {
+    // Racial Traits
+    //Protector Aasimar: Radiant Soul Damage
+    if (character.hasRacialTrait("Radiant Soul") &&
+    character.getSetting("protector-aasimar-radiant-soul", false)) {
+        damages.push(character._level);
+        damage_types.push("Radiant Soul");
+    }
+
+    // Class Specific
+    if (character.hasClass("Barbarian")) {
+        // Barbarian: Path of the Zealot: Divine Fury
+        if (character.hasClassFeature("Rage") &&
+        character.getSetting("barbarian-rage", false) &&
+        character.getSetting("barbarian-divine-fury", true) &&
+        character.hasClassFeature("Divine Fury")) {
+            const barbarian_level = character.getClassLevel("Barbarian");
+            damages.push(`1d6+${Math.floor(barbarian_level / 2)}`);
+            damage_types.push("Divine Fury");
+        }
+    }
+
+    if (character.hasClass("Bard")) {
+        // Bard's Psychic blades;
+        if (character.hasClassFeature("Psychic Blades") &&
+            character.getSetting("bard-psychic-blades", false)) {
+            const bard_level = character.getClassLevel("Bard");
+            let blades_dmg = "2d6";
+            if (bard_level < 5)
+                blades_dmg = "2d6"
+            else if (bard_level < 10)
+                blades_dmg = "3d6"
+            else if (bard_level < 15)
+                blades_dmg = "5d6"
+            else
+                blades_dmg = "8d6"
+            damages.push(blades_dmg);
+            damage_types.push("Psychic Blades");
+            settings_to_change["bard-psychic-blades"] = false;
+        }
+    }
+
+    if (character.hasClass("Cleric")) {
+        // Cleric's Divine Strike;
+        if (character.hasClassFeature("Divine Strike") &&
+            character.getSetting("cleric-divine-strike", true)) {
+            const cleric_level = character.getClassLevel("Cleric");
+            damages.push(cleric_level < 14 ? "1d8" : "2d8");
+            damage_types.push("Divine Strike");
+        }
+
+        // Cleric Blessed strikes
+        if (character.hasClassFeature("Blessed Strikes") &&
+            character.getSetting("cleric-blessed-strikes", false)) {
+            damages.push("1d8");
+            damage_types.push("Blessed Strikes");
+        }
+    }
+
+    if (character.hasClass("Fighter")) {
+        // Fighter: Giant’s Might;
+        if (character.hasClassFeature("Giant’s Might") &&
+        character.getSetting("fighter-giant-might", false)) {
+            const fighter_level = character.getClassLevel("Fighter");
+            damages.push(fighter_level < 10 ? "1d6" : (fighter_level < 18 ? "1d8" : "1d10"));
+            damage_types.push("Giant’s Might");
+        }
+    }
+
+    if (character.hasClass("Ranger")) {
+        // Ranger: Gloom Stalker: Dread Ambusher
+        if (character.getSetting("ranger-dread-ambusher", false)) {
+            damages.push("1d8");
+            damage_types.push("Dread Ambusher");
+            settings_to_change["ranger-dread-ambusher"] = false;
+        }
+        
+        // Ranger: Hunter: Colossus Slayer
+        if (character.hasClassFeature("Hunter’s Prey: Colossus Slayer") &&
+            character.getSetting("ranger-colossus-slayer", false)) {
+            damages.push("1d8");
+            damage_types.push("Colossus Slayer");
+        }
+        
+        // Ranger: Monster Slayer: Slayer's Prey
+        if (character.hasClassFeature("Slayer’s Prey") &&
+            character.getSetting("ranger-slayers-prey", false)) {
+            damages.push("1d6");
+            damage_types.push("Slayer’s Prey");
+        }
+        
+        // Ranger: Horizon Walker: Planar Warrior
+        if (character.hasClassFeature("Planar Warrior") &&
+            character.getSetting("ranger-planar-warrior", false)) {
+            const ranger_level = character.getClassLevel("Ranger");
+            damages.push(ranger_level < 11 ? "1d8" : "2d8");
+            damage_types.push("Planar Warrior");
+        }
+        
+        // Ranger: Favored Foe
+        if (character.hasClassFeature("Favored Foe") &&
+            character.getSetting("ranger-favored-foe", false)) {
+            const ranger_level = character.getClassLevel("Ranger");
+            damages.push(ranger_level < 6 ? "1d4" : ( ranger_level < 14 ? "1d6" : "1d8"));
+            damage_types.push("Favored Foe");
+        }
+        
+        // Ranger: Gathered Swarm
+        if (character.hasClassFeature("Gathered Swarm") &&
+            character.getSetting("ranger-gathered-swarm", false)) {
+            const ranger_level = character.getClassLevel("Ranger");
+            damages.push(ranger_level < 11 ? "1d6" : "1d8");
+            damage_types.push("Gathered Swarm");
+        }
+
+        // Ranger: Fey Wanderer - Dreadful Strikes
+        if (character.hasClassFeature("Dreadful Strikes") &&
+        character.getSetting("fey-wanderer-dreadful-strikes")) {
+            const ranger_level = character.getClassLevel("Ranger");
+            damages.push(ranger_level < 11 ? "1d4" : "1d6");
+            damage_types.push("Dreadful Strikes");
+        }
+    }
+
+    if (character.hasClass("Rogue")) {
+        // Rogue: Sneak Attack
+        if (character.getSetting("rogue-sneak-attack", false) &&
+        (properties["Attack Type"] == "Ranged" ||
+        (properties["Properties"] && properties["Properties"].includes("Finesse"))) ||
+        action_name.includes("Psychic Blade")) {
+            const sneak_attack = Math.ceil(character._classes["Rogue"] / 2) + "d6";
+            damages.push(sneak_attack);
+            damage_types.push("Sneak Attack");
+        }
+    }
+
+    if (character.hasClass("Warlock")) {
+        // Warlock Hexblade's Curse
+        if (damages.length > 0 &&
+            character.getSetting("warlock-hexblade-curse", false) &&
+            character.hasClassFeature("Hexblade’s Curse") &&
+            character._proficiency !== null) {
+            damages.push(character._proficiency);
+            damage_types.push("Hexblade's Curse");
+        }
+        
+        // Warlock: Genie Patron - Genie's Wrath
+        if (character.hasClassFeature("Genie’s Vessel") && character.getSetting("genies-vessel", false)) {
+            damages.push(character._proficiency);
+            damage_types.push("Genie's Wrath");
         }
     }
 }
@@ -1181,46 +1223,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             damage_types.push(dmgtype);
         }
 
-        handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
-
-        // Hex blade's curse only applies if there are damages
-        if (damages.length > 0 &&
-            character.getSetting("warlock-hexblade-curse", false) &&
-            character.hasClassFeature("Hexblade’s Curse") &&
-            character._proficiency !== null) {
-            damages.push(character._proficiency);
-            damage_types.push("Hexblade's Curse");
-        }
-        // Protector Aasimar: Radiant Soul Damage
-        if (character.hasRacialTrait("Radiant Soul") &&
-            character.getSetting("protector-aasimar-radiant-soul", false)) {
-            damages.push(character._level);
-            damage_types.push("Radiant Soul");
-        }
-    
-        // Ranger - Gathered Swarm
-        if (character.hasClassFeature("Gathered Swarm") &&
-            character.getSetting("ranger-gathered-swarm", false) &&
-            to_hit !== null) {
-            const ranger_level = character.getClassLevel("Ranger");
-            damages.push(ranger_level < 11 ? "1d6" : "1d8");
-            damage_types.push("Gathered Swarm");
-        }
-        // Ranger - Favored Foe
-        if (character.hasClassFeature("Favored Foe") &&
-            character.getSetting("ranger-favored-foe", false) &&
-            to_hit !== null) {
-            const ranger_level = character.getClassLevel("Ranger");
-            damages.push(ranger_level < 6 ? "1d4" : ( ranger_level < 14 ? "1d6" : "1d8"));
-            damage_types.push("Favored Foe");
-        }
-
-        // Warlock: Genie Patron - Genie's Wrath
-        if (character.hasClassFeature("Genie’s Vessel") && character.getSetting("genies-vessel", false) && to_hit != null) {
-            damages.push(character._proficiency);
-            damage_types.push("Genie's Wrath");
-        }
-    
+        handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas}, to_hit);
 
         // We can then add healing types
         for (let modifier of healing_modifiers.toArray()) {
