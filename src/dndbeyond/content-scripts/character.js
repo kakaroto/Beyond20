@@ -1126,7 +1126,8 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
         }
         
         // Warlock: Genie Patron - Genie's Wrath
-        if (character.hasClassFeature("Genie’s Vessel") && character.getSetting("genies-vessel", false)) {
+        if (character.hasClassFeature("Genie’s Vessel") &&
+        character.getSetting("genies-vessel", false)) {
             damages.push(character._proficiency);
             damage_types.push("Genie's Wrath");
         }
