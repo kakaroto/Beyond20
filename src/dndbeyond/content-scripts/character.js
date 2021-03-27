@@ -383,7 +383,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     spell_damage_types.push(dmg_type);
                 }
             }
-            handleSpecialSpells(group_name, spell_damages, spell_damage_types, {spell_source: group_origin}, to_hit);
+            handleSpecialSpells(group_name, spell_damages, spell_damage_types, {spell_source: group_origin, to_hit});
             damages.push(...spell_damages);
             damage_types.push(...spell_damage_types.map(t => `${t} (${group_name})`));
         }
@@ -402,65 +402,18 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             }
         }
 
+        to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, to_hit);
+
+        to_hit = handleSpecialItemAttacks(damages, damage_types, properties, settings_to_change, to_hit, {item_customizations, item_type});
+
         if (properties["Attack Type"] == "Melee") {
-            handleSpecialMeleeAttacks(damages, damage_types, properties, settings_to_change, to_hit);
+            to_hit = handleSpecialMeleeAttacks(damages, damage_types, properties, settings_to_change, to_hit);
         }
 
         if (properties["Attack Type"] == "Ranged") {
-            handleSpecialRangedAttacks(damages, damage_types, properties, settings_to_change, to_hit);
+            to_hit = handleSpecialRangedAttacks(damages, damage_types, properties, settings_to_change, to_hit);
         }
-
-        handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, to_hit);
-
-        // Should remain here, as they require a weapon you're holding
-        // -----------------------------------------------------------
-        // Paladin: Sacred Weapon
-        if (to_hit !== null && 
-            character.getSetting("paladin-sacred-weapon", false)) {
-            const charisma_attack_mod =  Math.max(character.getAbility("CHA").mod, 1);
-            to_hit += "+" + charisma_attack_mod;
-        }
-
-        // Warlock: Eldritch Invocation: Lifedrinker
-        if (to_hit !== null && 
-            character.getSetting("eldritch-invocation-lifedrinker", false) &&
-            item_customizations.includes("Pact Weapon")) {
-            const charisma_damage_mod =  Math.max(character.getAbility("CHA").mod, 1);
-            damages.push(`${charisma_damage_mod}`);
-            damage_types.push("Lifedrinker");
-        }
-
-        // Bloodhunter: Crimson Rite
-        if (character.getSetting("bloodhunter-crimson-rite", false) &&
-            character.hasClassFeature("Crimson Rite")) {
-            const bloodhunter_level = character.getClassLevel("Blood Hunter");
-            if (bloodhunter_level > 0) {
-                let rite_die = "1d4";
-                if (bloodhunter_level <= 4)
-                    rite_die = "1d4";
-                else if (bloodhunter_level <= 10)
-                    rite_die = "1d6";
-                else if (bloodhunter_level <= 16)
-                    rite_die = "1d8";
-                else
-                    rite_die = "1d10";
-                damages.push(rite_die);
-                damage_types.push("Crimson Rite");
-            }
-        }
-
-        //Artificer Battlemaster Arcane Jolt
-        // TODO: Implement for Steel Defender at later date
-        if (damages.length > 0 &&
-            character.hasClassFeature("Arcane Jolt") &&
-            character.getSetting("artificer-arcane-jolt", false) &&
-            item_type.indexOf(", Common") === -1) {
-            damages.push(character._level < 15 ? "2d6" : "4d6");
-            damage_types.push("Arcane Jolt");
-        }
-        // ----------------------------------------------------------------
-        // End: Should remain here, as they require a weapon you're holding
-
+        
         let critical_limit = 20;
         if (character.hasAction("Channel Divinity: Legendary Strike") &&
             character.getSetting("paladin-legendary-strike", false))
@@ -655,16 +608,23 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         
         const isRangedAttack = action_name.includes("Lightning Launcher");
 
+        const isItem = action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Psychic Blade") || action_name.includes("Thunder Gauntlets")
+        || action_name.includes("Lightning Launcher");
+
+        to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, to_hit, action_name);
+        
+        if (isItem) {
+            to_hit = handleSpecialItemAttacks(damages, damage_types, properties, settings_to_change, to_hit, {action_name});
+        }
+
         if (isMeleeAttack) {
-            handleSpecialMeleeAttacks(damages, damage_types, properties, settings_to_change, to_hit, action_name);
+            to_hit = handleSpecialMeleeAttacks(damages, damage_types, properties, settings_to_change, to_hit, action_name);
         }
 
         if (isRangedAttack) {
-            handleSpecialRangedAttacks(damages, damage_types, properties, settings_to_change, to_hit, action_name);
+            to_hit = handleSpecialRangedAttacks(damages, damage_types, properties, settings_to_change, to_hit, action_name);
         }
 
-        handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, to_hit, action_name);
-        
         if ( isMeleeAttack || isRangedAttack) {
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
@@ -684,24 +644,6 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
                 }
                 if (character.hasRacialTrait("Savage Attacks"))
                     brutal += 1;
-            }
-
-            if (character.getSetting("bloodhunter-crimson-rite", false) &&
-            character.hasClassFeature("Crimson Rite")) {
-                const bloodhunter_level = character.getClassLevel("Blood Hunter");
-                if (bloodhunter_level > 0) {
-                    let rite_die = "1d4";
-                    if (bloodhunter_level <= 4)
-                        rite_die = "1d4";
-                    else if (bloodhunter_level <= 10)
-                        rite_die = "1d6";
-                    else if (bloodhunter_level <= 16)
-                        rite_die = "1d8";
-                    else
-                        rite_die = "1d10";
-                    damages.push(rite_die);
-                    damage_types.push("Crimson Rite");
-                }
             }
         }
 
@@ -758,7 +700,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
     }
 }
 
-function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas}={}, to_hit="") {
+function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas, to_hit=""}={}) {
     // Artificer
     if (character.hasClass("Artificer")) {
         // Artificer: Arcane Firearm
@@ -832,6 +774,15 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
     }
 
     if (character.hasClass("Warlock")) {
+        // Warlock Hexblade's Curse
+        if (damages.length > 0 &&
+            character.getSetting("warlock-hexblade-curse", false) &&
+            character.hasClassFeature("Hexblade’s Curse") &&
+            character._proficiency !== null) {
+            damages.push(character._proficiency);
+            damage_types.push("Hexblade's Curse");
+        }
+        
         // Warlock: Genie Patron - Genie's Wrath
         if (character.hasClassFeature("Genie’s Vessel") &&
         character.getSetting("genies-vessel", false) && to_hit != null) {
@@ -945,7 +896,7 @@ function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {sp
     }
 }
 
-function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, settings_to_change={}, to_hit, action_name="") {
+function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, settings_to_change={}, to_hit="", action_name="") {
     if (character.hasClass("Barbarian")) {
         // Barbarian: Rage
         if (character.hasClassFeature("Rage") &&
@@ -1008,9 +959,11 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
         damage_types.push("Charger Feat");
         settings_to_change["charger-feat"] = false;
     }
+    
+    return to_hit;
 }
 
-function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, settings_to_change={}, to_hit, action_name="") {
+function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, settings_to_change={}, to_hit="", action_name="") {
     // Feats
     // Sharpshooter Feat
     if (to_hit !== null && 
@@ -1022,9 +975,11 @@ function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, set
         damage_types.push("Sharpshooter");
         settings_to_change["sharpshooter"] = false;
     }
+    
+    return to_hit;
 }
 
-function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, settings_to_change={}, to_hit, action_name="") {
+function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, settings_to_change={}, to_hit="", action_name="") {
     // Racial Traits
     //Protector Aasimar: Radiant Soul Damage
     if (character.hasRacialTrait("Radiant Soul") &&
@@ -1176,6 +1131,66 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
             damage_types.push("Genie's Wrath");
         }
     }
+
+    return to_hit;
+}
+
+function handleSpecialItemAttacks(damages=[], damage_types=[], properties, settings_to_change={}, to_hit="", {action_name="", item_customizations=[], item_type=""}={}) {
+    // Class Specific
+    if (character.hasClass("Artificer")) {
+        //Artificer Battlemaster Arcane Jolt
+        // TODO: Implement for Steel Defender at later date
+        if (damages.length > 0 &&
+            character.hasClassFeature("Arcane Jolt") &&
+            character.getSetting("artificer-arcane-jolt", false) &&
+            item_type.indexOf(", Common") === -1) {
+            damages.push(character._level < 15 ? "2d6" : "4d6");
+            damage_types.push("Arcane Jolt");
+        }
+    }
+    
+    if (character.hasClass("Blood Hunter")) {
+        // Bloodhunter: Crimson Rite
+        if (character.getSetting("bloodhunter-crimson-rite", false) &&
+            character.hasClassFeature("Crimson Rite")) {
+            const bloodhunter_level = character.getClassLevel("Blood Hunter");
+            if (bloodhunter_level > 0) {
+                let rite_die = "1d4";
+                if (bloodhunter_level <= 4)
+                    rite_die = "1d4";
+                else if (bloodhunter_level <= 10)
+                    rite_die = "1d6";
+                else if (bloodhunter_level <= 16)
+                    rite_die = "1d8";
+                else
+                    rite_die = "1d10";
+                damages.push(rite_die);
+                damage_types.push("Crimson Rite");
+            }
+        }
+    }
+
+    if (character.hasClass("Paladin")) {
+        // Paladin: Sacred Weapon
+        if (to_hit !== null && 
+            character.getSetting("paladin-sacred-weapon", false)) {
+            const charisma_attack_mod =  Math.max(character.getAbility("CHA").mod, 1);
+            to_hit += `+ ${charisma_attack_mod}`;
+        }
+    }
+
+    if (character.hasClass("Warlock")) {
+        // Warlock: Eldritch Invocation: Lifedrinker
+        if (to_hit !== null && 
+            character.getSetting("eldritch-invocation-lifedrinker", false) &&
+            item_customizations.includes("Pact Weapon")) {
+            const charisma_damage_mod =  Math.max(character.getAbility("CHA").mod, 1);
+            damages.push(`${charisma_damage_mod}`);
+            damage_types.push("Lifedrinker");
+        }
+    }
+
+    return to_hit;
 }
 
 function rollSpell(force_display = false, force_to_hit_only = false, force_damages_only = false) {
@@ -1223,7 +1238,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             damage_types.push(dmgtype);
         }
 
-        handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas}, to_hit);
+        handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas, to_hit});
 
         // We can then add healing types
         for (let modifier of healing_modifiers.toArray()) {
