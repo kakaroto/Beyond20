@@ -288,7 +288,7 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
     }
 
     if (character.hasClass("Druid")) {
-        // Druid: Circle of Spores - Symbiotic Entity
+        // Druid: Circle of Spores: Symbiotic Entity
         if (character.hasClassFeature("Symbiotic Entity") &&
             character.getSetting("druid-symbiotic-entity", false)) {
                 damages.push("1d6");
@@ -381,7 +381,7 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
     }
 
     if (character.hasClass("Bard")) {
-        // Bard's Psychic blades;
+        // Bard: College of Whispers: Psychic blades
         if (character.hasClassFeature("Psychic Blades") &&
             character.getSetting("bard-psychic-blades", false)) {
             const bard_level = character.getClassLevel("Bard");
@@ -401,7 +401,7 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
     }
 
     if (character.hasClass("Cleric")) {
-        // Cleric's Divine Strike;
+        // Cleric: Divine Strike
         if (character.hasClassFeature("Divine Strike") &&
             character.getSetting("cleric-divine-strike", true)) {
             const cleric_level = character.getClassLevel("Cleric");
@@ -409,7 +409,7 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
             damage_types.push("Divine Strike");
         }
 
-        // Cleric Blessed strikes
+        // Cleric: Blessed Strikes
         if (character.hasClassFeature("Blessed Strikes") &&
             character.getSetting("cleric-blessed-strikes", false)) {
             damages.push("1d8");
@@ -473,7 +473,7 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
             damage_types.push("Gathered Swarm");
         }
 
-        // Ranger: Fey Wanderer - Dreadful Strikes
+        // Ranger: Fey Wanderer: Dreadful Strikes
         if (character.hasClassFeature("Dreadful Strikes") &&
             character.getSetting("fey-wanderer-dreadful-strikes")) {
             const ranger_level = character.getClassLevel("Ranger");
@@ -495,7 +495,7 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
     }
 
     if (character.hasClass("Warlock")) {
-        // Warlock Hexblade's Curse
+        // Warlock: The Hexblade: Hexblade's Curse
         if (damages.length > 0 &&
             character.getSetting("warlock-hexblade-curse", false) &&
             character.hasClassFeature("Hexblade’s Curse") &&
@@ -504,7 +504,7 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
             damage_types.push("Hexblade's Curse");
         }
         
-        // Warlock: Genie Patron - Genie's Wrath
+        // Warlock: Genie Patron: Genie's Wrath
         if (character.hasClassFeature("Genie’s Vessel") &&
             character.getSetting("genies-vessel", false)) {
             damages.push(character._proficiency);
@@ -518,7 +518,7 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
 function handleSpecialItemAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {action_name="", item_customizations=[], item_type="", to_hit}={}) {
     // Class Specific
     if (character.hasClass("Artificer")) {
-        //Artificer Battlemaster Arcane Jolt
+        //Artificer: Battlemaster: Arcane Jolt
         // TODO: Implement for Steel Defender at later date
         if (damages.length > 0 &&
             character.hasClassFeature("Arcane Jolt") &&
@@ -1052,7 +1052,7 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
     }
 
     if (character.hasClass("Ranger")) {
-        // Ranger - Favored Foe
+        // Ranger: Favored Foe
         if (character.hasClassFeature("Favored Foe") &&
             character.getSetting("ranger-favored-foe", false) &&
             to_hit !== null) {
@@ -1072,7 +1072,7 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
     }
 
     if (character.hasClass("Warlock")) {
-        // Warlock Hexblade's Curse
+        // Warlock: The Hexblade: Hexblade's Curse
         if (damages.length > 0 &&
             character.getSetting("warlock-hexblade-curse", false) &&
             character.hasClassFeature("Hexblade’s Curse") &&
@@ -1081,7 +1081,7 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
             damage_types.push("Hexblade's Curse");
         }
         
-        // Warlock: Genie Patron - Genie's Wrath
+        // Warlock: Genie Patron: Genie's Wrath
         if (character.hasClassFeature("Genie’s Vessel") &&
             character.getSetting("genies-vessel", false) && to_hit != null) {
             damages.push(character._proficiency);
@@ -1090,7 +1090,7 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
     }
 
     if (character.hasClass("Wizard")) {
-        // Evocation Wizard - Empowered Evocation
+        // Wizard: School of Evocation: Empowered Evocation
         if (character.hasClassFeature("Empowered Evocation") &&
             character.getSetting("empowered-evocation", false) &&
             spell_level.includes("Evocation")) {
