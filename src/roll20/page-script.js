@@ -57,8 +57,15 @@ function updateCombatTracker(combat) {
 
 
 function checkForOGL() {
-    const templates = customcharsheet_data.rolltemplates || {};
-    const isOGL = ["simple", "atk", "atkdmg", "dmg", "spell", "traits"].every(template => !!templates[template]);
+    const oglTemplates = ["simple", "atk", "atkdmg", "dmg", "spell", "traits"];
+    const templates = typeof(customcharsheet_data) !== "undefined" && customcharsheet_data.rolltemplates;
+    let isOGL = false;
+    if (templates) {
+        isOGL = oglTemplates.every(template => !!templates[template]);
+    } else {
+        const html = $(atob(customcharsheet_html));
+        isOGL = oglTemplates.every(template => html.find(`rolltemplate.sheet-rolltemplate-${template}`).length !== 0);
+    }
     $("#isOGL").remove();
     document.body.append($(`<input type="hidden" value="${isOGL ? 1 : 0}" name="isOGL" id="isOGL">`)[0]);
 }
@@ -74,7 +81,7 @@ registered_events.push(addCustomEventListener("CombatTracker", updateCombatTrack
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
 
 // Hack for VTT ES making every script load before Roll20 loads
-if (window.$ !== undefined && typeof(customcharsheet_data) !== "undefined")
+if (window.$ !== undefined && (typeof(customcharsheet_data) !== "undefined" || typeof(customcharsheet_html) !== "undefined"))
     checkForOGL();
 else
     window.addEventListener("DOMContentLoaded", () => setTimeout(checkForOGL, 1000));
