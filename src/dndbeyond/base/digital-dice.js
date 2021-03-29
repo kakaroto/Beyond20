@@ -110,7 +110,17 @@ class DigitalDiceManager {
         const notifications = this._getNotificationIds();
         const newNotification = notifications.find(n => !this._notificationIds.includes(n))
         this._notificationIds = notifications;
-        if (!newNotification) return;
+        if (!newNotification) {
+            // Check if we have a pending roll and the game log is open
+            // game log will cause the notifications not to appear, so we need to prevent it
+            if (this._pendingRolls.length > 0 && $(".ct-game-log-pane").length > 0) {
+                const collapse = $(".ct-sidebar__control--collapse");
+                // Collapse the side bar, or if it's locked, fake a click on the character name to change the sidepanel
+                if (collapse.length > 0) collapse.click();
+                else $(".ddbc-character-name").click();
+            }
+            return;
+        }
         return this._handleNewNotification(newNotification);
     }
     static _handleNewNotification(notification) {
