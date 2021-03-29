@@ -686,7 +686,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     spell_damage_types.push(dmg_type);
                 }
             }
-            handleSpecialSpells(group_name, spell_damages, spell_damage_types, {spell_source: group_origin, to_hit});
+            handleSpecialSpells(group_name, spell_damages, spell_damage_types, {spell_source: group_origin});
             damages.push(...spell_damages);
             damage_types.push(...spell_damage_types.map(t => `${t} (${group_name})`));
         }
