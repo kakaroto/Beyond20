@@ -801,9 +801,9 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
     } else if (!force_display && (is_tool || is_instrument) && character._abilities.length > 0) {
         const proficiencies = {}
         proficiencies["None"] = 0;
-        proficiencies["Half Proficient"] = Math.floor(character._proficiency / 2);
-        proficiencies["Proficient"] = parseInt(character._proficiency);
-        proficiencies["Expert"] = character._proficiency * 2;
+        proficiencies["Half Proficiency"] = Math.floor(character._proficiency / 2);
+        proficiencies["Proficiency"] = parseInt(character._proficiency);
+        proficiencies["Expertise"] = character._proficiency * 2;
         const formula = "1d20 + @ability + @proficiency + @custom_dice";
         let html = '<form>';
         html += '<div class="beyond20-form-row"><label>Roll Formula</label><input type="text" value="' + formula + '" disabled></div>';
