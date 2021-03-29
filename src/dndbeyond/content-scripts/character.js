@@ -1826,6 +1826,12 @@ function injectRollToSnippets() {
         checkAndInjectDiceToRolls(snippet.find(".ct-feature-snippet__content"), name);
     }
 }
+function showHotkeysList(popup) {
+    popup.removeClass('beyond20-hotkeys-hidden');
+}
+function hideHotkeysList(popup) {
+    popup.addClass('beyond20-hotkeys-hidden');
+}
 
 function injectSettingsButton() {
     if ($(".ct-beyond20-settings").length > 0)
@@ -1838,7 +1844,6 @@ function injectSettingsButton() {
     let button_type = null;
     let gap = null;
     let span_text = "Beyond 20";
-    let mobiclass = "";
     let icon = chrome.extension.getURL("images/icons/badges/normal20.png");
     if (desktop_gap.length > 0) {
         button_type = "desktop";
@@ -1849,7 +1854,6 @@ function injectSettingsButton() {
     } else if (mobile_gap.length > 0) {
         button_type = "mobile";
         gap = mobile_gap;
-        mobiclass = "beyond20-abilities-mobi";
         span_text = "\u00A0\u00A0"; // Add 2 non breaking spaces as padding;
         icon = chrome.extension.getURL("images/icons/badges/normal32.png");
     } else {
@@ -1857,7 +1861,7 @@ function injectSettingsButton() {
     }
 
     const button = E.div({ class: "ct-character-header-" + button_type + "__group ct-character-header-" + button_type + "__group--beyond20" },
-        E.div({ class: "ct-character-header-" + button_type + "__button", id: 'b20-button' },
+        E.div({ class: "ct-character-header-" + button_type + "__button ct-beyond20-settings-button" },
             E.img({ class: "ct-beyond20-settings", src: icon }),
             E.span({ class: "ct-character-header-" + button_type + "__button-label" }, span_text)
         )
@@ -1865,21 +1869,16 @@ function injectSettingsButton() {
 
     gap.after(button);
     $(button).on('click', (event) => alertQuickSettings());
-    $(button).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
 
-    const pbutton = E.div({ class: "ct-character-header-" + button_type + "__group ct-character-header-" + button_type + "__group--beyond20pop beyond-20-abilities-hid beyond20-parent" },
-        E.div({ class: "beyond20-abilities-list beyond20-abilities-hid " + mobiclass, id: "b20-abilities-pop"})
+    const hotkeys_button = E.div({ class: "ct-character-header-" + button_type + "__group ct-character-header-" + button_type + "__group--beyond20-hotkeys" },
+        E.div({ class: "beyond20-hotkeys-popup beyond20-hotkeys-list beyond20-hotkeys-hidden"})
     );
+    const hotkeys_popup = $(hotkeys_button).find(".beyond20-hotkeys-popup");
 
-    gap.after(pbutton);
-    $(pbutton).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
-    updateToggles();
-
-    $(document).off('click', '.b20-toggle'); //this removes all instances of this listener
-    $(document).on('click', '.b20-toggle', function(){
-        keyModifiers('keydown', $(this).data('key'), false);
-    });
-
+    gap.after(hotkeys_button);
+    $(hotkeys_button).on('mouseenter', (event) => showHotkeysList(hotkeys_popup)).on('mouseleave', (event) => hideHotkeysList(hotkeys_popup));
+    $(button).on('mouseenter', (event) => showHotkeysList(hotkeys_popup)).on('mouseleave', (event) => hideHotkeysList(hotkeys_popup));
+    updateHotkeysList(hotkeys_popup);
 }
 
 var quick_roll = false;

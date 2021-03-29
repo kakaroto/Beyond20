@@ -366,50 +366,6 @@ function updateRollTypeButtonClasses(character) {
     $(".beyond20-quick-roll-tooltip .beyond20-quick-roll-icon").attr("src", icon32);
 }
 
-function updateToggles() {
-    let modifiers = "";
-    let someSet = false;
-    const bindings = settings['hotkeys-bindings'];
-    const adn = ["disadvantage","normal_roll","advantage"]; 
-
-    //for adv/dis/norm, set up a special way to display them.
-    let dna = "<span class='b20-toggle " + (key_modifiers['disadvantage'] ? "b20-opt-sel" : "") + "' data-key='Control' style='float:left;' >Disadvantange</span>";  
-    dna += "<span class='b20-toggle " + (key_modifiers['normal_roll'] ? "b20-opt-sel" : "") + "' data-key='Alt' style='' >Normal</span>";  
-    dna += "<span class='b20-toggle " + (key_modifiers['advantage'] ? "b20-opt-sel" : "") + "' data-key='Shift' style='float:right;' >Advantange</span>";  
-
-    for (keyval in bindings){
-        let key = bindings[keyval];
-        let modifier = key_modifiers[key] === undefined ? false : key_modifiers[key];
-        let dna = "";
-        someSet |= modifier;
-        if (!adn.includes(key)){
-            let ability = character_settings[key.replace('option-','')];
-            if (ability !== undefined) {
-                ability = ability.title;
-            } else {
-                ability = BINDING_NAMES[key] === undefined ? key : BINDING_NAMES[key];
-            }
-            if (ability.length > 32)
-                ability = ability.substring(0, 31) + "...";
-
-            modifier = modifier == false ? '' : modifier;
-            modifiers += "<li class='b20-toggle' data-key='" + keyval + "'>" + ability + "<span style='float:right'>" + modifier + "</span></li>";
-        }
-    }
-
-    $('#b20-abilities-pop').html("<div class='b20-dna'>" + dna + "</div><hr/><ul>" + modifiers + "</ul>");
-    if (someSet){
-        $('#b20-button').addClass('beyond20-button-bg');
-    } else {
-        $('#b20-button').removeClass('beyond20-button-bg');
-    }
-
-    // $('.b20-toggle').off('click'); //this removes all instances of this listener
-    // $('.b20-toggle').on('click', function(){
-    //     keyModifiers('keyup', $(this).data('key'), false);
-    // });
-}
-
 
 const button_class = "ct-theme-button ct-theme-button--filled ct-theme-button--interactive ct-button character-button";
 const button_class_small = button_class + " character-button-small";
@@ -566,9 +522,9 @@ function beyond20SendMessageFailure(character, response) {
     } else if (response.error) {
         alertify.error("<strong>Beyond 20 : </strong>" + response.error);
     }
-    for (const key in key_modifiers)
-        key_modifiers[key] = false;
-    updateRollTypeButtonClasses();
-    updateToggles();
+    if (settings['sticky-hotkeys']) {
+        // FIXME: This could reset a key that is being held which the user may want to keep enabled
+        resetKeyModifiers();
+    }
 }
 

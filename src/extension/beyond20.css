@@ -163,27 +163,25 @@
     pointer-events: none;
 }
 
-.beyond20-abilities-ind {
-   margin: 5px;
-   cursor: pointer;
-}
 
-.beyond20-abilities-hid {
+.beyond20-hotkeys-hidden {
     display: none;
 }
 
-.beyond20-parent {
+.ct-character-header-desktop__group--beyond20-hotkeys,
+.ct-character-header-tablet__group--beyond20-hotkeys,
+.ct-character-header-mobile__group--beyond20-hotkeys {
     position: relative;
 }
 
-.beyond20-button-bg{
+.beyond20-button-has-hotkeys {
     background-color: rgb(95, 0, 0);
 }
-.beyond20-button-bg:hover{
+.beyond20-button-has-hotkeys:hover {
     background-color: rgb(129, 22, 22) !important;
 }
 
-.beyond20-abilities-list {
+.beyond20-hotkeys-list {
     min-width: 300px;
     background-color: black;
     z-index: 1000;
@@ -193,25 +191,29 @@
     top: 16px;
 }
 
-.beyond20-abilities-mobi {
+.ct-character-header-mobile__group--beyond20-hotkeys > .beyond20-hotkeys-list {
     right: -32px;
 }
-.b20-toggle {
+.beyond20-hotkey-toggle {
     cursor: pointer;
     border: 1px solid transparent;
     padding-left: 3px;
     padding-right: 3px;
 }
-.b20-toggle:hover {
+.beyond20-hotkey-checkmark {
+    float: right;
+    color: green;
+}
+.beyond20-hotkey-toggle:hover {
     background-color:rgb(155, 208, 243);
     border: 1px solid darkblue;
 }
-.b20-dna{
+.beyond20-hotkeys-roll-types {
     text-align: center;
     display: block;
     width: 100%;
 }
-.b20-opt-sel {
+.beyond20-hotkey-enabled {
     font-weight: bold;
     color: yellow;
 }

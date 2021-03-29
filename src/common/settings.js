@@ -183,6 +183,13 @@ const options_list = {
         // callbacks will be added after the functions are defined
     },
 
+    "sticky-hotkeys": {
+        "title": "Sticky Hotkeys: no need to hold the button",
+        "description": "Allows you to press a hotkey instead of holding it to toggle the assigned ability for the next roll.",
+        "type": "bool",
+        "default": false
+    },
+
     "roll20-template": {
         "title": "Roll20 Character Sheet Setting",
         "description": "Select the Character Sheet Template that you use in Roll20\n" +
@@ -345,13 +352,6 @@ const options_list = {
         "description": "Overwrites the VTT's combat tracker with the details from D&D Beyond's Encounter tool (Roll20 only, GM only)",
         "type": "bool",
         "default": true
-    },
-
-    "hotkey-click": {
-        "title": "Click hotkeys to toggle them instead of holding",
-        "description": "Allows you to click a hotkey instead of holding it to toggle the assigned ability",
-        "type": "bool",
-        "default": false
     },
 
     "donate": {
@@ -1316,20 +1316,12 @@ function configureHotKey(bindings, bindings_div, html, key) {
         }
         group = $(`<optgroup label="Temporarily toggle Character-Specific setting"></optgroup>`)
         select.append(group);
-        let optra = [];
         for (const name in character_settings) {
             const option = character_settings[name];
+            const action = `option-${name}`;
             if (option.hidden || option.type !== "bool") continue;
-            option.name = name;
-            optra.push(option);
-        }
-
-        const opt_sorted = optra.sort((a,b) => (a.title > b.title) ? 1: -1);
-        for (x=0; x < opt_sorted.length; x++) {
-            const item = opt_sorted[x];
-            const action = `option-${item.name}`;
             group.append($(`
-                <option value="${action}" ${bindings[key] === action ? "selected": ""}>${item.title}</option>
+                <option value="${action}" ${bindings[key] === action ? "selected": ""}>${option.title}</option>
             `));
         }
         alert.empty().append(actions)
