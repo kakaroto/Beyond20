@@ -911,9 +911,6 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         
         const isRangedAttack = action_name.includes("Lightning Launcher");
 
-        const isItem = action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Psychic Blade") || action_name.includes("Thunder Gauntlets")
-        || action_name.includes("Lightning Launcher");
-
         to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, action_name});
 
         if ( isMeleeAttack || isRangedAttack) {
@@ -1190,7 +1187,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
 
         handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas, to_hit});
 
-        handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
+        to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
 
         // We can then add healing types
         for (let modifier of healing_modifiers.toArray()) {
