@@ -1265,6 +1265,11 @@ const BINDING_NAMES = {
     custom_sub_d10: "Custom modifier: - 1d10",
     custom_add_d12: "Custom modifier: + 1d12",
     custom_sub_d12: "Custom modifier: - 1d12",
+    custom_add_damage_d4: "Custom damage: + 1d4",
+    custom_add_damage_d6: "Custom damage: + 1d6",
+    custom_add_damage_d8: "Custom damage: + 1d8",
+    custom_add_damage_d10: "Custom damage: + 1d10",
+    custom_add_damage_d12: "Custom damage: + 1d12"
 }
 
 function configureHotKey(bindings, bindings_div, html, key) {

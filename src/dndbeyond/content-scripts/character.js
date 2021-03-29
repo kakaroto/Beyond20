@@ -578,6 +578,28 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
     return to_hit;
 }
 
+function addCustomDamages(damages, damage_types) {
+    const custom_damages = character.getSetting("custom-damage-dice", "");
+    if (custom_damages.length > 0) {
+        for (let custom_damage of split_custom_damages(custom_damages)) {
+            if (custom_damage.includes(":")) {
+                const parts = custom_damage.split(":", 2);
+                damages.push(parts[1].trim());
+                damage_types.push(parts[0].trim());
+            } else {
+                damages.push(custom_damage.trim());
+                damage_types.push("Custom");
+            }
+        }
+    }
+    for (const dice of [4, 6, 8, 10, 12]) {
+        if (key_modifiers[`custom_add_damage_d${dice}`]) {
+            damages.push(`1d${dice}`);
+            damage_types.push("Custom");
+        }
+    }
+}
+
 function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, spell_group = null) {
     const prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
     const properties = propertyListToDict(prop_list);
@@ -691,19 +713,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             damage_types.push(...spell_damage_types.map(t => `${t} (${group_name})`));
         }
 
-        const custom_damages = character.getSetting("custom-damage-dice", "");
-        if (custom_damages.length > 0) {
-            for (let custom_damage of split_custom_damages(custom_damages)) {
-                if (custom_damage.includes(":")) {
-                    const parts = custom_damage.split(":", 2);
-                    damages.push(parts[1].trim());
-                    damage_types.push(parts[0].trim());
-                } else {
-                    damages.push(custom_damage.trim());
-                    damage_types.push("Custom");
-                }
-            }
-        }
+        addCustomDamages(damages, damage_types);
 
         to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, item_name});
 
@@ -879,19 +889,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             damage_types.push(properties["Damage Type"] || "");
         }
 
-        const custom_damages = character.getSetting("custom-damage-dice", "");
-        if (custom_damages.length > 0) {
-            for (let custom_damage of custom_damages.split(",")) {
-                if (custom_damage.includes(":")) {
-                    const parts = custom_damage.split(":", 2);
-                    damages.push(parts[1].trim());
-                    damage_types.push(parts[0].trim());
-                } else {
-                    damages.push(custom_damage.trim());
-                    damage_types.push("Custom");
-                }
-            }
-        }
+        addCustomDamages(damages, damage_types);
 
         const settings_to_change = {}
         let brutal = 0;
@@ -1218,19 +1216,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             handleSpecialHealingSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
         }
 
-        const custom_damages = character.getSetting("custom-damage-dice", "");
-        if (custom_damages.length > 0) {
-            for (let custom_damage of custom_damages.split(",")) {
-                if (custom_damage.includes(":")) {
-                    const parts = custom_damage.split(":", 2);
-                    damages.push(parts[1].trim());
-                    damage_types.push(parts[0].trim());
-                } else {
-                    damages.push(custom_damage.trim());
-                    damage_types.push("Custom");
-                }
-            }
-        }
+        addCustomDamages(damages, damage_types);
 
         let critical_limit = 20;
         if (character.hasClassFeature("Hexblade’s Curse") &&
