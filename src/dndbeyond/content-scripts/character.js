@@ -544,6 +544,7 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
         // Ranger: Horizon Walker: Planar Warrior
         if (character.hasClassFeature("Planar Warrior") &&
             character.getSetting("ranger-planar-warrior", false)) {
+            damage_types[0] = "Force";
             const ranger_level = character.getClassLevel("Ranger");
             damages.push(ranger_level < 11 ? "1d8" : "2d8");
             damage_types.push("Planar Warrior");
@@ -650,11 +651,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                         damage = damage.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
                     }
                 }
-                if (character.hasClass("Ranger") &&
-                    character.hasClassFeature("Planar Warrior") &&
-                    character.getSetting("ranger-planar-warrior", false))
-                    damage_type = "Force";
-
+                
                 if (versatile_damage != "") {
                     let versatile_choice = character.getSetting("versatile-choice", "both");
                     if (key_modifiers.versatile_one_handed)
