@@ -220,6 +220,7 @@ function populateCharacter(response) {
         }
         if (response["actions"].includes("Channel Divinity: Sacred Weapon")) {
             e = createHTMLOption("paladin-sacred-weapon", false, character_settings);
+            options.append(e);
         }
         if (response["class-features"].includes("Blessed Strikes")) {
             e = createHTMLOption("cleric-blessed-strikes", false, character_settings);
