@@ -270,9 +270,15 @@ function split_custom_damages(damages) {
 
 function isItemATool(item_name, source) {
     return source === "tool, common" ||
-        (source === "gear, common" && item_name.endsWith(" Tools")) ||
-        (source.includes("gear, common") && item_name.endsWith(" Kit")) ||
-        (source.includes("gear, common") && item_name.endsWith(" Supplies"));
+        item_name.includes(" Tools") || item_name.includes(" Tool") ||
+        item_name.includes(" Kit") ||
+        item_name.includes(" Supplies") || 
+        item_name.includes(" Set") || 
+        item_name === "Wagon";
+}
+function isItemAnInstruction(item_name, item_tags) {
+    // Rhythm-Maker’s Drum, +1, +2, +3 don't have the tag
+    return item_tags.includes("Instrument") || item_name.includes(" Drum");
 }
 
 function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {to_hit, action_name=""}={}) {
@@ -611,7 +617,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
     const item_customizations = $(".ct-item-pane .ct-item-detail__class-customize-item .ddbc-checkbox--is-enabled .ddbc-checkbox__label").toArray().map(e => e.textContent);
     const source = item_type.trim().toLowerCase();
     const is_tool = isItemATool(item_name, source);
-    const is_instrument =  item_tags.includes("Instrument");
+    const is_instrument = isItemAnInstruction(item_name, item_tags);
     const description = descriptionToString(".ct-item-detail__description");
     if (!force_display && Object.keys(properties).includes("Damage")) {
         const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
