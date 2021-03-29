@@ -913,7 +913,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
 
         to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, action_name});
 
-        if ( isMeleeAttack || isRangedAttack) {
+        if (isMeleeAttack || isRangedAttack) {
             to_hit = handleSpecialWeaponAttacks(damages, damage_types, properties, settings_to_change, {to_hit, action_name});
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
                 character.getSetting("paladin-legendary-strike", false))
