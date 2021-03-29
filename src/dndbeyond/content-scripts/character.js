@@ -997,7 +997,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
     }
 }
 
-function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas, to_hit}={}) {
+function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas}={}) {
     // Artificer
     if (character.hasClass("Artificer")) {
         // Artificer: Arcane Firearm
@@ -1185,7 +1185,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             damage_types.push(dmgtype);
         }
 
-        handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas, to_hit});
+        handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
 
         to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
 
