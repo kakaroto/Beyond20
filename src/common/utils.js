@@ -121,8 +121,16 @@ function alertQuickSettings() {
 }
 function alertFullSettings() {
     alertSettings("options.html", "Beyond 20 Settings");
-
 }
+function showAbilities(){
+    if (settings['hotkey-click'])
+        $('#b20-abilities-pop').removeClass('beyond20-abilities-hid');
+}
+function hideAbilities(){
+    if (settings['hotkey-click'])
+        $('#b20-abilities-pop').addClass('beyond20-abilities-hid');
+}
+
 function isListEqual(list1, list2) {
     const list1_str = list1.join(",");
     const list2_str = list2.join(",");

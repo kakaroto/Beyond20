@@ -162,3 +162,56 @@
 .ddbc-box-background {
     pointer-events: none;
 }
+
+.beyond20-abilities-ind {
+   margin: 5px;
+   cursor: pointer;
+}
+
+.beyond20-abilities-hid {
+    display: none;
+}
+
+.beyond20-parent {
+    position: relative;
+}
+
+.beyond20-button-bg{
+    background-color: rgb(95, 0, 0);
+}
+.beyond20-button-bg:hover{
+    background-color: rgb(129, 22, 22) !important;
+}
+
+.beyond20-abilities-list {
+    min-width: 300px;
+    background-color: black;
+    z-index: 1000;
+    position: absolute;
+    border: 1px solid rgb(95, 0, 0);
+    padding: 10px;
+    top: 16px;
+}
+
+.beyond20-abilities-mobi {
+    right: -32px;
+}
+.b20-toggle {
+    cursor: pointer;
+    border: 1px solid transparent;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+.b20-toggle:hover {
+    background-color:rgb(155, 208, 243);
+    border: 1px solid darkblue;
+}
+.b20-dna{
+    text-align: center;
+    display: block;
+    width: 100%;
+}
+.b20-opt-sel {
+    font-weight: bold;
+    color: yellow;
+}

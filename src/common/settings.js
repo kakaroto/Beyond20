@@ -347,6 +347,13 @@ const options_list = {
         "default": true
     },
 
+    "hotkey-click": {
+        "title": "Click hotkeys to toggle them instead of holding",
+        "description": "Allows you to click a hotkey instead of holding it to toggle the assigned ability",
+        "type": "bool",
+        "default": false
+    },
+
     "donate": {
         "short": "Buy rations (1 day) to feed my familiar",
         "title": "Become a patron of the art of software development!",
@@ -631,6 +638,7 @@ const character_settings = {
         "default": true
     }
 }
+
 
 function getStorage() {
     return chrome.storage.local;
@@ -1308,12 +1316,20 @@ function configureHotKey(bindings, bindings_div, html, key) {
         }
         group = $(`<optgroup label="Temporarily toggle Character-Specific setting"></optgroup>`)
         select.append(group);
+        let optra = [];
         for (const name in character_settings) {
             const option = character_settings[name];
-            const action = `option-${name}`;
             if (option.hidden || option.type !== "bool") continue;
+            option.name = name;
+            optra.push(option);
+        }
+
+        const opt_sorted = optra.sort((a,b) => (a.title > b.title) ? 1: -1);
+        for (x=0; x < opt_sorted.length; x++) {
+            const item = opt_sorted[x];
+            const action = `option-${item.name}`;
             group.append($(`
-                <option value="${action}" ${bindings[key] === action ? "selected": ""}>${option.title}</option>
+                <option value="${action}" ${bindings[key] === action ? "selected": ""}>${item.title}</option>
             `));
         }
         alert.empty().append(actions)

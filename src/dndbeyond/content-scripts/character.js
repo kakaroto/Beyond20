@@ -1830,6 +1830,7 @@ function injectRollToSnippets() {
 function injectSettingsButton() {
     if ($(".ct-beyond20-settings").length > 0)
         return;
+
     const desktop_gap = $(".ct-character-header-desktop__group--gap");
     const tablet_gap = $(".ct-character-header-tablet__group--gap");
     const mobile_gap = $(".ct-character-header-mobile__group--gap");
@@ -1837,6 +1838,7 @@ function injectSettingsButton() {
     let button_type = null;
     let gap = null;
     let span_text = "Beyond 20";
+    let mobiclass = "";
     let icon = chrome.extension.getURL("images/icons/badges/normal20.png");
     if (desktop_gap.length > 0) {
         button_type = "desktop";
@@ -1847,19 +1849,37 @@ function injectSettingsButton() {
     } else if (mobile_gap.length > 0) {
         button_type = "mobile";
         gap = mobile_gap;
+        mobiclass = "beyond20-abilities-mobi";
         span_text = "\u00A0\u00A0"; // Add 2 non breaking spaces as padding;
         icon = chrome.extension.getURL("images/icons/badges/normal32.png");
     } else {
         return;
     }
+
     const button = E.div({ class: "ct-character-header-" + button_type + "__group ct-character-header-" + button_type + "__group--beyond20" },
-        E.div({ class: "ct-character-header-" + button_type + "__button" },
+        E.div({ class: "ct-character-header-" + button_type + "__button", id: 'b20-button' },
             E.img({ class: "ct-beyond20-settings", src: icon }),
             E.span({ class: "ct-character-header-" + button_type + "__button-label" }, span_text)
         )
     );
+
     gap.after(button);
     $(button).on('click', (event) => alertQuickSettings());
+    $(button).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
+
+    const pbutton = E.div({ class: "ct-character-header-" + button_type + "__group ct-character-header-" + button_type + "__group--beyond20pop beyond-20-abilities-hid beyond20-parent" },
+        E.div({ class: "beyond20-abilities-list beyond20-abilities-hid " + mobiclass, id: "b20-abilities-pop"})
+    );
+
+    gap.after(pbutton);
+    $(pbutton).on('mouseenter', (event) => showAbilities()).on('mouseleave', (event) => hideAbilities());
+    updateToggles();
+
+    $(document).off('click', '.b20-toggle'); //this removes all instances of this listener
+    $(document).on('click', '.b20-toggle', function(){
+        keyModifiers('keydown', $(this).data('key'), false);
+    });
+
 }
 
 var quick_roll = false;
