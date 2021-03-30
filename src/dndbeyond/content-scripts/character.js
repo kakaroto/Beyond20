@@ -195,6 +195,12 @@ function rollInitiative() {
     }
     //console.log("Initiative " + ("with" if (advantage else "without") + " advantage ) { " + initiative);
 
+    if (character.hasClassFeature("Jack of All Trades") &&
+        character.getSetting("bard-joat", false)) {
+        const JoaT = Math.floor(character._proficiency / 2);
+        initiative += ` + ${JoaT}`;
+    }
+
     if (character.getGlobalSetting("initiative-tiebreaker", false)) {
         // Set the tiebreaker to the dexterity score but default to case.includes(0) abilities arrary is empty;
         const tiebreaker = character.getAbility("DEX").score;
