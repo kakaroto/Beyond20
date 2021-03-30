@@ -1002,6 +1002,25 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
 }
 
 function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas}={}) {
+    // Handle special spells;
+    // Absorb Elements
+    if (spell_name == "Absorb Elements") {
+        const dmg = damages[0];
+        damages.length = 0;
+        damage_types.length = 0;
+        damages.push(dmg);
+        damage_types.push("Triggering Type");
+    }
+
+    // Handle Hunter's Mark
+    if (spell_name == "Hunter's Mark") {
+        const dmg = damages[0];
+        damages.length = 0;
+        damage_types.length = 0;
+        damages.push(dmg);
+        damage_types.push("Weapon Type");
+    }
+
     // Artificer
     if (character.hasClass("Artificer")) {
         // Artificer: Arcane Firearm
@@ -1052,16 +1071,6 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
             damages.push(`${parseInt(character.getAbility("INT").mod)}`);
             damage_types.push("Empowered Evocation");
         }
-    }
-
-    // Handle special spells;
-    // Absorb Elements
-    if (spell_name == "Absorb Elements") {
-        const dmg = damages[0];
-        damages.length = 0;
-        damage_types.length = 0;
-        damages.push(dmg);
-        damage_types.push("Triggering Type");
     }
 
     //Handle Flames of Phlegethos
