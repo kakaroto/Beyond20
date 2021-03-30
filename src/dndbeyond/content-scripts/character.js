@@ -1278,12 +1278,14 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             character.getSetting("rogue-assassinate", false)) {
             roll_properties["critical-limit"] = 1;
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-            character.mergeCharacterSettings({ "rogue-assassinate": false });
+            settings_to_change["rogue-assassinate"] = false;
         }
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
-
+        // Apply batched updates to settings, if any:
+        if (Object.keys(settings_to_change).length > 0)
+            character.mergeCharacterSettings(settings_to_change);
         return sendRollWithCharacter("spell-attack", damages[0] || "", roll_properties);
     } else {
         const roll_properties = {
@@ -1306,9 +1308,6 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         }
         if (castas != "" && !level.startsWith(castas))
             roll_properties["cast-at"] = castas;
-        // Apply batched updates to settings, if any:
-        if (Object.keys(settings_to_change).length > 0)
-            character.mergeCharacterSettings(settings_to_change);
         return sendRollWithCharacter("spell-card", 0, roll_properties);
     }
 }
