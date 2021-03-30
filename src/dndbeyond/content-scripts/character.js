@@ -1191,7 +1191,11 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
 
         handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
 
-        to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
+        // If statement should contain specific spells that shouldn't have extras applied to them
+        // Hunter's Mark in example is already an "additional damage on an attack" spell, so other additional damages would be to that attack
+        if (spell_name != "Hunter's Mark") {
+            to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
+        }
 
         // We can then add healing types
         for (let modifier of healing_modifiers.toArray()) {
