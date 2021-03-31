@@ -98,6 +98,9 @@ function updateHotkeysList(popup) {
             "data-key": roll_types['normal_roll'],
             "data-modifier": 'normal_roll'
         }, "Normal"));
+    } else {
+        // This prevents <hr/> from breaking due to adv/disadv being floats
+        roll_types_span.push($('<span>&nbsp;</span>')[0]);
     }
     if (roll_types['advantage']) {
         roll_types_span.push(E.span({
