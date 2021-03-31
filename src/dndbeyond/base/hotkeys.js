@@ -93,14 +93,14 @@ function updateHotkeysList(popup) {
             style: "float: left;"
         }, "Disadvantage"));
     }
-    if (roll_types['disadvantage']) {
+    if (roll_types['normal_roll']) {
         roll_types_span.push(E.span({
             class: "beyond20-hotkey-toggle " + (key_modifiers['normal_roll'] ? "beyond20-hotkey-enabled" : ""),
             "data-key": roll_types['normal_roll'],
             "data-modifier": 'normal_roll'
         }, "Normal"));
     }
-    if (roll_types['disadvantage']) {
+    if (roll_types['advantage']) {
         roll_types_span.push(E.span({
             class: "beyond20-hotkey-toggle " + (key_modifiers['advantage'] ? "beyond20-hotkey-enabled" : ""),
             "data-key": roll_types['advantage'],
