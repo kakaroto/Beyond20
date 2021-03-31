@@ -1,3 +1,26 @@
+v2.4.0
+===
+
+Another Beyond20 update is ready for you!
+This update has been long overdue, and I can't believe that the last update was in December already. Thankfully, it seemed like Beyond20 has been particularly stable in recent months, and other than the Game Log feature, which I'm still investigating how to properly address, things have been rather smooth with only a few hotkeys related bugs.
+
+This update fixes most of the issues with the hotkeys feature from last update, but also adds support for handling a bunch of special class features, bringing the coverage even higher in 2.4.0. The support for these special class features and spells is brought to you by `@Aeristoka`, who is, as always, on top of things! We've also got some cool new features, relating to the hotkeys handling, which has been a popular feature since its release in 2.3.0. 
+
+One of the big changes that I've done has been to add support for doing native rolls in Foundry, which would allow the Beyond20 rolls to integrate with other Foundry VTT modules for example. This work is still unfinished unfortunately, but some of the required changes for it to function are coming as part of this release. The native rolls support will be released soon(-ish) as part of the Beyond20 Companion Module, and would not require an update to the browser extension itself.
+
+A recent change in Roll20 has also caused Beyond20 to break a couple of days ago, where the roll templates being used had reverted back to the default template. Thankfully, this was an easy fix and is part of this release as well.
+
+I'd like to give a special thank you to `@Aeristoka` who has been holding down the fort and doing a lot of work in recent months to keeping Beyond20 updated with new class features support, UA changes as well as general tech support, bug triaging and bugfixing.
+
+A big thank you as usual to all my [Patrons](https://patreon.com/kakaroto) as well as those who sent their support via [ko-fi or github](/rations), and for all the love we receive from this community. And thank you for the contributors who helped make this release possible: `@Aeristoka`, `@adriangaro`, `@Stoneguard001` and `@IvanGirderboot`.
+
+Again, shameless plug: If you're interested in trying out [Foundry VTT](https://foundryvtt.com), give it a try at [The Forge](https://forge-vtt.com/?referral=beyond20) which allows you to explore Foundry fully with a temporary license. Just sign up and and click the "[Try Foundry Now](https://www.youtube.com/watch?v=XJUIDvaqPcg)" button to get your game setup instantly, and feel free to try it as many times as you need until you fall in love with it, like the rest of us.
+
+We've also recently launched a marketplace on the [Bazaar](https://forge-vtt.com/bazaar/?referral=beyond20) where you can find some amazing modules, maps, and assets packs for your games, and you can even download them for use in your self-hosted Foundry or Roll20 games, if you wish to do so.
+
+Enjoy this release and happy dice rolling!
+
+
 v2.3.0
 ===
 
