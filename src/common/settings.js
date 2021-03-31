@@ -1359,10 +1359,7 @@ function addHotKeyToUI(bindings, bindings_div, key) {
         <div style="border-bottom: 1px grey solid; display: flex; justify-content: space-between;">
             <div class="hotkey-event" style="cursor: pointer; flex-shrink: 1; padding: 5px; font-weight: bold;">${keyName}</div>
             <div class="hotkey-action" style="cursor: pointer; overflow: hidden; text-overflow: ellipsis; text-align: center; padding: 5px; flex-grow: 1;">${binding_name}</div>
-            <i class="icon marka marka-set marka-icon-times delete-hotkey" style="width:15px;height:15px; margin: 5px; flex-shrink: 1;">
-                <i style="background-color:rgb(0, 0, 0)"></i>
-                <i style="background-color:rgb(0, 0, 0)"></i>
-            </i>
+            <span class="delete-hotkey" style="width:15px; height:15px; padding: 3px; flex-shrink: 1;font-weight: 900; font-size: medium;">X</span>
         </div>
     `);
     html.find(".delete-hotkey").click(ev => {
@@ -1380,16 +1377,11 @@ function addHotKeyToUI(bindings, bindings_div, key) {
     return html;
 }
 
-function openHotkeyManager(button) {
-    console.log("Hotkeys manager");
-    let bindings = null;
-    try {
-        bindings = JSON.parse(button.attr("data-bindings"));
-    } catch (err) {}
+async function promptHotkeyManager(bindings) {
     // Use defaults if value is invalid or never set
     if (!bindings)
         bindings = {...key_bindings};
-
+    console.log("Hotkeys manager");
     const manager = $(`
     <div class="hotkeys-manager">
         <div class="key-bindings">
@@ -1423,12 +1415,24 @@ function openHotkeyManager(button) {
         configureHotKey(bindings, bindings_div, html, null)
     });
 
-    alertify.confirm('Beyond20 Hotkey Manager', manager[0], () => {
-        delete bindings[null];
-        button.attr("data-bindings", JSON.stringify(bindings));
-        button.trigger("change");
-    }, () => {});
+    return new Promise(resolve => {
+        alertify.confirm('Beyond20 Hotkey Manager', manager[0], () => {
+            delete bindings[null];
+            resolve(bindings);
+        }, () => {});
+    });
+}
 
+function openHotkeyManager(button) {
+    let bindings = null;
+    try {
+        bindings = JSON.parse(button.attr("data-bindings"));
+    } catch (err) {}
+
+    promptHotkeyManager(bindings).then(new_bindings => {
+        button.attr("data-bindings", JSON.stringify(new_bindings));
+        button.trigger("change");
+    });
 }
 function createHotkeysSetting(name, short) {
     const opt = options_list[name];

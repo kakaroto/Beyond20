@@ -58,7 +58,6 @@ function updateHotkeysList(popup) {
     // Ensure it runs only on pages with the hotkeys popup
     popup = popup || $(".beyond20-hotkeys-list");
     if (!popup) return;
-    let modifiers = "";
     let hotkeys_enabled = false;
     const bindings = settings['hotkeys-bindings'];
     const roll_types = {"disadvantage": "", "normal_roll": "", "advantage": ""};
@@ -108,6 +107,8 @@ function updateHotkeysList(popup) {
             style: "float: right;"
         }, "Advantage"))
     }
+    const manage_button = E.a({href: "#"}, E.span({class: "ddbc-manage-icon__icon beyond20-manage-hotkeys"}))
+    roll_types_span.push(manage_button);
 
     if (hotkeys_enabled){
         $('.ct-beyond20-settings-button').addClass('beyond20-button-has-hotkeys');
@@ -121,6 +122,13 @@ function updateHotkeysList(popup) {
         // Set the event to be keydown or keyup based on whether we have sticky or not and if the hotkey is pressed
         const keydown = settings['sticky-hotkeys'] || !key_modifiers[this.dataset.modifier];
         handleKeyModifier(keydown ? 'keydown' : 'keyup', key, false);
+    });
+    $(manage_button).click(async ev => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const new_bindings = await promptHotkeyManager();
+        mergeSettings({"hotkeys-bindings": new_bindings});
+        updateHotkeysList(popup);
     });
 }
 
