@@ -1138,33 +1138,43 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
 }
     
 function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas}={}) {
-    if (character.hasClassFeature("Supreme Healing")) {
-        for (let i = 0; i < damages.length; i++) {
-            if (damage_types[i] !== "Healing") continue;
-            damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)?/, (match, dice, faces) => {
-                return String(parseInt(dice || 1) * parseInt(faces));
-            });
+    // Artificer
+    if (character.hasClass("Artificer")) {
+        if (character.hasClassFeature("Alchemical Savant") &&
+            character.getSetting("artificer-alchemical-savant", false)) {
+            const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
+            for (let i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Healing" && alchemical_savant_regex.test(damages[i])) {
+                    damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
+                    damage_types.push("Alchemical Savant Healing");
+                    break;
+                }
+            }
         }
     }
-    if (character.hasClassFeature("Alchemical Savant") &&
-        character.getSetting("artificer-alchemical-savant", false)) {
-        const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
-        for (let i = 0; i < damages.length; i++){
-            if (damage_types[i] === "Healing" && alchemical_savant_regex.test(damages[i])) {
-                damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
-                damage_types.push("Alchemical Savant Healing");
-                break;
+
+    // Druid
+    if (character.hasClass("Druid")) {    
+        if (character.hasClassFeature("Enhanced Bond") &&
+            character.getSetting("wildfire-spirit-enhanced-bond", false)) {
+            for (let i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Healing") {
+                    damages.push("1d8");
+                    damage_types.push("Enhanced Bond Healing");
+                    break;
+                }
             }
         }
     }
     
-    if (character.hasClassFeature("Enhanced Bond") &&
-        character.getSetting("wildfire-spirit-enhanced-bond", false)) {
-        for (let i = 0; i < damages.length; i++){
-            if (damage_types[i] === "Healing") {
-                damages.push("1d8");
-                damage_types.push("Enhanced Bond Healing");
-                break;
+    // Supreme Healing must ALWAYS be at the end, at it maxes all healing dice
+    if (character.hasClass("Cleric")) {
+        if (character.hasClassFeature("Supreme Healing")) {
+            for (let i = 0; i < damages.length; i++) {
+                if (damage_types[i] !== "Healing") continue;
+                damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)?/, (match, dice, faces) => {
+                    return String(parseInt(dice || 1) * parseInt(faces));
+                });
             }
         }
     }
