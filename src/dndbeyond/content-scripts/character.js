@@ -274,7 +274,8 @@ function isItemATool(item_name, source) {
         item_name.includes(" Kit") ||
         item_name.includes(" Supplies") || 
         item_name.includes(" Set") || 
-        item_name === "Wagon";
+        item_name === "Wagon" ||
+        item_name.includes(" Utensils");
 }
 function isItemAnInstruction(item_name, item_tags) {
     // Rhythm-Maker’s Drum, +1, +2, +3 don't have the tag
