@@ -1013,7 +1013,8 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
     }
 
     // Handle Hunter's Mark
-    if (spell_name == "Hunter's Mark") {
+    if (spell_name == "Hunter's Mark" && damages.length == 3 &&
+        damage_types[0] == "Bludgeoning" && damage_types[1] == "Piercing" && damage_types[2] == "Slashing") {
         const dmg = damages[0];
         damages.length = 0;
         damage_types.length = 0;
