@@ -326,8 +326,7 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
 
     // Feats
     // Great Weapon Master Feat
-    if (to_hit !== null && 
-        character.getSetting("great-weapon-master", false) &&
+    if (character.getSetting("great-weapon-master", false) &&
         character.hasFeat("Great Weapon Master") &&
         (properties["Properties"] && properties["Properties"].includes("Heavy") ||
         action_name.includes("Polearm Master - Bonus Attack")) &&
@@ -352,8 +351,7 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
 function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {to_hit, action_name=""}={}) {
     // Feats
     // Sharpshooter Feat
-    if (to_hit !== null && 
-        character.getSetting("sharpshooter", false) &&
+    if (character.getSetting("sharpshooter", false) &&
         character.hasFeat("Sharpshooter") &&
         properties["Proficient"] == "Yes") {
         to_hit += " - 5";
@@ -377,7 +375,7 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
     // Class Specific
     if (character.hasClass("Cleric")) {
         // Cleric: Blessed Strikes
-        if ((item_name || action_name || (spell_name && spell_level.includes("Cantrip"))) &&
+        if ((((item_name || action_name) && to_hit != null) || (spell_name && spell_level.includes("Cantrip"))) &&
             character.hasClassFeature("Blessed Strikes") &&
             character.getSetting("cleric-blessed-strikes", false)) {
             damages.push("1d8");
@@ -387,7 +385,8 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
 
     if (character.hasClass("Ranger")) {
         // Ranger: Favored Foe
-        if (character.hasClassFeature("Favored Foe") &&
+        if (to_hit != null &&
+            character.hasClassFeature("Favored Foe") &&
             character.getSetting("ranger-favored-foe", false)) {
             const ranger_level = character.getClassLevel("Ranger");
             damages.push(ranger_level < 6 ? "1d4" : ( ranger_level < 14 ? "1d6" : "1d8"));
@@ -395,7 +394,8 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
         }
         
         // Ranger: Gathered Swarm
-        if (character.hasClassFeature("Gathered Swarm") &&
+        if (to_hit != null &&
+            character.hasClassFeature("Gathered Swarm") &&
             character.getSetting("ranger-gathered-swarm", false)) {
             const ranger_level = character.getClassLevel("Ranger");
             damages.push(ranger_level < 11 ? "1d6" : "1d8");
@@ -405,7 +405,7 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
 
     if (character.hasClass("Warlock")) {
         // Warlock: The Hexblade: Hexblade's Curse
-        if (damages.length > 0 &&
+        if (to_hit != null &&
             character.getSetting("warlock-hexblade-curse", false) &&
             character.hasClassFeature("Hexblade’s Curse") &&
             character._proficiency !== null) {
@@ -414,7 +414,8 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
         }
         
         // Warlock: Genie Patron: Genie's Wrath
-        if (character.hasClassFeature("Genie’s Vessel") &&
+        if (to_hit != null &&
+            character.hasClassFeature("Genie’s Vessel") &&
             character.getSetting("genies-vessel", false)) {
             damages.push(character._proficiency);
             damage_types.push("Genie's Wrath");
@@ -513,8 +514,7 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
 
     if (character.hasClass("Paladin")) {
         // Paladin: Sacred Weapon
-        if (to_hit !== null && 
-            character.getSetting("paladin-sacred-weapon", false)) {
+        if (character.getSetting("paladin-sacred-weapon", false)) {
             const charisma_attack_mod =  Math.max(character.getAbility("CHA").mod, 1);
             to_hit += `+ ${charisma_attack_mod}`;
         }
@@ -573,8 +573,7 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
 
     if (character.hasClass("Warlock")) {
         // Warlock: Eldritch Invocation: Lifedrinker
-        if (to_hit !== null && 
-            character.getSetting("eldritch-invocation-lifedrinker", false) &&
+        if (character.getSetting("eldritch-invocation-lifedrinker", false) &&
             item_customizations.includes("Pact Weapon")) {
             const charisma_damage_mod =  Math.max(character.getAbility("CHA").mod, 1);
             damages.push(`${charisma_damage_mod}`);
@@ -1045,21 +1044,6 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
             damages.push("1d8");
             damage_types.push("Arcane Firearm");
         }
-
-        // Artificer: Alchemical Savant
-        if (character.hasClassFeature("Alchemical Savant") &&
-            character.getSetting("artificer-alchemical-savant", false) &&
-            damages.length > 0) {
-            const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
-            for (let i = 0; i < damages.length; i++){
-                if ((damage_types[i] === "Acid" || damage_types[i] === "Fire" || damage_types[i] === "Necrotic" || damage_types[i] === "Poison") &&
-                    alchemical_savant_regex.test(damages[i])) {
-                    damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
-                    damage_types.push("Alchemical Savant");
-                    break;
-                }
-            }
-        }
     }
     
     if (character.hasClass("Druid")) {
@@ -1087,13 +1071,21 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
             damage_types.push("Empowered Evocation");
         }
     }
-
-    //Handle Flames of Phlegethos
-    if (damages.length > 0 &&
-        character.hasFeat("Flames of Phlegethos")) {
-        for (i = 0; i < damages.length; i++) {
-            if (damage_types[i] === "Fire")
-                damages[i] = damages[i].replace(/[0-9]*d[0-9]+/g, "$&ro<=1");
+    
+    // Artificer
+    if (character.hasClass("Artificer")) {
+        if (character.hasClassFeature("Alchemical Savant") &&
+            character.getSetting("artificer-alchemical-savant", false) &&
+            damages.length > 0) {
+            const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
+            for (let i = 0; i < damages.length; i++){
+                if ((damage_types[i] === "Acid" || damage_types[i] === "Fire" || damage_types[i] === "Necrotic" || damage_types[i] === "Poison") &&
+                    alchemical_savant_regex.test(damages[i])) {
+                    damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
+                    damage_types.push("Alchemical Savant");
+                    break;
+                }
+            }
         }
     }
 
@@ -1128,6 +1120,15 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
                     return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min2`).join(" + ") + mods;
                 });
             }
+        }
+    }
+
+    //Handle Flames of Phlegethos
+    if (damages.length > 0 &&
+        character.hasFeat("Flames of Phlegethos")) {
+        for (i = 0; i < damages.length; i++) {
+            if (damage_types[i] === "Fire")
+                damages[i] = damages[i].replace(/[0-9]*d[0-9]+/g, "$&ro<=1");
         }
     }
 
@@ -1213,13 +1214,9 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             damage_types.push(dmgtype);
         }
 
+        to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
+        
         handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
-
-        // If statement should contain specific spells that shouldn't have extras applied to them
-        // Hunter's Mark in example is already an "additional damage on an attack" spell, so other additional damages would be to that attack
-        if (spell_name != "Hunter's Mark") {
-            to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
-        }
 
         // We can then add healing types
         for (let modifier of healing_modifiers.toArray()) {
