@@ -1004,7 +1004,9 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
 function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas}={}) {
     // Handle special spells;
     // Absorb Elements
-    if (spell_name == "Absorb Elements") {
+    if (spell_name == "Absorb Elements" && damages.length == 5 &&
+        damage_types[0] == "Acid" && damage_types[1] == "Cold" && damage_types[2] == "Fire" &&
+        damage_types[3] == "Lightning" && damage_types[4] == "Thunder") {
         const dmg = damages[0];
         damages.length = 0;
         damage_types.length = 0;
