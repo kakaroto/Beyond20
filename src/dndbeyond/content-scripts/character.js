@@ -1022,7 +1022,8 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
     }
 
     // Handle Spirit Guardians
-    if (spell_name == "Spirit Guardians") {
+    if (spell_name == "Spirit Guardians" && damages.length == 2 &&
+        damage_types[0] == "Radiant" && damage_types[1] == "Necrotic") {
         const dmg = damages[0];
         damages.length = 0;
         damage_types.length = 0;
