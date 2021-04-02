@@ -1081,7 +1081,8 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
         // Wizard: School of Evocation: Empowered Evocation
         if (character.hasClassFeature("Empowered Evocation") &&
             character.getSetting("empowered-evocation", false) &&
-            spell_level.includes("Evocation")) {
+            spell_level.includes("Evocation") &&
+            spell_source.includes("Wizard")) {
             damages.push(`${parseInt(character.getAbility("INT").mod)}`);
             damage_types.push("Empowered Evocation");
         }
