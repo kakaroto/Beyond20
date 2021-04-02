@@ -1025,6 +1025,16 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
         damage_types.push("Weapon Type");
     }
 
+    // Handle Spirit Guardians
+    if (spell_name == "Spirit Guardians" && damages.length == 2 &&
+        damage_types[0] == "Radiant" && damage_types[1] == "Necrotic") {
+        const dmg = damages[0];
+        damages.length = 0;
+        damage_types.length = 0;
+        damages.push(dmg);
+        damage_types.push("Radiant or Necrotic");
+    }
+
     // Artificer
     if (character.hasClass("Artificer")) {
         // Artificer: Arcane Firearm
