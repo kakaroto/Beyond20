@@ -1072,6 +1072,7 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
         }
     }
     
+    // NOTE: Below this line are things that work on ALL damages, they should stay there
     // Artificer
     if (character.hasClass("Artificer")) {
         if (character.hasClassFeature("Alchemical Savant") &&
@@ -1088,7 +1089,7 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
             }
         }
     }
-
+    
     // Check for Draconic Sorcerer's Elemental Affinity;
     let elementalAffinity = null;
     for (let feature of character._class_features) {
@@ -1098,19 +1099,21 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
             break;
         }
     }
-    const elementalAdepts = [];
-    for (let feature of character._feats) {
-        const match = feature.match("Elemental Adept \\((.*)\\)");
-        if (match) {
-            elementalAdepts.push(match[1]);
-        }
-    }
     if (elementalAffinity && damage_types.includes(elementalAffinity)) {
         for (let ability of character._abilities) {
             if (ability[1] == "CHA" && ability[3] != "" && ability[3] != "0") {
                 damages.push(ability[3]);
                 damage_types.push(elementalAffinity + " (Elemental Affinity)");
             }
+        }
+    }
+    
+    // Check for Elemental Adept Feats
+    const elementalAdepts = [];
+    for (let feature of character._feats) {
+        const match = feature.match("Elemental Adept \\((.*)\\)");
+        if (match) {
+            elementalAdepts.push(match[1]);
         }
     }
     for (let elementalAdept of elementalAdepts) {
