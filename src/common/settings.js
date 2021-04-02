@@ -427,6 +427,12 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
+    "bard-spiritual-focus": {
+        "title": "Bard: College of Spirits: Spiritual Focus",
+        "description": "Use your Bardic Inspiration to deal extra psychic damage (Apply to next roll only)",
+        "type": "bool",
+        "default": false
+    },
     "bard-psychic-blades": {
         "title": "Bard: College of Whispers: Psychic Blades",
         "description": "Use your Bardic Inspiration to deal extra psychic damage (Apply to next roll only)",

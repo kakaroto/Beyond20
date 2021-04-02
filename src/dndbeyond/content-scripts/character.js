@@ -1047,6 +1047,18 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
             }
         }
     }
+
+    // Bard
+    if (character.hasClass("Bard")) {
+        // UA: Bard: College of Spirits: Spiritual Focus
+        if (character.hasClassFeature("Spiritual Focus") &&
+            character.getSetting("bard-spiritual-focus", false) &&
+            damages.length > 0 &&
+            parseInt(character.getClassLevel("Bard")) >= 6) {
+                damages.push("1d6");
+                damage_types.push("Spiritual Focus");
+            }
+    }
     
     if (character.hasClass("Druid")) {
         // Druid: Wildfire Druid: Enhanced Bond
@@ -1119,6 +1131,18 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
 }
     
 function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas}={}) {
+    // Bard
+    if (character.hasClass("Bard")) {
+        // UA: Bard: College of Spirits: Spiritual Focus
+        if (character.hasClassFeature("Spiritual Focus") &&
+            character.getSetting("bard-spiritual-focus", false) &&
+            damages.length > 0 &&
+            parseInt(character.getClassLevel("Bard")) >= 6) {
+                damages.push("1d6");
+                damage_types.push("Spiritual Focus Healing");
+            }
+    }
+    
     if (character.hasClassFeature("Supreme Healing")) {
         for (let i = 0; i < damages.length; i++) {
             if (damage_types[i] !== "Healing") continue;
@@ -1127,6 +1151,7 @@ function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {sp
             });
         }
     }
+    
     if (character.hasClassFeature("Alchemical Savant") &&
         character.getSetting("artificer-alchemical-savant", false)) {
         const alchemical_savant_regex = /[0-9]+d[0-9]+/g;

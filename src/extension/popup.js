@@ -254,6 +254,10 @@ function populateCharacter(response) {
             e = createHTMLOption("empowered-evocation", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Spiritual Focus")) {
+            e = createHTMLOption("bard-spiritual-focus", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }
