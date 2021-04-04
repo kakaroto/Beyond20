@@ -82,6 +82,9 @@ function damagesToCrits(character, damages) {
     const rule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
     if (rule == CriticalRules.HOMEBREW_REROLL || rule == CriticalRules.HOMEBREW_MOD)
         return damages.slice();
+    if (rule == CriticalRules.HOMEBREW_D52CARDS) {
+      return crits;
+    }
     for (let damage of damages) {
         const damage_matches = reMatchAll(/([0-9]*)d([0-9]+)(?:ro<=[0-9]+)?(?:min[0-9]+)?/, damage) || [];
         const damage_parts = damage_matches.map(match => {
@@ -158,7 +161,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 for (let i = 0; i < damage_types.length; i++) {
                     if (damage_types[i].includes("Piercing")){
                         const piercer_damage = damagesToCrits(character, [damages[i]]);
-                        if (piercer_damage.length > 0 && piercer_damage[0] != "") {    
+                        if (piercer_damage.length > 0 && piercer_damage[0] != "") {
                             piercer_damage[0] = piercer_damage[0].replace(/([0-9]+)d([0-9]+)/, '1d$2');
                             crit_damages.push(piercer_damage[0]);
                             crit_damage_types.push("Piercer Feat");
@@ -287,7 +290,7 @@ async function sendRoll(character, rollType, fallback, args) {
         if (key_modifiers.custom_sub_d12)
             req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d12";
     }
-        
+
     if (req.whisper === WhisperType.QUERY)
         req.whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
     if (req.advantage === RollType.QUERY)
@@ -527,4 +530,3 @@ function beyond20SendMessageFailure(character, response) {
         resetKeyModifiers();
     }
 }
-

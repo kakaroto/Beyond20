@@ -368,7 +368,7 @@ function rollAttack(request, custom_roll_dice = "") {
         dmg_props["charname"] = request.character.name;
         dmg_props["rname"] = request.name;
     }
-    if (request.damages && request.damages.length > 0 && 
+    if (request.damages && request.damages.length > 0 &&
         request["to-hit"] !== undefined && !request.rollDamage) {
         template_type = "atk";
         dmg_props["charname"] = request.character.name;
@@ -950,11 +950,80 @@ function handleMessage(request, sender, sendResponse) {
         }
         handleRoll(request);
     } else if (request.action == "rendered-roll") {
+        checkAndRenderD52Cards(request);
         handleRenderedRoll(request);
     } else if (request.action === "update-combat") {
         sendCustomEvent("CombatTracker", [request.combat]);
     }
 }
+
+async function checkAndRenderD52Cards(request) {
+  if (settings["critical-homebrew"] == CriticalRules.HOMEBREW_D52CARDS ) {
+    if (request.attack_rolls.length !== 'undefined' && request.attack_rolls.length > 0 ) {
+      for (const attack_roll in request.attack_rolls) {
+        if (request.attack_rolls[attack_roll]["critical-failure"]) {
+          console.log("fail");
+          d52Cards("fail");
+          renderD52Card(card, request.character, request.request["damage-types"]);
+        }
+        if (request.attack_rolls[attack_roll]["critical-success"]) {
+          console.log("success");
+          d52Cards("success");
+          renderD52Card(card, request.character, request.request["damage-types"]);
+        }
+      }
+    }
+  }
+}
+
+function renderD52Card(card, character, damageTypes) {
+  console.log("renderD52Card:", card, character, damageTypes);
+  text = '&{template:default}{{name='+character+' got crit '+card.type+'}}';
+  cardN = '{{Card Number = '+card.cardN+'}}'
+  let magicDamages = ["Acid",
+                      "Cold",
+                      "Fire",
+                      "Force",
+                      "Lightning",
+                      "Necrotic",
+                      "Poison",
+                      "Psychic",
+                      "Radiant",
+                      "Thunder"]
+  text = text + cardN;
+  if (damageTypes.includes(" Bludgeoning") || damageTypes.includes("Bludgeoning")) {
+    text = text +'{{Bludgeoning='+card.result.Bludgeoning+'}}';
+  }
+  if (damageTypes.includes(" Piercing") || damageTypes.includes("Piercing")) {
+    text = text +'{{Piercing='+card.result.Piercing+'}}';
+  }
+  if (damageTypes.includes(" Slashing") || damageTypes.includes("Slashing")) {
+    text = text +'{{Slashing='+card.result.Slashing+'}}';
+  }
+  if (damageTypes.some((val) => magicDamages.indexOf(val) !== -1)) {
+    text = text +'{{Magic='+card.result.Magic+'}}';
+  }
+  postChatMessage(text, character);
+}
+
+function d52Cards(type) {
+  if (type == "fail"){
+    randomCard = Math.floor(Math.random() * Math.floor(d52CardsFailData.length));
+    card = {"type": "Fail",
+              "result": d52CardsFailData[randomCard],
+              "cardN": randomCard + 1}
+    return card ;
+  }
+  if (type == "success"){
+    randomCard = Math.floor(Math.random() * Math.floor(d52CardsSuccessData.length));
+    card = {"type": "Success",
+              "result": d52CardsSuccessData[randomCard],
+              "cardN": randomCard + 1}
+    return card ;
+  }
+
+}
+
 
 chrome.runtime.onMessage.addListener(handleMessage);
 updateSettings();
