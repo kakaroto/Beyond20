@@ -326,7 +326,8 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
 
     // Feats
     // Great Weapon Master Feat
-    if (character.getSetting("great-weapon-master", false) &&
+    if (to_hit !== null && 
+        character.getSetting("great-weapon-master", false) &&
         character.hasFeat("Great Weapon Master") &&
         (properties["Properties"] && properties["Properties"].includes("Heavy") ||
         action_name.includes("Polearm Master - Bonus Attack")) &&
@@ -351,7 +352,8 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
 function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {to_hit, action_name=""}={}) {
     // Feats
     // Sharpshooter Feat
-    if (character.getSetting("sharpshooter", false) &&
+    if (to_hit !== null && 
+        character.getSetting("sharpshooter", false) &&
         character.hasFeat("Sharpshooter") &&
         properties["Proficient"] == "Yes") {
         to_hit += " - 5";
@@ -514,7 +516,8 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
 
     if (character.hasClass("Paladin")) {
         // Paladin: Sacred Weapon
-        if (character.getSetting("paladin-sacred-weapon", false)) {
+        if (to_hit !== null && 
+            character.getSetting("paladin-sacred-weapon", false)) {
             const charisma_attack_mod =  Math.max(character.getAbility("CHA").mod, 1);
             to_hit += `+ ${charisma_attack_mod}`;
         }
@@ -1227,10 +1230,6 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             damage_types.push(dmgtype);
         }
 
-        to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
-        
-        handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
-
         // We can then add healing types
         for (let modifier of healing_modifiers.toArray()) {
             let dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
@@ -1258,6 +1257,11 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         }
         if (healing_modifiers.length > 0) {
             handleSpecialHealingSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
+        }
+        else {
+            to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
+        
+            handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
         }
 
         addCustomDamages(damages, damage_types);
