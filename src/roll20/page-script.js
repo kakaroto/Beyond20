@@ -58,8 +58,9 @@ function updateCombatTracker(combat) {
 
 function checkForOGL() {
     // Make sure at least one of these variables is set
-    const vars = ['customcharsheet_data', 'customcharsheet_html', 'CHARSHEET_NAME'];
-    if (!vars.some(v => typeof(v) !== "undefined"))
+    if (typeof(customcharsheet_data) === "undefined" &&
+        typeof(customcharsheet_html) === "undefined" &&
+        typeof(CHARSHEET_NAME) === "undefined")
         return setTimeout(checkForOGL, 1000)
     const oglTemplates = ["simple", "atk", "atkdmg", "dmg", "spell", "traits"];
     const templates = typeof(customcharsheet_data) !== "undefined" && customcharsheet_data.rolltemplates;
