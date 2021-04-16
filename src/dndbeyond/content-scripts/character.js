@@ -377,7 +377,7 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
     // Class Specific
     if (character.hasClass("Cleric")) {
         // Cleric: Blessed Strikes
-        if ((item_name || action_name || (spell_name && spell_level.includes("Cantrip"))) &&
+        if ((((item_name || action_name) && to_hit != null) || (spell_name && spell_level.includes("Cantrip"))) &&
             character.hasClassFeature("Blessed Strikes") &&
             character.getSetting("cleric-blessed-strikes", false)) {
             damages.push("1d8");
@@ -387,7 +387,8 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
 
     if (character.hasClass("Ranger")) {
         // Ranger: Favored Foe
-        if (character.hasClassFeature("Favored Foe") &&
+        if (to_hit != null &&
+            character.hasClassFeature("Favored Foe") &&
             character.getSetting("ranger-favored-foe", false)) {
             const ranger_level = character.getClassLevel("Ranger");
             damages.push(ranger_level < 6 ? "1d4" : ( ranger_level < 14 ? "1d6" : "1d8"));
@@ -395,7 +396,8 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
         }
         
         // Ranger: Gathered Swarm
-        if (character.hasClassFeature("Gathered Swarm") &&
+        if (to_hit != null &&
+            character.hasClassFeature("Gathered Swarm") &&
             character.getSetting("ranger-gathered-swarm", false)) {
             const ranger_level = character.getClassLevel("Ranger");
             damages.push(ranger_level < 11 ? "1d6" : "1d8");
@@ -405,7 +407,7 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
 
     if (character.hasClass("Warlock")) {
         // Warlock: The Hexblade: Hexblade's Curse
-        if (damages.length > 0 &&
+        if (to_hit != null &&
             character.getSetting("warlock-hexblade-curse", false) &&
             character.hasClassFeature("Hexblade’s Curse") &&
             character._proficiency !== null) {
@@ -414,7 +416,8 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
         }
         
         // Warlock: Genie Patron: Genie's Wrath
-        if (character.hasClassFeature("Genie’s Vessel") &&
+        if (to_hit != null &&
+            character.hasClassFeature("Genie’s Vessel") &&
             character.getSetting("genies-vessel", false)) {
             damages.push(character._proficiency);
             damage_types.push("Genie's Wrath");
@@ -573,8 +576,7 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
 
     if (character.hasClass("Warlock")) {
         // Warlock: Eldritch Invocation: Lifedrinker
-        if (to_hit !== null && 
-            character.getSetting("eldritch-invocation-lifedrinker", false) &&
+        if (character.getSetting("eldritch-invocation-lifedrinker", false) &&
             item_customizations.includes("Pact Weapon")) {
             const charisma_damage_mod =  Math.max(character.getAbility("CHA").mod, 1);
             damages.push(`${charisma_damage_mod}`);
@@ -1045,21 +1047,6 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
             damages.push("1d8");
             damage_types.push("Arcane Firearm");
         }
-
-        // Artificer: Alchemical Savant
-        if (character.hasClassFeature("Alchemical Savant") &&
-            character.getSetting("artificer-alchemical-savant", false) &&
-            damages.length > 0) {
-            const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
-            for (let i = 0; i < damages.length; i++){
-                if ((damage_types[i] === "Acid" || damage_types[i] === "Fire" || damage_types[i] === "Necrotic" || damage_types[i] === "Poison") &&
-                    alchemical_savant_regex.test(damages[i])) {
-                    damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
-                    damage_types.push("Alchemical Savant");
-                    break;
-                }
-            }
-        }
     }
     
     if (character.hasClass("Druid")) {
@@ -1087,16 +1074,25 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
             damage_types.push("Empowered Evocation");
         }
     }
-
-    //Handle Flames of Phlegethos
-    if (damages.length > 0 &&
-        character.hasFeat("Flames of Phlegethos")) {
-        for (i = 0; i < damages.length; i++) {
-            if (damage_types[i] === "Fire")
-                damages[i] = damages[i].replace(/[0-9]*d[0-9]+/g, "$&ro<=1");
+    
+    // NOTE: Below this line are things that work on ALL damages, they should stay there
+    // Artificer
+    if (character.hasClass("Artificer")) {
+        if (character.hasClassFeature("Alchemical Savant") &&
+            character.getSetting("artificer-alchemical-savant", false) &&
+            damages.length > 0) {
+            const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
+            for (let i = 0; i < damages.length; i++){
+                if ((damage_types[i] === "Acid" || damage_types[i] === "Fire" || damage_types[i] === "Necrotic" || damage_types[i] === "Poison") &&
+                    alchemical_savant_regex.test(damages[i])) {
+                    damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
+                    damage_types.push("Alchemical Savant");
+                    break;
+                }
+            }
         }
     }
-
+    
     // Check for Draconic Sorcerer's Elemental Affinity;
     let elementalAffinity = null;
     for (let feature of character._class_features) {
@@ -1106,19 +1102,21 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
             break;
         }
     }
-    const elementalAdepts = [];
-    for (let feature of character._feats) {
-        const match = feature.match("Elemental Adept \\((.*)\\)");
-        if (match) {
-            elementalAdepts.push(match[1]);
-        }
-    }
     if (elementalAffinity && damage_types.includes(elementalAffinity)) {
         for (let ability of character._abilities) {
             if (ability[1] == "CHA" && ability[3] != "" && ability[3] != "0") {
                 damages.push(ability[3]);
                 damage_types.push(elementalAffinity + " (Elemental Affinity)");
             }
+        }
+    }
+    
+    // Check for Elemental Adept Feats
+    const elementalAdepts = [];
+    for (let feature of character._feats) {
+        const match = feature.match("Elemental Adept \\((.*)\\)");
+        if (match) {
+            elementalAdepts.push(match[1]);
         }
     }
     for (let elementalAdept of elementalAdepts) {
@@ -1131,36 +1129,55 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
         }
     }
 
+    //Handle Flames of Phlegethos
+    if (damages.length > 0 &&
+        character.hasFeat("Flames of Phlegethos")) {
+        for (i = 0; i < damages.length; i++) {
+            if (damage_types[i] === "Fire")
+                damages[i] = damages[i].replace(/[0-9]*d[0-9]+/g, "$&ro<=1");
+        }
+    }
+
 }
     
 function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas}={}) {
-    if (character.hasClassFeature("Supreme Healing")) {
-        for (let i = 0; i < damages.length; i++) {
-            if (damage_types[i] !== "Healing") continue;
-            damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)?/, (match, dice, faces) => {
-                return String(parseInt(dice || 1) * parseInt(faces));
-            });
+    // Artificer
+    if (character.hasClass("Artificer")) {
+        if (character.hasClassFeature("Alchemical Savant") &&
+            character.getSetting("artificer-alchemical-savant", false)) {
+            const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
+            for (let i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Healing" && alchemical_savant_regex.test(damages[i])) {
+                    damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
+                    damage_types.push("Alchemical Savant Healing");
+                    break;
+                }
+            }
         }
     }
-    if (character.hasClassFeature("Alchemical Savant") &&
-        character.getSetting("artificer-alchemical-savant", false)) {
-        const alchemical_savant_regex = /[0-9]+d[0-9]+/g;
-        for (let i = 0; i < damages.length; i++){
-            if (damage_types[i] === "Healing" && alchemical_savant_regex.test(damages[i])) {
-                damages.push(`${character.getAbility("INT").mod < 2 ? 1 : character.getAbility("INT").mod}`);
-                damage_types.push("Alchemical Savant Healing");
-                break;
+
+    // Druid
+    if (character.hasClass("Druid")) {    
+        if (character.hasClassFeature("Enhanced Bond") &&
+            character.getSetting("wildfire-spirit-enhanced-bond", false)) {
+            for (let i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Healing") {
+                    damages.push("1d8");
+                    damage_types.push("Enhanced Bond Healing");
+                    break;
+                }
             }
         }
     }
     
-    if (character.hasClassFeature("Enhanced Bond") &&
-        character.getSetting("wildfire-spirit-enhanced-bond", false)) {
-        for (let i = 0; i < damages.length; i++){
-            if (damage_types[i] === "Healing") {
-                damages.push("1d8");
-                damage_types.push("Enhanced Bond Healing");
-                break;
+    // Supreme Healing must ALWAYS be at the end, at it maxes all healing dice
+    if (character.hasClass("Cleric")) {
+        if (character.hasClassFeature("Supreme Healing")) {
+            for (let i = 0; i < damages.length; i++) {
+                if (!damage_types[i].includes("Healing")) continue;
+                damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)?/, (match, dice, faces) => {
+                    return String(parseInt(dice || 1) * parseInt(faces));
+                });
             }
         }
     }
@@ -1213,12 +1230,10 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             damage_types.push(dmgtype);
         }
 
-        handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
-
-        // If statement should contain specific spells that shouldn't have extras applied to them
-        // Hunter's Mark in example is already an "additional damage on an attack" spell, so other additional damages would be to that attack
-        if (spell_name != "Hunter's Mark") {
+        if (damages.length > 0) {
             to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
+        
+            handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
         }
 
         // We can then add healing types
