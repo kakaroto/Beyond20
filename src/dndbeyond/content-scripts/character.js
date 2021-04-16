@@ -1880,6 +1880,7 @@ function deactivateTooltipListeners(el) {
 }
 
 var quickRollHideId = 0;
+var quickRollMouseOverEl = null;
 function activateTooltipListeners(el, direction, tooltip, callback) {
     const site = $("#site");
     el.on('mouseenter', (e) => {
@@ -1916,12 +1917,18 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
             }
             callback(el);
         })
+        quickRollMouseOverEl = el[0];
     }).on('mouseleave', (e) => {
         if (quickRollHideId)
             clearTimeout(quickRollHideId);
         quickRollHideId = setTimeout(() => tooltip.hide(), 250);
+        quickRollMouseOverEl = null;
     });
     el.addClass("beyond20-quick-roll-area");
+    // If the mouse was over one of the quick roll areas, then we've just destroyed the click handler, so we need to redo it.
+    if (quickRollMouseOverEl === el[0]) {
+        el.trigger('mouseenter');
+    }
 }
 
 function deactivateQuickRolls() {
