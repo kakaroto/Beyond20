@@ -1174,7 +1174,7 @@ function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {sp
     if (character.hasClass("Cleric")) {
         if (character.hasClassFeature("Supreme Healing")) {
             for (let i = 0; i < damages.length; i++) {
-                if (damage_types[i] !== "Healing") continue;
+                if (!damage_types[i].includes("Healing")) continue;
                 damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)?/, (match, dice, faces) => {
                     return String(parseInt(dice || 1) * parseInt(faces));
                 });
