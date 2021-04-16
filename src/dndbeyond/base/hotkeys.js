@@ -130,7 +130,10 @@ function updateHotkeysList(popup) {
         ev.preventDefault();
         ev.stopPropagation();
         const new_bindings = await promptHotkeyManager();
-        mergeSettings({"hotkeys-bindings": new_bindings});
+        mergeSettings({"hotkeys-bindings": new_bindings}, (newSettings) => {
+            settings = newSettings;
+            chrome.runtime.sendMessage({ "action": "settings", "type": "general", "settings": settings });
+        });
         updateHotkeysList(popup);
     });
 }
