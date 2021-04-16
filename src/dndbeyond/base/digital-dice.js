@@ -43,18 +43,42 @@ class DigitalDice {
         const breakdown = result.find(".dice_result__info__results .dice_result__info__breakdown").text();
         const dicenotation = result.find(".dice_result__info__dicenotation").text();
 
-        const diceMatches = reMatchAll(/([0-9]*)d([0-9]+)/, dicenotation) || [];
+        const diceMatches = reMatchAll(/([0-9]*)d([0-9]+)(kh1|kl1)?/, dicenotation) || [];
         const results = breakdown.split("+");
         this._dice.forEach(d => d._rolls = []);
         for (let match of diceMatches) {
             const amount = parseInt(match[1]);
             const faces = parseInt(match[2]);
+            const mod = match[3];
             for (let i = 0; i < amount; i++) {
-                const result = parseInt(results.shift());
+                let rolls = [];
+                if (mod) {
+                    const result = results.shift();
+                    if (result.match(/\([0-9,]+\)/)) {
+                        rolls = result.slice(1, -1).split(",").map(r => ({roll: parseInt(r)}));
+                        if (mod === "kh1") {
+                            let max = 0;
+                            for (let r of rolls) {
+                                if (r.roll > max) max = r.roll;
+                            }
+                            rolls.forEach(r => r.discarded = r.roll !== max);
+                        } else if (mod === "kl1") {
+                            let min = faces;
+                            for (let r of rolls) {
+                                if (r.roll < min) min = r.roll;
+                            }
+                            rolls.forEach(r => r.discarded = r.roll !== min);
+                        }
+                    } else {
+                        rolls = [{roll: parseInt(result || 0)}];
+                    }
+                } else {
+                    rolls = [{roll: parseInt(results.shift())}];
+                }
                 for (let dice of this._dice) {
                     if (dice.faces != faces) continue;
                     if (dice._rolls.length == dice.amount) continue;
-                    dice._rolls.push({ "roll": result });
+                    dice._rolls.push(...rolls);
                     break;
                 }
             }
