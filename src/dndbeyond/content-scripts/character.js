@@ -1735,7 +1735,8 @@ function injectRollButton(paneClass) {
             return;
         }
         const base = $(".ct-creature-block").length > 0 ? ".ct-creature-block" : ".ddbc-creature-block";
-        creature = new Monster("Creature", base, settings);
+        const creatureType = $(".ct-sidebar__header-parent").text();
+        creature = new Monster("Creature", base, settings, {creatureType, character});
         creature.parseStatBlock();
         creature.updateInfo();
     } else if (paneClass == "ct-vehicle-pane") {

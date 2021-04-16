@@ -1,5 +1,5 @@
 class Monster extends CharacterBase {
-    constructor(_type, base = null, global_settings = null) {
+    constructor(_type, base = null, global_settings = null, {character, creatureType}={}) {
         super(_type, global_settings);
         if (this.type() == "Monster") {
             this._base = ".mon-stat-block";
@@ -10,8 +10,11 @@ class Monster extends CharacterBase {
         } else {
             this._base = ".mon-stat-block";
         }
-        if (base)
+        if (base) {
             this._base = base;
+        }
+        this._creatureType = creatureType;
+        this._parent_character = character;
         this._stat_block = $(this._base);
         this._id = null;
         this._name = null;
@@ -216,12 +219,17 @@ class Monster extends CharacterBase {
         for (let ability of this._abilities) {
             if (ability[1] == abbr) {
                 const [name, abbr, score, modifier] = ability;
-                sendRoll(this, "ability", "1d20" + modifier, {
+                const roll_properties = {
                     "name": name,
                     "ability": abbr,
                     "modifier": modifier,
                     "ability-score": score
-                });
+                };
+                if (abbr == "STR" && this.type() == "Creature" && this._creatureType === "Wildshape" && this._parent_character && 
+                    this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
+                    roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+                }
+                sendRoll(this, "ability", "1d20" + modifier, roll_properties);
                 break;
             }
         }
@@ -252,21 +260,31 @@ class Monster extends CharacterBase {
     rollSavingThrow(abbr) {
         const mod = this._saves[abbr];
         const name = abbreviationToAbility(abbr);
-        sendRoll(this, "saving-throw", "1d20" + mod, {
+        const roll_properties = {
             "name": name,
             "ability": abbr,
             "modifier": mod
-        });
+        };
+        if (abbr == "STR" && this.type() == "Creature" && this._creatureType === "Wildshape" && this._parent_character && 
+            this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
+            roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+        }
+        sendRoll(this, "saving-throw", "1d20" + mod, roll_properties);
     }
 
     rollSkillCheck(skill) {
         const modifier = this._skills[skill];
         const ability = skillToAbility(skill);
-        sendRoll(this, "skill", "1d20" + modifier, {
+        const roll_properties = {
             "skill": skill,
             "ability": ability,
             "modifier": modifier
-        });
+        };
+        if (ability == "STR" && this.type() == "Creature" && this._creatureType === "Wildshape" && this._parent_character && 
+            this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
+            roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+        }
+        sendRoll(this, "skill", "1d20" + modifier, roll_properties);
     }
 
     parseAttackInfo(description) {
@@ -387,6 +405,17 @@ class Monster extends CharacterBase {
                 if (roll_properties) {
                     const id = addRollButton(this, () => {
                         const roll_properties = this.buildAttackRoll(action_name, description);
+                        if (this.type() == "Creature" && this._creatureType === "Wildshape" && this._parent_character && 
+                            this._parent_character.hasClass("Barbarian") && this._parent_character.hasClassFeature("Rage") &&
+                            this._parent_character.getSetting("barbarian-rage", false) && description.match(/Melee(?: Weapon)? Attack:/) &&
+                            roll_properties["damages"] && roll_properties["damages"].length > 0) {
+                            // Barbarian: Rage
+                            const barbarian_level = this._parent_character.getClassLevel("Barbarian");
+                            const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
+                            roll_properties["damages"].push(String(rage_damage));
+                            roll_properties["damage-types"].push("Rage");
+                        }
+                    
                         sendRoll(this, "attack", "1d20" + (roll_properties["to-hit"] || ""), roll_properties)
                     }, block, {small: true, before: true, image: true, text: action_name});
                     $("#" + id).css({ "float": "", "text-align": "", "margin-top": "15px" });
