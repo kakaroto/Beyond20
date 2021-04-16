@@ -1230,6 +1230,12 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             damage_types.push(dmgtype);
         }
 
+        if (damages.length > 0) {
+            to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
+        
+            handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
+        }
+
         // We can then add healing types
         for (let modifier of healing_modifiers.toArray()) {
             let dmg = $(modifier).find(".ct-spell-caster__modifier-amount").text();
@@ -1257,11 +1263,6 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         }
         if (healing_modifiers.length > 0) {
             handleSpecialHealingSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
-        }
-        else {
-            to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
-        
-            handleSpecialSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
         }
 
         addCustomDamages(damages, damage_types);
