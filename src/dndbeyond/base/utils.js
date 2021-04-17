@@ -460,10 +460,12 @@ function addIconButton(character, callback, where, { append = false, prepend = f
 }
 
 function removeRollButtons() {
-    $(".ct-beyond20-roll").remove();
-    $(".ct-beyond20-roll-hitdie").remove();
-    $(".ct-beyond20-roll-display").remove();
-    $(".ct-beyond20-custom-icon").remove();
+    $(`.ct-beyond20-roll,
+        .ct-beyond20-roll-hitdie,
+        .ct-beyond20-roll-display,
+        .ct-beyond20-custom-icon,
+        .ct-beyond20-roll-display,
+        .ct-beyond20-spell-icon`).remove();
     const custom_rolls = $("u.ct-beyond20-custom-roll");
     for (let i = 0; i < custom_rolls.length; i++)
         custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
