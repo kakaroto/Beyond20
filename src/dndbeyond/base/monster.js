@@ -404,6 +404,7 @@ class Monster extends CharacterBase {
                 const roll_properties = this.buildAttackRoll(action_name, description);
                 if (roll_properties) {
                     const id = addRollButton(this, () => {
+                        // Need to recreate roll properties, in case settings (whisper, custom dmg, etc..) have changed since button was added
                         const roll_properties = this.buildAttackRoll(action_name, description);
                         if (this.type() == "Creature" && this._creatureType === "Wildshape" && this._parent_character && 
                             this._parent_character.hasClass("Barbarian") && this._parent_character.hasClassFeature("Rage") &&
@@ -418,6 +419,15 @@ class Monster extends CharacterBase {
                     
                         sendRoll(this, "attack", "1d20" + (roll_properties["to-hit"] || ""), roll_properties)
                     }, block, {small: true, before: true, image: true, text: action_name});
+                    $("#" + id).css({ "float": "", "text-align": "", "margin-top": "15px" });
+                } else {
+                    const id = addRollButton(this, () => {
+                        const roll_properties = {
+                            name: action_name,
+                            description
+                        };
+                        sendRoll(this, "trait", "0", roll_properties);
+                    }, block, {small: true, before: true, image: false, text: action_name});
                     $("#" + id).css({ "float": "", "text-align": "", "margin-top": "15px" });
                 }
             }
