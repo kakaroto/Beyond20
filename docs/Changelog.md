@@ -1,4 +1,4 @@
-v2.4.0
+v2.4.0 (March 30th 2021)
 ===
 
 * **Feature**: Add support for special spells within an item's attack (Green-Flame Blade and Booming Blade for example)
@@ -59,7 +59,7 @@ v2.4.0
 * **Misc**: Refactored special melee, ranged, weapon and spell attacks into more generic and less error-prone functions (by [@KaKaRoTo](https://github.com/kakaroto) and [@Aeristoka](https://github.com/Aeristoka))
 * **Misc**: Add sponsored section to the website and sponsor links for [The Forge](https://forge-vtt.com/?referral=beyond20) and [Toucan](https://jointoucan.com/partners/beyond20)
 
-v2.3.0
+v2.3.0 (December 8th 2020)
 ===
 
 * **Feature**: Add a hotkeys manager to allow setting custom hotkeys for controlling Beyond20's behavior🥳🎉
@@ -126,7 +126,7 @@ v2.3.0
 * **Misc**: Updated to the website's FAQ
 
 
-v2.2.1
+v2.2.1 (October 4th 2020)
 ===
 
 * **Feature**: Make the quick roll tooltip stay longer after hover to more easily interact with it
@@ -141,7 +141,7 @@ v2.2.1
 * **Bugfix**: *Roll20*: Fix the independent to-hit and damage rolls rolling the full attack on Roll20 with digital dice disabled
 * **Bugfix**: *Roll20*: Fix possible race condition with chrome extensions that may prevent proper detection of OGL sheet template use in a campaign
 
-v2.2
+v2.2 (October 3rd 2020)
 ===
 
 * **Feature**: Add support for Astral Tabletop (by [@adriangaro](https://github.com/adriangaro))
@@ -218,7 +218,7 @@ v2.2
 * **Misc**: Remove testimonials from site's main page and add link to reviews instead
 * **Misc**: Add banner/ad for [The Forge](https://forge-vtt.com) to the main site
 
-v2.1.1
+v2.1.1 (July 11th 2020)
 ===
 * **Feature**: Add synchronization of D&D Beyond's combat tracker with Roll20's Combat tracker (By [@shadow7412](https://github.com/shadow7412))
 * **Feature**: Add support for the Wizard's Bladesong class feature (By [@Aeristoka](https://github.com/Aeristoka))
@@ -229,7 +229,7 @@ v2.1.1
 * **Bugfix**: *Roll20*: Show the spell's name when rolling a spell without to-hit using the Beyond20 renderer
 * **Bugfix**: *Roll20*: Fix "Display in VTT" for a monster's avatar when using the Beyond20 renderer 
 
-v2.1
+v2.1 (July 8th 2020)
 ===
 * **Feature**: Add Quick Roll Area to the Digital Dice buttons for "To Hit" and "Damages" in Actions and Spells tabs
 * **Feature**: Add support for the Bard's Silver Tongue class feature (By [@Aeristoka](https://github.com/Aeristoka))
@@ -269,7 +269,7 @@ v2.1
 * **Misc**: Improved and more standard build and packaging process (By [@moritonal ](https://github.com/moritonal))
 
 
-v2.0
+v2.0 (June 2nd 2020)
 ===
 * **Feature**: Add integration with the D&D Beyond Digital Dice
 * **Feature**: Update the Beyond20 icon sets to make them more beautiful and usable at low resolutions. Icons provided by [Jerry Escandon](https://github.com/Jerryescandon)
@@ -328,7 +328,7 @@ v2.0
 * **Misc**: Make the quick roll icon remain fixed in place and disappear with a small delay
 * **Misc**: Fix some dice rolls failing on pre-v3 D&D Beyond character sheets (irrelevant at this point)
 
-v1.1
+v1.1 (April 9th 2020)
 ===
 * **Feature**: Add support for the new D&D Beyond character sheet layout
 * **Feature**: Save and cache spell modifiers/attack/save DC information from character sheets
@@ -345,7 +345,7 @@ v1.1
 * **Misc**: Fix Donate button size being too big in the popout dialog in non-dnd/roll20/fvtt websites
 * **Misc**: *Chrome*: Add permissions for forge-vtt.com as I prepare for using a new domain
 
-v1.0
+v1.0 (March 16th 2020)
 ===
 * **Feature**: Added [Discord integration](/discord) via the new Beyond20 Discord Bot!
 * **Feature**: Add setting for adding a dexterity tie breaker to initiative rolls (Contributed by Jeremy '[@jaypoulz](https://github.com/jaypoulz)' Poulin)
@@ -376,7 +376,7 @@ v1.0
 * **Misc**: Add transparency to the roll type indicator to make it less conspicuous
 
 
-v0.9
+v0.9 (February 13th 2020)
 ===
 
 * **Feature**: Add indicator on roll buttons to identify the roll type (advantage, disadvantage, roll twice, etc...)
@@ -412,7 +412,7 @@ v0.9
 * **Misc**: Added the 'sponsor' button on the github page, and registered for the Github Sponsors program
 
 
-v0.8
+v0.8 (December 6th 2019)
 ===
 
 * **Feature**: Add Quick Rolls feature to quickly roll skills, attacks, spells from the main page directly
@@ -439,7 +439,7 @@ v0.8
 * **Bugfix**: *Dice Roller*: Fix display bug on rolls after opening the quick settings dialog
 * **Bugfix**: Fix full settings window opening donate link inside the iframe instead of a new tab
 
-v0.7
+v0.7 (November 19th 2019)
 ===
 
 * **Feature**: Add a Dice Roller within D&D Beyond for players not using Roll20 or FVTT
@@ -469,7 +469,7 @@ v0.7
 * **Misc**: Updated donate link to redirect to beyond20.here-for-more.info/rations instead of paypal.me/kakaroto
 * **Misc**: *FVTT*: Major refactor of how message rendering is done internally to allow for the dice roller to work
 
-v0.6
+v0.6 (September 20th 2019)
 ===
 
 * **Feature**: Roll Spells from Monster stat blocks without opening the spell in a separate window
@@ -488,7 +488,7 @@ v0.6
 * **Bugfix**: *FVTT*: Re-calculate total damages when rolling damage multiple times with the 'Roll Damages' button (Auto-roll disabled)
 * **Bugfix**: *FVTT*: Do not re-roll damages the first time we click on 'Roll Damages' (gives proper dice values and damage types for Chaos Bolt for example)
 
-v0.5
+v0.5 (August 13th 2019)
 ===
 
 - **Feature**: Roll the appropriate die when clicking on a Superiority Die or Maneuvers feature instead of displaying its description
@@ -501,7 +501,7 @@ v0.5
 - **Misc**: Decrease Chrome extension permissions and require manual activation for FVTT installations (See [Release Notes](release_notes#v05) for more information)
 - **Misc**: Replace all remaining occurrences of "Roll20" with "VTT"
 
-v0.4
+v0.4 (July 3rd 2019)
 ===
 
 - **Feature**: Add option to decide if character is using one-handed or two-handed versatile weapons
@@ -515,7 +515,7 @@ v0.4
 - **Bugfix**: Fix spell attack dice disappearing
 - **Misc**: Remove the green/red on death saving throws above/below 10 as it was apparently confusing to players (might re-add as an option).
 
-v0.3
+v0.3 (June 18th 2019)
 ===
 
 - **Feature**: Support for sending the rolls to [Foundry Virtual TableTop](http://foundryvtt.com) (FVTT) as an alternative to Roll20
@@ -530,7 +530,7 @@ v0.3
 - **Bugfix**: Fix damage for actions (like Unarmed attacks) when a custom dice is set.
 - **Bugfix**: More relaxed monster action parsing algorithm to work better with homebrewed monsters.
 
-v0.2
+v0.2 (May 29th 2019)
 ===
 
 - **Feature:** Add per character custom roll and damage dice formulas
@@ -550,7 +550,7 @@ v0.2
 - **Misc:** Clean up of quick settings window to make room for more per-character options
 
 
-v0.1
+v0.1 (May 21st 2019)
 ===
 
 - **Feature:** Full support for Monster stat blocks and character Creatures (roll for Abilities, Saves, Skills and Weapon attacks)
@@ -562,7 +562,7 @@ v0.1
 - **Misc:** Only allow Disciple of Life option if the Cleric is of the Life domain
 - **Misc:** Change the way Sneak attack bonus is sent so it also gets doubled if Crit
 
-v0.0.9
+v0.0.9 (May 19th 2019)
 ===
 
 - **Feature:** Add preliminary Monster and Creatures support (only dice formulas are clickable for now)
@@ -576,7 +576,7 @@ v0.0.8.1 (Firefox-only)
 
 - **Bugfix:** Fix bug where HP management only works if VTT ES extension is installed
 
-v0.0.8
+v0.0.8 (May 18th 2019)
 ===
 - **Feature:** Add support for HP management (Requires VTT ES extension installed, for now)
 - **Feature:** Add ability to select which Roll20 page to send the rolls to
@@ -584,7 +584,7 @@ v0.0.8
 - **Feature:** Add roll dice icon to spell attack modifier
 - **Misc:** Brand new website!
 
-v0.0.7
+v0.0.7 (May 15th 2019)
 ===
 
 - **Feature:** Add support for Firefox
@@ -594,7 +594,7 @@ v0.0.7
 - **Bugfix:** Fix damage output with multiple additional damages in custom weapons
 - **Bugfix:** Fix GreenFlame Blade damage output when level < 5
 
-v0.0.6
+v0.0.6 (May 9th 2019)
 ===
 
 - **Feature:** Add option to send initiative to the turn tracker
@@ -602,26 +602,26 @@ v0.0.6
 - **Bugfix:** Fix 1d20 added to spell description for +x modifiers
 - **Misc:** Change the "First/Second Roll" for other templates into a better name
 
-v0.0.5
+v0.0.5 (May 7th 2019)
 ===
 
 - **Bugfix:** Fix issue with settings getting reset if we modify an option in the toolbar popup
 - **Misc:** Change tag names for default template rolls to make them more readable
 
-v0.0.4
+v0.0.4 (May 7th 2019)
 ===
 
 - **Feature:** Add support for other roll20 character sheet templates
 - **Bugfix:** Fix custom dice formulas getting messed up if we change spell level casting
 
-v0.0.3
+v0.0.3 (May 6th 2019)
 ===
 
 - **Feature:** Add option to disable substitution of dice formulas
 - **Feature:** Add option for critical hit prefix
 - **Bugfix**: Fix dice formula detection
 
-v0.0.2
+v0.0.2 (May 6th 2019)
 ===
 
 - **Feature:** Add a settings window and a popup menu to quickly change settings
@@ -631,6 +631,6 @@ v0.0.2
 - **Bugfix:** Fix double roll of equipment items when clicking on the beyond20 button in the top-right
 
 
-v0.0.1
+v0.0.1 (May 5th 2019)
 ===
 - Initial release with support for all types of roles
