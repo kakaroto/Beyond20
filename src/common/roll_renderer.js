@@ -409,9 +409,10 @@ class Beyond20RollRenderer {
             roll: digitalRoll.rolls[0].formula,
             advantage: RollType.NORMAL,
             whisper: whisper,
-            sendMessage: true
+            sendMessage: true,
+            name: digitalRoll.name
         }
-        return this.postDescription(request, digitalRoll.name, null, {}, null, digitalRoll.rolls);
+        return this.postDescription(request, `${request.name} (${request.roll})`, null, {}, null, digitalRoll.rolls);
     }
 
     async rollD20(request, title, data, modifier="") {
@@ -792,7 +793,7 @@ class Beyond20RollRenderer {
         } else if (request.type == "chat-message") {
             return this.postMessage(request, request.name, request.message);
         } else {
-            // 'custom' || anything unexpected;
+            // 'custom' or anything unexpected
             const mod = request.modifier || request.roll;
             const rname = request.name || request.type;
 
