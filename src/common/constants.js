@@ -41,5 +41,8 @@ BUTTON_STYLE_CSS = `
     background-color: #c53131;
     color: #fff;
 }
+.mon-stat-block img {
+    vertical-align: middle;
+}
 `;
 
