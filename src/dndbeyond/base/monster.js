@@ -401,34 +401,36 @@ class Monster extends CharacterBase {
             if (add_dice) {
                 let description = descriptionToString(action);
                 description = description.replace(/−/g, "-");
-                const roll_properties = this.buildAttackRoll(action_name, description);
-                if (roll_properties) {
-                    const id = addRollButton(this, () => {
-                        // Need to recreate roll properties, in case settings (whisper, custom dmg, etc..) have changed since button was added
-                        const roll_properties = this.buildAttackRoll(action_name, description);
-                        if (this.type() == "Creature" && this._creatureType === "Wildshape" && this._parent_character && 
-                            this._parent_character.hasClass("Barbarian") && this._parent_character.hasClassFeature("Rage") &&
-                            this._parent_character.getSetting("barbarian-rage", false) && description.match(/Melee(?: Weapon)? Attack:/) &&
-                            roll_properties["damages"] && roll_properties["damages"].length > 0) {
-                            // Barbarian: Rage
-                            const barbarian_level = this._parent_character.getClassLevel("Barbarian");
-                            const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
-                            roll_properties["damages"].push(String(rage_damage));
-                            roll_properties["damage-types"].push("Rage");
-                        }
-                    
-                        sendRoll(this, "attack", "1d20" + (roll_properties["to-hit"] || ""), roll_properties)
-                    }, block, {small: true, before: true, image: true, text: action_name});
-                    $("#" + id).css({ "float": "", "text-align": "", "margin-top": "15px" });
-                } else {
-                    const id = addRollButton(this, () => {
-                        const roll_properties = {
-                            name: action_name,
-                            description
-                        };
-                        sendRoll(this, "trait", "0", roll_properties);
-                    }, block, {small: true, before: true, image: false, text: action_name});
-                    $("#" + id).css({ "float": "", "text-align": "", "margin-top": "15px" });
+                if (description.startsWith(action_name)) {
+                    const roll_properties = this.buildAttackRoll(action_name, description);
+                    if (roll_properties) {
+                        const id = addRollButton(this, () => {
+                            // Need to recreate roll properties, in case settings (whisper, custom dmg, etc..) have changed since button was added
+                            const roll_properties = this.buildAttackRoll(action_name, description);
+                            if (this.type() == "Creature" && this._creatureType === "Wildshape" && this._parent_character && 
+                                this._parent_character.hasClass("Barbarian") && this._parent_character.hasClassFeature("Rage") &&
+                                this._parent_character.getSetting("barbarian-rage", false) && description.match(/Melee(?: Weapon)? Attack:/) &&
+                                roll_properties["damages"] && roll_properties["damages"].length > 0) {
+                                // Barbarian: Rage
+                                const barbarian_level = this._parent_character.getClassLevel("Barbarian");
+                                const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
+                                roll_properties["damages"].push(String(rage_damage));
+                                roll_properties["damage-types"].push("Rage");
+                            }
+                        
+                            sendRoll(this, "attack", "1d20" + (roll_properties["to-hit"] || ""), roll_properties)
+                        }, block, {small: true, before: true, image: true, text: action_name});
+                        $("#" + id).css({ "float": "", "text-align": "", "margin-top": "15px" });
+                    } else {
+                        const id = addRollButton(this, () => {
+                            const roll_properties = {
+                                name: action_name,
+                                description
+                            };
+                            sendRoll(this, "trait", "0", roll_properties);
+                        }, block, {small: true, before: true, image: false, text: action_name});
+                        $("#" + id).css({ "float": "", "text-align": "", "margin-top": "15px" });
+                    }
                 }
             }
             if (inject_descriptions)
@@ -446,8 +448,13 @@ class Monster extends CharacterBase {
                     continue;
                 }
                 // Usually <em><strong> || <strong><em> (Orcus is <span><em><strong>);
-                let action_name = $(firstChild).find("> :first-child").text().trim();
-                handleAction(action_name, action, action);
+                let action_name = "";
+                if (firstChild.localName === "em")
+                    action_name = $(firstChild).find("> :first-child").text().trim();
+                if (firstChild.localName === "strong")
+                    action_name = $(firstChild).text();
+                if (action_name)
+                    handleAction(action_name, action, action);
             }
         }
 
