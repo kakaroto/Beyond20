@@ -873,9 +873,9 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
     if (action_name == "Superiority Dice" || action_parent == "Maneuvers") {
         const fighter_level = character.getClassLevel("Fighter");
         let superiority_die = fighter_level < 10 ? "1d8" : (fighter_level < 18 ? "1d10" : "1d12");
-        if (action_name === "Parry")
+        if (action_name === "Maneuvers: Parry")
             superiority_die += " + " + character.getAbility("DEX").mod;
-        else if (action_name === "Rally")
+        else if (action_name === "Maneuvers: Rally")
             superiority_die += " + " + character.getAbility("CHA").mod;
         return sendRollWithCharacter("custom", superiority_die, {
             "name": action_name,
