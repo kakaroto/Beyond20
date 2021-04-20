@@ -173,7 +173,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 crit_damages[0] = damagesToCrits(character, ["3d4"])[0];
             if (brutal > 0) {
                 const rule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
-                let highest_dice = 0;
+                let weapon_dice = 0;
                 let homebrew_max_damage = 0;
                 if (rule == CriticalRules.HOMEBREW_MAX) {
                     let highest_damage = 0;
@@ -188,15 +188,15 @@ function buildAttackRoll(character, attack_source, name, description, properties
                         const match = dmg.match(/[0-9]*d([0-9]+)/);
                         if (match) {
                             const sides = parseInt(match[1]);
-                            if (sides > highest_dice)
-                                highest_dice = sides;
+                            if (weapon_dice == 0)
+                                weapon_dice = sides;
                         }
                     }
                 }
                 const isBrutal = character.hasClassFeature("Brutal Critical");
                 const isSavage = character.hasRacialTrait("Savage Attacks");
-                if (highest_dice != 0) {
-                    let brutal_dmg = `${brutal}d${highest_dice}`
+                if (weapon_dice != 0) {
+                    let brutal_dmg = `${brutal}d${weapon_dice}`
                     // Apply great weapon fighting to brutal damage dice
                     if ((character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&
                         properties["Attack Type"] == "Melee" &&
