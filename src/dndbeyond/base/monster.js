@@ -288,7 +288,7 @@ class Monster extends CharacterBase {
     }
 
     parseAttackInfo(description) {
-        const m = description.match(/(Melee|Ranged)(?: Weapon| Spell)? Attack:.*?(\+[0-9]+) to hit.*?, (?:reach |ranged? |Gibletish )?(.*?)(?:,.*?)?\./)
+        const m = description.match(/(Melee|Ranged)(?: Weapon| Spell)? Attack:.*?(\+[0-9]+) to hit.*?, (?:reach |ranged? |Gibletish )?(.*?)(?:,.*?)?\./i)
         if (m)
             return m.slice(1, 4);
         else
