@@ -99,7 +99,7 @@ function damagesToCrits(character, damages) {
     return crits;
 }
 
-function buildAttackRoll(character, attack_source, name, description, properties,
+function buildAttackRoll(character, attack_source, name, description, properties, WeaponDamageLength,
                          damages = [], damage_types = [], to_hit = null,
                          brutal = 0, force_to_hit_only = false, force_damages_only = false) {
     const roll_properties = {
@@ -173,7 +173,7 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 crit_damages[0] = damagesToCrits(character, ["3d4"])[0];
             if (brutal > 0) {
                 const rule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
-                let weapon_dice = 0;
+                let weapon_dice = [];
                 let homebrew_max_damage = 0;
                 if (rule == CriticalRules.HOMEBREW_MAX) {
                     let highest_damage = 0;
@@ -184,18 +184,21 @@ function buildAttackRoll(character, attack_source, name, description, properties
                     }
                     homebrew_max_damage = brutal * highest_damage;
                 } else {
-                    for (let dmg of crit_damages) {
-                        const match = dmg.match(/[0-9]*d([0-9]+)/);
-                        if (match) {
-                            const sides = parseInt(match[1]);
-                            if (weapon_dice == 0)
-                                weapon_dice = sides;
-                        }
+                    let WeaponDamageInc = 0;
+                    for (let dmg of crit_damages){
+                        if(WeaponDamageInc < WeaponDamageLength){
+                            const match = dmg.match(/[0-9]*d([0-9]+)/);
+                            if(match){
+                                const sides = parseInt(match[1]);
+                                weapon_dice.push(sides);
+                            }
+                            WeaponDamageInc++
+                        }      
                     }
                 }
                 const isBrutal = character.hasClassFeature("Brutal Critical");
                 const isSavage = character.hasRacialTrait("Savage Attacks");
-                if (weapon_dice != 0) {
+                if (Array.isArray(weapon_dice) && weapon_dice.length) {
                     let brutal_dmg = `${brutal}d${weapon_dice}`
                     // Apply great weapon fighting to brutal damage dice
                     if ((character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&

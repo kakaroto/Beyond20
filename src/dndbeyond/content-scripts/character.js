@@ -702,6 +702,9 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 break;
             }
         }
+
+        const WeaponDamageLength = damages.length;
+
         // If clicking on a spell group within a item (Green flame blade, Booming blade), then add the additional damages from that spell
         if (spell_group) {
             const group_name = $(spell_group).find(".ct-item-detail__spell-damage-group-name").text();
@@ -768,6 +771,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             item_name,
             description,
             properties,
+            WeaponDamageLength,
             damages,
             damage_types,
             to_hit,
@@ -920,6 +924,8 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
 
         to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, action_name});
 
+        const WeaponDamageLength = damages.length;
+
         if (isMeleeAttack || isRangedAttack) {
             to_hit = handleSpecialWeaponAttacks(damages, damage_types, properties, settings_to_change, {to_hit, action_name});
             if (character.hasAction("Channel Divinity: Legendary Strike") &&
@@ -963,6 +969,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             action_name,
             description,
             properties,
+            WeaponDamageLength,
             damages,
             damage_types,
             to_hit,
@@ -1230,6 +1237,8 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             damage_types.push(dmgtype);
         }
 
+        const WeaponDamageLength = damages.length;
+        
         if (damages.length > 0) {
             to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
         
@@ -1278,6 +1287,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             spell_name,
             description,
             properties,
+            WeaponDamageLength,
             damages,
             damage_types,
             to_hit,
