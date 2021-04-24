@@ -919,12 +919,12 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
         || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons") 
         || action_name.includes("Thunder Gauntlets") || action_name.includes("Unarmed Fighting") || action_name.includes("Arms of the Astral Self");
+
+        const WeaponDamageLength = damages.length;
         
         const isRangedAttack = action_name.includes("Lightning Launcher");
 
         to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, action_name});
-
-        const WeaponDamageLength = damages.length;
 
         if (isMeleeAttack || isRangedAttack) {
             to_hit = handleSpecialWeaponAttacks(damages, damage_types, properties, settings_to_change, {to_hit, action_name});

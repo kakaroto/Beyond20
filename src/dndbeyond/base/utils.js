@@ -199,18 +199,21 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 const isBrutal = character.hasClassFeature("Brutal Critical");
                 const isSavage = character.hasRacialTrait("Savage Attacks");
                 if (Array.isArray(weapon_dice) && weapon_dice.length) {
-                    let brutal_dmg = `${brutal}d${weapon_dice}`
-                    // Apply great weapon fighting to brutal damage dice
-                    if ((character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&
-                        properties["Attack Type"] == "Melee" &&
-                        (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
-                        brutal_dmg += "ro<=2"
+                    for(let i = 0; i < WeaponDamageLength; i++){
+                        let brutal_dmg = `${brutal}d${weapon_dice[i]}`
+                        // Apply great weapon fighting to brutal damage dice
+                        if ((character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&
+                            properties["Attack Type"] == "Melee" &&
+                            (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
+                            brutal_dmg += "ro<=2"
+                        }
+                        crit_damages.push(brutal_dmg);
+                        crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal " + damage_types[i] : (isBrutal ? "Brutal " + damage_types[i] : "Savage Attacks " + damage_types[i]));
                     }
-                    crit_damages.push(brutal_dmg);
-                    crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
+
                 } else if (rule == CriticalRules.HOMEBREW_MAX) {
                     crit_damages.push(`${homebrew_max_damage}`);
-                    crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
+                    crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal " : (isBrutal ? "Brutal " : "Savage Attacks "));
                 }
 
             }
