@@ -499,6 +499,8 @@ class Beyond20RollRenderer {
             const damage_types = request["damage-types"];
             const critical_damages = request["critical-damages"];
             const critical_damage_types = request["critical-damage-types"];
+            const brutal_critical_and_savage_attack_damages = request["brutal-and-savage-damages"];
+            const brutal_critical_and_savage_attack_damage_types = request["brutal-and-savage-damage-types"];
             if (request.name === "Chromatic Orb") {
                 const damage_choices = {}
                 const critical_damage_choices = {}
@@ -609,6 +611,11 @@ class Beyond20RollRenderer {
             }
             if (is_critical) {
                 const critical_damage_rolls = []
+                if (request["brutal-and-savage-damage-types"].length > 0){
+                    const WeaponDiceType = await this.queryDamageType(request.name, brutal_critical_and_savage_attack_damage_types);
+                    critical_damages.push(brutal_critical_and_savage_attack_damages[WeaponDiceType]);
+                    critical_damage_types.push(brutal_critical_and_savage_attack_damage_types[WeaponDiceType]);
+                }
                 for (let i = 0; i < (critical_damages.length); i++) {
                     const roll = this._roller.roll(critical_damages[i]);
                     critical_damage_rolls.push(roll);

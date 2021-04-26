@@ -148,6 +148,8 @@ function buildAttackRoll(character, attack_source, name, description, properties
             const crits = damagesToCrits(character, damages, damage_types);
             const crit_damages = [];
             const crit_damage_types = [];
+            const brutal_and_savage_damages = [];
+            const brutal_and_savage_damage_types = [];
             for (let [i, dmg] of crits.entries()) {
                 if (dmg != "") {
                     crit_damages.push(dmg);
@@ -207,18 +209,20 @@ function buildAttackRoll(character, attack_source, name, description, properties
                             (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
                             brutal_dmg += "ro<=2"
                         }
-                        crit_damages.push(brutal_dmg);
-                        crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal " + damage_types[i] : (isBrutal ? "Brutal " + damage_types[i] : "Savage Attacks " + damage_types[i]));
+                        brutal_and_savage_damages.push(brutal_dmg);
+                        brutal_and_savage_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal " + damage_types[i] : (isBrutal ? "Brutal " + damage_types[i] : "Savage Attacks " + damage_types[i]));
                     }
 
                 } else if (rule == CriticalRules.HOMEBREW_MAX) {
-                    crit_damages.push(`${homebrew_max_damage}`);
-                    crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal " : (isBrutal ? "Brutal " : "Savage Attacks "));
+                    brutal_and_savage_damages.push(`${homebrew_max_damage}`);
+                    brutal_and_savage_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal " : (isBrutal ? "Brutal " : "Savage Attacks "));
                 }
 
             }
             roll_properties["critical-damages"] = crit_damages;
             roll_properties["critical-damage-types"] = crit_damage_types;
+            roll_properties["brutal-and-savage-damages"] = brutal_and_savage_damages;
+            roll_properties["brutal-and-savage-damage-types"] = brutal_and_savage_damage_types;
         }
     }
 
