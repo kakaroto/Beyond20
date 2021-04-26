@@ -1,3 +1,24 @@
+v2.4.1 (April 25th 2021)
+===
+* **Feature**: Add support for Raging from a Wildshape creature (for Druid/Barbarian multiclassers)
+* **Feature**: Add the ability to display NPC's traits in the VTT (non attack actions/features)
+* **Feature**: Add support for using Utensils as tools (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Spirit Guardians (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Display the roll formula when doing a custom digital dice roll
+* **Feature**: Add support for rolling Shadow Blade attacks as melee weapons when added as a custom action (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: *Roll20*: Fix OGL sheet template detection as Roll20 keeps changing it
+* **Bugfix**: Fix and improve the handling of special spell and class features which was refactored in 2.4.0 (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix support for some monster attacks that use incorrect capitalization in the description (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Prevent Empowered Evocation damage from happening on non-Wizard spells (by [@cashoes](https://github.com/cashoes))
+* **Bugfix**: Fix support for adding modifier to the superiority die of Parry and Rally Maneuvers (by [@tyler-macinnis](https://github.com/tyler-macinnis))
+* **Bugfix**: Fix Sneak Attack being always rolled on Pshycic Blade regardless of setting (by [@atomicpeach](https://github.com/atomicpeach))
+* **Bugfix**: Fix quick roll areas not registering clicks in some situations
+* **Bugfix**: Fix hotkey settings tooltip not updating after modifying the hotkeys
+* **Bugfix**: Correctly parse the 2d20kh1/2d20kl1 when rolling an attack with advantage/disadvantage in D&D Beyond's Digital Dice
+* **Bugfix**: Fix misaligned Beyond20 icons in the monster statblocks of Encounters pages
+* **Bugfix**: Fix spell icons duplicating when switching between similar monsters in the Encounters page
+* **Misc**: Added release dates to the Changelog
+
 v2.4.0 (March 30th 2021)
 ===
 
