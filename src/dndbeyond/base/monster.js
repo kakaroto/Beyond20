@@ -446,7 +446,10 @@ class Monster extends CharacterBase {
                     continue;
                 }
                 // Usually <em><strong> || <strong><em> (Orcus is <span><em><strong>);
-                let action_name = $(firstChild).find("> :first-child").text().trim();
+                let action_name = $(firstChild).find("> :first-child").text().trim() || $(firstChild).text().trim();
+                if (!action_name) continue;
+                const description = descriptionToString(action);
+                if (!description.startsWith(action_name)) continue;
                 handleAction(action_name, action, action);
             }
         }

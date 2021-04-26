@@ -1,3 +1,18 @@
+v2.4.1
+===
+
+Hello everyone! We're releasing a small bugfix release that polishes some of the new features introduced in 2.4.0 and fixes some newly found bugs. 
+This release was also necessary due to the recent changes in Roll20 who changed the way the character sheet template is detected, causing Beyond20 to revert back to the default template. This is unfortunately the third time they changed it in recent weeks (I mentioned that in the 2.4.0 release notes) and they kept switching back and forth between the old and the new method, so I wanted it to stabilize a bit first before releasing a fix. This update supports 3 different detection methods, so hopefully, we got you covered for the foreseeable future!
+
+There are also a few new features in this release, such as support for Raging from a Druid/Barbarian Wildshape creature, or displaying a monster's non-attack traits. I'd recommend you check out the full [Changelog](/Changelog#v241) for details. 
+
+In other news, I'm continuing my work on bringing integrations with D&D Beyond to make life easier for my users. This time, it's in the form of a source book conversion integration with [The Forge](https://forge-vtt.com). The feature is still in beta and available as early access to my Patrons, and you can see it in action here : [https://youtu.be/DkS7w7hkg3Y](https://youtu.be/DkS7w7hkg3Y)
+
+Speaking of patrons, another thank you goes to all my [Patrons](https://patreon.com/kakaroto) and [ko-fi/github](/rations) supporters as well as to those who contributed code to this release: Thank you all!
+
+Enjoy, and as always, happy dice rolling!
+
+
 v2.4.0
 ===
 

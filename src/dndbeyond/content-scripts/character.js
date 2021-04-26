@@ -566,8 +566,8 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
         // Rogue: Sneak Attack
         if (character.getSetting("rogue-sneak-attack", false) &&
             (properties["Attack Type"] == "Ranged" ||
-            (properties["Properties"] && properties["Properties"].includes("Finesse"))) ||
-            (action_name && action_name.includes("Psychic Blade"))) {
+            (properties["Properties"] && properties["Properties"].includes("Finesse")) ||
+            (action_name && (action_name.includes("Psychic Blade") || action_name.includes("Shadow Blade"))))) {
             const sneak_attack = Math.ceil(character._classes["Rogue"] / 2) + "d6";
             damages.push(sneak_attack);
             damage_types.push("Sneak Attack");
@@ -918,10 +918,11 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         const isMeleeAttack = action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
         || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
         || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons") 
-        || action_name.includes("Thunder Gauntlets") || action_name.includes("Unarmed Fighting") || action_name.includes("Arms of the Astral Self");
-
+        || action_name.includes("Thunder Gauntlets") || action_name.includes("Unarmed Fighting") || action_name.includes("Arms of the Astral Self")
+        || action_name.includes("Shadow Blade");
+      
         const WeaponDamageLength = damages.length;
-        
+
         const isRangedAttack = action_name.includes("Lightning Launcher");
 
         to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, action_name});
