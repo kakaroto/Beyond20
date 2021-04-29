@@ -49,9 +49,9 @@ All you need is to load the extension from the source :
 
 ## Firefox
 
-4. Open "[about:debugging](about:debugging)" in Firefox
-5. Click "Load Temporary Add-on"
-6. Select the `manifest.json` file from the extension's directory
+3. Open "[about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox)" in Firefox
+4. Click "Load Temporary Add-on"
+5. Select the `manifest.json` file from the extension's directory
 
 # License
 
