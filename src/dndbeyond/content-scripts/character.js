@@ -702,6 +702,9 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 break;
             }
         }
+        
+        const weapon_damage_length = damages.length;
+        
         // If clicking on a spell group within a item (Green flame blade, Booming blade), then add the additional damages from that spell
         if (spell_group) {
             const group_name = $(spell_group).find(".ct-item-detail__spell-damage-group-name").text();
@@ -773,7 +776,8 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             to_hit,
             brutal,
             force_to_hit_only,
-            force_damages_only);
+            force_damages_only,
+            {weapon_damage_length});
         roll_properties["item-type"] = item_type;
         roll_properties["item-customizations"] = item_customizations;
         if (critical_limit != 20)
@@ -898,6 +902,8 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             damage_types.push(properties["Damage Type"] || "");
         }
 
+        const weapon_damage_length = damages.length;
+
         addCustomDamages(damages, damage_types);
 
         const settings_to_change = {}
@@ -969,7 +975,8 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             to_hit,
             brutal,
             force_to_hit_only,
-            force_damages_only);
+            force_damages_only,
+            {weapon_damage_length});
 
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
