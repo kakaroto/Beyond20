@@ -114,6 +114,12 @@ async function rollSkillCheck(paneClass) {
     if (character.hasRacialTrait("Windwright’s Intuition") && skill_name == "Acrobatics"){
         roll_properties.modifier += "+1d4";
     }
+
+    if (character.hasClassFeature("Natural Explorer") && character.getSetting("ranger-natural-explorer", false) &&
+        (ability == "WIS" || ability == "INT") && (proficiency == "Proficiency" || proficiency == "Expertise")) {
+        roll_properties.modifier += character._proficiency;
+    }
+
     return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 
