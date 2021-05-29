@@ -1,9 +1,3 @@
-/*
-from roll_renderer import Beyond20RollRenderer, Beyond20BaseRoll;
-from settings import getDefaultSettings, WhisperType;
-import re;
-*/
-
 class DNDBDisplayer {
     constructor() {
         this._error = null;

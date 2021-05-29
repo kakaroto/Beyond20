@@ -212,6 +212,18 @@ class FVTTRoll extends Beyond20BaseRoll {
                         total: t.total,
                         rolls: t.results.map(r => ({discarded: r.discarded || r.rerolled, roll: r.result}))
                     }
+                } else if (t instanceof PoolTerm) {
+                    const dice = t.rolls[0]?.dice[0];
+                    // A DicePool means a "minX", so don't include it in the roll results
+                    const results = t.results.slice(0, t.results.length - 1);
+                    return {
+                        amount: dice ? dice.amount || dice.number : 0,
+                        faces: dice ? dice.faces : 0,
+                        formula: t.formula,
+                        total: t.total,
+                        rolls: results.map(r => ({discarded: r.discarded || r.rerolled, roll: r.result})),
+                        modifiers: t.modifiers.join("")
+                    }
                 } else {
                     return t.expression;
                 }
@@ -225,6 +237,18 @@ class FVTTRoll extends Beyond20BaseRoll {
                         formula: t.formula,
                         total: t.total,
                         rolls: t.results.map(r => ({discarded: r.discarded || r.rerolled, roll: r.result}))
+                    }
+                } else if (t instanceof DicePool) {
+                    const dice = t.rolls[0]?.dice[0];
+                    // A DicePool means a "minX", so don't include it in the roll results
+                    const results = t.results.slice(0, t.results.length - 1);
+                    return {
+                        amount: dice ? dice.amount || dice.number : 0,
+                        faces: dice ? dice.faces : 0,
+                        formula: t.formula,
+                        total: t.total,
+                        rolls: results.map(r => ({discarded: r.discarded || r.rerolled, roll: r.result})),
+                        modifiers: t.modifiers.join("")
                     }
                 } else {
                     return String(t);
