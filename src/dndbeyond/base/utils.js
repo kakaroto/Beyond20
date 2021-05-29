@@ -176,16 +176,12 @@ function buildAttackRoll(character, attack_source, name, description, properties
                 let highest_dice = 0;
                 let weapon_damage_counter = 0;
                 for (let dmg of damages) {
-                    if(weapon_damage_counter < weapon_damage_length){
-                        const match = dmg.match(/[0-9]*d([0-9]+)/);
-                        if (match) {
-                            const sides = parseInt(match[1]);
-                            if (sides > highest_dice)
-                                highest_dice = sides;
-                        }
-                    }
-                    else {
-                        break;
+                    if (weapon_damage_length && weapon_damage_counter >= weapon_damage_length) break;
+                    const match = dmg.match(/[0-9]*d([0-9]+)/);
+                    if (match) {
+                        const sides = parseInt(match[1]);
+                        if (sides > highest_dice)
+                            highest_dice = sides;
                     }
                     weapon_damage_counter++;
                 }
