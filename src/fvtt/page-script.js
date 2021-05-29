@@ -65,7 +65,6 @@ class FVTTDisplayer {
                             options: {}
                         });
                         if (p.formula) {
-                            p.class = "Die";
                             parts.push({
                                 class: "Die",
                                 evaluated: true,
@@ -88,6 +87,28 @@ class FVTTDisplayer {
                     });
                     r.parts = undefined;
                     r.terms = parts;
+                } else if (isNewerVersion(game.data.version, "0.7")) {
+                    r.parts.forEach(p => {
+                        if (parts.length > 0 && !["+", "-"].includes(parts[parts.length - 1])) parts.push("+");
+                        if (p.formula) {
+                            result.push(p.total)
+                            parts.push({
+                                class: "Die",
+                                options: {},
+                                number: p.amount,
+                                faces: p.faces,
+                                modifiers: [],
+                                results: p.rolls.map(roll => ({active: !roll.discarded, result: roll.roll}))
+                            });
+                        } else {
+                            parts.push(p)
+                            result.push(p)
+                        }
+                    })
+                    r.dice = [];
+                    r.terms = parts;
+                    r.parts = undefined;
+                    r.result = result.join(" + ")
                 } else {
                     r.parts.forEach(p => {
                         if (parts.length > 0) parts.push("+");
