@@ -163,7 +163,19 @@ class FVTTRoll extends Beyond20BaseRoll {
     get parts() {
         // 0.7.x Dice Roll API is different
         if (isNewerVersion(game.data.version, "0.7")) {
-            return this._roll.terms;
+            return this._roll.terms.map(t => {
+                if (t instanceof Die) {
+                    return {
+                        amount: t.amount || t.number,
+                        faces: t.faces,
+                        formula: t.formula,
+                        total: t.total,
+                        rolls: t.results.map(r => ({discarded: r.discarded || r.rerolled, roll: r.result}))
+                    }
+                } else {
+                    return String(t);
+                }
+            });
         } else {
             return this._roll.parts;
         }
