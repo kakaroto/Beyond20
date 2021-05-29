@@ -54,26 +54,66 @@ class FVTTDisplayer {
                 const dice = [];
                 const result = []
                 const parts = [];
-                r.parts.forEach(p => {
-                    if (parts.length > 0) parts.push("+");
-                    if (p.formula) {
-                        const idx = dice.length;
-                        p.class = "Die";
-                        dice.push(p)
-                        result.push(p.total)
-                        parts.push(`_d${idx}`);
-                    } else {
-                        parts.push(p)
-                        result.push(p)
-                    }
-                })
                 r.class = "Roll";
-                r.dice = dice;
-                r.parts = parts;
-                r.result = result.join(" + ")
+                if (isNewerVersion(game.data.version, "0.8")) {
+                    // Foundry 0.8.x API
+                    r.parts.forEach(p => {
+                        if (parts.length > 0) parts.push({
+                            class: "OperatorTerm",
+                            evaluated: true,
+                            expression: "+",
+                            options: {}
+                        });
+                        if (p.formula) {
+                            p.class = "Die";
+                            parts.push({
+                                class: "Die",
+                                evaluated: true,
+                                expression: p.formula,
+                                options: {},
+                                number: p.amount,
+                                faces: p.faces,
+                                modifiers: [],
+                                results: p.rolls.map(roll => ({active: !roll.discarded, result: roll.roll}))
+                            });
+                        } else {
+                            const numeric = parseFloat(p);
+                            parts.push({
+                                class: isNaN(numeric) ? "OperatorTerm" : "NumericTerm",
+                                evaluated: true,
+                                expression: isNaN(numeric) ? p : numeric,
+                                options: {}
+                            })
+                        }
+                    });
+                    r.parts = undefined;
+                    r.terms = parts;
+                } else {
+                    r.parts.forEach(p => {
+                        if (parts.length > 0) parts.push("+");
+                        if (p.formula) {
+                            const idx = dice.length;
+                            p.class = "Die";
+                            dice.push(p)
+                            result.push(p.total)
+                            parts.push(`_d${idx}`);
+                        } else {
+                            parts.push(p)
+                            result.push(p)
+                        }
+                    })
+                    r.dice = dice;
+                    r.parts = parts;
+                    r.result = result.join(" + ")
+                }
                 return Roll.fromData(r)
             });
-            if (isNewerVersion(game.data.version, "0.7")) {
+            if (isNewerVersion(game.data.version, "0.8")) {
+                // Foundry 0.8.x API
+                // This will accept backware compatible fvttRolls format
+                const pool = PoolTerm.fromRolls(fvttRolls);
+                data.roll = Roll.fromTerms([pool]);
+            } else if (isNewerVersion(game.data.version, "0.7")) {
                 // Foundry 0.7.x API
                 // This will accept backware compatible fvttRolls format
                 const pool = new DicePool({rolls: fvttRolls}).evaluate();
@@ -162,7 +202,21 @@ class FVTTRoll extends Beyond20BaseRoll {
 
     get parts() {
         // 0.7.x Dice Roll API is different
-        if (isNewerVersion(game.data.version, "0.7")) {
+        if (isNewerVersion(game.data.version, "0.8")) {
+            return this._roll.terms.map(t => {
+                if (t instanceof Die) {
+                    return {
+                        amount: t.amount || t.number,
+                        faces: t.faces,
+                        formula: t.formula,
+                        total: t.total,
+                        rolls: t.results.map(r => ({discarded: r.discarded || r.rerolled, roll: r.result}))
+                    }
+                } else {
+                    return t.expression;
+                }
+            });
+        } else if (isNewerVersion(game.data.version, "0.7")) {
             return this._roll.terms.map(t => {
                 if (t instanceof Die) {
                     return {
