@@ -10,8 +10,8 @@
 	.list-group {
 		list-style: none;
 		margin: 0px;
-		padding: 0px;
-		width: 100%;
+		padding: 10px;
+		width: calc(100% - 20px);
 	}
 	.list-group > .list-group-item {
 		border-top: 1px solid rgba(0, 0, 0, 0.1);
