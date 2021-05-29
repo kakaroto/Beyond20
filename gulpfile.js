@@ -145,6 +145,9 @@ watch = () => {
     gulp.watch(["manifest.json", "manifest_ff.json", "dist/**"], gulp.series([
         "copy-chrome-dist", "chrome-manifest", "copy-firefox-dist", "firefox-manifest"
     ]));
+    gulp.watch(["options.*", "*.html"], gulp.series([
+        "copy-misc", "build-chrome", "build-firefox"
+    ]));
 }
 
 build = gulp.series(css, ...Object.values(targets));
