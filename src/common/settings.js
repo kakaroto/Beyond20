@@ -547,6 +547,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "ranger-natural-explorer": {
+        "title": "Ranger: Natural Explorer",
+        "description": "Your familiarity with certain regions aids in your exploration",
+        "type": "bool",
+        "default": false
+    },
     "ranger-gathered-swarm": {
         "title": "Ranger: Swarmkeeper: Gathered Swarm",
         "description": "Use your Gathered Swarm ability to add extra Force damage to your attacks",
