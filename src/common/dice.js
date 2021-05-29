@@ -256,6 +256,7 @@ class DNDBDice {
             "total": this.total,
             "formula": this.formula,
             "rolls": this.rolls,
+            "amount": this.amount,
             "faces": this.faces
         }
     }

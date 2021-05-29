@@ -148,6 +148,7 @@ class FVTTRoll extends Beyond20BaseRoll {
         if (isNewerVersion(game.data.version, "0.7")) {
             return this._roll.dice.map(d => {
                 return {
+                    amount: d.amount || d.number,
                     faces: d.faces,
                     formula: d.formula,
                     total: d.total,
