@@ -549,7 +549,7 @@ const character_settings = {
     },
     "ranger-natural-explorer": {
         "title": "Ranger: Natural Explorer",
-        "description": "Your familiarity with certain regions aids in your exploration",
+        "description": "Your familiarity with the current region aids in your exploration",
         "type": "bool",
         "default": false
     },
