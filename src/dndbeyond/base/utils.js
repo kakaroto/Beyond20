@@ -297,12 +297,14 @@ async function sendRoll(character, rollType, fallback, args) {
     }
 }
 
-function isRollButtonAdded() {
-    return $(".ct-beyond20-roll,.ct-beyond20-roll-display").length > 0;
+function isRollButtonAdded(where) {
+    if (!where) where = $(document);
+    return where.find(".ct-beyond20-roll,.ct-beyond20-roll-display").length > 0;
 }
 
-function isCustomRollIconsAdded() {
-    return $(".ct-beyond20-custom-roll, .ct-beyond20-custom-roll-button").length > 0;
+function isCustomRollIconsAdded(where) {
+    if (!where) where = $(document);
+    return where.find(".ct-beyond20-custom-roll, .ct-beyond20-custom-roll-button").length > 0;
 }
 
 function isHitDieButtonAdded() {

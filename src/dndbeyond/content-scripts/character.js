@@ -1748,8 +1748,9 @@ function injectRollButton(paneClass) {
             removeRollButtons();
         }
     } else if (paneClass == "ct-health-manage-pane") {
-        if ($(".ct-health-manage-pane .ct-health-manager__deathsaves").length > 0) {
-            if (isRollButtonAdded() || isCustomRollIconsAdded())
+        const deathsaves = $(".ct-health-manage-pane .ct-health-manager__deathsaves");
+        if (deathsaves.length > 0) {
+            if (isRollButtonAdded(deathsaves) || isCustomRollIconsAdded(deathsaves))
                 return;
             
             // Check for Advantage/Disadvantage Badges, as Lineages: Reborn advantage on Death Saves or similar will supply
