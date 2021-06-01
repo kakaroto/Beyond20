@@ -44,6 +44,7 @@ Enjoy, and keep rolling!
 Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
+
 v2.4.3 (June 1st 2021)
 ===
 
