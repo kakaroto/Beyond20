@@ -582,6 +582,12 @@ function rollSpellAttack(request, custom_roll_dice) {
     return template(request, template_type, properties);
 }
 
+async function rollRollTable(request) {
+    const table = new RollTable(request.name, request.formula, request.table);
+    const results = await table.roll();
+    return createTable(request, `${request.name}: ${table.total}`, results);
+}
+
 function convertRollToText(whisper, roll, standout=false) {
     if (typeof (roll) === "string")
         return roll;
@@ -651,6 +657,8 @@ async function handleRoll(request) {
         roll = rollSpellAttack(request, custom_roll_dice);
     } else if (request.type == "chat-message") {
         roll = request.message;
+    } else if (request.type == "roll-table") {
+        roll = await rollRollTable(request);
     } else {
         // 'custom' || anything unexpected;
         const mod = request.modifier != undefined ? request.modifier : request.roll;
