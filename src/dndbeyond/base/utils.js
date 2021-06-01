@@ -464,6 +464,11 @@ function removeRollButtons() {
     const custom_rolls = $("u.ct-beyond20-custom-roll");
     for (let i = 0; i < custom_rolls.length; i++)
         custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
+    // We add "beyond20-rolls-added" class to indicate we parsed it. Remove it if we remove dice too
+    const added_indicators = $(".beyond20-rolls-added");
+    for (let i = 0; i < added_indicators.length; i++) {
+        added_indicators.removeClass("beyond20-rolls-added");
+    }
 }
 
 

@@ -1801,7 +1801,10 @@ function injectRollButton(paneClass) {
 
         character.updateConditions(conditions, exhaustion_level);
     } else {
-        removeRollButtons();
+        const pane = $(`.${paneClass}`);
+        if (isRollButtonAdded(pane) || isCustomRollIconsAdded(pane)) {
+            removeRollButtons();
+        }
     }
 }
 
