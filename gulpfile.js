@@ -118,6 +118,10 @@ const SRC_FILES = {
         "src/dndbeyond/base/monster.js",
         "src/dndbeyond/base/character.js",
         "src/dndbeyond/content-scripts/character.js",
+    ],
+    dndbeyond_source: [
+        ...DNDBEYOND_PAGE_DEPS,
+        "src/dndbeyond/content-scripts/source.js",
     ]
 }
 const CSS_FILES = ['src/extension/beyond20.css']
