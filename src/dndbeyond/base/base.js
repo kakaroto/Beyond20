@@ -8,7 +8,7 @@ import re;
 
 class CharacterBase {
     constructor(_type, global_settings) {
-        this._name = null;
+        this._name = "";
         this._type = _type;
         this._settings = null;
         this._url = window.location.href;
