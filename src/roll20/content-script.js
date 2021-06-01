@@ -367,6 +367,9 @@ function rollAttack(request, custom_roll_dice = "") {
         template_type = "dmg";
         dmg_props["charname"] = request.character.name;
         dmg_props["rname"] = request.name;
+        if (request.rollCritical) {
+            dmg_props["crit"] = 1;
+        }
     }
     if (request.damages && request.damages.length > 0 && 
         request["to-hit"] !== undefined && !request.rollDamage) {

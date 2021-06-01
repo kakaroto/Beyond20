@@ -285,8 +285,11 @@ async function sendRoll(character, rollType, fallback, args) {
         req.whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
     if (req.advantage === RollType.QUERY)
         req.advantage = await dndbeyondDiceRoller.queryAdvantage(args.name || rollType);
-    if (character.getGlobalSetting("weapon-force-critical", false) || key_modifiers.force_critical)
+    if (character.getGlobalSetting("weapon-force-critical", false) || key_modifiers.force_critical) {
         req["critical-limit"] = 1;
+        req["rollCritical"] = true;
+    }
+
 
     if (character.getGlobalSetting("use-digital-dice", false) && DigitalDiceManager.isEnabled()) {
         req.sendMessage = true;
