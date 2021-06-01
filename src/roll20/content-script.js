@@ -585,7 +585,7 @@ function rollSpellAttack(request, custom_roll_dice) {
 async function rollRollTable(request) {
     const table = new RollTable(request.name, request.formula, request.table);
     const results = await table.roll();
-    return createTable(request, `${request.name}: ${table.total}`, results);
+    return createTable(request, `${request.name}: [[${table.total} [${request.formula}]]]`, results);
 }
 
 function convertRollToText(whisper, roll, standout=false) {
