@@ -1581,6 +1581,13 @@ function checkAndInjectDiceToRolls(selector, name = "") {
     if (!settings["subst-dndbeyond"])
         return;
 
+    const tables = $("table");
+    for (const table of tables.toArray()) {
+        const roll_table = RollTable.parseTable($(table), name);
+        if (roll_table) {
+            addRollTableButton(character, table, roll_table);
+        }
+    }
     injectDiceToRolls(selector, character, name);
 
     for (let custom_roll of $(".ct-beyond20-custom-roll").toArray())

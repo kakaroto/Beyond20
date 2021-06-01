@@ -457,6 +457,30 @@ function addIconButton(character, callback, where, { append = false, prepend = f
     return button;
 }
 
+function addRollTableButton(character, where, table) {
+    const icon = chrome.extension.getURL("images/icons/badges/normal32.png");
+    const button = E.a({ class: "ct-beyond20-roll button-alt", href: "#" },
+        E.span({ class: "label" },
+            E.img({ class: "ct-beyond20-roll-table-icon", src: icon, style: "margin-right: 10px;" }),
+            "Roll Table to VTT"
+        )
+    );
+    $(where).before(button);
+    $(button).css({
+        "float": "left",
+        "display": "inline-block"
+    });
+    $(button).on('click', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        sendRoll(character, "roll-table", table.formula, {
+            "name": table.name,
+            "formula": table.formula,
+            "table": table.table
+        });
+    });
+}
+
 function removeRollButtons(where) {
     if (!where) where = $(document);
     where.find(`.ct-beyond20-roll,

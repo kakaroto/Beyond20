@@ -37,4 +37,54 @@ class RollTable {
         this.total = total;
     }
 
+    static parseTable(table, name) {
+        const dice_columns = [];
+        const columns = {};
+        const headers = table.find("thead tr th");
+        for (let index = 0; index < headers.length; index++) {
+            const header = headers.eq(index).text().trim();
+            if (!header) break;
+            // If header is a dice formula, then this is a roll table
+            const replaced = replaceRolls(header, () => "").trim();
+            if (dice_columns.length === 0) {
+                if (replaced) break;
+                dice_columns.push(index);
+                continue;
+            } else {
+                // Look for other columns that are part of this roll table
+                // (some tables are split horizontally, having multiple columns for the same data)
+                // see https://www.dndbeyond.com/sources/dmg/adventure-environments#BuildingaDungeon
+                if (replaced) {
+                    columns[header] = {};
+                    continue;
+                }
+                const firstColumn = headers.eq(dice_columns[0]).text();
+                if (header === firstColumn) {
+                    dice_columns.push(index);
+                }
+            }
+        }
+        if (dice_columns.length === 0) return;
+    
+        const rows = table.find("tbody tr");
+        for (const row of rows.toArray()) {
+            const cells = $(row).find("td");
+            let last_range = null;
+            for (let index = 0; index < headers.length; index++) {
+                if (dice_columns.includes(index)) {
+                    last_range = cells.eq(index).text();
+                } else if (last_range === null) {
+                    break;
+                } else {
+                    const header = headers.eq(index).text();
+                    const description = cells.eq(index).text();
+                    if (columns[header] === undefined) continue;
+                    columns[header][last_range] = description;
+                }
+            }
+        }
+    
+        return new this(name, headers.eq(dice_columns[0]).text().trim(), columns);
+    }
+
 }
