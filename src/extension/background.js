@@ -116,6 +116,8 @@ function sendMessageToBeyond(request) {
     sendMessageTo(DNDBEYOND_COMBAT_URL, request)
     sendMessageTo(DNDBEYOND_SPELL_URL, request)
     sendMessageTo(DNDBEYOND_VEHICLE_URL, request)
+    sendMessageTo(DNDBEYOND_SOURCES_URL, request)
+    sendMessageTo(DNDBEYOND_CLASSES_URL, request)
 }
 
 function addFVTTTab(tab) {
