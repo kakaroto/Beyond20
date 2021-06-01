@@ -457,19 +457,20 @@ function addIconButton(character, callback, where, { append = false, prepend = f
     return button;
 }
 
-function removeRollButtons() {
-    $(`.ct-beyond20-roll,
+function removeRollButtons(where) {
+    if (!where) where = $(document);
+    where.find(`.ct-beyond20-roll,
         .ct-beyond20-roll-hitdie,
         .ct-beyond20-roll-display,
         .ct-beyond20-custom-icon,
         .ct-beyond20-roll-display,
         .ct-beyond20-spell-icon,
         .ct-beyond20-spell-attack-icon`).remove();
-    const custom_rolls = $("u.ct-beyond20-custom-roll");
+    const custom_rolls = where.find("u.ct-beyond20-custom-roll");
     for (let i = 0; i < custom_rolls.length; i++)
         custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
     // We add "beyond20-rolls-added" class to indicate we parsed it. Remove it if we remove dice too
-    const added_indicators = $(".beyond20-rolls-added");
+    const added_indicators = where.find(".beyond20-rolls-added");
     for (let i = 0; i < added_indicators.length; i++) {
         added_indicators.removeClass("beyond20-rolls-added");
     }

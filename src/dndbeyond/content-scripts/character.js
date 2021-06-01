@@ -1599,6 +1599,7 @@ var lastItemName = "";
 var lastSpellName = "";
 var lastSpellLevel = "";
 function injectRollButton(paneClass) {
+    const pane = $(`.${paneClass}`);
     if (["ct-custom-skill-pane",
         "ct-skill-pane",
         "ct-ability-pane",
@@ -1628,7 +1629,7 @@ function injectRollButton(paneClass) {
         if (isRollButtonAdded() && item_name == lastItemName)
             return;
         lastItemName = item_name;
-        removeRollButtons();
+        removeRollButtons(pane);
 
         checkAndInjectDiceToRolls(".ct-item-detail__description", item_name);
         const properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property"));
@@ -1658,7 +1659,7 @@ function injectRollButton(paneClass) {
         if (isRollButtonAdded() && infusion_name == lastItemName)
             return;
         lastItemName = infusion_name;
-        removeRollButtons();
+        removeRollButtons(pane);
 
         checkAndInjectDiceToRolls(".ct-infusion-choice-pane__description", infusion_name);
         addDisplayButtonEx(paneClass, ".ct-sidebar__heading", { append: false, small: false });
@@ -1687,7 +1688,7 @@ function injectRollButton(paneClass) {
             return;
         lastSpellName = spell_full_name;
         lastSpellLevel = spell_level;
-        removeRollButtons();
+        removeRollButtons(pane);
         checkAndInjectDiceToRolls(".ct-spell-pane .ct-spell-detail__description", spell_name);
 
         const damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier");
@@ -1742,10 +1743,10 @@ function injectRollButton(paneClass) {
         if (hitdice.length > 0) {
             if (isHitDieButtonAdded())
                 return;
-            removeRollButtons();
+            removeRollButtons(pane);
             addHitDieButtons(rollHitDie);
         } else {
-            removeRollButtons();
+            removeRollButtons(pane);
         }
     } else if (paneClass == "ct-health-manage-pane") {
         const deathsaves = $(".ct-health-manage-pane .ct-health-manager__deathsaves");
@@ -1769,7 +1770,7 @@ function injectRollButton(paneClass) {
                 sendRollWithCharacter("death-save", "1d20", { "advantage": deathSaveRollType })
             }, ".ct-health-manager__deathsaves-group--fails", { custom: true });
         } else {
-            removeRollButtons();
+            removeRollButtons(pane);
         }
     } else if (paneClass == "ct-creature-pane") {
         if (isRollButtonAdded() || isCustomRollIconsAdded()) {
@@ -1801,10 +1802,7 @@ function injectRollButton(paneClass) {
 
         character.updateConditions(conditions, exhaustion_level);
     } else {
-        const pane = $(`.${paneClass}`);
-        if (isRollButtonAdded(pane) || isCustomRollIconsAdded(pane)) {
-            removeRollButtons();
-        }
+        removeRollButtons(pane);
     }
 }
 
