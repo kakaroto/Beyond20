@@ -28,7 +28,7 @@ function handleRollTable(table, name) {
     const columns = {};
     const headers = table.find("thead tr th");
     for (let index = 0; index < headers.length; index++) {
-        const header = headers.eq(index).text();
+        const header = headers.eq(index).text().trim();
         if (!header) break;
         // If header is a dice formula, then this is a roll table
         const replaced = replaceRolls(header, () => "").trim();
