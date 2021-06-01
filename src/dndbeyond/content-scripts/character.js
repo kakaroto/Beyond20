@@ -1751,8 +1751,21 @@ function injectRollButton(paneClass) {
         if ($(".ct-health-manage-pane .ct-health-manager__deathsaves").length > 0) {
             if (isRollButtonAdded() || isCustomRollIconsAdded())
                 return;
+            
+            // Check for Advantage/Disadvantage Badges, as Lineages: Reborn advantage on Death Saves or similar will supply
+            const skill_badge_adv = $(".ct-health-manage-pane .ct-health-manager__deathsaves .ddbc-advantage-icon").length > 0;
+            const skill_badge_disadv = $(".ct-health-manage-pane .ct-health-manager__deathsaves .ddbc-disadvantage-icon").length > 0;
+            let deathSaveRollType = RollType.NORMAL;
+            if (skill_badge_adv && skill_badge_disadv) {
+                deathSaveRollType = RollType.QUERY;
+            } else if (skill_badge_adv) {
+                deathSaveRollType = RollType.OVERRIDE_ADVANTAGE;
+            } else if (skill_badge_disadv) {
+                deathSaveRollType = RollType.OVERRIDE_DISADVANTAGE;
+            }
+            
             addIconButton(character, () => {
-                sendRollWithCharacter("death-save", "1d20", { "advantage": RollType.NORMAL })
+                sendRollWithCharacter("death-save", "1d20", { "advantage": deathSaveRollType })
             }, ".ct-health-manager__deathsaves-group--fails", { custom: true });
         } else {
             removeRollButtons();
