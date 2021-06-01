@@ -478,11 +478,11 @@ function removeRollButtons() {
 
 function recursiveDiceReplace(node, cb) {
     if (node.hasChildNodes()) {
-        // We need to copy the list since its size could change as we modify it;
+        // We need to copy the list since its size could change as we modify it
         const children = [].concat(...node.childNodes);
         for (let child of children) {
-            // don't replace anything inside of a roll button itthis;
-            if ($(child).hasClass("ct-beyond20-roll"))
+            // don't replace anything inside of a roll button itself
+            if ($(child).hasClass("ct-beyond20-roll") || $(child).hasClass("ct-beyond20-custom-roll"))
                 continue;
             recursiveDiceReplace(child, cb);
         }
