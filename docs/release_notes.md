@@ -1,3 +1,8 @@
+2.4.3
+===
+
+Oups, a small (but critical) bug slipped through 2.4.2 released earlier today. This should fix it along with a couple of other small bugs discovered. See release notes below for what's new in today's releases.
+
 2.4.2
 ===
 

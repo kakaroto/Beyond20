@@ -1,3 +1,11 @@
+v2.4.3 (June 1st 2021)
+===
+
+* **Feature**: Add support for the roll tables in character sheets too
+* **Bugfix**: Fix a crash that happened on the long rest dialog
+* **Bugfix**: Fix settings not propagating to source and classes pages
+* **Bugfix**: Fix the merging of two adjacent formulas within ddb tooltips not working in all use cases
+
 v2.4.2 (June 1st 2021)
 ===
 

@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.4.2
+Congratulations! Beyond20 was just updated to the latest version : v2.4.3
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -17,6 +17,10 @@ Thank you all for your support!
 
 # Release Notes
 
+2.4.3
+===
+
+Oups, a small (but critical) bug slipped through 2.4.2 released earlier today. This should fix it along with a couple of other small bugs discovered. See release notes below for what's new in today's releases.
 2.4.2
 ===
 
@@ -42,6 +46,13 @@ Enjoy, and keep rolling!
 Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
+v2.4.3 (June 1st 2021)
+===
+
+* **Feature**: Add support for the roll tables in character sheets too
+* **Bugfix**: Fix a crash that happened on the long rest dialog
+* **Bugfix**: Fix settings not propagating to source and classes pages
+* **Bugfix**: Fix the merging of two adjacent formulas within ddb tooltips not working in all use cases
 
 v2.4.2 (June 1st 2021)
 ===
