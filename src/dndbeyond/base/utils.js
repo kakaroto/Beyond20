@@ -463,7 +463,8 @@ function removeRollButtons() {
         .ct-beyond20-roll-display,
         .ct-beyond20-custom-icon,
         .ct-beyond20-roll-display,
-        .ct-beyond20-spell-icon`).remove();
+        .ct-beyond20-spell-icon,
+        .ct-beyond20-spell-attack-icon`).remove();
     const custom_rolls = $("u.ct-beyond20-custom-roll");
     for (let i = 0; i < custom_rolls.length; i++)
         custom_rolls.eq(i).replaceWith(custom_rolls.eq(i).text());
