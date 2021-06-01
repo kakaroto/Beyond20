@@ -20,10 +20,6 @@ Thank you all for your support!
 2.4.3
 ===
 
-Oups, a small (but critical) bug slipped through 2.4.2 released earlier today. This should fix it along with a couple of other small bugs discovered. See release notes below for what's new in today's releases.
-2.4.2
-===
-
 I'm really excited about this Beyond20 update, as it adds a feature I've been wanting to add for a long time.
 
 While this is marked as 2.4.2, which means it's a "minor" update, it's actually got some really major features, like the ability to roll from source books and classes pages, and a newly added support for roll tables (give the treasure tables in the DMG a try)!
@@ -40,6 +36,8 @@ Thank you to all my [Patrons](https://patreon.com/kakaroto) and [ko-fi/github](/
 
 Thank you all for using this software and for being part of this amazing community.
 Enjoy, and keep rolling!
+
+**UPDATE**: Oups, a small (but critical) bug slipped through 2.4.2 released earlier today. The 2.4.3 release should fix it along with a couple of other small bugs discovered.
 
 ---
 
