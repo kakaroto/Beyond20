@@ -1,3 +1,23 @@
+2.4.2
+===
+
+I'm really excited about this Beyond20 update, as it adds a feature I've been wanting to add for a long time.
+
+While this is marked as 2.4.2, which means it's a "minor" update, it's actually got some really major features, like the ability to roll from source books and classes pages, and a newly added support for roll tables (give the treasure tables in the DMG a try)!
+
+This release also adds support for the latest Foundry VTT stable version 0.8.6 which was released today, so for those of you who have updated your Foundry to the latest release, you'll be able to use Beyond20 without problems.
+If you haven't seen the latest Foundry update video (with a nice feature tour of the VTT), I recommend you check out the video on Foundry's youtube : [https://www.youtube.com/watch?v=nuyzLlk_QQQ](https://www.youtube.com/watch?v=nuyzLlk_QQQ) and of course, if you want to enhance that gaming experience even further and get the best hosting there is, with plenty of awesome features on top, you have to drop by to [The Forge](https://forge-vtt.com) and subscribe! 😄
+
+Among other smaller bugfixes, a long standing bug that was fixed in this release is the one where dice formulas in the class features list or action snippets might get split in two and appear as two separate formulas. I finally managed to figure out a way to fix that bug, so hopefully there are no more issues there.
+
+Overall, I'm quite happy with this release, and I suggest you check out the [Changelog](/Changelog#v242) for the full list of changes (a small/readable changelog for once).
+I have recently posted a [status update](https://www.patreon.com/posts/status-update-51779621) on my Patreon that lists my current projects and plans for the short term, if anyone is curious and/or interested in giving it a read.
+
+Thank you to all my [Patrons](https://patreon.com/kakaroto) and [ko-fi/github](/rations) supporters, and for everyone who helped make this possible.
+
+Thank you all for using this software and for being part of this amazing community.
+Enjoy, and keep rolling!
+
 v2.4.1
 ===
 

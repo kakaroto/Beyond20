@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.4.1
+Congratulations! Beyond20 was just updated to the latest version : v2.4.2
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -17,20 +17,25 @@ Thank you all for your support!
 
 # Release Notes
 
-v2.4.1
+2.4.2
 ===
 
-Hello everyone! We're releasing a small bugfix release that polishes some of the new features introduced in 2.4.0 and fixes some newly found bugs. 
-This release was also necessary due to the recent changes in Roll20 who changed the way the character sheet template is detected, causing Beyond20 to revert back to the default template. This is unfortunately the third time they changed it in recent weeks (I mentioned that in the 2.4.0 release notes) and they kept switching back and forth between the old and the new method, so I wanted it to stabilize a bit first before releasing a fix. This update supports 3 different detection methods, so hopefully, we got you covered for the foreseeable future!
+I'm really excited about this Beyond20 update, as it adds a feature I've been wanting to add for a long time.
 
-There are also a few new features in this release, such as support for Raging from a Druid/Barbarian Wildshape creature, or displaying a monster's non-attack traits. I'd recommend you check out the full [Changelog](/Changelog#v241) for details. 
+While this is marked as 2.4.2, which means it's a "minor" update, it's actually got some really major features, like the ability to roll from source books and classes pages, and a newly added support for roll tables (give the treasure tables in the DMG a try)!
 
-In other news, I'm continuing my work on bringing integrations with D&D Beyond to make life easier for my users. This time, it's in the form of a source book conversion integration with [The Forge](https://forge-vtt.com). The feature is still in beta and available as early access to my Patrons, and you can see it in action here : [https://youtu.be/DkS7w7hkg3Y](https://youtu.be/DkS7w7hkg3Y)
+This release also adds support for the latest Foundry VTT stable version 0.8.6 which was released today, so for those of you who have updated your Foundry to the latest release, you'll be able to use Beyond20 without problems.
+If you haven't seen the latest Foundry update video (with a nice feature tour of the VTT), I recommend you check out the video on Foundry's youtube : [https://www.youtube.com/watch?v=nuyzLlk_QQQ](https://www.youtube.com/watch?v=nuyzLlk_QQQ) and of course, if you want to enhance that gaming experience even further and get the best hosting there is, with plenty of awesome features on top, you have to drop by to [The Forge](https://forge-vtt.com) and subscribe! 😄
 
-Speaking of patrons, another thank you goes to all my [Patrons](https://patreon.com/kakaroto) and [ko-fi/github](/rations) supporters as well as to those who contributed code to this release: Thank you all!
+Among other smaller bugfixes, a long standing bug that was fixed in this release is the one where dice formulas in the class features list or action snippets might get split in two and appear as two separate formulas. I finally managed to figure out a way to fix that bug, so hopefully there are no more issues there.
 
-Enjoy, and as always, happy dice rolling!
+Overall, I'm quite happy with this release, and I suggest you check out the [Changelog](/Changelog#v242) for the full list of changes (a small/readable changelog for once).
+I have recently posted a [status update](https://www.patreon.com/posts/status-update-51779621) on my Patreon that lists my current projects and plans for the short term, if anyone is curious and/or interested in giving it a read.
 
+Thank you to all my [Patrons](https://patreon.com/kakaroto) and [ko-fi/github](/rations) supporters, and for everyone who helped make this possible.
+
+Thank you all for using this software and for being part of this amazing community.
+Enjoy, and keep rolling!
 
 ---
 
@@ -38,26 +43,27 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-v2.4.1 (April 25th 2021)
+v2.4.2 (June 1st 2021)
 ===
-* **Feature**: Add support for Raging from a Wildshape creature (for Druid/Barbarian multiclassers)
-* **Feature**: Add the ability to display NPC's traits in the VTT (non attack actions/features)
-* **Feature**: Add support for using Utensils as tools (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for Spirit Guardians (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Display the roll formula when doing a custom digital dice roll
-* **Feature**: Add support for rolling Shadow Blade attacks as melee weapons when added as a custom action (by [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: *Roll20*: Fix OGL sheet template detection as Roll20 keeps changing it
-* **Bugfix**: Fix and improve the handling of special spell and class features which was refactored in 2.4.0 (by [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Fix support for some monster attacks that use incorrect capitalization in the description (by [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Prevent Empowered Evocation damage from happening on non-Wizard spells (by [@cashoes](https://github.com/cashoes))
-* **Bugfix**: Fix support for adding modifier to the superiority die of Parry and Rally Maneuvers (by [@tyler-macinnis](https://github.com/tyler-macinnis))
-* **Bugfix**: Fix Sneak Attack being always rolled on Pshycic Blade regardless of setting (by [@atomicpeach](https://github.com/atomicpeach))
-* **Bugfix**: Fix quick roll areas not registering clicks in some situations
-* **Bugfix**: Fix hotkey settings tooltip not updating after modifying the hotkeys
-* **Bugfix**: Correctly parse the 2d20kh1/2d20kl1 when rolling an attack with advantage/disadvantage in D&D Beyond's Digital Dice
-* **Bugfix**: Fix misaligned Beyond20 icons in the monster statblocks of Encounters pages
-* **Bugfix**: Fix spell icons duplicating when switching between similar monsters in the Encounters page
-* **Misc**: Added release dates to the Changelog
+
+* **Feature**: Add the ability to roll from formulas in source book pages
+* **Feature**: Add the ability to roll from formulas in classes pages
+* **Feature**: Add the ability to parse roll tables and roll their results directly to the VTT
+* **Feature**: *FVTT*: Add support for Foundry VTT 0.8.x new Dice API
+* **Feature**: Add support for advantage/disadvantage badges on death saves (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add suport for Ranger: Natural Explorer (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Roll critical damage dice when using the "Force Critical" option and rolling damages only
+* **Feature**: Add the ability to parse and roll formulas with multiple different dice in them (1d10+1d8 for example, instead of 1d10+mod)
+* **Bugfix**: Fix roll dice in feature snippets that are split into two separate rolls due to tooltips (Deflect Missiles, Talons, Radiance of the Dawn, Hands of Healings, etc...)
+* **Bugfix**: Fix dice duplication in the Foundry VTT 0.7.x with Dice So Nice module, when using dice pools
+* **Bugfix**: Fix Brutal Critical for Perfect rolls Homebrew critical rule (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix Brutal Critical processing non weapon damage for the dice selection (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix the death save icon not appearing upon page reload
+* **Bugfix**: Fix custom dice in action snippets disappearing after a side panel is opened
+* **Bugfix**: Fix missing settings variable when rolling from an equipment/magic item page
+* **Bugfix**: *Firefox*: Fix extension options scrollbar flickering on Firefox
+* **Bugfix**: *Roll20*: Fix character name showing as "null" in Roll20 in some instances
+
 
 ---
 

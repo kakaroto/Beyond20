@@ -1,3 +1,25 @@
+v2.4.2 (June 1st 2021)
+===
+
+* **Feature**: Add the ability to roll from formulas in source book pages
+* **Feature**: Add the ability to roll from formulas in classes pages
+* **Feature**: Add the ability to parse roll tables and roll their results directly to the VTT
+* **Feature**: *FVTT*: Add support for Foundry VTT 0.8.x new Dice API
+* **Feature**: Add support for advantage/disadvantage badges on death saves (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add suport for Ranger: Natural Explorer (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Roll critical damage dice when using the "Force Critical" option and rolling damages only
+* **Feature**: Add the ability to parse and roll formulas with multiple different dice in them (1d10+1d8 for example, instead of 1d10+mod)
+* **Bugfix**: Fix roll dice in feature snippets that are split into two separate rolls due to tooltips (Deflect Missiles, Talons, Radiance of the Dawn, Hands of Healings, etc...)
+* **Bugfix**: Fix dice duplication in the Foundry VTT 0.7.x with Dice So Nice module, when using dice pools
+* **Bugfix**: Fix Brutal Critical for Perfect rolls Homebrew critical rule (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix Brutal Critical processing non weapon damage for the dice selection (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix the death save icon not appearing upon page reload
+* **Bugfix**: Fix custom dice in action snippets disappearing after a side panel is opened
+* **Bugfix**: Fix missing settings variable when rolling from an equipment/magic item page
+* **Bugfix**: *Firefox*: Fix extension options scrollbar flickering on Firefox
+* **Bugfix**: *Roll20*: Fix character name showing as "null" in Roll20 in some instances
+
+
 v2.4.1 (April 25th 2021)
 ===
 * **Feature**: Add support for Raging from a Wildshape creature (for Druid/Barbarian multiclassers)
