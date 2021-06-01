@@ -1859,8 +1859,27 @@ function injectRollToSnippets() {
                 continue;
         snippet.addClass("beyond20-rolls-added");
         const name = snippet.find(".ct-feature-snippet__heading")[0].childNodes[0].textContent.trim();
-        checkAndInjectDiceToRolls(snippet.find(".ct-feature-snippet__content"), name);
+        const content = snippet.find(".ct-feature-snippet__content")
+        checkAndInjectDiceToRolls(content, name);
+        // DDB now displays tooltips on the modifiers, so it's not "1d4+3" it's "1d4<span>+3</span>" which causes
+        // Beyond20 to see it as two separate formulas, a "1d4" and a "+3" which rolls as "1d20 + 3"
+        // We need to find these and fix them manually
+        const customRolls = content.find(".ct-beyond20-custom-roll");
+        for (const customRoll of customRolls.toArray()) {
+            const modifier = customRoll.nextElementSibling;
+            if (!modifier || 
+                modifier.nodeName !== "SPAN" ||
+                !modifier.classList.contains("ddbc-tooltip") ||
+                $(modifier).find("span > u.ct-beyond20-custom-roll").length === 0) continue;
+            // We found one! Let's grab the formula from both and replace the calculated one
+            const leftFormula = customRoll.textContent || "";
+            const rightFormula = modifier.textContent || "";
+            const formula = `${leftFormula}${rightFormula}`;
+            $(customRoll).find("img.ct-beyond20-custom-icon").attr("x-beyond20-roll", formula).hide();
+            $(modifier).find("img.ct-beyond20-custom-icon").attr("x-beyond20-roll", formula);
+        }
     }
+
 }
 function showHotkeysList(popup) {
     popup.removeClass('beyond20-hotkeys-hidden');
