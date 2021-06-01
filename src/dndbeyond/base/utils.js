@@ -487,7 +487,7 @@ function recursiveDiceReplace(node, cb) {
             recursiveDiceReplace(child, cb);
         }
     } else if (node.nodeName == "#text") {
-        const text = replaceRolls(node.textContent, cb);
+        const text = replaceRolls(node.textContent, (...args) => cb(node, ...args));
         // Only replace if (we changed it, otherwise we might break existing html code bindings;
         if (text != node.textContent)
             $(node).replaceWith($.parseHTML(text));
@@ -496,10 +496,11 @@ function recursiveDiceReplace(node, cb) {
 
 function injectDiceToRolls(selector, character, name = "") {
     const icon = chrome.extension.getURL("images/icons/badges/custom20.png");
-    const replaceCB = (dice, modifier) => {
+    const replaceCB = (node, dice, modifier) => {
         dice_formula = (dice == "" ? "1d20" : dice) + modifier;
+        const rollName = name instanceof Function ? name(node) : name;
         return '<u class="ct-beyond20-custom-roll"><strong>' + dice + modifier + '</strong>' +
-            '<img class="ct-beyond20-custom-icon" x-beyond20-name="' + name +
+            '<img class="ct-beyond20-custom-icon" x-beyond20-name="' + rollName +
             '" x-beyond20-roll="' + dice_formula + '"></img></u>';
     }
 
