@@ -9,6 +9,7 @@ const ROLL_RENDERER_DEPS = [
     "src/common/constants.js",
     "src/discord/discord.js",
     "src/common/dice.js",
+    "src/common/roll-table.js",
     "src/common/roll_renderer.js"
 ];
 

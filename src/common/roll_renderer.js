@@ -375,7 +375,7 @@ class Beyond20RollRenderer {
 
     }
 
-    createRoll(dice, data) {
+    createRoll(dice, data={}) {
         const new_data = {}
         const parts = [dice];
         for (let key in data) {
@@ -761,6 +761,15 @@ class Beyond20RollRenderer {
         });
     }
 
+    async rollRollTable(request, name, formula, data) {
+        const table = new RollTable(name, formula, data);
+        const roll = this.createRoll(formula);
+        await this._roller.resolveRolls(name, [roll]);
+        table.setTotal(roll.total);
+        const results = Object.entries(table.results);
+        return this.postDescription(request, name, null, {}, null, [roll], results);
+    }
+
     handleRollRequest(request) {
         let custom_roll_dice = "";
         if (request.character.type == "Character")
@@ -792,6 +801,8 @@ class Beyond20RollRenderer {
             return this.rollSpellAttack(request, custom_roll_dice);
         } else if (request.type == "chat-message") {
             return this.postMessage(request, request.name, request.message);
+        } else if (request.type == "roll-table") {
+            return this.rollRollTable(request, request.name, request.formula, request.table);
         } else {
             // 'custom' or anything unexpected
             const mod = request.modifier || request.roll;

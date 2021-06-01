@@ -9,51 +9,6 @@ class SourceBookCharacter extends CharacterBase {
 var settings = getDefaultSettings();
 var character = null;
 
-class RollTable {
-    constructor(name, formula, table) {
-        this.name = name;
-        this.formula = formula;
-        this.table = table;
-        this.total = null;
-    }
-    get results() {
-        const results = {};
-        for (const row of Object.keys(this.table)) {
-            for (const [range, description] of Object.entries(this.table[row])) {
-                const match = range.match(/([0-9]+)(?:[–-]([0-9]+))?/);
-                if (!match) continue;
-                let min = parseInt(match[1]);
-                let max = parseInt(match[2] || min);
-                // A d100 table will use '00' for the 100 result
-                if (min === 0) min = 100;
-                if (max === 0) max = 100;
-                if (this.total >= min && this.total <= max) {
-                    results[row] = description;
-                    break;
-                }
-            }
-        }
-        return results;
-    }
-
-    async roll() {
-        const roll = new DNDBRoll(this.formula);
-        await roll.roll();
-        this.total = roll.total;
-    }
-
-    async send() {
-        await this.roll();
-        
-        sendRoll(character, "roll-table", this.formula, {
-            "name": this.name,
-            "formula": this.formula,
-            "table": this.table,
-            "total": this.total,
-            "results": this.results
-        });
-    }
-}
 
 // Find the nearest heading in the text
 // Taken from : https://stackoverflow.com/questions/35340275/selecting-nearest-heading-element
@@ -135,7 +90,11 @@ function addRollTableButton(where, table) {
     $(button).on('click', (event) => {
         event.stopPropagation();
         event.preventDefault();
-        table.send()
+        sendRoll(character, "roll-table", table.formula, {
+            "name": table.name,
+            "formula": table.formula,
+            "table": table.table
+        });
     });
 }
 
