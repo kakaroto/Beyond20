@@ -1871,17 +1871,47 @@ function injectRollToSnippets() {
         // We need to find these and fix them manually
         const customRolls = content.find(".ct-beyond20-custom-roll");
         for (const customRoll of customRolls.toArray()) {
-            const modifier = customRoll.nextElementSibling;
-            if (!modifier || 
-                modifier.nodeName !== "SPAN" ||
-                !modifier.classList.contains("ddbc-tooltip") ||
-                $(modifier).find("span > u.ct-beyond20-custom-roll").length === 0) continue;
-            // We found one! Let's grab the formula from both and replace the calculated one
             const leftFormula = customRoll.textContent || "";
-            const rightFormula = modifier.textContent || "";
+            let modifier = customRoll.nextElementSibling;
+            if (!modifier) {
+                // Handle the use case of both left and right formulas having a modifier tooltip
+                const closestTooltip = $(customRoll).closest(".ddbc-tooltip");
+                // Ensure we got the right setup of "<ddbc-tooltip><custom roll></ddbc-tooltip><ddbc-tooltip><custom roll></ddbc-tooltip>"
+                if (leftFormula.trim() === closestTooltip.text().trim()) {
+                    modifier = closestTooltip[0].nextElementSibling;
+                }
+            }
+            if (!modifier) {
+                // Handle the use case of <strong>1d6</strong>+6
+                const parent = customRoll.parentElement;
+                if (parent && parent.nodeName === "STRONG" && parent.textContent.trim() === leftFormula) {
+                    modifier = parent.nextElementSibling;
+                }
+            }
+            if (!modifier ||
+                modifier.nodeName !== "SPAN" ||
+                !modifier.classList.contains("ddbc-tooltip")) continue;
+            // We found one! Let's grab the formula from both and replace the calculated one
+            let rightFormula = modifier.textContent || "";
+            if ($(modifier).find("span > u.ct-beyond20-custom-roll").length === 0) {
+                // Handle the use case of <roll> + <tooltip>5</tooltip>
+                if (!customRoll.nextSibling ||
+                    customRoll.nextSibling.nodeName !== "#text" ||
+                    !["+", "-"].includes(customRoll.nextSibling.textContent.trim()) ||
+                    !rightFormula.match(/[0-9]+/)) continue;
+                const operator = customRoll.nextSibling.textContent.trim();
+                rightFormula = `${operator}${rightFormula}`;
+            } else {
+                // Ensure we got the right setup of "<custom roll><ddbc-tooltip><custom roll></ddbc-tooltip>"
+                if (rightFormula.trim() !== $(modifier).find("u.ct-beyond20-custom-roll").text()) continue;
+                $(customRoll).find("img.ct-beyond20-custom-icon").hide();
+            }
+            
             const formula = `${leftFormula}${rightFormula}`;
-            $(customRoll).find("img.ct-beyond20-custom-icon").attr("x-beyond20-roll", formula).hide();
+            $(customRoll).find("img.ct-beyond20-custom-icon").attr("x-beyond20-roll", formula)
             $(modifier).find("img.ct-beyond20-custom-icon").attr("x-beyond20-roll", formula);
+            
+
         }
     }
 
