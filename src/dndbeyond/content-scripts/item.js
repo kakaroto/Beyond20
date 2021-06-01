@@ -13,6 +13,7 @@ class ItemCharacter extends CharacterBase {
 }
 
 var character = null;
+var settings = getDefaultSettings();
 
 function addDisplayButton() {
     const icon32 = chrome.extension.getURL("images/icons/badges/normal32.png");
@@ -56,6 +57,7 @@ function documentLoaded(settings) {
 
 function updateSettings(new_settings = null) {
     if (new_settings) {
+        settings = new_settings;
         if (character)
             character.setGlobalSettings(new_settings);
         if (settings['hotkeys-bindings'])
