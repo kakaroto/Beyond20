@@ -15,8 +15,7 @@ function documentLoaded(settings) {
         chrome.runtime.sendMessage({ "action": "reload-me" });
     } else {
         const source_name = $(".page-title").text().trim();
-        if (settings['subst-dndbeyond'])
-            injectDiceToRolls(".p-article", character, (node) => {
+            injectDiceToRolls(".primary-content", character, (node) => {
                 // Find the nearest heading in the text
                 // Taken from : https://stackoverflow.com/questions/35340275/selecting-nearest-heading-element
                 const header = $(node)
