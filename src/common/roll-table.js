@@ -58,7 +58,7 @@ class RollTable {
                     columns[header] = {};
                     continue;
                 }
-                const firstColumn = headers.eq(dice_columns[0]).text();
+                const firstColumn = headers.eq(dice_columns[0]).text().trim();
                 if (header === firstColumn) {
                     dice_columns.push(index);
                 }
@@ -72,12 +72,12 @@ class RollTable {
             let last_range = null;
             for (let index = 0; index < headers.length; index++) {
                 if (dice_columns.includes(index)) {
-                    last_range = cells.eq(index).text();
+                    last_range = cells.eq(index).text().trim();
                 } else if (last_range === null) {
                     break;
                 } else {
-                    const header = headers.eq(index).text();
-                    const description = cells.eq(index).text();
+                    const header = headers.eq(index).text().trim();
+                    const description = cells.eq(index).text().trim();
                     if (columns[header] === undefined) continue;
                     columns[header][last_range] = description;
                 }
