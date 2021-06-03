@@ -120,7 +120,8 @@ class DigitalDiceManager {
         return amount || 0;
     }
     static _makeRoll() {
-        $(".dice-toolbar__roll").click();
+        // New DDB roll button has 2 buttons, one to roll, one to select target, so pick the first one only.
+        $(".dice-toolbar__roll, .dice-toolbar.rollable button").eq(0).click();
     }
     static isEnabled() {
         const toolbar = $(".dice-toolbar");
