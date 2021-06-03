@@ -525,19 +525,16 @@ function injectDiceToRolls(selector, character, name = "") {
         dice_formula = (dice == "" ? "1d20" : dice) + modifier;
         const rollName = name instanceof Function ? name(node) : name;
         return '<u class="ct-beyond20-custom-roll"><strong>' + dice + modifier + '</strong>' +
-            '<img class="ct-beyond20-custom-icon" x-beyond20-name="' + rollName +
-            '" x-beyond20-roll="' + dice_formula + '"></img></u>';
+            '<img class="ct-beyond20-custom-icon" src="' + icon + '" x-beyond20-name="' + rollName +
+            '" x-beyond20-roll="' + dice_formula + '" style="margin-right: 3px; margin-left: 3px;"></img></u>';
     }
 
     const items = $(selector);
     for (let item of items.toArray())
         recursiveDiceReplace(item, replaceCB);
 
-    $(".ct-beyond20-custom-icon").css("margin-right", "3px");
-    $(".ct-beyond20-custom-icon").css("margin-left", "3px");
-    $(".ct-beyond20-custom-icon").attr("src", icon);
-    $(".ct-beyond20-custom-roll").off('click');
-    $(".ct-beyond20-custom-roll").on('click', (event) => {
+    $(".ct-beyond20-custom-roll").off('click')
+        .on('click', (event) => {
         const name = $(event.currentTarget).find("img").attr("x-beyond20-name");
         const roll = $(event.currentTarget).find("img").attr("x-beyond20-roll");
         sendRoll(character, "custom", roll, { "name": name });
