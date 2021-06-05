@@ -390,6 +390,9 @@ class Character extends CharacterBase {
             if (callback)
                 callback(settings);
         }
+        for (let k in data) {
+            this._settings[k] = data[k];
+        }
         mergeSettings(data, cb, "character-" + this._id, character_settings);
     }
 
