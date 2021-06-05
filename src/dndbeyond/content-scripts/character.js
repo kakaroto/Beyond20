@@ -1590,8 +1590,9 @@ function checkAndInjectDiceToRolls(selector, name = "") {
     }
     injectDiceToRolls(selector, character, name);
 
-    for (let custom_roll of $(".ct-beyond20-custom-roll").toArray())
+    for (const custom_roll of $(selector).find(".ct-beyond20-custom-roll").toArray()) {
         findModifiers(character, custom_roll);
+    }
 }
 
 function addRollButtonEx(paneClass, where, options) {
