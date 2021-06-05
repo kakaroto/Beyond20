@@ -520,8 +520,10 @@ function recursiveDiceReplace(node, cb) {
 }
 
 function injectDiceToRolls(selector, character, name = "") {
+    let added = 0;
     const icon = chrome.extension.getURL("images/icons/badges/custom20.png");
     const replaceCB = (node, dice, modifier) => {
+        added++;
         dice_formula = (dice == "" ? "1d20" : dice) + modifier;
         const rollName = name instanceof Function ? name(node) : name;
         return '<u class="ct-beyond20-custom-roll"><strong>' + dice + modifier + '</strong>' +
@@ -538,8 +540,8 @@ function injectDiceToRolls(selector, character, name = "") {
         const name = $(event.currentTarget).find("img").attr("x-beyond20-name");
         const roll = $(event.currentTarget).find("img").attr("x-beyond20-roll");
         sendRoll(character, "custom", roll, { "name": name });
-    }
-    );
+    });
+    return added;
 }
 
 function beyond20SendMessageFailure(character, response) {

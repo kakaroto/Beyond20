@@ -1590,7 +1590,10 @@ function checkAndInjectDiceToRolls(selector, name = "") {
             addRollTableButton(character, table, roll_table);
         }
     }
-    injectDiceToRolls(selector, character, name);
+    const added = injectDiceToRolls(selector, character, name);
+
+    // Don't parse if nothing new was added
+    if (added === 0) return;
 
     for (const custom_roll of $(selector).find(".ct-beyond20-custom-roll").toArray()) {
         findModifiers(character, custom_roll);
