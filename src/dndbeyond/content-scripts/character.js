@@ -1900,7 +1900,7 @@ function injectRollToSnippets() {
                 }
             }
             if (modifier && modifier.nodeName === "#text" &&
-                ["+", "-"].includes(modifier.textContent.trim())) {
+                ["+", "-", ""].includes(modifier.textContent.trim())) {
                 operator = modifier.textContent.trim();
                 modifier = modifier.nextSibling;
             }
