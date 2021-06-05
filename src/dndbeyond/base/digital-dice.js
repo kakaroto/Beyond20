@@ -87,8 +87,14 @@ class DigitalDice {
             this._dice.forEach(dice => dice.calculateTotal());
             this._rolls.forEach(roll => roll.calculateTotal());
         } else {
-            result.find(".dice_result__info__title .dice_result__info__rolldetail").text("Beyond 20: ")
-            result.find(".dice_result__info__title .dice_result__rolltype").text(this._name);
+            const rolldetails = result.find(".dice_result__info__title .dice_result__info__rolldetail");
+            // the target also appears with the same class, so only replace the roll type
+            for (const detail of rolldetails.toArray()) {
+                const rolltype = $(detail.nextElementSibling);
+                if (!rolltype.hasClass("dice_result__rolltype")) continue;
+                $(detail).text("Beyond 20: ")
+                rolltype.text(this._name);
+            }
         }
     }
     async handleCompletedRoll() {
