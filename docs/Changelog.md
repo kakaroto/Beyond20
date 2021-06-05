@@ -1,3 +1,8 @@
+v2.4.5 (June 4th 2021)
+===
+
+* **Bugfix**: Fix a crash when showing a table in a character sheet's sidebar
+
 v2.4.4 (June 4th 2021)
 ===
 

@@ -1,3 +1,8 @@
+2.4.5 (June 4th 2021)
+===
+
+And merely 30 minutes later, a 4th hotfix release because clearly I've lost touch with reality.
+
 2.4.4 (June 4th 2021)
 ===
 

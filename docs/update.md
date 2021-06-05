@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.4.4
+Congratulations! Beyond20 was just updated to the latest version : v2.4.5
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -17,13 +17,15 @@ Thank you all for your support!
 
 # Release Notes
 
-2.4.3
+2.4.2 - (with updates for 2.4.3, 2.4.4 and 2.4.5)
 ===
 
-**UPDATE**: Oups, a small (but critical) bug slipped through 2.4.2 released earlier today. The 2.4.3 release should fix it along with a couple of other small bugs discovered.
+**UPDATE 2.4.3**: Oups, a small (but critical) bug slipped through 2.4.2 released earlier today. The 2.4.3 release should fix it along with a couple of other small bugs discovered.
 
-**Update 2**: Wow, a third release of Beyond20 in as many days! Shortly after the last release, D&D Beyond released an update to the character sheets which adds support for targetted rolls in the Digital Dice roller, which broke rolling with Beyond20 when Digital Dice were enabled. This 2.4.4 hotfix release will fix the issue, along with a few other small issues.
+**UPDATE 2.4.4**: Wow, a third release of Beyond20 in as many days! Shortly after the last release, D&D Beyond released an update to the character sheets which adds support for targetted rolls in the Digital Dice roller, which broke rolling with Beyond20 when Digital Dice were enabled. This 2.4.4 hotfix release will fix the issue, along with a few other small issues.
 Read on below for more information on this week's release.
+
+**UPDATE 2.4.5**: And merely 30 minutes later, a 4th hotfix release because clearly I've lost touch with reality.
 
 I'm really excited about this Beyond20 update, as it adds a feature I've been wanting to add for a long time.
 
@@ -48,6 +50,11 @@ Enjoy, and keep rolling!
 Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
+
+v2.4.5 (June 4th 2021)
+===
+
+* **Bugfix**: Fix a crash when showing a table in a character sheet's sidebar
 
 v2.4.4 (June 4th 2021)
 ===
