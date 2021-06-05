@@ -1882,21 +1882,27 @@ function injectRollToSnippets() {
         const customRolls = content.find(".ct-beyond20-custom-roll");
         for (const customRoll of customRolls.toArray()) {
             const leftFormula = customRoll.textContent || "";
-            let modifier = customRoll.nextElementSibling;
+            let modifier = customRoll.nextSibling;
+            let operator = "";
             if (!modifier) {
                 // Handle the use case of both left and right formulas having a modifier tooltip
                 const closestTooltip = $(customRoll).closest(".ddbc-tooltip");
                 // Ensure we got the right setup of "<ddbc-tooltip><custom roll></ddbc-tooltip><ddbc-tooltip><custom roll></ddbc-tooltip>"
                 if (leftFormula.trim() === closestTooltip.text().trim()) {
-                    modifier = closestTooltip[0].nextElementSibling;
+                    modifier = closestTooltip[0].nextSibling;
                 }
             }
             if (!modifier) {
                 // Handle the use case of <strong>1d6</strong>+6
                 const parent = customRoll.parentElement;
                 if (parent && parent.nodeName === "STRONG" && parent.textContent.trim() === leftFormula) {
-                    modifier = parent.nextElementSibling;
+                    modifier = parent.nextSibling;
                 }
+            }
+            if (modifier && modifier.nodeName === "#text" &&
+                ["+", "-"].includes(modifier.textContent.trim())) {
+                operator = modifier.textContent.trim();
+                modifier = modifier.nextSibling;
             }
             if (!modifier ||
                 modifier.nodeName !== "SPAN" ||
@@ -1905,11 +1911,7 @@ function injectRollToSnippets() {
             let rightFormula = modifier.textContent || "";
             if ($(modifier).find("span > u.ct-beyond20-custom-roll").length === 0) {
                 // Handle the use case of <roll> + <tooltip>5</tooltip>
-                if (!customRoll.nextSibling ||
-                    customRoll.nextSibling.nodeName !== "#text" ||
-                    !["+", "-"].includes(customRoll.nextSibling.textContent.trim()) ||
-                    !rightFormula.match(/[0-9]+/)) continue;
-                const operator = customRoll.nextSibling.textContent.trim();
+                if (!operator || !rightFormula.match(/[0-9]+/)) continue;
                 rightFormula = `${operator}${rightFormula}`;
             } else {
                 // Ensure we got the right setup of "<custom roll><ddbc-tooltip><custom roll></ddbc-tooltip>"
