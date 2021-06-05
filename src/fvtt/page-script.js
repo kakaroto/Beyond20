@@ -455,7 +455,14 @@ function updateConditions(request, name, conditions, exhaustion) {
         // Update status effects;
         name = name.toLowerCase();
 
-        const tokens = canvas.tokens.placeables.filter((t) => t.data.name.toLowerCase() == name);
+        const tokens = canvas.tokens.placeables.filter((t) => t.data.name.toLowerCase() === name);
+        // look for an actor with the character name and search for a linked token to that actor
+        const actor = game.actors.entities.find((a) => a.owner && a.name.toLowerCase() === name);
+        if (actor) {
+            const linkedTokens = canvas.tokens.placeables.filter((t) => t.actor && t.actor.id === actor.id);
+            // Only add linked tokens that do not name match to avoid duplicate operations
+            tokens.push(...linkedTokens.filter((t) => t.data.name.toLowerCase() !== name));
+        }
 
         for (let token of tokens) {
             const effects = token.data.effects;
