@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.4.3
+Congratulations! Beyond20 was just updated to the latest version : v2.4.4
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -20,6 +20,11 @@ Thank you all for your support!
 2.4.3
 ===
 
+**UPDATE**: Oups, a small (but critical) bug slipped through 2.4.2 released earlier today. The 2.4.3 release should fix it along with a couple of other small bugs discovered.
+
+**Update 2**: Wow, a third release of Beyond20 in as many days! Shortly after the last release, D&D Beyond released an update to the character sheets which adds support for targetted rolls in the Digital Dice roller, which broke rolling with Beyond20 when Digital Dice were enabled. This 2.4.4 hotfix release will fix the issue, along with a few other small issues.
+Read on below for more information on this week's release.
+
 I'm really excited about this Beyond20 update, as it adds a feature I've been wanting to add for a long time.
 
 While this is marked as 2.4.2, which means it's a "minor" update, it's actually got some really major features, like the ability to roll from source books and classes pages, and a newly added support for roll tables (give the treasure tables in the DMG a try)!
@@ -37,13 +42,23 @@ Thank you to all my [Patrons](https://patreon.com/kakaroto) and [ko-fi/github](/
 Thank you all for using this software and for being part of this amazing community.
 Enjoy, and keep rolling!
 
-**UPDATE**: Oups, a small (but critical) bug slipped through 2.4.2 released earlier today. The 2.4.3 release should fix it along with a couple of other small bugs discovered.
 
 ---
 
 Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
+
+v2.4.4 (June 4th 2021)
+===
+
+* **Feature**: *FVTT*: Apply condition status effects to custom named tokens linked to an actor with the correct name
+* **Bugfix**: Fix support for rolling with digital dice with the new targetted rolls update from D&D Beyond
+* **Bugfix**: Fix Wild Magic roll table not displaying the resulting effect
+* **Bugfix**: Fix dice rolls in feature snippets disappearing after clicking on the sheet
+* **Bugfix**: Fix dice rolls in feature snippets being merged into invalid formulas in certain situations
+* **Bugfix**: Fix condition updates being sent twice in some situations
+* **Misc**: Improved some performance in how pages are parsed
 
 v2.4.3 (June 1st 2021)
 ===

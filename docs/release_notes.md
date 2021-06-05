@@ -1,9 +1,15 @@
-2.4.3
+2.4.4 (June 4th 2021)
+===
+
+Wow, a third release of Beyond20 in as many days! Shortly after the last release, D&D Beyond released an update to the character sheets which adds support for targetted rolls in the Digital Dice roller, which broke rolling with Beyond20 when Digital Dice were enabled. This 2.4.4 hotfix release will fix the issue, along with a few other small issues.
+Read on below for more information on this week's release.
+
+2.4.3 (June 1st 2021)
 ===
 
 Oups, a small (but critical) bug slipped through 2.4.2 released earlier today. This should fix it along with a couple of other small bugs discovered. See release notes below for what's new in today's releases.
 
-2.4.2
+2.4.2 (June 1st 2021)
 ===
 
 I'm really excited about this Beyond20 update, as it adds a feature I've been wanting to add for a long time.
@@ -23,7 +29,7 @@ Thank you to all my [Patrons](https://patreon.com/kakaroto) and [ko-fi/github](/
 Thank you all for using this software and for being part of this amazing community.
 Enjoy, and keep rolling!
 
-v2.4.1
+v2.4.1 (April 25th 2021)
 ===
 
 Hello everyone! We're releasing a small bugfix release that polishes some of the new features introduced in 2.4.0 and fixes some newly found bugs. 
@@ -38,7 +44,7 @@ Speaking of patrons, another thank you goes to all my [Patrons](https://patreon.
 Enjoy, and as always, happy dice rolling!
 
 
-v2.4.0
+v2.4.0 (March 30th 2021)
 ===
 
 Another Beyond20 update is ready for you!

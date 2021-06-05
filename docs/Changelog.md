@@ -1,3 +1,14 @@
+v2.4.4 (June 4th 2021)
+===
+
+* **Feature**: *FVTT*: Apply condition status effects to custom named tokens linked to an actor with the correct name
+* **Bugfix**: Fix support for rolling with digital dice with the new targetted rolls update from D&D Beyond
+* **Bugfix**: Fix Wild Magic roll table not displaying the resulting effect
+* **Bugfix**: Fix dice rolls in feature snippets disappearing after clicking on the sheet
+* **Bugfix**: Fix dice rolls in feature snippets being merged into invalid formulas in certain situations
+* **Bugfix**: Fix condition updates being sent twice in some situations
+* **Misc**: Improved some performance in how pages are parsed
+
 v2.4.3 (June 1st 2021)
 ===
 
