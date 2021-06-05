@@ -1759,6 +1759,8 @@ function injectRollButton(paneClass) {
             removeRollButtons(pane);
             addHitDieButtons(rollHitDie);
         } else {
+            if (!isHitDieButtonAdded())
+                return
             removeRollButtons(pane);
         }
     } else if (paneClass == "ct-health-manage-pane") {
@@ -1782,8 +1784,6 @@ function injectRollButton(paneClass) {
             addIconButton(character, () => {
                 sendRollWithCharacter("death-save", "1d20", { "advantage": deathSaveRollType })
             }, ".ct-health-manager__deathsaves-group--fails", { custom: true });
-        } else {
-            removeRollButtons(pane);
         }
     } else if (paneClass == "ct-creature-pane") {
         if (isRollButtonAdded() || isCustomRollIconsAdded()) {
@@ -1814,6 +1814,7 @@ function injectRollButton(paneClass) {
             exhaustion_level = parseInt(exhaustion_level);
 
         character.updateConditions(conditions, exhaustion_level);
+        removeRollButtons(pane);
     } else {
         removeRollButtons(pane);
     }
@@ -1866,9 +1867,12 @@ function injectRollToSnippets() {
 
     for (let group of groups.toArray()) {
         const snippet = $(group);
-        if (snippet.hasClass("beyond20-rolls-added"))
-                continue;
-        snippet.addClass("beyond20-rolls-added");
+                
+        // Not the most optimal, but avoids double-adding dice. Problem is that the dice get cleared out by
+        // DDB when a panel is opened, so we can't mark the snippet itself with a custom class, as that doesn't
+        // get modified.
+        if (snippet.find(".ct-beyond20-custom-roll").length > 0)
+            continue;
         const name = snippet.find(".ct-feature-snippet__heading")[0].childNodes[0].textContent.trim();
         const content = snippet.find(".ct-feature-snippet__content")
         checkAndInjectDiceToRolls(content, name);
@@ -1916,8 +1920,6 @@ function injectRollToSnippets() {
             const formula = `${leftFormula}${rightFormula}`;
             $(customRoll).find("img.ct-beyond20-custom-icon").attr("x-beyond20-roll", formula)
             $(modifier).find("img.ct-beyond20-custom-icon").attr("x-beyond20-roll", formula);
-            
-
         }
     }
 
