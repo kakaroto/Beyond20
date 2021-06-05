@@ -1571,8 +1571,10 @@ function findModifiers(character, custom_roll) {
             find_spell_modifier("save dc", character._spell_saves);
         }
 
-        sibling.textContent = text;
-        img.attr("x-beyond20-roll", roll_formula);
+        if (sibling.textContent !== text) {
+            sibling.textContent = text;
+            img.attr("x-beyond20-roll", roll_formula);
+        }
     }
 }
 
