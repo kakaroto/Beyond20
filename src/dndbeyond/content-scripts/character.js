@@ -435,6 +435,28 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
             damages.push(character._proficiency);
             damage_types.push("Genie's Wrath");
         }
+
+        // Warlock: The Undead: Grave Touched
+        if (to_hit != null &&
+            character.hasClassFeature("Grave Touched") &&
+            character.getSetting("warlock-grave-touched", false)) {
+                damage_types[0] = "Necrotic";
+                let highest_dice = 0;
+                for (let dmg of damages) {
+                    const match = dmg.match(/[0-9]*d([0-9]+)/);
+                    if (match) {
+                        const sides = parseInt(match[1]);
+                        if (sides > highest_dice)
+                            highest_dice = sides;
+                    }
+                }
+                if (highest_dice != 0) {
+                    damages.push(`1d${highest_dice}`);
+                    damage_types.push("Grave Touched")
+                }
+
+                settings_to_change["warlock-grave-touched"] = false;
+            }
     }
 
     return to_hit;

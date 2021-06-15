@@ -601,6 +601,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "warlock-grave-touched": {
+        "title": "Warlock: The Undead: Grave Touched",
+        "description": "Your attacks become necrotic, and apply extra damage",
+        "type": "bool",
+        "default": false
+    },
     "wizard-bladesong": {
         "title": "Wizard: Bladesinger: Bladesong",
         "description": "Activate your Bladesong and make your weapon sing with magic",

@@ -266,6 +266,10 @@ function populateCharacter(response) {
             e = createHTMLOption("wizard-durable-magic", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Grave Touched")) {
+            e = createHTMLOption("warlock-grave-touched", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }
