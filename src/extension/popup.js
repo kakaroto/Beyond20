@@ -258,6 +258,10 @@ function populateCharacter(response) {
             e = createHTMLOption("ranger-natural-explorer", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Spiritual Focus")) {
+            e = createHTMLOption("bard-spiritual-focus", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }
