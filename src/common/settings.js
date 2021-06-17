@@ -613,6 +613,12 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
+    "wizard-durable-magic": {
+        "title": "Wizard: War Magic: Durable Magic",
+        "description": "While concenctrating on a spell, your savings throws are fortified",
+        "type": "bool",
+        "default": false
+    },
     "charger-feat": {
         "title": "Feat: Charger Extra Damage (Apply to next roll only)",
         "description": "You charge into battle, lending weight to your blow!",

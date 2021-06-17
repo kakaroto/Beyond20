@@ -262,6 +262,10 @@ function populateCharacter(response) {
             e = createHTMLOption("bard-spiritual-focus", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Durable Magic")) {
+            e = createHTMLOption("wizard-durable-magic", false, character_settings);
+            options.append(e);
+        }
 
         loadSettings(response.settings, character_settings);
     }
