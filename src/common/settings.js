@@ -433,6 +433,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "bard-spiritual-focus": {
+        "title": "Bard: College of Spirits: Spiritual Focus",
+        "description": "Use your Spiritual Focus to deal extra psychic damage, or apply extra healing",
+        "type": "bool",
+        "default": true
+    },
     "barbarian-rage": {
         "title": "Barbarian: Rage! You are raging, ARRGGHHHHHH",
         "description": "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws",
@@ -595,6 +601,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "warlock-grave-touched": {
+        "title": "Warlock: The Undead: Grave Touched",
+        "description": "Your attacks become necrotic, and apply extra damage",
+        "type": "bool",
+        "default": false
+    },
     "wizard-bladesong": {
         "title": "Wizard: Bladesinger: Bladesong",
         "description": "Activate your Bladesong and make your weapon sing with magic",
@@ -606,6 +618,12 @@ const character_settings = {
         "description": "Your prowess in Evocation lends power to your Evocation spells",
         "type": "bool",
         "default": true
+    },
+    "wizard-durable-magic": {
+        "title": "Wizard: War Magic: Durable Magic",
+        "description": "While concenctrating on a spell, your savings throws are fortified",
+        "type": "bool",
+        "default": false
     },
     "charger-feat": {
         "title": "Feat: Charger Extra Damage (Apply to next roll only)",

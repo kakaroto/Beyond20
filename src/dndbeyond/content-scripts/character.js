@@ -171,6 +171,13 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
             roll_properties["modifier"] = modifier;
         }
     }
+    // Wizard - War Magic - Saving Throw Bonus
+    if (character.hasClassFeature("Durable Magic") && character.getSetting("wizard-durable-magic", false) &&
+        rollType == "saving-throw") {
+        modifier = parseInt(modifier) + 2;
+        modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+        roll_properties["modifier"] = modifier;
+    }
     // Fey Wanderer Ranger - Otherworldly Glamour
     if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
         modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
@@ -428,6 +435,26 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
             damages.push(character._proficiency);
             damage_types.push("Genie's Wrath");
         }
+
+        // Warlock: The Undead: Grave Touched
+        if (to_hit != null &&
+            character.hasClassFeature("Grave Touched") &&
+            character.getSetting("warlock-grave-touched", false)) {
+                damage_types[0] = "Necrotic";
+                let highest_dice = 0;
+                for (let dmg of damages) {
+                    const match = dmg.match(/[0-9]*d([0-9]+)/);
+                    if (match) {
+                        const sides = parseInt(match[1]);
+                        if (sides > highest_dice)
+                            highest_dice = sides;
+                    }
+                }
+                if (highest_dice != 0) {
+                    damages.push(`1d${highest_dice}`);
+                    damage_types.push("Grave Touched")
+                }
+            }
     }
 
     return to_hit;
@@ -1062,7 +1089,20 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
             damage_types.push("Arcane Firearm");
         }
     }
-    
+
+    // Bard
+    if (character.hasClass("Bard")) {
+        // Bard: College of Spirits: Spiritual Focus
+        if (damages.length > 0 &&
+            character.hasClassFeature("Spiritual Focus") &&
+            character.getSetting("bard-spiritual-focus", false) &&
+            spell_source.includes("Bard")) {
+                damages.push("1d6");
+                damage_types.push("Spiritual Focus");
+            }
+    }
+
+    // Druid
     if (character.hasClass("Druid")) {
         // Druid: Wildfire Druid: Enhanced Bond
         if (character.hasClassFeature("Enhanced Bond") &&
@@ -1168,6 +1208,18 @@ function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {sp
                 }
             }
         }
+    }
+
+    // Bard
+    if (character.hasClass("Bard")) {
+        // Bard: College of Spirits: Spiritual Focus
+        if (damages.length > 0 &&
+            character.hasClassFeature("Spiritual Focus") &&
+            character.getSetting("bard-spiritual-focus", false) &&
+            spell_source.includes("Bard")) {
+                damages.push("1d6");
+                damage_types.push("Spiritual Focus Healing");
+            }
     }
 
     // Druid
