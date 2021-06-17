@@ -175,6 +175,7 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
     if (character.hasClassFeature("Durable Magic") && character.getSetting("wizard-durable-magic", false) &&
         rollType == "saving-throw") {
         modifier = parseInt(modifier) + 2;
+        modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
         roll_properties["modifier"] = modifier;
     }
     // Fey Wanderer Ranger - Otherworldly Glamour
