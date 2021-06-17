@@ -171,6 +171,13 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
             roll_properties["modifier"] = modifier;
         }
     }
+    // Wizard - War Magic - Saving Throw Bonus
+    if (character.hasClassFeature("Durable Magic") && character.getSetting("wizard-durable-magic", false) &&
+        rollType == "saving-throw") {
+        modifier = parseInt(modifier) + 2;
+        modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+        roll_properties["modifier"] = modifier;
+    }
     // Fey Wanderer Ranger - Otherworldly Glamour
     if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
         modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
