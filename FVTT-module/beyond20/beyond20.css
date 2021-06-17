@@ -15,7 +15,7 @@
 /* Styling for the last result row, usually containing total damage or total crit damage */
 /* Minor problem: On a crit, only total crit damage is enlarged (being the last line), while regular total damage is not. */
 .beyond20-roll-result:nth-last-of-type(1) {
-    font-size: 1.3em;
+    font-size: 1.2em;
     border-radius: 3px;
     margin-top: 0.2em;
 }
@@ -32,7 +32,7 @@
 }
 
 .beyond20-message {
-    font-size: 12px;
+    /* font-size: 12px; */
     font-family: Signika, sans-serif;
 }
 
@@ -51,20 +51,17 @@
 }
 
 .beyond20-message .beyond20-description, .beyond20-message details table {
-    margin: 2px 0px;
 	/* border: 2px groove #eeede0; */
 	border: none;
     width: 100%;
+	padding: 4px;
     border-spacing: 0;
     border-collapse: collapse;
 	background-color: initial;
 }
+
 .beyond20-message table td:first-child{
     font-weight: bold;
-}
-
-.beyond20-message details table {
-    border: 2px groove #eeede0;
 }
 
 .beyond20-roll-cells,
@@ -81,6 +78,7 @@
 .beyond20-roll-die-result {
     flex: 1 0 auto;
     margin: 1px;
+
     line-height: 24px;
     text-align: center;
     background: rgba(0, 0, 0, 0.1);
@@ -149,6 +147,7 @@
     display: block;
     /* Move the tooltip above the parent element. */
     transform: translate(0, -100%);
+    font-size: initial;
 }
 
 .beyond20-tooltip-content .dice-tooltip {
