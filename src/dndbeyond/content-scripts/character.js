@@ -454,8 +454,6 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
                     damages.push(`1d${highest_dice}`);
                     damage_types.push("Grave Touched")
                 }
-
-                settings_to_change["warlock-grave-touched"] = false;
             }
     }
 
