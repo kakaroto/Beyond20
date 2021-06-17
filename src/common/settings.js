@@ -433,6 +433,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "bard-spiritual-focus": {
+        "title": "Bard: College of Spirits: Spiritual Focus",
+        "description": "Use your Spiritual Focus to deal extra psychic damage, or apply extra healing",
+        "type": "bool",
+        "default": true
+    },
     "barbarian-rage": {
         "title": "Barbarian: Rage! You are raging, ARRGGHHHHHH",
         "description": "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws",

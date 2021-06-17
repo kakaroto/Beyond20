@@ -1062,7 +1062,20 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
             damage_types.push("Arcane Firearm");
         }
     }
-    
+
+    // Bard
+    if (character.hasClass("Bard")) {
+        // Bard: College of Spirits: Spiritual Focus
+        if (damages.length > 0 &&
+            character.hasClassFeature("Spiritual Focus") &&
+            character.getSetting("bard-spiritual-focus", false) &&
+            spell_source.includes("Bard")) {
+                damages.push("1d6");
+                damage_types.push("Spiritual Focus");
+            }
+    }
+
+    // Druid
     if (character.hasClass("Druid")) {
         // Druid: Wildfire Druid: Enhanced Bond
         if (character.hasClassFeature("Enhanced Bond") &&
@@ -1168,6 +1181,18 @@ function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {sp
                 }
             }
         }
+    }
+
+    // Bard
+    if (character.hasClass("Bard")) {
+        // Bard: College of Spirits: Spiritual Focus
+        if (damages.length > 0 &&
+            character.hasClassFeature("Spiritual Focus") &&
+            character.getSetting("bard-spiritual-focus", false) &&
+            spell_source.includes("Bard")) {
+                damages.push("1d6");
+                damage_types.push("Spiritual Focus Healing");
+            }
     }
 
     // Druid
