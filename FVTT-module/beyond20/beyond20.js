@@ -343,7 +343,7 @@ class Beyond20 {
         }
         const mod = parseInt(request.initiative) || 0;
         let formula = request.d20 || "1d20";
-        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/g, "r$1$2");
+        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/g, "ro$1$2");
         formula = formula.replace(/(^|\s)+([^\s]+)min([0-9]+)([^\s]*)/g, "$1{$2$4, $3}kh1");
         formula = formula.replace(/1d20/g, this._advantageToD20(request));
         formula += ` ${mod >= 0 ? '+' : ''} ${mod}`;
