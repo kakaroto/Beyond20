@@ -111,6 +111,10 @@ async function rollSkillCheck(paneClass) {
         roll_properties.modifier += "+1d4";
     }
 
+    if (character.hasRacialTrait("Cunning Intuition") && (skill_name == "Performance" || skill_name == "Stealth")){
+        roll_properties.modifier += "+1d4";
+    }
+
     if (character.hasRacialTrait("Windwright’s Intuition") && skill_name == "Acrobatics"){
         roll_properties.modifier += "+1d4";
     }
