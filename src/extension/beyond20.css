@@ -47,16 +47,29 @@
 }
 
  /* Styling for Odd Roll Result Rows */
-.beyond20-roll-result:nth-child(odd) {
-    background-color: rgb(128 128 128 / 10%);
-}
+/* .beyond20-roll-result:nth-child(odd) { */
+    /* background-color: rgb(128 128 128 / 10%); */
+/* } */
 
-/* Styling for the last result row, usually containing total damage or total crit damage */
-/* Minor problem: On a crit, only total crit damage is enlarged (being the last line), while regular total damage is not. */
-.beyond20-roll-result:nth-last-of-type(1) {
+.beyond20-total-damage {
     font-size: 1.2em;
     border-radius: 3px;
-    margin-top: 0.2em;
+    line-height: 24px;
+    text-align: center;
+    background: rgb(180 0 0 / 20%);
+    border: 1px solid rgb(125 0 0);
+    box-shadow: 0 0 2px #690000c2 inset;
+    margin-bottom: 3px;
+}
+
+.beyond20-healing {
+    font-size: 1.2em;
+    border-radius: 3px;
+    line-height: 24px;
+    text-align: center;
+    background: rgb(0 180 15 / 20%);
+    border: 1px solid rgb(0 125 10);
+    box-shadow: 0 0 2px #0b6900c2 inset;
 }
 
 .beyond20-dice-roller-content {
@@ -205,9 +218,10 @@
     flex: 2;
 }
 
-button.beyond20-button-roll-damages {
+.beyond20-button-roll-damages {
     font-family: "Signika", sans-serif;
     font-size: 12px;
+	width: 100%;
     height: 24px;
     line-height: 20px;
     margin: 2px 0;
@@ -220,6 +234,26 @@ button.beyond20-button-roll-damages {
 /* Resizes Beyond20 Icon (20px) to fit new text size, this might need further fixing/a new, smaller icon for better visibility. */
 img.ct-beyond20-custom-icon {
     height: 10px;
+}
+
+/* Changes Tooltips for the DnDBeyond page display rolls */
+.dice-formula.beyond20-roll-formula {
+    line-height: 24px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid #999;
+    border-radius: 3px;
+    box-shadow: 0 0 2px #fff inset;
+    font-size: 20px;
+	margin: 5px 0;
+    font-weight: bold;
+    /* font-family: Signika; */
+}
+
+.beyond20-roll-dice-formula {
+    text-align: center;
+    font-size: 18px;
+    margin: auto;
 }
 
 /* Prevent background / border images from swallowing quickroll mouse events */
