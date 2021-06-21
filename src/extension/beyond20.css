@@ -56,8 +56,8 @@
     border-radius: 3px;
     line-height: 24px;
     text-align: center;
-    background: rgb(180 0 0 / 20%);
-    border: 1px solid rgb(125 0 0);
+	background: rgb(120 120 120 / 20%);
+    border: 1px solid rgb(132 5 5);
     box-shadow: 0 0 2px #690000c2 inset;
     margin-bottom: 3px;
 }
@@ -186,11 +186,15 @@
     width: 90%;
     top: -50%;
     left: 0;
-    border: 2px solid black;
+	border: 2px solid #6f6c66;
 
     /* Position the tooltip */
     position: absolute;
     z-index: 1;
+}
+
+span.dice-roll.beyond20-tooltip-content {
+    background-color: #f9f9f9;
 }
 
 .beyond20-tooltip:hover .beyond20-tooltip-content {
@@ -206,6 +210,11 @@
 
 .dice-tooltip .part-header {
     font-size: initial;
+}
+
+.dice-roll .dice-formula {
+    margin: 0.3em 0;
+    font-weight: normal;
 }
 
 .beyond20-form-row {
@@ -244,10 +253,9 @@ img.ct-beyond20-custom-icon {
     border: 1px solid #999;
     border-radius: 3px;
     box-shadow: 0 0 2px #fff inset;
-    font-size: 20px;
+    /* font-size: 20px; */
 	margin: 5px 0;
     font-weight: bold;
-    /* font-family: Signika; */
 }
 
 .beyond20-roll-dice-formula {
@@ -256,6 +264,14 @@ img.ct-beyond20-custom-icon {
     margin: auto;
 }
 
+ /* Styles the DDB Page roll-popup field */
+.beyond20-dice-roller-content {
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid #999;
+    border-radius: 3px;
+    box-shadow: 0 0 2px #fff inset;
+    margin: 5px 0;
+}										   
 /* Prevent background / border images from swallowing quickroll mouse events */
 .ddbc-box-background {
     pointer-events: none;
