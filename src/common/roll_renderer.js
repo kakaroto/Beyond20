@@ -264,7 +264,10 @@ class Beyond20RollRenderer {
 
             play_sound = true;
             roll_name = roll_name[0].toUpperCase() + roll_name.slice(1) + ": ";
-            html += "<div class='beyond20-roll-result'><b>" + roll_name + "</b>" + roll_html + "</div>";
+            let dmg_classes = "beyond20-roll-result";
+            if (flags & DAMAGE_FLAGS.CRITICAL) dmg_classes += " beyond20-critical-damage";
+            if (flags & DAMAGE_FLAGS.HEALING) dmg_classes += " beyond20-healing";
+            html += `<div class='${dmg_classes}'><b>${roll_name}</b>${roll_html}</div>`;
             if (add_totals) {
                 let kind_of_damage = "";
                 if (flags & DAMAGE_FLAGS.REGULAR) {
@@ -320,7 +323,9 @@ class Beyond20RollRenderer {
             await roll.roll();
             total_damages[key] = roll;
             const roll_html = await this.rollToDetails(roll, is_total);
-            html += "<div class='beyond20-roll-result'><b>Total " + key + ": </b>" + roll_html + "</div>";
+            let total_classes = "beyond20-total-damage";
+            if (key.includes("Critical")) total_classes += " beyond20-critical-damage";
+            html += `<div class='beyond20-roll-result ${total_classes}'><b>Total ${key}: </b>${roll_html}</div>`;
         }
 
         if (request.damages && request.damages.length > 0 && 
