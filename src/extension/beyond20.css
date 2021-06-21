@@ -53,6 +53,7 @@
 
 .beyond20-total-damage {
     font-size: 1.2em;
+	font-weight: bold;
     border-radius: 3px;
     line-height: 24px;
     text-align: center;
