@@ -695,7 +695,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     character.getSetting("ranger-planar-warrior", false))
                     damage_type = "Force";
 
-                if (versatile_damage != "") {
+                if (versatile_damage != "" && damage_type != "--") {
                     let versatile_choice = character.getSetting("versatile-choice", "both");
                     if (key_modifiers.versatile_one_handed)
                         versatile_choice = "one"
@@ -713,7 +713,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                         damages.push(versatile_damage);
                         damage_types.push(damage_type + "(Two-Handed)");
                     }
-                } else {
+                } else if (damage != "" && damage_type != "--") {
                     damages.push(damage);
                     damage_types.push(damage_type);
                 }
