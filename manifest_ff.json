@@ -167,6 +167,9 @@
 				"*://*.dndbeyond.com/sources/*",
 				"*://*.dndbeyond.com/classes/*"
 			],
+            "exclude_matches": [
+				"*://*.dndbeyond.com/classes/*/edit"
+            ],
 			"css": [
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",
