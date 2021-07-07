@@ -42,7 +42,38 @@
  */
 .beyond20-roll-result,
 .beyond20-roller-error {
-   position: relative;
+    position: relative;
+    padding: 0px 5px;
+}
+
+/* Styling for last Roll Result Rows, applies to single-damage attacks and spells */
+.beyond20-roll-result:last-child {
+    font-size: 1.2em;
+    font-weight: bold;
+    line-height: 24px;
+    margin-bottom: 3px;
+}
+
+.beyond20-total-damage {
+    font-size: 1.2em;
+    font-weight: bold;
+    border-radius: 3px;
+    line-height: 24px;
+    text-align: center;
+    background: rgb(120 120 120 / 20%);
+    border: 1px solid rgb(132 5 5);
+    box-shadow: 0 0 2px #690000c2 inset;
+    margin-bottom: 3px;
+}
+
+.beyond20-healing {
+    font-size: 1.2em;
+    border-radius: 3px;
+    line-height: 24px;
+    text-align: center;
+    background: rgb(0 180 15 / 20%);
+    border: 1px solid rgb(0 125 10);
+    box-shadow: 0 0 2px #0b6900c2 inset;
 }
 
 .beyond20-dice-roller-content {
@@ -52,25 +83,44 @@
 }
 
 .beyond20-roll-total {
-    text-decoration: underline;
+    text-decoration: none;
+    font-weight: bold;
 }
 
-
-.beyond20-message details summary, .beyond20-title {
-    font-style: italic;
-    color: #500;
-    font-size: 1.2em;
+.beyond20-message {
+    /* font-size: 12px; */
+    font-family: Signika, sans-serif;
 }
 
-.beyond20-message .beyond20-description, .beyond20-message details table {
+.beyond20-message details summary,
+.beyond20-title {
+    flex: 1;
+    font-style: normal;
     margin: 2px 0px;
-    border: 1px solid #333;
+    line-height: 36px;
+    font-family: "Modesto Condensed", "Palatino Linotype", serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #4b4a44;
+    padding-top: 3px;
+    border-top: 2px groove #fff;
+    border-bottom: 2px groove #fff;
+}
+
+.beyond20-message .beyond20-description,
+.beyond20-message details table {
+    /* border: 2px groove #eeede0; */
+    border: none;
     width: 100%;
+    padding: 4px;
     border-spacing: 0;
     border-collapse: collapse;
-    background-color: #DDD;
+    background-color: initial;
 }
 
+.beyond20-message table td:first-child {
+    font-weight: bold;
+}
 
 .beyond20-roll-cells,
 .beyond20-roll-dice-rolls,
@@ -78,6 +128,8 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    margin-bottom: 0.2em;
+    padding: 0;
 }
 
 .beyond20-roll-cell,
@@ -85,10 +137,15 @@
     flex: 1 0 auto;
     margin: 1px;
 
+    line-height: 24px;
     text-align: center;
-    border: thin solid black;
-    border-radius: 2px;
-    background-color: lightgray;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid #999;
+    border-radius: 3px;
+    box-shadow: 0 0 2px #fff inset;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: Signika;
 }
 
 .beyond20-dice-roller-content .beyond20-roll-dice-formula {
@@ -98,19 +155,22 @@
     flex-grow: 4;
 }
 .beyond20-dice-roller-content .beyond20-roll-formula {
-    background-color: #DDD;
+    background-color: #ddd;
     text-align: center;
     width: 100%;
 }
 
 .beyond20-roll-detail-crit {
-    color: green;
+    color: darkgreen;
+    font-weight: bold;
 }
 .beyond20-roll-detail-fail {
-    color: red;
+    color: darkred;
+    font-weight: bold;
 }
 .beyond20-roll-detail-crit-fail {
-    color: blue;
+    color: darkblue;
+    font-weight: bold;
 }
 .beyond20-roll-detail-normal {
     color: black;
@@ -123,6 +183,7 @@
 
 .beyond20-tooltip .beyond20-tooltip-content {
     display: none;
+    background: url(/ui/parchment.jpg) repeat;
     background-color: #f5f2ec;
     text-align: left;
     border-radius: 6px;
@@ -131,21 +192,35 @@
     width: 90%;
     top: -50%;
     left: 0;
-    border: 2px solid black;
+    border: 2px solid #6f6c66;
 
     /* Position the tooltip */
     position: absolute;
     z-index: 1;
 }
 
+span.dice-roll.beyond20-tooltip-content {
+    background-color: #f9f9f9;
+}
+
 .beyond20-tooltip:hover .beyond20-tooltip-content {
     display: block;
     /* Move the tooltip above the parent element. */
     transform: translate(0, -100%);
+    font-size: initial;
 }
 
 .beyond20-tooltip-content .dice-tooltip {
     display: block;
+}
+
+.dice-tooltip .part-header {
+    font-size: initial;
+}
+
+.dice-roll .dice-formula {
+    margin: 0.3em 0;
+    font-weight: normal;
 }
 
 .beyond20-form-row {
@@ -158,11 +233,55 @@
     flex: 2;
 }
 
+.beyond20-button-roll-damages {
+    font-family: "Signika", sans-serif;
+    font-size: 12px;
+    width: 100%;
+    height: 24px;
+    line-height: 20px;
+    margin: 2px 0;
+    background: rgba(0, 0, 0, 0.1);
+    border: 2px groove #eeede0;
+    border-radius: 3px;
+    margin-top: 2px;
+}
+
+/* Resizes Beyond20 Icon (20px) to fit new text size, this might need further fixing/a new, smaller icon for better visibility. */
+.beyond20-message details img.ct-beyond20-custom-icon {
+    height: 10px;
+}
+
+/* Changes Tooltips for the DnDBeyond page display rolls */
+.dice-formula.beyond20-roll-formula {
+    line-height: 24px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid #999;
+    border-radius: 3px;
+    box-shadow: 0 0 2px #fff inset;
+    /* font-size: 20px; */
+    margin: 5px 0;
+    font-weight: bold;
+}
+
+.beyond20-roll-dice-formula {
+    text-align: center;
+    font-size: 18px;
+    margin: auto;
+}
+
+/* Styles the DDB Page roll-popup field */
+.beyond20-dice-roller-content {
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid #999;
+    border-radius: 3px;
+    box-shadow: 0 0 2px #fff inset;
+    margin: 5px 0;
+}
 /* Prevent background / border images from swallowing quickroll mouse events */
 .ddbc-box-background {
     pointer-events: none;
 }
-
 
 .beyond20-hotkeys-hidden {
     display: none;
@@ -205,7 +324,7 @@
     color: green;
 }
 .beyond20-hotkey-toggle:hover {
-    background-color:rgb(155, 208, 243);
+    background-color: rgb(155, 208, 243);
     border: 1px solid darkblue;
 }
 .beyond20-hotkeys-roll-types {
@@ -225,7 +344,8 @@
 }
 .save .btn {
     background-color: rgb(66, 133, 244);
-    box-shadow: 0 2px 5px 0 rgba(0,0,0,.16), 0 2px 10px 0 rgba(0,0,0,.12);
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16),
+        0 2px 10px 0 rgba(0, 0, 0, 0.12);
     border-radius: 2px;
     border-width: 0px;
     color: rgb(255, 255, 255);
@@ -234,7 +354,9 @@
     margin: 5px;
     padding: 10px 30px;
     text-transform: uppercase;
-    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,-webkit-box-shadow .15s ease-in-out;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+        border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,
+        -webkit-box-shadow 0.15s ease-in-out;
     white-space: normal;
     word-wrap: break-word;
 }
