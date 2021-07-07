@@ -5,6 +5,7 @@
     "version": "1.2",
     "author": "KaKaRoTo",
     "systems": ["dnd5e"],
+    "system": ["dnd5e"],
     "scripts": ["./beyond20.js"],
     "styles": ["./beyond20.css"],
     "packs": [],
@@ -12,5 +13,5 @@
     "manifest": "https://raw.githubusercontent.com/kakaroto/Beyond20/master/FVTT-module/beyond20/module.json",
     "download": "https://raw.githubusercontent.com/kakaroto/Beyond20/fvtt-module-v1.2/FVTT-module/beyond20.zip",
     "minimumCoreVersion": "0.6.0",
-    "compatibleCoreVersion": "0.7.10"
+    "compatibleCoreVersion": "0.8.8"
 }
