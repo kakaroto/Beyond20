@@ -1,6 +1,6 @@
 {
 	"name": "Beyond 20",
-	"version": "2.4.5",
+	"version": "2.4.6",
 	"manifest_version": 2,
 	"description": "Integrates the D&D Beyond Character Sheets with Roll20 and Foundry VTT.",
 	"permissions": [
@@ -162,6 +162,9 @@
 				"*://*.dndbeyond.com/sources/*",
 				"*://*.dndbeyond.com/classes/*"
 			],
+            "exclude_matches": [
+				"*://*.dndbeyond.com/classes/*/edit"
+            ],
 			"css": [
 				"libs/css/alertify.css",
 				"libs/css/alertify-themes/default.css",

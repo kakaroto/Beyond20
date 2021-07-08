@@ -145,7 +145,7 @@ class Character extends CharacterBase {
         } else {
             const hp_items = $(".ct-health-summary__hp-group--primary .ct-health-summary__hp-item");
             for (let item of hp_items.toArray()) {
-                const label = $(item).find(".ct-health-summary__hp-item-label").text();
+                const label = $(item).find(".ct-health-summary__hp-item-label").text().trim();
                 if (label == "Current") {
                     // Make sure it's !an input being modified;
                     const number = $(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number");

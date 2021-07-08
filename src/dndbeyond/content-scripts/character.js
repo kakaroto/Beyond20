@@ -646,6 +646,10 @@ function addCustomDamages(damages, damage_types) {
     }
 }
 
+function capitalize(str) {
+    return str.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, spell_group = null) {
     const prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
     const properties = propertyListToDict(prop_list);
@@ -673,7 +677,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             to_hit = character._getToHitCache(item_full_name);
 
         const damages = [];
-        const damage_types = [];
+        let damage_types = [];
         for (let i = 0; i < prop_list.length; i++) {
             if (prop_list.eq(i).find(".ct-property-list__property-label,.ddbc-property-list__property-label").text() == "Damage:") {
                 const value = prop_list.eq(i).find(".ct-property-list__property-content,.ddbc-property-list__property-content");
@@ -695,7 +699,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     character.getSetting("ranger-planar-warrior", false))
                     damage_type = "Force";
 
-                if (versatile_damage != "") {
+                if (versatile_damage != "" && damage_type != "--") {
                     let versatile_choice = character.getSetting("versatile-choice", "both");
                     if (key_modifiers.versatile_one_handed)
                         versatile_choice = "one"
@@ -713,7 +717,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                         damages.push(versatile_damage);
                         damage_types.push(damage_type + "(Two-Handed)");
                     }
-                } else {
+                } else if (damage != "" && damage_type != "--") {
                     damages.push(damage);
                     damage_types.push(damage_type);
                 }
@@ -739,7 +743,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 break;
             }
         }
-        
+
         const weapon_damage_length = damages.length;
         
         // If clicking on a spell group within a item (Green flame blade, Booming blade), then add the additional damages from that spell
@@ -763,6 +767,9 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
         }
 
         addCustomDamages(damages, damage_types);
+
+        // Capitalize all Damage Types to ensure consistency for later processing
+        damage_types = damage_types.map(t => capitalize(t));
 
         to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, item_name});
 
@@ -933,7 +940,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         });
     } else if (Object.keys(properties).includes("Damage") || to_hit !== null || properties["Attack/Save"] !== undefined) {
         const damages = [];
-        const damage_types = [];
+        let damage_types = [];
         if (Object.keys(properties).includes("Damage")) {
             damages.push(properties["Damage"]);
             damage_types.push(properties["Damage Type"] || "");
@@ -942,6 +949,9 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
         const weapon_damage_length = damages.length;
 
         addCustomDamages(damages, damage_types);
+
+        // Capitalize all Damage Types to ensure consistency for later processing
+        damage_types = damage_types.map(t => capitalize(t));
 
         const settings_to_change = {}
         let brutal = 0;
@@ -1290,7 +1300,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
 
     if (!force_display && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || temp_hp_modifiers.length > 0 || to_hit !== null || properties["Attack/Save"] !== undefined)) {
         const damages = [];
-        const damage_types = [];
+        let damage_types = [];
         const settings_to_change = {}
         
         for (let modifier of damage_modifiers.toArray()) {
@@ -1299,6 +1309,11 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             damages.push(dmg);
             damage_types.push(dmgtype);
         }
+
+        addCustomDamages(damages, damage_types);
+
+        // Capitalize all Damage Types to ensure consistency for later processing
+        damage_types = damage_types.map(t => capitalize(t));
 
         if (damages.length > 0) {
             to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
@@ -1334,8 +1349,6 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
         if (healing_modifiers.length > 0) {
             handleSpecialHealingSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
         }
-
-        addCustomDamages(damages, damage_types);
 
         let critical_limit = 20;
         if (character.hasClassFeature("Hexblade’s Curse") &&
