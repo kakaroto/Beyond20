@@ -1,3 +1,21 @@
+2.4.6 (July 7th 2021)
+===
+
+* **Feature**: Change the roll output's styling to look much nicer and be more in line with FVTT's own CSS styling (by [@LorduFreeman](https://github.com/LorduFreeman))
+* **Feature**: Add support for Bard: Spiritual Focus (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Wizard: Durable Magic (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Warlock: Grave Touched (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Mask of Shadow Elf Cunning Intuition (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix HP syncing not working anymore from the character sheet page (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix display/detection of spell damage types that would affect special abilities (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Clean up bogus damage types from some items (Arrow of Slaying) (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix rolling spell damages from spells that don't have a To Hit value (saving throws or healing) when force critical is enabled
+* **Bugfix**: Only compute critical damages on attacks which include a To Hit value, even if force critical is enabled
+* **Bugfix**: Fix issue with editing homebrew subclass descriptions which include dice formulas in them
+* **Bugfix**: Remove extraneous html content introduced by Beyond20 in the editors of homebrew subclasses
+* **Misc**: *FVTT*: Change the FVTT module to appear compatible with 0.8.8 and fix the change from `systems` to `system` in the module's metadata
+
+
 v2.4.5 (June 4th 2021)
 ===
 

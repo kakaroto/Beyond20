@@ -1,3 +1,18 @@
+2.4.6 (July 7th 2021)
+===
+
+Hi everyone. We're releasing today another bugfix release to Beyond20, due to recent changes to the D&D Beyond website with the arrival of the new [Underdark mode](https://www.dndbeyond.com/forums/d-d-beyond-general/news-announcements/113373-news-underdark-mode-for-character-sheets), which caused some features to stop working correctly. This release fixes the HP syncing as well as the broken special class abilities that were affected by the recent update to D&D Beyond's site.
+
+Another exciting change in this release is a new styling for the roll results, which will show a much cleaner look when rolling into D&D Beyond's site or to your Foundry VTT game. If using FVTT and you have the Beyond20 companion module installed, make sure to update the module too. This change was contributed by [@LorduFreeman](https://github.com/LorduFreeman) and I'm really happy with the results!
+
+Other than these bugfixes and the new styling, there's also a bunch of new special class features added, thanks to [@Aeristoka](https://github.com/Aeristoka) as usual, who has been the main contributor to this release! You can see all the new features in the [Changelog](/Changelog#v246).
+
+Hopefully, there won't be any new bugfixes after this (Last month's multiple releases were annoying to us both!) and the next release, in a couple of months hopefully, will bring in some new major features.
+
+As usual, thank you everyone for your support, and a special thank you to all my [Patrons](https://patreon.com/kakaroto) and [ko-fi/github](/rations) supporters, and for everyone who helped make this possible.
+
+Enjoy, and happy rolling!
+
 2.4.5 (June 4th 2021)
 ===
 
