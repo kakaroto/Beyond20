@@ -89,7 +89,7 @@
 
 .beyond20-message {
     /* font-size: 12px; */
-    font-family: Signika, sans-serif;
+    font-family: Signika, "Roboto", sans-serif;
 }
 
 .beyond20-message details summary,
@@ -98,7 +98,7 @@
     font-style: normal;
     margin: 2px 0px;
     line-height: 36px;
-    font-family: "Modesto Condensed", "Palatino Linotype", serif;
+    font-family: "Modesto Condensed", "Roboto Condensed", "Palatino Linotype", serif;
     font-size: 20px;
     font-weight: 700;
     color: #4b4a44;
@@ -145,7 +145,7 @@
     box-shadow: 0 0 2px #fff inset;
     font-size: 20px;
     font-weight: bold;
-    font-family: Signika;
+    font-family: Signika, "Roboto", serif;
 }
 
 .beyond20-dice-roller-content .beyond20-roll-dice-formula {
@@ -234,7 +234,7 @@ span.dice-roll.beyond20-tooltip-content {
 }
 
 .beyond20-button-roll-damages {
-    font-family: "Signika", sans-serif;
+    font-family: "Signika", "Roboto", sans-serif;
     font-size: 12px;
     width: 100%;
     height: 24px;
