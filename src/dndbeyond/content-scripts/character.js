@@ -127,6 +127,11 @@ async function rollSkillCheck(paneClass) {
         roll_properties.modifier += "+1d4";
     }
 
+    // Mark of Scribing Gnome - Gifted Scribe
+    if (character.hasRacialTrait("Gifted Scribe") && skill_name == "History"){
+        roll_properties.modifier += "+1d4";
+    }
+
     if (character.hasClassFeature("Natural Explorer") && character.getSetting("ranger-natural-explorer", false) &&
         (ability == "WIS" || ability == "INT") && (proficiency == "Proficiency" || proficiency == "Expertise")) {
         roll_properties.modifier += character._proficiency;
@@ -908,6 +913,9 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     roll_properties.modifier += "+1d4";
                 // Mark of Warding Dwarf - Warder's Intuition
                 if (character.hasRacialTrait("Warder’s Intuition") && is_tool && item_name == "Thieves' Tools")
+                    roll_properties.modifier += "+1d4";
+                // Mark of Scribing Gnome - Gifted Scribe
+                if (character.hasRacialTrait("Gifted Scribe") && is_tool && item_name == "Calligrapher's Supplies")
                     roll_properties.modifier += "+1d4";
                 return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
             }
