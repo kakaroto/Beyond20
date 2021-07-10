@@ -162,6 +162,11 @@ async function rollSkillCheck(paneClass) {
         roll_properties.modifier += "+1d4";
     }
 
+    // Mark of Sentinel Human - Sentinel's Intuition
+    if (character.hasRacialTrait("Sentinel’s Intuition") && (skill_name == "Insight" || skill_name == "Perception")) {
+        roll_properties.modifier += "+1d4";
+    }
+
     if (character.hasClassFeature("Natural Explorer") && character.getSetting("ranger-natural-explorer", false) &&
         (ability == "WIS" || ability == "INT") && (proficiency == "Proficiency" || proficiency == "Expertise")) {
         roll_properties.modifier += character._proficiency;
