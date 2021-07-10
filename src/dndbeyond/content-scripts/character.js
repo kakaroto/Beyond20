@@ -152,6 +152,11 @@ async function rollSkillCheck(paneClass) {
         roll_properties.modifier += "+1d4";
     }
 
+    // Mark of Making Human - Artisan's Intuition
+    if (character.hasRacialTrait("Artisan’s Intuition") && skill_name == "Arcana") {
+        roll_properties.modifier += "+1d4";
+    }
+
     if (character.hasClassFeature("Natural Explorer") && character.getSetting("ranger-natural-explorer", false) &&
         (ability == "WIS" || ability == "INT") && (proficiency == "Proficiency" || proficiency == "Expertise")) {
         roll_properties.modifier += character._proficiency;
@@ -942,6 +947,9 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     roll_properties.modifier += "+1d4";
                 // Mark of Hospitality Halfing - Ever Hospitable
                 if (character.hasRacialTrait("Ever Hospitable") && is_tool && (item_name == "Brewer's Supplies" || item_name == "Cook's Utensils"))
+                    roll_properties.modifier += "+1d4";
+                // Mark of Making Human - Artisan's Intuition
+                if (character.hasRacialTrait("Artisan’s Intuition") && is_tool)
                     roll_properties.modifier += "+1d4";
                 return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
             }
