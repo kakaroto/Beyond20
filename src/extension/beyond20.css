@@ -47,11 +47,23 @@
 }
 
 /* Styling for last Roll Result Rows, applies to single-damage attacks and spells */
-.beyond20-roll-result:last-child {
+.beyond20-roll-damage {
     font-size: 1.2em;
     font-weight: bold;
+    border-radius: 3px;
     line-height: 24px;
+    text-align: center;
     margin-bottom: 3px;
+    box-shadow: rgb(255, 255, 255) 0px 0px 2px inset;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid #999;
+}
+
+.beyond20-critical-damage {
+    border: 1px solid #540000;
+    border-radius: 3px;
+    margin-bottom: 2px;
+    box-shadow: rgb(208 53 53) 0px 0px 2px inset;
 }
 
 .beyond20-total-damage {
@@ -60,8 +72,8 @@
     border-radius: 3px;
     line-height: 24px;
     text-align: center;
-    background: rgb(120 120 120 / 20%);
-    border: 1px solid rgb(132 5 5);
+    background: rgba(0, 0, 0, 0.1);
+    border-color: #0070d0;
     box-shadow: 0 0 2px #690000c2 inset;
     margin-bottom: 3px;
 }
@@ -71,7 +83,7 @@
     border-radius: 3px;
     line-height: 24px;
     text-align: center;
-    background: rgb(0 180 15 / 20%);
+    background: rgb(0 180 15 / 10%);
     border: 1px solid rgb(0 125 10);
     box-shadow: 0 0 2px #0b6900c2 inset;
 }
