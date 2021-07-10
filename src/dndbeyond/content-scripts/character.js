@@ -147,6 +147,11 @@ async function rollSkillCheck(paneClass) {
         roll_properties.modifier += "+1d4";
     }
 
+    // Mark of Handling Human - Wild Intuition
+    if (character.hasRacialTrait("Wild Intuition") && (skill_name == "Animal Handling" || skill_name == "Nature")) {
+        roll_properties.modifier += "+1d4";
+    }
+
     if (character.hasClassFeature("Natural Explorer") && character.getSetting("ranger-natural-explorer", false) &&
         (ability == "WIS" || ability == "INT") && (proficiency == "Proficiency" || proficiency == "Expertise")) {
         roll_properties.modifier += character._proficiency;
