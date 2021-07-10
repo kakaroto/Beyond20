@@ -108,27 +108,32 @@ async function rollSkillCheck(paneClass) {
     }
 
     // Mark of Detection Half-Elf - Deductive Intuition
-    if (character.hasRacialTrait("Deductive Intuition") && (skill_name == "Investigation" || skill_name == "Insight")){
+    if (character.hasRacialTrait("Deductive Intuition") && (skill_name == "Investigation" || skill_name == "Insight")) {
         roll_properties.modifier += "+1d4";
     }
 
     // Mark of Shadow Elf - Cunning Intuition
-    if (character.hasRacialTrait("Cunning Intuition") && (skill_name == "Performance" || skill_name == "Stealth")){
+    if (character.hasRacialTrait("Cunning Intuition") && (skill_name == "Performance" || skill_name == "Stealth")) {
         roll_properties.modifier += "+1d4";
     }
 
     // Mark of Storm Half-Elf Windwright's Intuition
-    if (character.hasRacialTrait("Windwright’s Intuition") && skill_name == "Acrobatics"){
+    if (character.hasRacialTrait("Windwright’s Intuition") && skill_name == "Acrobatics") {
         roll_properties.modifier += "+1d4";
     }
 
     // Mark of Warding Dwarf - Warder's Intuition
-    if (character.hasRacialTrait("Warder’s Intuition") && skill_name == "Investigation"){
+    if (character.hasRacialTrait("Warder’s Intuition") && skill_name == "Investigation") {
         roll_properties.modifier += "+1d4";
     }
 
     // Mark of Scribing Gnome - Gifted Scribe
-    if (character.hasRacialTrait("Gifted Scribe") && skill_name == "History"){
+    if (character.hasRacialTrait("Gifted Scribe") && skill_name == "History") {
+        roll_properties.modifier += "+1d4";
+    }
+
+    // Mark of Healing Halfing - Healing Touch
+    if (character.hasRacialTrait("Healing Touch") && skill_name == "Medicine") {
         roll_properties.modifier += "+1d4";
     }
 
@@ -916,6 +921,9 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                     roll_properties.modifier += "+1d4";
                 // Mark of Scribing Gnome - Gifted Scribe
                 if (character.hasRacialTrait("Gifted Scribe") && is_tool && item_name == "Calligrapher's Supplies")
+                    roll_properties.modifier += "+1d4";
+                // Mark of Hospitality Halfing - Healing Touch
+                if (character.hasRacialTrait("Healing Touch") && is_tool && item_name == "Herbalism Kit")
                     roll_properties.modifier += "+1d4";
                 return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
             }
