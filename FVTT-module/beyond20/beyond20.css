@@ -17,13 +17,6 @@
     border: 1px solid #999;
 }
 
-.beyond20-critical-damage {
-    border: 1px solid #540000;
-    border-radius: 3px;
-    margin-bottom: 2px;
-    box-shadow: rgb(208 53 53) 0px 0px 2px inset;
-}
-
 .beyond20-total-damage {
     font-size: 1.2em;
     font-weight: bold;
@@ -31,17 +24,20 @@
     line-height: 24px;
     text-align: center;
     background: rgba(0, 0, 0, 0.1);
-    border-color: #0070d0;
-    box-shadow: 0 0 2px #690000c2 inset;
+	box-shadow: 0 0 2px #00316b inset;
+    border: 1px solid #00142b;
     margin-bottom: 3px;
 }
 
-.beyond20-healing {
-    font-size: 1.2em;
+.beyond20-critical-damage {
+    border: 1px solid #9c3940;
     border-radius: 3px;
-    line-height: 24px;
-    text-align: center;
-    background: rgb(120 120 120 / 10%);
+    margin-bottom: 2px;
+    box-shadow: rgb(208 53 53) 0px 0px 2px inset;
+}
+
+.beyond20-healing {
+    border-radius: 3px;
     border: 1px solid rgb(0 125 10);
     box-shadow: 0 0 2px #0b6900c2 inset;
 }
