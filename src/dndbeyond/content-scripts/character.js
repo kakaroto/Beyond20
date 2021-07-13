@@ -107,15 +107,63 @@ async function rollSkillCheck(paneClass) {
         }
     }
 
-    if (character.hasRacialTrait("Deductive Intuition") && (skill_name == "Investigation" || skill_name == "Insight")){
+    // Mark of Detection Half-Elf - Deductive Intuition
+    if (character.hasRacialTrait("Deductive Intuition") && (skill_name == "Investigation" || skill_name == "Insight")) {
         roll_properties.modifier += "+1d4";
     }
 
-    if (character.hasRacialTrait("Cunning Intuition") && (skill_name == "Performance" || skill_name == "Stealth")){
+    // Mark of Shadow Elf - Cunning Intuition
+    if (character.hasRacialTrait("Cunning Intuition") && (skill_name == "Performance" || skill_name == "Stealth")) {
         roll_properties.modifier += "+1d4";
     }
 
-    if (character.hasRacialTrait("Windwright’s Intuition") && skill_name == "Acrobatics"){
+    // Mark of Storm Half-Elf Windwright's Intuition
+    if (character.hasRacialTrait("Windwright’s Intuition") && skill_name == "Acrobatics") {
+        roll_properties.modifier += "+1d4";
+    }
+
+    // Mark of Warding Dwarf - Warder's Intuition
+    if (character.hasRacialTrait("Warder’s Intuition") && skill_name == "Investigation") {
+        roll_properties.modifier += "+1d4";
+    }
+
+    // Mark of Scribing Gnome - Gifted Scribe
+    if (character.hasRacialTrait("Gifted Scribe") && skill_name == "History") {
+        roll_properties.modifier += "+1d4";
+    }
+
+    // Mark of Healing Halfing - Healing Touch
+    if (character.hasRacialTrait("Healing Touch") && skill_name == "Medicine") {
+        roll_properties.modifier += "+1d4";
+    }
+
+    // Mark of Hospitality Halfing - Ever Hospitable
+    if (character.hasRacialTrait("Ever Hospitable") && skill_name == "Persuasion") {
+        roll_properties.modifier += "+1d4";
+    }
+
+    // Mark of Finding Half-Orc/Human - Hunter's Intuition
+    if (character.hasRacialTrait("Hunter’s Intuition") && (skill_name == "Perception" || skill_name == "Survival")) {
+        roll_properties.modifier += "+1d4";
+    }
+
+    // Mark of Handling Human - Wild Intuition
+    if (character.hasRacialTrait("Wild Intuition") && (skill_name == "Animal Handling" || skill_name == "Nature")) {
+        roll_properties.modifier += "+1d4";
+    }
+
+    // Mark of Making Human - Artisan's Intuition
+    if (character.hasRacialTrait("Artisan’s Intuition") && skill_name == "Arcana") {
+        roll_properties.modifier += "+1d4";
+    }
+
+    // Mark of Passage Human - Intuitive Motion
+    if (character.hasRacialTrait("Intuitive Motion") && skill_name == "Acrobatics") {
+        roll_properties.modifier += "+1d4";
+    }
+
+    // Mark of Sentinel Human - Sentinel's Intuition
+    if (character.hasRacialTrait("Sentinel’s Intuition") && (skill_name == "Insight" || skill_name == "Perception")) {
         roll_properties.modifier += "+1d4";
     }
 
@@ -895,7 +943,23 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
                 // Sorcerer: Clockwork Soul - Trance of Order
                 if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
                     roll_properties.d20 = "1d20min10";
+                // Mark of Storm Half-Elf Windwright's Intuition
                 if (character.hasRacialTrait("Windwright’s Intuition") && is_tool && item_name == "Navigator's Tools")
+                    roll_properties.modifier += "+1d4";
+                // Mark of Warding Dwarf - Warder's Intuition
+                if (character.hasRacialTrait("Warder’s Intuition") && is_tool && item_name == "Thieves' Tools")
+                    roll_properties.modifier += "+1d4";
+                // Mark of Scribing Gnome - Gifted Scribe
+                if (character.hasRacialTrait("Gifted Scribe") && is_tool && item_name == "Calligrapher's Supplies")
+                    roll_properties.modifier += "+1d4";
+                // Mark of Hospitality Halfing - Healing Touch
+                if (character.hasRacialTrait("Healing Touch") && is_tool && item_name == "Herbalism Kit")
+                    roll_properties.modifier += "+1d4";
+                // Mark of Hospitality Halfing - Ever Hospitable
+                if (character.hasRacialTrait("Ever Hospitable") && is_tool && (item_name == "Brewer's Supplies" || item_name == "Cook's Utensils"))
+                    roll_properties.modifier += "+1d4";
+                // Mark of Making Human - Artisan's Intuition
+                if (character.hasRacialTrait("Artisan’s Intuition") && is_tool)
                     roll_properties.modifier += "+1d4";
                 return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
             }
