@@ -7,11 +7,6 @@
     padding: 0px 5px;
 }
 
-/* Styling for Roll Damage Result Rows, applies to single-damage attacks and spells */
-.beyond20-roll-damage {
-    border-radius: 3px;
-}
-
 .beyond20-total-damage {
     font-size: 1.05em;
     font-weight: bold;
