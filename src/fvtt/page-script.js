@@ -413,7 +413,7 @@ function updateHP(name, current, total, temp) {
 
     const tokens = canvas.tokens.placeables.filter((t) => t.owner && t.name.toLowerCase().trim() == name);
 
-    const dnd5e_data = { "data.attributes.hp.value": current, "data.attributes.hp.temp": temp, "data.attributes.hp.max": total, "data.attributes.hp.tempmax": temp }
+    const dnd5e_data = { "data.attributes.hp.value": current, "data.attributes.hp.temp": temp, "data.attributes.hp.max": total }
     const sws_data = { "data.health.value": current + temp, "data.health.max": total }
     if (tokens.length == 0) {
         const actor = game.actors.entities.find((a) => a.owner && a.name.toLowerCase() == name);
