@@ -264,7 +264,7 @@ class Beyond20RollRenderer {
 
             play_sound = true;
             roll_name = roll_name[0].toUpperCase() + roll_name.slice(1) + ": ";
-            let dmg_classes = "beyond20-roll-result";
+            let dmg_classes = "beyond20-roll-result beyond20-roll-damage";
             if (flags & DAMAGE_FLAGS.CRITICAL) dmg_classes += " beyond20-critical-damage";
             if (flags & DAMAGE_FLAGS.HEALING) dmg_classes += " beyond20-healing";
             html += `<div class='${dmg_classes}'><b>${roll_name}</b>${roll_html}</div>`;

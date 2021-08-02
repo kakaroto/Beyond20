@@ -7,33 +7,40 @@
     padding: 0px 5px;
 }
 
-/* Styling for last Roll Result Rows, applies to single-damage attacks and spells */
-.beyond20-roll-result:last-child {
-    font-size: 1.2em;
-    font-weight: bold;
-    line-height: 24px;
-    margin-bottom: 3px;
-}
-
 .beyond20-total-damage {
-    font-size: 1.2em;
+    font-size: 1.05em;
     font-weight: bold;
     border-radius: 3px;
     line-height: 24px;
     text-align: center;
-    background: rgb(120 120 120 / 20%);
-    border: 1px solid rgb(132 5 5);
-    box-shadow: 0 0 2px #690000c2 inset;
+    box-shadow: rgb(255, 255, 255) 0px 0px 2px inset;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid #999;
     margin-bottom: 3px;
+}
+
+.beyond20-critical-damage {
+    border-left: 2px solid #9c3940;
+	padding-left: 3px;
+}
+
+.beyond20-total-damage.beyond20-critical-damage {
+    border: 1px solid #9c3940;
+    border-radius: 3px;
+    margin-bottom: 2px;
+    box-shadow: rgb(208 53 53) 0px 0px 2px inset;
+	padding: 0px 5px;
 }
 
 .beyond20-healing {
-    font-size: 1.2em;
+    font-size: 1.05em;
+    font-weight: bold;
     border-radius: 3px;
     line-height: 24px;
     text-align: center;
-    background: rgb(120 120 120 / 20%);
+    margin-bottom: 3px;
     border: 1px solid rgb(0 125 10);
+    background: rgb(40 255 0 / 10%);
     box-shadow: 0 0 2px #0b6900c2 inset;
 }
 
@@ -50,7 +57,7 @@
 
 .beyond20-message {
     /* font-size: 12px; */
-    font-family: Signika, sans-serif;
+    font-family: "Signika", sans-serif;
 }
 
 .beyond20-message details summary,
@@ -106,7 +113,7 @@
     box-shadow: 0 0 2px #fff inset;
     font-size: 20px;
     font-weight: bold;
-    font-family: Signika, sans-serif;
+    font-family: "Signika", sans-serif;
 }
 
 .beyond20-dice-roller-content .beyond20-roll-dice-formula {
