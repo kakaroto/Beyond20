@@ -23,7 +23,7 @@ async function rollSkillCheck(paneClass) {
     
     if (ability == "--" && character._abilities.length > 0) {
         let prof = "";
-        let prof_val = "";
+        let prof_val = 0;
         if (proficiency == "Proficiency") {
             prof = "proficiency";
             prof_val = parseInt(character._proficiency);
