@@ -561,6 +561,16 @@ class Beyond20RollRenderer {
                 const spirit_shroud_type = await this.queryDamageType(request.name, damage_choices);
                 damages.splice(0, 0, damage_choices[spirit_shroud_type]);
                 damage_types.splice(0, 0, spirit_shroud_type);
+            } else if (request.name === "Destructive Wave") {
+                const damage_choices = {}
+                for (let dmgtype of ["Radiant", "Necrotic"]) {
+                    let idx = damage_types.findIndex(t => t === dmgtype);
+                    damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
+                }
+
+                const destructive_wave_extra_type = await this.queryDamageType(request.name, damage_choices);
+                damages.splice(1, 0, damage_choices[destructive_wave_extra_type]);
+                damage_types.splice(1, 0, destructive_wave_extra_type);
             }
 
             const has_versatile = damage_types.length > 1 && damage_types[1].includes("Two-Handed");
