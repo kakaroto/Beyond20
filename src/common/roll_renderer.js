@@ -551,6 +551,26 @@ class Beyond20RollRenderer {
             } else if (request.name == "Toll the Dead") {
                 const ttd_dice = await this.queryGeneric(request.name, "Is the target missing any of its hit points ?", { "d12": "Yes", "d8": "No" }, "ttd_dice", ["d12", "d8"]);
                 damages[0] = damages[0].replace("d8", ttd_dice);
+            } else if (request.name === "Spirit Shroud") {
+                const damage_choices = {}
+                for (let dmgtype of ["Cold", "Necrotic", "Radiant"]) {
+                    let idx = damage_types.findIndex(t => t === dmgtype);
+                    damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
+                }
+
+                const spirit_shroud_type = await this.queryDamageType(request.name, damage_choices);
+                damages.splice(0, 0, damage_choices[spirit_shroud_type]);
+                damage_types.splice(0, 0, spirit_shroud_type);
+            } else if (request.name === "Destructive Wave") {
+                const damage_choices = {}
+                for (let dmgtype of ["Radiant", "Necrotic"]) {
+                    let idx = damage_types.findIndex(t => t === dmgtype);
+                    damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
+                }
+
+                const destructive_wave_extra_type = await this.queryDamageType(request.name, damage_choices);
+                damages.splice(1, 0, damage_choices[destructive_wave_extra_type]);
+                damage_types.splice(1, 0, destructive_wave_extra_type);
             }
 
             const has_versatile = damage_types.length > 1 && damage_types[1].includes("Two-Handed");
