@@ -64,11 +64,22 @@ async function rollSkillCheck(paneClass) {
         "modifier": modifier,
         "proficiency": proficiency
     }
+    const adjustments = $(`.${paneClass}__dice-adjustments`);
+    let query = "";
+    let hasRestriction = false;
+    for (const adj of adjustments.find(".ct-dice-adjustment-summary").toArray()) {
+        const adv =  $(adj).find(".ddbc-advantage-icon").length > 0;
+        const restriction = $(adj).find(".ct-dice-adjustment-summary__restriction").text();
+        const origin = $(adj).find(".ct-dice-adjustment-summary__data-origin").text();
+        query += `${query ? "\n" : ""}${adv ? "Advantage: " : "Disadvantage : "} ${restriction} ${origin}`;
+        hasRestriction |= !!restriction;
+    }
+    roll_properties["advantage-query"] = query;
     if(character.getGlobalSetting("roll-type", RollType.NORMAL) != RollType.QUERY) {
-        const skill_badge_adv = $("." + paneClass + "__dice-adjustments .ddbc-advantage-icon").length > 0;
-        const skill_badge_disadv = $("." + paneClass + "__dice-adjustments .ddbc-disadvantage-icon").length > 0;
+        const skill_badge_adv =  adjustments.find(".ddbc-advantage-icon").length > 0;
+        const skill_badge_disadv = adjustments.find(".ddbc-disadvantage-icon").length > 0;
 
-        if (skill_badge_adv && skill_badge_disadv) {
+        if (hasRestriction || (skill_badge_adv && skill_badge_disadv)) {
             roll_properties["advantage"] = RollType.QUERY;
         } else if (skill_badge_adv) {
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;

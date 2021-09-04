@@ -281,10 +281,12 @@ async function sendRoll(character, rollType, fallback, args) {
             req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d12";
     }
         
-    if (req.whisper === WhisperType.QUERY)
+    if (req.whisper === WhisperType.QUERY) {
         req.whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
-    if (req.advantage === RollType.QUERY)
-        req.advantage = await dndbeyondDiceRoller.queryAdvantage(args.name || rollType);
+    }
+    if (req.advantage === RollType.QUERY) {
+        req.advantage = await dndbeyondDiceRoller.queryAdvantage(args.name || rollType, req["advantage-query"]);
+    }
     if (req["to-hit"] && character.getGlobalSetting("weapon-force-critical", false) || key_modifiers.force_critical) {
         req["critical-limit"] = 1;
         req["rollCritical"] = true;

@@ -34,8 +34,12 @@ class Beyond20RollRenderer {
         } catch (err) {}
     }
 
-    async queryGeneric(title, question, choices, select_id = "generic-query", order, selection) {
-        let html = `<form><div class="beyond20-form-row"><label>${question}</label><select id="${select_id}" name="${select_id}">`;
+    async queryGeneric(title, question, choices, select_id = "generic-query", order, selection, {prefix=""}={}) {
+        let html = "<form>";
+        if (prefix) {
+            html += `<div class="beyond20-query-prefix">${prefix}</div>`;
+        }
+        html += `<div class="beyond20-form-row"><label>${question}</label><select id="${select_id}" name="${select_id}">`;
 
         if (!order)
             order = Object.keys(choices);
@@ -53,7 +57,7 @@ class Beyond20RollRenderer {
         });
     }
 
-    async queryAdvantage(title) {
+    async queryAdvantage(title, reason="") {
         const choices = {
             [RollType.NORMAL]: "Normal Roll",
             [RollType.DOUBLE]: "Roll Twice",
@@ -65,7 +69,8 @@ class Beyond20RollRenderer {
         }
         const order = [RollType.NORMAL, RollType.ADVANTAGE, RollType.DISADVANTAGE, RollType.DOUBLE, RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE];
         const lastQuery = this._settings["last-advantage-query"];
-        const advantage = parseInt(await this.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order, lastQuery));
+        reason = reason.split("\n").join("<br/>");
+        const advantage = parseInt(await this.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order, lastQuery, {prefix: reason}));
         if (lastQuery != advantage) {
             this._mergeSettings({ "last-advantage-query": advantage })
         }

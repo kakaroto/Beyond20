@@ -230,6 +230,10 @@ span.dice-roll.beyond20-tooltip-content {
     font-weight: normal;
 }
 
+.beyond20-query-prefix {
+    padding: 5px;
+}
+
 .beyond20-form-row {
     display: flex;
     flex-direction: row;
