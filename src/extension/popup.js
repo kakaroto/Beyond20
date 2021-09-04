@@ -74,10 +74,10 @@ function setupHTML() {
 }
 
 function populateCharacter(response) {
+    const options = $(".beyond20-options");
     character = response;
     if (response) {
         console.log("Received character: ", response);
-        const options = $(".beyond20-options");
         options.append(
             E.li({
                 class: "list-group-item beyond20-option",
@@ -271,11 +271,22 @@ function populateCharacter(response) {
             options.append(e);
         }
 
-        loadSettings(response.settings, character_settings);
     }
     $('.beyond20-option-input').off('change', save_settings);
     $('.beyond20-option-input').change(save_settings);
-    initializeSettings(gotSettings);
+    initializeSettings(s => {
+        gotSettings(s);
+
+        if (response) {
+            e = createHTMLOption("discord-target", false, character_settings);
+            options.append(e);
+
+            // Load character specific setttings after global settings in case
+            // an option (like discord-target) needs the global variable `settings`
+            // to be pre-populated
+            loadSettings(response.settings, character_settings);
+        }
+    });
 }
 
 function addMonsterOptions() {

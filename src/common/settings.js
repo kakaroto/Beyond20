@@ -660,7 +660,13 @@ const character_settings = {
         "description": "The luck of your people guides your steps",
         "type": "bool",
         "default": true
-    }
+    },
+    "discord-target": {
+        "title": "Discord Destination",
+        "description": "Send rolls to a character specific Discord channel",
+        "type": "special",
+        "default": null
+    },
 }
 
 
@@ -1129,7 +1135,7 @@ function createDiscordChannelsCombobox(name, description, title, dropdown_option
         p.classList.add("select");
 
     return E.li({
-        id: "beyond20-option-discord-channels",
+        id: `beyond20-option-${name}`,
         class: "list-group-item beyond20-option beyond20-option-combobox"
     },
         E.label({ class: "list-content", for: name },
@@ -1144,12 +1150,13 @@ function createDiscordChannelsCombobox(name, description, title, dropdown_option
         )
     );
 }
+
 function createDiscordChannelsSetting(name, short) {
     const opt = options_list[name];
     const dropdowns = [{ name: "Do not send to Discord", active: true, secret: "" }]
     return createDiscordChannelsCombobox(name, opt.description, opt.title, dropdowns);
-
 }
+
 function setDiscordChannelsSetting(name, settings) {
     let val = settings[name];
     const dropdowns = [{ name: "Do not send to Discord", active: false, secret: "" }]
@@ -1165,12 +1172,12 @@ function setDiscordChannelsSetting(name, settings) {
     console.log("Added new options", dropdowns);
     fillDisordChannelsDropdown(name, dropdowns);
 }
-function fillDisordChannelsDropdown(name, dropdowns, triggerChange=false) {
-    const settings_line = $("#beyond20-option-discord-channels");
+function fillDisordChannelsDropdown(name, dropdowns, triggerChange=false, _list = options_list) {
+    const settings_line = $(`#beyond20-option-${name}`);
     if (settings_line.length == 0) return;
-    const opt = options_list[name];
+    const opt = _list[name];
     settings_line.replaceWith(createDiscordChannelsCombobox(name, opt.description, opt.title, dropdowns));
-    const markaGroup = $("#beyond20-option-discord-channels")
+    const markaGroup = $(`#beyond20-option-${name}`)
     const dropdown_menu = $(markaGroup).find(".dropdown-menu");
     const button_group = $(markaGroup).find(".button-group");
     const input = $(markaGroup).find('.input');
@@ -1180,7 +1187,7 @@ function fillDisordChannelsDropdown(name, dropdowns, triggerChange=false) {
     input.text(active.name);
     input.attr("data-secret", active.secret.slice(0, 12));
 
-    $("#beyond20-option-discord-channels li").off('click').click(ev => {
+    $(`#beyond20-option-${name} li`).off('click').click(ev => {
         ev.stopPropagation();
         ev.preventDefault()
         const li = ev.currentTarget;
@@ -1194,9 +1201,9 @@ function fillDisordChannelsDropdown(name, dropdowns, triggerChange=false) {
         button_group.removeClass('open');
         m.set('triangle').size(10);
         dropdowns.forEach(d => d.active = (d.name === li.textContent && d.secret === secret))
-        fillDisordChannelsDropdown(name, dropdowns, true);
+        fillDisordChannelsDropdown(name, dropdowns, true, _list);
     });
-    $("#beyond20-option-discord-channels li[data-action=add]").off('click').click(ev => {
+    $(`#beyond20-option-${name} li[data-action=add]`).off('click').click(ev => {
         ev.stopPropagation();
         ev.preventDefault()
 
@@ -1209,12 +1216,12 @@ function fillDisordChannelsDropdown(name, dropdowns, triggerChange=false) {
                 alertify.prompt('Enter the secret value given by the Beyond20 Bot', '', (evt, channelSecret) => {
                     console.log("Adding new channel ", channelName, channelSecret);
                     dropdowns.splice(1, 0, {name: channelName, secret: channelSecret});
-                    fillDisordChannelsDropdown(name, dropdowns, true);
+                    fillDisordChannelsDropdown(name, dropdowns, true, _list);
                 });
             }, 100);
         });
     });
-    $("#beyond20-option-discord-channels li[data-action=delete]").off('click').click(ev => {
+    $(`#beyond20-option-${name} li[data-action=delete]`).off('click').click(ev => {
         ev.stopPropagation();
         ev.preventDefault();
         console.log("DELETE");
@@ -1225,7 +1232,7 @@ function fillDisordChannelsDropdown(name, dropdowns, triggerChange=false) {
         if (toDelete > 0) {
             dropdowns.splice(toDelete, 1);
             dropdowns[0].active = true;
-            fillDisordChannelsDropdown(name, dropdowns, true);
+            fillDisordChannelsDropdown(name, dropdowns, true, _list);
         }
     });
     if (triggerChange)
@@ -1251,11 +1258,34 @@ function getDiscordChannelsSetting(name) {
     return channels;
 }
 
+function createDiscordTargetSetting(name, short) {
+    const opt = character_settings[name];
+    const dropdowns = [{ name: "Send to default target", active: true, secret: "" }]
+    return createDiscordChannelsCombobox(name, opt.description, opt.title, dropdowns);
+}
+
+function setDiscordTargetSetting(name, charSettings) {
+    let val = charSettings[name];
+    const dropdowns = [{ name: "Send to default target", active: false, secret: "" }]
+    const channels = settings['discord-channels'] || []; // get settings from the global variable
+    dropdowns.push(...channels)
+    const selected = dropdowns.find(c => c.secret.slice(0, 12) === val);
+    if (selected) selected.active = true;
+    else dropdowns[0].active = true;
+
+    fillDisordChannelsDropdown(name, dropdowns, false, character_settings);
+}
+
+function getDiscordTargetSetting(name) {
+    return $(`#${name}`).attr("data-secret");
+}
+
 function getDiscordChannel(settings, character) {
     const channels = (settings["discord-channels"] || [])
     if (typeof (channels) === "string")
         return channels;
-    return channels.find(c => c.active);
+    const target = character && character.settings && character.settings["discord-target"] || null;
+    return channels.find(c => target ? c.secret.slice(0, 12) === target : c.active);
 }
 
 let key_bindings = {
@@ -1509,3 +1539,6 @@ options_list["discord-channels"]["get"] = getDiscordChannelsSetting;
 options_list["hotkeys-bindings"]["createHTMLElement"] = createHotkeysSetting;
 options_list["hotkeys-bindings"]["set"] = setHotkeysSetting;
 options_list["hotkeys-bindings"]["get"] = getHotkeysSetting;
+character_settings["discord-target"]["createHTMLElement"] = createDiscordTargetSetting;
+character_settings["discord-target"]["set"] = setDiscordTargetSetting;
+character_settings["discord-target"]["get"] = getDiscordTargetSetting;
