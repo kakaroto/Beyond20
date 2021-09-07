@@ -4,6 +4,7 @@ var settings = getDefaultSettings();
 var character = null;
 
 function documentLoaded(settings) {
+    cleanupAlertifyComments();
     character = new Monster("Monster", null, settings);
     // We reloaded the extension ? reload the page too...;
     if (isRollButtonAdded()) {

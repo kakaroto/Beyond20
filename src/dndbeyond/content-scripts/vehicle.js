@@ -5,6 +5,7 @@ var character = null;
 
 
 function documentLoaded(settings) {
+    cleanupAlertifyComments();
     character = new Monster("Vehicle", null, settings);
     // We reloaded the extension !== undefined reload the page too...;
     if (isRollButtonAdded())

@@ -27,6 +27,7 @@ function addDisplayButton() {
 }
 
 function documentLoaded(settings) {
+    cleanupAlertifyComments();
     character = new SpellCharacter(settings);
     if (isRollButtonAdded()) {
         chrome.runtime.sendMessage({ "action": "reload-me" });

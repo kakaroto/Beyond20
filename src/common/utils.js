@@ -150,6 +150,16 @@ function reMatchAll(regexp, string) {
     return matches;
 }
 
+/**
+ * Some users somehow inject html into their comments which include alertify classes
+ * which can negatively impact how the page renders. We should remove those in order
+ * to clean up the page
+ */
+function cleanupAlertifyComments() {
+    const comments = $(".listing-comments");
+    comments.find(".alertify, .alertify-notifier").remove();
+}
+
 E = new Proxy({}, {
     get: function (obj, name) {
         return new Proxy(function () {}, {
