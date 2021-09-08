@@ -1993,6 +1993,16 @@ function injectRollButton(paneClass) {
         for (const group of proficiencies.toArray()) {
             addRollButton(character, () => displayProficiencies(group), group, { small: true, prepend: true, image: false });
         }
+    } else if (paneClass == "ct-character-manage-pane") {
+        const avatar = $(".ct-character-manage-pane .ct-character-manage-pane__summary-avatar");
+        const char_name = $(".ct-character-manage-pane .ct-character-manage-pane__summary-description .ddbc-character-name").text().trim();
+        let avatar_link = avatar.css('background-image');
+        if (avatar_link && avatar_link.startsWith("url("))
+            avatar_link = avatar_link.slice(5, -2);
+        if (!avatar_link || isRollButtonAdded())
+            return;
+        const button = addDisplayButton(() => sendRoll(character, "avatar", avatar_link, { "name": char_name }), avatar, { small: true, append: false, image: false });
+        $(button).css({"text-align": "center"});
     } else {
         removeRollButtons(pane);
     }

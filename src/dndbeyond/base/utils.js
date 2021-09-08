@@ -414,12 +414,13 @@ function addDisplayButton(callback, where, { text = "Display in VTT", append = t
     else
         $(where).after(button);
 
-    $(".ct-beyond20-roll-button").css({
+    $(".ct-beyond20-roll-display").css({
         "margin-left": "auto",
         "margin-right": "auto"
     });
     $(".ct-beyond20-roll-display").css("margin-top", "2px");
     $(".ct-beyond20-roll-display").on('click', (event) => callback());
+    return button;
 }
 
 function addHitDieButtons(rollCallback) {
