@@ -457,14 +457,16 @@ class Monster extends CharacterBase {
         // Parse Vehicle (boats) weapons;
         blocks = stat_block.find(this._base + "__component-block");
         for (let block of blocks.toArray()) {
-            const action_name = $(block).find(this._base + "__component-block-heading").text();
-            const attributes = $(block).find(this._base + "__component-block-content " + this._base + "__attribute-value");
-            for (let action of attributes.toArray()) {
-                const description = $(action).text();
-                // HACK: Skip ship movement to  avoid having a "-5 ft speed per 25 damage taken" inject dice rolls on '-5';
-                if (description.match(/-\d+ ft. speed/))
+            const action_name = $(block).find(this._base + "__component-block-heading").text().trim();
+            const attributes = $(block).find(this._base + "__component-block-content " + this._base + "__attribute");
+            for (const attribute of attributes.toArray()) {
+                const label = $(attribute).find(`${this._base}__attribute-label`).text().trim();
+                const description = $(attribute).find(`${this._base}__attribute-value`).text().trim();
+                // Skip all attributes and only handle action on the action's desription paragraph with no label
+                // Some vehicles will also have empty attributes with no label and no value
+                if (label || !description)
                     continue;
-                handleAction(action_name, block, action);
+                handleAction(action_name, block, attribute);
             }
         }
 
