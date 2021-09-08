@@ -42,6 +42,21 @@ function documentLoaded(settings) {
             injectDiceToRolls(".primary-content", character, (node) => {
                 return nearestHeading(node, source_name);
             });
+            const read_aloud = $(".read-aloud-text,.adventure-read-aloud-text");
+            for (const aside of read_aloud.toArray()) {
+                const id = addRollButton(character, () => {
+                    sendRoll(character, "chat-message", 0, {
+                        name: source_name,
+                        message: $(aside).text().trim()
+                    });
+                }, aside, { small: true, image: false, before: true, text: "Display in VTT"});
+                // Display the button on top of the read aloud text
+                $(`#${id}`).css({
+                    "position": "absolute",
+                    "z-index": "1",
+                    "right": "0",
+                });
+            }
         }
     }
 }
@@ -70,6 +85,7 @@ function handleMessage(request, sender, sendResponse) {
     }
 }
 
+injectCSS(BUTTON_STYLE_CSS);
 chrome.runtime.onMessage.addListener(handleMessage);
 chrome.runtime.sendMessage({ "action": "activate-icon" });
 updateSettings();
