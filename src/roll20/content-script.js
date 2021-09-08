@@ -316,6 +316,7 @@ function rollItem(request) {
 
 function rollTrait(request) {
     let source = request.type;
+    let name = request.name;
     if (request["source-type"] !== undefined) {
         source = request["source-type"];
         if (request.source && request.source.length > 0)
@@ -323,9 +324,12 @@ function rollTrait(request) {
     } else if (request["item-type"] !== undefined) {
         source = request["item-type"];
     }
+    if (request.quantity) {
+        name = `${request.name} (${request.quantity})`;
+    }
     return template(request, "traits", {
         "charname": request.character.name,
-        "name": request.name,
+        "name": name,
         "source": source,
         "description": subDescriptionRolls(request, request.description)
     });

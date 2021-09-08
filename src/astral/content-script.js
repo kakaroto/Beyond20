@@ -98,6 +98,7 @@ function rollItem(request) {
 
 function rollTrait(request) {
     let source = request.type;
+    let name = request.name;
     if (request["source-type"] !== undefined) {
         source = request["source-type"];
         if (request.source && request.source.length > 0)
@@ -105,9 +106,12 @@ function rollTrait(request) {
     } else if (request["item-type"] !== undefined) {
         source = request["item-type"];
     }
+    if (request.quantity) {
+        name = `${request.name} (${request.quantity})`;
+    }
 
     return {
-        title: request.name,
+        title: name,
         message: `_**Source:** ${source}_
 
 ${ parseDescription(request, request.description)}

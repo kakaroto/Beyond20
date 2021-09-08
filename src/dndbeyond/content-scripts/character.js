@@ -722,6 +722,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
     const is_tool = isItemATool(item_name, source);
     const is_instrument = isItemAnInstruction(item_name, item_tags);
     const description = descriptionToString(".ct-item-detail__description");
+    const quantity = $(".ct-item-pane .ct-simple-quantity .ct-simple-quantity__value .ct-simple-quantity__input").val();
     if (!force_display && Object.keys(properties).includes("Damage")) {
         const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
         let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
@@ -883,6 +884,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             {weapon_damage_length});
         roll_properties["item-type"] = item_type;
         roll_properties["item-customizations"] = item_customizations;
+        if (quantity) roll_properties["quantity"] = parseInt(quantity);
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
         const custom_critical_limit = parseInt(character.getSetting("custom-critical-limit", ""))
@@ -980,7 +982,8 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             "name": item_name,
             "description": description,
             "item-type": item_type,
-            "tags": item_tags
+            "tags": item_tags,
+            "quantity": quantity ? parseInt(quantity) : undefined
         });
     }
 }

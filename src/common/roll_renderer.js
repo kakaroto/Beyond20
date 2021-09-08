@@ -469,6 +469,7 @@ class Beyond20RollRenderer {
 
     rollTrait(request) {
         let source = request.type;
+        let name = request.name;
         if (request["source-type"] !== undefined) {
             source = request["source-type"];
             if (request.source && request.source.length > 0)
@@ -476,7 +477,10 @@ class Beyond20RollRenderer {
         } else if (request["item-type"] !== undefined) {
             source = request["item-type"];
         }
-        return this.postDescription(request, request.name, source, {}, request.description, [], [], [], true);
+        if (request.quantity) {
+            name = `${request.name} (${request.quantity})`;
+        }
+        return this.postDescription(request, name, source, {}, request.description, [], [], [], true);
     }
 
     queryDamageType(title, damage_types) {
