@@ -2235,7 +2235,7 @@ function deactivateQuickRolls() {
     let abilities = $(".ddbc-ability-summary .ddbc-ability-summary__primary .integrated-dice__container");
     // If digital dice are disabled, look up where the modifier is
     if (abilities.length === 0)
-        abilities = $(".ddbc-ability-summary .ddbc-ability-summary__secondary .ddbc-signed-number, .ddbc-ability-summary .ddbc-ability-summary__primary .ddbc-signed-number");
+        abilities = $(".ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary .ddbc-signed-number, .ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__primary .ddbc-signed-number");
     const saving_throws = $(".ct-saving-throws-summary__ability .ct-saving-throws-summary__ability-modifier,.ddbc-saving-throws-summary__ability .ddbc-saving-throws-summary__ability-modifier");
     const skills = $(".ct-skills .ct-skills__list .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__list .ddbc-skills__col--modifier");
     const actions = $(".ct-combat-attack .ct-combat-attack__icon,.ddbc-combat-attack .ddbc-combat-attack__icon");
