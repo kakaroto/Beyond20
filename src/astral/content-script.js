@@ -100,7 +100,7 @@ function rollTrait(request) {
     let source = request.type;
     if (request["source-type"] !== undefined) {
         source = request["source-type"];
-        if (request.source.length > 0)
+        if (request.source && request.source.length > 0)
             source += ": " + request.source;
     } else if (request["item-type"] !== undefined) {
         source = request["item-type"];

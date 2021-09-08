@@ -1561,7 +1561,7 @@ function displayBackground() {
     const description = descriptionToString(".ct-background-pane__description > p");
     return sendRollWithCharacter("trait", 0, {
         name: background,
-        source: "Bakground",
+        source: "Background",
         description: description
     });
 }
@@ -1582,6 +1582,15 @@ function displayInfusion() {
         "name": infusion,
         "description": description,
         "item-type": "Infusion",
+    });
+}
+function displayProficiencies(group) {
+    const label = $(group).find(".ct-proficiency-groups__group-label").text().trim();
+    const proficiencies = $(group).find(".ct-proficiency-groups__group-items").text().trim();
+    return sendRollWithCharacter("trait", 0, {
+        "name": label,
+        "source-type": "Proficiency",
+        "description": proficiencies
     });
 }
 
@@ -1961,6 +1970,13 @@ function injectRollButton(paneClass) {
 
         character.updateConditions(conditions, exhaustion_level);
         removeRollButtons(pane);
+    } else if (paneClass == "ct-proficiencies-pane") {
+        const proficiencies = $(".ct-proficiencies-pane .ct-proficiency-groups .ct-proficiency-groups__group");
+        if (isRollButtonAdded())
+            return;
+        for (const group of proficiencies.toArray()) {
+            addRollButton(character, () => displayProficiencies(group), group, { small: true, prepend: true, image: false });
+        }
     } else {
         removeRollButtons(pane);
     }
