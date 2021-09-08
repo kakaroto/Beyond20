@@ -192,6 +192,7 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
     const ability = ability_abbreviations[ability_name];
     let modifier = $("." + paneClass + "__modifier .ct-signed-number,." + paneClass + "__modifier .ddbc-signed-number").text();
 
+
     if (rollType == "ability") {
         // Remarkable Athelete and Jack of All Trades don't stack, we give priority to RA instead of JoaT because
         // it's rounded up instead of rounded down.
@@ -211,6 +212,12 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
         "name": ability_name,
         "ability": ability,
         "modifier": modifier
+    }
+
+    if (rollType === "saving-throw") {
+        const proficiency = $(`.ddbc-saving-throws-summary__ability--${ability.toLowerCase()}
+                                .ddbc-saving-throws-summary__ability-proficiency .ddbc-tooltip`).attr("data-original-title");
+        roll_properties["proficiency"] = proficiency;
     }
 
     if (ability == "STR" &&
