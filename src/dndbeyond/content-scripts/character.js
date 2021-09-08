@@ -1890,12 +1890,13 @@ function injectRollButton(paneClass) {
                     const to_hit = m[1];
                     const dmg = m[2];
                     //console.log("Match for ", size, " : ", to_hit, dmg);
+                    const sizeStr = size.text().trim();
 
                     const id = addRollButton(character, () => {
                         const props = buildAttackRoll(character,
                             "action",
-                            spell_name + "(" + size + ")",
-                            size + " animated object",
+                            spell_name + "(" + sizeStr + ")",
+                            sizeStr + " animated object",
                             {},
                             [dmg],
                             ["Bludgeoning"], to_hit);
