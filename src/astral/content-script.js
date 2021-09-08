@@ -87,7 +87,7 @@ function rollDeathSave(request, custom_roll_dice = "") {
     return {
         title: "Death Saving Throw",
         message:  template([
-            ["Normal", generateRoll(request.d20 || "1d20", [custom_roll_dice])]
+            ["Normal", generateRoll(request.d20 || "1d20", [request.modifier, custom_roll_dice])]
         ])
     }
 }

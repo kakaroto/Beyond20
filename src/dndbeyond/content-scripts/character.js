@@ -1937,7 +1937,20 @@ function injectRollButton(paneClass) {
             }
             
             addIconButton(character, () => {
-                sendRollWithCharacter("death-save", "1d20", { "advantage": deathSaveRollType })
+                const adjustments = $(".ct-saving-throws-box__info .ct-dice-adjustment-summary");
+                let modifier = "";
+                for (const adjustment of adjustments.toArray()) {
+                    const desc = $(adjustment).find(".ct-dice-adjustment-summary__description").text().trim();
+                    if (desc !== "on saves") continue;
+                    const pos = $(adjustment).find(".ddbc-bonus-positive-svg").length > 0;
+                    const amount = parseInt($(adjustment).find(".ct-dice-adjustment-summary__value").text().trim()) || 0;
+                    if (!amount) continue;
+                    modifier += `${pos ? "+" : "-"} ${amount} `;
+                }
+                sendRollWithCharacter("death-save", "1d20" + modifier, {
+                    "modifier": modifier,
+                    "advantage": deathSaveRollType
+                })
             }, ".ct-health-manager__deathsaves-group--fails", { custom: true });
         }
     } else if (paneClass == "ct-creature-pane") {

@@ -304,8 +304,8 @@ function rollDeathSave(request, custom_roll_dice = "") {
     return template(request, "simple", {
         "charname": request.character.name,
         "rname": "Death Saving Throw",
-        "mod": format_plus_mod(custom_roll_dice),
-        "r1": genRoll(request.d20 || "1d20", { "CUSTOM": custom_roll_dice }),
+        "mod": request.modifier + format_plus_mod(custom_roll_dice),
+        "r1": genRoll(request.d20 || "1d20", { "MAGIC": request.modifier, "CUSTOM": custom_roll_dice }),
         "normal": 1
     });
 }
