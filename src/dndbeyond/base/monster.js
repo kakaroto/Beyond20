@@ -416,6 +416,36 @@ class Monster extends CharacterBase {
                             roll_properties["damages"].push(String(rage_damage));
                             roll_properties["damage-types"].push("Rage");
                         }
+                        if (roll_properties["damages"] && roll_properties["damages"].length > 0) {
+                            for (const dice of [4, 6, 8, 10, 12]) {
+                                if (key_modifiers[`custom_add_damage_d${dice}`]) {
+                                    roll_properties["damages"].push(`1d${dice}`);
+                                    roll_properties["damage-types"].push("Custom");
+                                }
+                            }
+                        }
+                        if (roll_properties["to-hit"]) {
+                            if (key_modifiers.custom_add_d4)
+                                roll_properties["to-hit"] += " + 1d4";
+                            if (key_modifiers.custom_sub_d4)
+                                roll_properties["to-hit"] += " - 1d4";
+                            if (key_modifiers.custom_add_d6)
+                                roll_properties["to-hit"] += " + 1d6";
+                            if (key_modifiers.custom_sub_d6)
+                                roll_properties["to-hit"] += " - 1d6";
+                            if (key_modifiers.custom_add_d8)
+                                roll_properties["to-hit"] += " + 1d8";
+                            if (key_modifiers.custom_sub_d8)
+                                roll_properties["to-hit"] += " - 1d8";
+                            if (key_modifiers.custom_add_d10)
+                                roll_properties["to-hit"] += " + 1d10";
+                            if (key_modifiers.custom_sub_d10)
+                                roll_properties["to-hit"] += " - 1d10";
+                            if (key_modifiers.custom_add_d12)
+                                roll_properties["to-hit"] += " + 1d12";
+                            if (key_modifiers.custom_sub_d12)
+                                roll_properties["to-hit"] += " - 1d12";
+                        }
                     
                         sendRoll(this, "attack", "1d20" + (roll_properties["to-hit"] || ""), roll_properties)
                     }, block, {small: true, before: true, image: true, text: action_name});
