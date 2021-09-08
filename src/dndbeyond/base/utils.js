@@ -284,6 +284,9 @@ async function sendRoll(character, rollType, fallback, args) {
     if (req.whisper === WhisperType.QUERY) {
         req.whisper = await dndbeyondDiceRoller.queryWhisper(args.name || rollType, is_monster);
     }
+    if (rollType === "custom") {
+        req.advantage = RollType.NORMAL;
+    }
     if (req.advantage === RollType.QUERY) {
         req.advantage = await dndbeyondDiceRoller.queryAdvantage(args.name || rollType, req["advantage-query"]);
     }
