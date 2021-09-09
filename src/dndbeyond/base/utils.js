@@ -302,7 +302,12 @@ async function sendRoll(character, rollType, fallback, args) {
     } else {
         console.log("Sending message: ", req);
         chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(character, resp));
+        sendRollRequestToDOM(req);
     }
+}
+
+function sendRollRequestToDOM(request) {
+    sendCustomEvent(request.action, [request]);
 }
 
 function isRollButtonAdded(where) {

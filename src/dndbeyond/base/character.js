@@ -192,6 +192,7 @@ class Character extends CharacterBase {
                 const req = { "action": "hp-update", "character": this.getDict() }
                 console.log("Sending message: ", req);
                 chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(this, resp));
+                sendRollRequestToDOM(req);
             }
         }
     }
@@ -215,6 +216,7 @@ class Character extends CharacterBase {
                 const req = { "action": "conditions-update", "character": this.getDict() }
                 console.log("Sending message: ", req);
                 chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(this, resp));
+                sendRollRequestToDOM(req);
             });
         }
     }

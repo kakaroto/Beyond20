@@ -597,6 +597,7 @@ class Monster extends CharacterBase {
                 const req = { "action": "hp-update", "character": this.getDict() }
                 console.log("Sending message: ", req);
                 chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(this, resp));
+                sendRollRequestToDOM(req);
             }
         }
     }

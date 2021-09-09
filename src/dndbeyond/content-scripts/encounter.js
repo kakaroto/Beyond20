@@ -50,6 +50,7 @@ function updateCombatTracker() {
     };
     console.log("Sending combat update", combat);
     chrome.runtime.sendMessage(req, resp => beyond20SendMessageFailure(character, resp));
+    sendRollRequestToDOM(req);
 }
 
 

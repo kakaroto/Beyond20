@@ -54,6 +54,7 @@ class DNDBDisplayer {
         }
         console.log("Sending message: ", req);
         chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(character, resp));
+        sendRollRequestToDOM(req);
     }
     displayError(message) {
         alertify.error(message);
