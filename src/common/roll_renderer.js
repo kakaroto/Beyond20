@@ -92,7 +92,7 @@ class Beyond20RollRenderer {
         return whisper;
     }
 
-    async getToHit(request, title, modifier = "", data = {}) {
+    async getToHit(request, title, modifier = "", data = {}, type="to-hit") {
         let advantage = request.advantage;
         if (advantage == RollType.QUERY)
             advantage = await this.queryAdvantage(title);
@@ -100,20 +100,20 @@ class Beyond20RollRenderer {
         const d20 = request.d20 || "1d20";
         let rolls = [];
         if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {
-            const roll_1 = this.createRoll(d20 + modifier, data);
-            const roll_2 = this.createRoll(d20 + modifier, data);
+            const roll_1 = this.createRoll(d20 + modifier, data, type);
+            const roll_2 = this.createRoll(d20 + modifier, data, type);
             roll_1.setCriticalFaces(20);
             roll_2.setCriticalFaces(20);
 
             rolls = [roll_1, roll_2];
         } else if ([RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE].includes(advantage)) {
-            const roll_1 = this.createRoll(d20 + modifier, data);
-            const roll_2 = this.createRoll(d20 + modifier, data);
-            const roll_3 = this.createRoll(d20 + modifier, data);
+            const roll_1 = this.createRoll(d20 + modifier, data, type);
+            const roll_2 = this.createRoll(d20 + modifier, data, type);
+            const roll_3 = this.createRoll(d20 + modifier, data, type);
 
             rolls = [roll_1, roll_2, roll_3];
         } else { // advantage == RollType.NORMAL
-            rolls.push(this.createRoll(d20 + modifier, data));
+            rolls.push(this.createRoll(d20 + modifier, data, type));
         }
         rolls.forEach(r => r.setCriticalFaces(20));
         return {advantage, rolls};
@@ -325,6 +325,7 @@ class Beyond20RollRenderer {
         for (let key in total_damages) {
             const is_total = (roll === null);
             roll = this._roller.roll(total_damages[key]);
+            roll.setRollType("damage");
             await roll.roll();
             total_damages[key] = roll;
             const roll_html = await this.rollToDetails(roll, is_total);
@@ -385,7 +386,7 @@ class Beyond20RollRenderer {
 
     }
 
-    createRoll(dice, data={}) {
+    createRoll(dice, data={}, type) {
         const new_data = {}
         const parts = [dice];
         for (let key in data) {
@@ -395,11 +396,14 @@ class Beyond20RollRenderer {
                 parts.push(new_key);
             }
         }
-        return this._roller.roll(parts.join(" + @"), new_data);
+        const roll = this._roller.roll(parts.join(" + @"), new_data);
+        if (type)
+            roll.setRollType(type);
+        return roll;
     }
 
-    async rollDice(request, title, dice, data = {}) {
-        const roll = this.createRoll(dice, data);
+    async rollDice(request, title, dice, data = {}, type) {
+        const roll = this.createRoll(dice, data, type);
         await this._roller.resolveRolls(title, [roll]);
         return this.postDescription(request, title, null, {}, null, [roll]);
     }
@@ -425,8 +429,8 @@ class Beyond20RollRenderer {
         return this.postDescription(request, `${request.name} (${request.roll})`, null, {}, null, digitalRoll.rolls);
     }
 
-    async rollD20(request, title, data, modifier="") {
-        const {advantage, rolls} = await this.getToHit(request, title, modifier, data)
+    async rollD20(request, title, data, type) {
+        const {advantage, rolls} = await this.getToHit(request, title, "", data, type)
         await this._roller.resolveRolls(title, rolls);
         this.processToHitAdvantage(advantage, rolls);
         return this.postDescription(request, title, null, {}, null, rolls);
@@ -434,33 +438,33 @@ class Beyond20RollRenderer {
 
     async rollSkill(request, custom_roll_dice = "") {
         const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-        return this.rollD20(request, request.skill + "(" + request.modifier + ")", data);
+        return this.rollD20(request, request.skill + "(" + request.modifier + ")", data, "skill-check");
     }
 
     rollAbility(request, custom_roll_dice = "") {
         const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-        return this.rollD20(request, request.name + "(" + request.modifier + ")", data);
+        return this.rollD20(request, request.name + "(" + request.modifier + ")", data, "ability-check");
     }
 
     rollSavingThrow(request, custom_roll_dice = "") {
         const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-        return this.rollD20(request, request.name + " Save" + "(" + request.modifier + ")", data);
+        return this.rollD20(request, request.name + " Save" + "(" + request.modifier + ")", data, "saving-throw");
     }
 
     rollInitiative(request, custom_roll_dice = "") {
         const data = { "initiative": request.initiative, "custom_dice": custom_roll_dice }
-        return this.rollD20(request, "Initiative" + "(" + request.initiative + ")", data);
+        return this.rollD20(request, "Initiative" + "(" + request.initiative + ")", data, "initiative");
     }
 
     rollHitDice(request) {
         const rname = "Hit Dice" + (request.multiclass ? `(${request.class})` : "");
-        return this.rollDice(request, rname, request["hit-dice"], {});
+        return this.rollDice(request, rname, request["hit-dice"], {}, "hit-dice");
     }
 
     rollDeathSave(request, custom_roll_dice = "") {
         const data = { "custom_dice": custom_roll_dice }
         if (request.modifier) data.modifier = request.modifier
-        return this.rollD20(request, "Death Saving Throw", data);
+        return this.rollD20(request, "Death Saving Throw", data, "death-save");
     }
 
     rollItem(request) {
@@ -587,6 +591,7 @@ class Beyond20RollRenderer {
             const has_versatile = damage_types.length > 1 && damage_types[1].includes("Two-Handed");
             for (let i = 0; i < (damages.length); i++) {
                 const roll = this._roller.roll(damages[i]);
+                roll.setRollType("damage");
                 all_rolls.push(roll);
                 const dmg_type = damage_types[i];
                 let damage_flags = DAMAGE_FLAGS.REGULAR;
@@ -647,6 +652,7 @@ class Beyond20RollRenderer {
                 const critical_damage_rolls = []
                 for (let i = 0; i < (critical_damages.length); i++) {
                     const roll = this._roller.roll(critical_damages[i]);
+                    roll.setRollType("critical-damage");
                     critical_damage_rolls.push(roll);
                     const dmg_type = critical_damage_types[i];
                     let damage_flags = DAMAGE_FLAGS.REGULAR;

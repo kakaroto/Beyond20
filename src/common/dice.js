@@ -8,6 +8,7 @@ class Beyond20BaseRoll {
         this._critical_faces = null;
         this._discarded = false;
         this._total = 0;
+        this._roll_type = "custom";
     }
 
     get formula() {
@@ -86,6 +87,9 @@ class Beyond20BaseRoll {
         }
         );
     }
+    setRollType(type) {
+        this._roll_type = type;
+    }
     toJSON() {
         return {
             "formula": this.formula,
@@ -95,6 +99,7 @@ class Beyond20BaseRoll {
             "critical-failure": this.isCriticalFail(),
             "critical-success": this.isCriticalHit(),
             "discarded": this.isDiscarded(),
+            "type": this._roll_type,
             "total": this.total
         }
     }
