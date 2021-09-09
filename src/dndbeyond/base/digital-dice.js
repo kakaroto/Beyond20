@@ -172,7 +172,10 @@ class DigitalDiceManager {
     }
     static _finishPendingRoll() {
         const [roll, resolver] = this._pendingRolls.shift()
-        roll.handleCompletedRoll().then(resolver);
+        roll.handleCompletedRoll().then(() => {
+            sendCustomEvent("MBFulfilledRoll", [roll.toJSON()]);
+            resolver();
+        });
         if (this._pendingRolls.length > 0) {
             const nextRoll = this._pendingRolls[0][0];
             this._submitRoll(nextRoll);

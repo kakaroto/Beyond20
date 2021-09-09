@@ -4,6 +4,14 @@ class DDBMessageBroker {
         this._mb = null;
         this._messageQueue = [];
         this._blockMessages = [];
+        this._characterId = (window.location.pathname.match(/\/characters\/([0-9]+)/) || [])[1];
+        this.saveMessages = false;
+    }
+    uuid() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
     }
     register() {
         if (this._mb) return;
@@ -28,7 +36,8 @@ class DDBMessageBroker {
         // Check if we unregistered
         if (!this._mb) return;
         //console.log("Received ", message);
-        this._messageQueue.push(message);
+        if (this.saveMessages)
+            this._messageQueue.push(message);
     }
     _onDispatchMessage(message) {
         //console.log("Dispatching ", message);
@@ -53,7 +62,20 @@ class DDBMessageBroker {
     postMessage(data) {
         this.register();
         if (!this._mb) return;
+        data.id = data.id || this.uuid(),
+        data.dateTime = data.dateTime || Date.now();
         data.source = data.source || "Beyond20";
+        data.persist = data.persist || false;
+        data.messageScope = data.messageScope || "gameId";
+        if (data.messageScope === "gameId") {
+            data.messageTarget = data.messageTarget || this._mb.gameId;
+        }
+        data.entityType = data.entityType || "character";
+        if (data.entityType === "character" && this._characterId) {
+            data.entityId = data.entityId || this._characterId;
+        }
+        data.gameId = data.gameId || this._mb.gameId;
+        data.userId = data.userId || this._mb.userId;
         this._mb.dispatch(data);
     }
     flush() {
