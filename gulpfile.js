@@ -125,9 +125,11 @@ const SRC_FILES = {
         "src/dndbeyond/content-scripts/source.js",
     ],
     dndbeyond_mb: [
+        "src/common/sandbox-header.js",
         "src/common/utils.js",
 		"src/dndbeyond/base/message-broker.js",
-		"src/dndbeyond/page-scripts/message-broker.js"
+		"src/dndbeyond/page-scripts/message-broker.js",
+        "src/common/sandbox-footer.js"
 	]
 }
 const CSS_FILES = ['src/extension/beyond20.css']
