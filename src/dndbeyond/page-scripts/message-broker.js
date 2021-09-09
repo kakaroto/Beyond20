@@ -114,6 +114,7 @@ function fulfilledRoll(rollData) {
 function disconnectAllEvents() {
     for (let event of registered_events)
         document.removeEventListener(...event);
+    messageBroker.unregister();
 }
 
 var registered_events = [];
