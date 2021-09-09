@@ -42,6 +42,7 @@
 		"dist/roll20_script.js",
 		"dist/fvtt_script.js",
 		"dist/astral_script.js",
+        "dist/dndbeyond_mb.js",
 		"popup.html",
 		"options.html"
 	],

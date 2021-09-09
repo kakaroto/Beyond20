@@ -5,7 +5,6 @@ class DDBMessageBroker {
         this._messageQueue = [];
     }
     register() {
-        // FIXME: This needs to run from the page script context
         if (this._mb) return;
         const key = Symbol.for('@dndbeyond/message-broker-lib')
         if (key)
@@ -15,12 +14,23 @@ class DDBMessageBroker {
         this._mbPost = this._mb.post.bind(this._mb);
         this._mb.post = this._onPostMessage.bind(this);
     }
+    unregister() {
+        if (!this._mb) return;
+        if (this._mbPost) {
+            this._mb.post = this._mbPost;
+            this._mbPost = null;
+        }
+        // We can't unsubscribe from the _onMessage
+        this._mb = null;
+    }
     _onMessage(message) {
-        console.log("Received ", message);
+        // Check if we unregistered
+        if (!this._mb) return;
+        //console.log("Received ", message);
         this._messageQueue.push(message);
     }
     _onPostMessage(message) {
-        console.log("Posting ", message);
+        //console.log("Posting ", message);
         this._mbPost(message);
     }
     getPendingMessages(type) {

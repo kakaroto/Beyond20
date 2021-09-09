@@ -123,7 +123,12 @@ const SRC_FILES = {
     dndbeyond_source: [
         ...DNDBEYOND_PAGE_DEPS,
         "src/dndbeyond/content-scripts/source.js",
-    ]
+    ],
+    dndbeyond_mb: [
+        "src/common/utils.js",
+		"src/dndbeyond/base/message-broker.js",
+		"src/dndbeyond/page-scripts/message-broker.js"
+	]
 }
 const CSS_FILES = ['src/extension/beyond20.css']
 
