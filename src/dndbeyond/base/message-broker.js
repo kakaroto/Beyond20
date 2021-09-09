@@ -93,7 +93,7 @@ class DDBMessageBroker {
         this.register();
         if (!this._mb) return;
         data.id = data.id || this.uuid(),
-        data.dateTime = data.dateTime || Date.now();
+        data.dateTime = String(data.dateTime || Date.now());
         data.source = data.source || "Beyond20";
         data.persist = data.persist || false;
         data.messageScope = data.messageScope || "gameId";

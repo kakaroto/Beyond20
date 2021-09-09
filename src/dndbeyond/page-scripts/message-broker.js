@@ -50,6 +50,20 @@ function rollToDDBRoll(roll, forceResults=false) {
             }
         }
     }
+    const rollToKind = {
+        "critical-damage": "critical hit"
+    }
+    const rollToType = {
+        "to-hit": "to hit",
+        "damage": "damage",
+        "critical-damage": "damage",
+        "skill-check": "check",
+        "ability-check": "check",
+        "initiative": "check",
+        "saving-throw": "save",
+        "death-save": "save",
+
+    }
 
     const data = {
         diceNotation: {
@@ -57,8 +71,8 @@ function rollToDDBRoll(roll, forceResults=false) {
             set: sets
         },
         diceNotationStr: roll.formula,
-        rollKind: "",
-        rollType: "roll"
+        rollKind: rollToKind[roll.type] || "",
+        rollType: rollToType[roll.type] || "roll"
     }
     // diceOperation options: 0 = sum, 1 = min, 2 = max
     // rollKind options : "" = none, advantage, disadvantage, critical hit
@@ -98,17 +112,24 @@ function pendingRoll(rollData) {
 function fulfilledRoll(rollData) {
     //console.log("fulfilled roll ", rollData);
     lastMessage = lastMessage || {data: {}};
+    const extraData = lastMessage ? {
+        context: lastMessage.data.context,
+        rollId: lastMessage.data.rollId,
+        setId: lastMessage.data.setId
+    } : {
+        setId: "8201337" // Not setting it makes it use "Basic Black" by default. Using an invalid value is better
+    }
     messageBroker.postMessage({
         persist: true,
         eventType: "dice/roll/fulfilled",
         data: {
             action: rollData.name,
-            context: lastMessage.data.context,
-            rollId: lastMessage.data.rollId,
-            rolls: rollData.rolls.map(r => rollToDDBRoll(r)),
-            setId: lastMessage.data.setId
+            rolls: rollData.rolls.map(r => rollToDDBRoll(r, true)),
+            ...extraData
         }
     });
+    // Avoid overwriting the old roll in case a roll generates multiple fulfilled rolls (critical hit)
+    lastMessage.data.rollId = messageBroker.uuid();
 }
 
 function disconnectAllEvents() {
