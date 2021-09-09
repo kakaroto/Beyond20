@@ -219,10 +219,13 @@
 /* link */ 
 .image-link {
 	position: absolute;
-    width: 120px;
+    max-width: 120px;
+    height: 100%;
     top: 50%;
     transform: translateY(-50%);
     right: 15px;
+    display: flex;
+    justify-content: center;
 }
 
 	.label-default {
@@ -257,6 +260,7 @@
 
 .link-image {
     float: right;
+    margin: auto;
 }
 .success {
     background-color: rgb(0, 200, 81);
