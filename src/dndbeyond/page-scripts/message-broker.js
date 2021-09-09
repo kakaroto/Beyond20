@@ -73,29 +73,40 @@ function rollToDDBRoll(roll) {
     }
     return data;
 }
+
+let lastMessage = null;
 function pendingRoll(rollData) {
     //console.log("rolling ", rollData);
-    messageBroker.postMessage({
-        persist: false,
-        eventType: "dice/roll/pending",
-        data: {
-            action: rollData.name,
-            rolls: rollData.rolls.map(r => rollToDDBRoll(r)),
-            setId: "8201337" // Not setting it makes it use "Basic Black" by default. Using an invalid value is better
-        }
-    });
-    messageBroker.blockMessages({type: "dice/roll/pending", once: true});
+    messageBroker.on("dice/roll/pending", (message) => {
+        lastMessage = message;
+        messageBroker.postMessage({
+            persist: false,
+            eventType: "dice/roll/pending",
+            data: {
+                action: rollData.name,
+                context: message.data.context,
+                rollId: message.data.rollId,
+                rolls: rollData.rolls.map(r => rollToDDBRoll(r)),
+                setId: message.data.setId
+            }
+        });
+        // Stop propagation
+        return false;
+    }, {once: true, send: true, recv: false});
     messageBroker.blockMessages({type: "dice/roll/fulfilled", once: true});
 }
 function fulfilledRoll(rollData) {
     //console.log("fulfilled roll ", rollData);
+    lastMessage = lastMessage || {data: {}};
     messageBroker.postMessage({
         persist: true,
         eventType: "dice/roll/fulfilled",
         data: {
             action: rollData.name,
+            context: lastMessage.data.context,
+            rollId: lastMessage.data.rollId,
             rolls: rollData.rolls.map(r => rollToDDBRoll(r)),
-            setId: "8201337" // Not setting it makes it use "Basic Black" by default.  Using an invalid value is better
+            setId: lastMessage.data.setId
         }
     });
 }

@@ -4,6 +4,7 @@ class DDBMessageBroker {
         this._mb = null;
         this._messageQueue = [];
         this._blockMessages = [];
+        this._hooks = {};
         this._characterId = (window.location.pathname.match(/\/characters\/([0-9]+)/) || [])[1];
         this.saveMessages = false;
     }
@@ -32,12 +33,39 @@ class DDBMessageBroker {
         // We can't unsubscribe from the _onMessage
         this._mb = null;
     }
+    /**
+     * Hook on events from the message broker of a particular type
+     */
+    on(event, callback, {once=false, send=true, recv=true}={}) {
+        const callbacks = this._hooks[event] || [];
+        callbacks.push({callback, once, send, recv});
+        this._hooks[event] = callbacks;
+    }
+    _dispatchHooks(eventType, message, recv) {
+        let stopPropagation = false;
+        const hooks = this._hooks[eventType] || [];
+        for (let idx = 0; idx < hooks.length; idx++) {
+            const hook = hooks[idx];
+            if (recv && !hook.recv) continue;
+            if (!recv && !hook.send) continue;
+            if (hook.once) {
+                hooks.splice(idx, 1);
+                idx--;
+            }
+            stopPropagation |= hook.callback(message) === false;
+            if (stopPropagation) break;
+        }
+        return stopPropagation;
+    }
     _onMessage(message) {
         // Check if we unregistered
         if (!this._mb) return;
         //console.log("Received ", message);
-        if (this.saveMessages)
+        if (this.saveMessages) {
             this._messageQueue.push(message);
+        }
+        if (this._dispatchHooks(message.eventType, message, true)) return;
+        this._dispatchHooks(null, message, true);
     }
     _onDispatchMessage(message) {
         //console.log("Dispatching ", message);
@@ -49,6 +77,8 @@ class DDBMessageBroker {
             //console.log("Dropped message ", message);
             return;
         }
+        if (this._dispatchHooks(message.eventType, message, false)) return;
+        if (this._dispatchHooks(null, message, false)) return;
         this._mbDispatch(message);
     }
     blockMessages(msg) {
