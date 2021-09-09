@@ -23,7 +23,7 @@ function sendRollToGameLog(request) {
 	messageBroker.postMessage(message);
 }
 
-function rollToDDBRoll(roll) {
+function rollToDDBRoll(roll, forceResults=false) {
     let constant = 0;
     let lastOperation = '+';
     const sets = [];
@@ -63,7 +63,7 @@ function rollToDDBRoll(roll) {
     // diceOperation options: 0 = sum, 1 = min, 2 = max
     // rollKind options : "" = none, advantage, disadvantage, critical hit
     // rollType options : roll, to hit, damage, heal, spell, save, check
-    if (results.length > 0) {
+    if (forceResults || results.length > 0) {
         data.result = {
             constant,
             text: roll.parts.map(p => p.total === undefined ? String(p) : String(p.total)).join(""),
