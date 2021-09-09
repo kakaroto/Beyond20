@@ -32,6 +32,11 @@ function sendRollToGameLog(request) {
 	messageBroker.postMessage(message);
 }
 
+function preventNextRoll(roll) {
+    //console.log("Preventing next roll ", roll);
+    messageBroker.blockMessages({type: "dice/roll/pending", once: true});
+    messageBroker.blockMessages({type: "dice/roll/fulfilled", once: true});
+}
 
 function disconnectAllEvents() {
     for (let event of registered_events)
@@ -41,4 +46,5 @@ function disconnectAllEvents() {
 var registered_events = [];
 registered_events.push(addCustomEventListener("rendered-roll", sendRollToGameLog));
 registered_events.push(addCustomEventListener("roll", sendRollToGameLog));
+registered_events.push(addCustomEventListener("MBPendingRoll", preventNextRoll));
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));

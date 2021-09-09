@@ -25,6 +25,12 @@ class DigitalDice {
     get rolls() {
         return this._rolls;
     }
+    toJSON() {
+        return {
+            name: this.name,
+            rolls: this.rolls.map(r => r.toJSON())
+        }
+    }
     async roll() {
         return DigitalDiceManager.rollDigitalDice(this);
     }
@@ -125,8 +131,9 @@ class DigitalDiceManager {
             dice.click()
         return amount || 0;
     }
-    static _makeRoll() {
+    static _makeRoll(roll) {
         // New DDB roll button has 2 buttons, one to roll, one to select target, so pick the first one only.
+        sendCustomEvent("MBPendingRoll", [roll.toJSON()]);
         $(".dice-toolbar__roll, .dice-toolbar.rollable button").eq(0).click();
     }
     static isEnabled() {
@@ -183,10 +190,11 @@ class DigitalDiceManager {
     static _submitRoll(roll) {
         this.clear();
         let diceRolled = 0;
-        for (let dice of roll._dice)
+        for (let dice of roll._dice) {
             diceRolled += this.rollDice(dice.amount, `d${dice.faces}`);
+        }
         if (diceRolled > 0) {
-            this._makeRoll();
+            this._makeRoll(roll);
         } else {
             this.clear();
             this._finishPendingRoll()
