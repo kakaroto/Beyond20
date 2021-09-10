@@ -414,7 +414,7 @@ class Beyond20RollRenderer {
         if (is_monster && whisper_monster != WhisperType.NO)
             whisper = whisper_monster;
         if (whisper === WhisperType.QUERY)
-            whisper = await this.queryWhisper(args.name || rollType, is_monster);
+            whisper = await this.queryWhisper(digitalRoll.name || "Custom Roll", is_monster);
         // Default advantage/whisper would get overriden if (they are part of provided args;
         const request = {
             action: "roll",
