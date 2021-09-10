@@ -1309,21 +1309,8 @@ const BINDING_NAMES = {
     force_critical: "Force Critical Hit Attack/Damage",
     versatile_one_handed: "Use Versatile Weapon One-handed",
     versatile_two_handed: "Use Versatile Weapon Two-handed",
-    custom_add_d4: "Custom modifier: + 1d4 (Bless/Guidance)",
-    custom_sub_d4: "Custom modifier: - 1d4 (Bane)",
-    custom_add_d6: "Custom modifier: + 1d6",
-    custom_sub_d6: "Custom modifier: - 1d6",
-    custom_add_d8: "Custom modifier: + 1d8",
-    custom_sub_d8: "Custom modifier: - 1d8",
-    custom_add_d10: "Custom modifier: + 1d10",
-    custom_sub_d10: "Custom modifier: - 1d10",
-    custom_add_d12: "Custom modifier: + 1d12",
-    custom_sub_d12: "Custom modifier: - 1d12",
-    custom_add_damage_d4: "Custom damage: + 1d4",
-    custom_add_damage_d6: "Custom damage: + 1d6",
-    custom_add_damage_d8: "Custom damage: + 1d8",
-    custom_add_damage_d10: "Custom damage: + 1d10",
-    custom_add_damage_d12: "Custom damage: + 1d12"
+    custom_modifier: "Custom Modifier",
+    custom_damage: "Custom Damage",
 }
 
 function configureHotKey(bindings, bindings_div, html, key) {
@@ -1348,29 +1335,39 @@ function configureHotKey(bindings, bindings_div, html, key) {
             return;
         }
         newKey = event.code;
+        let binding = bindings[key];
+        let custom_formula = "";
+        if (binding.startsWith("custom_damage")) {
+            custom_formula = binding.slice("custom_damage:".length).trim();
+            binding = "custom_damage";
+        } else if (binding.startsWith("custom_modifier")) {
+            custom_formula = binding.slice("custom_modifier:".length).trim();
+            binding = "custom_modifier";
+        }
         const newKeyName = newKey.replace(/^Key|^Digit/, "");
         const actions = $(`
             <div>
                 <div>
                     Select the action to perform when <strong>${newKeyName}</strong> is pressed :
                 </div>
-                <select>
+                <select style="margin: 5px;">
                     <option value="">None</option>
                 </select>
+                <div class="custom_formula" style="display: none">
+                    <label> Custom Formula : 
+                        <input type="text" value="${custom_formula}">
+                    </label>
+                </div>
             </div>
         `)
         const select = actions.find("select");
+        const custom_div = actions.find(".custom_formula");
         let group = $(`<optgroup label="Override Global Settings"></optgroup>`);
         select.append(group);
         for (const action in BINDING_NAMES) {
             if (!action) continue;
-            if (action === "custom_add_d4") {
-                // Switch group once we get to the custom roll modifiers
-                group = $(`<optgroup label="Apply custom roll modifier"></optgroup>`);
-                select.append(group);
-            }
             group.append($(`
-                <option value="${action}" ${bindings[key] === action ? "selected": ""}>${BINDING_NAMES[action]}</option>
+                <option value="${action}" ${binding === action ? "selected": ""}>${BINDING_NAMES[action]}</option>
             `));
         }
         group = $(`<optgroup label="Temporarily toggle Character-Specific setting"></optgroup>`)
@@ -1380,15 +1377,28 @@ function configureHotKey(bindings, bindings_div, html, key) {
             const action = `option-${name}`;
             if (option.hidden || option.type !== "bool") continue;
             group.append($(`
-                <option value="${action}" ${bindings[key] === action ? "selected": ""}>${option.title}</option>
+                <option value="${action}" ${binding === action ? "selected": ""}>${option.title}</option>
             `));
         }
+        select.on('input', ev => {
+            const value = select.val();
+            if (value.startsWith("custom_modifier") || value.startsWith("custom_damage")) {
+                custom_div.show();
+            } else {
+                custom_div.hide();
+            }
+        });
+        select.trigger('input');
         alert.empty().append(actions)
     };
     const onOK = () => {
         $window.off('keydown', null, onKeydown);
         if (!newKey) return;
         let action = alert.find("select").val() || "";
+        const custom_formula = alert.find(".custom_formula input").val() || "";
+        if (action === "custom_modifier" || action === "custom_damage") {
+            action = `${action}: ${custom_formula}`;
+        }
         html.remove();
         delete bindings[key];
         bindings[newKey] = action;
