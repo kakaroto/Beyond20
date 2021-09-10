@@ -53,7 +53,6 @@ const resetKeyModifiers = (event) => {
     updateHotkeysList();
 }
 
-
 function updateHotkeysList(popup) {
     // Ensure it runs only on pages with the hotkeys popup
     popup = popup || $(".beyond20-hotkeys-list");
@@ -72,10 +71,7 @@ function updateHotkeysList(popup) {
         if (roll_types[binding] !== undefined) {
             roll_types[binding] = key;
         } else {
-            let binding_name = BINDING_NAMES[binding] || binding;
-            if (binding_name.startsWith("option-") && character_settings[binding_name.slice("option-".length)]) {
-                binding_name = character_settings[binding_name.slice("option-".length)].title;
-            }
+            let binding_name = getHotKeyBindingName(binding);
             // Limit the text to 32 characters
             if (binding_name.length > 32)
                 binding_name = binding_name.substring(0, 31) + "…";

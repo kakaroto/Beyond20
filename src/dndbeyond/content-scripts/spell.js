@@ -42,10 +42,10 @@ function documentLoaded(settings) {
 
 function updateSettings(new_settings = null) {
     if (new_settings) {
+        settings = new_settings;
         if (character)
-            character.setGlobalSettings(new_settings);
-        if (settings['hotkeys-bindings'])
-            key_bindings = settings['hotkeys-bindings'];
+            character.setGlobalSettings(settings);
+        key_bindings = getKeyBindings(settings)
     } else {
         getStoredSettings((saved_settings) => {
             documentLoaded(saved_settings);
@@ -63,6 +63,7 @@ function handleMessage(request, sender, sendResponse) {
     }
 }
 
+var settings = getDefaultSettings();
 chrome.runtime.onMessage.addListener(handleMessage);
 chrome.runtime.sendMessage({ "action": "activate-icon" });
 updateSettings();

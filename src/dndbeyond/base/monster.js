@@ -417,34 +417,26 @@ class Monster extends CharacterBase {
                             roll_properties["damage-types"].push("Rage");
                         }
                         if (roll_properties["damages"] && roll_properties["damages"].length > 0) {
-                            for (const dice of [4, 6, 8, 10, 12]) {
-                                if (key_modifiers[`custom_add_damage_d${dice}`]) {
-                                    roll_properties["damages"].push(`1d${dice}`);
+                            for (const key in key_modifiers) {
+                                if (!key.startsWith("custom_damage:") || !key_modifiers[key]) continue;
+                                const custom_damage = key.slice("custom_damage:".length);
+                                if (custom_damage.includes(":")) {
+                                    const parts = custom_damage.split(":", 2);
+                                    roll_properties["damages"].push(parts[1].trim());
+                                    roll_properties["damage-types"].push(parts[0].trim());
+                                } else {
+                                    roll_properties["damages"].push(custom_damage.trim());
                                     roll_properties["damage-types"].push("Custom");
                                 }
                             }
                         }
                         if (roll_properties["to-hit"]) {
-                            if (key_modifiers.custom_add_d4)
-                                roll_properties["to-hit"] += " + 1d4";
-                            if (key_modifiers.custom_sub_d4)
-                                roll_properties["to-hit"] += " - 1d4";
-                            if (key_modifiers.custom_add_d6)
-                                roll_properties["to-hit"] += " + 1d6";
-                            if (key_modifiers.custom_sub_d6)
-                                roll_properties["to-hit"] += " - 1d6";
-                            if (key_modifiers.custom_add_d8)
-                                roll_properties["to-hit"] += " + 1d8";
-                            if (key_modifiers.custom_sub_d8)
-                                roll_properties["to-hit"] += " - 1d8";
-                            if (key_modifiers.custom_add_d10)
-                                roll_properties["to-hit"] += " + 1d10";
-                            if (key_modifiers.custom_sub_d10)
-                                roll_properties["to-hit"] += " - 1d10";
-                            if (key_modifiers.custom_add_d12)
-                                roll_properties["to-hit"] += " + 1d12";
-                            if (key_modifiers.custom_sub_d12)
-                                roll_properties["to-hit"] += " - 1d12";
+                            for (const key in key_modifiers) {
+                                if (!key.startsWith("custom_modifier:") || !key_modifiers[key]) continue;
+                                const modifier = key.slice("custom_modifier:".length).trim();
+                                const operator = ["+", "-"].includes(modifier[0]) ? "" : "+ "
+                                roll_properties["to-hit"] += ` ${operator}${modifier}`;
+                            }
                         }
                     
                         sendRoll(this, "attack", "1d20" + (roll_properties["to-hit"] || ""), roll_properties)

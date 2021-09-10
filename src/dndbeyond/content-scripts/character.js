@@ -704,9 +704,16 @@ function addCustomDamages(damages, damage_types) {
             }
         }
     }
-    for (const dice of [4, 6, 8, 10, 12]) {
-        if (key_modifiers[`custom_add_damage_d${dice}`]) {
-            damages.push(`1d${dice}`);
+    for (const key in key_modifiers) {
+        if (!key.startsWith("custom_damage:") || !key_modifiers[key]) continue;
+        const custom_damage = key.slice("custom_damage:".length).trim();
+        if (!custom_damage) continue;
+        if (custom_damage.includes(":")) {
+            const parts = custom_damage.split(":", 2);
+            damages.push(parts[1].trim());
+            damage_types.push(parts[0].trim());
+        } else {
+            damages.push(custom_damage.trim());
             damage_types.push("Custom");
         }
     }
@@ -2508,8 +2515,8 @@ function updateSettings(new_settings = null) {
     if (new_settings) {
         settings = new_settings;
         character.setGlobalSettings(settings);
+        key_bindings = getKeyBindings(settings)
         if (settings['hotkeys-bindings']) {
-            key_bindings = settings['hotkeys-bindings'];
             updateHotkeysList();
         }
     } else {

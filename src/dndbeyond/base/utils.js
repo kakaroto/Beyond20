@@ -259,26 +259,12 @@ async function sendRoll(character, rollType, fallback, args) {
 
     // Add custom roll modifiers from hotkeys
     if (req.character.settings && req.character.settings) {
-        if (key_modifiers.custom_add_d4)
-            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d4";
-        if (key_modifiers.custom_sub_d4)
-            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d4";
-        if (key_modifiers.custom_add_d6)
-            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d6";
-        if (key_modifiers.custom_sub_d6)
-            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d6";
-        if (key_modifiers.custom_add_d8)
-            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d8";
-        if (key_modifiers.custom_sub_d8)
-            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d8";
-        if (key_modifiers.custom_add_d10)
-            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d10";
-        if (key_modifiers.custom_sub_d10)
-            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d10";
-        if (key_modifiers.custom_add_d12)
-            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " + 1d12";
-        if (key_modifiers.custom_sub_d12)
-            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " - 1d12";
+        for (const key in key_modifiers) {
+            if (!key.startsWith("custom_modifier:") || !key_modifiers[key]) continue;
+            const modifier = key.slice("custom_modifier:".length).trim();
+            const operator = ["+", "-"].includes(modifier[0]) ? "" : "+"
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + ` ${operator}${modifier}`;
+        }
     }
         
     if (req.whisper === WhisperType.QUERY) {

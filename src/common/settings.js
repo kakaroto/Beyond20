@@ -1403,11 +1403,22 @@ function configureHotKey(bindings, bindings_div, html, key) {
     const dialog = alertify.Beyond20HotkeyConfirm('Configure Hotkey', alert[0], () => onOK(), () => onCancel());
 }
 
-function addHotKeyToUI(bindings, bindings_div, key) {
-    let binding_name = BINDING_NAMES[bindings[key]] || bindings[key];
-    if (binding_name.startsWith("option-") && character_settings[binding_name.slice("option-".length)]) {
-        binding_name = character_settings[binding_name.slice("option-".length)].title;
+function getHotKeyBindingName(key) {
+    let name = BINDING_NAMES[key] || key;
+    if (name.startsWith("option-") && character_settings[name.slice("option-".length)]) {
+        name = character_settings[name.slice("option-".length)].title;
     }
+    if (name.startsWith("custom_modifier:")) {
+        name = BINDING_NAMES["custom_modifier"] + ": " + name.slice("custom_modifier:".length);
+    }
+    if (name.startsWith("custom_damage:")) {
+        name = BINDING_NAMES["custom_damage"] + ": " + name.slice("custom_damage:".length);
+    }
+    return name;
+}
+
+function addHotKeyToUI(bindings, bindings_div, key) {
+    const binding_name = getHotKeyBindingName(bindings[key]);
     const keyName = (key || "").replace(/^Key|^Digit/, "");
     const html = $(`
         <div style="border-bottom: 1px grey solid; display: flex; justify-content: space-between;">
@@ -1516,7 +1527,7 @@ function createHotkeysSetting(name, short) {
     return setting;
 }
 function setHotkeysSetting(name, settings) {
-    let val = settings[name];
+    const val = getKeyBindings(settings);
     const button = $(`#${name}`);
     button.attr("data-bindings", JSON.stringify(val));
 }
@@ -1528,6 +1539,25 @@ function getHotkeysSetting(name) {
         // Fallback on current settings or on default
         return {...key_bindings};
     }
+}
+function getKeyBindings(settings) {
+    if (!settings['hotkeys-bindings']) return key_bindings;
+    const bindings = settings['hotkeys-bindings'];
+    
+    // Migrate < 2.5 to 2.5+ custom modifier/damage key bindings
+    for (const key in bindings) {
+        const binding = bindings[key];
+        for (const dice of [4, 6, 8, 10, 12]) {
+            if (binding === `custom_add_damage_d${dice}`) {
+                bindings[key] = `custom_damage: + 1d${dice}`;
+            } else if (binding === `custom_add_d${dice}`) {
+                bindings[key] = `custom_modifier: + 1d${dice}`;
+            } else if (binding === `custom_sub_d${dice}`) {
+                bindings[key] = `custom_modifier: - 1d${dice}`;
+            }
+        }
+    }
+    return bindings;
 }
 
 options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting;
