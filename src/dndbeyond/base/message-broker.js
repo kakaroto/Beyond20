@@ -96,15 +96,25 @@ class DDBMessageBroker {
         data.dateTime = String(data.dateTime || Date.now());
         data.source = data.source || "Beyond20";
         data.persist = data.persist || false;
-        data.messageScope = data.messageScope || "gameId";
+        const defaultScope = this._mb.gameId == '0' ? "userId" : "gameId";
+        const defaultType = this._characterId ? "character" : "user";
+        data.messageScope = data.messageScope || defaultScope;
         if (data.messageScope === "gameId") {
             data.messageTarget = data.messageTarget || this._mb.gameId;
         }
-        data.entityType = data.entityType || "character";
+        if (data.messageScope === "userId") {
+            data.messageTarget = data.messageTarget || this._mb.userId;
+        }
+        data.entityType = data.entityType || defaultType;
         if (data.entityType === "character" && this._characterId) {
             data.entityId = data.entityId || this._characterId;
         }
-        data.gameId = data.gameId || this._mb.gameId;
+        if (data.entityType === "user") {
+            data.entityId = data.entityId || this._mb.userId;
+        }
+        if (this._mb.gameId != '0') {
+            data.gameId = data.gameId || this._mb.gameId;
+        }
         data.userId = data.userId || this._mb.userId;
         this._mb.dispatch(data);
     }

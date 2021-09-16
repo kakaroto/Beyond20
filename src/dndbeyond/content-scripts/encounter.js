@@ -83,3 +83,5 @@ chrome.runtime.onMessage.addListener(handleMessage);
 const observer = new window.MutationObserver(documentModified);
 observer.observe(document, { "subtree": true, "childList": true, attributes: true, });
 chrome.runtime.sendMessage({ "action": "activate-icon" });
+sendCustomEvent("disconnect");
+injectPageScript(chrome.runtime.getURL('dist/dndbeyond_mb.js'));
