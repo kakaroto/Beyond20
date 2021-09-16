@@ -151,8 +151,8 @@ class DigitalDiceManager {
         if (!newNotification) {
             // Check if we have a pending roll and the game log is open
             // game log will cause the notifications not to appear, so we need to prevent it
-            if (this._pendingRolls.length > 0 && $(".ct-game-log-pane").length > 0) {
-                const collapse = $(".ct-sidebar__control--collapse");
+            if (this._pendingRolls.length > 0 && $(".ct-game-log-pane, .sidebar__pane-content .glc-game-log").length > 0) {
+                const collapse = $(".ct-sidebar__control--collapse, .sidebar__control:has(.sidebar__control--collaspe)");
                 // Collapse the side bar, or if it's locked, fake a click on the character name to change the sidepanel
                 if (collapse.length > 0) collapse.click();
                 else $(".ddbc-character-name").click();
