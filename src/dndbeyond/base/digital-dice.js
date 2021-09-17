@@ -5,6 +5,7 @@ class DigitalDice {
         this._dice = [];
         for (let roll of rolls) {
             for (const dice of roll.dice) {
+                // If the dice faces aren't supported by the digital dice, then do a native roll instead
                 if ([4, 6, 8, 10, 12, 20, 100].includes(dice.faces)) {
                     this._dice.push(dice);
                 } else {

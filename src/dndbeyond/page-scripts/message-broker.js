@@ -39,11 +39,13 @@ function rollToDDBRoll(roll, forceResults=false) {
                 operation = 1; // min
             else if (part.modifiers.includes("kh") || part.modifiers.includes("dl"))
                 operation = 2; // max
+            // the game log will crash if a message is posted with a dieType that isn't supported
+            const dieType = [4, 6, 8, 10, 12, 20, 100].includes(part.faces) ? `d${part.faces}` : 'd100';
             sets.push({
                 count: part.amount,
-                dieType: `d${part.faces}`,
+                dieType,
                 operation,
-                dice: part.rolls.filter(r => !r.discarded).map(r => ({dieType: `d${part.faces}`, dieValue: r.roll || 0}))
+                dice: part.rolls.filter(r => !r.discarded).map(r => ({dieType, dieValue: r.roll || 0}))
             });
             if (part.total !== undefined) {
                 results.push(part.total);
