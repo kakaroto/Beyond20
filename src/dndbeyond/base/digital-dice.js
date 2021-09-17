@@ -4,7 +4,14 @@ class DigitalDice {
         this._rolls = rolls;
         this._dice = [];
         for (let roll of rolls) {
-            this._dice.push(...roll.dice);
+            for (const dice of roll.dice) {
+                if ([4, 6, 8, 10, 12, 20, 100].includes(dice.faces)) {
+                    this._dice.push(dice);
+                } else {
+                    // It's an async method but it doesn't have any async operations, so it will be immediately resolved
+                    dice.roll();
+                }
+            }
         }
         for (let dice of this._dice) {
             // Need access to the roll Class used to create the fake Roll on reroll
