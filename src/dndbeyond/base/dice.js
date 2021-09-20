@@ -70,12 +70,19 @@ class DNDBRoller {
         return new DNDBRoll(formula, data);
     }
     async resolveRolls(name, rolls) {
+        
         if (dndbeyondDiceRoller._settings['use-digital-dice'] && DigitalDiceManager.isEnabled()) {
             const digital = new DigitalDice(name, rolls);
-            return digital.roll();
+            await digital.roll();
         } else {
-            return Promise.all(rolls.map(roll => roll.roll()))
+            await Promise.all(rolls.map(roll => roll.roll()))
         }
+        
+        const rollInfo = {
+            name,
+            rolls: rolls.map(r => r.toJSON())
+        }
+        sendCustomEvent("MBFulfilledRoll", [rollInfo]);
     }
 }
 
