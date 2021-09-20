@@ -219,13 +219,11 @@ class Beyond20RollRenderer {
     async postDescription(request, title, source, attributes, description, attack_rolls = [], roll_info = [], damage_rolls = [], open = false) {
         let play_sound = false;
 
+        let html = '<div class="beyond20-message"><div class="beyond20-header">';
         if (request.whisper == WhisperType.HIDE_NAMES) {
             description = null;
             title = "???";
-        }
-
-        let html = '<div class="beyond20-message"><div class="beyond20-header">';
-        if (request.character && request.character.avatar) {
+        } else if (request.character && request.character.avatar) {
             html += `<img class="beyond20-character-avatar" src="${request.character.avatar}" title="${title}" width="37" height="37">`;
         }
         if (description) {
