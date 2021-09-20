@@ -1,4 +1,4 @@
-2.5 (September 20th 2021)
+v2.5.0 (September 20th 2021)
 ===
 
 * **Feature**: Add support for sending the detailed roll results to the D&D Beyond Game Log
@@ -44,7 +44,7 @@
 * **Misc**: Fix the "available in chrome store" image not loading on the website
 * **Misc**: Remove Toucan sponsorhip from the website (nobody seemed particularly interested in their product 🤷‍♂️)
 
-2.4.6 (July 7th 2021)
+v2.4.6 (July 7th 2021)
 ===
 
 * **Feature**: Change the roll output's styling to look much nicer and be more in line with FVTT's own CSS styling (by [@LorduFreeman](https://github.com/LorduFreeman))

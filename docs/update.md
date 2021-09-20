@@ -25,7 +25,7 @@ Another cool feature is the ability to set a target Discord channel to send roll
 
 Finally, last but not least, I'm happy to announce the ability to send read aloud text from source books directly into the chat of your favorite VTT!
 
-This is of course only a small subset of the changes, and I recommend you check out the full [Changelog](/Changelog#v250) to see all of the new features and bugfixes that went into this release.
+This is of course only a small subset of the changes, and I recommend you check out the full [Changelog](/Changelog#v250-september-20th-2021) to see all of the new features and bugfixes that went into this release.
 
 As usual, I want to thank all of my [Patrons](https://patreon.com/kakaroto) and [ko-fi/github](/rations) supporters, and for everyone who helped make this release possible. Thank you all for your support and your love!
 
@@ -36,7 +36,8 @@ Enjoy this update, and keep rolling!
 Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
-2.5.0 (September 20th 2021)
+
+v2.5.0 (September 20th 2021)
 ===
 
 * **Feature**: Add support for sending the detailed roll results to the D&D Beyond Game Log
