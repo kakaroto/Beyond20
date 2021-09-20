@@ -1,3 +1,20 @@
+2.5.0 (September 20th 2021)
+===
+
+Hello Beyonders! We are due another major release of Beyond20 and this one packs a couple of really cool features!
+
+The feature I'm most happy about is the new integration with the D&D Beyond Game Log. This feature was coming for a long time and was complicated to get working properly, but you will now be able to see the detailed result from Beyond20 in your Game Log and your friends/players/minions will be able to see the exact formulas and results of each roll made by Beyond20!
+
+Another cool feature is the ability to set a target Discord channel to send rolls to, on a per-character basis. That should make it easier for people playing in multiple campaigns, not to have to switch their discord settings every time. You can now also set custom damage formulas or custom modifier formulas for your hotkeys, instead of being limited to the hardcoded choices we previously offered.
+
+Finally, last but not least, I'm happy to announce the ability to send read aloud text from source books directly into the chat of your favorite VTT!
+
+This is of course only a small subset of the changes, and I recommend you check out the full [Changelog](/Changelog#v250) to see all of the new features and bugfixes that went into this release.
+
+As usual, I want to thank all of my [Patrons](https://patreon.com/kakaroto) and [ko-fi/github](/rations) supporters, and for everyone who helped make this release possible. Thank you all for your support and your love!
+
+Enjoy this update, and keep rolling!
+
 2.4.6 (July 7th 2021)
 ===
 

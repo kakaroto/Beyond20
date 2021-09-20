@@ -1,3 +1,49 @@
+2.5 (September 20th 2021)
+===
+
+* **Feature**: Add support for sending the detailed roll results to the D&D Beyond Game Log
+* **Feature**: Add the ability to set custom modifier/damage formulas when setting up hotkeys
+* **Feature**: Add option to set a target discord channel on a per-character basis
+* **Feature**: Add Beyond20 button on read-aloud text boxes to send as chat message to the VTT
+* **Feature**: Add support for applying custom modifiers and custom damages from hotkeys to Monster rolls too
+* **Feature**: Query for the advantage/disadvantage on skill checks that have a magical conditional advantage/disadvantage badge
+* **Feature**: Add buttons to display character's proficiencies to the VTT
+* **Feature**: Add support for adding magical modifiers on death saves (from Luck Stone, or Cloak of Protection)
+* **Feature**: Add item quantities when rolling/displaying an item
+* **Feature**: Add button to display a character sheet's avatar to the VTT
+* **Feature**: Add the ability to roll non standard dice formulas (1d2, 1d50, etc..) when using the digital dice
+* **Feature**: Show the character's avatar next to each roll when using the html roll renderer
+* **Feature**: Add support for Mark of Warding Dwarf - Warder's Intuition (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Mark of Scribing Gnome - Gifted Scribe (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Mark of Healing Halfling - Healing Touch (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Mark of Hospitality Halfling - Ever Hospitable (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Mark of Finding Half-Orc/Human - Hunter's Intuition (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Mark of Handling Human - Wild Intuition (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Mark of Making Human - Artisan's Intuition (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Mark of Passage Human - Intuitive Motion (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Mark of Sentinel Human - Sentinel's Intuition (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Mark of Warding Dwarf (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add special handling for Spirit Shroud spell (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add special handling for Destructive Wave spell (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Update the CSS styling further for the roll renderer (by [@LorduFreeman](https://github.com/LorduFreeman))
+* **Feature**: Send Beyond20 roll request information to the DOM as a custom event, which could allow other extensions to take advantage of that data
+* **Feature**: Send roll requests and rendered rolls to other D&D Beyond players through the Game Log (does not appear but could be used by other extensions)
+* **Bugfix**: Fix bug calculating the modifier in custom skills when querying for the ability to use (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Prevent the custom digital dice rolls from being sent to the game log, polluting it with hard to parse roll information
+* **Bugfix**: Fix "Force Critical" option being ignored when rolling damages only on spells (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Clean up alertify classes from comments sections of items, monsters, spells, vehicles to prevent comments polluting the page
+* **Bugfix**: Fix duplicate roll buttons appearing on vehicle statblocks
+* **Bugfix**: Fix broken attacks for the Animate Objects spell
+* **Bugfix**: Remove querying for advantage when rolling a custom formula rather than an attack/ability check
+* **Bugfix**: Fix adding quick roll areas to the modifiers preview in the "Change Theme" panel
+* **Bugfix**: Fix discord logo in the options menu not being visible anymore
+* **Bugfix**: Fix issue rolling custom dice formula with the digital dice when the whisper type is set to "Ask every time"
+* **Bugfix**: Fix the game log hijacking digital dice rolls in the encounters page
+* **Bugfix**: *FVTT*: Fix Temp HP syncing by removing the HP Max override when Temp HP is set (by [@Aeristoka](https://github.com/Aeristoka))
+* **Misc**: Add proficiency flag to saving throw requests sent by Beyond20
+* **Misc**: Fix the "available in chrome store" image not loading on the website
+* **Misc**: Remove Toucan sponsorhip from the website (nobody seemed particularly interested in their product 🤷‍♂️)
+
 2.4.6 (July 7th 2021)
 ===
 
