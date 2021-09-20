@@ -224,7 +224,10 @@ class Beyond20RollRenderer {
             title = "???";
         }
 
-        let html = '<div class="beyond20-message">';
+        let html = '<div class="beyond20-message"><div class="beyond20-header">';
+        if (request.character && request.character.avatar) {
+            html += `<img class="beyond20-character-avatar" src="${request.character.avatar}" title="${title}" width="37" height="37">`;
+        }
         if (description) {
             html += "<details" + (open ? " open" : "") + "><summary><a>" + title + "</a></summary>";
             if (source || Object.keys(attributes).length > 0) {
@@ -238,8 +241,9 @@ class Beyond20RollRenderer {
             const html_description = this.injectRollsInDescription(description).replace(/\n/g, "</br>");
             html += "<div class='beyond20-description'>" + html_description + "</div></details>";
         } else {
-            html = "<div class='beyond20-title'>" + title + "</div>";
+            html += "<span class='beyond20-title'>" +  title + "</span>";
         }
+        html += "</div>";
 
         //console.log("Rolls : ", attack_rolls, roll_info, damage_rolls);
 

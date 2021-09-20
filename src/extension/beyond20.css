@@ -99,6 +99,21 @@
     font-family: "Signika", "Roboto", sans-serif;
 }
 
+.beyond20-header {
+    display: flex;
+    flex-direction: row;
+}
+.beyond20-header .beyond20-character-avatar {
+    margin-top: 0.5rem;
+    margin-bottom: auto;
+    margin-right: 5px;
+    margin-left: 5px;
+    border: 1px solid black;
+}
+.beyond20-message details {
+    flex-grow: 1;
+}
+
 .beyond20-message details summary,
 .beyond20-title {
     flex: 1;
