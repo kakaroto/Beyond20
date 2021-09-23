@@ -164,7 +164,7 @@ async function rollSkillCheck(paneClass) {
     }
 
     // Mark of Making Human - Artisan's Intuition
-    if (character.hasRacialTrait("Artisan’s Intuition") && skill_name == "Arcana") {
+    if (character.hasRacialTrait("Artisan’s Intuition") && (skill_name == "Arcana" || skill_name.match(/ (Tools|Supplies|Utensils|Kit|Set|Instrument)$/))) {
         roll_properties.modifier += "+1d4";
     }
 
