@@ -134,7 +134,7 @@ async function rollSkillCheck(paneClass) {
     }
 
     // Mark of Warding Dwarf - Warder's Intuition
-    if (character.hasRacialTrait("Warder’s Intuition") && skill_name == "Investigation") {
+    if (character.hasRacialTrait("Warder’s Intuition") && (skill_name == "Investigation" || skill_name.toLowerCase().match(/\bthieve's tools\b/))) {
         roll_properties.modifier += "+1d4";
     }
 
@@ -149,7 +149,7 @@ async function rollSkillCheck(paneClass) {
     }
 
     // Mark of Hospitality Halfing - Ever Hospitable
-    if (character.hasRacialTrait("Ever Hospitable") && skill_name == "Persuasion") {
+    if (character.hasRacialTrait("Ever Hospitable") && (skill_name == "Persuasion" || skil_name.toLowerCase().match(/\b(brewer's supplies|cooking utensils)\b/))) {
         roll_properties.modifier += "+1d4";
     }
 
@@ -164,7 +164,7 @@ async function rollSkillCheck(paneClass) {
     }
 
     // Mark of Making Human - Artisan's Intuition
-    if (character.hasRacialTrait("Artisan’s Intuition") && (skill_name == "Arcana" || skill_name.match(/ (Tools|Supplies|Utensils|Kit|Set|Instrument)$/))) {
+    if (character.hasRacialTrait("Artisan’s Intuition") && (skill_name == "Arcana" || skill_name.toLowerCase().match(/\b(tools|supplies|utensils|kit|set|instrument)\b/))) {
         roll_properties.modifier += "+1d4";
     }
 
@@ -360,7 +360,7 @@ function isItemATool(item_name, source) {
         item_name === "Wagon" ||
         item_name.includes(" Utensils");
 }
-function isItemAnInstruction(item_name, item_tags) {
+function isItemAnInstrument(item_name, item_tags) {
     // Rhythm-Maker’s Drum, +1, +2, +3 don't have the tag
     return item_tags.includes("Instrument") || item_name.includes(" Drum");
 }
@@ -734,7 +734,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
     const item_customizations = $(".ct-item-pane .ct-item-detail__class-customize-item .ddbc-checkbox--is-enabled .ddbc-checkbox__label").toArray().map(e => e.textContent);
     const source = item_type.trim().toLowerCase();
     const is_tool = isItemATool(item_name, source);
-    const is_instrument = isItemAnInstruction(item_name, item_tags);
+    const is_instrument = isItemAnInstrument(item_name, item_tags);
     const description = descriptionToString(".ct-item-detail__description");
     const quantity = $(".ct-item-pane .ct-simple-quantity .ct-simple-quantity__value .ct-simple-quantity__input").val();
     if (!force_display && Object.keys(properties).includes("Damage")) {
