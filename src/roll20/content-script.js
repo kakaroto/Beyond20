@@ -176,14 +176,14 @@ function template(request, name, properties) {
 
     if (request.whisper == WhisperType.HIDE_NAMES) {
         if (properties["charname"])
-            properties["charname"] = "???"
+            properties["charname"] = ""
         // Take into account links for disabled auto-roll-damages option
         if (properties["rname"])
             properties["rname"] = properties["rname"].includes("](!") ?
-                properties["rname"].replace(/\[[^\]]*\]\(\!/, "[???](!") : "???";
+                properties["rname"].replace(/\[[^\]]*\]\(\!/, "[???](!") : "";
         if (properties["rnamec"])
             properties["rnamec"] = properties["rnamec"].includes("](!") ?
-                properties["rnamec"].replace(/\[[^\]]*\]\(\!/, "[???](!") : "???";
+                properties["rnamec"].replace(/\[[^\]]*\]\(\!/, "[???](!") : "";
         delete properties["description"];
     }
     for (let key in properties)
