@@ -608,6 +608,16 @@ class Beyond20RollRenderer {
                 const elemental_bane_extra_type = await this.queryDamageType(request.name, damage_choices);
                 damages.splice(0, 0, damage_choices[elemental_bane_extra_type]);
                 damage_types.splice(0, 0, elemental_bane_extra_type);
+            } else if (request.name === "Spirit Guardians") {
+                const damage_choices = {}
+                for (let dmgtype of ["Radiant", "Necrotic"]) {
+                    let idx = damage_types.findIndex(t => t === dmgtype);
+                    damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
+                }
+
+                const spirit_guardians_extra_type = await this.queryDamageType(request.name, damage_choices);
+                damages.splice(0, 0, damage_choices[spirit_guardians_extra_type]);
+                damage_types.splice(0, 0, spirit_guardians_extra_type);
             }
 
             const has_versatile = damage_types.length > 1 && damage_types[1].includes("Two-Handed");
