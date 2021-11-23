@@ -1,6 +1,26 @@
 
 
 class Beyond20 {
+    static getMyActor() {
+        return game.actors.find(a => a.isOwner && a.getFlag("beyond20", "user") === game.userId);
+    }
+    static async getUpdatedActor(request, items=[]) {
+        const actorData = await this.createActorData(request);
+        const existing = this.getMyActor();
+        actorData.items.push(...items);
+        if (existing) {
+            for (const item of actorData.items) {
+                const found = existing.items.find(i => i.type === item.type && i.name === item.name);
+                if (!found) continue;
+                item._id = found._id;
+            }
+            await existing.update(actorData);
+            return existing;
+        } else {
+            const actor = await Actor.create(actorData);
+            return actor;
+        }
+    }
 
     static _getDefaultTemplate(entityType, templateType) {
         const data = duplicate(game.system.template[entityType][templateType]);
@@ -9,7 +29,6 @@ class Beyond20 {
         delete data.templates;
         return data;
     }
-
     static async createActorData(request) {
         const type = request.character.type == "Character" ? "character" : "npc";
         // get default actor template
@@ -17,9 +36,13 @@ class Beyond20 {
         const baseAttributes = {
             name: request.character.name || request.name,
             type,
-            flags: {},
+            flags: {
+                beyond20: {
+                    user: game.user.id
+                }
+            },
             permission: {
-                default: CONST.ENTITY_PERMISSIONS.OWNER
+                [game.userId]: CONST.ENTITY_PERMISSIONS.OWNER
             }
         };
         if (!["Character", "Monster", "Creature"].includes(request.character.type)) {
@@ -96,6 +119,15 @@ class Beyond20 {
             token = canvas.tokens.placeables.find((t) => t.owner && t.name.toLowerCase().trim() == name);
         }
         return token || canvas.tokens.controlled[0];
+    }
+    static async callOnToken(actor, token, callback) {
+        const originalActor = token._actor;
+        try {
+            token._actor = actor;
+            await callback();
+        } finally {
+            token._actor = originalActor;
+        }
     }
     static createActor(request, data) {
         const token = this.findToken(request);
@@ -358,10 +390,12 @@ class Beyond20 {
         }
         const combatants = tokens.map(t => combat.getCombatantByToken(t.id));
         combat.rollInitiative(combatants.filter(c => !!c).map(c => c._id), {formula, messageOptions: this.getRollOptions(request)})
+        //await token.actor.rollInitiative({createCombatants: true, rerollInitiative: true})
     }
 
     static async rollSkill(request) {
-        const actorData = await this.createActorData(request);
+        const actor = await this.getUpdatedActor(request);
+        const actorData = actor.data;
         const token = this.findToken(request);
         
         const SKILLS = {
@@ -405,8 +439,6 @@ class Beyond20 {
         const bonus = parseInt(request.modifier) - calculated;
         actorData.data.skills[skill].mod = calculated;
         actorData.data.bonuses.abilities.skill = bonus;
-
-        const actor = this.createActor(request, actorData);
         
         // Compose roll parts and data
         const parts = ["@mod"];
@@ -426,11 +458,14 @@ class Beyond20 {
             messageData: {"flags.dnd5e.roll": {type: "skill", skill }}
         });
         rollOptions.speaker = ChatMessage.getSpeaker({actor: actor, token: token});
-        game.dnd5e.dice.d20Roll(rollOptions);
+        this.callOnToken(actor, token, () => {
+            game.dnd5e.dice.d20Roll(rollOptions);
+        });
     }
 
     static async rollSavingThrow(request) {
-        const actorData = await this.createActorData(request);
+        const actor = await this.getUpdatedActor(request);
+        const actorData = actor.data;
         const token = this.findToken(request);
         
         const abl = request.ability.toLowerCase();
@@ -442,7 +477,6 @@ class Beyond20 {
         actorData.data.abilities[abl].proficient = proficient;
         actorData.data.abilities[abl].save = calculated;
         actorData.data.bonuses.abilities.save = bonus;
-        const actor = this.createActor(request, actorData);
         
         // Compose roll parts and data
         const parts = ["@mod"];
@@ -462,23 +496,24 @@ class Beyond20 {
             messageData: {"flags.dnd5e.roll": {type: "save", abl }}
         });
         rollOptions.speaker = ChatMessage.getSpeaker({actor: actor, token: token});
-        game.dnd5e.dice.d20Roll(rollOptions);
+        this.callOnToken(actor, token, () => {
+            game.dnd5e.dice.d20Roll(rollOptions);
+        });
     }
     
     static async rollAbility(request) {
-        const actorData = await this.createActorData(request);
+        const actor = await this.getUpdatedActor(request);
         const token = this.findToken(request);
         
         const abl = request.ability.toLowerCase();
         const mod = parseInt(request.modifier)
-        const bonus = mod - actorData.data.abilities[abl].mod;
+        const bonus = mod - actor.data.data.abilities[abl].mod;
 
-        actorData.data.bonuses.abilities.check = bonus;
-        const actor = this.createActor(request, actorData)
+        actor.data.data.bonuses.abilities.check = bonus;
         
         // Compose roll parts and data
         const parts = ["@mod"];
-        const data = {mod: actorData.data.abilities[abl].mod};
+        const data = {mod: actor.data.data.abilities[abl].mod};
 
         // Ability check bonus
         if ( bonus ) {
@@ -494,16 +529,16 @@ class Beyond20 {
             messageData: {"flags.dnd5e.roll": {type: "ability", abl }}
         });
         rollOptions.speaker = ChatMessage.getSpeaker({actor: actor, token: token});
-        game.dnd5e.dice.d20Roll(rollOptions);
+        this.callOnToken(actor, token, () => {
+            game.dnd5e.dice.d20Roll(rollOptions);
+        });
+
     }
 
     static async rollItems(request) {
-        const actorData = await this.createActorData(request);
-
         const item = this.createItemData(request);
-        actorData.items.push(item);
-        const actor = this.createActor(request, actorData);
-        const actorItem = actor.items.entries.find(i => i.type === item.type && i.name === item.name);
+        const actor = await this.getUpdatedActor(request, [item]);
+        const actorItem = actor.items.find(i => i.type === item.type && i.name === item.name);
 
         const template = game.dnd5e.canvas.AbilityTemplate.fromItem(actorItem);
         if ( template ) template.drawPreview();
@@ -520,19 +555,16 @@ class Beyond20 {
     static handleBeyond20Request(action, request) {
         if (action !== "roll") return;
         if (!game.settings.get("beyond20", "nativeRolls")) return;
+        // return false to interrupt the beyond20 
         switch (request.type) {
             case "skill":
-                this.rollSkill(request);
-                return false;
+                return !this.rollSkill(request);
             case "saving-throw":
-                this.rollSavingThrow(request);
-                return false;
+                return !this.rollSavingThrow(request);
             case "ability":
-                this.rollAbility(request);
-                return false;
+                return !this.rollAbility(request);
             case "initiative":
-                this.rollInitiative(request);
-                return false;
+                return !this.rollInitiative(request);
             case 'feature':
             case 'trait':
             case 'item':
@@ -540,14 +572,45 @@ class Beyond20 {
             case 'action':
             case 'spell-attack':
             case 'spell-card':
-                this.rollItems(request);
-                return false;
+                return !this.rollItems(request);
             default:
                 break;
         }
     }
 }
 
+class Beyond20CreateNativeActorsApplication extends FormApplication {
+    async render() {
+        if (!game.user.isGM) {
+            return ui.notifications.error("Only the GM can create actors for Beyond20.");
+        }
+        let folder = game.folders.find(f => f.name === "Beyond20" && f.type === "Actor");
+        if (!folder) {
+            folder = await Folder.create({name: "Beyond20", type: "Actor"});
+        }
+        for (const user of game.users.contents) {
+            const actor = game.actors.find(a => a.getFlag("beyond20", "user") === user.id);
+            if (!actor) {
+                await Actor.create({
+                    name: user.name,
+                    type: "character",
+                    img: "modules/beyond20/images/icons/icon256.png",
+                    folder: folder.id,
+                    flags: {
+                        beyond20: {
+                            user: user.id
+                        }
+                    },
+                    permission: {
+                        [user.id]: CONST.ENTITY_PERMISSIONS.OWNER
+                    }
+                });
+                ui.notifications.info(`Created Beyond20 Actor for user ${user.name}`);
+            }
+        }
+        ui.notifications.info("Beyond20 Actors creation completed.");
+    }
+}
 
 Hooks.on('beyond20Request', (action, request) => Beyond20.handleBeyond20Request(action, request))
 
@@ -561,13 +624,39 @@ Hooks.on('ready', function () {
         type: Boolean
     });
     game.settings.register("beyond20", "nativeRolls", {
-        name: "Use Foundry native rolls",
+        name: "Use Foundry native rolls (EXPERIMENTAL)",
         hint: "If enabled, will use Foundry native rolls instead of the Beyond20 roll renderer. Cannot work when D&D Beyond Digital Dice are enabled. All Beyond20 features may not be supported.",
         scope: "client",
         config: true,
         default: false,
-        type: Boolean
+        type: Boolean,
+        onChange: async (v) => {
+            if (!v) return;
+            if (!isNewerVersion(game.data.version || game.version, "0.8.8")) {
+                ui.notifications.warn(`Cannot enable Beyond20 native rolls on Foundry VTT v${game.data.version}. Please upgrade to version 0.8.9 or newer.`);
+                return game.settings.set("beyond20", "nativeRolls", false);
+            }
+            if (Actor.canUserCreate(game.user)) return true;
+            if (!Beyond20.getMyActor()) {
+                ui.notifications.warn(`Cannot enable Beyond20 native rolls because native actor doesn't exist. Please ask your GM to create the actors from the Beyond20 module settings.`, {permanent: true});
+                return game.settings.set("beyond20", "nativeRolls", false);
+            }
+        }
     });
+    game.settings.registerMenu("beyond20", "createNativeActors", {
+        name: "Create native rolls Actors",
+        label: "Create Actors",      // The text label used in the button
+        hint: "Creates a Beyond20 native rolls actor for each user (if one doesn't exist), allowing them to use the native rolls feature.",
+        icon: "fas fa-users",
+        type: Beyond20CreateNativeActorsApplication,   // A FormApplication subclass which should be created
+        restricted: true
+    });
+    if (game.settings.get("beyond20", "nativeRolls")  && !Actor.canUserCreate(game.user)) {
+        if (!Beyond20.getMyActor()) {
+            ui.notifications.warn(`Cannot enable Beyond20 native rolls because native actor doesn't exist. Please ask your GM to create the actors from the Beyond20 module settings.`, {permanent: true});
+            game.settings.set("beyond20", "nativeRolls", false);
+        }
+    }
     if (typeof (chrome) !== "undefined" && typeof (browser) === "undefined" && game.settings.get("beyond20", "notifyAtLoad") && document.title.startsWith("Foundry Virtual Tabletop")) {
         dialog = new Dialog({
             title: `Beyond20`,
