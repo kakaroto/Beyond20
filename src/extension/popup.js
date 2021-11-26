@@ -270,6 +270,10 @@ function populateCharacter(response) {
             e = createHTMLOption("warlock-grave-touched", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Radiant Soul")) {
+            e = createHTMLOption("warlock-the-celestial-radiant-soul", false, character_settings);
+            options.append(e);
+        }
 
     }
     $('.beyond20-option-input').off('change', save_settings);
