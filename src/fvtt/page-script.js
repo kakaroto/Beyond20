@@ -164,7 +164,8 @@ class FVTTDisplayer {
     _getSpeakerByName(name) {
         if (name === null)
             return ChatMessage.getSpeaker();
-        const actor = game.actors.entities.find((actor) => actor.data.name.toLowerCase() == name.toLowerCase());
+        const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
+        const actor = actors.find((actor) => actor.data.name.toLowerCase() == name.toLowerCase());
         const speaker = ChatMessage.getSpeaker({ actor });
         speaker.alias = name;
         return speaker;
@@ -416,7 +417,8 @@ function updateHP(name, current, total, temp) {
     const dnd5e_data = { "data.attributes.hp.value": current, "data.attributes.hp.temp": temp, "data.attributes.hp.max": total }
     const sws_data = { "data.health.value": current + temp, "data.health.max": total }
     if (tokens.length == 0) {
-        const actor = game.actors.entities.find((a) => a.owner && a.name.toLowerCase() == name);
+        const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
+        const actor = actors.find((a) => a.owner && a.name.toLowerCase() == name);
         if (actor && getProperty(actor.data, "data.attributes.hp") !== undefined) {
             actor.update(dnd5e_data);
         } else if (actor && getProperty(actor.data, "data.health") !== undefined) {
@@ -457,7 +459,8 @@ function updateConditions(request, name, conditions, exhaustion) {
 
         const tokens = canvas.tokens.placeables.filter((t) => t.data.name.toLowerCase() === name);
         // look for an actor with the character name and search for a linked token to that actor
-        const actor = game.actors.entities.find((a) => a.owner && a.name.toLowerCase() === name);
+        const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
+        const actor = actors.find((a) => a.owner && a.name.toLowerCase() === name);
         if (actor) {
             const linkedTokens = canvas.tokens.placeables.filter((t) => t.actor && t.actor.id === actor.id);
             // Only add linked tokens that do not name match to avoid duplicate operations
