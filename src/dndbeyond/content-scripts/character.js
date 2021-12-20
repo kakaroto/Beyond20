@@ -1224,6 +1224,23 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
         }
     }
 
+    // Warlock
+    if (character.hasClass("Warlock")) {
+        // Warlock: The Celestial: Radiant Soul
+        if (character.hasClassFeature("Radiant Soul") &&
+            character.getSetting("warlock-the-celestial-radiant-soul", false) &&
+            damages.length > 0) {
+            for (let i = 0; i < damages.length; i++){
+                if (damage_types[i] === "Fire" || damage_types[i] === "Radiant") {
+                    damages.push(`${parseInt(character.getAbility("CHA").mod)}`);
+                    damage_types.push("Radiant Soul");
+                    break;
+                }
+            }
+        }
+    }
+
+    // Wizard
     if (character.hasClass("Wizard")) {
         // Wizard: School of Evocation: Empowered Evocation
         if (character.hasClassFeature("Empowered Evocation") &&

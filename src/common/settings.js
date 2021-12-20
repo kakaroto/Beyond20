@@ -589,6 +589,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "warlock-the-celestial-radiant-soul": {
+        "title": "Warlock: The Celestial: Radiant Soul",
+        "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
+        "type": "bool",
+        "default": true
+    },
     "genies-vessel": {
         "title": "Warlock: The Genie: Genie's Wrath",
         "description": "You genie patron lends their wrath to your attacks.",
