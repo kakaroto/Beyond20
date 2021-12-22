@@ -607,6 +607,7 @@ class Monster extends CharacterBase {
             "temp-hp": this._temp_hp,
             "speed": this._speed,
             "abilities": this._abilities,
+            "discord-target": this._parent_character && this._parent_character.getSetting("discord-target", undefined),
             "saves": this._saves,
             "skills": this._skills,
             "cr": this._cr,

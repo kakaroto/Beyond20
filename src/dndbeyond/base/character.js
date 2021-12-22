@@ -439,6 +439,7 @@ class Character extends CharacterBase {
             "exhaustion": this._exhaustion,
             "conditions": this._conditions,
             "settings": settings,
+            "discord-target": settings["discord-target"],
             "class-features": this._class_features,
             "racial-traits": this._racial_traits,
             "feats": this._feats,

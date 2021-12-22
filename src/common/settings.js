@@ -1290,7 +1290,7 @@ function getDiscordChannel(settings, character) {
     const channels = (settings["discord-channels"] || [])
     if (typeof (channels) === "string")
         return channels;
-    const target = character && character.settings && character.settings["discord-target"] || null;
+    const target = (character && character["discord-target"]) || null;
     return channels.find(c => target ? c.secret.slice(0, 12) === target : c.active);
 }
 

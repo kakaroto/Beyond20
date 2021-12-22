@@ -2003,7 +2003,7 @@ function injectRollButton(paneClass) {
         if (isRollButtonAdded() || isCustomRollIconsAdded())
             return;
         const base = $(".ct-vehicle-block").length > 0 ? ".ct-vehicle-block" : ".ddbc-vehicle-block";
-        monster = new Monster("Extra-Vehicle", base, settings);
+        monster = new Monster("Extra-Vehicle", base, settings, {character});
         monster.parseStatBlock();
     } else if (paneClass == "ct-condition-manage-pane") {
         const j_conditions = $(".ct-condition-manage-pane .ct-toggle-field--enabled,.ct-condition-manage-pane .ddbc-toggle-field--is-enabled").closest(".ct-condition-manage-pane__condition");
