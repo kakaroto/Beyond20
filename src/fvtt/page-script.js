@@ -541,3 +541,4 @@ registered_events.push(addCustomEventListener("UpdateConditions", updateConditio
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
 //const alertify = ui.notifications;
 setTitle();
+initializeAlertify();

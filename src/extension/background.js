@@ -231,6 +231,10 @@ function onMessage(request, sender, sendResponse) {
         addFVTTTab(sender.tab)
     } else if (request.action == "reload-me") {
         chrome.tabs.reload(sender.tab.id)
+    } else if (request.action == "load-alertify") {
+        insertCSSs([sender.tab], ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css"]);
+        chrome.tabs.executeScript(sender.tab.id, { "file": "libs/alertify.min.js" }, sendResponse);
+        return true
     } else if (request.action == "get-current-tab") {
         sendResponse(sender.tab)
     } else if (request.action == "forward") {

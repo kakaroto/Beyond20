@@ -41,6 +41,9 @@ class CharacterBase {
     }
 }
 
-
-alertify.set("alert", "title", "Beyond 20");
-alertify.set("notifier", "position", "top-center");
+/**
+ * Load alertify from all D&D Beyond pages, through the base file
+ */
+if (window.document.body.id !== "tinymce") {
+    chrome.runtime.sendMessage({ "action": "load-alertify" }, initializeAlertify);
+}

@@ -381,3 +381,4 @@ injectPageScript(chrome.runtime.getURL("libs/jquery-3.4.1.min.js"));
 injectPageScript(chrome.runtime.getURL("libs/lz-string.min.js"));
 injectPageScript(chrome.runtime.getURL('dist/astral_script.js'));
 sendCustomEvent("disconnect");
+initializeAlertify();

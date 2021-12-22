@@ -60,3 +60,4 @@ observer.observe(document.getElementsByTagName("title")[0], { "childList": true 
 sendCustomEvent("disconnect");
 injectPageScript(chrome.runtime.getURL("libs/alertify.min.js"));
 injectPageScript(chrome.runtime.getURL('dist/fvtt_script.js'));
+initializeAlertify();

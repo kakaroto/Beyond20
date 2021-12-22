@@ -388,3 +388,4 @@ function trySetDOMListeners() {
 }
 
 trySetDOMListeners();
+initializeAlertify();

@@ -980,3 +980,4 @@ chrome.runtime.sendMessage({ "action": "activate-icon" });
 sendCustomEvent("disconnect");
 injectPageScript(chrome.runtime.getURL('dist/roll20_script.js'));
 injectSettingsButton();
+initializeAlertify();

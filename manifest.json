@@ -36,6 +36,9 @@
 	},
 	"web_accessible_resources": [
         "images/*",
+        "libs/css/alertify.css",
+        "libs/css/alertify-themes/default.css",
+        "libs/css/alertify-themes/beyond20.css",
         "libs/alertify.min.js",
         "libs/jquery-3.4.1.min.js",
 		"libs/lz-string.min.js",
@@ -58,13 +61,9 @@
 				"*://*.dndbeyond.com/*characters/*"
 			],
 			"css": [
-				"libs/css/alertify.css",
-				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css",
 				"dist/beyond20.css"
 			],
 			"js": [
-				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/dndbeyond_character.js"
 			],
@@ -75,13 +74,9 @@
 				"*://*.dndbeyond.com/monsters/*"
 			],
 			"css": [
-				"libs/css/alertify.css",
-				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css",
 				"dist/beyond20.css"
 			],
 			"js": [
-				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/dndbeyond_monster.js"
 			],
@@ -92,13 +87,9 @@
 				"*://*.dndbeyond.com/vehicles/*"
 			],
 			"css": [
-				"libs/css/alertify.css",
-				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css",
 				"dist/beyond20.css"
 			],
 			"js": [
-				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/dndbeyond_vehicle.js"
 			],
@@ -109,13 +100,9 @@
 				"*://*.dndbeyond.com/spells/*"
 			],
 			"css": [
-				"libs/css/alertify.css",
-				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css",
 				"dist/beyond20.css"
 			],
 			"js": [
-				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/dndbeyond_spell.js"
 			],
@@ -128,13 +115,9 @@
 				"*://*.dndbeyond.com/combat-tracker/*"
 			],
 			"css": [
-				"libs/css/alertify.css",
-				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css",
 				"dist/beyond20.css"
 			],
 			"js": [
-				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/dndbeyond_encounter.js"
 			],
@@ -146,13 +129,9 @@
 				"*://*.dndbeyond.com/magic-items/*"
 			],
 			"css": [
-				"libs/css/alertify.css",
-				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css",
 				"dist/beyond20.css"
 			],
 			"js": [
-				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/dndbeyond_item.js"
 			],
@@ -167,13 +146,9 @@
 				"*://*.dndbeyond.com/classes/*/edit"
             ],
 			"css": [
-				"libs/css/alertify.css",
-				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css",
 				"dist/beyond20.css"
 			],
 			"js": [
-				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/dndbeyond_source.js"
 			],
