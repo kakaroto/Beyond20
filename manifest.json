@@ -13,6 +13,7 @@
 		"*://*.forge-vtt.com/game",
 		"*://*.astraltabletop.com/play/*"
 	],
+    "optional_permissions": ["<all_urls>"],
 	"icons": {
 		"16": "images/icons/icon16.png",
 		"24": "images/icons/icon24.png",
@@ -173,14 +174,8 @@
 			"matches": [
 				"*://*.forge-vtt.com/game"
 			],
-			"css": [
-				"libs/css/alertify.css",
-				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css"
-			],
+			"css": [],
 			"js": [
-				"libs/alertify.min.js",
-				"libs/jquery-3.4.1.min.js",
 				"dist/fvtt_test.js"
 			]
 		},

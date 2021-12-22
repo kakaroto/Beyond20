@@ -4,6 +4,7 @@
 
 var settings = getDefaultSettings()
 var fvtt_tabs = []
+var currentPermissions = {origins: []};
 
 function updateSettings(new_settings = null) {
     if (new_settings) {
@@ -268,15 +269,32 @@ function executeScripts(tabs, js_files) {
 function onTabsUpdated(id, changes, tab) {
     if (fvtt_tabs.includes(id) &&
         (Object.keys(changes).includes("url") && !urlMatches(changes["url"], "*) {//*/game")) ||
-        (Object.keys(changes).includes("status") && changes["status"] == "loading"))
+        (Object.keys(changes).includes("status") && changes["status"] == "loading")) {
         removeFVTTTab(id)
+    }
+    /* Load Beyond20 on custom urls that have been added to our permissions */
+    if (changes["status"] === "complete") {
+        // Check only origins that don't start with '*://' to ignore those in the manifest already
+        const hasPermission = currentPermissions.origins.some(pattern => pattern.startsWith("http") && urlMatches(tab.url, pattern));
+        if (hasPermission) {
+            chrome.tabs.executeScript(tab.id, { "file": "dist/fvtt_test.js" })
+        }
+    }
+
 }
 
 function onTabRemoved(id, info) {
     removeFVTTTab(id)
 }
 
+function onPermissionsUpdated() {
+    chrome.permissions.getAll((permissions) => {
+        currentPermissions = permissions;
+    });
+}
+
 function browserActionClicked(tab) {
+    console.log("Browser action clicked for tab : ", tab.id, tab.url);
     chrome.tabs.executeScript(tab.id, { "file": "dist/fvtt_test.js" })
 }
 
@@ -284,6 +302,12 @@ updateSettings()
 chrome.runtime.onMessage.addListener(onMessage)
 chrome.tabs.onUpdated.addListener(onTabsUpdated)
 chrome.tabs.onRemoved.addListener(onTabRemoved)
+chrome.permissions.onAdded.addListener(onPermissionsUpdated)
+chrome.permissions.onRemoved.addListener(onPermissionsUpdated)
+
+chrome.permissions.getAll((permissions) => {
+    currentPermissions = permissions;
+});
 
 if (getBrowser() == "Chrome") {
     chrome.browserAction.onClicked.addListener(browserActionClicked)

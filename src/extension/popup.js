@@ -356,6 +356,33 @@ function actOnCurrentTab(tab) {
         initializeSettings(gotSettings);
     }
     canAlertify(tab.id);
+    chrome.permissions.getAll((currentPermissions) => {
+        const origin = new URL(tab.url).origin + "/*";
+        const hasPermission = currentPermissions.origins.some(pattern => urlMatches(tab.url, pattern));
+        if (!hasPermission) {
+            const options = $(".beyond20-options");
+            const request = createHTMLOptionEx("default-popup", {
+                "title": "No permanent permission for this URL",
+                "description": "Click here to give permission to Beyond20 to load automatically on this URL.",
+                "type": "info"
+            });
+            options.prepend(request);
+            request.addEventListener("click", (ev) => {
+                console.log("Clicked, requesting permissions!");
+                chrome.permissions.request({origins: [origin]}, function onResponse(response) {
+                    if (response) {
+                        console.log("Permission was granted");
+                        request.remove();
+                    } else {
+                        console.log("Permission was refused");
+                    }
+                    chrome.permissions.getAll((currentPermissions) => {
+                        console.log(`Current permissions:`, currentPermissions);
+                    });
+                })
+            });
+        }
+    });
 }
 
 

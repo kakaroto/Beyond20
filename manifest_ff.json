@@ -10,9 +10,10 @@
 		"*://beyond20.kicks-ass.org/roll",
 		"*://app.roll20.net/editor/",
 		"*://*.dndbeyond.com/*",
-		"*://*/*game",
+		"*://*.forge-vtt.com/*game",
 		"*://*.astraltabletop.com/play/*"
 	],
+    "optional_permissions": ["<all_urls>"],
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "beyond20@kakaroto.homelinux.net"
@@ -176,16 +177,10 @@
 		},
 		{
 			"matches": [
-				"*://*/*game"
+				"*://*.forge-vtt.com/*game"
 			],
-			"css": [
-				"libs/css/alertify.css",
-				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css"
-			],
+			"css": [],
 			"js": [
-				"libs/alertify.min.js",
-				"libs/jquery-3.4.1.min.js",
 				"dist/fvtt_test.js"
 			]
 		},
