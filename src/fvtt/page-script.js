@@ -412,13 +412,13 @@ function updateHP(name, current, total, temp) {
     console.log(`Updating HP for ${name} : (${current} + ${temp})/${total}`);
     name = name.toLowerCase().trim();
 
-    const tokens = canvas.tokens.placeables.filter((t) => t.owner && t.name.toLowerCase().trim() == name);
+    const tokens = canvas.tokens.placeables.filter((t) => (t.owner || t.isOwner) && t.name.toLowerCase().trim() == name);
 
     const dnd5e_data = { "data.attributes.hp.value": current, "data.attributes.hp.temp": temp, "data.attributes.hp.max": total }
     const sws_data = { "data.health.value": current + temp, "data.health.max": total }
     if (tokens.length == 0) {
         const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
-        const actor = actors.find((a) => a.owner && a.name.toLowerCase() == name);
+        const actor = actors.find((a) => (a.owner || a.isOwner) && a.name.toLowerCase().trim() == name);
         if (actor && getProperty(actor.data, "data.attributes.hp") !== undefined) {
             actor.update(dnd5e_data);
         } else if (actor && getProperty(actor.data, "data.health") !== undefined) {
@@ -455,16 +455,16 @@ function updateConditions(request, name, conditions, exhaustion) {
 
     if (module && isNewerVersion(module.data.version, "0.6")) {
         // Update status effects;
-        name = name.toLowerCase();
+        name = name.toLowerCase().trim();
 
-        const tokens = canvas.tokens.placeables.filter((t) => t.data.name.toLowerCase() === name);
+        const tokens = canvas.tokens.placeables.filter((t) => t.data.name.toLowerCase().trim() === name);
         // look for an actor with the character name and search for a linked token to that actor
         const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
-        const actor = actors.find((a) => a.owner && a.name.toLowerCase() === name);
+        const actor = actors.find((a) => (a.owner || a.isOwner) && a.name.toLowerCase().trim() === name);
         if (actor) {
             const linkedTokens = canvas.tokens.placeables.filter((t) => t.actor && t.actor.id === actor.id);
             // Only add linked tokens that do not name match to avoid duplicate operations
-            tokens.push(...linkedTokens.filter((t) => t.data.name.toLowerCase() !== name));
+            tokens.push(...linkedTokens.filter((t) => t.data.name.toLowerCase().trim() !== name));
         }
 
         for (let token of tokens) {
