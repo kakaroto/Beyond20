@@ -7,6 +7,7 @@ class DDBMessageBroker {
         this._hooks = {};
         this._characterId = (window.location.pathname.match(/\/characters\/([0-9]+)/) || [])[1];
         this.saveMessages = false;
+        this._debug = false;
     }
     uuid() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -60,7 +61,7 @@ class DDBMessageBroker {
     _onMessage(message) {
         // Check if we unregistered
         if (!this._mb) return;
-        //console.log("Received ", message);
+        if (this._debug) console.log("Received ", message);
         if (this.saveMessages) {
             this._messageQueue.push(message);
         }
@@ -68,13 +69,13 @@ class DDBMessageBroker {
         this._dispatchHooks(null, message, true);
     }
     _onDispatchMessage(message) {
-        //console.log("Dispatching ", message);
+        if (this._debug) console.log("Dispatching ", message);
         const blockIndex = this._blockMessages.findIndex(msg => msg.type === message.eventType);
         if (blockIndex !== -1) {
             if (this._blockMessages[blockIndex].once) {
                 this._blockMessages.splice(blockIndex, 1);
             }
-            //console.log("Dropped message ", message);
+            if (this._debug) console.log("Dropped message ", message);
             return;
         }
         if (this._dispatchHooks(message.eventType, message, false)) return;
