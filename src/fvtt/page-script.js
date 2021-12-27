@@ -452,7 +452,6 @@ function updateConditions(request, name, conditions, exhaustion) {
 
     // Check for the beyond20 module, if (it's there, we can use its status effects.;
     const module = game.modules.get("beyond20");
-
     if (module && isNewerVersion(module.data.version, "0.6")) {
         // Update status effects;
         name = name.toLowerCase().trim();
@@ -467,6 +466,7 @@ function updateConditions(request, name, conditions, exhaustion) {
             tokens.push(...linkedTokens.filter((t) => t.data.name.toLowerCase().trim() !== name));
         }
 
+        const updates = [];
         for (let token of tokens) {
             const effects = token.data.effects;
             let new_effects = [];
@@ -495,10 +495,14 @@ function updateConditions(request, name, conditions, exhaustion) {
             }
             console.log("From ", effects, "to ", new_effects, " still need to add ", new_conditions);
             new_effects = new_effects.concat(new_conditions.map((c) => "modules/beyond20/conditions/" + c));
-            data = { "effects": new_effects }
-            if (defeated)
+            const data = { "_id": token.data._id, "effects": new_effects };
+            if (defeated) {
                 data["overlayEffect"] = "icons/svg/skull.svg";
-            token.update(data);
+            }
+            updates.push(data);
+        }
+        if (updates.length > 0) {
+            canvas.scene.updateEmbeddedDocuments("Token", updates);
         }
     }
 }
