@@ -314,6 +314,11 @@ chrome.permissions.onRemoved.addListener(onPermissionsUpdated)
 
 chrome.permissions.getAll((permissions) => {
     currentPermissions = permissions;
+    for (const pattern of currentPermissions.origins) {
+        if (!pattern.startsWith("http")) continue; // skip manifest permissions
+        // Inject script in existing tabs
+        chrome.tabs.query({ "url": pattern }, (tabs) => executeScripts(tabs, ["dist/fvtt_test.js"]))
+    }
 });
 
 if (getBrowser() == "Chrome") {
