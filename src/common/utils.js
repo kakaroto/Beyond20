@@ -5,6 +5,9 @@ function replaceRollsCallback(match, replaceCB) {
         dice = "";
         modifiers = match[4];
     }
+    if (modifiers) {
+        modifiers = modifiers.replace(/−/g, "-");
+    }
 
     let result = match[1];
     result += replaceCB(dice, modifiers);
@@ -14,7 +17,7 @@ function replaceRollsCallback(match, replaceCB) {
 
 function replaceRolls(text, replaceCB) {
     // TODO: Cache the value so we don't recompile the regexp every time
-    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro(?:=|<|<=|>|>=)[0-9]+)?(?:min[0-9]+)?)((?:(?:\s*[-+]\s*\d+)|(?:\s*[0+]\s*\d*d\d+))*))|((?:[-+]\s*\d+)+)))($|[^\w])/, "gm");
+    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*d\d+(?:ro(?:=|<|<=|>|>=)[0-9]+)?(?:min[0-9]+)?)((?:(?:\s*[-−+]\s*\d+)|(?:\s*[0+]\s*\d*d\d+))*))|((?:[-−+]\s*\d+)+)))($|[^\w])/, "gm");
     return text.replace(dice_regexp, (...match) => replaceRollsCallback(match, replaceCB));
 }
 
