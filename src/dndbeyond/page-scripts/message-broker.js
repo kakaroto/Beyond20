@@ -122,7 +122,7 @@ function fulfilledRoll(rollData) {
         setId: "8201337" // Not setting it makes it use "Basic Black" by default. Using an invalid value is better
     }
     // For initiative to work in the Encounter builder, it needs to have the action name "Initiative" and not "Initiative(+x)" that B20 sends
-    const action = /^Initiative/.test(action) ? "Initiative" : rollData.name;
+    const action = /^Initiative/.test(rollData.name) ? "Initiative" : rollData.name;
     messageBroker.postMessage({
         persist: true,
         eventType: "dice/roll/fulfilled",
