@@ -359,11 +359,19 @@ async function addInitiativeToCombat(roll) {
             } else {
                 for (let token of canvas.tokens.controlled) {
                     combatant = game.combat.getCombatantByToken(token.id);
-                    if (combatant) {
-                        idField = combatant._id ? "_id" : "id";
-                        await game.combat.updateCombatant({ [idField]: combatant[idField], "initiative": roll.total });
+                    if (isNewerVersion(fvttVersion, "9")) {
+                        if (combatant) {
+                            await game.combat.updateEmbeddedDocuments("Combatant", [{ "_id": combatant.data._id, "initiative": roll.total }]);
+                        } else {
+                            await game.combat.createEmbeddedDocuments("Combatant", [{ "tokenId": token.id, "hidden": token.data.hidden, "initiative": roll.total }]);
+                        }
                     } else {
-                        await game.combat.createCombatant({ "tokenId": token.id, "hidden": token.data.hidden, "initiative": roll.total });
+                        if (combatant) {
+                            idField = combatant._id ? "_id" : "id";
+                            await game.combat.updateCombatant({ [idField]: combatant[idField], "initiative": roll.total });
+                        } else {
+                            await game.combat.createCombatant({ "tokenId": token.id, "hidden": token.data.hidden, "initiative": roll.total });
+                        }
                     }
                 }
             }
