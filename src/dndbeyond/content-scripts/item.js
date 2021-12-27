@@ -10,12 +10,19 @@ class ItemCharacter extends CharacterBase {
     constructor(global_settings) {
         super("item", global_settings);
     }
+    getDict() {
+        const dict = super.getDict();
+        if (this.avatar) {
+            dict.avatar = this.avatar;
+        }
+        return dict;
+    }
 }
 
 var character = null;
 var settings = getDefaultSettings();
 
-function addDisplayButton() {
+function addDisplayItemButton() {
     const icon32 = chrome.extension.getURL("images/icons/badges/normal32.png");
     const button = E.a({ class: "ct-beyond20-roll button-alt", href: "#" },
         E.span({ class: "label" },
@@ -49,7 +56,17 @@ function documentLoaded(settings) {
     if (isRollButtonAdded()) {
         chrome.runtime.sendMessage({ "action": "reload-me" });
     } else {
-        addDisplayButton();
+        addDisplayItemButton();
+        const avatar = $(".details-aside .image a");
+        if (avatar.length > 0) {
+            character.avatar = avatar[0].href;
+            const avatarImg = $(".details-aside .image");
+            if (avatarImg) {
+                addDisplayButton(() => {
+                    sendRoll(character, "avatar", character.avatar, { "name": "Item" });
+                }, avatarImg, { small: false, image: true });
+            }
+        }
         const item_name = $(".page-title").text().trim();
         if (settings['subst-dndbeyond'])
             injectDiceToRolls(".item-details .more-info-content, .details-container-equipment .details-container-content-description-text", character, item_name);
@@ -79,6 +96,7 @@ function handleMessage(request, sender, sendResponse) {
     }
 }
 
+injectCSS(BUTTON_STYLE_CSS);
 chrome.runtime.onMessage.addListener(handleMessage);
 chrome.runtime.sendMessage({ "action": "activate-icon" });
 updateSettings();

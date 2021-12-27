@@ -205,7 +205,7 @@ class Monster extends CharacterBase {
     }
 
     displayAvatar() {
-        sendRoll(this, "avatar", this.avatar, { "name": "Avatar" });
+        sendRoll(this, "avatar", this._avatar, { "name": "Avatar" });
     }
 
     rollHitPoints() {
