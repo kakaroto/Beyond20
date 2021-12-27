@@ -472,54 +472,56 @@ function rollSpellAttack(request, custom_roll_dice) {
         const damage_types = request["damage-types"];
         const critical_damages = request["critical-damages"];
         const critical_damage_types = request["critical-damage-types"];
-        if (request.name === "Chromatic Orb") {
-            let chromatic_type = "?{Choose damage type";
-            let chromatic_damage = null;
-            let crit_damage = null;
-            for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder"]) {
-                let idx = damage_types.findIndex(t => t === dmgtype);
-                chromatic_damage = damages.splice(idx, 1)[0];
-                damage_types.splice(idx, 1);
-                idx = critical_damage_types.findIndex(t => t === dmgtype);
-                if (idx >= 0) {
-                    crit_damage = critical_damages.splice(idx, 1)[0];
-                    critical_damage_types.splice(idx, 1)[0];
-                }
-                chromatic_type += "|" + dmgtype;
-            }
-            chromatic_type += "}";
-            damages.splice(0, 0, chromatic_damage);
-            damage_types.splice(0, 0, chromatic_type);
-            critical_damages.splice(0, 0, crit_damage);
-            critical_damage_types.splice(0, 0, chromatic_type);
-        } else if (request.name === "Dragon's Breath") {
-            let dragons_breath_type = "?{Choose damage type";
-            let dragons_breath_damage = null;
-            for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Poison"]) {
-                let idx = damage_types.findIndex(t => t === dmgtype);
-                dragons_breath_damage = damages.splice(idx, 1)[0];
-                damage_types.splice(idx, 1);
-                dragons_breath_type += "|" + dmgtype;
-            }
-            dragons_breath_type += "}";
-            damages.splice(0, 0, dragons_breath_damage);
-            damage_types.splice(0, 0, dragons_breath_type);
-        } else if (request.name.includes("Chaos Bolt")) {
-            let base_damage = null;
-            let crit_damage = null;
-            for (let dmgtype of ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]) {
-                let idx = damage_types.findIndex(t => t === dmgtype);
-                base_damage = damages.splice(idx, 1)[0];
-                damage_types.splice(idx, 1);
-                idx = critical_damage_types.findIndex(t => t === dmgtype);
-                crit_damage = critical_damages.splice(idx, 1)[0];
-                critical_damage_types.splice(idx, 1)[0];
-            }
-            damages.splice(0, 0, base_damage);
-            damage_types.splice(0, 0, "Chaotic energy");
-            critical_damages.splice(0, 0, crit_damage);
-            critical_damage_types.splice(0, 0, "Chaotic energy");
-        } else if (request.name === "Life Transference") {
+        // if (request.name === "Chromatic Orb") {
+        //     let chromatic_type = "?{Choose damage type";
+        //     let chromatic_damage = null;
+        //     let crit_damage = null;
+        //     for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder"]) {
+        //         let idx = damage_types.findIndex(t => t === dmgtype);
+        //         chromatic_damage = damages.splice(idx, 1)[0];
+        //         damage_types.splice(idx, 1);
+        //         idx = critical_damage_types.findIndex(t => t === dmgtype);
+        //         if (idx >= 0) {
+        //             crit_damage = critical_damages.splice(idx, 1)[0];
+        //             critical_damage_types.splice(idx, 1)[0];
+        //         }
+        //         chromatic_type += "|" + dmgtype;
+        //     }
+        //     chromatic_type += "}";
+        //     damages.splice(0, 0, chromatic_damage);
+        //     damage_types.splice(0, 0, chromatic_type);
+        //     critical_damages.splice(0, 0, crit_damage);
+        //     critical_damage_types.splice(0, 0, chromatic_type);
+        // } else if (request.name === "Dragon's Breath") {
+        //     let dragons_breath_type = "?{Choose damage type";
+        //     let dragons_breath_damage = null;
+        //     for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Poison"]) {
+        //         let idx = damage_types.findIndex(t => t === dmgtype);
+        //         dragons_breath_damage = damages.splice(idx, 1)[0];
+        //         damage_types.splice(idx, 1);
+        //         dragons_breath_type += "|" + dmgtype;
+        //     }
+        //     dragons_breath_type += "}";
+        //     damages.splice(0, 0, dragons_breath_damage);
+        //     damage_types.splice(0, 0, dragons_breath_type);
+        // } else
+        // if (request.name.includes("Chaos Bolt")) {
+        //     let base_damage = null;
+        //     let crit_damage = null;
+        //     // for (let dmgtype of ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]) {
+        //     //     let idx = damage_types.findIndex(t => t === dmgtype);
+        //     //     base_damage = damages.splice(idx, 1)[0];
+        //     //     damage_types.splice(idx, 1);
+        //     //     idx = critical_damage_types.findIndex(t => t === dmgtype);
+        //     //     crit_damage = critical_damages.splice(idx, 1)[0];
+        //     //     critical_damage_types.splice(idx, 1)[0];
+        //     // }
+        //     damages.splice(0, 0, base_damage);
+        //     damage_types.splice(0, 0, "Chaotic Energy");
+        //     critical_damages.splice(0, 0, crit_damage);
+        //     critical_damage_types.splice(0, 0, "Chaotic Energy");
+        // } else 
+        if (request.name === "Life Transference") {
             damages.push("Twice the Necrotic damage");
             damage_types.push("Healing");
         } else if (request.name === "Toll the Dead") {

@@ -521,104 +521,6 @@ class Beyond20RollRenderer {
             const damage_types = request["damage-types"];
             const critical_damages = request["critical-damages"];
             const critical_damage_types = request["critical-damage-types"];
-            if (request.name === "Chromatic Orb") {
-                const damage_choices = {}
-                const critical_damage_choices = {}
-                for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder"]) {
-                    let idx = damage_types.findIndex(t => t === dmgtype);
-                    damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
-                    idx = critical_damage_types.findIndex(t => t === dmgtype);
-                    if (idx >= 0)
-                        critical_damage_choices[critical_damage_types.splice(idx, 1)[0]] = critical_damages.splice(idx, 1)[0];
-                }
-
-                const chromatic_type = await this.queryDamageType(request.name, damage_choices);
-                damages.splice(0, 0, damage_choices[chromatic_type]);
-                damage_types.splice(0, 0, chromatic_type);
-                if (critical_damage_choices[chromatic_type] !== undefined) {
-                    const crit_damage = critical_damage_choices[chromatic_type];
-                    critical_damages.splice(0, 0, crit_damage);
-                    critical_damage_types.splice(0, 0, chromatic_type);
-                }
-            } else if (request.name === "Dragon's Breath") {
-                const damage_choices = {}
-                for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Poison"]) {
-                    let idx = damage_types.findIndex(t => t === dmgtype);
-                    damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
-                }
-
-                const dragons_breath_type = await this.queryDamageType(request.name, damage_choices);
-                damages.splice(0, 0, damage_choices[dragons_breath_type]);
-                damage_types.splice(0, 0, dragons_breath_type);
-            } else if (request.name.includes("Chaos Bolt")) {
-                let base_damage = null;
-                let crit_damage = null;
-                for (let dmgtype of ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]) {
-                    let idx = damage_types.findIndex(t => t === dmgtype);
-                    base_damage = damages.splice(idx, 1)[0];
-                    damage_types.splice(idx, 1);
-                    idx = critical_damage_types.findIndex(t => t === dmgtype);
-                    crit_damage = critical_damages.splice(idx, 1)[0];
-                    critical_damage_types.splice(idx, 1);
-                }
-                damages.splice(0, 0, base_damage);
-                damage_types.splice(0, 0, "Chaotic energy");
-                critical_damages.splice(0, 0, crit_damage);
-                critical_damage_types.splice(0, 0, "Chaotic energy");
-            } else if (request.name == "Toll the Dead") {
-                const ttd_dice = await this.queryGeneric(request.name, "Is the target missing any of its hit points ?", { "d12": "Yes", "d8": "No" }, "ttd_dice", ["d12", "d8"]);
-                damages[0] = damages[0].replace("d8", ttd_dice);
-            } else if (request.name === "Spirit Shroud") {
-                const damage_choices = {}
-                for (let dmgtype of ["Cold", "Necrotic", "Radiant"]) {
-                    let idx = damage_types.findIndex(t => t === dmgtype);
-                    damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
-                }
-
-                const spirit_shroud_type = await this.queryDamageType(request.name, damage_choices);
-                damages.splice(0, 0, damage_choices[spirit_shroud_type]);
-                damage_types.splice(0, 0, spirit_shroud_type);
-            } else if (request.name === "Destructive Wave") {
-                const damage_choices = {}
-                for (let dmgtype of ["Radiant", "Necrotic"]) {
-                    let idx = damage_types.findIndex(t => t === dmgtype);
-                    damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
-                }
-
-                const destructive_wave_extra_type = await this.queryDamageType(request.name, damage_choices);
-                damages.splice(1, 0, damage_choices[destructive_wave_extra_type]);
-                damage_types.splice(1, 0, destructive_wave_extra_type);
-            } else if (request.name === "Elemental Weapon") {
-                const damage_choices = {}
-                for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Thunder"]) {
-                    let idx = damage_types.findIndex(t => t === dmgtype);
-                    damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
-                }
-
-                const elemental_weapon_extra_type = await this.queryDamageType(request.name, damage_choices);
-                damages.splice(0, 0, damage_choices[elemental_weapon_extra_type]);
-                damage_types.splice(0, 0, elemental_weapon_extra_type);
-            } else if (request.name === "Elemental Bane") {
-                const damage_choices = {}
-                for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Thunder"]) {
-                    let idx = damage_types.findIndex(t => t === dmgtype);
-                    damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
-                }
-
-                const elemental_bane_extra_type = await this.queryDamageType(request.name, damage_choices);
-                damages.splice(0, 0, damage_choices[elemental_bane_extra_type]);
-                damage_types.splice(0, 0, elemental_bane_extra_type);
-            } else if (request.name === "Spirit Guardians") {
-                const damage_choices = {}
-                for (let dmgtype of ["Radiant", "Necrotic"]) {
-                    let idx = damage_types.findIndex(t => t === dmgtype);
-                    damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
-                }
-
-                const spirit_guardians_extra_type = await this.queryDamageType(request.name, damage_choices);
-                damages.splice(0, 0, damage_choices[spirit_guardians_extra_type]);
-                damage_types.splice(0, 0, spirit_guardians_extra_type);
-            }
 
             const has_versatile = damage_types.length > 1 && damage_types[1].includes("Two-Handed");
             for (let i = 0; i < (damages.length); i++) {
@@ -647,11 +549,11 @@ class Beyond20RollRenderer {
 
             await this._roller.resolveRolls(request.name, all_rolls)
             
-            //Moved after the new resolveRolls so it can access the roll results
+            // Moved after the new resolveRolls so it can access the roll results
             if (request.name.includes("Chaos Bolt")) {
                 for (let [i, dmg_roll] of damage_rolls.entries()) {
                     const [dmg_type, roll, flags] = dmg_roll;
-                    if (dmg_type == "Chaotic energy Damage" && roll.dice[0].faces == 8) {
+                    if (dmg_type == "Chaotic Energy Damage" && roll.dice[0].faces == 8) {
                         const chaos_bolt_damages = ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"];
                         const damage_choices = {}
                         for (let r of roll.dice[0].rolls)
@@ -665,7 +567,9 @@ class Beyond20RollRenderer {
                             chaotic_type = await this.queryDamageType(request.name, damage_choices);
                         }
                         damage_rolls[i] = [chaotic_type + " Damage", roll, flags];
+                        damage_rolls[i + 1][0] = chaotic_type + " Damage";
                         critical_damage_types[0] = chaotic_type;
+                        critical_damage_types[1] = chaotic_type;
                         break;
                     }
                 }
