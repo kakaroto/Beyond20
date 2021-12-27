@@ -5,18 +5,14 @@
 var settings = getDefaultSettings()
 var fvtt_tabs = []
 var currentPermissions = {origins: []};
+var openedChangelog = false;
 
 function updateSettings(new_settings = null) {
     if (new_settings) {
         settings = new_settings
     } else {
         getStoredSettings((saved_settings) => {
-            settings = saved_settings
-            const version = chrome.runtime.getManifest().version
-            if (settings["show-changelog"] && settings["last-version"] != version) {
-                mergeSettings({ "last-version": version })
-                chrome.tabs.create({ "url": CHANGELOG_URL })
-            }
+            updateSettings(saved_settings);
         })
     }
 }
@@ -227,6 +223,17 @@ function onMessage(request, sender, sendResponse) {
         }
         if (isFVTT(tab.title)) {
             injectFVTTScripts(tab);
+        }
+        // maybe open the changelog
+        if (!openedChangelog) {
+            // Mark it true regardless of whether we opened it, so we don't check every time and avoid race conditions on setting save
+            openedChangelog = true;
+            const version = chrome.runtime.getManifest().version;
+            if (settings["show-changelog"] && settings["last-version"] != version) {
+                mergeSettings({ "last-version": version })
+                chrome.tabs.create({ "url": CHANGELOG_URL })
+            }
+
         }
     } else if (request.action == "register-fvtt-tab") {
         addFVTTTab(sender.tab)
