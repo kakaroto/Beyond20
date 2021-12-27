@@ -723,7 +723,7 @@ function capitalize(str) {
     return str.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, spell_group = null) {
+async function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, spell_group = null) {
     const prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
     const properties = propertyListToDict(prop_list);
     properties["Properties"] = properties["Properties"] || "";
@@ -884,7 +884,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
             }
         }
 
-        const roll_properties = buildAttackRoll(character,
+        const roll_properties = await buildAttackRoll(character,
             "item",
             item_name,
             description,
@@ -1002,7 +1002,7 @@ function rollItem(force_display = false, force_to_hit_only = false, force_damage
     }
 }
 
-function rollAction(paneClass, force_to_hit_only = false, force_damages_only = false) {
+async function rollAction(paneClass, force_to_hit_only = false, force_damages_only = false) {
     const properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property,." + paneClass + " .ddbc-property-list .ddbc-property-list__property"));
     //console.log("Properties are : " + String(properties));
     const action_name = $(".ct-sidebar__heading").text();
@@ -1104,7 +1104,7 @@ function rollAction(paneClass, force_to_hit_only = false, force_damages_only = f
             damages[0] = damages[0].replace(/1d/g, "2d");
         }
 
-        const roll_properties = buildAttackRoll(character,
+        const roll_properties = await buildAttackRoll(character,
             "action",
             action_name,
             description,
@@ -1372,7 +1372,7 @@ function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {sp
     }
 }
 
-function rollSpell(force_display = false, force_to_hit_only = false, force_damages_only = false) {
+async function rollSpell(force_display = false, force_to_hit_only = false, force_damages_only = false) {
     const properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property,.ct-spell-pane .ddbc-property-list .ddbc-property-list__property"));
     //console.log("Properties are : " + String(properties));
     const spell_source = $(".ct-sidebar__header-parent").text();
@@ -1465,7 +1465,7 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
             critical_limit = 19;
         if (spell_full_name === "Blade of Disaster")
             critical_limit = 18;
-        const roll_properties = buildAttackRoll(character,
+        const roll_properties = await buildAttackRoll(character,
             "spell",
             spell_name,
             description,
@@ -1547,12 +1547,12 @@ function rollSpell(force_display = false, force_to_hit_only = false, force_damag
     }
 }
 
-function displayItem() {
-    rollItem(true);
+async function displayItem() {
+    return rollItem(true);
 }
 
-function displaySpell() {
-    rollSpell(true);
+async function displaySpell() {
+    return rollSpell(true);
 }
 
 function displayFeature(paneClass) {
@@ -1923,8 +1923,8 @@ function injectRollButton(paneClass) {
                     //console.log("Match for ", size, " : ", to_hit, dmg);
                     const sizeStr = size.text().trim();
 
-                    const id = addRollButton(character, () => {
-                        const props = buildAttackRoll(character,
+                    const id = addRollButton(character, async () => {
+                        const props = await buildAttackRoll(character,
                             "action",
                             spell_name + "(" + sizeStr + ")",
                             sizeStr + " animated object",

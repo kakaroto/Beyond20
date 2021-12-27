@@ -99,7 +99,7 @@ function damagesToCrits(character, damages) {
     return crits;
 }
 
-function buildAttackRoll(character, attack_source, name, description, properties,
+async function buildAttackRoll(character, attack_source, name, description, properties,
                          damages = [], damage_types = [], to_hit = null,
                          brutal = 0, force_to_hit_only = false, force_damages_only = false, {weapon_damage_length=0}={}) {
     const roll_properties = {
