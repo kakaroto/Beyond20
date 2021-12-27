@@ -5,7 +5,7 @@ from roll_renderer import Beyond20RollRenderer, Beyond20BaseRoll;
 */
 var settings = null;
 var extension_url = "/modules/beyond20/";
-
+const fvttVersion = game.version || game.data.version;
 class FVTTDisplayer {
     postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
         Hooks.once('renderChatMessage', (chat_message, html, data) => {
@@ -55,7 +55,7 @@ class FVTTDisplayer {
                 const result = []
                 const parts = [];
                 r.class = "Roll";
-                if (isNewerVersion(game.data.version, "0.8")) {
+                if (isNewerVersion(fvttVersion, "0.8")) {
                     // Foundry 0.8.x API
                     r.parts.forEach(p => {
                         if (parts.length > 0) parts.push({
@@ -87,7 +87,7 @@ class FVTTDisplayer {
                     });
                     r.parts = undefined;
                     r.terms = parts;
-                } else if (isNewerVersion(game.data.version, "0.7")) {
+                } else if (isNewerVersion(fvttVersion, "0.7")) {
                     r.parts.forEach(p => {
                         if (parts.length > 0 && !["+", "-"].includes(parts[parts.length - 1])) parts.push("+");
                         if (p.formula) {
@@ -129,12 +129,12 @@ class FVTTDisplayer {
                 }
                 return Roll.fromData(r)
             });
-            if (isNewerVersion(game.data.version, "0.8")) {
+            if (isNewerVersion(fvttVersion, "0.8")) {
                 // Foundry 0.8.x API
                 // This will accept backware compatible fvttRolls format
                 const pool = PoolTerm.fromRolls(fvttRolls);
                 data.roll = Roll.fromTerms([pool]);
-            } else if (isNewerVersion(game.data.version, "0.7")) {
+            } else if (isNewerVersion(fvttVersion, "0.7")) {
                 // Foundry 0.7.x API
                 // This will accept backware compatible fvttRolls format
                 const pool = new DicePool({rolls: fvttRolls}).evaluate();
@@ -207,7 +207,7 @@ class FVTTRoll extends Beyond20BaseRoll {
 
     get dice() {
         // 0.7.x Dice Roll API is different
-        if (isNewerVersion(game.data.version, "0.7")) {
+        if (isNewerVersion(fvttVersion, "0.7")) {
             return this._roll.dice.map(d => {
                 return {
                     amount: d.amount || d.number,
@@ -224,7 +224,7 @@ class FVTTRoll extends Beyond20BaseRoll {
 
     get parts() {
         // 0.7.x Dice Roll API is different
-        if (isNewerVersion(game.data.version, "0.8")) {
+        if (isNewerVersion(fvttVersion, "0.8")) {
             return this._roll.terms.map(t => {
                 if (t instanceof Die) {
                     return {
@@ -250,7 +250,7 @@ class FVTTRoll extends Beyond20BaseRoll {
                     return t.expression;
                 }
             });
-        } else if (isNewerVersion(game.data.version, "0.7")) {
+        } else if (isNewerVersion(fvttVersion, "0.7")) {
             return this._roll.terms.map(t => {
                 if (t instanceof Die) {
                     return {
