@@ -109,7 +109,7 @@ function populateCharacter(response) {
             e = createHTMLOption("rogue-sneak-attack", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Jack of All Trade")) {
+        if (response["class-features"].includes("Jack of All Trades")) {
             e = createHTMLOption("bard-joat", false, character_settings);
             options.append(e);
         }
