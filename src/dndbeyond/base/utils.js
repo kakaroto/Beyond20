@@ -144,6 +144,91 @@ async function buildAttackRoll(character, attack_source, name, description, prop
     if (damages.length > 0) {
         roll_properties["damages"] = damages;
         roll_properties["damage-types"] = damage_types;
+        
+        if (roll_properties.name === "Chromatic Orb") {
+            const damage_choices = {}
+            for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder"]) {
+                let idx = damage_types.findIndex(t => t === dmgtype);
+                damage_choices[roll_properties["damage-types"].splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
+            }
+
+            const chromatic_type = await dndbeyondDiceRoller.queryDamageType(roll_properties.name, damage_choices);
+            damages.splice(0, 0, damage_choices[chromatic_type]);
+            damage_types.splice(0, 0, chromatic_type);
+        } else if (roll_properties.name === "Dragon's Breath") {
+            const damage_choices = {}
+            for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Poison"]) {
+                let idx = damage_types.findIndex(t => t === dmgtype);
+                damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
+            }
+
+            const dragons_breath_type = await dndbeyondDiceRoller.queryDamageType(roll_properties.name, damage_choices);
+            damages.splice(0, 0, damage_choices[dragons_breath_type]);
+            damage_types.splice(0, 0, dragons_breath_type);
+        } else if (roll_properties.name.includes("Chaos Bolt")) {
+            let base_damage = null;
+            for (let dmgtype of ["Acid", "Cold", "Fire", "Force", "Lightning", "Poison", "Psychic", "Thunder"]) {
+                let idx = damage_types.findIndex(t => t === dmgtype);
+                base_damage = damages.splice(idx, 1)[0];
+                damage_types.splice(idx, 1);
+            }
+            damages.splice(0, 0, base_damage);
+            damage_types.splice(0, 0, "Chaotic Energy");
+        } else if (roll_properties.name == "Toll the Dead") {
+            const ttd_dice = await dndbeyondDiceRoller.queryGeneric(roll_properties.name, "Is the target missing any of its hit points ?", { "d12": "Yes", "d8": "No" }, "ttd_dice", ["d12", "d8"]);
+            damages[0] = damages[0].replace("d8", ttd_dice);
+        }  else if (roll_properties.name === "Spirit Shroud") {
+            const damage_choices = {}
+            for (let dmgtype of ["Cold", "Necrotic", "Radiant"]) {
+                let idx = damage_types.findIndex(t => t === dmgtype);
+                damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
+            }
+
+            const spirit_shroud_type = await dndbeyondDiceRoller.queryDamageType(roll_properties.name, damage_choices);
+            damages.splice(0, 0, damage_choices[spirit_shroud_type]);
+            damage_types.splice(0, 0, spirit_shroud_type);
+        } else if (roll_properties.name === "Destructive Wave") {
+            const damage_choices = {}
+            for (let dmgtype of ["Radiant", "Necrotic"]) {
+                let idx = damage_types.findIndex(t => t === dmgtype);
+                damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
+            }
+
+            const destructive_wave_extra_type = await dndbeyondDiceRoller.queryDamageType(roll_properties.name, damage_choices);
+            damages.splice(1, 0, damage_choices[destructive_wave_extra_type]);
+            damage_types.splice(1, 0, destructive_wave_extra_type);
+        } else if (roll_properties.name === "Elemental Weapon") {
+            const damage_choices = {}
+            for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Thunder"]) {
+                let idx = damage_types.findIndex(t => t === dmgtype);
+                damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
+            }
+
+            const elemental_weapon_extra_type = await dndbeyondDiceRoller.queryDamageType(roll_properties.name, damage_choices);
+            damages.splice(0, 0, damage_choices[elemental_weapon_extra_type]);
+            damage_types.splice(0, 0, elemental_weapon_extra_type);
+        } else if (roll_properties.name === "Elemental Bane") {
+            const damage_choices = {}
+            for (let dmgtype of ["Acid", "Cold", "Fire", "Lightning", "Thunder"]) {
+                let idx = damage_types.findIndex(t => t === dmgtype);
+                damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
+            }
+
+            const elemental_bane_extra_type = await dndbeyondDiceRoller.queryDamageType(roll_properties.name, damage_choices);
+            damages.splice(0, 0, damage_choices[elemental_bane_extra_type]);
+            damage_types.splice(0, 0, elemental_bane_extra_type);
+        } else if (roll_properties.name === "Spirit Guardians") {
+            const damage_choices = {}
+            for (let dmgtype of ["Radiant", "Necrotic"]) {
+                let idx = damage_types.findIndex(t => t === dmgtype);
+                damage_choices[damage_types.splice(idx, 1)[0]] = damages.splice(idx, 1)[0];
+            }
+
+            const spirit_guardians_extra_type = await dndbeyondDiceRoller.queryDamageType(roll_properties.name, damage_choices);
+            damages.splice(0, 0, damage_choices[spirit_guardians_extra_type]);
+            damage_types.splice(0, 0, spirit_guardians_extra_type);
+        }
+        
         if (to_hit) {
             const crits = damagesToCrits(character, damages, damage_types);
             const crit_damages = [];
