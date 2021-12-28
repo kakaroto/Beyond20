@@ -1,8 +1,10 @@
+var advancedOptions = false;
 
 function createOptionList() {
+    $("main .beyond20-options").remove();
     const options = [];
     for (let option in options_list) {
-        const child = createHTMLOption(option);
+        const child = createHTMLOptionEx(option, options_list[option], false, {advanced: advancedOptions});
         if (child)
             options.push(child);
     }
@@ -29,7 +31,6 @@ function setupHTML() {
     createOptionList();
     $("ul").addClass("disabled");
     initializeSettings(gotSettings);
-    $('#save').bind('click', save_settings);
     $('.beyond20-option-input').change(save_settings);
     $(".beyond20-options").on("markaChanged", save_settings);
     $(document).on('click', 'a', function (ev) {
@@ -40,4 +41,14 @@ function setupHTML() {
     });
 }
 
-setupHTML();
+function setupOptionsMenu() {
+    setupHTML();
+    $('#save').on('click', save_settings);
+    $('#advanced').on('click', (ev) => {
+        advancedOptions = !advancedOptions;
+        $(ev.target).text(advancedOptions ? "Basic Options" : "Advanced Options");
+        setupHTML();
+    });
+}
+
+setupOptionsMenu();

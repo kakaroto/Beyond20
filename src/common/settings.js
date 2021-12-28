@@ -72,7 +72,8 @@ const options_list = {
         "title": "Hide roll results on D&D Beyond when whispering to Discord",
         "description": "Don't show the roll results on D&D Beyond when using whisper and sending results to \"D&D Beyond Dice Roller & Discord\"",
         "type": "bool",
-        "default": false
+        "default": false,
+        "advanced": true
     },
 
     "roll-type": {
@@ -99,7 +100,8 @@ const options_list = {
         "title": "Add Quick Rolls areas to main page",
         "description": "Listen to clicks in specific areas of the abilities, skills, actions and spells to quickly roll them.",
         "type": "bool",
-        "default": true
+        "default": true,
+        "advanced": true
     },
 
     "use-digital-dice": {
@@ -130,7 +132,8 @@ const options_list = {
         "title": "Add tiebreaker to initiative rolls",
         "description": "Adds the dexterity score as a decimal to initiative rolls to break any initiative ties.",
         "type": "bool",
-        "default": false
+        "default": false,
+        "advanced": true
     },
 
     "critical-homebrew": {
@@ -196,7 +199,8 @@ const options_list = {
             "If the template does not match the campaign setting, it will default to the Beyond20 Roll Renderer.",
         "type": "combobox",
         "default": "roll20",
-        "choices": { "roll20": "D&D 5E By Roll20", "default": "Beyond20 Roll Renderer" }
+        "choices": { "roll20": "D&D 5E By Roll20", "default": "Beyond20 Roll Renderer" },
+        "advanced": true
     },
 
     "notes-to-vtt": {
@@ -206,7 +210,8 @@ const options_list = {
             + "\nTo do this, format the text you wish to send as follows:"
             + "\n[[msg-type]] Put text you wish to send HERE[[/msg-type]]"
             + "\nReplace \"msg-type\" with one of the following: \"before\", \"after\", or \"replace\" depending on how you want to affect the message or action that would normally be sent to the VTT.",
-        "type": "info"
+        "type": "info",
+        "advanced": true
     },
 
     "subst-roll20": {
@@ -228,7 +233,8 @@ const options_list = {
         "description": "In the D&D Beyond Spell page or Character sheet side panel, if a spell, item, feat or action has a dice formula in its description,\n" +
             "enabling this will add a dice icon next to the formula to allow you to roll it.",
         "type": "bool",
-        "default": true
+        "default": true,
+        "advanced": true
     },
 
     "subst-dndbeyond-stat-blocks": {
@@ -236,21 +242,24 @@ const options_list = {
         "description": "In D&D Beyond, if a dice formula is found in the stat block of a creature, monster, vehicle,\n" +
             "enabling this will add a dice icon next to the formula to allow you to roll it.",
         "type": "bool",
-        "default": true
+        "default": true,
+        "advanced": true
     },
 
     "handle-stat-blocks": {
         "title": "Add roll buttons to stat blocks",
         "description": "In D&D Beyond, adds roll buttons for abilities/saving throws/skills/actions to the stat block of a creature, monster or vehicle.",
         "type": "bool",
-        "default": true
+        "default": true,
+        "advanced": true
     },
 
     "crit-prefix": {
         "title": "Critical Hit Prefix",
         "description": "Prefix to add to the Critical Hit dice result.\nIt might be less confusing to explicitely show the crit damage",
         "type": "string",
-        "default": "Crit: "
+        "default": "Crit: ",
+        "advanced": true
     },
 
     "components-display": {
@@ -258,7 +267,8 @@ const options_list = {
         "description": "When doing a spell attack, what components to show alongside the spell roll.",
         "type": "combobox",
         "default": "all",
-        "choices": { "all": "All components", "material": "Only material components", "none": "Do not display anything" }
+        "choices": { "all": "All components", "material": "Only material components", "none": "Do not display anything" },
+        "advanced": true
     },
 
     "roll20-spell-description-display": {
@@ -272,7 +282,8 @@ const options_list = {
         "title": "Component Prefix",
         "description": "Prefix to the components display of a spell attack.\nIf displaying material components only, you may want to set it to 'Materials used :' for example",
         "type": "string",
-        "default": "Components: "
+        "default": "Components: ",
+        "advanced": true
     },
 
 
@@ -319,7 +330,8 @@ const options_list = {
         "description": "When a new version is released and the extension has been updated,\n" +
             "open the changelog in a new window",
         "type": "bool",
-        "default": true
+        "default": true,
+        "advanced": true
     },
 
     "last-version": {
@@ -364,6 +376,18 @@ const options_list = {
         "icon": "/images/donate.png",
         "icon-width": "64",
         "icon-height": "64"
+    },
+    "donate-advanced": {
+        "short": "Buy rations (1 day) to feed my familiar",
+        "title": "Become a patron of the art of software development!",
+        "description": "If you wish to support my work on Beyond 20 or my other D&D related project, subscribe to my patreon " +
+            "or donate via paypal!\nI am grateful for your generosity!",
+        "type": "link",
+        "default": "https://beyond20.here-for-more.info/rations",
+        "icon": "/images/donate.png",
+        "icon-width": "64",
+        "icon-height": "64",
+        "advanced": true
     }
 }
 
@@ -769,9 +793,12 @@ function resetSettings(cb = null, _list = options_list) {
     setSettings(getDefaultSettings(_list), cb);
 }
 
-function createHTMLOptionEx(name, option, short = false) {
+function createHTMLOptionEx(name, option, short = false, {advanced=false}={}) {
     if (option.hidden || (short && !option.short) || !option.title)
         return null;
+    if (!advanced && option.advanced) return null; // Hide advanced if not in advanced mode
+    if (advanced && !option.advanced) return null; // Hide non-advanced if in advanced mode
+
     const description = short ? option.short_description : option.description;
     const description_p = description ? description.split("\n").map(desc => E.p({}, desc)) : [];
     const title = short ? option.short : option.title;
