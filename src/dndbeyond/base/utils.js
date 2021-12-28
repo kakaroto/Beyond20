@@ -467,9 +467,11 @@ function addRollTableButton(character, where, table) {
         "float": "left",
         "display": "inline-block"
     });
-    $(button).on('click', (event) => {
+    $(button).on('click', async (event) => {
         event.stopPropagation();
         event.preventDefault();
+        // This is because of the prompt for the bardic inspiration dice
+        await table.resolveFormula();
         sendRoll(character, "roll-table", table.formula, {
             "name": table.name,
             "formula": table.formula,

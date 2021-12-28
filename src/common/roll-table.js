@@ -33,28 +33,45 @@ class RollTable {
         return this.results;
     }
 
+    async resolveFormula() {
+        const bardicInspirationDie = /Bardic Insp.* Die/.test(this.formula);
+        if (bardicInspirationDie) {
+            const choices = {
+                "1d6": "1d6 (Bard levels 1-4)",
+                "1d8": "1d8 (Bard levels 5-9)",
+                "1d10": "1d10 (Bard levels 10-14)",
+                "1d12": "1d12 (Bard levels 15-20)"
+            }
+            this.formula = await dndbeyondDiceRoller.queryGeneric(this.name, "Select Bardic Inspiration Die : ", choices);
+        }
+        return this.formula;
+    }
+
     setTotal(total) {
         this.total = total;
     }
 
-    static parseTable(table, name) {
-        const dice_columns = [];
+    static parseTable(table, name, options={}) {
+        const dice_columns = []; // Index of columns that contain dice results
         const columns = {};
         const headers = table.find("thead tr th");
+        let formula = null;
         for (let index = 0; index < headers.length; index++) {
             const header = headers.eq(index).text().trim();
             if (!header) break;
             // If header is a dice formula, then this is a roll table
-            const replaced = replaceRolls(header, () => "").trim();
-            if (dice_columns.length === 0) {
-                if (replaced) break;
+            const isDiceFormula = !replaceRolls(header, () => "").trim();
+            const bardicInspirationDie = /Bardic Insp.* Die/.test(header);
+            if (!formula) {
+                if (!isDiceFormula && !bardicInspirationDie) break;
                 dice_columns.push(index);
+                formula = header;
                 continue;
             } else {
                 // Look for other columns that are part of this roll table
                 // (some tables are split horizontally, having multiple columns for the same data)
                 // see https://www.dndbeyond.com/sources/dmg/adventure-environments#BuildingaDungeon
-                if (replaced) {
+                if (!isDiceFormula && !bardicInspirationDie) {
                     columns[header] = {};
                     continue;
                 }
@@ -64,8 +81,18 @@ class RollTable {
                 }
             }
         }
-        if (dice_columns.length === 0) return;
+        if (!formula) return;
     
+        const bardicInspirationDie = /Bardic Insp.* Die/.test(formula);
+        if (bardicInspirationDie) {
+            if (options.character) {
+                const lvl = options.character.getClassLevel("Bard");
+                if (lvl < 5) formula = "1d6";
+                else if (lvl < 10) formula = "1d8";
+                else if (lvl < 15) formula = "1d10";
+                else formula = "1d12";
+            }
+        }
         const rows = table.find("tbody tr");
         for (const row of rows.toArray()) {
             const cells = $(row).find("td");
@@ -84,7 +111,7 @@ class RollTable {
             }
         }
     
-        return new this(name, headers.eq(dice_columns[0]).text().trim(), columns);
+        return new this(name, formula, columns);
     }
 
 }
