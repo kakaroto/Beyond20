@@ -555,12 +555,6 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
-    "paladin-legendary-strike": {
-        "title": "Paladin: Oath of Heroism: Legendary Strike",
-        "description": "Channel Divinity and score critical hits on rolls of 19 and 20",
-        "type": "bool",
-        "default": false
-    },
     "ranger-favored-foe": {
         "title": "Ranger: Favored Foe",
         "description": "You mark an enemy and your attacks hurt them to an increased degree",
