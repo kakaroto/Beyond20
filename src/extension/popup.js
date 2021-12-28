@@ -94,6 +94,8 @@ function populateCharacter(response) {
         options.append(e);
         e = createHTMLOption("custom-damage-dice", false, character_settings);
         options.append(e);
+        e = createHTMLOption("custom-ability-modifier", false, character_settings);
+        options.append(e);
         e = createHTMLOption("custom-critical-limit", false, character_settings);
         options.append(e);
         if (response["racial-traits"].includes("Lucky")) {

@@ -206,6 +206,13 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
             modifier = parseInt(modifier) + JoaT;
             modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
         }
+        if (character.getSetting("custom-ability-modifier", "")) {
+            const custom = parseInt(character.getSetting("custom-ability-modifier", "0")) || 0;
+            if (custom != 0)  {
+                modifier = parseInt(modifier) + custom;
+                modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+            }
+        }
     }
 
     const roll_properties = {

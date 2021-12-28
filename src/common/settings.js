@@ -428,6 +428,12 @@ const character_settings = {
         "type": "string",
         "default": ""
     },
+    "custom-ability-modifier": {
+        "title": "Custom magical modifier to raw ability checks",
+        "description": "Add a custom modifier from magical items (Stone of Good Luck for example) to raw ability checks.",
+        "type": "string",
+        "default": ""
+    },
     "custom-critical-limit": {
         "title": "Custom Critical limit",
         "description": "Set a custom threshold for the critical hit limit (if using homebrew magical items)",
