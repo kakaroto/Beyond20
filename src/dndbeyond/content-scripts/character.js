@@ -781,10 +781,18 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                         versatile_choice = "two";
                     if (versatile_choice == "one") {
                         damages.push(damage);
-                        damage_types.push(damage_type);
+                        if (character.getGlobalSetting("weapon-handedness", false)){
+                            damage_types.push(damage_type + " (1-Hand)");
+                        } else {
+                            damage_types.push(damage_type);
+                        }
                     } else if (versatile_choice == "two") {
                         damages.push(versatile_damage);
-                        damage_types.push(damage_type);
+                        if (character.getGlobalSetting("weapon-handedness", false)){
+                            damage_types.push(damage_type + " (2-Hand)");
+                        } else {
+                            damage_types.push(damage_type);
+                        }
                     } else {
                         damages.push(damage);
                         damage_types.push(damage_type + " (1-Hand)");

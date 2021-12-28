@@ -286,6 +286,13 @@ const options_list = {
         "advanced": true
     },
 
+    "weapon-handedness": {
+        "title": "Always Show Weapon Handedness",
+        "description": "On Versatile weapons, always show weapon-handedness, even if 1-handed or 2-handed is selected",
+        "type": "bool",
+        "default": false,
+        "advanced": true
+    },
 
     "roll20-tab": {
         "type": "migrate",
