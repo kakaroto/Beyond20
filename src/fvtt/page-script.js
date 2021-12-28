@@ -5,7 +5,8 @@ from roll_renderer import Beyond20RollRenderer, Beyond20BaseRoll;
 */
 var settings = null;
 var extension_url = "/modules/beyond20/";
-const fvttVersion = game.version || game.data.version;
+var fvttVersion = game.version || game.data?.version;
+
 class FVTTDisplayer {
     postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
         Hooks.once('renderChatMessage', (chat_message, html, data) => {
@@ -541,6 +542,10 @@ function setTitle() {
         // Wait for the world and UI to be loaded;
         Hooks.once("renderChatLog", setTitle);
     }
+    // Re-set the game version on ready in case the game data wasn't initialized on Beyond20 load
+    Hooks.on("ready", () => {
+        fvttVersion = game.version || game.data?.version;
+    });
 }
 
 console.log("Beyond20: Foundry VTT Page Script loaded");
