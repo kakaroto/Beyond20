@@ -885,8 +885,8 @@ function createHTMLOptionEx(name, option, short = false, {advanced=false}={}) {
     return e;
 }
 
-function createHTMLOption(name, short = false, _list = options_list) {
-    return createHTMLOptionEx(name, _list[name], short);
+function createHTMLOption(name, short = false, _list = options_list, {advanced}={}) {
+    return createHTMLOptionEx(name, _list[name], short, {advanced});
 }
 
 function initializeMarkaGroup(group) {

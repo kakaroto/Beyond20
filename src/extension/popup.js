@@ -25,8 +25,15 @@ function createOptionList() {
     $("main").prepend(E.ul({ class: "list-group beyond20-options" }, ...options));
     $(".beyond20-options").append(
         E.li({ class: "list-group-item beyond20-option" },
-            E.a({ id: "openOptions", class: "list-content", href: '#' },
-                E.h4({}, "More Options")
+            E.div({ class: "list-content", style: "padding-right: 0px;"},
+                E.span({style: "display: flex;"},
+                    E.a({ id: "openOptions", href: '#', style: "flex-grow: 1;" },
+                        E.h4({}, "More Options")
+                    ),
+                    E.a({ id: "toggleAdvanced", href: '#', style: "display: none;" },
+                        E.h4({}, "🔻Advanced Options")
+                    )
+                )
             )
         )
     );
@@ -38,6 +45,9 @@ function createOptionList() {
     });
     $("#openOptions").on('click', (ev) => {
         chrome.runtime.openOptionsPage();
+    });
+    $("#toggleAdvanced").on('click', () => {
+        $(".beyond20-options .advanced-option").toggle();
     });
 }
 
@@ -89,14 +99,19 @@ function populateCharacter(response) {
         );
 
         let e = createHTMLOption("versatile-choice", false, character_settings);
+        e.classList.add("advanced-option");
         options.append(e);
         e = createHTMLOption("custom-roll-dice", false, character_settings);
+        e.classList.add("advanced-option");
         options.append(e);
         e = createHTMLOption("custom-damage-dice", false, character_settings);
+        e.classList.add("advanced-option");
         options.append(e);
         e = createHTMLOption("custom-ability-modifier", false, character_settings);
+        e.classList.add("advanced-option");
         options.append(e);
         e = createHTMLOption("custom-critical-limit", false, character_settings);
+        e.classList.add("advanced-option");
         options.append(e);
         if (response["racial-traits"].includes("Lucky")) {
             e = createHTMLOption("halfling-lucky", false, character_settings);
@@ -276,7 +291,6 @@ function populateCharacter(response) {
             e = createHTMLOption("warlock-the-celestial-radiant-soul", false, character_settings);
             options.append(e);
         }
-
     }
     $('.beyond20-option-input').off('change', save_settings);
     $('.beyond20-option-input').change(save_settings);
@@ -285,13 +299,19 @@ function populateCharacter(response) {
 
         if (response) {
             e = createHTMLOption("discord-target", false, character_settings);
-            options.append(e);
+            e.classList.add("advanced-option");
+            $("#character-option").after(e);
 
             // Load character specific setttings after global settings in case
             // an option (like discord-target) needs the global variable `settings`
             // to be pre-populated
             loadSettings(response.settings, character_settings);
+            // When loading settings, the discord target combobox gets replaced in order to be filled,
+            // so we need to fetch it again to add the advanced-option class to it
+            $("#beyond20-option-discord-target").addClass("advanced-option");
         }
+        options.find(".advanced-option").hide();
+        $("#toggleAdvanced").show();
     });
 }
 

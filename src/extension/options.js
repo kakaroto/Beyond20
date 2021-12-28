@@ -4,7 +4,7 @@ function createOptionList() {
     $("main .beyond20-options").remove();
     const options = [];
     for (let option in options_list) {
-        const child = createHTMLOptionEx(option, options_list[option], false, {advanced: advancedOptions});
+        const child = createHTMLOption(option, false, options_list, {advanced: advancedOptions});
         if (child)
             options.push(child);
     }
