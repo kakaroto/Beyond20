@@ -178,10 +178,6 @@ function populateCharacter(response) {
             e = createHTMLOption("ranger-gathered-swarm", false, character_settings);
             options.append(e);
         }
-        if (response["actions"].includes("Channel Divinity: Legendary Strike")) {
-            e = createHTMLOption("paladin-legendary-strike", false, character_settings)
-            options.append(e);
-        }
         if (response["class-features"].includes("Improved Divine Smite")) {
             e = createHTMLOption("paladin-improved-divine-smite", false, character_settings);
             options.append(e);

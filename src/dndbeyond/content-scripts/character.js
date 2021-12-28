@@ -873,9 +873,6 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
         }
         
         let critical_limit = 20;
-        if (character.hasAction("Channel Divinity: Legendary Strike") &&
-            character.getSetting("paladin-legendary-strike", false))
-            critical_limit = 19;
         if (character.hasClassFeature("Hexblade’s Curse") &&
             character.getSetting("warlock-hexblade-curse", false))
             critical_limit = 19;
@@ -1083,9 +1080,6 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
 
         if (isMeleeAttack || isRangedAttack) {
             to_hit = handleSpecialWeaponAttacks(damages, damage_types, properties, settings_to_change, {to_hit, action_name});
-            if (character.hasAction("Channel Divinity: Legendary Strike") &&
-                character.getSetting("paladin-legendary-strike", false))
-                critical_limit = 19;
             if (character.hasClassFeature("Improved Critical"))
                 critical_limit = 19;
             if (character.hasClassFeature("Invincible Conqueror") &&
