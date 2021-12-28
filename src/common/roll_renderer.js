@@ -222,7 +222,7 @@ class Beyond20RollRenderer {
         let html = '<div class="beyond20-message"><div class="beyond20-header">';
         if (request.whisper == WhisperType.HIDE_NAMES) {
             description = null;
-            title = "???";
+            title = this._settings["hidden-monster-replacement"];
         } else if (request.character && request.character.avatar) {
             html += `<img class="beyond20-character-avatar" src="${request.character.avatar}" title="${title}" width="37" height="37">`;
         }
@@ -342,7 +342,7 @@ class Beyond20RollRenderer {
         }
 
         html += "</div>";
-        const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
+        const character = (request.whisper == WhisperType.HIDE_NAMES) ? this._settings["hidden-monster-replacement"] : request.character.name;
         const discordChannel = getDiscordChannel(this._settings, request.character)
         postToDiscord(discordChannel ? discordChannel.secret : "", request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open).then(discord_error => {
             if (discord_error != undefined)
@@ -378,9 +378,9 @@ class Beyond20RollRenderer {
     }
 
     postMessage(request, title, message) {
-        const character = (request.whisper == WhisperType.HIDE_NAMES) ? "???" : request.character.name;
+        const character = (request.whisper == WhisperType.HIDE_NAMES) ? this._settings["hidden-monster-replacement"] : request.character.name;
         if (request.whisper == WhisperType.HIDE_NAMES)
-            title = "???";
+            title = this._settings["hidden-monster-replacement"];
         if (request.sendMessage && this._displayer.sendMessage)
             this._displayer.sendMessage(request, title, message, character, request.whisper, false, '', {}, '', [], [], [], [], true);
         else
@@ -727,7 +727,7 @@ class Beyond20RollRenderer {
     }
 
     displayAvatar(request) {
-        const character = (request.whisper !== WhisperType.NO) ? "???" : request.character.name;
+        const character = (request.whisper !== WhisperType.NO) ? this._settings["hidden-monster-replacement"] : request.character.name;
         this._displayer.postHTML(request, request.name, `<img src='${request.character.avatar}' width='100%'>`, {}, character, false, false);
         this.displayAvatarToDiscord(request);
     }

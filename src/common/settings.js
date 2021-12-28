@@ -271,13 +271,6 @@ const options_list = {
         "advanced": true
     },
 
-    "roll20-spell-description-display": {
-        "title": "Display Spell Descriptions in spell attacks",
-        "description": "When doing a spell attack, display the spells full description (Roll20 only toggle)",
-        "type": "bool",
-        "default": false
-    },
-
     "component-prefix": {
         "title": "Component Prefix",
         "description": "Prefix to the components display of a spell attack.\nIf displaying material components only, you may want to set it to 'Materials used :' for example",
@@ -286,6 +279,20 @@ const options_list = {
         "advanced": true
     },
 
+    "hidden-monster-replacement": {
+        "title": "Hidden monster name",
+        "description": "Text to use to replace the monster name and attack name for hidden monsters (whisper type)",
+        "type": "string",
+        "default": "???",
+        "advanced": true
+    },
+
+    "roll20-spell-description-display": {
+        "title": "Display Spell Descriptions in spell attacks",
+        "description": "When doing a spell attack, display the spells full description (Roll20 only toggle)",
+        "type": "bool",
+        "default": false
+    },
 
     "roll20-tab": {
         "type": "migrate",

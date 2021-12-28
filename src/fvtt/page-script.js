@@ -346,7 +346,7 @@ function rollInitiative(request, custom_roll_dice = "") {
 function popAvatar(request) {
     new ImagePopout(request.character.avatar, {
         "shareable": false,
-        "title": (request.whisper !== WhisperType.NO) ? "???" : request.character.name,
+        "title": (request.whisper !== WhisperType.NO) ? settings["hidden-monster-replacement"] : request.character.name,
         "entity": { "type": "User", "id": game.user.id }
     }).render(true).shareImage(true);
     roll_renderer.displayAvatarToDiscord(request);

@@ -176,14 +176,14 @@ function template(request, name, properties) {
 
     if (request.whisper == WhisperType.HIDE_NAMES) {
         if (properties["charname"])
-            properties["charname"] = "???"
+            properties["charname"] = settings["hidden-monster-replacement"]
         // Take into account links for disabled auto-roll-damages option
         if (properties["rname"])
             properties["rname"] = properties["rname"].includes("](!") ?
-                properties["rname"].replace(/\[[^\]]*\]\(\!/, "[???](!") : "???";
+                properties["rname"].replace(/\[[^\]]*\]\(\!/, "[???](!") : settings["hidden-monster-replacement"];
         if (properties["rnamec"])
             properties["rnamec"] = properties["rnamec"].includes("](!") ?
-                properties["rnamec"].replace(/\[[^\]]*\]\(\!/, "[???](!") : "???";
+                properties["rnamec"].replace(/\[[^\]]*\]\(\!/, "[???](!") : settings["hidden-monster-replacement"];
         delete properties["description"];
     }
     for (let key in properties)
@@ -631,7 +631,7 @@ async function handleRoll(request) {
             "normal": 1
         });
     }
-    const character_name = request.whisper == WhisperType.HIDE_NAMES ? "???" : request.character.name;
+    const character_name = request.whisper == WhisperType.HIDE_NAMES ? settings["hidden-monster-replacement"] : request.character.name;
     postChatMessage(roll, character_name);
 }
 
@@ -909,10 +909,10 @@ function handleMessage(request, sender, sendResponse) {
         if (request.type == "avatar") {
             roll_renderer.displayAvatarToDiscord(request);
             roll = rollAvatarDisplay(request);
-            const character_name = request.whisper !== WhisperType.NO ? "???" : request.character.name;
+            const character_name = request.whisper !== WhisperType.NO ? settings["hidden-monster-replacement"] : request.character.name;
             return postChatMessage(roll, character_name);
         } else if (request.type == "chat-message") {
-            const character_name = request.whisper == WhisperType.HIDE_NAMES ? "???" : request.character.name;
+            const character_name = request.whisper == WhisperType.HIDE_NAMES ? settings["hidden-monster-replacement"] : request.character.name;
             return postChatMessage(request.message, character_name);
         }
         const isOGL = $("#isOGL").val() === "1";
