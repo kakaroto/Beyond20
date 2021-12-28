@@ -787,9 +787,9 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                         damage_types.push(damage_type);
                     } else {
                         damages.push(damage);
-                        damage_types.push(damage_type + "(One-Handed)");
+                        damage_types.push(damage_type + " (1-Hand)");
                         damages.push(versatile_damage);
-                        damage_types.push(damage_type + "(Two-Handed)");
+                        damage_types.push(damage_type + " (2-Hand)");
                     }
                 } else if (damage != "" && damage_type != "--") {
                     damages.push(damage);
