@@ -16,15 +16,19 @@ In order for the Beyond20 extension to know where to send rolls, and to prevent 
 
 As owner of a server, you can send the command `!beyond20 secret` in any channel where the bot has joined, and it will reply with a secret key that allows you to **send rolls to that specific channel**. You may share that key with your players so they can also send rolls to that channel.
 
-You can also mention a specific channel or user for the rolls to be sent to, as well as a separate channel or user for whispers to be sent to it by adding arguments to that command. For example, to send to the `#beyond20-rolls` channel, you could do `!beyond20 secret #beyond20-rolls` and to send whispers to a `#whisper-rolls` channel, you would do `!beyond20 secret #beyond20-rolls whisper #whisper-rolls`. You can also use `!beyond20 secret #party-channel whisper @DMUser` for example.
+You can also mention a specific channel or user for the rolls to be sent to, as well as a separate channel or user for whispers to be sent to it by adding arguments to that command. For example, to send to the `#beyond20-rolls` channel, you could do `!beyond20 secret #beyond20-rolls` and to send whispers to a `#whisper-rolls` channel, you would do `!beyond20 secret #beyond20-rolls whisper #whisper-rolls`. You can also use `!beyond20 secret #party-channel whisper @DMUser` for example to send whispers to `@DMUser` directly.
 
 If you are not a server owner, you can send the command `secret` in a Direct Message to the bot and the secret key you will receive will allow it to send rolls to you directly in private. As a DM, you could share it with your party members to get rolls sent to you as whispers.
 
 ## 3 - Set the Discord Secret Key in Beyond 20
 
-The Beyond 20 browser extension now needs to know where to send the rolls. Click the Beyond 20 options menu (the icon in the browser's address bar), then `More Options`, then scroll down towards the end of the list of options for the Discord Secret Key field, just below the Discord logo and paste the key there.
+The Beyond 20 browser extension now needs to know where to send the rolls. Click the Beyond 20 options menu (the icon in the browser's address bar), then `More Options`, then scroll down towards the end of the list of options for the `Discord Default Destination Channel` option, just below the Discord logo.
 
-Save your settings, and you're good to go!
+Click on the dropdown list and select "Add new Channel", then enter a friendly name to remember the channel by (could be "Monday Group" or "#my-beyond20-channel" for example), click `OK` then enter the secret key then `OK` again.
+
+You can add as many Discord destinations as you like, then select the one you want to send all your default rolls to, save your settings, and you're good to go!
+
+Note that you can also override the Discord destination channel on a per-character basis, which is practical if you have multiple groups and want the right character to send their rolls to the appropriate channel. Simply set the override in the per-character settings by clicking the Beyond20 icon on the character sheet page.
 
 # Important notes
 
@@ -41,6 +45,6 @@ After the whisper setting, you can add extra options to the bot. The only curren
 
 # Secret key
 
-The 'secret key' cannot be revoked, so it's important not to get it leaked or you risk getting your channel spammed by someone. In that case, you can change the channel's permissions to prevent the bot from accessing it, and generate a new secret key for a different channel.
+The 'secret key' cannot be revoked, so it's important not to get it leaked publicly or you risk getting your channel spammed by someone. In that case, you can change the channel's permissions to prevent the bot from accessing it, and generate a new secret key for a different channel.
 
 In the case of sending rolls as Direct Messages, you cannot destroy that channel, so the only way would be to block the bot, which can have negative effects, so it is recommended to always use channels in your server for where the bot would send its messages, and create new channels just for the Beyond20 bot so you could destroy them if the need ever arises.
