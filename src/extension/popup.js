@@ -31,7 +31,7 @@ function createOptionList() {
                         E.h4({}, "More Options")
                     ),
                     E.a({ id: "toggleAdvanced", href: '#', style: "display: none;" },
-                        E.h4({}, "🔻Advanced Options")
+                        E.h4({}, "▼ Advanced Options")
                     )
                 )
             )
