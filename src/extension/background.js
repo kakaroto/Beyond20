@@ -215,12 +215,7 @@ function onMessage(request, sender, sendResponse) {
     } else if (request.action == "activate-icon") {
         // popup doesn't have sender.tab so we grab it from the request.
         const tab = request.tab || sender.tab;
-        // Using browserAction on Chrome but pageAction on Firefox
-        if (getBrowser() == "Chrome") {
-            chrome.browserAction.setPopup({ "tabId": tab.id, "popup": "popup.html" });
-        } else {
-            chrome.pageAction.show(tab.id);
-        }
+        chrome.browserAction.setPopup({ "tabId": tab.id, "popup": "popup.html" });
         if (isFVTT(tab.title)) {
             injectFVTTScripts(tab);
         }
@@ -322,7 +317,7 @@ chrome.permissions.getAll((permissions) => {
 });
 
 if (getBrowser() == "Chrome") {
-    chrome.browserAction.onClicked.addListener(browserActionClicked)
+    // Re-inject scripts when reloading the extension, on Chrome
     const manifest = chrome.runtime.getManifest()
     for (let script of manifest.content_scripts) {
         cb = (js_files, css_files) => {
@@ -338,4 +333,4 @@ if (getBrowser() == "Chrome") {
         chrome.tabs.query({ "url": script.matches }, cb(script.js, script.css))
     }
 }
-
+chrome.browserAction.onClicked.addListener(browserActionClicked);

@@ -10,7 +10,7 @@
 		"*://beyond20.kicks-ass.org/roll",
 		"*://app.roll20.net/editor/",
 		"*://*.dndbeyond.com/*",
-		"*://*.forge-vtt.com/*game",
+		"*://*.forge-vtt.com/game",
 		"*://*.astraltabletop.com/play/*"
 	],
     "optional_permissions": ["<all_urls>"],
@@ -32,8 +32,8 @@
 		"page": "options.html",
 		"open_in_tab": false
 	},
-	"page_action": {
-		"default_popup": "popup.html",
+	"browser_action": {
+		"default_popup": "default_popup.html",
         "default_icon": {
           "16": "images/icons/icon16.png",
           "24": "images/icons/icon24.png",
@@ -177,7 +177,7 @@
 		},
 		{
 			"matches": [
-				"*://*.forge-vtt.com/*game"
+				"*://*.forge-vtt.com/game"
 			],
 			"css": [],
 			"js": [
