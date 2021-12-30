@@ -98,6 +98,12 @@ function pendingRoll(rollData) {
         messageBroker.postMessage({
             persist: false,
             eventType: "dice/roll/pending",
+            entityType: message.entityType,
+            entityId: message.entityId,
+            gameId: message.gameId,
+            messageScope: message.messageScope,
+            messageTarget: message.messageTarget,
+            userId: message.userId,
             data: {
                 action: rollData.name,
                 context: message.data.context,
@@ -117,7 +123,7 @@ function fulfilledRoll(rollData) {
     const extraData = lastMessage ? {
         context: lastMessage.data.context,
         rollId: lastMessage.data.rollId,
-        setId: lastMessage.data.setId
+        setId: lastMessage.data.setId || "8201337"
     } : {
         setId: "8201337" // Not setting it makes it use "Basic Black" by default. Using an invalid value is better
     }
@@ -126,6 +132,12 @@ function fulfilledRoll(rollData) {
     messageBroker.postMessage({
         persist: true,
         eventType: "dice/roll/fulfilled",
+        entityType: lastMessage.entityType,
+        entityId: lastMessage.entityId,
+        gameId: lastMessage.gameId,
+        messageScope: lastMessage.messageScope,
+        messageTarget: lastMessage.messageTarget,
+        userId: lastMessage.userId,
         data: {
             action,
             rolls: rollData.rolls.map(r => rollToDDBRoll(r, true)),

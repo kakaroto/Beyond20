@@ -69,10 +69,10 @@ class DNDBRoller {
     roll(formula, data) {
         return new DNDBRoll(formula, data);
     }
-    async resolveRolls(name, rolls) {
+    async resolveRolls(name, rolls, request={}) {
         
         if (dndbeyondDiceRoller._settings['use-digital-dice'] && DigitalDiceManager.isEnabled()) {
-            const digital = new DigitalDice(name, rolls);
+            const digital = new DigitalDice(name, rolls, {whisper: request.whisper === WhisperType.YES});
             await digital.roll();
         } else {
             await Promise.all(rolls.map(roll => roll.roll()))

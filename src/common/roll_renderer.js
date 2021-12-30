@@ -406,7 +406,7 @@ class Beyond20RollRenderer {
 
     async rollDice(request, title, dice, data = {}, type) {
         const roll = this.createRoll(dice, data, type);
-        await this._roller.resolveRolls(title, [roll]);
+        await this._roller.resolveRolls(title, [roll], request);
         return this.postDescription(request, title, null, {}, null, [roll]);
     }
     async sendCustomDigitalDice(character, digitalRoll) {
@@ -433,7 +433,7 @@ class Beyond20RollRenderer {
 
     async rollD20(request, title, data, type) {
         const {advantage, rolls} = await this.getToHit(request, title, "", data, type)
-        await this._roller.resolveRolls(title, rolls);
+        await this._roller.resolveRolls(title, rolls, request);
         this.processToHitAdvantage(advantage, rolls);
         return this.postDescription(request, title, null, {}, null, rolls);
     }
@@ -547,7 +547,7 @@ class Beyond20RollRenderer {
             }
         
 
-            await this._roller.resolveRolls(request.name, all_rolls)
+            await this._roller.resolveRolls(request.name, all_rolls, request)
             
             // Moved after the new resolveRolls so it can access the roll results
             if (request.name.includes("Chaos Bolt")) {
@@ -604,12 +604,12 @@ class Beyond20RollRenderer {
                     const suffix = !(damage_flags & DAMAGE_FLAGS.HEALING) ? " Critical Damage" : "";
                     damage_rolls.push([dmg_type + suffix, roll, damage_flags | DAMAGE_FLAGS.CRITICAL]);
                 }
-                await this._roller.resolveRolls(request.name, critical_damage_rolls);
+                await this._roller.resolveRolls(request.name, critical_damage_rolls, request);
             }
         } else {
             // If no damages, still need to resolve to hit rolls
             
-            await this._roller.resolveRolls(request.name, all_rolls)
+            await this._roller.resolveRolls(request.name, all_rolls, request)
             if (to_hit.length > 0)
                 this.processToHitAdvantage(to_hit_advantage, to_hit)
             const critical_limit = request["critical-limit"] || 20;
@@ -742,7 +742,7 @@ class Beyond20RollRenderer {
     async rollRollTable(request, name, formula, data) {
         const table = new RollTable(name, formula, data);
         const roll = this.createRoll(formula);
-        await this._roller.resolveRolls(name, [roll]);
+        await this._roller.resolveRolls(name, [roll], request);
         table.setTotal(roll.total);
         const results = Object.entries(table.results);
         return this.postDescription(request, name, null, {}, null, [roll], results);

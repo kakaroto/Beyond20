@@ -1,7 +1,8 @@
 class DigitalDice {
-    constructor(name, rolls) {
+    constructor(name, rolls, {whisper=false}={}) {
         this._name = name;
         this._rolls = rolls;
+        this._whisper = whisper;
         this._dice = [];
         for (let roll of rolls) {
             for (const dice of roll.dice) {
@@ -20,7 +21,7 @@ class DigitalDice {
             dice.rerollDice = async function (amount) {
                 const fakeDice = new this.constructor(amount, this.faces, "");
                 const fakeRoll = new rollClass(fakeDice.formula);
-                const digital = new DigitalDice(name, [fakeRoll])
+                const digital = new DigitalDice(name, [fakeRoll], {whisper: this.whisper})
                 await digital.roll();
                 this._rolls.push(...fakeRoll.dice[0]._rolls);
             }
@@ -32,6 +33,9 @@ class DigitalDice {
     }
     get rolls() {
         return this._rolls;
+    }
+    get whisper() {
+        return this._whisper;
     }
     toJSON() {
         return {
@@ -142,7 +146,25 @@ class DigitalDiceManager {
     static _makeRoll(roll) {
         // New DDB roll button has 2 buttons, one to roll, one to select target, so pick the first one only.
         sendCustomEvent("MBPendingRoll", [roll.toJSON()]);
-        $(".dice-toolbar__roll, .dice-toolbar.rollable button").eq(0).click();
+        let rolled = false;
+        if (roll.whisper) {
+            $(".dice-toolbar__roll, .dice-toolbar.rollable button.dice-toolbar__target-menu-button").click();
+            const options = $("#options-menu ul ul > div");
+            const texts = options.toArray().map(d => d.textContent);
+            const toDM = texts.findIndex(t => t === "Dungeon Master");
+            const toSelf = texts.findIndex(t => t === "Self");
+            if (toDM >= 0) {
+                options.eq(toDM).click();
+                rolled = true;
+            } else if (toSelf >= 0) {
+                options.eq(toSelf).click();
+                rolled = true;
+            }
+        }
+        // Roll normally (to everyone) or fallback if we can't find the whisper option
+        if (!rolled) {
+            $(".dice-toolbar__roll, .dice-toolbar.rollable button:not(.dice-toolbar__target-menu-button)").click();
+        }
     }
     static isEnabled() {
         const toolbar = $(".dice-toolbar");
