@@ -858,7 +858,7 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
         addCustomDamages(damages, damage_types);
 
         // Capitalize all Damage Types to ensure consistency for later processing
-        damage_types = damage_types.map(t => capitalize(t));
+        damage_types = damage_types.map(t => capitalize(t.trim()));
 
         to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, item_name});
 
@@ -1055,7 +1055,7 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
         addCustomDamages(damages, damage_types);
 
         // Capitalize all Damage Types to ensure consistency for later processing
-        damage_types = damage_types.map(t => capitalize(t));
+        damage_types = damage_types.map(t => capitalize(t.trim()));
 
         const settings_to_change = {}
         let brutal = 0;
@@ -1421,7 +1421,7 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
         addCustomDamages(damages, damage_types);
 
         // Capitalize all Damage Types to ensure consistency for later processing
-        damage_types = damage_types.map(t => capitalize(t));
+        damage_types = damage_types.map(t => capitalize(t.trim()));
 
         if (damages.length > 0) {
             to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, spell_name, spell_level: level});
