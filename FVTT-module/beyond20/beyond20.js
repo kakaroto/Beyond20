@@ -9,12 +9,7 @@ class Beyond20 {
         const existing = this.getMyActor();
         actorData.items.push(...items);
         if (existing) {
-            for (const item of actorData.items) {
-                const found = existing.items.find(i => i.type === item.type && i.name === item.name);
-                if (!found) continue;
-                item._id = found._id;
-            }
-            await existing.update(actorData);
+            await existing.update(actorData, {diff: false, recursive: false});
             return existing;
         } else {
             const actor = await Actor.create(actorData);
