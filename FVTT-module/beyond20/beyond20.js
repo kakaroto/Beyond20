@@ -120,6 +120,8 @@ class Beyond20 {
         return token || canvas.tokens.controlled[0];
     }
     static async callOnToken(actor, token, callback) {
+        if (!token) return callback();
+
         const originalActor = token._actor;
         try {
             token._actor = actor;
