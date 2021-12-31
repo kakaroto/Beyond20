@@ -392,7 +392,7 @@ function getRollTypeButtonClass(character) {
 
 function getBadgeIconFromClass(rolltype_class, size="20") {
     const type = rolltype_class.replace("beyond20-roll-type-", "") || "normal";
-    return chrome.extension.getURL(`images/icons/badges/${type}${size}.png`);
+    return chrome.runtime.getURL(`images/icons/badges/${type}${size}.png`);
 }
 
 var last_character_used = null;
@@ -466,7 +466,7 @@ function addDisplayButton(callback, where, { text = "Display in VTT", append = t
 }
 
 function addHitDieButtons(rollCallback) {
-    const icon = chrome.extension.getURL("images/icons/badges/custom20.png");
+    const icon = chrome.runtime.getURL("images/icons/badges/custom20.png");
     const button = E.div({ class: "ct-beyond20-roll-hitdie", style: "float: right;" },
         E.img({ class: "ct-beyond20-icon", src: icon, style: "margin-right: 6px;" }),
         E.button({ class: "ct-beyond20-roll-button " + button_class_small },
@@ -485,7 +485,7 @@ function addHitDieButtons(rollCallback) {
 
 function addIconButton(character, callback, where, { append = false, prepend = false, custom = false } = {}) {
     const rolltype_class = getRollTypeButtonClass(character);
-    const icon = custom ? chrome.extension.getURL("images/icons/badges/custom20.png") :
+    const icon = custom ? chrome.runtime.getURL("images/icons/badges/custom20.png") :
                         getBadgeIconFromClass(rolltype_class);
     const id = "beyond20-roll-" + (custom ? "custom-" : "") + Math.random().toString().slice(2);
     const button = E.span({ class: "ct-beyond20-" + (custom ? "custom-roll-button" : "roll"), id, style: "margin-right:3px; margin-left: 3px;" },
@@ -503,7 +503,7 @@ function addIconButton(character, callback, where, { append = false, prepend = f
 }
 
 function addRollTableButton(character, where, table) {
-    const icon = chrome.extension.getURL("images/icons/badges/normal32.png");
+    const icon = chrome.runtime.getURL("images/icons/badges/normal32.png");
     const button = E.a({ class: "ct-beyond20-roll button-alt", href: "#" },
         E.span({ class: "label" },
             E.img({ class: "ct-beyond20-roll-table-icon", src: icon, style: "margin-right: 10px;" }),
@@ -568,7 +568,7 @@ function recursiveDiceReplace(node, cb) {
 
 function injectDiceToRolls(selector, character, name = "") {
     let added = 0;
-    const icon = chrome.extension.getURL("images/icons/badges/custom20.png");
+    const icon = chrome.runtime.getURL("images/icons/badges/custom20.png");
     const replaceCB = (node, dice, modifier) => {
         added++;
         dice_formula = (dice == "" ? "1d20" : dice) + modifier;

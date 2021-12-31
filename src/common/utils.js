@@ -47,7 +47,7 @@ function getBrowser() {
 
 function isExtensionDisconnected() {
     try {
-        chrome.extension.getURL("");
+        chrome.runtime.getURL("");
         return false;
     } catch (err) {
         return true;
@@ -113,8 +113,8 @@ function alertSettings(url, title) {
     if (alertify.Beyond20Settings === undefined)
         alertify.dialog('Beyond20Settings', function () { return {}; }, false, "alert");
 
-    const popup = chrome.extension.getURL(url);
-    const img = E.img({src: chrome.extension.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})
+    const popup = chrome.runtime.getURL(url);
+    const img = E.img({src: chrome.runtime.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})
     const iframe = E.iframe({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "yes"});
     const dialog = alertify.Beyond20Settings(img.outerHTML + title, iframe);
     dialog.set('padding', false).set('resizable', true).set('overflow', false).resizeTo("80%", "80%");

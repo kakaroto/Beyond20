@@ -1,6 +1,3 @@
-//from elementmaker import E;
-//from utils import roll20Title, fvttTitle, isFVTT;
-
 class WhisperType {
     static get NO() { return 0; }
     static get YES() { return 1; }
@@ -867,7 +864,7 @@ function createHTMLOptionEx(name, option, short = false, {advanced=false}={}) {
                             class: "link-image",
                             width: option['icon-width'],
                             height: option['icon-height'],
-                            src: option.icon.startsWith("/") ? chrome.extension.getURL(option.icon) : option.icon
+                            src: option.icon.startsWith("/") ? chrome.runtime.getURL(option.icon) : option.icon
                         })
                     )
                 )

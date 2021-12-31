@@ -46,7 +46,7 @@ class Monster extends CharacterBase {
         if (this.type() != "Creature" && this.type() != "Extra-Vehicle") {
             stat_block.find(".ct-beyond20-settings-button").remove();
             const quick_settings = E.div({ class: "ct-beyond20-settings-button", style: "background-color: rgba(0, 0, 0, 0.1)" },
-                E.img({ class: "ct-beyond20-settings", src: chrome.extension.getURL("images/icons/icon32.png"), style: "vertical-align: top;" }),
+                E.img({ class: "ct-beyond20-settings", src: chrome.runtime.getURL("images/icons/icon32.png"), style: "vertical-align: top;" }),
                 E.span({ class: "ct-beyond20-settings-button-label mon-stat-block__tidbit mon-stat-block__tidbit-label", style: "font-size: 28px; margin: 5px;" }, "Beyond 20")
             );
             stat_block.find(`${base}__header`).prepend(quick_settings);
@@ -528,7 +528,7 @@ class Monster extends CharacterBase {
 
 
     injectSpellRolls(element, url) {
-        const icon = chrome.extension.getURL("images/icons/badges/spell20.png");
+        const icon = chrome.runtime.getURL("images/icons/badges/spell20.png");
         const roll_icon = $('<img class="ct-beyond20-spell-icon" x-beyond20-spell-url="' + url + '"></img>');
 
         $(element).after(roll_icon);

@@ -847,7 +847,7 @@ async function handleRenderedRoll(request) {
 }
 
 function injectSettingsButton() {
-    const icon = chrome.extension.getURL("images/icons/icon32.png");
+    const icon = chrome.runtime.getURL("images/icons/icon32.png");
     let img = document.getElementById("beyond20-settings");
     if (img)
         img.remove();

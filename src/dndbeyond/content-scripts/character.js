@@ -2049,7 +2049,7 @@ function injectRollToSpellAttack() {
             if (label.hasClass("beyond20-rolls-added"))
                 return;
             label.addClass("beyond20-rolls-added");
-            const icon = chrome.extension.getURL("images/icons/badges/spell20.png");
+            const icon = chrome.runtime.getURL("images/icons/badges/spell20.png");
             const items = $(group).find(".ct-spells-level-casting__info-item,.ddbc-spells-level-casting__info-item");
             for (let item of items.toArray()) {
                 const modifier = item.textContent;
@@ -2163,7 +2163,7 @@ function injectSettingsButton() {
     let button_type = null;
     let gap = null;
     let span_text = "Beyond 20";
-    let icon = chrome.extension.getURL("images/icons/badges/normal20.png");
+    let icon = chrome.runtime.getURL("images/icons/badges/normal20.png");
     if (desktop_gap.length > 0) {
         button_type = "desktop";
         gap = desktop_gap;
@@ -2174,7 +2174,7 @@ function injectSettingsButton() {
         button_type = "mobile";
         gap = mobile_gap;
         span_text = "\u00A0\u00A0"; // Add 2 non breaking spaces as padding;
-        icon = chrome.extension.getURL("images/icons/badges/normal32.png");
+        icon = chrome.runtime.getURL("images/icons/badges/normal32.png");
     } else {
         return;
     }
@@ -2305,12 +2305,12 @@ function activateQuickRolls() {
         const rolltype_class = getRollTypeButtonClass(character);
         const icon = getBadgeIconFromClass(rolltype_class, "32");
         const img = E.img({ class: "beyond20-quick-roll-icon", src: icon, style: "margin-right: 5px;margin-left: 5px;padding: 5px 5px;" });
-        const indicator = E.img({ class: "beyond20-quick-roll-indicator", src: chrome.extension.getURL("images/quick-roll-indicator.png") });
+        const indicator = E.img({ class: "beyond20-quick-roll-indicator", src: chrome.runtime.getURL("images/quick-roll-indicator.png") });
         const div = E.div({ class: "beyond20-quick-roll-tooltip " + getRollTypeButtonClass(character) }, img, indicator);
         beyond20_tooltip = $(div);
         beyond20_tooltip.css({
             "position": "absolute",
-            "background": `url("${chrome.extension.getURL("images/quick-roll-background.png")}") 50% center no-repeat transparent`,
+            "background": `url("${chrome.runtime.getURL("images/quick-roll-background.png")}") 50% center no-repeat transparent`,
             "background-size": "contain",
             "z-index": "20"
         });
