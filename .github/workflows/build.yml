@@ -23,13 +23,13 @@ jobs:
         run: npm run build
 
       - name: Zip Chrome files
-        uses: papeloto/action-zip@v1
+        uses: vimtor/action-zip@v1
         with:
           files: build/chrome/
           dest: chrome.zip
         
       - name: Zip Firefox files
-        uses: papeloto/action-zip@v1
+        uses: vimtor/action-zip@v1
         with:
           files: build/firefox/
           dest: firefox.zip
