@@ -4,6 +4,7 @@
 
 var settings = getDefaultSettings()
 var fvtt_tabs = []
+var tabRemovalTimers = {};
 var currentPermissions = {origins: []};
 var openedChangelog = false;
 
@@ -274,16 +275,25 @@ function onTabsUpdated(id, changes, tab) {
     if (isTabAdded(tab) &&
         ((changes.url && !urlMatches(changes.url, FVTT_URL)) ||
          (changes["status"] == "loading"))) {
-        removeFVTTTab(id)
+        // Delay tab removal because the 'loading' could be caused by the injection of the page script itself
+        // 100ms should be fast enough for page script but not so slow that a reload on a localhost would
+        // fail to remove/add the tab, as it should
+        tabRemovalTimers[id] = setTimeout(() => removeFVTTTab(id), 100);
     }
     /* Load Beyond20 on custom urls that have been added to our permissions */
-    if (changes["status"] === "complete" && urlMatches(tab.url, FVTT_URL) && !isTabAdded(tab)) {
-        // We cannot use the url or its origin, because Firefox, in its great magnificent wisdom
-        // decided that ports in the origin would break the whole permissions system
-        const origin = `*://${new URL(tab.url).hostname}/*`;
-        const hasPermission = currentPermissions.origins.some(pattern => urlMatches(origin, pattern));
-        if (hasPermission) {
-            chrome.tabs.executeScript(tab.id, { "file": "dist/fvtt_test.js" });
+    if (changes["status"] === "complete" && urlMatches(tab.url, FVTT_URL)) {
+        // Cancel tab removal if we go back to complete within 100ms as the page script loads
+        if (tabRemovalTimers[id]) {
+            clearTimeout(tabRemovalTimers[id]);
+        }
+        if (!isTabAdded(tab)) {
+            // We cannot use the url or its origin, because Firefox, in its great magnificent wisdom
+            // decided that ports in the origin would break the whole permissions system
+            const origin = `*://${new URL(tab.url).hostname}/*`;
+            const hasPermission = currentPermissions.origins.some(pattern => urlMatches(origin, pattern));
+            if (hasPermission) {
+                chrome.tabs.executeScript(tab.id, { "file": "dist/fvtt_test.js" });
+            }
         }
     }
 
