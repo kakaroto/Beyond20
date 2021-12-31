@@ -374,6 +374,8 @@ function actOnCurrentTab(tab) {
         initializeSettings(gotSettings);
     }
     canAlertify(tab.id);
+    // Do not check for permissions if it's running from inside the page script
+    if (!chrome.permissions) return;
     // We cannot use the url or its origin, because Firefox, in its great magnificent wisdom
     // decided that ports in the origin would break the whole permissions system
     const origin = `*://${new URL(tab.url).hostname}/*`;
