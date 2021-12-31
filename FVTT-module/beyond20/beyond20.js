@@ -577,6 +577,77 @@ class Beyond20 {
                 break;
         }
     }
+    /**
+     * Add Chat Damage buttons to Beyond20 chat messages;
+     */
+    static handleChatMessage(message, html, data) {
+        if (!game.settings.get("beyond20", "damageButtons")) return;
+        const damages = html.find(".beyond20-message .beyond20-roll-damage, .beyond20-message .beyond20-total-damage");
+        if (damages.length === 0) return;
+        for (let i = 0; i < damages.length; i++) {
+            this._addChatDamageButtons(damages.eq(i));
+        }
+    }
+    static _addChatDamageButtons(roll) {
+        let valueSpan = roll.find(".beyond20-roll-value");
+        if (valueSpan.length === 0) {
+            // Fall back for old chat message
+            valueSpan = roll.find(".beyond20-tooltip > span:first-child");
+            if (valueSpan.length === 0) return;
+        }
+        const damage = parseInt(valueSpan.text());
+        if (isNaN(damage)) return;
+        const isTotal = roll.hasClass("beyond20-total-damage");
+        const isCritical = roll.hasClass("beyond20-critical-damage");
+        const isHealing = roll.hasClass("beyond20-healing");
+        const container = $(`
+        <span class="beyond20-chat-damage-buttons-container">
+          <i class="fas fa-long-arrow-alt-left"></i>
+          <span class="beyond20-chat-damage-buttons"></span>
+        </span>`)
+        const buttonContainer = container.find(".beyond20-chat-damage-buttons");
+        const buttons = [
+            {
+                multiplier: 1,
+                icon: "user",
+                label: "Apply Damage",
+                color: "Crimson",
+                visible: true
+            },
+            {
+                multiplier: 0.5,
+                icon: "user-minus",
+                label: "Apply Half Damage",
+                color: "LightCoral",
+                visible: true
+            },
+            {
+                multiplier: 2,
+                icon: "user-plus",
+                label: "Apply Double Damage",
+                color: "Red",
+                visible: true
+            },
+            {
+                multiplier: -1,
+                icon: "first-aid",
+                label: "Apply Healing",
+                color: "LightGreen",
+                visible: isTotal || isHealing // Only display healing button on healing damages
+            },
+        ];
+        for (const data of buttons) {
+            if (!data.visible) continue;
+            const button = $(`<button title="${data.label}" style="background-color: ${data.color};"><i class="fas fa-${data.icon}"></i></button>`);
+            button.on('click', async () => {
+                for (const token of canvas.tokens.controlled) {
+                    await token.actor?.applyDamage(damage, data.multiplier);
+                };
+            })
+            buttonContainer.append(button);
+        }
+        roll.append(container);
+    }
 }
 
 class Beyond20CreateNativeActorsApplication extends FormApplication {
@@ -613,11 +684,23 @@ class Beyond20CreateNativeActorsApplication extends FormApplication {
 }
 
 Hooks.on('beyond20Request', (action, request) => Beyond20.handleBeyond20Request(action, request))
+Hooks.on("renderChatMessage", (message, html, data) => Beyond20.handleChatMessage(message, html, data));
 
-Hooks.on('ready', function () {
+Hooks.on('init', function () {
     game.settings.register("beyond20", "notifyAtLoad", {
         name: "Notify player to activate Beyond20",
         hint: "Beyond20 extension doesn't load automatically for Foundry unless permission is granted. The module can show a notification to remind the player to activate it for the current tab.",
+        scope: "client",
+        config: true,
+        default: true,
+        type: Boolean
+    });
+    /**
+     * Inspired by chatdamagebuttons-beyond20 module by Victor Ling: https://gitlab.com/Ionshard/foundry-vtt-chatdamagebuttons-beyond20/
+     */
+    game.settings.register("beyond20", "damageButtons", {
+        name: "Add chat damage buttons",
+        hint: "Adds chat damage buttons to rolls to more easily apply damage or healing to tokens",
         scope: "client",
         config: true,
         default: true,
@@ -651,6 +734,9 @@ Hooks.on('ready', function () {
         type: Beyond20CreateNativeActorsApplication,   // A FormApplication subclass which should be created
         restricted: true
     });
+});
+
+Hooks.on('ready', function () {
     if (game.settings.get("beyond20", "nativeRolls")  && !Actor.canUserCreate(game.user)) {
         if (!Beyond20.getMyActor()) {
             ui.notifications.warn(`Cannot enable Beyond20 native rolls because native actor doesn't exist. Please ask your GM to create the actors from the Beyond20 module settings.`, {permanent: true});

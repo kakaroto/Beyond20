@@ -239,3 +239,40 @@ span.dice-roll.beyond20-tooltip-content {
 .beyond20-message details img.ct-beyond20-custom-icon {
     height: 10px;
 }
+
+/***************************************************************************/
+/* Chat damage buttons */
+.beyond20-chat-damage-buttons {
+    position: absolute;
+    right: 0px;
+    top: calc(-1.5rem - 10px);
+    width: 100%;
+    padding: 3px;
+    margin: 3px;
+    text-align: center;
+    background-color: lightgray;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+.beyond20-chat-damage-buttons > button {
+    height: 1.5rem;
+    width: 1.5rem;
+    line-height: 1.5rem;
+    padding: 1px;
+    margin-left: 5px;
+    padding: 0px 3px;
+    border-radius: 3px;
+}
+
+.beyond20-chat-damage-buttons-container > i,
+.beyond20-chat-damage-buttons-container .beyond20-chat-damage-buttons {
+    display: none;
+}
+
+.beyond20-chat-damage-buttons-container:hover .beyond20-chat-damage-buttons {
+    display: inline;
+}
+
+.beyond20-roll-result:hover .beyond20-chat-damage-buttons-container > i {
+    display: inline;
+}
