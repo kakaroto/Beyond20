@@ -70,6 +70,8 @@
     margin-right: 5px;
     margin-left: 5px;
     border: 1px solid black;
+    aspect-ratio: 1/1;
+    object-fit: contain;
 }
 .beyond20-message details {
     flex-grow: 1;
