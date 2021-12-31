@@ -374,9 +374,10 @@ function actOnCurrentTab(tab) {
         initializeSettings(gotSettings);
     }
     canAlertify(tab.id);
-    chrome.permissions.getAll((currentPermissions) => {
-        const origin = new URL(tab.url).origin + "/*";
-        const hasPermission = currentPermissions.origins.some(pattern => urlMatches(tab.url, pattern));
+    // We cannot use the url or its origin, because Firefox, in its great magnificent wisdom
+    // decided that ports in the origin would break the whole permissions system
+    const origin = `*://${new URL(tab.url).hostname}/*`;
+    chrome.permissions.contains({origins: [origin]}, (hasPermission) => {
         if (!hasPermission) {
             const options = $(".beyond20-options");
             const request = createHTMLOptionEx("default-popup", {
@@ -394,9 +395,6 @@ function actOnCurrentTab(tab) {
                     } else {
                         console.log("Permission was refused");
                     }
-                    chrome.permissions.getAll((currentPermissions) => {
-                        console.log(`Current permissions:`, currentPermissions);
-                    });
                 })
             });
         }
@@ -405,6 +403,7 @@ function actOnCurrentTab(tab) {
 
 
 setupHTML();
+// Check if the popup is in the browser action or open in alertify from within an active DDB/VTT page
 if (chrome.tabs != undefined) {
     chrome.tabs.query({ "active": true, "currentWindow": true }, (tabs) => actOnCurrentTab(tabs[0]));
 } else {
