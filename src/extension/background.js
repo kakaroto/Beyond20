@@ -272,7 +272,7 @@ function executeScripts(tabs, js_files) {
 
 function onTabsUpdated(id, changes, tab) {
     if (fvtt_tabs.includes(id) &&
-        (Object.keys(changes).includes("url") && !urlMatches(changes["url"], "*) {//*/game")) ||
+        (Object.keys(changes).includes("url") && !urlMatches(changes["url"], FVTT_URL)) ||
         (Object.keys(changes).includes("status") && changes["status"] == "loading")) {
         removeFVTTTab(id)
     }
