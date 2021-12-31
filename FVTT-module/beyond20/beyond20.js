@@ -291,12 +291,16 @@ class Beyond20 {
             const damages = [];
             for (let i = 0; i < request.damages.length; i++) {
                 let damage = request.damages[i];
-                let type = (request['damage-types'][i] || "").trim();;
+                let type = (request['damage-types'][i] || "").trim();
+                // Add damage type in the flavor text for each damage
+                if (/[0-9]+d[0-9]+/.test(damage)) {
+                    damage = `${damage}[${type}]`;
+                } else {
+                    damage = `{${damage}}[${type}]`;
+                }
                 if (CONFIG.DND5E.damageTypes[type.toLowerCase()]) {
                     type = type.toLowerCase();
                 } else {
-                    // This fails because Foundry has a lot of trouble handling flavor text for a roll
-                    //damage = `{${damage}}[${type}]`;
                     type = "";
                 }
                 damages.push([damage, type]);
