@@ -542,9 +542,13 @@ function setTitle() {
         // Wait for the world and UI to be loaded;
         Hooks.once("renderChatLog", setTitle);
     }
+    if (game) {
+        game.beyond20 = {loaded: true};
+    }
     // Re-set the game version on ready in case the game data wasn't initialized on Beyond20 load
     Hooks.on("ready", () => {
         fvttVersion = game.version || game.data?.version;
+        game.beyond20 = {loaded: true};
     });
 }
 
