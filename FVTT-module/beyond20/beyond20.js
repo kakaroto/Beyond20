@@ -293,7 +293,7 @@ class Beyond20 {
                 let damage = request.damages[i];
                 let type = (request['damage-types'][i] || "").trim();
                 // Add damage type in the flavor text for each damage
-                if (/[0-9]+d[0-9]+/.test(damage)) {
+                if (/^[0-9]+d[0-9]+$/.test(damage.trim())) {
                     damage = `${damage}[${type}]`;
                 } else {
                     damage = `{${damage}}[${type}]`;
@@ -306,6 +306,12 @@ class Beyond20 {
                 damages.push([damage, type]);
             }
             itemData.damage.parts = damages;
+        }
+        // Weapon properties
+        if (request.properties) {
+            for (const prop in game.dnd5e.config.weaponProperties) {
+                itemData.properties[prop] = !!request.properties.find(p => p.toLowerCase().trim() === game.dnd5e.config.weaponProperties[prop].toLowerCase());
+            }
         }
     }
     static getRollOptions(request) {
