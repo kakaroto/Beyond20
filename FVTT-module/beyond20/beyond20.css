@@ -21,7 +21,7 @@
 
 .beyond20-critical-damage {
     border-left: 2px solid #9c3940;
-	padding-left: 3px;
+    padding-left: 3px;
 }
 
 .beyond20-total-damage.beyond20-critical-damage {
@@ -29,7 +29,7 @@
     border-radius: 3px;
     margin-bottom: 2px;
     box-shadow: rgb(208 53 53) 0px 0px 2px inset;
-	padding: 0px 5px;
+    padding: 0px 5px;
 }
 
 .beyond20-healing {
@@ -57,7 +57,22 @@
 
 .beyond20-message {
     /* font-size: 12px; */
-    font-family: "Signika", sans-serif;
+    font-family: "Signika", "Roboto", sans-serif;
+}
+
+.beyond20-header {
+    display: flex;
+    flex-direction: row;
+}
+.beyond20-header .beyond20-character-avatar {
+    margin-top: 0.5rem;
+    margin-bottom: auto;
+    margin-right: 5px;
+    margin-left: 5px;
+    border: 1px solid black;
+}
+.beyond20-message details {
+    flex-grow: 1;
 }
 
 .beyond20-message details summary,
@@ -66,7 +81,7 @@
     font-style: normal;
     margin: 2px 0px;
     line-height: 36px;
-    font-family: "Modesto Condensed", "Palatino Linotype", serif;
+    font-family: "Modesto Condensed", "Roboto Condensed", "Palatino Linotype", serif;
     font-size: 20px;
     font-weight: 700;
     color: #4b4a44;
@@ -113,17 +128,15 @@
     box-shadow: 0 0 2px #fff inset;
     font-size: 20px;
     font-weight: bold;
-    font-family: "Signika", sans-serif;
+    font-family: "Signika", "Roboto", serif;
 }
 
 .beyond20-dice-roller-content .beyond20-roll-dice-formula {
     flex-grow: 1;
 }
-
 .beyond20-dice-roller-content .beyond20-roll-dice-rolls {
     flex-grow: 4;
 }
-
 .beyond20-dice-roller-content .beyond20-roll-formula {
     background-color: #ddd;
     text-align: center;
@@ -169,6 +182,10 @@
     z-index: 1;
 }
 
+span.dice-roll.beyond20-tooltip-content {
+    background-color: #f9f9f9;
+}
+
 .beyond20-tooltip:hover .beyond20-tooltip-content {
     display: block;
     /* Move the tooltip above the parent element. */
@@ -189,6 +206,10 @@
     font-weight: normal;
 }
 
+.beyond20-query-prefix {
+    padding: 5px;
+}
+
 .beyond20-form-row {
     display: flex;
     flex-direction: row;
@@ -199,16 +220,8 @@
     flex: 2;
 }
 
-/* Since 0.4.4, the roll type has a fixed width of 200px which
- * means it gets squished into two lines when we add the beyond20
- * icon next to it, as a GM.
- */
-#chat-controls div.roll-type-select select {
-    width: calc(100% - 38px);
-}
-
 .beyond20-button-roll-damages {
-    font-family: "Signika", sans-serif;
+    font-family: "Signika", "Roboto", sans-serif;
     font-size: 12px;
     width: 100%;
     height: 24px;
