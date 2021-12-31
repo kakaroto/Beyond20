@@ -177,15 +177,6 @@
 		},
 		{
 			"matches": [
-				"*://*.forge-vtt.com/game"
-			],
-			"css": [],
-			"js": [
-				"dist/fvtt_test.js"
-			]
-		},
-		{
-			"matches": [
 				"*://*.astraltabletop.com/play/*"
 			],
 			"css": [
