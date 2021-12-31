@@ -275,11 +275,13 @@ function onTabsUpdated(id, changes, tab) {
         removeFVTTTab(id)
     }
     /* Load Beyond20 on custom urls that have been added to our permissions */
-    if (changes["status"] === "complete") {
-        // Check only origins that don't start with '*://' to ignore those in the manifest already
-        const hasPermission = currentPermissions.origins.some(pattern => pattern.startsWith("http") && urlMatches(tab.url, pattern));
+    if (changes["status"] === "complete" && urlMatches(tab.url, FVTT_URL)) {
+        // We cannot use the url or its origin, because Firefox, in its great magnificent wisdom
+        // decided that ports in the origin would break the whole permissions system
+        const origin = `*://${new URL(tab.url).hostname}/*`;
+        const hasPermission = currentPermissions.origins.some(pattern => urlMatches(origin, pattern));
         if (hasPermission) {
-            chrome.tabs.executeScript(tab.id, { "file": "dist/fvtt_test.js" })
+            chrome.tabs.executeScript(tab.id, { "file": "dist/fvtt_test.js" });
         }
     }
 
@@ -310,9 +312,12 @@ chrome.permissions.onRemoved.addListener(onPermissionsUpdated)
 chrome.permissions.getAll((permissions) => {
     currentPermissions = permissions;
     for (const pattern of currentPermissions.origins) {
-        if (!pattern.startsWith("http")) continue; // skip manifest permissions
         // Inject script in existing tabs
-        chrome.tabs.query({ "url": pattern }, (tabs) => executeScripts(tabs, ["dist/fvtt_test.js"]))
+        chrome.tabs.query({ "url": pattern }, (tabs) => {
+            // Skip if it's not a FVTT tab
+            const fvttTabs = tabs.filter(tab => urlMatches(tab.url, FVTT_URL));
+            executeScripts(fvttTabs, ["dist/fvtt_test.js"]);
+        })
     }
 });
 
