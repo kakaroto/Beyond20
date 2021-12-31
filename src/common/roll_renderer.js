@@ -195,7 +195,7 @@ class Beyond20RollRenderer {
     async rollToDetails(roll, is_total = false) {
         const hit = roll.isCriticalHit();
         const fail = roll.isCriticalFail();
-        let roll_type_class = 'beyond20-roll-detail-';
+        let roll_type_class = 'beyond20-roll-value beyond20-roll-detail-';
         roll_type_class += hit && fail ? 'crit-fail' : (hit ? 'crit' : (fail ? 'fail' : 'normal'))
         if (roll.isDiscarded())
             roll_type_class += ' beyond20-roll-detail-discarded';
