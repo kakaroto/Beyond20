@@ -85,7 +85,11 @@ class Beyond20 {
             let item = null;
             if (itemIdx) {
                 const compendium = game.packs.get("dnd5e.classes")
-                item = compendium && await compendium.getEntry(itemIdx._id);
+                const document = compendium && await compendium.getDocument(itemIdx._id);
+                if (document) {
+                    item = duplicate(document.data);
+                    delete item._id;
+                }
             }
             if (!item) {
                 item = {
