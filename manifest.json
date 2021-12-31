@@ -13,7 +13,7 @@
 		"*://*.forge-vtt.com/game",
 		"*://*.astraltabletop.com/play/*"
 	],
-    "optional_permissions": ["<all_urls>"],
+    "optional_permissions": ["*://*/"],
 	"icons": {
 		"16": "images/icons/icon16.png",
 		"24": "images/icons/icon24.png",
