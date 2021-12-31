@@ -391,6 +391,7 @@ class Beyond20 {
         const combatants = tokens.map(t => combat.getCombatantByToken(t.id));
         combat.rollInitiative(combatants.filter(c => !!c).map(c => c._id), {formula, messageOptions: this.getRollOptions(request)})
         //await token.actor.rollInitiative({createCombatants: true, rerollInitiative: true})
+        return true;
     }
 
     static async rollSkill(request) {
@@ -461,6 +462,7 @@ class Beyond20 {
         this.callOnToken(actor, token, () => {
             game.dnd5e.dice.d20Roll(rollOptions);
         });
+        return true;
     }
 
     static async rollSavingThrow(request) {
@@ -499,6 +501,7 @@ class Beyond20 {
         this.callOnToken(actor, token, () => {
             game.dnd5e.dice.d20Roll(rollOptions);
         });
+        return true;
     }
     
     static async rollAbility(request) {
@@ -532,7 +535,7 @@ class Beyond20 {
         this.callOnToken(actor, token, () => {
             game.dnd5e.dice.d20Roll(rollOptions);
         });
-
+        return true;
     }
 
     static async rollItems(request) {
@@ -546,10 +549,7 @@ class Beyond20 {
         
         const roll = ['attack', 'spell-attack'].includes(request.type);
         actorItem[roll ? 'roll' : 'displayCard']({configureDialog: false, rollMode, createMessage: true});
-        /*actorItem.sheet.render(true);
-        console.log("*******************************")
-        console.log(actor.data);
-        console.log(actorItem.data);*/
+        return true;
     }
 
     static handleBeyond20Request(action, request) {
