@@ -154,8 +154,12 @@ async function buildAttackRoll(character, attack_source, name, description, prop
         roll_properties["save-dc"] = save_dc;
     }
 
-    if (properties["Properties"] !== undefined)
+    if (properties["Properties"] !== undefined) {
         roll_properties["properties"] = properties["Properties"].split(", ");
+    }
+    if (properties["Proficient"] === "Yes") {
+        roll_properties["proficient"] = true;
+    }
 
     if (damages.length > 0) {
         roll_properties["damages"] = damages;
