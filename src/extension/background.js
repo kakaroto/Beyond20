@@ -117,11 +117,12 @@ function sendMessageToBeyond(request) {
     sendMessageTo(DNDBEYOND_CLASSES_URL, request)
 }
 
+function isTabAdded(tab) {
+    return !!fvtt_tabs.find(t => t.id === tab.id);
+}
+
 function addFVTTTab(tab) {
-    for (let t of fvtt_tabs) {
-        if (t.id == tab.id)
-            return;
-    }
+    if (isTabAdded(tab)) return;
     fvtt_tabs.push(tab);
     console.log("Added ", tab.id, " to fvtt tabs.");
 }
@@ -218,6 +219,7 @@ function onMessage(request, sender, sendResponse) {
         chrome.browserAction.setPopup({ "tabId": tab.id, "popup": "popup.html" });
         if (isFVTT(tab.title)) {
             injectFVTTScripts(tab);
+            addFVTTTab(sender.tab)
         }
         // maybe open the changelog
         if (!openedChangelog) {
@@ -275,7 +277,7 @@ function onTabsUpdated(id, changes, tab) {
         removeFVTTTab(id)
     }
     /* Load Beyond20 on custom urls that have been added to our permissions */
-    if (changes["status"] === "complete" && urlMatches(tab.url, FVTT_URL)) {
+    if (changes["status"] === "complete" && urlMatches(tab.url, FVTT_URL) && !isTabAdded(tab)) {
         // We cannot use the url or its origin, because Firefox, in its great magnificent wisdom
         // decided that ports in the origin would break the whole permissions system
         const origin = `*://${new URL(tab.url).hostname}/*`;
