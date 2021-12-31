@@ -1394,10 +1394,10 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
     }
     
     // Find the icon with the AoE effect (<i class="i-aoe-sphere">) and convert it to a word
-    const range_shape = $(".ct-spell-pane .ddbc-property-list__property .ct-spell-detail__range-shape i");
-    const aoe_class = (range_shape.attr("class") || "").split(" ").find(c => c.startsWith("i-aoe-"));
+    const range_shape = $(".ct-spell-pane .ddbc-property-list__property .ct-spell-detail__range-shape .ddbc-aoe-type-icon");
+    const aoe_class = (range_shape.attr("class") || "").split(" ").find(c => c.startsWith("ddbc-aoe-type-icon--"));
     // Remove class prefix and capitalize first letter
-    const aoe_shape = aoe_class ? aoe_class.replace(/^i-aoe-(.)/, (_, g) => g.toUpperCase()) : undefined;
+    const aoe_shape = aoe_class ? aoe_class.replace(/^ddbc-aoe-type-icon--(.)/, (_, g) => g.toUpperCase()) : undefined;
 
     let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
 
