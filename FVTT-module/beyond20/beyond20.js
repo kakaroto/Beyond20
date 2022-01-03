@@ -180,7 +180,7 @@ class Beyond20 {
             case 'attack':
                 type = 'weapon';
                 itemData = this._getDefaultTemplate('Item', type);
-                this._buildAttackData(request, itemData);
+                this._buildAttackData(request, type, itemData);
                 break;
         }
         if (!itemData) {
@@ -263,12 +263,12 @@ class Beyond20 {
             itemData.target.type = request['aoe-shape'].toLowerCase();
         }
 
-        this._buildAttackData(request, itemData);
+        this._buildAttackData(request, 'spell', itemData);
 
         request.description = request.description.replace("At Higher Levels.", "<strong>At Higher Levels.</strong>");
     }
 
-    static _buildAttackData(request, itemData) {
+    static _buildAttackData(request, type, itemData) {
         if (request["save-dc"] !== undefined) {
             const ability = (request["save-ability"] || "").toLowerCase();
             itemData.actionType = "save";
@@ -280,12 +280,29 @@ class Beyond20 {
             };
         }
         if (request['to-hit'] !== undefined) {
-            if (request['attack-source'] === "spell") {
+            if (type === "spell") {
                 itemData.actionType = request['attack-type'] === "Melee" ? "msak" : "rsak";
             } else {
                 itemData.actionType = request['attack-type'] === "Melee" ? "mwak" : "rwak";
             }
-            // TODO: set the correct ability and magical bonus to match the to-hit value
+            let modifier = parseInt(request['to-hit']);
+            if (request.proficient || type === "spell") {
+                modifier -= parseInt(request.character.proficiency);
+            }
+            const abilities = {};
+            for (const ability of request.character.abilities) {
+                const [name, abbr, score, mod] = ability;
+                abilities[abbr.toLowerCase()] = parseInt(mod);
+            }
+            // Calculate the ability modifier to use based on the to-hit value, with a potential magical bonus too
+            const potentialBonuses = Object.values(abilities).map(mod => modifier - mod);
+            itemData.attackBonus = potentialBonuses.includes(0) ? 0 : Math.min(...potentialBonuses);
+            itemData.ability = Object.entries(abilities).find(([abbr, mod]) => modifier === itemData.attackBonus + mod)[0];
+            if (request['attack-source'] === "item") {
+                itemData.proficient = request.proficient;
+            }
+        } else if (request.damages) {
+            itemData.actionType = request["damage-types"].every(d => d.includes("Healing") || d === "Temp HP") ? "heal" : "util";
         }
         if (request.damages) {
             const damages = [];
