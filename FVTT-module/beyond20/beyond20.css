@@ -71,7 +71,7 @@
     margin-left: 5px;
     border: 1px solid black;
     aspect-ratio: 1/1;
-    object-fit: contain;
+    object-fit: cover;
 }
 .beyond20-message details {
     flex-grow: 1;
@@ -248,7 +248,7 @@ span.dice-roll.beyond20-tooltip-content {
     top: calc(-1.5rem - 10px);
     width: 100%;
     padding: 3px;
-    margin: 3px;
+    margin: 5px;
     text-align: center;
     background-color: lightgray;
     border: 1px solid black;

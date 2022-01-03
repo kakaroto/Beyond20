@@ -60,7 +60,7 @@
 
 .beyond20-critical-damage {
     border-left: 2px solid #9c3940;
-	padding-left: 3px;
+    padding-left: 3px;
 }
 
 .beyond20-total-damage.beyond20-critical-damage {
@@ -68,7 +68,7 @@
     border-radius: 3px;
     margin-bottom: 2px;
     box-shadow: rgb(208 53 53) 0px 0px 2px inset;
-	padding: 0px 5px;
+    padding: 0px 5px;
 }
 
 .beyond20-healing {
@@ -109,6 +109,8 @@
     margin-right: 5px;
     margin-left: 5px;
     border: 1px solid black;
+    aspect-ratio: 1/1;
+    object-fit: cover;
 }
 .beyond20-message details {
     flex-grow: 1;
