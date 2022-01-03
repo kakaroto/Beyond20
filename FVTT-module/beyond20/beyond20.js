@@ -608,9 +608,9 @@ class Beyond20 {
         }
         const damage = parseInt(valueSpan.text());
         if (isNaN(damage)) return;
-        const isTotal = roll.hasClass("beyond20-total-damage");
-        const isCritical = roll.hasClass("beyond20-critical-damage");
-        const isHealing = roll.hasClass("beyond20-healing");
+        //const isTotal = roll.hasClass("beyond20-total-damage");
+        //const isCritical = roll.hasClass("beyond20-critical-damage");
+        //const isHealing = roll.hasClass("beyond20-healing");
         const container = $(`
         <span class="beyond20-chat-damage-buttons-container">
           <i class="fas fa-long-arrow-alt-left"></i>
@@ -620,14 +620,14 @@ class Beyond20 {
         const buttons = [
             {
                 multiplier: 1,
-                icon: "user",
+                icon: "user-minus",
                 label: "Apply Damage",
                 color: "Crimson",
                 visible: true
             },
             {
                 multiplier: 0.5,
-                icon: "user-minus",
+                icon: "user-shield",
                 label: "Apply Half Damage",
                 color: "LightCoral",
                 visible: true
@@ -644,7 +644,7 @@ class Beyond20 {
                 icon: "first-aid",
                 label: "Apply Healing",
                 color: "LightGreen",
-                visible: isTotal || isHealing // Only display healing button on healing damages
+                visible: true
             },
         ];
         for (const data of buttons) {
