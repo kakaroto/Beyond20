@@ -157,8 +157,8 @@ async function buildAttackRoll(character, attack_source, name, description, prop
     if (properties["Properties"] !== undefined) {
         roll_properties["properties"] = properties["Properties"].split(", ");
     }
-    if (properties["Proficient"] === "Yes") {
-        roll_properties["proficient"] = true;
+    if (attack_source === "item") {
+        roll_properties["proficient"] = properties["Proficient"] === "Yes";
     }
 
     if (damages.length > 0) {
