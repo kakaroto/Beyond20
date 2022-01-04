@@ -1,3 +1,27 @@
+2.6.0 (January 4th 2022)
+===
+
+Happy New Year everyone! 🎉
+
+I hope everyone enjoyed the holidays and got plenty of rest. We're kicking off the new year with a new Beyond 20 release, which adds a couple of interesting features, and the much anticipated support for Foundry VTT v9.
+
+The first thing to mention is of course the support for Foundry VTT version 9, which was released only a couple of weeks ago and is looking as great as ever. Unfortunately, with the new release, Beyond20 had stopped working due to breaking API changes in Foundry, and this release fixes it and restores all functionality. We've also updated the Foundry companion module with support for chat damage buttons, allowing you to more easily apply damage or healing to your selected tokens, and also adds support for native Foundry rolls, allowing integration with other Foundry modules, such as midi-qol for example.
+
+One big feature we've worked on is that if you are self hosting Foundry, you can now request permanent permissions for your Foundry domain allowing it to automatically be activated when you load your Foundry game. As usual, you don't need to activate Beyond20 if you use [The Forge](https://forge-vtt.com), but for all those who aren't Forge users (and missing out on its awesomeness), this is a long awaited feature. Thanks to the new permission request system, we've also removed the broad permissions from FireFox, now only requesting access to the sites we actually need, and requiring the user to manually activate Beyond20 on their Foundry self hosted URLs. If you are unfamiliar with the process, you simply need to click on the Beyond20 icon in the address bar to activate the extension for your Foundry game, and you should be able to request the permanent permission from there as well.
+
+[![s1](images/screenshots/beyond20-activate.png)](images/screenshots/beyond20-activate.png)
+
+In other news, we've added a new "Advanced options" section, both to the per-character options and the global options, which gives us a cleaner settings interface, and will also allow us in the future to add some more controversial/rare options without worrying about bloating the UI. We also made good use of the new menu to add some new fine tuning options as well as move existing rarely used options to the Advanced menu. You can find the "Advanced Options" button at the bottom of the Beyond20 options menu.
+
+Another small, but important feature, is that the Beyond20 changelog, which is displayed when the extension is updated, will now only be displayed when you access a D&D Beyond or VTT page. It's a very welcome change, as it used to display the changelog when the extension was updated, which could happen at any time, and could disrupt a user's browsing experience. I'd like to thank [@sleepkever](https://github.com/sleepkever) for the [suggestion](https://github.com/kakaroto/Beyond20/issues/867), because I know it was something annoying (especially last June where there were multiple consecutive updates in a short span of time), and that some users didn't want to disable the option to open the changelog either. This should make everyone happy!
+
+That's it, as always, check out the full [Changelog](/Changelog#v260) to see all of the new features and bugfixes that went into this release.
+
+As usual, I want to thank all of my [Patrons](https://patreon.com/kakaroto) and [ko-fi/github](/rations) supporters, and for everyone who helped make this release possible. Thank you all for your support and your love! You're the ones making Beyond20 possible!
+
+Enjoy this update, and may 2022 bring you lots of natural 20s!
+
+
 2.5.0 (September 20th 2021)
 ===
 

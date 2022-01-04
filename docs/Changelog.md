@@ -1,3 +1,40 @@
+v2.6.0 (January 4th 2022)
+===
+
+* **Feature**: *FVTT*: Add support for Foundry v9 (rolls, HP syncing, conditions syncing, initiative tracking, etc...)
+* **Feature**: *FVTT*: Add support for (Experimental) Foundry native rolls for 0.8.9 and v9 in the FVTT module 1.4.0 (disabled option by default)
+* **Feature**: *FVTT*: Add support for requesting permanent permissions for custom Foundry VTT domains
+* **Feature**: Remove broad permissions from FireFox, and switching to a Chrome like system for activating on Foundry VTT tab
+* **Feature**: Add an 'Advanced Options' button to separate the more common vs advanced settings in Beyond20 options
+* **Feature**: Only open Beyond20 changelog when the user visits a D&D Beyond or VTT page, rather than on extension update
+* **Feature**: Hide the custom modifiers in the per-character settings under an Advanced settings toggle
+* **Feature**: Add support for sending whispers to the DDB game log 
+* **Feature**: Add ability to display an item's image to the VTT from Magic Item pages
+* **Feature**: Add character initiative to the D&D Beyond encounters when rolling for Initiative
+* **Feature**: Add support for dice formula that use uppercase 'D' instead of 'd' for the dice
+* **Feature**: Add support for roll tables which uses a 'Bardic Insp. Die' instead of a dice formula (Bard College of Spirits: Spirit Tales)
+* **Feature**: Add support for Warlock: The Celestial: Radiant Soul (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Elemental Weapon damage selection (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Elemental Bane weapon damage selection (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add a query for Spirit Guardian's damage type (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Move all queries to the D&D Beyond site when building a roll request, instead of on the VTT side (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add an advanced option to configure how a hidden monster name/attack should appear (default to '???')
+* **Feature**: Add support for a custom raw ability check modifier 
+* **Feature**: Rename "One/Two Handed" weapon damages into a shorter "1/2-Hand" display (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add option to always show the type of damage for versatile weapon attacks (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: *FVTT*: Add support for chat damage buttons in the Foundry VTT module
+* **Bugfix**: Apply per-character discord target to a character's Extras
+* **Bugfix**: Fix issue with some monster actions not being recognized if they started with a space (Mind Flayer Lich Illithilich)
+* **Bugfix**: Fix alertify library polluting the comments in DDB pages (tinymce iframe)
+* **Bugfix**: Fix formula parsing which uses the unicode minus character (Homunculus Servant in artifier's source)
+* **Bugfix**: Fix the Jack of All Trades character option not being visible in the per-character settings
+* **Bugfix**: Fix aspect ratio of the character avatar images so they match DDB's display
+* **Bugfix**: Trim all damage types, as a damage type might appear preceded with a space in some situations
+* **Bugfix**: Fix detection of AoE shape for spells in character sheets (useful for Foundry native roll support)
+* **Misc**: Remove support for Paladin's Legendary Strike, as it was not retained from UA (by [@Aeristoka](https://github.com/Aeristoka))
+* **Misc**: Updated instructions for the Discord integration
+* **Misc**: Remove Toucan sponsorship and fix Discord logo from support page
+
 v2.5.0 (September 20th 2021)
 ===
 

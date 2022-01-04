@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.5.0
+Congratulations! Beyond20 was just updated to the latest version : v2.6.0
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -17,19 +17,26 @@ Thank you all for your support!
 
 # Release Notes
 
-Hello Beyonders! We are due another major release of Beyond20 and this one packs a couple of really cool features!
+Happy New Year everyone! 🎉
 
-The feature I'm most happy about is the new integration with the D&D Beyond Game Log. This feature was coming for a long time and was complicated to get working properly, but you will now be able to see the detailed result from Beyond20 in your Game Log and your friends/players/minions will be able to see the exact formulas and results of each roll made by Beyond20, whether you use the Digital Dice or not!
+I hope everyone enjoyed the holidays and got plenty of rest. We're kicking off the new year with a new Beyond 20 release, which adds a couple of interesting features, and the much anticipated support for Foundry VTT v9.
 
-Another cool feature is the ability to set a target Discord channel to send rolls to, on a per-character basis. That should make it easier for people playing in multiple campaigns, not to have to switch their discord settings every time. You can now also set custom damage formulas or custom modifier formulas for your hotkeys, instead of being limited to the hardcoded choices we previously offered.
+The first thing to mention is of course the support for Foundry VTT version 9, which was released only a couple of weeks ago and is looking as great as ever. Unfortunately, with the new release, Beyond20 had stopped working due to breaking API changes in Foundry, and this release fixes it and restores all functionality. We've also updated the Foundry companion module with support for chat damage buttons, allowing you to more easily apply damage or healing to your selected tokens, and also adds support for native Foundry rolls, allowing integration with other Foundry modules, such as midi-qol for example.
 
-Finally, last but not least, I'm happy to announce the ability to send read aloud text from source books directly into the chat of your favorite VTT!
+One big feature we've worked on is that if you are self hosting Foundry, you can now request permanent permissions for your Foundry domain allowing it to automatically be activated when you load your Foundry game. As usual, you don't need to activate Beyond20 if you use [The Forge](https://forge-vtt.com), but for all those who aren't Forge users (and missing out on its awesomeness), this is a long awaited feature. Thanks to the new permission request system, we've also removed the broad permissions from FireFox, now only requesting access to the sites we actually need, and requiring the user to manually activate Beyond20 on their Foundry self hosted URLs. If you are unfamiliar with the process, you simply need to click on the Beyond20 icon in the address bar to activate the extension for your Foundry game, and you should be able to request the permanent permission from there as well.
 
-This is of course only a small subset of the changes, and I recommend you check out the full [Changelog](/Changelog#v250-september-20th-2021) to see all of the new features and bugfixes that went into this release.
+[![s1](images/screenshots/beyond20-activate.png)](images/screenshots/beyond20-activate.png)
 
-As usual, I want to thank all of my [Patrons](https://patreon.com/kakaroto) and [ko-fi/github](/rations) supporters, and for everyone who helped make this release possible. Thank you all for your support and your love!
+In other news, we've added a new "Advanced options" section, both to the per-character options and the global options, which gives us a cleaner settings interface, and will also allow us in the future to add some more controversial/rare options without worrying about bloating the UI. We also made good use of the new menu to add some new fine tuning options as well as move existing rarely used options to the Advanced menu. You can find the "Advanced Options" button at the bottom of the Beyond20 options menu.
 
-Enjoy this update, and keep rolling!
+Another small, but important feature, is that the Beyond20 changelog, which is displayed when the extension is updated, will now only be displayed when you access a D&D Beyond or VTT page. It's a very welcome change, as it used to display the changelog when the extension was updated, which could happen at any time, and could disrupt a user's browsing experience. I'd like to thank [@sleepkever](https://github.com/sleepkever) for the [suggestion](https://github.com/kakaroto/Beyond20/issues/867), because I know it was something annoying (especially last June where there were multiple consecutive updates in a short span of time), and that some users didn't want to disable the option to open the changelog either. This should make everyone happy!
+
+That's it, as always, check out the full [Changelog](/Changelog#v260) to see all of the new features and bugfixes that went into this release.
+
+As usual, I want to thank all of my [Patrons](https://patreon.com/kakaroto) and [ko-fi/github](/rations) supporters, and for everyone who helped make this release possible. Thank you all for your support and your love! You're the ones making Beyond20 possible!
+
+Enjoy this update, and may 2022 bring you lots of natural 20s!
+
 
 ---
 
@@ -37,51 +44,42 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-v2.5.0 (September 20th 2021)
+v2.6.0 (January 4th 2022)
 ===
 
-* **Feature**: Add support for sending the detailed roll results to the D&D Beyond Game Log
-* **Feature**: Add the ability to set custom modifier/damage formulas when setting up hotkeys
-* **Feature**: Add option to set a target discord channel on a per-character basis
-* **Feature**: Add Beyond20 button on read-aloud text boxes to send as chat message to the VTT
-* **Feature**: Add support for applying custom modifiers and custom damages from hotkeys to Monster rolls too
-* **Feature**: Query for the advantage/disadvantage on skill checks that have a magical conditional advantage/disadvantage badge
-* **Feature**: Add buttons to display character's proficiencies to the VTT
-* **Feature**: Add support for adding magical modifiers on death saves (from Luck Stone, or Cloak of Protection)
-* **Feature**: Add item quantities when rolling/displaying an item
-* **Feature**: Add button to display a character sheet's avatar to the VTT
-* **Feature**: Add the ability to roll non standard dice formulas (1d2, 1d50, etc..) when using the digital dice
-* **Feature**: Show the character's avatar next to each roll when using the html roll renderer
-* **Feature**: Add support for Mark of Warding Dwarf - Warder's Intuition (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for Mark of Scribing Gnome - Gifted Scribe (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for Mark of Healing Halfling - Healing Touch (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for Mark of Hospitality Halfling - Ever Hospitable (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for Mark of Finding Half-Orc/Human - Hunter's Intuition (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for Mark of Handling Human - Wild Intuition (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for Mark of Making Human - Artisan's Intuition (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for Mark of Passage Human - Intuitive Motion (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for Mark of Sentinel Human - Sentinel's Intuition (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for Mark of Warding Dwarf (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add special handling for Spirit Shroud spell (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add special handling for Destructive Wave spell (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Update the CSS styling further for the roll renderer (by [@LorduFreeman](https://github.com/LorduFreeman))
-* **Feature**: Send Beyond20 roll request information to the DOM as a custom event, which could allow other extensions to take advantage of that data
-* **Feature**: Send roll requests and rendered rolls to other D&D Beyond players through the Game Log (does not appear but could be used by other extensions)
-* **Bugfix**: Fix bug calculating the modifier in custom skills when querying for the ability to use (by [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Prevent the custom digital dice rolls from being sent to the game log, polluting it with hard to parse roll information
-* **Bugfix**: Fix "Force Critical" option being ignored when rolling damages only on spells (by [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Clean up alertify classes from comments sections of items, monsters, spells, vehicles to prevent comments polluting the page
-* **Bugfix**: Fix duplicate roll buttons appearing on vehicle statblocks
-* **Bugfix**: Fix broken attacks for the Animate Objects spell
-* **Bugfix**: Remove querying for advantage when rolling a custom formula rather than an attack/ability check
-* **Bugfix**: Fix adding quick roll areas to the modifiers preview in the "Change Theme" panel
-* **Bugfix**: Fix discord logo in the options menu not being visible anymore
-* **Bugfix**: Fix issue rolling custom dice formula with the digital dice when the whisper type is set to "Ask every time"
-* **Bugfix**: Fix the game log hijacking digital dice rolls in the encounters page
-* **Bugfix**: *FVTT*: Fix Temp HP syncing by removing the HP Max override when Temp HP is set (by [@Aeristoka](https://github.com/Aeristoka))
-* **Misc**: Add proficiency flag to saving throw requests sent by Beyond20
-* **Misc**: Fix the "available in chrome store" image not loading on the website
-* **Misc**: Remove Toucan sponsorhip from the website (nobody seemed particularly interested in their product 🤷‍♂️)
+* **Feature**: *FVTT*: Add support for Foundry v9 (rolls, HP syncing, conditions syncing, initiative tracking, etc...)
+* **Feature**: *FVTT*: Add support for (Experimental) Foundry native rolls for 0.8.9 and v9 in the FVTT module 1.4.0 (disabled option by default)
+* **Feature**: *FVTT*: Add support for requesting permanent permissions for custom Foundry VTT domains
+* **Feature**: Remove broad permissions from FireFox, and switching to a Chrome like system for activating on Foundry VTT tab
+* **Feature**: Add an 'Advanced Options' button to separate the more common vs advanced settings in Beyond20 options
+* **Feature**: Only open Beyond20 changelog when the user visits a D&D Beyond or VTT page, rather than on extension update
+* **Feature**: Hide the custom modifiers in the per-character settings under an Advanced settings toggle
+* **Feature**: Add support for sending whispers to the DDB game log 
+* **Feature**: Add ability to display an item's image to the VTT from Magic Item pages
+* **Feature**: Add character initiative to the D&D Beyond encounters when rolling for Initiative
+* **Feature**: Add support for dice formula that use uppercase 'D' instead of 'd' for the dice
+* **Feature**: Add support for roll tables which uses a 'Bardic Insp. Die' instead of a dice formula (Bard College of Spirits: Spirit Tales)
+* **Feature**: Add support for Warlock: The Celestial: Radiant Soul (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Elemental Weapon damage selection (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Elemental Bane weapon damage selection (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add a query for Spirit Guardian's damage type (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Move all queries to the D&D Beyond site when building a roll request, instead of on the VTT side (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add an advanced option to configure how a hidden monster name/attack should appear (default to '???')
+* **Feature**: Add support for a custom raw ability check modifier 
+* **Feature**: Rename "One/Two Handed" weapon damages into a shorter "1/2-Hand" display (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add option to always show the type of damage for versatile weapon attacks (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: *FVTT*: Add support for chat damage buttons in the Foundry VTT module
+* **Bugfix**: Apply per-character discord target to a character's Extras
+* **Bugfix**: Fix issue with some monster actions not being recognized if they started with a space (Mind Flayer Lich Illithilich)
+* **Bugfix**: Fix alertify library polluting the comments in DDB pages (tinymce iframe)
+* **Bugfix**: Fix formula parsing which uses the unicode minus character (Homunculus Servant in artifier's source)
+* **Bugfix**: Fix the Jack of All Trades character option not being visible in the per-character settings
+* **Bugfix**: Fix aspect ratio of the character avatar images so they match DDB's display
+* **Bugfix**: Trim all damage types, as a damage type might appear preceded with a space in some situations
+* **Bugfix**: Fix detection of AoE shape for spells in character sheets (useful for Foundry native roll support)
+* **Misc**: Remove support for Paladin's Legendary Strike, as it was not retained from UA (by [@Aeristoka](https://github.com/Aeristoka))
+* **Misc**: Updated instructions for the Discord integration
+* **Misc**: Remove Toucan sponsorship and fix Discord logo from support page
 
 ---
 
