@@ -220,7 +220,7 @@ function onMessage(request, sender, sendResponse) {
         chrome.browserAction.setPopup({ "tabId": tab.id, "popup": "popup.html" });
         if (isFVTT(tab.title)) {
             injectFVTTScripts(tab);
-            addFVTTTab(sender.tab)
+            addFVTTTab(tab)
         }
         // maybe open the changelog
         if (!openedChangelog) {
