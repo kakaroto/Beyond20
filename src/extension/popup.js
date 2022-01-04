@@ -98,10 +98,7 @@ function populateCharacter(response) {
                 E.p({ style: "margin: 0px;" }, response.name))
         );
 
-        let e = createHTMLOption("versatile-choice", false, character_settings);
-        e.classList.add("advanced-option");
-        options.append(e);
-        e = createHTMLOption("custom-roll-dice", false, character_settings);
+        let e = createHTMLOption("custom-roll-dice", false, character_settings);
         e.classList.add("advanced-option");
         options.append(e);
         e = createHTMLOption("custom-damage-dice", false, character_settings);
@@ -112,6 +109,8 @@ function populateCharacter(response) {
         options.append(e);
         e = createHTMLOption("custom-critical-limit", false, character_settings);
         e.classList.add("advanced-option");
+        options.append(e);
+        e = createHTMLOption("versatile-choice", false, character_settings);
         options.append(e);
         if (response["racial-traits"].includes("Lucky")) {
             e = createHTMLOption("halfling-lucky", false, character_settings);
