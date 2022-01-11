@@ -313,7 +313,7 @@ class Beyond20RollRenderer {
                 total_damages["2-Handed Damage"] = two_handed;
             }
             if (total_damages["Critical 2-Handed Damage"]) {
-                total_damages["Critical One-Handed Damage"] = total_damages["Critical Damage"];
+                total_damages["Critical 1-Handed Damage"] = total_damages["Critical Damage"];
                 delete total_damages["Critical Damage"];
                 // Need to swap them so two-handed goes last
                 const two_handed = total_damages["Critical 2-Handed Damage"];

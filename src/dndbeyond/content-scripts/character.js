@@ -909,8 +909,7 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
             brutal,
             force_to_hit_only,
             force_damages_only,
-            {weapon_damage_length},
-            is_versatile);
+            {weapon_damage_length});
         roll_properties["item-type"] = item_type;
         roll_properties["item-customizations"] = item_customizations;
         roll_properties["is_versatile"] = is_versatile;
