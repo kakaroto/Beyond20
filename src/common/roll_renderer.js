@@ -280,13 +280,13 @@ class Beyond20RollRenderer {
                 if (flags & DAMAGE_FLAGS.REGULAR) {
                     kind_of_damage = flags & DAMAGE_FLAGS.CRITICAL ? "Critical Damage" : "Damage";
                 } else if (flags & DAMAGE_FLAGS.VERSATILE) {
-                    kind_of_damage = flags & DAMAGE_FLAGS.CRITICAL ? "Critical Two-Handed Damage" : "Two-Handed Damage";
+                    kind_of_damage = flags & DAMAGE_FLAGS.CRITICAL ? "Critical 2-Handed Damage" : "2-Handed Damage";
                 } else if (flags & DAMAGE_FLAGS.HEALING) {
                     kind_of_damage = "Healing";
                 } else if (flags & DAMAGE_FLAGS.ADDITIONAL) {
                     // HACK Alert: crappy code;
                     const regular = flags & DAMAGE_FLAGS.CRITICAL ? "Critical Damage" : "Damage";
-                    const versatile = flags & DAMAGE_FLAGS.CRITICAL ? "Critical Two-Handed Damage" : "Two-Handed Damage";
+                    const versatile = flags & DAMAGE_FLAGS.CRITICAL ? "Critical 2-Handed Damage" : "2-Handed Damage";
                     if (total_damages[regular] !== undefined)
                         total_damages[regular] += " + " + String(roll.total);
                     if (total_damages[versatile] !== undefined)
@@ -304,21 +304,21 @@ class Beyond20RollRenderer {
 
         if (Object.keys(total_damages).length > 0) {
             // HACK ALERT: Even crappier code than above
-            if (total_damages["Two-Handed Damage"]) {
-                total_damages["One-Handed Damage"] = total_damages["Damage"];
+            if (total_damages["2-Handed Damage"]) {
+                total_damages["1-Handed Damage"] = total_damages["Damage"];
                 delete total_damages["Damage"];
                 // Need to swap them so two-handed goes last
-                const two_handed = total_damages["Two-Handed Damage"];
-                delete total_damages["Two-Handed Damage"];
-                total_damages["Two-Handed Damage"] = two_handed;
+                const two_handed = total_damages["2-Handed Damage"];
+                delete total_damages["2-Handed Damage"];
+                total_damages["2-Handed Damage"] = two_handed;
             }
-            if (total_damages["Critical Two-Handed Damage"]) {
+            if (total_damages["Critical 2-Handed Damage"]) {
                 total_damages["Critical One-Handed Damage"] = total_damages["Critical Damage"];
                 delete total_damages["Critical Damage"];
                 // Need to swap them so two-handed goes last
-                const two_handed = total_damages["Critical Two-Handed Damage"];
-                delete total_damages["Critical Two-Handed Damage"];
-                total_damages["Critical Two-Handed Damage"] = two_handed;
+                const two_handed = total_damages["Critical 2-Handed Damage"];
+                delete total_damages["Critical 2-Handed Damage"];
+                total_damages["Critical 2-Handed Damage"] = two_handed;
             }
             html += "<div class='beyond20-roll-result'><b><hr/></b></div>";
         }
@@ -522,7 +522,6 @@ class Beyond20RollRenderer {
             const critical_damages = request["critical-damages"];
             const critical_damage_types = request["critical-damage-types"];
 
-            const has_versatile = damage_types.length > 1 && damage_types[1].includes("Two-Handed");
             for (let i = 0; i < (damages.length); i++) {
                 const roll = this._roller.roll(damages[i]);
                 roll.setRollType("damage");
@@ -533,7 +532,7 @@ class Beyond20RollRenderer {
                     damage_flags = DAMAGE_FLAGS.HEALING;
                 } else if (i == 0) {
                     damage_flags = DAMAGE_FLAGS.REGULAR;
-                } else if (i == 1 && has_versatile) {
+                } else if (i == 1 && request.is_versatile) {
                     damage_flags = DAMAGE_FLAGS.VERSATILE;
                 } else {
                     damage_flags = DAMAGE_FLAGS.ADDITIONAL;
@@ -596,7 +595,7 @@ class Beyond20RollRenderer {
                         damage_flags = DAMAGE_FLAGS.HEALING;
                     } else if (i == 0) {
                         damage_flags = DAMAGE_FLAGS.REGULAR;
-                    } else if (i == 1 && has_versatile) {
+                    } else if (i == 1 && request.is_versatile) {
                         damage_flags = DAMAGE_FLAGS.VERSATILE;
                     } else {
                         damage_flags = DAMAGE_FLAGS.ADDITIONAL;
