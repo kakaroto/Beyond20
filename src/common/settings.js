@@ -626,7 +626,7 @@ const character_settings = {
     },
     "warlock-the-celestial-radiant-soul": {
         "title": "Warlock: The Celestial: Radiant Soul",
-        "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
+        "description": "The pact with your Celestial enhances your radiant and fire spells.",
         "type": "bool",
         "default": true
     },
