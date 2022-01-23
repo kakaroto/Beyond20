@@ -572,8 +572,6 @@ class Beyond20 {
         const actor = await this.getUpdatedActor(request, [item]);
         const actorItem = actor.items.find(i => i.type === item.type && i.name === item.name);
 
-        const template = game.dnd5e.canvas.AbilityTemplate.fromItem(actorItem);
-        if ( template ) template.drawPreview();
         const rollMode = request.whisper === 0 ? "roll" : "gmroll";
         
         const roll = ['attack', 'spell-attack'].includes(request.type);
