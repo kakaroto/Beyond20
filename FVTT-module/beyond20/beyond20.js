@@ -47,7 +47,8 @@ class Beyond20 {
             const [name, abbr, score, mod] = ability;
             actorData.abilities[abbr.toLowerCase()] = {value: parseInt(score), mod: parseInt(mod)}
         }
-        actorData.attributes.ac.value = parseInt(request.character.ac);
+        actorData.attributes.ac.flat = parseInt(request.character.ac);
+        actorData.attributes.ac.calc = "flat";
         actorData.attributes.hp.value = parseInt(request.character.hp);
         actorData.attributes.hp.max = parseInt(request.character['max-hp']);
         actorData.attributes.hp.temp = parseInt(request.character['temp-hp']);
