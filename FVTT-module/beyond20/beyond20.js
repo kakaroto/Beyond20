@@ -397,7 +397,7 @@ class Beyond20 {
 
         if (!combat) {
             if (game.user.isGM) {
-                combat = await game.combats.object.create({scene: canvas.scene._id, active: true});
+                combat = await game.combats.object.create({scene: canvas.scene.id, active: true});
             } else {
                 return null;
             }
@@ -418,7 +418,7 @@ class Beyond20 {
             await combat.createEmbeddedEntity("Combatant", createData);
         }
         const combatants = tokens.map(t => combat.getCombatantByToken(t.id));
-        combat.rollInitiative(combatants.filter(c => !!c).map(c => c._id), {formula, messageOptions: this.getRollOptions(request)})
+        combat.rollInitiative(combatants.filter(c => !!c).map(c => c.id), {formula, messageOptions: this.getRollOptions(request)})
         //await token.actor.rollInitiative({createCombatants: true, rerollInitiative: true})
         return true;
     }
