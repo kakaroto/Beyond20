@@ -159,7 +159,7 @@ class FVTTDisplayer {
             }
             data.type = MESSAGE_TYPES.ROLL;
         }
-        return ChatMessage.create(data);
+        return ChatMessage.create(data, {rollMode});
     }
 
     _getSpeakerByName(name) {
