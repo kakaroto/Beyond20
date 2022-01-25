@@ -523,9 +523,6 @@ class Beyond20RollRenderer {
             const critical_damage_types = request["critical-damage-types"];
 
             for (let i = 0; i < (damages.length); i++) {
-                const roll = this._roller.roll(damages[i]);
-                roll.setRollType("damage");
-                all_rolls.push(roll);
                 const dmg_type = damage_types[i];
                 let damage_flags = DAMAGE_FLAGS.REGULAR;
                 if (["Healing", "Temp HP", "Alchemical Savant Healing", "Enhanced Bond Healing", "Spiritual Focus Healing"].includes(dmg_type)) {
@@ -538,7 +535,13 @@ class Beyond20RollRenderer {
                     damage_flags = DAMAGE_FLAGS.ADDITIONAL;
                 }
                 const suffix = !(damage_flags & DAMAGE_FLAGS.HEALING) ? " Damage" : "";
-                damage_rolls.push([dmg_type + suffix, roll, damage_flags]);
+                // Avoid adding an empty string
+                if (damages[i].trim()) {
+                    const roll = this._roller.roll(damages[i]);
+                    roll.setRollType("damage");
+                    all_rolls.push(roll);
+                    damage_rolls.push([dmg_type + suffix, roll, damage_flags]);
+                }
                 // Handle life transference;
                 if (request.name == "Life Transference" && dmg_type == "Necrotic") {
                     damage_rolls.push(["Healing", "Twice the Necrotic damage", DAMAGE_FLAGS.HEALING]);

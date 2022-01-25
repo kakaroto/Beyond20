@@ -48,7 +48,7 @@ class FVTTDisplayer {
         // Build a dicePool, attach it to a Roll, then attach it to the ChatMessage
         // Then set ChatMessage type to "ROLL"
         if (attack_rolls.length > 0 || damage_rolls.length > 0) {
-            const rolls = [...attack_rolls, ...damage_rolls.map(d =>d[1]).filter(r => !!r)];
+            const rolls = [...attack_rolls, ...damage_rolls.map(d => d[1]).filter(r => !!r && typeof(r) !== "string")];
             // Transforms DNDBRolls -> FVTTRolls
             const fvttRolls = rolls.map(r => {
                 if (r instanceof FVTTRoll) { return r._roll; }
