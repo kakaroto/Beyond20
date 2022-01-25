@@ -538,16 +538,20 @@ class Beyond20RollRenderer {
                     damage_flags = DAMAGE_FLAGS.ADDITIONAL;
                 }
                 const suffix = !(damage_flags & DAMAGE_FLAGS.HEALING) ? " Damage" : "";
-                damage_rolls.push([dmg_type + suffix, roll, damage_flags]);
                 // Handle life transference;
-                if (request.name == "Life Transference" && dmg_type == "Necrotic") {
-                    damage_rolls.push(["Healing", "Twice the Necrotic damage", DAMAGE_FLAGS.HEALING]);
+                if (request.name == "Life Transference" && dmg_type == "Healing") {
+                    continue;
                 }
+                damage_rolls.push([dmg_type + suffix, roll, damage_flags]);
             }
         
 
             await this._roller.resolveRolls(request.name, all_rolls, request)
             
+            if (request.name == "Life Transference") {
+                damage_rolls.push(["Healing", "Twice the Necrotic damage", DAMAGE_FLAGS.HEALING]);
+            }
+
             // Moved after the new resolveRolls so it can access the roll results
             if (request.name.includes("Chaos Bolt")) {
                 for (let [i, dmg_roll] of damage_rolls.entries()) {
