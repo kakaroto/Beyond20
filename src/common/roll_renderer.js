@@ -275,7 +275,7 @@ class Beyond20RollRenderer {
             if (flags & DAMAGE_FLAGS.CRITICAL) dmg_classes += " beyond20-critical-damage";
             if (flags & DAMAGE_FLAGS.HEALING) dmg_classes += " beyond20-healing";
             html += `<div class='${dmg_classes}'><b>${roll_name}</b>${roll_html}</div>`;
-            if (add_totals) {
+            if (add_totals && typeof (roll) !== "string") {
                 let kind_of_damage = "";
                 if (flags & DAMAGE_FLAGS.REGULAR) {
                     kind_of_damage = flags & DAMAGE_FLAGS.CRITICAL ? "Critical Damage" : "Damage";
