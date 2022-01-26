@@ -472,11 +472,11 @@ function rollSpellAttack(request, custom_roll_dice) {
         const critical_damages = request["critical-damages"];
         const critical_damage_types = request["critical-damage-types"];
         if (request.name === "Life Transference") {
-            damages.push("Twice the Necrotic damage");
-            damage_types.push("Healing");
+            const idx = damage_types.indexOf("Healing");
+            damages[idx] = "Twice the Necrotic damage";
         } else if (request.name === "Vampiric Touch") {
-            damages.push("Half the Necrotic damage");
-            damage_types.push("Healing");
+            const idx = damage_types.indexOf("Healing");
+            damages[idx] = "Half the Necrotic damage";
         }
         dmg_props = damagesToRollProperties(damages, damage_types, critical_damages, critical_damage_types);
     }
