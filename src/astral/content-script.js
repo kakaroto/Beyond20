@@ -259,6 +259,9 @@ function rollSpellAttack(request, custom_roll_dice) {
         } else if (request.name === "Life Transference") {
             damages.push("Twice the Necrotic damage");
             damage_types.push("Healing");
+        } else if (request.name === "Vampiric Touch") {
+            damages.push("Half the Necrotic damage");
+            damage_types.push("Healing");
         } else if (request.name === "Toll the Dead") {
             damages[0] = `${damages[0]} or if hurt ${damages[0].replace("d8", "d12")}`
         } else if (request.name === "Booming Blade") {

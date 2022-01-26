@@ -474,6 +474,9 @@ function rollSpellAttack(request, custom_roll_dice) {
         if (request.name === "Life Transference") {
             damages.push("Twice the Necrotic damage");
             damage_types.push("Healing");
+        } else if (request.name === "Vampiric Touch") {
+            damages.push("Half the Necrotic damage");
+            damage_types.push("Healing");
         }
         dmg_props = damagesToRollProperties(damages, damage_types, critical_damages, critical_damage_types);
     }

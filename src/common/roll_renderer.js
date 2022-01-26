@@ -545,6 +545,8 @@ class Beyond20RollRenderer {
                 // Handle life transference;
                 if (request.name == "Life Transference" && dmg_type == "Necrotic") {
                     damage_rolls.push(["Healing", "Twice the Necrotic damage", DAMAGE_FLAGS.HEALING]);
+                } else if (request.name == "Vampiric Touch" && dmg_type == "Necrotic") {
+                    damage_rolls.push(["Healing", "Half the Necrotic damage", DAMAGE_FLAGS.HEALING]);
                 }
             }
         
