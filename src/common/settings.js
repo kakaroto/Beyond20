@@ -106,7 +106,7 @@ const options_list = {
         "title": "Use D&D Beyond's Digital Dice",
         "description": "Integrate with D&D Beyond's Digital Dice, rolling the dice on the screen and sending the pre-calculated results to the VTT.",
         "type": "bool",
-        "default": false
+        "default": true
     },
 
     "auto-roll-damage": {
