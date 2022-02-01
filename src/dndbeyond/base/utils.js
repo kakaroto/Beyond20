@@ -196,69 +196,67 @@ async function buildAttackRoll(character, attack_source, name, description, prop
             await queryDamageTypeFromArray(roll_properties.name, damages, damage_types, ["Radiant", "Necrotic"]);
         }
         
-        if (to_hit) {
-            const crits = damagesToCrits(character, damages, damage_types);
-            const crit_damages = [];
-            const crit_damage_types = [];
-            for (let [i, dmg] of crits.entries()) {
-                if (dmg != "") {
-                    crit_damages.push(dmg);
-                    crit_damage_types.push(damage_types[i]);
-                }
+        const crits = damagesToCrits(character, damages, damage_types);
+        const crit_damages = [];
+        const crit_damage_types = [];
+        for (let [i, dmg] of crits.entries()) {
+            if (dmg != "") {
+                crit_damages.push(dmg);
+                crit_damage_types.push(damage_types[i]);
             }
-            if (character.hasFeat("Piercer")) {
-                for (let i = 0; i < damage_types.length; i++) {
-                    if (damage_types[i].includes("Piercing")){
-                        const piercer_damage = damagesToCrits(character, [damages[i]]);
-                        if (piercer_damage.length > 0 && piercer_damage[0] != "") {    
-                            piercer_damage[0] = piercer_damage[0].replace(/([0-9]+)d([0-9]+)/, '1d$2');
-                            crit_damages.push(piercer_damage[0]);
-                            crit_damage_types.push("Piercer Feat");
-                            break;
-                        }
-                    }
-                }
-            }
-            if (roll_properties.name === "Blade of Disaster")
-                crit_damages[0] = damagesToCrits(character, ["8d12"])[0];
-            if (roll_properties.name === "Jim’s Magic Missile")
-                crit_damages[0] = damagesToCrits(character, ["3d4"])[0];
-            if (brutal > 0) {
-                const rule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
-                let highest_dice = 0;
-                let weapon_damage_counter = 0;
-                for (let dmg of damages) {
-                    if (weapon_damage_length && weapon_damage_counter >= weapon_damage_length) break;
-                    const match = dmg.match(/[0-9]*d([0-9]+)/);
-                    if (match) {
-                        const sides = parseInt(match[1]);
-                        if (sides > highest_dice)
-                            highest_dice = sides;
-                    }
-                    weapon_damage_counter++;
-                }
-                const isBrutal = character.hasClassFeature("Brutal Critical");
-                const isSavage = character.hasRacialTrait("Savage Attacks");
-                if (highest_dice != 0) {
-                    let brutal_dmg = `${brutal}d${highest_dice}`
-                    if (rule == CriticalRules.HOMEBREW_MAX) {
-                        crit_damages.push(damagesToCrits(character, [brutal_dmg])[0]);
-                    } else {
-                        // Apply great weapon fighting to brutal damage dice
-                        if ((character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&
-                            properties["Attack Type"] == "Melee" &&
-                            (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
-                            brutal_dmg += "ro<=2"
-                        }
-                        crit_damages.push(brutal_dmg);
-                    }
-                    crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
-                }
-
-            }
-            roll_properties["critical-damages"] = crit_damages;
-            roll_properties["critical-damage-types"] = crit_damage_types;
         }
+        if (character.hasFeat("Piercer")) {
+            for (let i = 0; i < damage_types.length; i++) {
+                if (damage_types[i].includes("Piercing")){
+                    const piercer_damage = damagesToCrits(character, [damages[i]]);
+                    if (piercer_damage.length > 0 && piercer_damage[0] != "") {    
+                        piercer_damage[0] = piercer_damage[0].replace(/([0-9]+)d([0-9]+)/, '1d$2');
+                        crit_damages.push(piercer_damage[0]);
+                        crit_damage_types.push("Piercer Feat");
+                        break;
+                    }
+                }
+            }
+        }
+        if (roll_properties.name === "Blade of Disaster")
+            crit_damages[0] = damagesToCrits(character, ["8d12"])[0];
+        if (roll_properties.name === "Jim’s Magic Missile")
+            crit_damages[0] = damagesToCrits(character, ["3d4"])[0];
+        if (brutal > 0) {
+            const rule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
+            let highest_dice = 0;
+            let weapon_damage_counter = 0;
+            for (let dmg of damages) {
+                if (weapon_damage_length && weapon_damage_counter >= weapon_damage_length) break;
+                const match = dmg.match(/[0-9]*d([0-9]+)/);
+                if (match) {
+                    const sides = parseInt(match[1]);
+                    if (sides > highest_dice)
+                        highest_dice = sides;
+                }
+                weapon_damage_counter++;
+            }
+            const isBrutal = character.hasClassFeature("Brutal Critical");
+            const isSavage = character.hasRacialTrait("Savage Attacks");
+            if (highest_dice != 0) {
+                let brutal_dmg = `${brutal}d${highest_dice}`
+                if (rule == CriticalRules.HOMEBREW_MAX) {
+                    crit_damages.push(damagesToCrits(character, [brutal_dmg])[0]);
+                } else {
+                    // Apply great weapon fighting to brutal damage dice
+                    if ((character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&
+                        properties["Attack Type"] == "Melee" &&
+                        (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
+                        brutal_dmg += "ro<=2"
+                    }
+                    crit_damages.push(brutal_dmg);
+                }
+                crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
+            }
+
+        }
+        roll_properties["critical-damages"] = crit_damages;
+        roll_properties["critical-damage-types"] = crit_damage_types;
     }
 
     return roll_properties;
@@ -328,9 +326,11 @@ async function sendRoll(character, rollType, fallback, args) {
     if (req.advantage === RollType.QUERY) {
         req.advantage = await dndbeyondDiceRoller.queryAdvantage(args.name || rollType, req["advantage-query"]);
     }
-    if (req["to-hit"] && character.getGlobalSetting("weapon-force-critical", false) || key_modifiers.force_critical) {
-        req["critical-limit"] = 1;
+    if (character.getGlobalSetting("weapon-force-critical", false) || key_modifiers.force_critical) {
         req["rollCritical"] = true;
+        if (req["to-hit"]) {
+            req["critical-limit"] = 1;
+        }
     }
 
 

@@ -580,9 +580,8 @@ class Beyond20RollRenderer {
             }
 
             // If rolling the attack, check for critical hit, otherwise, use argument.
-            if (request.rollAttack) {
-                if (to_hit.length > 0)
-                    this.processToHitAdvantage(to_hit_advantage, to_hit)
+            if (request.rollAttack && to_hit.length > 0) {
+                this.processToHitAdvantage(to_hit_advantage, to_hit)
                 const critical_limit = request["critical-limit"] || 20;
                 is_critical = this.isCriticalHitD20(to_hit, critical_limit);
             } else {
