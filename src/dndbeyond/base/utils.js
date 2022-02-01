@@ -246,7 +246,7 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                     // Apply great weapon fighting to brutal damage dice
                     if ((character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&
                         properties["Attack Type"] == "Melee" &&
-                        (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
+                        ((properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice") != "one") || properties["Properties"].includes("Two-Handed"))) {
                         brutal_dmg += "ro<=2"
                     }
                     crit_damages.push(brutal_dmg);
