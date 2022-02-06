@@ -748,7 +748,7 @@ async function handleOGLRenderedRoll(request) {
         let custom_roll_dice = "";
         if (originalRequest.character && originalRequest.character.type === "Character")
             custom_roll_dice = originalRequest.character.settings["custom-roll-dice"] || "";
-        atk_props["mod"] = originalRequest["to-hit"] + custom_roll_dice;
+        atk_props["mod"] = originalRequest["to-hit"] + "+" + custom_roll_dice;
         // properties["r1"] = genRoll(d20_roll, { "": originalRequest["to-hit"], "CUSTOM": custom_roll_dice });
         // properties["attack"] = 1;
     }
