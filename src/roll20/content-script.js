@@ -202,7 +202,7 @@ function template(request, name, properties) {
 
 function format_plus_mod(custom_roll_dice) {
     const prefix = custom_roll_dice && !["+", "-", "?", "&", ""].includes(custom_roll_dice.trim()[0]) ? " + " : "";
-    return prefix + (custom_roll_dice || "").replace(/([0-9]*d[0-9]+)/, "$1cs0cf0");;
+    return prefix + (custom_roll_dice || "").replace(/([0-9]*d[0-9]+)/g, "$1cs0cf0");;
 }
 
 function createTable(request, name, properties) {
@@ -345,7 +345,9 @@ function rollAttack(request, custom_roll_dice = "") {
         let d20_roll = request.d20 || "1d20";
         if (request["critical-limit"])
             d20_roll += "cs>" + request["critical-limit"];
-        properties["mod"] = request["to-hit"] + format_plus_mod(custom_roll_dice);
+        properties["mod"] = request["to-hit"];
+        if (custom_roll_dice.length > 0)
+            properties["mod"] += " + " + custom_roll_dice;
         properties["r1"] = genRoll(d20_roll, { "": request["to-hit"], "CUSTOM": custom_roll_dice });
         properties["attack"] = 1;
     }
@@ -462,7 +464,9 @@ function rollSpellAttack(request, custom_roll_dice) {
         let d20_roll = request.d20 || "1d20";
         if (request["critical-limit"])
             d20_roll += "cs>" + request["critical-limit"];
-        properties["mod"] = request["to-hit"] + format_plus_mod(custom_roll_dice);
+        properties["mod"] = request["to-hit"];
+        if (custom_roll_dice.length > 0)
+            properties["mod"] += " + " + custom_roll_dice;
         properties["r1"] = genRoll(d20_roll, { "": request["to-hit"], "CUSTOM": custom_roll_dice });
         properties["attack"] = 1;
     }
@@ -741,7 +745,13 @@ async function handleOGLRenderedRoll(request) {
         atk_props["dmg2"] = convertRollToText(request.whisper, request.damage_rolls[1][1]);
         atk_props["dmg2type"] = request.damage_rolls[1][0];
     }
-
+    if (originalRequest.rollAttack && originalRequest["to-hit"] !== undefined) {
+        atk_props["mod"] = originalRequest["to-hit"];
+        if (originalRequest.character.settings["custom-roll-dice"].length > 0) {
+            atk_props["mod"] += "+" + originalRequest.character.settings["custom-roll-dice"];
+        }
+    }
+    
     message += template(request, atkType, atk_props) + "\n";
 
     let damages = request.damage_rolls.slice(2)
