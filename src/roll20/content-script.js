@@ -467,7 +467,7 @@ function rollSpellAttack(request, custom_roll_dice) {
         properties["mod"] = request["to-hit"];
         if (custom_roll_dice.length > 0)
             properties["mod"] += " + " + custom_roll_dice;
-	properties["r1"] = genRoll(d20_roll, { "": request["to-hit"], "CUSTOM": custom_roll_dice });
+        properties["r1"] = genRoll(d20_roll, { "": request["to-hit"], "CUSTOM": custom_roll_dice });
         properties["attack"] = 1;
     }
     if (request.damages !== undefined) {
