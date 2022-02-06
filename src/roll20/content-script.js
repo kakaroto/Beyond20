@@ -741,17 +741,17 @@ async function handleOGLRenderedRoll(request) {
         atk_props["dmg2"] = convertRollToText(request.whisper, request.damage_rolls[1][1]);
         atk_props["dmg2type"] = request.damage_rolls[1][0];
     }
-    if (originalRequest.rollAttack && originalRequest["to-hit"] !== undefined) {
         // let d20_roll = originalRequest.d20 || "1d20";
-        // if (originalRequest["critical-limit"])
-        //     d20_roll += "cs>" + originalRequest["critical-limit"];
-        let custom_roll_dice = "";
-        if (originalRequest.character && originalRequest.character.type === "Character")
-            custom_roll_dice = originalRequest.character.settings["custom-roll-dice"] || "";
-        atk_props["mod"] = originalRequest["to-hit"] + "+" + custom_roll_dice;
-        // properties["r1"] = genRoll(d20_roll, { "": originalRequest["to-hit"], "CUSTOM": custom_roll_dice });
-        // properties["attack"] = 1;
+    // if (originalRequest["critical-limit"])
+    //     d20_roll += "cs>" + originalRequest["critical-limit"];
+    if (originalRequest.rollAttack && originalRequest["to-hit"] !== undefined) {
+        atk_props["mod"] = originalRequest["to-hit"];
+        if (originalRequest.character && originalRequest.character.type === "Character" && originalRequest.character.settings["custom-roll-dice"].length > 0) {
+            atk_props["mod"] += "+" + originalRequest.character.settings["custom-roll-dice"];
+        }
     }
+    // properties["r1"] = genRoll(d20_roll, { "": originalRequest["to-hit"], "CUSTOM": custom_roll_dice });
+    // properties["attack"] = 1;
 
     message += template(request, atkType, atk_props) + "\n";
 
