@@ -745,13 +745,15 @@ async function handleOGLRenderedRoll(request) {
         atk_props["dmg2"] = convertRollToText(request.whisper, request.damage_rolls[1][1]);
         atk_props["dmg2type"] = request.damage_rolls[1][0];
     }
-    if (originalRequest.rollAttack && originalRequest["to-hit"] !== undefined) {
-        atk_props["mod"] = originalRequest["to-hit"];
-        if (originalRequest.character.settings["custom-roll-dice"].length > 0) {
-            atk_props["mod"] += "+" + originalRequest.character.settings["custom-roll-dice"];
+    // If we have a character-related roll, then add modfier text based on the request and character settings
+    if (originalRequest.character && originalRequest.character.type === "Character") {
+        atk_props["mod"] = (originalRequest["to-hit"] || "").trim();
+        const custom_roll_dice = (originalRequest.character.settings["custom-roll-dice"] || "").trim();
+        if (custom_roll_dice.length > 0) {
+            atk_props["mod"] += "+" + custom_roll_dice;
         }
     }
-    
+
     message += template(request, atkType, atk_props) + "\n";
 
     let damages = request.damage_rolls.slice(2)
