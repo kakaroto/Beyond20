@@ -750,7 +750,7 @@ async function handleOGLRenderedRoll(request) {
         atk_props["mod"] = (originalRequest["to-hit"] || "").trim();
         const custom_roll_dice = (originalRequest.character.settings["custom-roll-dice"] || "").trim();
         if (custom_roll_dice.length > 0) {
-            atk_props["mod"] += "+" + custom_roll_dice;
+            atk_props["mod"] += " + " + custom_roll_dice;
         }
     }
 
