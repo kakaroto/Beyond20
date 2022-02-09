@@ -534,6 +534,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "monk-diamond-soul": {
+        "title": "Monk: Diamond Soul",
+        "description": "Your proficiency with ki aids you even against the grasp of death",
+        "type": "bool",
+        "default": true
+    },
     "paladin-improved-divine-smite": {
         "title": "Paladin: Improved Divine Smite",
         "description": "Roll an extra 1d8 radiant damage whenever you hit with a melee weapon",
