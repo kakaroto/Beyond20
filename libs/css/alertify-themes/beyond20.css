@@ -33,3 +33,8 @@
 .alertify.ajs-maximized .ajs-body .ajs-content {
   top: 64px;
 }
+
+/* Make ajs dialog readable on larger screens in "Beyond20 Settings" */
+.ajs-dialog {
+  max-width: 950px;
+}
