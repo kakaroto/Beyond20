@@ -35,6 +35,10 @@
 }
 
 /* Make ajs dialog readable on larger screens in "Beyond20 Settings" */
+.alertify.ajs-maximized .ajs-dialog {
+  max-width: 950px !important;
+}
+
 .alertify .ajs-dialog {
-  max-width: 950px;
+  max-width: 950px !important;
 }
