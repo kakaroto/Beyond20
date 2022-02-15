@@ -586,7 +586,9 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
     if (character.hasClass("Blood Hunter")) {
         // Bloodhunter: Crimson Rite
         if (character.getSetting("bloodhunter-crimson-rite", false) &&
-            character.hasClassFeature("Crimson Rite")) {
+            character.hasClassFeature("Crimson Rite") &&
+            ((properties["Attack Type"] == "Ranged" || properties["Attack Type"] == "Melee") ||
+            action_name.includes("Predatory Strike"))) {
             const bloodhunter_level = character.getClassLevel("Blood Hunter");
             if (bloodhunter_level > 0) {
                 let rite_die = "1d4";
@@ -1075,7 +1077,7 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
         || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
         || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons") 
         || action_name.includes("Thunder Gauntlets") || action_name.includes("Unarmed Fighting") || action_name.includes("Arms of the Astral Self")
-        || action_name.includes("Shadow Blade");
+        || action_name.includes("Shadow Blade") || action_name.includes("Predatory Strike");
         
         const isRangedAttack = action_name.includes("Lightning Launcher");
 
