@@ -366,7 +366,7 @@ function rollAttack(request, custom_roll_dice = "") {
         dmg_props["saveattr"] = request["save-ability"];
         dmg_props["savedc"] = request["save-dc"];
     }
-    if (request.rollDamage && !request.rollAttack) {
+    if (request.rollDamage && (!request.rollAttack || request["to-hit"] == undefined)) {
         template_type = "dmg";
         dmg_props["charname"] = request.character.name;
         dmg_props["rname"] = request.name;
@@ -513,7 +513,7 @@ function rollSpellAttack(request, custom_roll_dice) {
 		properties["desc"] = properties["desc"] ? properties["desc"] + "\n\n" : "";
 		properties["desc"] += `Description: ${request.description}`;
     }
-    if (request.rollDamage && !request.rollAttack) {
+    if (request.rollDamage && (!request.rollAttack || request["to-hit"] == undefined)) {
         template_type = "dmg";
         dmg_props["charname"] = request.character.name;
         dmg_props["rname"] = request.name;
