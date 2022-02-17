@@ -1204,7 +1204,8 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
         if (damages.length > 0 &&
             character.hasClassFeature("Spiritual Focus") &&
             character.getSetting("bard-spiritual-focus", false) &&
-            spell_source.includes("Bard")) {
+            spell_source.includes("Bard") &&
+            parseInt(character.getClassLevel("Bard")) >= 6) {
                 damages.push("1d6");
                 damage_types.push("Spiritual Focus");
             }
@@ -1341,7 +1342,8 @@ function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {sp
         if (damages.length > 0 &&
             character.hasClassFeature("Spiritual Focus") &&
             character.getSetting("bard-spiritual-focus", false) &&
-            spell_source.includes("Bard")) {
+            spell_source.includes("Bard") &&
+            parseInt(character.getClassLevel("Bard")) >= 6) {
                 damages.push("1d6");
                 damage_types.push("Spiritual Focus Healing");
             }
