@@ -745,9 +745,9 @@ async function handleOGLRenderedRoll(request) {
         atk_props["dmg2"] = convertRollToText(request.whisper, request.damage_rolls[1][1]);
         atk_props["dmg2type"] = request.damage_rolls[1][0];
     }
-    // If we have a character-related roll, then add modfier text based on the request and character settings
+    atk_props["mod"] = (originalRequest["to-hit"] || "").trim();
+    // If we have a character-related roll, then add custom roll modfier to the mod display
     if (originalRequest.character && originalRequest.character.type === "Character") {
-        atk_props["mod"] = (originalRequest["to-hit"] || "").trim();
         const custom_roll_dice = (originalRequest.character.settings["custom-roll-dice"] || "").trim();
         if (custom_roll_dice.length > 0) {
             atk_props["mod"] += " + " + custom_roll_dice;
