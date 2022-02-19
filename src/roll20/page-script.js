@@ -47,6 +47,7 @@ function updateCombatTracker(combat) {
             id: graphic ? graphic.id : "-1",
             pr: combatant.initiative,
             custom: combatant.name,
+            _pageid: graphic ? page.id : undefined // if an id is set, the page id must be set too
         }
     });
     Campaign.set("turnorder", JSON.stringify(turnOrder));
