@@ -45,6 +45,26 @@ function getBrowser() {
     }
 }
 
+function getPlatform() {
+    let platform;
+    if (navigator.userAgentData && navigator.userAgentData.platform) {
+        // This is the official way to do it but it's not supported by anything but Edge
+        platform = navigator.userAgentData.platform;
+    } else if (navigator.platform) {
+        // And this is supposed to be deprecated...
+        platform = navigator.platform;
+    } else {
+        return "Unknown";
+    }
+    if (platform.includes("Windows") || platform.includes("Win32")) {
+        return "Windows";
+    } else if (platform.includes("Mac")) {
+        return "Mac";
+    } else {
+        return platform;
+    }
+}
+
 function isExtensionDisconnected() {
     try {
         chrome.runtime.getURL("");

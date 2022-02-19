@@ -1345,6 +1345,15 @@ let key_bindings = {
     ControlRight: "super_disadvantage",
     AltLeft: "normal_roll"
 };
+try {
+    // Mac OS X uses Command instead of Control, since Control+click = right click because mac mice have 1 button...
+    if (getPlatform() === "Mac") {
+        key_bindings.MetaLeft = "disadvantage";
+        key_bindings.MetaRight = "super_disadvantage";
+    }
+} catch (err) {
+    // Just in case...
+}
 
 const BINDING_NAMES = {
     "": "Click to configure hotkey",
