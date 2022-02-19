@@ -50,10 +50,11 @@ function updateCombatTracker(combat) {
             _pageid: graphic ? page.id : undefined // if an id is set, the page id must be set too
         }
     });
-    Campaign.set("turnorder", JSON.stringify(turnOrder));
     // Make sure the turn tracker window is open
     // This also forces roll20 to sync the initiative tracker state to other clients.
     $("#startrounds").click();
+    Campaign.set("turnorder", JSON.stringify(turnOrder));
+    Campaign.save();
 }
 
 
