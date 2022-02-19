@@ -95,6 +95,8 @@ function pendingRoll(rollData) {
     //console.log("rolling ", rollData);
     messageBroker.on("dice/roll/pending", (message) => {
         lastMessage = message;
+        // If no roll data, then simply stop propagation but don't replace it
+        if (!rollData) return false;
         messageBroker.postMessage({
             persist: false,
             eventType: "dice/roll/pending",

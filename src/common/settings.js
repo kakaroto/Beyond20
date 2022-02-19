@@ -297,6 +297,13 @@ const options_list = {
         "default": false,
         "advanced": true
     },
+    "roll-to-game-log": {
+        "title": "Send Beyond20 roll results to game log",
+        "description": "Send the roll results made by Beyond20 (not in the VTT) to the D&D Beyond Game Log",
+        "type": "bool",
+        "default": true,
+        "advanced": true
+    },
 
     "roll20-tab": {
         "type": "migrate",

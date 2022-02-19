@@ -145,7 +145,12 @@ class DigitalDiceManager {
     }
     static _makeRoll(roll) {
         // New DDB roll button has 2 buttons, one to roll, one to select target, so pick the first one only.
-        sendCustomEvent("MBPendingRoll", [roll.toJSON()]);
+        if (dndbeyondDiceRoller._settings["roll-to-game-log"]) {
+            sendCustomEvent("MBPendingRoll", [roll.toJSON()]);
+        } else {
+            // Stop the pending roll and fulfilled result from being posted
+            sendCustomEvent("MBPendingRoll", null);
+        }
         let rolled = false;
         if (roll.whisper) {
             $(".dice-toolbar__roll, .dice-toolbar.rollable button.dice-toolbar__target-menu-button").click();

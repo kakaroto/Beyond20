@@ -82,7 +82,9 @@ class DNDBRoller {
             name,
             rolls: rolls.map(r => r.toJSON())
         }
-        sendCustomEvent("MBFulfilledRoll", [rollInfo]);
+        if (dndbeyondDiceRoller._settings["roll-to-game-log"]) {
+            sendCustomEvent("MBFulfilledRoll", [rollInfo]);
+        }
     }
 }
 
