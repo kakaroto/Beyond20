@@ -13,7 +13,7 @@
 }
 .alertify .ajs-modal {
   z-index: 100002;
-} 
+}
 .alertify-notifier {
   z-index: 100003;
 }
@@ -32,4 +32,13 @@
 .alertify.ajs-resizable .ajs-body .ajs-content,
 .alertify.ajs-maximized .ajs-body .ajs-content {
   top: 64px;
+}
+
+/* Make ajs dialog readable on larger screens in "Beyond20 Settings" */
+.alertify.ajs-maximized .ajs-dialog {
+  max-width: 950px !important;
+}
+
+.alertify .ajs-dialog {
+  max-width: 950px !important;
 }
