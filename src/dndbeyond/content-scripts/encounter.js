@@ -34,9 +34,10 @@ function updateCombatTracker() {
     if (!$(".turn-controls__next-turn-button").length) return;
     const combat = Array.from($(".combatant-card.in-combat")).map(combatant => {
         const $combatant = $(combatant);
+        const initiative = $combatant.find(".combatant-card__initiative-value").text() || $combatant.find(".combatant-card__initiative-input").val()
         return {
             name: $combatant.find(".combatant-summary__name").text(),
-            initiative: $combatant.find(".combatant-card__initiative-value").text(),
+            initiative: initiative,
             turn: $combatant.hasClass("is-turn"),
         };
     });
