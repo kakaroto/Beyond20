@@ -1,9 +1,3 @@
-/*from settings import getStoredSettings;
-from dndbeyond import injectDiceToRolls, isRollButtonAdded, CharacterBase, sendRoll, descriptionToString;
-from elementmaker import E;
-from utils import alertFullSettings;
-*/
-
 console.log("Beyond20: D&D Beyond Equipment & Magic Items module loaded.");
 
 class ItemCharacter extends CharacterBase {
