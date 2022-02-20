@@ -79,9 +79,20 @@ class Monster extends CharacterBase {
                 this._ac = $(attr).find(base + "__attribute-data-value").text().trim();
             } else if (label == "Hit Points") {
                 this._hp = $(attr).find(base + "__attribute-data-value").text().trim();
-                this._hp_formula = $(attr).find(base + "__attribute-data-extra").text().trim().slice(1, -1);
-                if (add_dice)
-                    addIconButton(this, () => this.rollHitPoints(), $(attr).find(base + "__attribute-data-extra"), {custom: true});
+                const formula = $(attr).find(base + "__attribute-data-extra");
+                this._hp_formula = formula.text().trim().slice(1, -1);
+                if (add_dice) {
+                    const digitalDiceBox = formula.find(".integrated-dice__container");
+                    if (digitalDiceBox.length > 0) {
+                        // Use the digital Dice box (encounters page)
+                        digitalDiceBox.off('click').on('click', (e) => {
+                            e.stopPropagation();
+                            this.rollHitPoints();
+                        })
+                    } else {
+                        addIconButton(this, () => this.rollHitPoints(), $(attr).find(base + "__attribute-data-extra"), {custom: true});
+                    }
+                }
             } else if (label == "Speed") {
                 this._speed = value;
             }
@@ -102,7 +113,16 @@ class Monster extends CharacterBase {
             const modifier = $(ability).find(prefix + "modifier").text().slice(1, -1);
             this._abilities.push([abbreviationToAbility(abbr), abbr, score, modifier]);
             if (add_dice) {
-                addIconButton(this, () => this.rollAbilityCheck(abbr), ability, { prepend: true });
+                const digitalDiceBox = $(ability).find(prefix + "modifier .integrated-dice__container");
+                if (digitalDiceBox.length > 0) {
+                    // Use the digital Dice box (encounters page)
+                    digitalDiceBox.off('click').on('click', (e) => {
+                        e.stopPropagation();
+                        this.rollAbilityCheck(abbr)
+                    })
+                } else {
+                    addIconButton(this, () => this.rollAbilityCheck(abbr), ability, { prepend: true });
+                }
                 if (abbr == "DEX") {
                     let roll_initiative = stat_block.find(base + "__beyond20-roll-initiative");
                     const attributes = stat_block.find(base + "__attributes");
@@ -138,34 +158,56 @@ class Monster extends CharacterBase {
         for (let tidbit of tidbits.toArray()) {
             const label = $(tidbit).find(base + "__tidbit-label").text();
             const data = $(tidbit).find(base + "__tidbit-data");
+            const digitalDiceBoxes = data.find(".integrated-dice__container");
             const value = data.text().trim();
             if (label == "Saving Throws") {
                 const saves = value.split(", ");
-                if (add_dice)
+                const useDigitalDice = digitalDiceBoxes.length === saves.length;
+                if (add_dice && !useDigitalDice)
                     data.html("");
                 for (let save of saves) {
                     const parts = save.split(" ");
                     const abbr = parts[0];
                     const mod = parts.slice(1).join(" ");
                     this._saves[abbr] = mod;
-                    if (!add_dice)
-                        continue;
-                    data.append(abbr + " " + mod);
-                    addIconButton(this, () => this.rollSavingThrow(abbr), data, { append: true });
-                    if (saves.length > Object.keys(this._saves).length)
-                        data.append(", ");
+                    if (useDigitalDice) {
+                        // Hook into the existing digital dice boxes
+                        const idx = saves.indexOf(save);
+                        const digitalDiceBox = digitalDiceBoxes.eq(idx);
+                        // Use the digital Dice box (encounters page)
+                        digitalDiceBox.off('click').on('click', (e) => {
+                            e.stopPropagation();
+                            this.rollSavingThrow(abbr);
+                        })
+                    } else if (add_dice) {
+                        data.append(abbr + " " + mod);
+                        addIconButton(this, () => this.rollSavingThrow(abbr), data, { append: true });
+                        if (saves.length > Object.keys(this._saves).length)
+                            data.append(", ");
+                    }
                 }
             } else if (label == "Skills") {
                 const skills = value.split(", ");
+                const useDigitalDice = digitalDiceBoxes.length === skills.length;
                 for (let skill of skills) {
                     const match = skill.match(/(.+?)([+-]?)\s*([0-9]+)/);
                     if (match) {
                         const name = match[1].trim();
                         const mod = `${match[2] || "+"}${match[3]}`;
                         this._skills[name] = mod;
+                        // Hook into the existing digital dice boxes
+                        if (useDigitalDice) {
+                            const idx = skills.indexOf(skill);
+                            const digitalDiceBox = digitalDiceBoxes.eq(idx);
+                            // Use the digital Dice box (encounters page)
+                            digitalDiceBox.off('click').on('click', (e) => {
+                                e.stopPropagation();
+                                this.rollSkillCheck(name)
+                            })
+                        }
                     }
                 }
-                if (!add_dice)
+                if (useDigitalDice || !add_dice)
                     continue;
                 if (this.type() == "Monster") {
                     const skill_links = data.find("> a");
@@ -189,8 +231,7 @@ class Monster extends CharacterBase {
                             data.append(", ");
                         first = false;
                         data.append(skill + " " + this._skills[skill]);
-                        if (add_dice)
-                            addIconButton(this, () => this.rollSkillCheck(skill), data, { append: true });
+                        addIconButton(this, () => this.rollSkillCheck(skill), data, { append: true });
                     }
                 }
             } else if (label == "Challenge") {
