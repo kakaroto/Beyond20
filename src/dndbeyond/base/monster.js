@@ -454,7 +454,7 @@ class Monster extends CharacterBase {
                 }
             }
             if (inject_descriptions)
-                injectDiceToRolls(action, this, action_name);
+                injectDiceToRolls(action, this, action_name, (...args) => this._injectDiceReplacement(...args));
         }
 
         for (let block of blocks.toArray()) {
@@ -464,7 +464,7 @@ class Monster extends CharacterBase {
                 const firstChild = action.firstElementChild;
                 if (!firstChild) {
                     if (inject_descriptions)
-                        injectDiceToRolls(action, this, this._name);
+                        injectDiceToRolls(action, this, this._name, (...args) => this._injectDiceReplacement(...args));
                     continue;
                 }
                 // Usually <em><strong> || <strong><em> (Orcus is <span><em><strong>);
@@ -525,7 +525,24 @@ class Monster extends CharacterBase {
             handleAction(action_name, block, action);
         }
     }
-
+    _injectDiceReplacement(node, formula, dice, modifier, name, defaultReplacement) {
+        // Check if the formula is inside a digital dice button, if yes, don't replace anything
+        const originalFormula = dice + modifier;
+        const digitalDiceBox = $(node).closest(".integrated-dice__container");
+        if (digitalDiceBox.length === 1) {
+            // Trim parenthesis from the formula, as DDB tends to add them
+            const formula = digitalDiceBox.text().replace(/^[\(\)]+|[\(\)]+$/g, "");
+            // Make sure the closest dice box contains the formula we're replacing
+            if (formula === originalFormula) {
+                digitalDiceBox.off('click').on('click', (e) => {
+                    e.stopPropagation();
+                    sendRoll(this, "custom", formula, { "name": name });
+                })
+                return originalFormula;
+            }
+        }
+        return defaultReplacement;
+    }
 
     injectSpellRolls(element, url) {
         const icon = chrome.runtime.getURL("images/icons/badges/spell20.png");
