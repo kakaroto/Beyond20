@@ -672,8 +672,9 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
     }
 }
 
+var quickRollTooltipEl = null;
 function getQuickRollTooltip() {
-    let beyond20_tooltip = $(".beyond20-quick-roll-tooltip");
+    let beyond20_tooltip = quickRollTooltipEl || $(".beyond20-quick-roll-tooltip");
     if (beyond20_tooltip.length == 0) {
         const rolltype_class = getRollTypeButtonClass(character);
         const icon = getBadgeIconFromClass(rolltype_class, "32");
@@ -698,6 +699,8 @@ function getQuickRollTooltip() {
         })
         beyond20_tooltip.hide();
         $("body").append(beyond20_tooltip);
+        // Cache it
+        quickRollTooltipEl = beyond20_tooltip;
     }
     return beyond20_tooltip;
 }

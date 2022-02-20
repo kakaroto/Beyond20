@@ -38,6 +38,7 @@ class Monster extends CharacterBase {
     parseStatBlock(stat_block) {
         const add_dice = this.getGlobalSetting('handle-stat-blocks', true);
         const inject_descriptions = this.getGlobalSetting('subst-dndbeyond-stat-blocks', true);
+        const beyond20_tooltip = add_dice || inject_descriptions ? getQuickRollTooltip() : null;
         const base = this._base;
         if (!stat_block)
             stat_block = $(base);
@@ -89,6 +90,8 @@ class Monster extends CharacterBase {
                             e.stopPropagation();
                             this.rollHitPoints();
                         })
+                        deactivateTooltipListeners(digitalDiceBox);
+                        activateTooltipListeners(digitalDiceBox, "right", beyond20_tooltip, () => this.rollHitPoints());
                     } else {
                         addIconButton(this, () => this.rollHitPoints(), $(attr).find(base + "__attribute-data-extra"), {custom: true});
                     }
@@ -120,6 +123,8 @@ class Monster extends CharacterBase {
                         e.stopPropagation();
                         this.rollAbilityCheck(abbr)
                     })
+                    deactivateTooltipListeners(digitalDiceBox);
+                    activateTooltipListeners(digitalDiceBox, "down", beyond20_tooltip, () => this.rollAbilityCheck(abbr));
                 } else {
                     addIconButton(this, () => this.rollAbilityCheck(abbr), ability, { prepend: true });
                 }
@@ -179,6 +184,8 @@ class Monster extends CharacterBase {
                             e.stopPropagation();
                             this.rollSavingThrow(abbr);
                         })
+                        deactivateTooltipListeners(digitalDiceBox);
+                        activateTooltipListeners(digitalDiceBox, "down", beyond20_tooltip, () => this.rollSavingThrow(abbr));
                     } else if (add_dice) {
                         data.append(abbr + " " + mod);
                         addIconButton(this, () => this.rollSavingThrow(abbr), data, { append: true });
@@ -204,6 +211,8 @@ class Monster extends CharacterBase {
                                 e.stopPropagation();
                                 this.rollSkillCheck(name)
                             })
+                            deactivateTooltipListeners(digitalDiceBox);
+                            activateTooltipListeners(digitalDiceBox, "down", beyond20_tooltip, () => this.rollSkillCheck(name));
                         }
                     }
                 }
@@ -579,6 +588,8 @@ class Monster extends CharacterBase {
                     e.stopPropagation();
                     sendRoll(this, "custom", formula, { "name": name });
                 })
+                deactivateTooltipListeners(digitalDiceBox);
+                activateTooltipListeners(digitalDiceBox, "up", getQuickRollTooltip(), () => sendRoll(this, "custom", formula, { "name": name }));
                 return originalFormula;
             }
         }
