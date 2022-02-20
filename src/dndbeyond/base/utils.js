@@ -618,3 +618,86 @@ function beyond20SendMessageFailure(character, response) {
     }
 }
 
+
+
+function deactivateTooltipListeners(el) {
+    return el.off('mouseenter').off('mouseleave').off('click');
+}
+
+var quickRollHideId = 0;
+var quickRollMouseOverEl = null;
+function activateTooltipListeners(el, direction, tooltip, callback) {
+    el.on('mouseenter', (e) => {
+        if (quickRollHideId)
+            clearTimeout(quickRollHideId);
+        quickRollHideId = 0;
+
+        const target = $(e.currentTarget)
+        const position = target.offset()
+        if (direction === "up") {
+            position.left += target.outerWidth() / 2 - tooltip.outerWidth() / 2;
+            position.top -= tooltip.outerHeight() + 5;
+        } else if (direction == "down") {
+            position.left += target.outerWidth() / 2 - tooltip.outerWidth() / 2;
+            position.top += target.outerHeight() + 5;
+        } else if (direction == "left") {
+            position.left -= tooltip.outerWidth() - 2;
+            position.top += target.outerHeight() / 2 - tooltip.outerHeight() / 2;
+        } else if (direction == "right") {
+            position.left += target.outerWidth() + 2;
+            position.top += target.outerHeight() / 2 - tooltip.outerHeight() / 2;
+        }
+        tooltip.find(".beyond20-quick-roll-indicator").removeClass("left right down up").addClass(direction);
+        tooltip.css(position).show().off('click').on('click', (e) => {
+            e.stopPropagation();
+            callback(el);
+        });
+        el.off('click').on('click', (e) => {
+            if ($(e.currentTarget).hasClass('integrated-dice__container') || $(e.currentTarget).find(".integrated-dice__container").length > 0) {
+                e.stopPropagation();
+            }
+            callback(el);
+        })
+        quickRollMouseOverEl = el[0];
+    }).on('mouseleave', (e) => {
+        if (quickRollHideId)
+            clearTimeout(quickRollHideId);
+        quickRollHideId = setTimeout(() => tooltip.hide(), 250);
+        quickRollMouseOverEl = null;
+    });
+    el.addClass("beyond20-quick-roll-area");
+    // If the mouse was over one of the quick roll areas, then we've just destroyed the click handler, so we need to redo it.
+    if (quickRollMouseOverEl === el[0]) {
+        el.trigger('mouseenter');
+    }
+}
+
+function getQuickRollTooltip() {
+    let beyond20_tooltip = $(".beyond20-quick-roll-tooltip");
+    if (beyond20_tooltip.length == 0) {
+        const rolltype_class = getRollTypeButtonClass(character);
+        const icon = getBadgeIconFromClass(rolltype_class, "32");
+        const img = E.img({ class: "beyond20-quick-roll-icon", src: icon, style: "margin-right: 5px;margin-left: 5px;padding: 5px 5px;" });
+        const indicator = E.img({ class: "beyond20-quick-roll-indicator", src: chrome.runtime.getURL("images/quick-roll-indicator.png") });
+        const div = E.div({ class: "beyond20-quick-roll-tooltip " + getRollTypeButtonClass(character) }, img, indicator);
+        beyond20_tooltip = $(div);
+        beyond20_tooltip.css({
+            "position": "absolute",
+            "background": `url("${chrome.runtime.getURL("images/quick-roll-background.png")}") 50% center no-repeat transparent`,
+            "background-size": "contain",
+            "z-index": "20"
+        });
+        beyond20_tooltip.off('mouseenter').off('mouseleave').on('mouseleave', (e) => {
+            if (quickRollHideId)
+                clearTimeout(quickRollHideId);
+            quickRollHideId = setTimeout(() => beyond20_tooltip.hide(), 100);
+        }).on('mouseenter', () => {
+            if (quickRollHideId)
+                clearTimeout(quickRollHideId);
+            quickRollHideId = 0;
+        })
+        beyond20_tooltip.hide();
+        $("body").append(beyond20_tooltip);
+    }
+    return beyond20_tooltip;
+}
