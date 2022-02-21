@@ -395,8 +395,7 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
 
     if (character.hasClass("Paladin")) {
         //Paladin: Improved Divine Smite
-        if (properties["Attack Type"] == "Melee" &&
-            character.hasClassFeature("Improved Divine Smite") &&
+        if (character.hasClassFeature("Improved Divine Smite") &&
             character.getSetting("paladin-improved-divine-smite", true)) {
             damages.push("1d8");
             damage_types.push("Radiant");
@@ -420,7 +419,7 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
         character.getSetting("great-weapon-master", false) &&
         character.hasFeat("Great Weapon Master") &&
         (properties["Properties"] && properties["Properties"].includes("Heavy") ||
-        action_name.includes("Polearm Master - Bonus Attack")) &&
+        action_name.includes("Polearm Master")) &&
         properties["Proficient"] == "Yes") {
         to_hit += " - 5";
         damages.push("10");
@@ -1069,11 +1068,11 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             character.getSetting("warlock-hexblade-curse", false))
             critical_limit = 19;
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.
-        if (action_name.includes("Polearm Master - Bonus Attack") && (character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true))) {
+        if (action_name.includes("Polearm Master") && (character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true))) {
             damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
         }
 
-        const isMeleeAttack = action_name.includes("Polearm Master - Bonus Attack") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
+        const isMeleeAttack = action_name.includes("Polearm Master") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
         || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
         || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons") 
         || action_name.includes("Thunder Gauntlets") || action_name.includes("Unarmed Fighting") || action_name.includes("Arms of the Astral Self")
