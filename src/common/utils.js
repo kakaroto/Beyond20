@@ -10,10 +10,9 @@ function replaceRollsCallback(match, replaceCB) {
     }
     dice = dice.replace("D", "d");
 
-    let result = match[1];
-    result += replaceCB(dice, modifiers);
-    result += match[5];
-    return result;
+    const replacement = replaceCB(dice, modifiers);
+    if (replacement === null) return match[0];
+    else return `${match[1]}${replacement}${match[5]}`;
 }
 
 function replaceRolls(text, replaceCB) {

@@ -581,16 +581,17 @@ class Monster extends CharacterBase {
         const digitalDiceBox = $(node).closest(".integrated-dice__container");
         if (digitalDiceBox.length === 1) {
             // Trim parenthesis from the formula, as DDB tends to add them
-            const formula = digitalDiceBox.text().replace(/^[\(\)]+|[\(\)]+$/g, "");
+            const digitalDiceFormula = digitalDiceBox.text().replace(/^[\(\)]+|[\(\)]+$/g, "");
             // Make sure the closest dice box contains the formula we're replacing
-            if (formula === originalFormula) {
+            if (digitalDiceFormula === originalFormula) {
                 digitalDiceBox.off('click').on('click', (e) => {
                     e.stopPropagation();
                     sendRoll(this, "custom", formula, { "name": name });
                 })
                 deactivateTooltipListeners(digitalDiceBox);
                 activateTooltipListeners(digitalDiceBox, "up", getQuickRollTooltip(), () => sendRoll(this, "custom", formula, { "name": name }));
-                return originalFormula;
+                // Return null to prevent modifying the html
+                return null;
             }
         }
         return defaultReplacement;

@@ -576,10 +576,6 @@ function recursiveDiceReplace(node, cb) {
 function injectDiceToRolls(selector, character, name = "", replacementFn = null) {
     let added = 0;
     const icon = chrome.runtime.getURL("images/icons/badges/custom20.png");
-    // If no replacement function is provided, return the default replacement string
-    if (!replacementFn) {
-        replacementFn = (node, formula, dice, modifier, name, result) => result;
-    }
     const replaceCB = (node, dice, modifier) => {
         added++;
         dice_formula = (dice == "" ? "1d20" : dice) + modifier;
@@ -587,6 +583,7 @@ function injectDiceToRolls(selector, character, name = "", replacementFn = null)
         const defaultReplacement = '<u class="ct-beyond20-custom-roll"><strong>' + dice + modifier + '</strong>' +
             '<img class="ct-beyond20-custom-icon" src="' + icon + '" x-beyond20-name="' + rollName +
             '" x-beyond20-roll="' + dice_formula + '" style="margin-right: 3px; margin-left: 3px;"></img></u>';
+        if (!replacementFn) return defaultReplacement;
         return replacementFn(node, dice_formula, dice, modifier, rollName, defaultReplacement);
     }
 
