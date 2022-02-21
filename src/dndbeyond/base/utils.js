@@ -424,12 +424,15 @@ function addRollButton(character, callback, where, { small = false, append = fal
     const id = "beyond20-roll-" + Math.random().toString().slice(2);
 
     const rolltype_class = getRollTypeButtonClass(character);
-    const icon = getBadgeIconFromClass(rolltype_class);
-
+    const buttonContents = [];
+    if (image) {
+        const icon = getBadgeIconFromClass(rolltype_class);
+        buttonContents.push(E.img({ class: "ct-beyond20-icon", src: icon, style: "margin-right: 6px;" }));
+    }
+    buttonContents.push(E.span({ class: "ct-button__content" }, text));
     const button = E.div({ class: "ct-beyond20-roll", id },
         E.button({ class: "ct-beyond20-roll-button " + (small ? button_class_small : button_class) + " " + rolltype_class },
-            E.img({ class: "ct-beyond20-icon", src: image ? icon : "", style: image ? "margin-right: 6px;" : "" }),
-            E.span({ class: "ct-button__content" }, text)
+            ...buttonContents
         )
     )
 
