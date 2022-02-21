@@ -1,3 +1,19 @@
+2.6.1 (February 21st 2022)
+===
+
+Hi everyone! It's time for another release already.
+
+This update is a bugfix release, which we felt needed to be out sooner rather than later considering some of the bugs that popped up recently. It doesn't add much in terms of new features, but there's plenty of bugs to fix to improve everyone's games. Some of the more problematic issues we've seen reported were related to the combat tracker failing to sync properly with Roll20, duplicate prompts for Toll the Dead on Roll20, and whispered rolls not working properly on Foundry VTT. 
+
+The big feature introduced in this update (which served to fix another bug) was the ability to roll from the digital dice boxes in monster stat blocks. So if you're on the Encounters page and looking at your monsters, you can roll with Beyond20 directly using the clickable digital dice buttons from D&D Beyond, instead of the Beyond20 icons that we added to the statblocks. This makes for a much cleaner look as well!
+
+This release was almost entirely brought to you by [@Aeristoka](https://github.com/Aeristoka), thank you as usual for helping with Beyond20 and keeping all those pesky bugs away! If anyone wants to thank Aeristoka for his work, you can buy him a coffee on [Ko-fi](https://ko-fi.com/aeristoka)! This release has also seen the addition of a new contributor to the project, so I want to say welcome and thanks to [@jjchambl](https://github.com/jjchambl) for his contribution!
+
+And finally, I want to thank all of my [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters, and those who reported the bugs they've found and for everyone else who helped make this release possible. Thank you all for your support and your love!
+
+I hope this update makes your games run smoother, and happy gaming!
+
+
 2.6.0 (January 4th 2022)
 ===
 

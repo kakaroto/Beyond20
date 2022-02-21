@@ -1,3 +1,35 @@
+v2.6.1 (February 21st 2022)
+===
+
+* **Feature**: Add the ability to hook into the Digital Dice buttons of monster stat blocks (Encounters) when available, instead of adding the Beyond20 icons to the statblock
+* **Feature**: Add support for displaying the healing portion of Vampiric Touch
+* **Feature**: Add an option to disable sending rolls to the D&D Beyond Game Log
+* **Feature**: Add support for Monk: Diamond Soul class feature (adds proficiency to death saves at level 14) (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add the ability to roll critical damages on special attacks (like Sneak Attack) which has no "To Hit" value, when using Force Critical (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Command-Click as default additional hotkeys on Mac OS X, due to Control-Click being an accessibility hotkey on Macs
+* **Bugfix**: Fix initiative value from the combat tracker not being parsed properly
+* **Bugfix**: *Roll20*: Fix issue of missing combatants in the turn tracker when synchronizing with D&D Beyond's Combat tracker
+* **Bugfix**: *Roll20*: Fix the turn tracker showing empty or old value when starting a combat with the tracker closed
+* **Bugfix**: Fix some roll formulas in digital dice boxes being incorrect when switching between monsters in the Encounters page
+* **Bugfix**: *Roll20*: Remove duplicate prompt for Toll the Dead damage from Roll20 (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: *FVTT*: Fix whispered rolls being overridden by Foundry VTT on roll type messages and showing as public rolls
+* **Bugfix**: *FVTT*: Fix Life Transference and Vampiric Touch damages failing to roll due to flavor text
+* **Bugfix**: *Roll20*: Fix Life Transference and Vampiric Touch showing an empty healing value
+* **Bugfix**: Fix the extra damage/healing from College of Spirits: Spirital Focus not applying until level 6 (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Do not show total of one-handed and two-handed weapon attacks when there are no other damages to sum up (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Further fixes to the renaming of the two-handed/one-handed damage tyeps (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix the description text of the Celestial Radiant Soul option which was incorrectly describing the Wildfire spirit bond (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix adding non-numeric damages to the total calculation
+* **Bugfix**: Do not use Great Weapon Fighting on Brutal Critical/Savage Attacks when using versatile weapons one-handed (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: *Roll20*: Add missing modifier to rolls when digital dice is enabled (by [@jjchambl](https://github.com/jjchambl))
+* **Bugfix**: *Roll20*: Clean up the display of custom modifiers in attack rolls (by [@jjchambl](https://github.com/jjchambl))
+* **Bugfix**: Fix for the quickrolls tooltip being shifted due to the D&D Beyond sale/offer banners at the top of the site (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix the options dialog being too wide and unusable on large monitors (by [@jjchambl](https://github.com/jjchambl))
+* **Bugfix**: Fix Crimson Rite not applying on Predatory Strike attacks (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix Divine Smite support for Polearm Master attacks when used as an opportunity attack reaction (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Prevent non-roll action buttons in monster statblocks from showing a roll icon after the advantage/disadvantage hotkey is pressed
+* **Misc**: Change the "Use Digital Dice" option to enabled by default, for new Beyond20 installs (by [@Aeristoka](https://github.com/Aeristoka))
+
 v2.6.0 (January 4th 2022)
 ===
 
