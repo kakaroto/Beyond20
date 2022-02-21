@@ -137,7 +137,8 @@ function alertSettings(url, title) {
     const img = E.img({src: chrome.runtime.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})
     const iframe = E.iframe({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "yes"});
     const dialog = alertify.Beyond20Settings(img.outerHTML + title, iframe);
-    dialog.set('padding', false).set('resizable', true).set('overflow', false).resizeTo("80%", "80%");
+    const width = Math.min(720, window.innerWidth / 2); // 720px width or 50% on small screens
+    dialog.set('padding', false).set('resizable', true).set('overflow', false).resizeTo(width, "80%");
 
 }
 function alertQuickSettings() {
