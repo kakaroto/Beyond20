@@ -679,7 +679,9 @@ async function handleOGLRenderedRoll(request) {
     if (request.attack_rolls.length > 1) {
         atk_props["r1"] = convertRollToText(request.whisper, request.attack_rolls[0]);
         atk_props["r2"] = request.attack_rolls.slice(1).map(roll => convertRollToText(request.whisper, roll)).join(" | ")
-        atk_props["always"] = "1";
+        if (request.attack_rolls.length === 2 && request.request.advantage === RollType.ADVANTAGE) atk_props["advantage"] = "1";
+        else if (request.attack_rolls.length === 2 && request.request.advantage === RollType.DISADVANTAGE) atk_props["disadvantage"] = "1";
+        else atk_props["always"] = "1";
         atk_props["attack"] = "1"
     } else if (request.attack_rolls.length > 0) {
         atk_props["r1"] = convertRollToText(request.whisper, request.attack_rolls[0]);
