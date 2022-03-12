@@ -20,10 +20,13 @@ function updateSettings(new_settings = null) {
 
 function sendMessageTo(url, request, failure = null) {
     chrome.tabs.query({ url }, (tabs) => {
-        if (failure)
-            failure(tabs.length === 0)
-        for (let tab of tabs)
+        if (failure) {
+            failure(!tabs || tabs.length === 0)
+        }
+            
+        for (let tab of tabs) {
             chrome.tabs.sendMessage(tab.id, request)
+        }
     })
 }
 
@@ -106,6 +109,23 @@ function sendMessageToFVTT(request, limit, failure = null) {
     }
 }
 
+function sendMessageToRoleplaytv(request, limit = null, failure = null) {
+    if (limit) {
+        const vtt = limit.vtt || "rptv"
+        if (vtt == "rptv") {
+            chrome.tabs.query({ "url": RPTV_URL }, (tabs) => {
+                found = filterVTTTab(request, limit, tabs, rptvTitle)
+                if (failure)
+                    failure(!found)
+            })
+        } else {
+            failure(true)
+        }
+    } else {
+        sendMessageTo(RPTV_URL, request, failure = failure)
+    }
+}
+
 function sendMessageToBeyond(request) {
     sendMessageTo(DNDBEYOND_CHARACTER_URL, request)
     sendMessageTo(DNDBEYOND_MONSTER_URL, request)
@@ -183,8 +203,8 @@ function onMessage(request, sender, sendResponse) {
             return (result) => {
                 trackFailure[vtt] = result
                 console.log("Result of sending to VTT ", vtt, ": ", result)
-                if (trackFailure["roll20"] !== null && trackFailure["fvtt"] !== null && trackFailure["astral"] !== null) {
-                    if (trackFailure["roll20"] == true && trackFailure["fvtt"] == true && trackFailure["astral"] == true) {
+                if (trackFailure["roll20"] !== null && trackFailure["fvtt"] !== null && trackFailure["astral"] !== null && trackFailure["rptv"] !== null) {
+                    if (trackFailure["roll20"] == true && trackFailure["fvtt"] == true && trackFailure["astral"] == true && trackFailure["rptv"] == true) {
                         onRollFailure(request, sendResponse)
                     } else {
                         const vtts = []
@@ -198,13 +218,14 @@ function onMessage(request, sender, sendResponse) {
                 }
             }
         }
-        const trackFailure = { "roll20": null, "fvtt": null, 'astral': null }
+        const trackFailure = { "roll20": null, "fvtt": null, 'astral': null, 'rptv': null }
         if (settings["vtt-tab"] && settings["vtt-tab"].vtt === "dndbeyond") {
             sendResponse({ "success": false, "vtt": "dndbeyond", "error": null, "request": request })
         } else {
             sendMessageToRoll20(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "roll20", sendResponse))
             sendMessageToFVTT(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "fvtt", sendResponse))
             sendMessageToAstral(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "astral", sendResponse))
+            sendMessageToRoleplaytv(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "rptv", sendResponse))
         }
         return true
     } else if (request.action == "settings") {
@@ -214,6 +235,7 @@ function onMessage(request, sender, sendResponse) {
         sendMessageToBeyond(request)
         sendMessageToFVTT(request)
         sendMessageToAstral(request)
+        sendMessageToRoleplaytv(request);
     } else if (request.action == "activate-icon") {
         // popup doesn't have sender.tab so we grab it from the request.
         const tab = request.tab || sender.tab;

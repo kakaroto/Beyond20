@@ -130,7 +130,12 @@ const SRC_FILES = {
 		"src/dndbeyond/base/message-broker.js",
 		"src/dndbeyond/page-scripts/message-broker.js",
         "src/common/sandbox-footer.js"
-	]
+	],
+    rptv: [
+        "src/common/utils.js",
+        "src/common/settings.js",
+        "src/roleplaytv/content-script.js"
+    ]
 }
 const CSS_FILES = ['src/extension/beyond20.css']
 

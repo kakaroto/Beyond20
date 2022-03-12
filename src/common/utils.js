@@ -116,12 +116,20 @@ function isAstral(title) {
     return title.includes("Astral TableTop");
 }
 
+function isRptv(title) {
+    return title.includes("Roleplay.tv");
+}
+
 function fvttTitle(title) {
     return title.replace(" • Foundry Virtual Tabletop", "");
 }
 
 function astralTitle(title) {
     return title.replace(" | Astral TableTop", "");
+}
+
+function rptvTitle(title) {
+    return title.replace("Roleplay.tv", "");
 }
 
 function urlMatches(url, matching) {

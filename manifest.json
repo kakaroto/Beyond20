@@ -2,7 +2,7 @@
 	"name": "Beyond 20",
 	"version": "2.6.1",
 	"manifest_version": 2,
-	"description": "Integrates the D&D Beyond Character Sheets with Roll20 and Foundry VTT.",
+	"description": "Integrates the D&D Beyond Character Sheets with Roll20, Foundry VTT, Discord, and Roleplay.tv.",
 	"permissions": [
 		"activeTab",
 		"tabs",
@@ -11,7 +11,8 @@
 		"*://app.roll20.net/editor/",
 		"*://*.dndbeyond.com/*",
 		"*://*.forge-vtt.com/game",
-		"*://*.astraltabletop.com/play/*"
+		"*://*.astraltabletop.com/play/*",
+		"https://*.roleplay.tv/*/play"
 	],
     "optional_permissions": ["*://*/"],
 	"icons": {
@@ -184,6 +185,21 @@
 				"libs/jquery-3.4.1.min.js",
 				"libs/lz-string.min.js",
 				"dist/astral.js"
+			]
+		},
+		{
+			"matches": [
+				"*://*.roleplay.tv/*/play"
+			],
+			"css": [
+				"libs/css/alertify.css",
+				"libs/css/alertify-themes/default.css",
+				"libs/css/alertify-themes/beyond20.css"
+			],
+			"js": [
+				"libs/alertify.min.js",
+				"libs/jquery-3.4.1.min.js",
+				"dist/rptv.js"
 			]
 		}
 	]
