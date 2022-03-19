@@ -304,6 +304,13 @@ const options_list = {
         "default": true,
         "advanced": true
     },
+    "passive-perception-min": {
+        "title": "Passive Perception floor for Perception Rolls",
+        "description": "Use Passive Perception as a floor value for Perception Rolls as suggested by Jeremy Crawford to always be the case",
+        "type": "bool",
+        "default": false,
+        "advanced": true
+    },
 
     "roll20-tab": {
         "type": "migrate",

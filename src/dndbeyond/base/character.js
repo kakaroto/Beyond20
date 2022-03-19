@@ -25,6 +25,9 @@ class Character extends CharacterBase {
         this._to_hit_cache = {}
         this._conditions = [];
         this._exhaustion = 0;
+        this._passive_perception = null;
+        this._passive_investigation = null;
+        this._passive_insight = null;
     }
 
     updateInfo() {
@@ -95,6 +98,19 @@ class Character extends CharacterBase {
                 const to_hit = findToHit(item_name, ".ct-combat-attack--item,.ddbc-combat-attack--item", ".ct-item-name,.ddbc-item-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
                 //console.log("Caching to hit for ", item_name, " : ", to_hit);
                 this._to_hit_cache[item_name] = to_hit;
+            }
+        }
+        if (this._passive_perception === null){
+            const senses = $(".ct-senses__callouts .ct-senses__callout .ct-senses__callout-value").toArray();
+            for (let i = 0; i < senses.length; i++) {
+                if (i === 0) {
+                    this._passive_perception = senses[i].innerHTML;
+                } else if (i === 1) {
+                    this._passive_investigation = senses[i].innerHTML;
+                } else if (i === 2) {
+                    this._passive_insight = senses [i].innerHTML;
+                }
+
             }
         }
         // Values that could change/get overriden dynamically;

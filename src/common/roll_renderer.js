@@ -435,6 +435,17 @@ class Beyond20RollRenderer {
         const {advantage, rolls} = await this.getToHit(request, title, "", data, type)
         await this._roller.resolveRolls(title, rolls, request);
         this.processToHitAdvantage(advantage, rolls);
+        if (request.skill && request.skill == "Perception" && character.getGlobalSetting("passive-perception-min")) {
+            let passive_perception = parseInt(character._passive_perception);
+            if (request.advantage == RollType.ADVANTAGE)
+                passive_perception += 5;
+            if (request.advantage == RollType.DISADVANTAGE)
+                passive_perception -= 5;
+            for (let i = 0; i < rolls.length; i++) {
+                if (rolls[i].total < passive_perception)
+                    rolls[i]._total = passive_perception;
+            }
+        }
         return this.postDescription(request, title, null, {}, null, rolls);
     }
 
