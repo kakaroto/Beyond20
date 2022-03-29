@@ -28,7 +28,7 @@ class Character extends CharacterBase {
     }
 
     updateInfo() {
-        this._id = $("#character-sheet-target,#character-tools-target").attr("data-character-id");
+        this._id = (window.location.pathname.match(/\/characters\/([0-9]+)/) || [])[1];
         this._url = window.location.href;
 
         if (this._settings === null)
