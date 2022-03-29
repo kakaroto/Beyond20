@@ -341,6 +341,10 @@ class Character extends CharacterBase {
                 "spell_saves": this._spell_saves,
                 "spell_attacks": this._spell_attacks,
                 "last-features-classes": updated_features_list ? current_classes : last_classes
+            }, () => {
+                if (updated_features_list) {
+                    alertify.success("Beyond20: Character's class features updated successfully.");
+                }
             });
         }
     }
