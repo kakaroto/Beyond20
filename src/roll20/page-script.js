@@ -1,10 +1,20 @@
-function updateHP(name, current, total, temp) {
+async function loadCharacterAttributes(character) {
+    if (!character.attribs.backboneFirebase) {
+        character.attribs.backboneFirebase = new BackboneFirebase(character.attribs);
+
+        return character.attribs.backboneFirebase.reference.once('value');
+    }
+}
+
+async function updateHP(name, current, total, temp) {
     console.log(`Updating HP for ${name} : (${current} + ${temp})/${total}`);
     name = name.toLowerCase().trim();
 
     character = window.Campaign.characters.find((c) => c.attributes.name.toLowerCase().trim() === name);
     if (character) {
         //console.log("Found character : ", character);
+        // Make sure character attributes are loaded before we try to find the HP attributes to sync it
+        await loadCharacterAttributes(character);
 
         const hp = character.attribs.find((a) => a.attributes.name === "hp");
         if (hp) {
