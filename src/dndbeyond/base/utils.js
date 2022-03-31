@@ -566,6 +566,9 @@ function recursiveDiceReplace(node, cb) {
             // don't replace anything inside of a roll button itself
             if ($(child).hasClass("ct-beyond20-roll") || $(child).hasClass("ct-beyond20-custom-roll"))
                 continue;
+            // don't replace anything inside of an embedded script or style tag
+            if (["STYLE", "SCRIPT"].includes(node.nodeName))
+                continue
             recursiveDiceReplace(child, cb);
         }
     } else if (node.nodeName == "#text") {
