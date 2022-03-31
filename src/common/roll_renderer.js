@@ -465,9 +465,10 @@ class Beyond20RollRenderer {
 
     rollDeathSave(request, custom_roll_dice = "") {
         const data = { "custom_dice": custom_roll_dice }
+        if (!data.modifier) data.modifier = '';
         if (request.modifier) data.modifier = request.modifier
-        if (character.hasClassFeature("Diamond Soul") && character.getSetting("monk-diamond-soul", false))
-            data.modifier += character._proficiency;
+        if ((request.character['class-features'] || []).includes("Diamond Soul") && (request.character['settings'] ||[])['monk-diamond-soul'] == true)
+            data.modifier += request.character.proficiency;
         return this.rollD20(request, "Death Saving Throw", data, "death-save");
     }
 
