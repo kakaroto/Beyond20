@@ -1,3 +1,16 @@
+v2.6.2 (March 30th 2022)
+===
+
+* **Feature**: Add support for rolling the right hemodice for Blood Curse of the Eyeless (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: *Roll20*: Display the advantage/disadvantage indicator (greying out dropped dice) when rolling with digital dice (by [@Cube-o](https://github.com/Cube-o))
+* **Bugfix**: Fix issue detecting a character sheet's ID due to a sheet change, causing character settings to not work properly
+* **Bugfix**: *Roll20*: Fix HP syncing due to a Roll20 change to their API
+* **Bugfix**: *FVTT*: Fix rolling Death saving throws when digital dice is disabled
+* **Bugfix**: *Roll20*: Fix support for Diamond Soul (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix display corruption of the Adventure flowchart in the call of the Netherdeep (due to dice formula replacement in embedded style/script tags)
+* **Bugfix**: Fix issue with looping notification about class features being parsed when two sheets are open, caused by the character sheet's ID not being detected properly
+* **Bugfix**: Fix display of the 'class features detected' notification not displaying properly
+
 v2.6.1 (February 21st 2022)
 ===
 

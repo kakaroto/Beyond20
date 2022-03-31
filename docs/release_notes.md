@@ -1,3 +1,16 @@
+2.6.2 (March 30th 2022)
+===
+
+Hi again, we're releasing another small bugfix release today for your favorite extension.
+
+This update had to be quickly released as there were two breaking changes that happened this week, one change in the D&D Beyond character sheet which caused some issues with the character specific settings not working properly, and also a change in the Roll20 website which caused HP syncing to stop working in most situations. 
+
+This release also adds a couple of other small but important bug fixes and features as well. See the short [Changelog](/Changelog#v262) below for more details.
+
+As usual, thank you to all my [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters, who are making this possible. 
+
+Happy rolling!
+
 2.6.1 (February 21st 2022)
 ===
 
