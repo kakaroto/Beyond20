@@ -1995,6 +1995,9 @@ function injectRollButton(paneClass) {
                     if (!amount) continue;
                     modifier += `${pos ? "+" : "-"} ${amount} `;
                 }
+                if (character.hasClassFeature("Diamond Soul") && character.getSetting("monk-diamond-soul", false)) {
+                    modifier += `+ ${parseInt(character._proficiency)} `;
+                }
                 sendRollWithCharacter("death-save", "1d20" + modifier, {
                     "modifier": modifier,
                     "advantage": deathSaveRollType
