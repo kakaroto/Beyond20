@@ -1,5 +1,6 @@
 const messageBroker = new DDBMessageBroker();
 messageBroker.register();
+console.log("Registered Beyond20 message broker");
 
 function sendRollToGameLog(request) {
 	const message = {
@@ -28,11 +29,12 @@ function rollToDDBRoll(roll, forceResults=false) {
     let lastOperation = '+';
     const sets = [];
     const results = [];
+    // constant, total, count, dieValue and result.values must be ints so it doesn't crash the mobile app
     for (const part of roll.parts) {
         if (['-', '+'].includes(part)) {
             lastOperation = part;
         } else if (typeof(part) === "number") {
-            constant = constant + part * (lastOperation === "+" ? 1 : -1);
+            constant = constant + parseInt(part) * (lastOperation === "+" ? 1 : -1);
         } else if (part.formula) {
             let operation = 0; // sum
             if (part.modifiers.includes("kl") || part.modifiers.includes("dh"))
@@ -42,13 +44,13 @@ function rollToDDBRoll(roll, forceResults=false) {
             // the game log will crash if a message is posted with a dieType that isn't supported
             const dieType = [4, 6, 8, 10, 12, 20, 100].includes(part.faces) ? `d${part.faces}` : 'd100';
             sets.push({
-                count: part.amount,
+                count: parseInt(part.amount),
                 dieType,
                 operation,
                 dice: part.rolls.filter(r => !r.discarded).map(r => ({dieType, dieValue: r.roll || 0}))
             });
             if (part.total !== undefined) {
-                results.push(part.total);
+                results.push(parseInt(part.total));
             }
         }
     }
@@ -83,7 +85,7 @@ function rollToDDBRoll(roll, forceResults=false) {
         data.result = {
             constant,
             text: roll.parts.map(p => p.total === undefined ? String(p) : String(p.total)).join(""),
-            total: roll.total,
+            total: parseInt(roll.total),
             values: results
         };
     }
