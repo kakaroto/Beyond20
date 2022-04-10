@@ -2,6 +2,7 @@ const messageBroker = new DDBMessageBroker();
 messageBroker.register();
 console.log("Registered Beyond20 message broker");
 
+let lastCharacter = null;
 function sendRollToGameLog(request) {
 	const message = {
         persist: false,
@@ -11,12 +12,16 @@ function sendRollToGameLog(request) {
         message.data = {
             'request': request
         }
+        // Save the character to be used when creating the default roll data context
+        lastCharacter = request.character;
     } else if (request.action === "rendered-roll") {
         message.eventType = "custom/beyond20/roll";
         message.data = {
             'request': request.request,
             'render': request.html
         }
+        // Save the character to be used when creating the default roll data context
+        lastCharacter = request.character;
 	} else {
         // Unknown action type
         return;
@@ -123,14 +128,14 @@ function pendingRoll(rollData) {
 }
 function fulfilledRoll(rollData) {
     //console.log("fulfilled roll ", rollData);
-    lastMessage = lastMessage || {data: {}};
-    const extraData = lastMessage ? {
-        context: lastMessage.data.context,
-        rollId: lastMessage.data.rollId,
-        setId: lastMessage.data.setId || "8201337"
-    } : {
-        setId: "8201337" // Not setting it makes it use "Basic Black" by default. Using an invalid value is better
-    }
+    // In case digital dice are disabled, and we have no previous pending roll message
+    // we need to construct a valid one for DDB to parse
+    lastMessage = lastMessage || {
+        data: {
+            context: messageBroker.getContext(lastCharacter),
+            rollId: messageBroker.uuid()
+        }
+    };
     // For initiative to work in the Encounter builder, it needs to have the action name "Initiative" and not "Initiative(+x)" that B20 sends
     const action = /^Initiative/.test(rollData.name) ? "Initiative" : rollData.name;
     messageBroker.postMessage({
@@ -145,7 +150,9 @@ function fulfilledRoll(rollData) {
         data: {
             action,
             rolls: rollData.rolls.map(r => rollToDDBRoll(r, true)),
-            ...extraData
+            context: lastMessage.data.context,
+            rollId: lastMessage.data.rollId,
+            setId: lastMessage.data.setId || "8201337" // Not setting it makes it use "Basic Black" by default. Using an invalid value is better
         }
     });
     // Avoid overwriting the old roll in case a roll generates multiple fulfilled rolls (critical hit)

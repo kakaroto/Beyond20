@@ -90,6 +90,28 @@ class DDBMessageBroker {
         this.register();
         return this._messageQueue.filter(m => m.eventType === type);
     }
+    getContext(character) {
+        const context = {};
+        context.messageScope = this._mb.gameId == '0' ? "userId" : "gameId";
+        if (context.messageScope === "gameId") {
+            context.messageTarget = this._mb.gameId;
+        }
+        if (context.messageScope === "userId") {
+            context.messageTarget = this._mb.userId;
+        }
+        context.entityType = this._characterId ? "character" : "user";
+        if (context.entityType === "character" && this._characterId) {
+            context.entityId = this._characterId;
+        }
+        if (context.entityType === "user") {
+            context.entityId = this._mb.userId;
+        }
+        if (character) {
+            context.name = character.name;
+            context.avatarUrl = character.avatar;
+        }
+        return context;
+    }
     postMessage(data) {
         this.register();
         if (!this._mb) return;
