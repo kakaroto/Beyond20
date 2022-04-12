@@ -277,7 +277,7 @@ function rollSavingThrow() {
 }
 
 function rollInitiative() {
-    let initiative = $(".ct-initiative-box__value").text();
+    let initiative = $(".ct-initiative-box__value .ddbc-signed-number").text();
     let advantage = $(".ct-initiative-box__advantage").length > 0;
     if (initiative == "") {
         initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text();
