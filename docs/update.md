@@ -17,11 +17,11 @@ Thank you all for your support!
 
 # Release Notes
 
-Hi again, we're releasing another small bugfix release today for your favorite extension.
+Hi everyone,
 
-This update had to be quickly released as there were two breaking changes that happened this week, one change in the D&D Beyond character sheet which caused some issues with the character specific settings not working properly, and also a change in the Roll20 website which caused HP syncing to stop working in most situations. 
+Today (April 12th), D&D Beyond updated their character sheet, which broke the parsing of the Initiative modifier. Due to that breaking change, we're releasing yet another small bugfix update to your favorite extension.
 
-This release also adds a couple of other small but important bug fixes and features as well. See the short [Changelog](#changelog) below for more details.
+We also fixed a couple of issues that might have affected the DDB mobile app parsing of the game log when rolling from Beyond20, and added support for Foundry VTT's upcoming v10 release.
 
 As usual, thank you to all my [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters, who are making this possible. 
 
@@ -33,18 +33,14 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-v2.6.2 (March 30th 2022)
+v2.6.3 (April 12th 2022)
 ===
 
-* **Feature**: Add support for rolling the right hemodice for Blood Curse of the Eyeless (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: *Roll20*: Display the advantage/disadvantage indicator (greying out dropped dice) when rolling with digital dice (by [@Cube-o](https://github.com/Cube-o))
-* **Bugfix**: Fix issue detecting a character sheet's ID due to a sheet change, causing character settings to not work properly
-* **Bugfix**: *Roll20*: Fix HP syncing due to a Roll20 change to their API
-* **Bugfix**: *FVTT*: Fix rolling Death saving throws when digital dice is disabled
-* **Bugfix**: *Roll20*: Fix support for Diamond Soul (by [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Fix display corruption of the Adventure flowchart in the call of the Netherdeep (due to dice formula replacement in embedded style/script tags)
-* **Bugfix**: Fix issue with looping notification about class features being parsed when two sheets are open, caused by the character sheet's ID not being detected properly
-* **Bugfix**: Fix display of the 'class features detected' notification not displaying properly
+* **Bugfix**: Fix parsing of the initiative modifier after DDB character sheet update on April 12th (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix some missing data from rolls sent to the game log which caused issues with the DDB mobile app
+* **Bugfix**: Remove decimal value of initiative rolls with tie breaker from rolls sent to the game log which caused issues with the DDB mobile app
+* **Bugfix**: *FVTT*: Fix support for attaching rolls to the new ChatMessage API in Foundry VTT v10
+* **Misc**: Update the Dread Ambusher option title and description
 
 
 ---

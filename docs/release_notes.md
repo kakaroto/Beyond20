@@ -1,3 +1,16 @@
+2.6.3 (April 12th 2022)
+===
+
+Hi everyone,
+
+Today (April 12th), D&D Beyond updated their character sheet, which broke the parsing of the Initiative modifier. Due to that breaking change, we're releasing yet another small bugfix update to your favorite extension.
+
+We also fixed a couple of issues that might have affected the DDB mobile app parsing of the game log when rolling from Beyond20, and added support for Foundry VTT's upcoming v10 release.
+
+As usual, thank you to all my [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters, who are making this possible. 
+
+Happy rolling!
+
 2.6.2 (March 30th 2022)
 ===
 

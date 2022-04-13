@@ -1,3 +1,12 @@
+v2.6.3 (April 12th 2022)
+===
+
+* **Bugfix**: Fix parsing of the initiative modifier after DDB character sheet update on April 12th (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix some missing data from rolls sent to the game log which caused issues with the DDB mobile app
+* **Bugfix**: Remove decimal value of initiative rolls with tie breaker from rolls sent to the game log which caused issues with the DDB mobile app
+* **Bugfix**: *FVTT*: Fix support for attaching rolls to the new ChatMessage API in Foundry VTT v10
+* **Misc**: Update the Dread Ambusher option title and description
+
 v2.6.2 (March 30th 2022)
 ===
 
