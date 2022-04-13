@@ -578,8 +578,8 @@ const character_settings = {
         "default": false
     },
     "ranger-dread-ambusher": {
-        "title": "Ranger: Gloom Stalker: Dread Ambusher",
-        "description": "Add Dread Ambusher attack 1d8 extra damage",
+        "title": "Ranger: Gloom Stalker: Dread Ambusher (Apply to next roll only)",
+        "description": "You skills in ambushing your enemies lend more damage to your initial strike",
         "type": "bool",
         "default": false
     },
