@@ -95,6 +95,10 @@ const SRC_FILES = {
         ...DNDBEYOND_PAGE_DEPS,
         "src/dndbeyond/content-scripts/item.js",
     ],
+    dndbeyond_feat: [
+        ...DNDBEYOND_PAGE_DEPS,
+        "src/dndbeyond/content-scripts/feat.js",
+    ],
     dndbeyond_monster: [
         ...DNDBEYOND_PAGE_DEPS,
         "src/dndbeyond/base/spell.js",
