@@ -130,7 +130,9 @@ class FVTTDisplayer {
                 }
                 return Roll.fromData(r)
             });
-            if (isNewerVersion(fvttVersion, "0.8")) {
+            if (isNewerVersion(fvttVersion, "10")) {
+                data.rolls = fvttRolls;
+            } else if (isNewerVersion(fvttVersion, "0.8")) {
                 // Foundry 0.8.x API
                 // This will accept backware compatible fvttRolls format
                 const pool = PoolTerm.fromRolls(fvttRolls);
