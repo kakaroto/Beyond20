@@ -63,7 +63,7 @@ function documentLoaded(settings) {
         }
         const feat_name = $(".page-title").text().trim();
         if (settings['subst-dndbeyond'])
-            injectDiceToRolls(".item-details .more-info-content, .details-container-equipment .details-container-content-description-text", character, feat_name);
+            injectDiceToRolls(".details-container-feat .details-container-content-description", character, feat_name);
     }
 }
 
