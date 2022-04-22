@@ -25,7 +25,7 @@ function addDisplayFeatButton() {
     );
     const feat_name = $(".page-title").text().trim();
     const feat_type = "";
-    const description = descriptionToString(".item-details .more-info-content, .details-container-feat .details-container-content-description").trim();
+    const description = descriptionToString(".details-container-feat .details-container-content-description").trim();
     const feat_tags = $(".details-container-content-footer .tags .tag").toArray().map(elem => elem.textContent);
     $(".page-heading__content").after(button);
 
