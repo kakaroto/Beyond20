@@ -22,7 +22,7 @@ function addDisplayFeatButton() {
         E.span({ class: "label" }, "Display Feat on VTT")
     );
     const feat_name = $(".page-title").text().trim();
-    const feat_type = "";
+    const sourceType = "Feat";
     const description = descriptionToString(".details-container-feat .details-container-content-description").trim();
     const feat_tags = $(".details-container-content-footer .tags .tag").toArray().map(elem => elem.textContent);
     $(".page-heading__content").after(button);
@@ -32,10 +32,10 @@ function addDisplayFeatButton() {
         "display": "inline-block"
     });
     $(".ct-beyond20-roll").on('click', (event) => {
-        sendRoll(character, "item", "0", {
+        sendRoll(character, "feature", 0, {
             "name": feat_name,
+            "source-type": sourceType,
             "description": description,
-            "item-type": feat_type,
             "tags": feat_tags
         });
     }
