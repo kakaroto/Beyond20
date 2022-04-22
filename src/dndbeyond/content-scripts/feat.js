@@ -51,10 +51,10 @@ function documentLoaded(settings) {
         chrome.runtime.sendMessage({ "action": "reload-me" });
     } else {
         addDisplayFeatButton();
-        const avatar = $(".details-aside .image a");
+        const avatar = $(".details-container-aside .image-container img");
         if (avatar.length > 0) {
-            character.avatar = avatar[0].href;
-            const avatarImg = $(".details-aside .image");
+            character.avatar = avatar[0].src;
+            const avatarImg = $(".details-container-aside .image-container");
             if (avatarImg) {
                 addDisplayButton(() => {
                     sendRoll(character, "avatar", character.avatar, { "name": "Feat" });
