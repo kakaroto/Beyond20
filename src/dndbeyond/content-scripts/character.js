@@ -587,7 +587,7 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
         if (character.getSetting("bloodhunter-crimson-rite", false) &&
             character.hasClassFeature("Crimson Rite") &&
             ((properties["Attack Type"] == "Ranged" || properties["Attack Type"] == "Melee") ||
-            action_name.includes("Predatory Strike"))) {
+            action_name.includes("Predatory Strike") || action_name.includes("Polearm Master"))) {
             const bloodhunter_level = character.getClassLevel("Blood Hunter");
             if (bloodhunter_level > 0) {
                 let rite_die = "1d4";
