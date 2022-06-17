@@ -4,14 +4,16 @@ class DigitalDice {
         this._rolls = rolls;
         this._whisper = whisper;
         this._dice = [];
+        this._diceRollPromises = [];
         for (let roll of rolls) {
             for (const dice of roll.dice) {
                 // If the dice faces aren't supported by the digital dice, then do a native roll instead
                 if ([4, 6, 8, 10, 12, 20, 100].includes(dice.faces)) {
                     this._dice.push(dice);
                 } else {
-                    // It's an async method but it doesn't have any async operations, so it will be immediately resolved
-                    dice.roll();
+                    // It's an async method so we need to store the promise to make sure it doesn't
+                    // get garbage collected before it's done calculating the total
+                    this._diceRollPromises.push(dice.roll());
                 }
             }
         }
@@ -44,6 +46,7 @@ class DigitalDice {
         }
     }
     async roll() {
+        await Promise.all(this._diceRollPromises);
         return DigitalDiceManager.rollDigitalDice(this);
     }
     /**
