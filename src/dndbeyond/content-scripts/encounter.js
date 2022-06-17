@@ -35,10 +35,14 @@ function updateCombatTracker() {
     const combat = Array.from($(".combatant-card.in-combat")).map(combatant => {
         const $combatant = $(combatant);
         const initiative = $combatant.find(".combatant-card__initiative-value").text() || $combatant.find(".combatant-card__initiative-input").val()
+        const tags = Array.from(combatant.classList)
+            .filter(c => c.startsWith("combatant-card--"))
+            .map(c => c.slice("combatant-card--".length))
         return {
             name: $combatant.find(".combatant-summary__name").text(),
             initiative: initiative,
             turn: $combatant.hasClass("is-turn"),
+            tags
         };
     });
     const json = JSON.stringify(combat);
