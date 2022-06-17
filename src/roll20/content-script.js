@@ -937,7 +937,7 @@ function handleMessage(request, sender, sendResponse) {
     } else if (request.action == "rendered-roll") {
         handleRenderedRoll(request);
     } else if (request.action === "update-combat") {
-        sendCustomEvent("CombatTracker", [request.combat]);
+        sendCustomEvent("CombatTracker", [request.combat, settings]);
     }
 }
 

@@ -284,6 +284,14 @@ const options_list = {
         "advanced": true
     },
 
+    "combat-unknown-monster-name": {
+        "title": "Unknown monster name replacement in encounters",
+        "description": "Replace monster names in the combat tracker when they can't be mapped to tokens. Leave empty to not replace it.",
+        "type": "string",
+        "default": "Unknown Creature",
+        "advanced": true
+    },
+
     "roll20-spell-description-display": {
         "title": "Display Spell Descriptions in spell attacks",
         "description": "When doing a spell attack, display the spells full description (Roll20 only toggle)",

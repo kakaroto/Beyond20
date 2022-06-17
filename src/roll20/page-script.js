@@ -38,7 +38,7 @@ async function updateHP(name, current, total, temp) {
     }
 }
 
-function updateCombatTracker(combat) {
+function updateCombatTracker(combat, settings) {
     if (!is_gm) return;
 
     const index = combat.findIndex(x => x.turn);
@@ -69,10 +69,14 @@ function updateCombatTracker(combat) {
               mappedGraphics.push(graphic.id);
           }
         }
+        let combatantName = combatant.name;
+        if (!graphic && combatant.tags.includes("monster") && settings["combat-unknown-monster-name"]) {
+            combatantName = settings["combat-unknown-monster-name"];
+        }
         return {
             id: graphic ? graphic.id : "-1",
             pr: combatant.initiative,
-            custom: combatant.name,
+            custom: combatantName,
             _pageid: graphic ? page.id : undefined // if an id is set, the page id must be set too
         }
     });
