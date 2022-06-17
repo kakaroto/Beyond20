@@ -386,7 +386,7 @@ function rollAttack(request, custom_roll_dice = "") {
         delete dmg_props["crit"];
         delete dmg_props["crit1"];
         delete dmg_props["crit2"];
-        dmg_template = template(request, "dmg", dmg_props);
+        const dmg_template = template(request, "dmg", dmg_props);
         properties["rname"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template) + ")";
         properties["rnamec"] = "[" + request.name + "](!\n" + escapeRoll20Macro(dmg_template_crit) + ")";
     } else {

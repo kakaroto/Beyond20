@@ -49,10 +49,26 @@ function updateCombatTracker(combat) {
         const c = combat.splice(index, combat.length);
         combat.splice(0, 0, ...c);
     }
+    const mappedGraphics = [];
     const turnOrder = combat.map(combatant => {
         const name = combatant.name.toLowerCase().trim();
         const page = Campaign.activePage();
-        const graphic = page && page.thegraphics ? page.thegraphics.models.find(g => g.attributes.name.toLowerCase().trim() === name) : null;
+        let graphic = null;
+        if (page && page.thegraphics) {
+          graphic = page.thegraphics.models.find(g => g.attributes.name.toLowerCase().trim() === name);
+          // Try to find token with the base name in case of multiple mooks
+          if (!graphic && name.match(/ \([a-z]\)$/)) {
+            const baseName = name.replace(/ \([a-z]\)$/, "");
+            graphic = page.thegraphics.models.find(g => {
+                if (mappedGraphics.includes(g.id)) return false;
+                return g.attributes.name.toLowerCase().trim() === baseName;
+            });
+
+          }
+          if (graphic) {
+              mappedGraphics.push(graphic.id);
+          }
+        }
         return {
             id: graphic ? graphic.id : "-1",
             pr: combatant.initiative,
