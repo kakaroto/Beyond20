@@ -553,7 +553,7 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
         if (damages.length > 0 &&
             character.hasClassFeature("Arcane Jolt") &&
             character.getSetting("artificer-arcane-jolt", false) &&
-            item_type.indexOf(", Common") === -1) {
+            (properties["Infused"] || item_type.indexOf(", Common") === -1)) {
             damages.push(character._level < 15 ? "2d6" : "4d6");
             damage_types.push("Arcane Jolt");
         }
@@ -754,6 +754,9 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
     const is_instrument = isItemAnInstruction(item_name, item_tags);
     const description = descriptionToString(".ct-item-detail__description");
     const quantity = $(".ct-item-pane .ct-simple-quantity .ct-simple-quantity__value .ct-simple-quantity__input").val();
+    const is_infused = $(".ct-item-pane .ct-item-detail__infusion");
+    if (is_infused.length > 0)
+        properties["Infused"] = true;
     let is_versatile = false;
     if (!force_display && Object.keys(properties).includes("Damage")) {
         const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
