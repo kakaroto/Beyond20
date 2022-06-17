@@ -19,7 +19,9 @@ var settings = getDefaultSettings();
 function addDisplayFeatButton() {
     const icon32 = chrome.runtime.getURL("images/icons/badges/normal32.png");
     const button = E.a({ class: "ct-beyond20-roll button-alt", href: "#" },
-        E.span({ class: "label" }, "Display Feat on VTT")
+        E.span({ class: "label" },
+            E.img({ class: "ct-beyond20-item-icon", src: icon32, style: "margin-right: 10px;" }),
+            "Display Feat on VTT")
     );
     const feat_name = $(".page-title").text().trim();
     const sourceType = "Feat";
