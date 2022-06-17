@@ -190,7 +190,7 @@ class DigitalDiceManager {
                 const collapse = $(".ct-sidebar__control--collapse, .sidebar__control:has(.sidebar__control--collaspe)");
                 // Collapse the side bar, or if it's locked, fake a click on the character name to change the sidepanel
                 if (collapse.length > 0) collapse.click();
-                else $(".ddbc-character-name").click();
+                else $(".ddb-character-app-1d1w1it").click();
             }
             return;
         }

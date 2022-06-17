@@ -2055,7 +2055,7 @@ function injectRollButton(paneClass) {
         }
     } else if (paneClass == "ct-character-manage-pane") {
         const avatar = $(".ct-character-manage-pane .ct-character-manage-pane__summary-avatar");
-        const char_name = $(".ct-character-manage-pane .ct-character-manage-pane__summary-description .ddbc-character-name").text().trim();
+        const char_name = $(".ct-character-manage-pane .ct-character-manage-pane__summary-description .ddb-character-app-1pdl6ha").text().trim();
         let avatar_link = avatar.css('background-image');
         if (avatar_link && avatar_link.startsWith("url("))
             avatar_link = avatar_link.slice(5, -2);
