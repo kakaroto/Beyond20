@@ -36,7 +36,7 @@ class Character extends CharacterBase {
 
         // Static values that need an edit to change;
         if (this._name === null) {
-            this._name = $(".ddbc-character-name").text();
+            this._name = $(".ddbc-character-tidbits__heading h1").text();
             // This can happen when you reload the page;
             if (this._name == "")
                 this._name = null;
