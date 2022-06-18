@@ -259,7 +259,17 @@ class Beyond20RollRenderer {
             }
             html += "<div class='beyond20-roll-result beyond20-roll-cells'>" + this.rollsToCells(roll_html) + "</div>";
         }
-        const add_totals = damage_rolls.filter((r) => (r[2] & DAMAGE_FLAGS.CRITICAL) == 0).length > 1 || damage_rolls.filter((r) => (r[2] & DAMAGE_FLAGS.CRITICAL) != 0).length > 1;
+        // Only add totals if we have either : 
+        // - more than 1 critical damage
+        // - or, more than 1 non-critical damage
+        // - and the 2 non-critical damages are not 1 handed + 2 handed
+        let add_totals = damage_rolls.filter((r) => (r[2] & DAMAGE_FLAGS.CRITICAL) == 0).length > 1 ||
+                        damage_rolls.filter((r) => (r[2] & DAMAGE_FLAGS.CRITICAL) != 0).length > 1;
+        if (add_totals && damage_rolls.length === 2 &&
+            (damage_rolls[0][2] & DAMAGE_FLAGS.REGULAR) != 0 &&
+            (damage_rolls[1][2] & DAMAGE_FLAGS.VERSATILE) != 0) {
+            add_totals = false;
+        }
         const total_damages = {}
         for (let [roll_name, roll, flags] of damage_rolls) {
             const is_total = !add_totals && (flags & DAMAGE_FLAGS.CRITICAL) == 0;
