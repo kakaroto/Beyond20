@@ -1659,7 +1659,17 @@ function createCustomDomainsSetting(name, short) {
     const description_p = opt.description.split("\n").map(desc => E.p({}, desc));
     for (let p of description_p)
         p.classList.add("select");
-
+    let apply_button = null;
+    if (getBrowser() === "Firefox") {
+        apply_button = E.div({class: "save button-group"},
+            E.span({}, "You", E.b({}, " must click "), " the Beyond 20 icon from the Firefox toolbar on the VTT page to load the addon")
+        );
+    } else {
+        apply_button = E.div({class: "save button-group"},
+            E.span({}, "You", E.b({}, " must "), " press Apply to request missing permissions"),
+            E.button({ class: "beyond20-option-input btn", type: "button"}, "Apply")
+        );
+    }
     const setting = E.li({
         id: "beyond20-option-custom-domains",
         class: "list-group-item beyond20-option beyond20-option-text" 
@@ -1670,10 +1680,8 @@ function createCustomDomainsSetting(name, short) {
             E.div({},
                 E.textarea({ id: name, name, class: "beyond20-option-input"}),
             ),
-            E.div({class: "save button-group"},
-                E.span({}, "You", E.b({}, " must "), " press Apply to request missing permissions"),
-                E.button({ class: "beyond20-option-input btn", type: "button"}, "Apply"),
-            )
+            apply_button
+            
         )
     );
     const button = $(setting).find("button");
