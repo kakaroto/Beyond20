@@ -1,11 +1,3 @@
-/*from utils import replaceRolls, cleanRoll, alertQuickSettings, isListEqual, isObjectEqual;
-from settings import getStoredSettings, mergeSettings, character_settings, WhisperType, RollType, CriticalRules;
-from dndbeyond_dice import dndbeyondDiceRoller;
-from elementmaker import E;
-import uuid;
-import re;
-*/
-
 class CharacterBase {
     constructor(_type, global_settings) {
         this._name = "";

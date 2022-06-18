@@ -14,6 +14,8 @@ class DNDBDisplayer {
         }
         content += "<div class='beyond20-dice-roller-content'>" + html + "</div>" +
             "</div>";
+        // Avoid having duplicate results displayed
+        DigitalDiceManager.clearResults();
         const dlg = alertify.Beyond20Roll(title, content);
         dlg.set('onclose', () => {
             dlg.set('onclose', null);

@@ -85,7 +85,7 @@ class Beyond20RollRenderer {
         if (monster)
             choices[WhisperType.HIDE_NAMES] = "Hide Monster and Attack Name";
         const lastQuery = this._settings["last-whisper-query"];
-        const whisper = parseInt(await dndbeyondDiceRoller.queryGeneric(title, "Select whisper mode : ", choices, "whisper-mode", null, lastQuery));
+        const whisper = parseInt(await this.queryGeneric(title, "Select whisper mode : ", choices, "whisper-mode", null, lastQuery));
         if (lastQuery != whisper) {
             this._mergeSettings({ "last-whisper-query": whisper })
         }
@@ -370,9 +370,9 @@ class Beyond20RollRenderer {
         const json_attack_rolls = attack_rolls.map(r => r.toJSON ? r.toJSON() : r);
         const json_damage_rolls = damage_rolls.map(([l, r, f]) => r.toJSON ? [l, r.toJSON(), f] : [l, r, f]);
         const json_total_damages = Object.fromEntries(Object.entries(total_damages).map(([k, v]) => [k, v.toJSON ? v.toJSON() : v]));
-        if (request.sendMessage && this._displayer.sendMessage)
+        if (request.sendMessage && this._displayer.sendMessage) {
             this._displayer.sendMessage(request, title, html, character, request.whisper, play_sound, source, attributes, description, json_attack_rolls, roll_info, json_damage_rolls, json_total_damages, open)
-        else if (canPostHTML) {
+        } else if (canPostHTML) {
             this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, json_attack_rolls, roll_info, json_damage_rolls, json_total_damages, open);
         }
 
