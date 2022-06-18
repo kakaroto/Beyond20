@@ -803,7 +803,8 @@ async function handleOGLRenderedRoll(request) {
 
 async function handleRenderedRoll(request) {
     const isOGL = $("#isOGL").val() === "1";
-    if (settings["roll20-template"] === "roll20" && isOGL) {
+    if (isOGL && (settings["roll20-template"] === "roll20" ||
+        settings["roll20-template"] === "beyond20")) {
         return handleOGLRenderedRoll(request);
     }
     const properties = {};
@@ -930,7 +931,9 @@ function handleMessage(request, sender, sendResponse) {
             return postChatMessage(request.message, character_name);
         }
         const isOGL = $("#isOGL").val() === "1";
-        if (settings["roll20-template"] === "default" || !isOGL) {
+        if (settings["roll20-template"] === "default" ||
+            settings["roll20-template"] === "beyond20" ||
+            !isOGL) {
             return roll_renderer.handleRollRequest(request);
         }
         handleRoll(request);

@@ -196,7 +196,7 @@ const options_list = {
             "If the template does not match the campaign setting, it will default to the Beyond20 Roll Renderer.",
         "type": "combobox",
         "default": "roll20",
-        "choices": { "roll20": "D&D 5E By Roll20", "default": "Beyond20 Roll Renderer" },
+        "choices": { "roll20": "D&D 5E By Roll20", "default": "Default Roll20 template", "beyond20": "Beyond20 Roll Renderer" },
         "advanced": true
     },
 
