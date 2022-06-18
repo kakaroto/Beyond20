@@ -42,13 +42,8 @@ function updateCombatTracker(combat, settings) {
     if (!is_gm) return;
 
     const index = combat.findIndex(x => x.turn);
-    if (index === -1) {
-        console.warn("It's apparently nobody's turn :/");
-    } else {
-        // Roll20 needs the unit whose turn it is at the top of the array.
-        const c = combat.splice(index, combat.length);
-        combat.splice(0, 0, ...c);
-    }
+    // Map combatants to tokens before splicing/re-ordering the array
+    // so we can ensure the token mapping is consistent
     const mappedGraphics = [];
     const turnOrder = combat.map(combatant => {
         const name = combatant.name.toLowerCase().trim();
@@ -80,6 +75,13 @@ function updateCombatTracker(combat, settings) {
             _pageid: graphic ? page.id : undefined // if an id is set, the page id must be set too
         }
     });
+    // Roll20 needs the unit whose turn it is at the top of the array.
+    if (index === -1) {
+        console.warn("It's apparently nobody's turn :/");
+    } else {
+        const c = turnOrder.splice(index, turnOrder.length);
+        turnOrder.splice(0, 0, ...c);
+    }
     // Make sure the turn tracker window is open
     // This also forces roll20 to sync the initiative tracker state to other clients.
     $("#startrounds").click();
