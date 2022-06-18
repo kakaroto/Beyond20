@@ -60,7 +60,7 @@ function sendMessageToRoll20(request, limit = null, failure = null) {
             failure(true)
         }
     } else {
-        sendMessageTo(ROLL20_URL, request, failure = failure)
+        sendMessageTo(ROLL20_URL, request, failure)
     }
 }
 
@@ -85,7 +85,7 @@ function sendMessageToAstral(request, limit = null, failure = null) {
 function sendMessageToFVTT(request, limit, failure = null) {
     console.log("Sending msg to FVTT ", fvtt_tabs)
     if (limit) {
-        const vtt = limit.vtt || "roll20"
+        const vtt = limit.vtt || "fvtt"
         if (vtt == "fvtt") {
             found = filterVTTTab(request, limit, fvtt_tabs, fvttTitle)
             if (failure)
@@ -117,12 +117,12 @@ function sendMessageToBeyond(request) {
     sendMessageTo(DNDBEYOND_FEATS_URL, request)
 }
 
-function isTabAdded(tab) {
+function isFVTTTabAdded(tab) {
     return !!fvtt_tabs.find(t => t.id === tab.id);
 }
 
 function addFVTTTab(tab) {
-    if (isTabAdded(tab)) return;
+    if (isFVTTTabAdded(tab)) return;
     fvtt_tabs.push(tab);
     console.log("Added ", tab.id, " to fvtt tabs.");
 }
@@ -201,24 +201,24 @@ function onMessage(request, sender, sendResponse) {
         if (settings["vtt-tab"] && settings["vtt-tab"].vtt === "dndbeyond") {
             sendResponse({ "success": false, "vtt": "dndbeyond", "error": null, "request": request })
         } else {
-            sendMessageToRoll20(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "roll20", sendResponse))
-            sendMessageToFVTT(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "fvtt", sendResponse))
-            sendMessageToAstral(request, settings["vtt-tab"], failure = makeFailureCB(trackFailure, "astral", sendResponse))
+            sendMessageToRoll20(request, settings["vtt-tab"], makeFailureCB(trackFailure, "roll20", sendResponse))
+            sendMessageToFVTT(request, settings["vtt-tab"], makeFailureCB(trackFailure, "fvtt", sendResponse))
+            sendMessageToAstral(request, settings["vtt-tab"],  makeFailureCB(trackFailure, "astral", sendResponse))
         }
         return true
     } else if (request.action == "settings") {
         if (request.type == "general")
             updateSettings(request.settings)
-        sendMessageToRoll20(request)
-        sendMessageToBeyond(request)
-        sendMessageToFVTT(request)
-        sendMessageToAstral(request)
+        sendMessageToRoll20(request);
+        sendMessageToBeyond(request);
+        sendMessageToFVTT(request);
+        sendMessageToAstral(request);
     } else if (request.action == "activate-icon") {
         // popup doesn't have sender.tab so we grab it from the request.
         const tab = request.tab || sender.tab;
         chrome.browserAction.setPopup({ "tabId": tab.id, "popup": "popup.html" });
         if (isFVTT(tab.title)) {
-            injectFVTTScripts(tab);
+            injectFVTTScripts([tab]);
             addFVTTTab(tab)
         }
         // maybe open the changelog
@@ -233,7 +233,7 @@ function onMessage(request, sender, sendResponse) {
 
         }
     } else if (request.action == "register-fvtt-tab") {
-        addFVTTTab(sender.tab)
+        addFVTTTab(sender.tab);
     } else if (request.action == "reload-me") {
         chrome.tabs.reload(sender.tab.id)
     } else if (request.action == "load-alertify") {
@@ -249,9 +249,9 @@ function onMessage(request, sender, sendResponse) {
     return false
 }
 
-function injectFVTTScripts(tab) {
-    insertCSSs([tab], ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css", "dist/beyond20.css"])
-    executeScripts([tab], ["libs/alertify.min.js", "libs/jquery-3.4.1.min.js", "dist/fvtt.js"])
+function injectFVTTScripts(tabs) {
+    insertCSSs(tabs, ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css", "dist/beyond20.css"])
+    executeScripts(tabs, ["libs/alertify.min.js", "libs/jquery-3.4.1.min.js", "dist/fvtt.js"])
 }
 
 function insertCSSs(tabs, css_files) {
@@ -271,7 +271,7 @@ function executeScripts(tabs, js_files) {
 }
 
 function onTabsUpdated(id, changes, tab) {
-    if (isTabAdded(tab) &&
+    if (isFVTTTabAdded(tab) &&
         ((changes.url && !urlMatches(changes.url, FVTT_URL)) ||
          (changes["status"] == "loading"))) {
         // Delay tab removal because the 'loading' could be caused by the injection of the page script itself
@@ -280,15 +280,15 @@ function onTabsUpdated(id, changes, tab) {
         tabRemovalTimers[id] = setTimeout(() => removeFVTTTab(id), 100);
     }
     /* Load Beyond20 on custom urls that have been added to our permissions */
-    if (changes["status"] === "complete" && urlMatches(tab.url, FVTT_URL)) {
+    if (changes["status"] === "complete" && isFVTT(tab.title) {
         // Cancel tab removal if we go back to complete within 100ms as the page script loads
         if (tabRemovalTimers[id]) {
             clearTimeout(tabRemovalTimers[id]);
         }
-        if (!isTabAdded(tab)) {
+        if (!isFVTTTabAdded(tab)) {
             // We cannot use the url or its origin, because Firefox, in its great magnificent wisdom
             // decided that ports in the origin would break the whole permissions system
-            const origin = `*://${new URL(tab.url).hostname}/*`;
+            const origin = `${new URL(tab.url).protocol}//${new URL(tab.url).hostname}/*`;
             const hasPermission = currentPermissions.origins.some(pattern => urlMatches(origin, pattern));
             if (hasPermission) {
                 chrome.tabs.executeScript(tab.id, { "file": "dist/fvtt_test.js" });

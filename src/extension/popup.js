@@ -381,7 +381,7 @@ function actOnCurrentTab(tab) {
     if (!chrome.permissions) return;
     // We cannot use the url or its origin, because Firefox, in its great magnificent wisdom
     // decided that ports in the origin would break the whole permissions system
-    const origin = `*://${new URL(tab.url).hostname}/*`;
+    const origin = `${new URL(tab.url).protocol}//${new URL(tab.url).hostname}/*`;
     chrome.permissions.contains({origins: [origin]}, (hasPermission) => {
         if (!hasPermission) {
             const options = $(".beyond20-options");
