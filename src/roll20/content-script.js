@@ -877,7 +877,7 @@ function updateSettings(new_settings = null) {
         roll_renderer.setSettings(settings);
     } else {
         getStoredSettings((saved_settings) => {
-            settings = saved_settings;
+            updateSettings(saved_settings);
         });
     }
 }

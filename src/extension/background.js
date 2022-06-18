@@ -1,7 +1,3 @@
-//import constants as c
-//from utils import roll20Title, isFVTT, fvttTitle, getBrowser, urlMatches
-//from settings import getDefaultSettings, getStoredSettings, mergeSettings
-
 var settings = getDefaultSettings()
 var fvtt_tabs = []
 var tabRemovalTimers = {};
@@ -116,6 +112,9 @@ function sendMessageToBeyond(request) {
     sendMessageTo(DNDBEYOND_VEHICLE_URL, request)
     sendMessageTo(DNDBEYOND_SOURCES_URL, request)
     sendMessageTo(DNDBEYOND_CLASSES_URL, request)
+    sendMessageTo(DNDBEYOND_EQUIPMENT_URL, request)
+    sendMessageTo(DNDBEYOND_ITEMS_URL, request)
+    sendMessageTo(DNDBEYOND_FEATS_URL, request)
 }
 
 function isTabAdded(tab) {
