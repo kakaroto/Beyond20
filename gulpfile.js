@@ -86,6 +86,11 @@ const SRC_FILES = {
         "src/fvtt/page-script.js",
         "src/common/sandbox-footer.js"
     ],
+    generic_site: [
+        ...ROLL_RENDERER_DEPS,
+        "src/generic-site/renderer.js",
+        "src/generic-site/content-script.js"
+    ],
     dndbeyond_spell: [
         ...DNDBEYOND_PAGE_DEPS,
         "src/dndbeyond/base/spell.js",

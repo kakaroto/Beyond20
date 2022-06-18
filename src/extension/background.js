@@ -1,5 +1,6 @@
 var settings = getDefaultSettings()
 var fvtt_tabs = []
+var custom_tabs = []
 var tabRemovalTimers = {};
 var currentPermissions = {origins: []};
 var openedChangelog = false;
@@ -12,6 +13,15 @@ function updateSettings(new_settings = null) {
             updateSettings(saved_settings);
         })
     }
+}
+
+function isCustomDomainUrl(tab) {
+    // FVTT is handled separately from custom domains
+    if (isFVTT(tab.title)) return false;
+    for (const url of settings["custom-domains"]) {
+        if (urlMatches(tab.url, url)) return true;
+    }
+    return false;
 }
 
 function sendMessageTo(url, request, failure = null) {
@@ -101,6 +111,14 @@ function sendMessageToFVTT(request, limit, failure = null) {
         }
     }
 }
+function sendMessageToCustomSites(request, limit, failure = null) {
+    console.log("Sending msg to custom sites ", custom_tabs);
+    if (failure)
+        failure(custom_tabs.length == 0)
+    for (let tab of custom_tabs) {
+        chrome.tabs.sendMessage(tab.id, request)
+    }
+}
 
 function sendMessageToBeyond(request) {
     sendMessageTo(DNDBEYOND_CHARACTER_URL, request)
@@ -137,6 +155,25 @@ function removeFVTTTab(id) {
     }
 }
 
+function isCustomTabAdded(tab) {
+    return !!custom_tabs.find(t => t.id === tab.id);
+}
+
+function addCustomTab(tab) {
+    if (isCustomTabAdded(tab)) return;
+    custom_tabs.push(tab);
+    console.log("Added ", tab.id, " to custom tabs.");
+}
+
+function removeCustomTab(id) {
+    for (let t of custom_tabs) {
+        if (t.id == id) {
+            custom_tabs = custom_tabs.filter(tab => tab !== t);
+            console.log("Removed ", id, " from custom tabs.");
+            return;
+        }
+    }
+}
 function onRollFailure(request, sendResponse) {
     console.log("Failure to find a VTT")
     chrome.tabs.query({ "url": FVTT_URL }, (tabs) => {
@@ -182,8 +219,10 @@ function onMessage(request, sender, sendResponse) {
             return (result) => {
                 trackFailure[vtt] = result
                 console.log("Result of sending to VTT ", vtt, ": ", result)
-                if (trackFailure["roll20"] !== null && trackFailure["fvtt"] !== null && trackFailure["astral"] !== null) {
-                    if (trackFailure["roll20"] == true && trackFailure["fvtt"] == true && trackFailure["astral"] == true) {
+                if (trackFailure["roll20"] !== null && trackFailure["fvtt"] !== null &&
+                    trackFailure["astral"] !== null && trackFailure["custom"] !== null) {
+                    if (trackFailure["roll20"] == true && trackFailure["fvtt"] == true &&
+                        trackFailure["astral"] == true  && trackFailure["custom"] == true) {
                         onRollFailure(request, sendResponse)
                     } else {
                         const vtts = []
@@ -197,13 +236,14 @@ function onMessage(request, sender, sendResponse) {
                 }
             }
         }
-        const trackFailure = { "roll20": null, "fvtt": null, 'astral': null }
+        const trackFailure = { "roll20": null, "fvtt": null, 'astral': null, "custom": null }
         if (settings["vtt-tab"] && settings["vtt-tab"].vtt === "dndbeyond") {
             sendResponse({ "success": false, "vtt": "dndbeyond", "error": null, "request": request })
         } else {
             sendMessageToRoll20(request, settings["vtt-tab"], makeFailureCB(trackFailure, "roll20", sendResponse))
             sendMessageToFVTT(request, settings["vtt-tab"], makeFailureCB(trackFailure, "fvtt", sendResponse))
             sendMessageToAstral(request, settings["vtt-tab"],  makeFailureCB(trackFailure, "astral", sendResponse))
+            sendMessageToCustomSites(request, null, makeFailureCB(trackFailure, "custom", sendResponse))
         }
         return true
     } else if (request.action == "settings") {
@@ -213,6 +253,7 @@ function onMessage(request, sender, sendResponse) {
         sendMessageToBeyond(request);
         sendMessageToFVTT(request);
         sendMessageToAstral(request);
+        sendMessageToCustomSites(request);
     } else if (request.action == "activate-icon") {
         // popup doesn't have sender.tab so we grab it from the request.
         const tab = request.tab || sender.tab;
@@ -234,6 +275,9 @@ function onMessage(request, sender, sendResponse) {
         }
     } else if (request.action == "register-fvtt-tab") {
         addFVTTTab(sender.tab);
+    } else if (request.action == "register-generic-tab") {
+        chrome.browserAction.setPopup({ "tabId": sender.tab.id, "popup": "popup.html" });
+        addCustomTab(sender.tab);
     } else if (request.action == "reload-me") {
         chrome.tabs.reload(sender.tab.id)
     } else if (request.action == "load-alertify") {
@@ -252,6 +296,10 @@ function onMessage(request, sender, sendResponse) {
 function injectFVTTScripts(tabs) {
     insertCSSs(tabs, ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css", "dist/beyond20.css"])
     executeScripts(tabs, ["libs/alertify.min.js", "libs/jquery-3.4.1.min.js", "dist/fvtt.js"])
+}
+function injectGenericSiteScripts(tabs) {
+    insertCSSs(tabs, ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css", "dist/beyond20.css"])
+    executeScripts(tabs, ["libs/alertify.min.js", "libs/jquery-3.4.1.min.js", "dist/generic_site.js"])
 }
 
 function insertCSSs(tabs, css_files) {
@@ -278,20 +326,32 @@ function onTabsUpdated(id, changes, tab) {
         // 100ms should be fast enough for page script but not so slow that a reload on a localhost would
         // fail to remove/add the tab, as it should
         tabRemovalTimers[id] = setTimeout(() => removeFVTTTab(id), 100);
+    } else if (isCustomTabAdded(tab) &&
+        ((changes.url && !isCustomDomainUrl(tab)) ||
+         (changes["status"] == "loading"))) {
+        // Delay tab removal because the 'loading' could be caused by the injection of the page script itself
+        // 100ms should be fast enough for page script but not so slow that a reload on a localhost would
+        // fail to remove/add the tab, as it should
+        tabRemovalTimers[id] = setTimeout(() => removeCustomTab(id), 100);
     }
     /* Load Beyond20 on custom urls that have been added to our permissions */
-    if (changes["status"] === "complete" && isFVTT(tab.title) {
+    if (changes["status"] === "complete" &&
+        (isFVTT(tab.title) || isCustomDomainUrl(tab))) {
         // Cancel tab removal if we go back to complete within 100ms as the page script loads
         if (tabRemovalTimers[id]) {
             clearTimeout(tabRemovalTimers[id]);
         }
-        if (!isFVTTTabAdded(tab)) {
+        if (!isFVTTTabAdded(tab) && !isCustomTabAdded(tab)) {
             // We cannot use the url or its origin, because Firefox, in its great magnificent wisdom
             // decided that ports in the origin would break the whole permissions system
             const origin = `${new URL(tab.url).protocol}//${new URL(tab.url).hostname}/*`;
             const hasPermission = currentPermissions.origins.some(pattern => urlMatches(origin, pattern));
             if (hasPermission) {
-                chrome.tabs.executeScript(tab.id, { "file": "dist/fvtt_test.js" });
+                if (isFVTT(tab.title)) {
+                    chrome.tabs.executeScript(tab.id, { "file": "dist/fvtt_test.js" });
+                } else {
+                    injectGenericSiteScripts([tab])
+                }
             }
         }
     }
@@ -300,6 +360,7 @@ function onTabsUpdated(id, changes, tab) {
 
 function onTabRemoved(id, info) {
     removeFVTTTab(id)
+    removeCustomTab(id)
 }
 
 function onPermissionsUpdated() {
@@ -325,9 +386,12 @@ chrome.permissions.getAll((permissions) => {
     for (const pattern of currentPermissions.origins) {
         // Inject script in existing tabs
         chrome.tabs.query({ "url": pattern }, (tabs) => {
-            // Skip if it's not a FVTT tab
-            const fvttTabs = tabs.filter(tab => urlMatches(tab.url, FVTT_URL));
+            // Skip if it's not a FVTT or custom tab
+            const fvttTabs = tabs.filter(tab => isFVTT(tab.title));
+            const customTabs = tabs.filter(tab => isCustomDomainUrl(tab));
+            console.log("Permissions : ", pattern, fvttTabs, customTabs);
             executeScripts(fvttTabs, ["dist/fvtt_test.js"]);
+            injectGenericSiteScripts(customTabs);
         })
     }
 });
