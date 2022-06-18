@@ -1,7 +1,4 @@
-/*from elementmaker import E;
-from settings import options_list, createHTMLOptionEx;
-from utils import isFVTT, injectPageScript;
-*/
+var settings = null;
 
 function createOptionList() {
     $("main").prepend(E.ul({ class: "list-group beyond20-options" }));
@@ -47,13 +44,20 @@ function actOnCurrentTab(tab) {
         // If FVTT, then inject the actual popup, instead of the default one.;
         chrome.runtime.sendMessage({ "action": "activate-icon", "tab": tab });
         injectPageScript("dist/popup.js");
-    } else {
+    } else if (isCustomDomainUrl(tab)) {
+        chrome.runtime.sendMessage({ "action": "activate-icon", "tab": tab });
+        injectPageScript("dist/popup.js");
+    } {
         setupHTML();
     }
 }
 
-if (chrome.tabs != undefined) {
-    chrome.tabs.query({ "active": true, "currentWindow": true }, (tabs) => actOnCurrentTab(tabs[0]));
-} else {
-    chrome.runtime.sendMessage({ "action": "get-current-tab" }, actOnCurrentTab);
-}
+
+getStoredSettings((saved_settings) => {
+    settings = saved_settings;
+    if (chrome.tabs != undefined) {
+        chrome.tabs.query({ "active": true, "currentWindow": true }, (tabs) => actOnCurrentTab(tabs[0]));
+    } else {
+        chrome.runtime.sendMessage({ "action": "get-current-tab" }, actOnCurrentTab);
+    }
+});

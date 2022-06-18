@@ -15,15 +15,6 @@ function updateSettings(new_settings = null) {
     }
 }
 
-function isCustomDomainUrl(tab) {
-    // FVTT is handled separately from custom domains
-    if (isFVTT(tab.title)) return false;
-    for (const url of settings["custom-domains"]) {
-        if (urlMatches(tab.url, url)) return true;
-    }
-    return false;
-}
-
 function sendMessageTo(url, request, failure = null) {
     chrome.tabs.query({ url }, (tabs) => {
         if (failure)
@@ -261,6 +252,8 @@ function onMessage(request, sender, sendResponse) {
         if (isFVTT(tab.title)) {
             injectFVTTScripts([tab]);
             addFVTTTab(tab)
+        } else if (isCustomDomainUrl(tab) && !isCustomTabAdded(tab)) {
+            injectGenericSiteScripts([tab]);
         }
         // maybe open the changelog
         if (!openedChangelog) {

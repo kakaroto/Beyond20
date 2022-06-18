@@ -128,6 +128,14 @@ function urlMatches(url, matching) {
     return url.match(matching.replace(/\*/g, "[^]*")) !== null;
 }
 
+function isCustomDomainUrl(tab) {
+    // FVTT is handled separately from custom domains
+    if (isFVTT(tab.title)) return false;
+    for (const url of ((settings || {})["custom-domains"] || [])) {
+        if (urlMatches(tab.url, url)) return true;
+    }
+    return false;
+}
 function alertSettings(url, title) {
     if (alertify.Beyond20Settings === undefined)
         alertify.dialog('Beyond20Settings', function () { return {}; }, false, "alert");
