@@ -1,3 +1,22 @@
+2.7.0
+===
+
+Hi all, it's time for a Beyond20 update!
+
+This update is being released in a bit of a rush as today, D&D Beyond made a change to the character sheets which broke the detection of the character name, breaking HP syncing among other things. 
+
+That being said, this is not just another small bugfix release, as this release is packed with many new features, as well as many other bugfixes.
+
+I'm super excited about one of the features that's been brewing for a very long time, and it's the ability to let users enter a custom URL to load Beyond20 on, making it send its parsed and rendered rolls to any website. While this won't be immediately useful to you, it will open the path for any VTT to implement support for Beyond20 natively, or for other smaller extensions to bridge the gap between Beyond20 and other VTTs. I can't wait to see what comes out of this feature.
+
+Another big change is to the Roll20 combat tracker support, as it will now hide the monster names by default, to avoid spoilers, but it will also be able to match tokens to multiple monsters with the same name without the need to add the "(A)", "(B)", etc.. prefixes to every token. 
+
+This release adds a total of 8 new features and fixes 7 issues. Please refer to the [Changelog](/Changelog#v270) for the full details of the changes.
+
+As usual, thank you to all contributors, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters, who are making this possible. 
+
+Happy rolling!
+
 2.6.3 (April 12th 2022)
 ===
 
