@@ -293,3 +293,12 @@
     background-color: #f0f0f0;
     border-radius: 3px;
 }
+
+.beyond20-options textarea#custom-domains {
+    min-width: calc(100% - 120px);
+    max-width: calc(100% - 120px);
+    min-height: 100px;
+    margin-top: 10px;
+    padding: 5px;
+    border-radius: 5px;
+}
