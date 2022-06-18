@@ -65,6 +65,15 @@ const options_list = {
         }
     },
 
+    "custom-domains": {
+        "title": "List of custom domains to load Beyond20",
+        "description": "Enter a list of custom domain URLs to load Beyond20 into.\nOne domain per line, you must include the http:// or https:// protocol and you can use wildcards for subdomains and path.\nThis can be used to send Beyond20 requests to sites that may independently support Beyond20.\nFor example: https://my-new-custom-vtt.com/*/game",
+        "type": "special",
+        "default": [],
+        "advanced": true
+        // callbacks will be added after the functions are defined
+    },
+
     "hide-results-on-whisper-to-discord": {
         "title": "Hide roll results on D&D Beyond when whispering to Discord",
         "description": "Don't show the roll results on D&D Beyond when using whisper and sending results to \"D&D Beyond Dice Roller & Discord\"",
@@ -1644,6 +1653,67 @@ function getKeyBindings(settings) {
     return bindings;
 }
 
+
+function createCustomDomainsSetting(name, short) {
+    const opt = options_list[name];
+    const description_p = opt.description.split("\n").map(desc => E.p({}, desc));
+    for (let p of description_p)
+        p.classList.add("select");
+
+    const setting = E.li({
+        id: "beyond20-option-custom-domains",
+        class: "list-group-item beyond20-option beyond20-option-text" 
+    },
+        E.label({ class: "list-content", for: name },
+            E.h4({}, opt.title),
+            ...description_p,
+            E.div({},
+                E.textarea({ id: name, name, class: "beyond20-option-input"}),
+            ),
+            E.div({class: "save button-group"},
+                E.span({}, "You", E.b({}, " must "), " press Apply to request missing permissions"),
+                E.button({ class: "beyond20-option-input btn", type: "button"}, "Apply"),
+            )
+        )
+    );
+    const button = $(setting).find("button");
+    button.click(ev => {
+        ev.stopPropagation();
+        ev.preventDefault();
+        const domains = getCustomDomainsSetting(name);
+        for (const url of domains) {
+            chrome.permissions.contains({origins: [url]}, (hasPermission) => {
+                if (hasPermission) return;
+                chrome.permissions.request({origins: [url]}, (response) => {
+                    if (response) {
+                        console.log("Permission was granted");
+                        alertify.success(`Beyond20 will now load automatically on ${url}`);
+                    } else {
+                        console.log("Permission was refused");
+                        alertify.error(`Error requesting permission for ${url}`);
+                    }
+                });
+            });
+        }
+    });
+
+    return setting;
+}
+function setCustomDomainsSetting(name, settings) {
+    const textarea = $(`#${name}`);
+    textarea.val(settings["custom-domains"].join("\n"));
+}
+function getCustomDomainsSetting(name) {
+    const textarea = $(`#${name}`);
+    const domains = textarea.val().split("\n");
+    const cleaned = domains.filter(url => {
+        // Check for a URL with maybe a wildcard subdomain but valid domain and ignore the path portion
+        return /^https?:\/\/(?:\*.)?(localhost|[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})/.test(url);
+    })
+    textarea.val(cleaned.join("\n"));
+    return cleaned;
+}
+
 options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting;
 options_list["vtt-tab"]["set"] = setVTTTabSetting;
 options_list["vtt-tab"]["get"] = getVTTTabSetting;
@@ -1653,6 +1723,9 @@ options_list["discord-channels"]["get"] = getDiscordChannelsSetting;
 options_list["hotkeys-bindings"]["createHTMLElement"] = createHotkeysSetting;
 options_list["hotkeys-bindings"]["set"] = setHotkeysSetting;
 options_list["hotkeys-bindings"]["get"] = getHotkeysSetting;
+options_list["custom-domains"]["createHTMLElement"] = createCustomDomainsSetting;
+options_list["custom-domains"]["set"] = setCustomDomainsSetting;
+options_list["custom-domains"]["get"] = getCustomDomainsSetting;
 character_settings["discord-target"]["createHTMLElement"] = createDiscordTargetSetting;
 character_settings["discord-target"]["set"] = setDiscordTargetSetting;
 character_settings["discord-target"]["get"] = getDiscordTargetSetting;
