@@ -42,7 +42,7 @@ function documentLoaded(settings) {
             injectDiceToRolls(".primary-content", character, (node) => {
                 return nearestHeading(node, source_name);
             });
-            const read_aloud = $(".read-aloud-text,.adventure-read-aloud-text");
+            const read_aloud = $(".read-aloud-text,.adventure-read-aloud-text,.text--quote-box");
             for (const aside of read_aloud.toArray()) {
                 const id = addRollButton(character, () => {
                     sendRoll(character, "chat-message", 0, {
