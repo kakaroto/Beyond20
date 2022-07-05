@@ -40,14 +40,11 @@ function setupHTML() {
 }
 
 function actOnCurrentTab(tab) {
-    if (isFVTT(tab.title)) {
+    if (isFVTT(tab.title) || isCustomDomainUrl(tab) || isSupportedVTT(tab)) {
         // If FVTT, then inject the actual popup, instead of the default one.;
         chrome.runtime.sendMessage({ "action": "activate-icon", "tab": tab });
         injectPageScript("dist/popup.js");
-    } else if (isCustomDomainUrl(tab)) {
-        chrome.runtime.sendMessage({ "action": "activate-icon", "tab": tab });
-        injectPageScript("dist/popup.js");
-    } {
+    } else {
         setupHTML();
     }
 }

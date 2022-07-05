@@ -136,6 +136,11 @@ function isCustomDomainUrl(tab) {
     }
     return false;
 }
+
+function isSupportedVTT(tab) {
+    return SUPPORTED_VTT_URLS.some(url => urlMatches(tab.url, url))
+}
+
 function alertSettings(url, title) {
     if (alertify.Beyond20Settings === undefined)
         alertify.dialog('Beyond20Settings', function () { return {}; }, false, "alert");

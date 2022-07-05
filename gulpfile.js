@@ -36,6 +36,7 @@ const SRC_FILES = {
     ],
     default_popup: [
         "src/common/sandbox-header.js",
+        "src/common/constants.js",
         "src/common/utils.js",
         "src/common/settings.js",
         "src/extension/default_popup.js",

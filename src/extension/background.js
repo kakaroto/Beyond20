@@ -252,7 +252,7 @@ function onMessage(request, sender, sendResponse) {
         if (isFVTT(tab.title)) {
             injectFVTTScripts([tab]);
             addFVTTTab(tab)
-        } else if (isCustomDomainUrl(tab) && !isCustomTabAdded(tab)) {
+        } else if ((isCustomDomainUrl(tab) || isSupportedVTT(tab)) && !isCustomTabAdded(tab)) {
             injectGenericSiteScripts([tab]);
         }
         // maybe open the changelog
@@ -320,7 +320,7 @@ function onTabsUpdated(id, changes, tab) {
         // fail to remove/add the tab, as it should
         tabRemovalTimers[id] = setTimeout(() => removeFVTTTab(id), 100);
     } else if (isCustomTabAdded(tab) &&
-        ((changes.url && !isCustomDomainUrl(tab)) ||
+        ((changes.url && !isCustomDomainUrl(tab) && !isSupportedVTT(tab)) ||
          (changes["status"] == "loading"))) {
         // Delay tab removal because the 'loading' could be caused by the injection of the page script itself
         // 100ms should be fast enough for page script but not so slow that a reload on a localhost would
@@ -329,7 +329,7 @@ function onTabsUpdated(id, changes, tab) {
     }
     /* Load Beyond20 on custom urls that have been added to our permissions */
     if (changes["status"] === "complete" &&
-        (isFVTT(tab.title) || isCustomDomainUrl(tab))) {
+        (isFVTT(tab.title) || isCustomDomainUrl(tab) || isSupportedVTT(tab))) {
         // Cancel tab removal if we go back to complete within 100ms as the page script loads
         if (tabRemovalTimers[id]) {
             clearTimeout(tabRemovalTimers[id]);
@@ -381,7 +381,7 @@ chrome.permissions.getAll((permissions) => {
         chrome.tabs.query({ "url": pattern }, (tabs) => {
             // Skip if it's not a FVTT or custom tab
             const fvttTabs = tabs.filter(tab => isFVTT(tab.title));
-            const customTabs = tabs.filter(tab => isCustomDomainUrl(tab));
+            const customTabs = tabs.filter(tab => isCustomDomainUrl(tab) || isSupportedVTT(tab));
             console.log("Permissions : ", pattern, fvttTabs, customTabs);
             executeScripts(fvttTabs, ["dist/fvtt_test.js"]);
             injectGenericSiteScripts(customTabs);
