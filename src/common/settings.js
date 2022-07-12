@@ -300,10 +300,17 @@ const options_list = {
         "default": "Unknown Creature",
         "advanced": true
     },
+    
+    "roll20-spell-details-display": {
+        "title": "Display Spell Details in spell attacks",
+        "description": "When doing a spell attack, display the spell's details (Roll20 only toggle)",
+        "type": "bool",
+        "default": false
+    },
 
     "roll20-spell-description-display": {
         "title": "Display Spell Descriptions in spell attacks",
-        "description": "When doing a spell attack, display the spells full description (Roll20 only toggle)",
+        "description": "When doing a spell attack, display the spell's full description (Roll20 only toggle)",
         "type": "bool",
         "default": false
     },
