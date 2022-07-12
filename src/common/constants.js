@@ -16,7 +16,7 @@ DNDBEYOND_FEATS_URL = "*://*.dndbeyond.com/feats/*";
 CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
 DISCORD_BOT_INVITE_URL = "https://beyond20.kicks-ass.org/invite";
 DISCORD_BOT_API_URL = "https://beyond20.kicks-ass.org/roll";
-SUPPORTED_VTT_URLS = ["https://harpy.gg/games/*"];
+SUPPORTED_VTT_URLS = ["https://harpy.gg/*"];
 
 
 BUTTON_STYLE_CSS = `
