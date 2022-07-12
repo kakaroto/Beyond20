@@ -513,6 +513,11 @@ function rollSpellAttack(request, custom_roll_dice) {
             }
         }
     }
+    if (settings["roll20-spell-details-display"] === true) {
+		properties["desc"] = properties["desc"] ? properties["desc"] + "\n\n" : "";
+		properties["desc"] += `Range/Area: ${request.range}\n\n`;
+        properties["desc"] += `Duration: ${request.duration}`;
+    }
     if (settings["roll20-spell-description-display"] === true) {
 		properties["desc"] = properties["desc"] ? properties["desc"] + "\n\n" : "";
 		properties["desc"] += `Description: ${request.description}`;
