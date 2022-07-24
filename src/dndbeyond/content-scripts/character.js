@@ -1341,7 +1341,7 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
 
 }
     
-function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas}={}) {
+function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas, settings_to_change}={}) {
     // Artificer
     if (character.hasClass("Artificer")) {
         if (character.hasClassFeature("Alchemical Savant") &&
@@ -1384,14 +1384,19 @@ function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {sp
         }
     }
     
-    // Supreme Healing must ALWAYS be at the end, at it maxes all healing dice
+    // Supreme Healing and Circle of Mortality must ALWAYS be at the end, as they max all healing dice
     if (character.hasClass("Cleric")) {
-        if (character.hasClassFeature("Supreme Healing")) {
+        if (character.hasClassFeature("Supreme Healing") ||
+            (character.hasClassFeature("Circle of Mortality") &&
+            character.getSetting("cleric-circle-of-mortality", false))) {
             for (let i = 0; i < damages.length; i++) {
                 if (!damage_types[i].includes("Healing")) continue;
                 damages[i] = damages[i].replace(/([0-9]*)d([0-9]+)?/, (match, dice, faces) => {
                     return String(parseInt(dice || 1) * parseInt(faces));
                 });
+            }
+            if (character.hasClassFeature("Circle of Mortality")) {
+                settings_to_change["cleric-circle-of-mortality"] = false;
             }
         }
     }
@@ -1481,7 +1486,7 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
             }
         }
         if (healing_modifiers.length > 0) {
-            handleSpecialHealingSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas});
+            handleSpecialHealingSpells(spell_name, damages, damage_types, {spell_level: level, spell_source, castas, settings_to_change});
         }
 
         let critical_limit = 20;

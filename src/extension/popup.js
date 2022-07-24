@@ -290,6 +290,10 @@ function populateCharacter(response) {
             e = createHTMLOption("monk-diamond-soul", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Circle of Mortality")) {
+            e = createHTMLOption("cleric-circle-of-mortality", false, character_settings);
+            options.append(e);
+        }
     }
     $('.beyond20-option-input').off('change', save_settings);
     $('.beyond20-option-input').change(save_settings);
