@@ -535,6 +535,12 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
+    "cleric-circle-of-mortality": {
+        "title": "Cleric: Death Domain: Circle of Mortality",
+        "description": "Manipulating the line between life and death, your healing on a creature with 0 hp is maximized",
+        "type": "bool",
+        "default": false
+    },
     "cleric-divine-strike": {
         "title": "Cleric: Divine Strike",
         "description": "Deal an extra 1d8 (2d8 at level 14) damage to weapon attacks",
