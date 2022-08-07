@@ -154,10 +154,12 @@
 		{
 			"matches": [
 				"*://*.dndbeyond.com/sources/*",
-				"*://*.dndbeyond.com/classes/*"
+				"*://*.dndbeyond.com/classes/*",
+				"*://*.dndbeyond.com/races/*"
 			],
             "exclude_matches": [
-				"*://*.dndbeyond.com/classes/*/edit"
+				"*://*.dndbeyond.com/classes/*/edit",
+				"*://*.dndbeyond.com/races/*/edit"
             ],
 			"css": [
 				"dist/beyond20.css"
