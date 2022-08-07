@@ -449,7 +449,9 @@ class Monster extends CharacterBase {
                 action_name = action_name.slice(0, -1);
             //console.log("Action name: ", action_name);
             if (add_dice) {
-                let description = descriptionToString(action);
+                let description = action.toArray ? 
+                    action.toArray().map(a => descriptionToString(a)).join("\n")
+                    : descriptionToString(action);
                 description = description.replace(/−/g, "-");
                 const roll_properties = this.buildAttackRoll(action_name, description);
                 if (roll_properties) {
@@ -503,26 +505,35 @@ class Monster extends CharacterBase {
                     $("#" + id).css({ "float": "", "text-align": "", "margin-top": "15px" });
                 }
             }
-            if (inject_descriptions)
+            if (inject_descriptions) {
                 injectDiceToRolls(action, this, action_name, (...args) => this._injectDiceReplacement(...args));
+            }
         }
 
         for (let block of blocks.toArray()) {
-            const actions = $(block).find(this._base + "__description-block-content p");
-            for (let action of actions.toArray()) {
+            const paragraphs = $(block).find(`${this._base}__description-block-content p`);
+            let lastAction = null;
+            for (const p of paragraphs.toArray()) {
                 //console.log("Found action: ", action);
-                const firstChild = action.firstElementChild;
-                if (!firstChild) {
-                    if (inject_descriptions)
-                        injectDiceToRolls(action, this, this._name, (...args) => this._injectDiceReplacement(...args));
-                    continue;
-                }
+                const firstChild = p.firstElementChild;
+                if (!firstChild) continue;
                 // Usually <em><strong> || <strong><em> (Orcus is <span><em><strong>);
                 let action_name = $(firstChild).find("> :first-child").text().trim() || $(firstChild).text().trim();
                 if (!action_name) continue;
-                const description = descriptionToString(action).trim();
+                const description = descriptionToString(p).trim();
                 if (!description.startsWith(action_name)) continue;
-                handleAction(action_name, action, action);
+                if (lastAction) {
+                    // Found a new action, parse all DOM elements in between as an action
+                    const action = $(lastAction.block).nextUntil(p).addBack();
+                    handleAction(lastAction.name, lastAction.block, action);
+                }
+                // Store action for later processing
+                lastAction = { name: action_name, block: p };
+            }
+            if (lastAction) {
+                // Grab all the remaining elements
+                const action = $(lastAction.block).nextUntil().addBack();
+                handleAction(lastAction.name, lastAction.block, action);
             }
         }
 
