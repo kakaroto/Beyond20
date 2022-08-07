@@ -588,6 +588,17 @@ function recursiveDiceReplace(node, cb) {
 }
 
 function injectDiceToRolls(selector, character, name = "", replacementFn = null) {
+    // Parse roll tables
+    const tables = $(selector).find("table");
+    for (let table of tables.toArray()) {
+        table = $(table);
+        if (isRollButtonAdded(table)) continue;
+        const roll_table = RollTable.parseTable(table, name, {character});
+        if (roll_table) {
+            addRollTableButton(character, table, roll_table);
+        }
+    }
+
     let added = 0;
     const icon = chrome.runtime.getURL("images/icons/badges/custom20.png");
     const replaceCB = (node, dice, modifier) => {
