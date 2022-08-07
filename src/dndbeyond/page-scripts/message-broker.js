@@ -55,7 +55,7 @@ function rollToDDBRoll(roll, forceResults=false) {
                 dice: part.rolls.filter(r => !r.discarded).map(r => ({dieType, dieValue: r.roll || 0}))
             });
             if (part.total !== undefined) {
-                results.push(parseInt(part.total));
+                results.push(...part.rolls.filter(r => !r.discarded).map(r => parseInt(r.roll) || 0));
             }
         }
     }
@@ -89,7 +89,12 @@ function rollToDDBRoll(roll, forceResults=false) {
     if (forceResults || results.length > 0) {
         data.result = {
             constant,
-            text: roll.parts.map(p => p.total === undefined ? String(p) : String(p.total)).join(""),
+            text: roll.parts.map(p => {
+                if (p.total === undefined) return String(p);
+                const rolls = p.rolls.filter(r => !r.discarded && !Number.isNaN(parseInt(r.roll))).map(r => parseInt(r.roll));
+                if (rolls.length === 0) return String(p.total);
+                return rolls.join("+");
+            }).join(""),
             total: parseInt(roll.total),
             values: results
         };
