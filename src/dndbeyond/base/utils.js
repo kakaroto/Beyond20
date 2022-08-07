@@ -593,7 +593,8 @@ function injectDiceToRolls(selector, character, name = "", replacementFn = null)
     for (let table of tables.toArray()) {
         table = $(table);
         if (isRollButtonAdded(table)) continue;
-        const roll_table = RollTable.parseTable(table, name, {character});
+        const tableName = name instanceof Function ? name(table) : name;
+        const roll_table = RollTable.parseTable(table, tableName, {character});
         if (roll_table) {
             addRollTableButton(character, table, roll_table);
         }

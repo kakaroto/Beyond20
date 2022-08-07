@@ -31,14 +31,6 @@ function documentLoaded(settings) {
     } else {
         const source_name = $(".page-title").text().trim();
         if (settings['subst-dndbeyond']) {
-            const tables = $("table");
-            for (const table of tables.toArray()) {
-                const roll_table = RollTable.parseTable($(table), nearestHeading(table, source_name));
-                if (roll_table) {
-                    addRollTableButton(character, table, roll_table);
-                }
-            }
-
             injectDiceToRolls(".primary-content", character, (node) => {
                 return nearestHeading(node, source_name);
             });
