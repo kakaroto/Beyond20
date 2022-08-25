@@ -1995,12 +1995,19 @@ function injectRollButton(paneClass) {
             addIconButton(character, () => {
                 const adjustments = $(".ct-saving-throws-box__info .ct-dice-adjustment-summary");
                 let modifier = "";
+                // Aura of protection grants bonus to saves and is listed as an adjustment
+                // but it should not apply when the character is unconscious
+                let removeAuraOfProtection = character.hasClassFeature("Aura of Protection");
                 for (const adjustment of adjustments.toArray()) {
                     const desc = $(adjustment).find(".ct-dice-adjustment-summary__description").text().trim();
                     if (desc !== "on saves") continue;
                     const pos = $(adjustment).find(".ddbc-bonus-positive-svg").length > 0;
                     const amount = parseInt($(adjustment).find(".ct-dice-adjustment-summary__value").text().trim()) || 0;
                     if (!amount) continue;
+                    if (removeAuraOfProtection && amount === Math.max(character.getAbility("CHA").mod, 1)) {
+                        removeAuraOfProtection = false;
+                        continue;
+                    }
                     modifier += `${pos ? "+" : "-"} ${amount} `;
                 }
                 if (character.hasClassFeature("Diamond Soul") && character.getSetting("monk-diamond-soul", false)) {
