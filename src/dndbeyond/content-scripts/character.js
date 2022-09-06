@@ -848,6 +848,29 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
             }
         }
 
+        // Handle Dragon Wing * Ranged Weapons
+        if (item_name.includes("Dragon Wing") || item_name === "Flail of Tiamat") {
+            damages.splice(2,damages.length - 2);
+            let possible_damages = damage_types.splice(1,damage_types.length - 1);
+            const damage_type = properties.Notes && possible_damages.reduce((found, damage) => {
+                if (found) return found;
+                if (properties.Notes.toLowerCase().includes(damage.toLowerCase())) return damage;
+                return null;
+            }, null);
+            if (damage_type) {
+                damage_types.push(damage_type);
+            }
+            else if (item_name.includes("Dragon Wing")) {
+                damage_types.push("Infused");
+            }
+            else if (item_name === "Flail of Tiamat") {
+                damage_types.push("Chosen Type");
+            }
+            else {
+                damage_types.push("Extra");
+            }
+        }
+
         const weapon_damage_length = damages.length;
         
         // If clicking on a spell group within a item (Green flame blade, Booming blade), then add the additional damages from that spell
