@@ -50,13 +50,15 @@ function documentLoaded(settings) {
             });
         }
 
-        for (const block of $("div.stat-block-finder")) {
+        for (const block of $("div.stat-block-finder, div.vehicle-block-finder")) {
             const statblock = $(block)
             removeRollButtons(statblock);
             const chunkId = statblock.data("content-chunk-id");
             if (chunkId) {
-                const selector = `div.stat-block-finder[data-content-chunk-id=${chunkId}]`;
-                const monster = new Monster("Monster", selector, settings, {character});
+                const blockFinderClass = Array.from(block.classList).find(c => c.includes("block-finder"));
+                const selector = `div.${blockFinderClass}[data-content-chunk-id=${chunkId}]`;
+                const type = blockFinderClass === 'stat-block-finder' ? "Monster" : "Vehicle";
+                const monster = new Monster(type, selector, settings, {character});
                 monster.parseStatBlock(statblock);
             }
         }

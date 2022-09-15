@@ -36,7 +36,7 @@ class Monster extends CharacterBase {
     }
 
     get isBlockFinder() {
-        return this._base.includes(".stat-block-finder");
+        return this._base.includes(".stat-block-finder") || this._base.includes(".vehicle-block-finder");
     }
 
     parseStatBlock(stat_block) {
@@ -620,6 +620,7 @@ class Monster extends CharacterBase {
             }
         }
 
+        let blockFinderPastTidbits = false;
         for (let block of blocks.toArray()) {
             const paragraphs = this.isBlockFinder ? 
                 $(block).find("> p.Stat-Block-Styles_Stat-Block-Body, > p.Stat-Block-Styles_Stat-Block-Data") :
@@ -632,6 +633,17 @@ class Monster extends CharacterBase {
                 // Usually <em><strong> || <strong><em> (Orcus is <span><em><strong>);
                 let action_name = $(firstChild).find("> :first-child").text().trim() || $(firstChild).text().trim();
                 if (!action_name) continue;
+                if (this.isBlockFinder && this.type() === "Vehicle") {
+                    // Vehicles in source books will use data blocks just like any of the tidbits
+                    // need to manually filter them out
+                    if (action_name === "Speed") {
+                        blockFinderPastTidbits = true;
+                        continue;
+                    }
+                    if (!blockFinderPastTidbits) continue;
+                    if (action_name.includes("Immunities")) continue;
+                    if (action_name.includes("Resistance")) continue;
+                }
                 const description = descriptionToString(p).trim();
                 if (!description.startsWith(action_name)) continue;
                 if (lastAction) {
