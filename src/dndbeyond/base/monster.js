@@ -537,53 +537,55 @@ class Monster extends CharacterBase {
             }
         }
 
-        // Parse Vehicle (boats) weapons;
-        blocks = stat_block.find(this._base + "__component-block");
-        for (let block of blocks.toArray()) {
-            const action_name = $(block).find(this._base + "__component-block-heading").text().trim();
-            const attributes = $(block).find(this._base + "__component-block-content " + this._base + "__attribute");
-            for (const attribute of attributes.toArray()) {
-                const label = $(attribute).find(`${this._base}__attribute-label`).text().trim();
-                const description = $(attribute).find(`${this._base}__attribute-value`).text().trim();
-                // Skip all attributes and only handle action on the action's desription paragraph with no label
-                // Some vehicles will also have empty attributes with no label and no value
-                if (label || !description)
-                    continue;
-                handleAction(action_name, block, attribute);
+        if (this.type() == "Vehicle" || this.type() == "Extra-Vehicle") {
+            // Parse Vehicle (boats) weapons;
+            blocks = stat_block.find(this._base + "__component-block");
+            for (let block of blocks.toArray()) {
+                const action_name = $(block).find(this._base + "__component-block-heading").text().trim();
+                const attributes = $(block).find(this._base + "__component-block-content " + this._base + "__attribute");
+                for (const attribute of attributes.toArray()) {
+                    const label = $(attribute).find(`${this._base}__attribute-label`).text().trim();
+                    const description = $(attribute).find(`${this._base}__attribute-value`).text().trim();
+                    // Skip all attributes and only handle action on the action's desription paragraph with no label
+                    // Some vehicles will also have empty attributes with no label and no value
+                    if (label || !description)
+                        continue;
+                    handleAction(action_name, block, attribute);
+                }
             }
-        }
 
-        // Parse Vehicle (boats) weapons (in character extra);
-        blocks = stat_block.find(this._base + "-component");
-        for (let block of blocks.toArray()) {
-            const action_name = $(block).find(this._base + "__section-header").text();
-            const actions = $(block).find(this._base + "-component__actions");
-            // We can't parse each action separately because the entire block is interactive.;
-            handleAction(action_name, block, actions);
-        }
-
-        // Parse Vehicle (infernal machines) features;
-        blocks = stat_block.find(this._base + "__feature," + this._base + "__features-feature");
-        for (let block of blocks.toArray()) {
-            let action_name = $(block).find(this._base + "__feature-label").text();
-            let action = $(block).find(this._base + "__feature-value");
-            if (action_name == "" && action.length == 0) {
-                action_name = $(block).find(this._base + "__features-feature-name").text();
-                action = $(block).find(this._base + "__features-feature-description");
+            // Parse Vehicle (boats) weapons (in character extra);
+            blocks = stat_block.find(this._base + "-component");
+            for (let block of blocks.toArray()) {
+                const action_name = $(block).find(this._base + "__section-header").text();
+                const actions = $(block).find(this._base + "-component__actions");
+                // We can't parse each action separately because the entire block is interactive.;
+                handleAction(action_name, block, actions);
             }
-            handleAction(action_name, block, action);
-        }
 
-        // Parse Vehicle (infernal machines) action stations;
-        blocks = stat_block.find(this._base + "__action-station-block," + this._base + "-action-station");
-        for (let block of blocks.toArray()) {
-            let action_name = $(block).find(this._base + "__action-station-block-heading").text();
-            let action = $(block).find(this._base + "__action-station-block-content " + this._base + "__attribute-value");
-            if (action_name == "" && action.length == 0) {
-                action_name = $(block).find(this._base + "-action-station__heading").text();
-                action = $(block).find(this._base + "__action");
+            // Parse Vehicle (infernal machines) features;
+            blocks = stat_block.find(this._base + "__feature," + this._base + "__features-feature");
+            for (let block of blocks.toArray()) {
+                let action_name = $(block).find(this._base + "__feature-label").text();
+                let action = $(block).find(this._base + "__feature-value");
+                if (action_name == "" && action.length == 0) {
+                    action_name = $(block).find(this._base + "__features-feature-name").text();
+                    action = $(block).find(this._base + "__features-feature-description");
+                }
+                handleAction(action_name, block, action);
             }
-            handleAction(action_name, block, action);
+
+            // Parse Vehicle (infernal machines) action stations;
+            blocks = stat_block.find(this._base + "__action-station-block," + this._base + "-action-station");
+            for (let block of blocks.toArray()) {
+                let action_name = $(block).find(this._base + "__action-station-block-heading").text();
+                let action = $(block).find(this._base + "__action-station-block-content " + this._base + "__attribute-value");
+                if (action_name == "" && action.length == 0) {
+                    action_name = $(block).find(this._base + "-action-station__heading").text();
+                    action = $(block).find(this._base + "__action");
+                }
+                handleAction(action_name, block, action);
+            }
         }
     }
     _injectDiceReplacement(node, formula, dice, modifier, name, defaultReplacement) {
