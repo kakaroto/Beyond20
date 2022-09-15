@@ -644,6 +644,7 @@ class Monster extends CharacterBase {
     }
 
     updateInfo() {
+        if (this.type() != "Creature" && this.type() != "Extra-Vehicle") return;
         // Creature name could change/be between.includes(customized) calls;
         this._name = this._stat_block.find(this._base + "__name").text().trim();
         let hp = null;
