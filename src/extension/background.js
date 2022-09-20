@@ -47,7 +47,6 @@ function filterVTTTab(request, limit, tabs, titleCB) {
     return found
 }
 
-
 function sendMessageToRoll20(request, limit = null, failure = null) {
     if (limit) {
         const vtt = limit.vtt || "roll20"
@@ -64,24 +63,6 @@ function sendMessageToRoll20(request, limit = null, failure = null) {
         sendMessageTo(ROLL20_URL, request, failure)
     }
 }
-
-function sendMessageToAstral(request, limit = null, failure = null) {
-    if (limit) {
-        const vtt = limit.vtt || "astral"
-        if (vtt == "astral") {
-            chrome.tabs.query({ "url": ASTRAL_URL }, (tabs) => {
-                found = filterVTTTab(request, limit, tabs, astralTitle)
-                if (failure)
-                    failure(!found)
-            })
-        } else {
-            failure(true)
-        }
-    } else {
-        sendMessageTo(ASTRAL_URL, request, failure = failure)
-    }
-}
-
 
 function sendMessageToFVTT(request, limit, failure = null) {
     console.log("Sending msg to FVTT ", fvtt_tabs)
@@ -102,6 +83,7 @@ function sendMessageToFVTT(request, limit, failure = null) {
         }
     }
 }
+
 function sendMessageToCustomSites(request, limit, failure = null) {
     console.log("Sending msg to custom sites ", custom_tabs);
     if (failure)
@@ -211,9 +193,9 @@ function onMessage(request, sender, sendResponse) {
                 trackFailure[vtt] = result
                 console.log("Result of sending to VTT ", vtt, ": ", result)
                 if (trackFailure["roll20"] !== null && trackFailure["fvtt"] !== null &&
-                    trackFailure["astral"] !== null && trackFailure["custom"] !== null) {
+                    trackFailure["custom"] !== null) {
                     if (trackFailure["roll20"] == true && trackFailure["fvtt"] == true &&
-                        trackFailure["astral"] == true  && trackFailure["custom"] == true) {
+                        trackFailure["custom"] == true) {
                         onRollFailure(request, sendResponse)
                     } else {
                         const vtts = []
@@ -227,13 +209,12 @@ function onMessage(request, sender, sendResponse) {
                 }
             }
         }
-        const trackFailure = { "roll20": null, "fvtt": null, 'astral': null, "custom": null }
+        const trackFailure = { "roll20": null, "fvtt": null, "custom": null }
         if (settings["vtt-tab"] && settings["vtt-tab"].vtt === "dndbeyond") {
             sendResponse({ "success": false, "vtt": "dndbeyond", "error": null, "request": request })
         } else {
             sendMessageToRoll20(request, settings["vtt-tab"], makeFailureCB(trackFailure, "roll20", sendResponse))
             sendMessageToFVTT(request, settings["vtt-tab"], makeFailureCB(trackFailure, "fvtt", sendResponse))
-            sendMessageToAstral(request, settings["vtt-tab"],  makeFailureCB(trackFailure, "astral", sendResponse))
             sendMessageToCustomSites(request, null, makeFailureCB(trackFailure, "custom", sendResponse))
         }
         return true
@@ -243,7 +224,6 @@ function onMessage(request, sender, sendResponse) {
         sendMessageToRoll20(request);
         sendMessageToBeyond(request);
         sendMessageToFVTT(request);
-        sendMessageToAstral(request);
         sendMessageToCustomSites(request);
     } else if (request.action == "activate-icon") {
         // popup doesn't have sender.tab so we grab it from the request.

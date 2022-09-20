@@ -1,6 +1,5 @@
 ROLL20_URL = "*://app.roll20.net/editor/";
 FVTT_URL = "*://*/*game";
-ASTRAL_URL =  "*://*.astraltabletop.com/play/*";
 DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
 DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
 DNDBEYOND_ENCOUNTERS_URL = "*://*.dndbeyond.com/my-encounters";
