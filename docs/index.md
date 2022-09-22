@@ -1,4 +1,4 @@
-Beyond20 integrates the D&D Beyond Character Sheet seamlessly into [Roll 20](https://roll20.net), [Foundry VTT](https://foundryvtt.com), [Astral Tabletop](https://www.astraltabletop.com) and [Discord](https://discord.com).
+Beyond20 integrates the D&D Beyond Character Sheet seamlessly into [Roll 20](https://roll20.net), [Foundry VTT](https://foundryvtt.com), and [Discord](https://discord.com).
 
 [![Cast on VTT](images/cast-on-vtt.png)](/install)
 

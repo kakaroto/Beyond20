@@ -48,20 +48,6 @@ const SRC_FILES = {
         "src/common/settings.js",
         "src/extension/popup.js"
     ],
-    astral: [
-        "src/common/utils.js",
-        "src/common/settings.js",
-        "src/astral/common.js",
-        "src/astral/content-script.js"
-    ],
-    astral_script: [
-        ...ROLL_RENDERER_DEPS,
-        "src/common/utils.js",
-        "src/astral/data-utils.js",
-        "src/astral/renderer.js",
-        "src/astral/common.js",
-        "src/astral/page-script.js"
-    ],
     roll20: [
         ...ROLL_RENDERER_DEPS,
         "src/roll20/renderer.js",
