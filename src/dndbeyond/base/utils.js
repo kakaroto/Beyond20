@@ -161,6 +161,18 @@ async function buildAttackRoll(character, attack_source, name, description, prop
         roll_properties["proficient"] = properties["Proficient"] === "Yes";
     }
 
+    // store the key modifier in the request prior to launching any dialog
+    if (key_modifiers.advantage)
+        roll_properties["advantage"] = RollType.ADVANTAGE;
+    else if (key_modifiers.disadvantage)
+        roll_properties["advantage"] = RollType.DISADVANTAGE;
+    if (key_modifiers.super_advantage)
+        roll_properties["advantage"] = RollType.SUPER_ADVANTAGE;
+    else if (key_modifiers.super_disadvantage)
+        roll_properties["advantage"] = RollType.SUPER_DISADVANTAGE;
+    else if (key_modifiers.normal_roll)
+        roll_properties["advantage"] = RollType.NORMAL;
+
     if (damages.length > 0) {
         roll_properties["damages"] = damages;
         roll_properties["damage-types"] = damage_types;
@@ -300,7 +312,11 @@ async function sendRoll(character, rollType, fallback, args) {
     }
     for (let key in args)
         req[key] = args[key];
-    if (key_modifiers.advantage)
+
+    // first check to see if advantage was passed in
+    if (args["advantage"])
+        req["advantage"] = args["advantage"];  // used passed value
+    else if (key_modifiers.advantage)
         req["advantage"] = RollType.ADVANTAGE;
     else if (key_modifiers.disadvantage)
         req["advantage"] = RollType.DISADVANTAGE;
