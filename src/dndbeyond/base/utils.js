@@ -124,7 +124,8 @@ async function buildAttackRoll(character, attack_source, name, description, prop
         "description": description,
         "rollAttack": force_to_hit_only || !force_damages_only,
         "rollDamage": force_damages_only || (!force_to_hit_only && character.getGlobalSetting("auto-roll-damage", true)),
-        "rollCritical": false
+        "rollCritical": false,
+        "advantage": getAdvantageType(character)
     }
     if (to_hit !== null)
         roll_properties["to-hit"] = to_hit;
@@ -160,18 +161,6 @@ async function buildAttackRoll(character, attack_source, name, description, prop
     if (attack_source === "item") {
         roll_properties["proficient"] = properties["Proficient"] === "Yes";
     }
-
-    // store the key modifier in the request prior to launching any dialog
-    if (key_modifiers.advantage)
-        roll_properties["advantage"] = RollType.ADVANTAGE;
-    else if (key_modifiers.disadvantage)
-        roll_properties["advantage"] = RollType.DISADVANTAGE;
-    if (key_modifiers.super_advantage)
-        roll_properties["advantage"] = RollType.SUPER_ADVANTAGE;
-    else if (key_modifiers.super_disadvantage)
-        roll_properties["advantage"] = RollType.SUPER_DISADVANTAGE;
-    else if (key_modifiers.normal_roll)
-        roll_properties["advantage"] = RollType.NORMAL;
 
     if (damages.length > 0) {
         roll_properties["damages"] = damages;
@@ -295,7 +284,8 @@ async function sendRoll(character, rollType, fallback, args) {
     if (rollType === "spell-card" && whisper === WhisperType.HIDE_NAMES)
         whisper = WhisperType.NO;
 
-    advantage = parseInt(character.getGlobalSetting("roll-type", RollType.NORMAL));
+    // get the advantage type from setting or key modifiers, this will be overwritten if passed in args
+    advantage = getAdvantageType(character);
     if (args["advantage"] == RollType.OVERRIDE_ADVANTAGE)
         args["advantage"] = advantage == RollType.SUPER_ADVANTAGE ? RollType.SUPER_ADVANTAGE : RollType.ADVANTAGE;
     if (args["advantage"] == RollType.OVERRIDE_DISADVANTAGE)
@@ -312,20 +302,6 @@ async function sendRoll(character, rollType, fallback, args) {
     }
     for (let key in args)
         req[key] = args[key];
-
-    // first check to see if advantage was passed in
-    if (args["advantage"])
-        req["advantage"] = args["advantage"];  // used passed value
-    else if (key_modifiers.advantage)
-        req["advantage"] = RollType.ADVANTAGE;
-    else if (key_modifiers.disadvantage)
-        req["advantage"] = RollType.DISADVANTAGE;
-    if (key_modifiers.super_advantage)
-        req["advantage"] = RollType.SUPER_ADVANTAGE;
-    else if (key_modifiers.super_disadvantage)
-        req["advantage"] = RollType.SUPER_DISADVANTAGE;
-    else if (key_modifiers.normal_roll)
-        req["advantage"] = RollType.NORMAL;
 
     if (key_modifiers.whisper)
         req.whisper = WhisperType.YES;
@@ -389,10 +365,11 @@ function isHitDieButtonAdded() {
     return $(".ct-beyond20-roll-hitdie").length > 0;
 }
 
-function getRollTypeButtonClass(character) {
+function getAdvantageType(character) {
     let advantage = RollType.NORMAL;
     if (character)
         advantage = parseInt(character.getGlobalSetting("roll-type", RollType.NORMAL));
+
     if (key_modifiers.advantage)
         advantage = RollType.ADVANTAGE;
     else if (key_modifiers.disadvantage)
@@ -403,6 +380,12 @@ function getRollTypeButtonClass(character) {
         advantage = RollType.SUPER_ADVANTAGE;
     else if (key_modifiers.super_disadvantage)
         advantage = RollType.SUPER_DISADVANTAGE;
+
+    return advantage;
+}
+
+function getRollTypeButtonClass(character) {
+    let advantage = getAdvantageType(character);
 
     if (advantage == RollType.DOUBLE)
         return "beyond20-roll-type-double";
