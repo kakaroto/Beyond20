@@ -1,6 +1,6 @@
 Some issues are already known and being worked on.
 
-- In Foundry v10, the Dice-So-Nice module has a [bug](https://gitlab.com/riccisi/foundryvtt-dice-so-nice/-/issues/337) that will cause Beyond20 tooltips to always be visible. A workaround is to enable the option "Display Chat Message Immediately" in Dice-So-Nice module settings.
+- In Foundry v10, the Dice-So-Nice v4.5.1 module has a [bug](https://gitlab.com/riccisi/foundryvtt-dice-so-nice/-/issues/337) that will cause Beyond20 tooltips to always be visible. A workaround is to enable the option "Display Chat Message Immediately" in Dice-So-Nice module settings.
 
 
 To check the latest list of known issues or feature suggestions, you can head to the [github issue tracker](https://github.com/kakaroto/Beyond20/issues).
