@@ -499,7 +499,7 @@ class Beyond20RollRenderer {
         return this.postDescription(request, name, source, {}, request.description, [], [], [], true);
     }
 
-    queryDamageType(title, damage_types) {
+    async queryDamageType(title, damage_types, type_id="damage-type") {
         const choices = {}
         for (let option in damage_types) {
             const value = damage_types[option];
@@ -508,7 +508,14 @@ class Beyond20RollRenderer {
             else
                 choices[option] = option;
         }
-        return this.queryGeneric(title, "Choose Damage Type :", choices, "damage-type");
+        // get/save the last user selection during similar query
+        const settingId = `last-query-${type_id}`;
+        const lastQuery = this._settings[settingId];
+        const result = await this.queryGeneric(title, "Choose Damage Type :", choices, type_id, undefined, lastQuery);
+        if (lastQuery != result) {
+            this._mergeSettings({ [settingId]: result })
+        }
+        return result;
     }
 
     async buildAttackRolls(request, custom_roll_dice) {
@@ -578,7 +585,7 @@ class Beyond20RollRenderer {
                             damage_rolls.push(["Chaotic energy leaps from the target to a different creature of your choice within 30 feet of it", "", DAMAGE_FLAGS.MESSAGE]);
                             chaotic_type = Object.keys(damage_choices)[0];
                         } else {
-                            chaotic_type = await this.queryDamageType(request.name, damage_choices);
+                            chaotic_type = await this.queryDamageType(request.name, damage_choices, "chaos-bolt");
                         }
                         damage_rolls[i] = [chaotic_type + " Damage", roll, flags];
                         damage_rolls[i + 1][0] = chaotic_type + " Damage";

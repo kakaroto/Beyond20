@@ -109,8 +109,8 @@ async function queryDamageTypeFromArray(name, damages, damage_types, possible_ty
         if (first_idx === -1) first_idx = idx;
     }
     if (first_idx === -1) return;
-
-    const choice = await dndbeyondDiceRoller.queryDamageType(name, damage_choices);
+    const id = `dmg-${name.replace(/[^a-zA-Z0-9]/g, '-')}`;
+    const choice = await dndbeyondDiceRoller.queryDamageType(name, damage_choices, id);
     damages.splice(first_idx, 0, damage_choices[choice]);
     damage_types.splice(first_idx, 0, choice);
 }
