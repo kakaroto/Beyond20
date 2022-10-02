@@ -339,7 +339,7 @@ roll_renderer.setSettings(settings);
 
 function rollInitiative(request, custom_roll_dice = "") {
     roll_renderer.handleRollRequest(request).then((roll) => {
-        if (settings["initiative-tracker"])
+        if (roll && settings["initiative-tracker"])
             addInitiativeToCombat(roll);
     });
 }

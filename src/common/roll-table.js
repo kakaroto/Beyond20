@@ -42,7 +42,9 @@ class RollTable {
                 "1d10": "1d10 (Bard levels 10-14)",
                 "1d12": "1d12 (Bard levels 15-20)"
             }
-            this.formula = await dndbeyondDiceRoller.queryGeneric(this.name, "Select Bardic Inspiration Die : ", choices);
+            const choice = await dndbeyondDiceRoller.queryGeneric(this.name, "Select Bardic Inspiration Die : ", choices);
+            if (choice === null) return null;
+            this.formula = choice;
         }
         return this.formula;
     }

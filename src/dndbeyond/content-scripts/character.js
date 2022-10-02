@@ -953,6 +953,10 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
             force_to_hit_only,
             force_damages_only,
             {weapon_damage_length});
+        if (roll_properties === null) {
+            // A query was cancelled, so let's cancel the roll
+            return;
+        }
         roll_properties["item-type"] = item_type;
         roll_properties["item-customizations"] = item_customizations;
         roll_properties["is_versatile"] = is_versatile;
@@ -1180,6 +1184,10 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             force_damages_only,
             {weapon_damage_length});
 
+        if (roll_properties === null) {
+            // A query was cancelled, so let's cancel the roll
+            return;
+        }
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
 
@@ -1537,6 +1545,10 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
             force_to_hit_only,
             force_damages_only);
 
+        if (roll_properties === null) {
+            // A query was cancelled, so let's cancel the roll
+            return;
+        }
         // If it's an AoE, then split the range property appropriately
         if (aoe_shape) {
             const [range, aoe] = properties["Range/Area"].split("/");
@@ -1982,7 +1994,9 @@ function injectRollButton(paneClass) {
                             {},
                             [dmg],
                             ["Bludgeoning"], to_hit);
-                        sendRollWithCharacter("attack", "1d20" + to_hit, props);
+                        if (props) {
+                            sendRollWithCharacter("attack", "1d20" + to_hit, props);
+                        }
                     }, size, { small: true, append: true, image: false, text: "Attack" });
                     $(`#${id}`).css({ "float": "", "text-align": "" });
                 }

@@ -51,8 +51,12 @@ class Beyond20RollRenderer {
         html += `;</select></div></form>`;
         return new Promise((resolve) => {
             this._prompter.prompt(title, html, "Roll").then((html) => {
-                if (html)
+                if (html) {
                     resolve(html.find("#" + select_id).val());
+                } else {
+                    // return null in case it got cancelled
+                    resolve(null);
+                }
             });
         });
     }
@@ -70,7 +74,9 @@ class Beyond20RollRenderer {
         const order = [RollType.NORMAL, RollType.ADVANTAGE, RollType.DISADVANTAGE, RollType.DOUBLE, RollType.THRICE, RollType.SUPER_ADVANTAGE, RollType.SUPER_DISADVANTAGE];
         const lastQuery = this._settings["last-advantage-query"];
         reason = reason.split("\n").join("<br/>");
-        const advantage = parseInt(await this.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order, lastQuery, {prefix: reason}));
+        const result = await this.queryGeneric(title, "Select roll mode : ", choices, "roll-mode", order, lastQuery, {prefix: reason});
+        if (result === null) return null;
+        const advantage = parseInt(result);
         if (lastQuery != advantage) {
             this._mergeSettings({ "last-advantage-query": advantage })
         }
@@ -85,7 +91,9 @@ class Beyond20RollRenderer {
         if (monster)
             choices[WhisperType.HIDE_NAMES] = "Hide Monster and Attack Name";
         const lastQuery = this._settings["last-whisper-query"];
-        const whisper = parseInt(await this.queryGeneric(title, "Select whisper mode : ", choices, "whisper-mode", null, lastQuery));
+        const result = await this.queryGeneric(title, "Select whisper mode : ", choices, "whisper-mode", null, lastQuery);
+        if (result === null) return null;
+        const whisper = parseInt(result);
         if (lastQuery != whisper) {
             this._mergeSettings({ "last-whisper-query": whisper })
         }
@@ -423,8 +431,10 @@ class Beyond20RollRenderer {
         let is_monster = character.type() == "Monster" || character.type() == "Vehicle";
         if (is_monster && whisper_monster != WhisperType.NO)
             whisper = whisper_monster;
-        if (whisper === WhisperType.QUERY)
+        if (whisper === WhisperType.QUERY) {
             whisper = await this.queryWhisper(digitalRoll.name || "Custom Roll", is_monster);
+            if (whisper === null) return; // query was cancelled
+        }
         // Default advantage/whisper would get overriden if (they are part of provided args;
         const request = {
             action: "roll",
@@ -510,7 +520,7 @@ class Beyond20RollRenderer {
         const settingId = `last-query-${type_id}`;
         const lastQuery = this._settings[settingId];
         const result = await this.queryGeneric(title, "Choose Damage Type :", choices, type_id, undefined, lastQuery);
-        if (lastQuery != result) {
+        if (result !== null && lastQuery != result) {
             this._mergeSettings({ [settingId]: result })
         }
         return result;
@@ -582,6 +592,10 @@ class Beyond20RollRenderer {
                             chaotic_type = Object.keys(damage_choices)[0];
                         } else {
                             chaotic_type = await this.queryDamageType(request.name, damage_choices, "chaos-bolt");
+                            if (chaotic_type === null) {
+                                // Query was cancelled
+                                chaotic_type = Object.keys(damage_choices)[0];
+                            }
                         }
                         damage_rolls[i] = [chaotic_type + " Damage", roll, flags];
                         damage_rolls[i + 1][0] = chaotic_type + " Damage";
