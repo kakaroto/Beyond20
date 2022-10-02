@@ -1743,44 +1743,54 @@ async function execute(paneClass, {force_to_hit_only = false, force_damages_only
     if (customTextRolls.replace.length > 0) {
         await rollCustomText(customTextRolls.replace);
     } else {
-        if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
-            await rollSkillCheck(paneClass);
-        else if (paneClass == "ct-ability-pane")
-            await rollAbilityCheck();
-        else if (paneClass == "ct-ability-saving-throws-pane")
-            await rollSavingThrow();
-        else if (paneClass == "ct-initiative-pane")
-            await rollInitiative();
-        else if (paneClass == "ct-item-pane")
-            await rollItem(false, force_to_hit_only, force_damages_only, spell_group);
-        else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
-            await rollAction(paneClass, force_to_hit_only, force_damages_only);
-        else if (paneClass == "ct-spell-pane")
-            await rollSpell(false, force_to_hit_only, force_damages_only);
-        else
-            await displayPanel(paneClass);
+        try {
+            pauseHotkeyHandling();
+            if (["ct-skill-pane", "ct-custom-skill-pane"].includes(paneClass))
+                await rollSkillCheck(paneClass);
+            else if (paneClass == "ct-ability-pane")
+                await rollAbilityCheck();
+            else if (paneClass == "ct-ability-saving-throws-pane")
+                await rollSavingThrow();
+            else if (paneClass == "ct-initiative-pane")
+                await rollInitiative();
+            else if (paneClass == "ct-item-pane")
+                await rollItem(false, force_to_hit_only, force_damages_only, spell_group);
+            else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
+                await rollAction(paneClass, force_to_hit_only, force_damages_only);
+            else if (paneClass == "ct-spell-pane")
+                await rollSpell(false, force_to_hit_only, force_damages_only);
+            else
+                await displayPanel(paneClass);
+        } finally {
+            resumeHotkeyHandling();
+        }
     }
     await rollCustomText(customTextRolls.after);
 }
 
 function displayPanel(paneClass) {
     console.log("Beyond20: Displaying panel : " + paneClass);
-    if (paneClass == "ct-item-pane")
-        return displayItem();
-    else if (paneClass == "ct-infusion-choice-pane")
-        return displayInfusion();
-    else if (paneClass == "ct-spell-pane")
-        return displaySpell();
-    else if (["ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane"].includes(paneClass))
-        return displayFeature(paneClass);
-    else if (paneClass == "ct-trait-pane")
-        return displayTrait();
-    else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
-        return displayAction(paneClass);
-    else if (paneClass == "ct-background-pane")
-        return displayBackground();
-    else
-        alertify.alert("Not recognizing the currently open sidebar");
+    try {
+        pauseHotkeyHandling();
+        if (paneClass == "ct-item-pane")
+            return displayItem();
+        else if (paneClass == "ct-infusion-choice-pane")
+            return displayInfusion();
+        else if (paneClass == "ct-spell-pane")
+            return displaySpell();
+        else if (["ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane"].includes(paneClass))
+            return displayFeature(paneClass);
+        else if (paneClass == "ct-trait-pane")
+            return displayTrait();
+        else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
+            return displayAction(paneClass);
+        else if (paneClass == "ct-background-pane")
+            return displayBackground();
+        else
+            alertify.alert("Not recognizing the currently open sidebar");
+    } finally {
+        resumeHotkeyHandling();
+    }
 }
 
 function findModifiers(character, custom_roll) {

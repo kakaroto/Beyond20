@@ -6,8 +6,15 @@ const key_modifiers = {
     super_disadvantage: false,
     normal_roll: false
 };
+const savedKeyEvents = [];
+var handleHotKeys = true;
 
-const handleKeyModifierEvent = (event) => {
+function handleKeyModifierEvent(event, force=false) {
+    // Pause event handling, queue the event
+    if (!handleHotKeys && !force) {
+        savedKeyEvents.push(event);
+        return;
+    }
     handleKeyModifier(event.type, event.key, event.code, event.originalEvent.repeat);
 }
 
@@ -42,7 +49,7 @@ function handleKeyModifier(etype, key, code, repeat) {
         updateRollTypeButtonClasses();
 }
 
-const resetKeyModifiers = (event) => {
+function resetKeyModifiers(event) {
     const needsUpdate = key_modifiers.advantage << 0 | key_modifiers.disadvantage << 1 |
                         key_modifiers.normal_roll << 2 | key_modifiers.super_advantage << 3 |
                         key_modifiers.super_disadvantage << 4;
@@ -52,6 +59,21 @@ const resetKeyModifiers = (event) => {
         updateRollTypeButtonClasses();
     updateHotkeysList();
 }
+
+/**
+ * Pauses the handling of key events, which can be used if a user prompt
+ * happens, where we want to retain the key_modifiers state until the roll is made
+ */
+function pauseHotkeyHandling() {
+    handleHotKeys = false;
+}
+function resumeHotkeyHandling() {
+    while (savedKeyEvents.length > 0) {
+        handleKeyModifierEvent(savedKeyEvents.pop(), true);
+    } 
+    handleHotKeys = true;
+}
+
 
 function updateHotkeysList(popup) {
     // Ensure it runs only on pages with the hotkeys popup
