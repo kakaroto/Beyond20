@@ -1,7 +1,7 @@
 
 class Beyond20BaseRoll {
     constructor(formula, data = {}) {
-        this._formula = formula;
+        this._formula = this.cleanupFormula(formula);
         this._data = data;
         this._fail_limit = null;
         this._critical_limit = null;
@@ -39,6 +39,19 @@ class Beyond20BaseRoll {
         throw new Error("NotImplemented");
     }
 
+    cleanupFormula(formula) {
+        const cleaned = formula
+            .replace(/(?:\+\s*)+([+-])/g, "$1") // Change + + and + - into + and - respectively
+            .replace(/(?:\-\s*\-)+/g, "+") // Change - - into +
+            .replace(/(?:\-\s*\+)+/g, "-") // Change - - into -
+            .replace(/\s+/g, " ") // trim double spaces
+        if (cleaned != formula) {
+            // Clean it recursively due to order of operations, we may end up with 
+            // a double operator situation
+            return this.cleanupFormula(cleaned);
+        }
+        return cleaned;
+    }
     setDiscarded(discarded) {
         this._discarded = discarded;
     }
@@ -271,12 +284,12 @@ class DNDBDice {
 class DNDBRoll extends Beyond20BaseRoll {
     constructor(formula, data = {}) {
         formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/g, "r$1$2");
+        for (let key in data)
+            formula = formula.replace('@' + key, data[key]);
         super(formula, data);
         this._parts = [];
         let last_sign = null;
-        for (let key in data)
-            formula = formula.replace('@' + key, data[key]);
-        const parts = formula.split(/(?=[+-])/);
+        const parts = this._formula.split(/(?=[+-])/);
         const mergeSigns = (sign) => {
             if (!sign) return last_sign;
             if (!last_sign) return sign;
