@@ -92,10 +92,8 @@ class Beyond20RollRenderer {
         return whisper;
     }
 
-    async getToHit(request, title, modifier = "", data = {}, type="to-hit") {
-        let advantage = request.advantage;
-        if (advantage == RollType.QUERY)
-            advantage = await this.queryAdvantage(title);
+    getToHit(request, modifier = "", data = {}, type="to-hit") {
+        const advantage = request.advantage;
 
         const d20 = request.d20 || "1d20";
         let rolls = [];
@@ -116,7 +114,7 @@ class Beyond20RollRenderer {
             rolls.push(this.createRoll(d20 + modifier, data, type));
         }
         rolls.forEach(r => r.setCriticalFaces(20));
-        return {advantage, rolls};
+        return {rolls};
     }
     processToHitAdvantage(advantage, rolls) {
         if ([RollType.DOUBLE, RollType.ADVANTAGE, RollType.DISADVANTAGE].includes(advantage)) {
@@ -442,9 +440,9 @@ class Beyond20RollRenderer {
     }
 
     async rollD20(request, title, data, type) {
-        const {advantage, rolls} = await this.getToHit(request, title, "", data, type)
+        const {rolls} = this.getToHit(request, "", data, type)
         await this._roller.resolveRolls(title, rolls, request);
-        this.processToHitAdvantage(advantage, rolls);
+        this.processToHitAdvantage(request.advantage, rolls);
         return this.postDescription(request, title, null, {}, null, rolls);
     }
 
@@ -520,15 +518,13 @@ class Beyond20RollRenderer {
 
     async buildAttackRolls(request, custom_roll_dice) {
         let to_hit = [];
-        let to_hit_advantage = null;
         const damage_rolls = [];
         const all_rolls = [];
         let is_critical = false;
         if (request.rollAttack && request["to-hit"] !== undefined) {
             const custom = custom_roll_dice == "" ? "" : (" + " + custom_roll_dice);
             const to_hit_mod = " + " + request["to-hit"] + custom;
-            const {advantage, rolls} = await this.getToHit(request, request.name, to_hit_mod)
-            to_hit_advantage = advantage;
+            const {rolls} = this.getToHit(request, to_hit_mod)
             to_hit.push(...rolls);
             all_rolls.push(...rolls);
         }
@@ -598,7 +594,7 @@ class Beyond20RollRenderer {
 
             // If rolling the attack, check for critical hit, otherwise, use argument.
             if (request.rollAttack && to_hit.length > 0) {
-                this.processToHitAdvantage(to_hit_advantage, to_hit)
+                this.processToHitAdvantage(request.advantage, to_hit)
                 const critical_limit = request["critical-limit"] || 20;
                 is_critical = this.isCriticalHitD20(to_hit, critical_limit);
             } else {
@@ -631,7 +627,7 @@ class Beyond20RollRenderer {
             
             await this._roller.resolveRolls(request.name, all_rolls, request)
             if (to_hit.length > 0)
-                this.processToHitAdvantage(to_hit_advantage, to_hit)
+                this.processToHitAdvantage(request.advantage, to_hit)
             const critical_limit = request["critical-limit"] || 20;
             this.isCriticalHitD20(to_hit, critical_limit);
         }
