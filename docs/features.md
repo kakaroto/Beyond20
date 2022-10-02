@@ -2,19 +2,23 @@
 * [Roll 20](https://roll20.net)
 * [Foundry VTT](https://foundryvtt.com)
 * [Discord Integration](https://discord.com) -- [Instructions](/discord)
+* DOM custom events, allowing any VTT to integrate with Beyond20 natively
 * Beyond 20 Integrated Dice Roller
 * D&D Beyond Digital Dice Integration
 
 # Feature list
 
 See the [Screenshots](screenshots) page for a video tour of some of the features listed here.
-This list may not always be up to date... I kind of lost track of everything the extension does....
+
+**The number of features Beyond20 supports has grown too long to have an exaustive list, so the list below is out-of-date but shows the main core things supported by the extension**
 
 ## Character Sheet
 * Ability checks
 * Saving throws
 * Skill checks
-  * Custom skills (if no ability is specified, the player is queried in the VTT)
+  * Custom skills
+  * Tools
+  * Instruments
 * Initiative rolls
   * Rolls with Advantage if the character has the feat
   * Adds the initiative to the tracker
@@ -43,7 +47,7 @@ This list may not always be up to date... I kind of lost track of everything the
 * Condition tracking
 * Creatures stat blocks
 * Vehicles stat blocks
-* Rolling Tools from Equipment
+* Integration with the D&D Beyond digital dice roller
 
 ## Monsters and Character creatures
 * Hit points
@@ -60,9 +64,11 @@ This list may not always be up to date... I kind of lost track of everything the
 * Ability checks
 * Attacks
 
-## Spell Compendium Pages
+## Spell, Item or Source Pages
 * Dice formulas from description
-* Display button to display the spell card
+* Display button to display the spell or item card
+* Roll tables
+* Displaying of "Speak aloud" text boxes
 
 ## Information sharing
 * Spell cards can be displayed in VTT
@@ -121,6 +127,7 @@ This list may not always be up to date... I kind of lost track of everything the
 * Warlock: Hexblade's Curse
 * Half-Orc: Savage Attacks
 * Halfling: Luck
+* etc...
 
 # Special Spells supported
 * Chromatic Orb: Macro to ask which damage type to use
@@ -132,7 +139,7 @@ This list may not always be up to date... I kind of lost track of everything the
 
 ## Configurable options
 * Whisper rolls (yes, no, query the user)
-* Whisper rolls for monster pages
+* Whisper rolls for monsters only
 * Incognito rolls for monster pages
 * Roll types (normal, roll twice, roll thrice, query the user, roll with advantage, roll with disadvantage, roll with super advantage, roll with super disadvantage)
 * Auto roll damage and crit
@@ -176,7 +183,7 @@ This list may not always be up to date... I kind of lost track of everything the
 * D&D 5e By Roll20
   * This is the official character sheet template I used and developed for and the one I recommend
 * Fallback option for all other templates
-* Automatically detected character sheet template
+* Automatically detect character sheet template
 
 
 ## Misc
