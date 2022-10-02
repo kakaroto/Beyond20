@@ -6,13 +6,16 @@ const key_modifiers = {
     super_disadvantage: false,
     normal_roll: false
 };
+const MAX_QUEUED_HOTKEY_EVENTS = 1000;
 const savedKeyEvents = [];
 var handleHotKeys = true;
 
 function handleKeyModifierEvent(event, force=false) {
     // Pause event handling, queue the event
     if (!handleHotKeys && !force) {
-        savedKeyEvents.push(event);
+        if (savedKeyEvents.length < MAX_QUEUED_HOTKEY_EVENTS) {
+            savedKeyEvents.push(event);
+        }
         return;
     }
     handleKeyModifier(event.type, event.key, event.code, event.originalEvent.repeat);
