@@ -407,6 +407,13 @@ const options_list = {
         "type": "bool",
         "default": true
     },
+    "discord-display-description": {
+        "title": "Display description in Discord",
+        "description": "Display the roll's description in the Discord message",
+        "type": "bool",
+        "default": false,
+        "advanced": true
+    },
 
     "donate": {
         "short": "Buy rations (1 day) to feed my familiar",

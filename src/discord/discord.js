@@ -1,11 +1,14 @@
 //from constants import DISCORD_BOT_API_URL;
 
-async function postToDiscord(secret, request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
+async function postToDiscord(secret, request, title, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open, settings) {
     secret = (secret || "").trim();
     if (!secret) return;
 
     if (request['original-whisper'] !== undefined)
         request.whisper = request['original-whisper'];
+
+    // Override open to force display description if the setting is enabled
+    open = open || settings["discord-display-description"];
 
     const body = {
         "secret": secret,
