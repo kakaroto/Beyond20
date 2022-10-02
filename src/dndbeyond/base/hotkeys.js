@@ -29,7 +29,16 @@ function handleKeyModifier(etype, key, code, repeat) {
                      key_modifiers.super_disadvantage << 4;
     const modifier = (key_bindings || {})[code] || (key_bindings || {})[key];
     if (modifier) {
-        if (settings['sticky-hotkeys']) {
+        if (modifier.startsWith("toggle-")) {
+            // Permanent option toggle
+            if (etype === "keydown" && typeof(character) !== "undefined" && character.type() === "Character") {
+                const option = modifier.slice("toggle-".length);
+                console.log("Toggling character option from hotkey", option);
+                character.mergeCharacterSettings({
+                    [option]: !character.getSetting(option)
+                });
+            }
+        } else if (settings['sticky-hotkeys']) {
             if (etype !== "keydown") return;
             // Save value before we reset all to false
             const new_value = !key_modifiers[modifier];
@@ -91,6 +100,8 @@ function updateHotkeysList(popup) {
     for (const key in bindings){
         const binding = bindings[key];
         if (!binding) continue;
+        // Don't show permanent toggles
+        if (binding.startsWith("toggle-")) continue;
         if (key_modifiers[binding])
             hotkeys_enabled = true;
         if (roll_types[binding] !== undefined) {

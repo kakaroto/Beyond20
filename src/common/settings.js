@@ -1440,12 +1440,16 @@ function configureHotKey(bindings, bindings_div, html, key) {
         newKey = event.code;
         let binding = bindings[key];
         let custom_formula = "";
+        let permanent_toggle = false;
         if (binding.startsWith("custom_damage")) {
             custom_formula = binding.slice("custom_damage:".length).trim();
             binding = "custom_damage";
         } else if (binding.startsWith("custom_modifier")) {
             custom_formula = binding.slice("custom_modifier:".length).trim();
             binding = "custom_modifier";
+        } else if (binding.startsWith("toggle-")) {
+            permanent_toggle = true;
+            binding = `option-${binding.slice("toggle-".length)}`;
         }
         const newKeyName = newKey.replace(/^Key|^Digit/, "");
         const actions = $(`
@@ -1457,14 +1461,27 @@ function configureHotKey(bindings, bindings_div, html, key) {
                     <option value="">None</option>
                 </select>
                 <div class="custom_formula" style="display: none">
-                    <label> Custom Formula : 
+                    <label style="margin: 5px;"> Custom Formula : 
                         <input type="text" value="${custom_formula}">
                     </label>
+                </div>
+                <div class="toggle_options" style="display: none">
+                    <label style="margin: 5px;">
+                        <b>Permanently toggle the setting when the hotkey is pressed</b>
+                        <input type="checkbox" ${permanent_toggle ? "checked" : ""}>
+                    </label>
+                    <div>
+                      <small>A temporary toggle will only apply while the hotkey is pressed</small>
+                    </div>
+                    <div>
+                      <small>A permanent toggle will change the option until pressed again or changed from the settings</small>
+                    </div>
                 </div>
             </div>
         `)
         const select = actions.find("select");
         const custom_div = actions.find(".custom_formula");
+        const toggles_div = actions.find(".toggle_options");
         let group = $(`<optgroup label="Override Global Settings"></optgroup>`);
         select.append(group);
         for (const action in BINDING_NAMES) {
@@ -1473,7 +1490,7 @@ function configureHotKey(bindings, bindings_div, html, key) {
                 <option value="${action}" ${binding === action ? "selected": ""}>${BINDING_NAMES[action]}</option>
             `));
         }
-        group = $(`<optgroup label="Temporarily toggle Character-Specific setting"></optgroup>`)
+        group = $(`<optgroup label="Toggle Character-Specific setting"></optgroup>`)
         select.append(group);
         for (const name in character_settings) {
             const option = character_settings[name];
@@ -1490,6 +1507,11 @@ function configureHotKey(bindings, bindings_div, html, key) {
             } else {
                 custom_div.hide();
             }
+            if (value.startsWith("option-")) {
+                toggles_div.show();
+            } else {
+                toggles_div.hide();
+            }
         });
         select.trigger('input');
         alert.empty().append(actions)
@@ -1501,6 +1523,12 @@ function configureHotKey(bindings, bindings_div, html, key) {
         const custom_formula = alert.find(".custom_formula input").val() || "";
         if (action === "custom_modifier" || action === "custom_damage") {
             action = `${action}: ${custom_formula}`;
+        }
+        if (action.startsWith("option-")) {
+            const toggle = alert.find(".toggle_options input")[0].checked;
+            if (toggle) {
+                action = action.replace(/^option-/, "toggle-")
+            }
         }
         html.remove();
         delete bindings[key];
@@ -1520,6 +1548,9 @@ function getHotKeyBindingName(key) {
     let name = BINDING_NAMES[key] || key;
     if (name.startsWith("option-") && character_settings[name.slice("option-".length)]) {
         name = character_settings[name.slice("option-".length)].title;
+    }
+    if (name.startsWith("toggle-") && character_settings[name.slice("toggle-".length)]) {
+        name = character_settings[name.slice("toggle-".length)].title + "✅";
     }
     if (name.startsWith("custom_modifier:")) {
         name = BINDING_NAMES["custom_modifier"] + ": " + name.slice("custom_modifier:".length);
