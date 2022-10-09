@@ -5,6 +5,7 @@ const rename = require("gulp-rename");
 
 const ROLL_RENDERER_DEPS = [
     "src/common/utils.js",
+    "libs/FileSaver.min.js",
     "src/common/settings.js",
     "src/common/constants.js",
     "src/discord/discord.js",
@@ -26,11 +27,13 @@ const SRC_FILES = {
     background: [
         "src/common/constants.js",
         "src/common/utils.js",
+        "libs/FileSaver.min.js",
         "src/common/settings.js",
         "src/extension/background.js"
     ],
     options: [
         "src/common/utils.js",
+        "libs/FileSaver.min.js",
         "src/common/settings.js",
         "src/extension/options.js"
     ],
@@ -38,6 +41,7 @@ const SRC_FILES = {
         "src/common/sandbox-header.js",
         "src/common/constants.js",
         "src/common/utils.js",
+        "libs/FileSaver.min.js",
         "src/common/settings.js",
         "src/extension/default_popup.js",
         "src/common/sandbox-footer.js"
@@ -45,6 +49,7 @@ const SRC_FILES = {
     popup: [
         "src/common/constants.js",
         "src/common/utils.js",
+        "libs/FileSaver.min.js",
         "src/common/settings.js",
         "src/extension/popup.js"
     ],
@@ -64,6 +69,7 @@ const SRC_FILES = {
     ],
     fvtt: [
         "src/common/utils.js",
+        "libs/FileSaver.min.js",
         "src/common/settings.js",
         "src/fvtt/content-script.js"
     ],

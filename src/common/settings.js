@@ -415,6 +415,21 @@ const options_list = {
         "advanced": true
     },
 
+    "backup-settings": {
+        "title": "Backup Beyond20 settings",
+        "description": "Export your Beyond20 settings to a file for backup",
+        "type": "special",
+        "advanced": true,
+        "default": null
+    },
+    "restore-settings": {
+        "title": "Restore Beyond20 settings",
+        "description": "Import your Beyond20 settings from a previously exported backup file",
+        "type": "special",
+        "advanced": true,
+        "default": null
+    },
+
     "donate": {
         "short": "Buy rations (1 day) to feed my familiar",
         "title": "Become a patron of the art of software development!",
@@ -784,6 +799,12 @@ function storageRemove(names, cb = null) {
         if (cb)
             cb(names);
     });
+}
+function storageGetEverything(cb) {
+    getStorage().get(null, cb);
+}
+function storageSetEverything(value, cb) {
+    getStorage().set(value, cb);
 }
 
 function getDefaultSettings(_list = options_list) {
@@ -1773,6 +1794,90 @@ function getCustomDomainsSetting(name) {
     return cleaned;
 }
 
+
+function createBackupRestoreSetting(name, short) {
+    const backup = (name === "backup-settings");
+    const opt = options_list[name];
+    const description_p = opt.description.split("\n").map(desc => E.p({}, desc));
+    const label = backup ? "Export" : "Import";
+    // If import, add a hidden file input
+    if (!backup) {
+        description_p.push(E.input({
+            style: "display: none;",
+            type: "file",
+            accept: ".json",
+        }))
+    }
+    const setting = E.li({
+        id: `beyond20-option-${name}`,
+        class: "list-group-item beyond20-option beyond20-option-text" 
+    },
+        E.label({ class: "list-content", for: name },
+            E.h4({}, opt.title),
+            ...description_p,
+            E.div({class: "save button-group"},
+                E.button({ class: "beyond20-option-input btn", type: "button"}, label),
+            )
+        )
+    );
+    const button = $(setting).find("button");
+    const input = $(setting).find("input");
+    button.click(ev => {
+        ev.stopPropagation();
+        ev.preventDefault();
+        if (backup) {
+            // Export
+            storageGetEverything(allSettings => {
+                allSettings.beyond20 = {format: 1};
+                const blob = new Blob([JSON.stringify(allSettings)], {type: "application/json"});
+                saveAs(blob, "Beyond20.json");
+            });
+        } else {
+            // Import
+            input.click();
+        }
+    });
+    if (!backup) {
+        input.on('change', (ev) => {
+            if (input[0].files.length === 0) return;
+            const file = input[0].files[0];
+            const fr = new FileReader();
+            fr.addEventListener("load", () => {
+                try {
+                    const allSettings = JSON.parse(fr.result);
+                    if (!allSettings.beyond20 || allSettings.beyond20.format !== 1) {
+                        throw new Error("File doesn't contain Beyond20 settings");
+                    }
+                    delete allSettings.beyond20;
+                    storageSetEverything(allSettings, () => {
+                        for (const key in allSettings) {
+                            if (key === "settings") {
+                                chrome.runtime.sendMessage({ "action": "settings", "type": "general", "settings": allSettings[key] });
+                            } else if (key.startsWith("character-")) {
+                                const id = key.slice("character-".length);
+                                chrome.runtime.sendMessage({ "action": "settings", "type": "character", "id": id, "settings": allSettings[key] })
+                            }
+                        }
+                        alertify.success("Beyond20 settings loaded successfully");
+                    });
+                } catch (err) {
+                    alertify.error(`Unable to load selected file : ${err.message}`);
+                }
+            }, false);
+            fr.addEventListener("error", (ev) => {
+                alertify.error("Unable to load selected file");
+            }, false);
+            fr.readAsText(file);
+        })
+    }
+
+    return setting;
+}
+function setBackupRestoreSetting(name, settings) {
+}
+function getBackupRestoreSetting(name) {
+}
+
 options_list["vtt-tab"]["createHTMLElement"] = createVTTTabSetting;
 options_list["vtt-tab"]["set"] = setVTTTabSetting;
 options_list["vtt-tab"]["get"] = getVTTTabSetting;
@@ -1788,3 +1893,11 @@ options_list["custom-domains"]["get"] = getCustomDomainsSetting;
 character_settings["discord-target"]["createHTMLElement"] = createDiscordTargetSetting;
 character_settings["discord-target"]["set"] = setDiscordTargetSetting;
 character_settings["discord-target"]["get"] = getDiscordTargetSetting;
+
+options_list["backup-settings"]["createHTMLElement"] = createBackupRestoreSetting;
+options_list["backup-settings"]["set"] = setBackupRestoreSetting;
+options_list["backup-settings"]["get"] = getBackupRestoreSetting;
+
+options_list["restore-settings"]["createHTMLElement"] = createBackupRestoreSetting;
+options_list["restore-settings"]["set"] = setBackupRestoreSetting;
+options_list["restore-settings"]["get"] = getBackupRestoreSetting;
