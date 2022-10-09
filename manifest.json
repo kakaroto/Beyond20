@@ -1,18 +1,21 @@
 {
 	"name": "Beyond 20",
 	"version": "2.9.1",
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"description": "Integrates the D&D Beyond Character Sheets with Roll20 and Foundry VTT.",
 	"permissions": [
 		"activeTab",
 		"tabs",
 		"storage",
+        "scripting"
+    ],
+    "host_permissions": [
 		"*://beyond20.kicks-ass.org/roll",
 		"*://app.roll20.net/editor/",
 		"*://*.dndbeyond.com/*",
 		"*://*.forge-vtt.com/game"
 	],
-    "optional_permissions": ["*://*/"],
+    "optional_host_permissions": ["*://*/*"],
 	"icons": {
 		"16": "images/icons/icon16.png",
 		"24": "images/icons/icon24.png",
@@ -26,7 +29,7 @@
 		"page": "options.html",
 		"open_in_tab": false
 	},
-	"browser_action": {
+	"action": {
 		"default_popup": "default_popup.html",
         "default_icon": {
           "16": "images/icons/icon16.png",
@@ -34,25 +37,25 @@
           "32": "images/icons/icon32.png"
         }
 	},
-	"web_accessible_resources": [
-        "images/*",
-        "libs/css/alertify.css",
-        "libs/css/alertify-themes/default.css",
-        "libs/css/alertify-themes/beyond20.css",
-        "libs/alertify.min.js",
-        "libs/jquery-3.4.1.min.js",
-		"libs/lz-string.min.js",
-		"dist/roll20_script.js",
-		"dist/fvtt_script.js",
-        "dist/dndbeyond_mb.js",
-		"popup.html",
-		"options.html"
-	],
+	"web_accessible_resources": [{
+        "resources": [
+            "images/*",
+            "libs/css/alertify.css",
+            "libs/css/alertify-themes/default.css",
+            "libs/css/alertify-themes/beyond20.css",
+            "libs/alertify.min.js",
+            "libs/jquery-3.4.1.min.js",
+            "libs/lz-string.min.js",
+            "dist/roll20_script.js",
+            "dist/fvtt_script.js",
+            "dist/dndbeyond_mb.js",
+            "popup.html",
+            "options.html"
+        ],
+        "matches": ["*://*/*"]
+    }],
 	"background": {
-		"persistent": true,
-		"scripts": [
-			"dist/background.js"
-		]
+		"service_worker": "dist/background.js"
 	},
 	"content_scripts": [
 		{
