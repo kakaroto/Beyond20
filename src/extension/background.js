@@ -4,6 +4,9 @@ var custom_tabs = []
 var tabRemovalTimers = {};
 var currentPermissions = {origins: []};
 var openedChangelog = false;
+const manifest = chrome.runtime.getManifest();
+// Manifest V3 uses action instead of browserAction
+const action = manifest.manifest_version >= 3 ? chrome.action : chrome.browserAction;
 
 function updateSettings(new_settings = null) {
     if (new_settings) {
@@ -228,7 +231,7 @@ function onMessage(request, sender, sendResponse) {
     } else if (request.action == "activate-icon") {
         // popup doesn't have sender.tab so we grab it from the request.
         const tab = request.tab || sender.tab;
-        chrome.browserAction.setPopup({ "tabId": tab.id, "popup": "popup.html" });
+        action.setPopup({ "tabId": tab.id, "popup": "popup.html" });
         if (isFVTT(tab.title)) {
             injectFVTTScripts([tab]);
             addFVTTTab(tab)
@@ -239,7 +242,7 @@ function onMessage(request, sender, sendResponse) {
         if (!openedChangelog) {
             // Mark it true regardless of whether we opened it, so we don't check every time and avoid race conditions on setting save
             openedChangelog = true;
-            const version = chrome.runtime.getManifest().version;
+            const version = manifest.version;
             if (settings["show-changelog"] && settings["last-version"] != version) {
                 mergeSettings({ "last-version": version })
                 chrome.tabs.create({ "url": CHANGELOG_URL })
@@ -249,13 +252,13 @@ function onMessage(request, sender, sendResponse) {
     } else if (request.action == "register-fvtt-tab") {
         addFVTTTab(sender.tab);
     } else if (request.action == "register-generic-tab") {
-        chrome.browserAction.setPopup({ "tabId": sender.tab.id, "popup": "popup.html" });
+        action.setPopup({ "tabId": sender.tab.id, "popup": "popup.html" });
         addCustomTab(sender.tab);
     } else if (request.action == "reload-me") {
         chrome.tabs.reload(sender.tab.id)
     } else if (request.action == "load-alertify") {
         insertCSSs([sender.tab], ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css"]);
-        chrome.tabs.executeScript(sender.tab.id, { "file": "libs/alertify.min.js" }, sendResponse);
+        executeScripts([sender.tab], ["libs/alertify.min.js"], sendResponse);
         return true
     } else if (request.action == "get-current-tab") {
         sendResponse(sender.tab)
@@ -275,18 +278,35 @@ function injectGenericSiteScripts(tabs) {
     executeScripts(tabs, ["libs/alertify.min.js", "libs/jquery-3.4.1.min.js", "dist/generic_site.js"])
 }
 
-function insertCSSs(tabs, css_files) {
+function insertCSSs(tabs, css_files, callback) {
     for (let tab of tabs) {
-        for (let file of css_files) {
-            chrome.tabs.insertCSS(tab.id, { "file": file })
+        // Use new Manifest V3 scripting API 
+        if (manifest.manifest_version >= 3) {
+            chrome.scripting.insertCSS( {
+                target: {tabId: tab.id},
+                files: css_files
+            }, callback);
+        } else {
+            for (let file of css_files) {
+                chrome.tabs.insertCSS(tab.id, { "file": file }, callback)
+            }
         }
     }
 }
 
-function executeScripts(tabs, js_files) {
+async function executeScripts(tabs, js_files, callback) {
     for (let tab of tabs) {
-        for (let file of js_files) {
-            chrome.tabs.executeScript(tab.id, { "file": file })
+        // Use new Manifest V3 scripting API 
+        if (manifest.manifest_version >= 3) {
+            console.log("Target is : ", tab);
+            chrome.scripting.executeScript( {
+                target: {tabId: tab.id},
+                files: js_files
+            }, callback);
+        } else {
+            for (let file of js_files) {
+                chrome.tabs.executeScript(tab.id, { file: file }, callback)
+            }
         }
     }
 }
@@ -321,7 +341,7 @@ function onTabsUpdated(id, changes, tab) {
             const hasPermission = currentPermissions.origins.some(pattern => urlMatches(origin, pattern));
             if (hasPermission) {
                 if (isFVTT(tab.title)) {
-                    chrome.tabs.executeScript(tab.id, { "file": "dist/fvtt_test.js" });
+                    executeScripts([tab], ["dist/fvtt_test.js"]);
                 } else {
                     injectGenericSiteScripts([tab])
                 }
@@ -344,7 +364,7 @@ function onPermissionsUpdated() {
 
 function browserActionClicked(tab) {
     console.log("Browser action clicked for tab : ", tab.id, tab.url);
-    chrome.tabs.executeScript(tab.id, { "file": "dist/fvtt_test.js" })
+    executeScripts([tab], ["dist/fvtt_test.js"])
 }
 
 updateSettings()
@@ -371,7 +391,6 @@ chrome.permissions.getAll((permissions) => {
 
 if (getBrowser() == "Chrome") {
     // Re-inject scripts when reloading the extension, on Chrome
-    const manifest = chrome.runtime.getManifest()
     for (let script of manifest.content_scripts) {
         cb = (js_files, css_files) => {
             return (tabs) => {
@@ -386,4 +405,4 @@ if (getBrowser() == "Chrome") {
         chrome.tabs.query({ "url": script.matches }, cb(script.js, script.css))
     }
 }
-chrome.browserAction.onClicked.addListener(browserActionClicked);
+action.onClicked.addListener(browserActionClicked);
