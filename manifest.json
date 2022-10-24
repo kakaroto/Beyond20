@@ -60,7 +60,8 @@
 	"content_scripts": [
 		{
 			"matches": [
-				"*://*.dndbeyond.com/*characters/*"
+				"*://*.dndbeyond.com/*characters/*",
+				"*://*.dndbeyond.com/*characters"
 			],
 			"css": [
 				"dist/beyond20.css"
