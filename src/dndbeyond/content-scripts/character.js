@@ -2308,6 +2308,7 @@ function deactivateQuickRolls() {
     let initiative = $(".ct-initiative-box__value .integrated-dice__container, .ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value .integrated-dice__container");
     if (initiative.length === 0)
         initiative = $(".ct-initiative-box__value .ddbc-signed-number, .ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value .ddbc-signed-number");
+    hideTooltipIfDestroyed();
     deactivateTooltipListeners(initiative);
     deactivateTooltipListeners(abilities);
     deactivateTooltipListeners(saving_throws);

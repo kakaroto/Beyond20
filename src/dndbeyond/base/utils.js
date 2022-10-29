@@ -709,6 +709,13 @@ function activateTooltipListeners(el, direction, tooltip, callback) {
         el.trigger('mouseenter');
     }
 }
+// If the element on which the tooltip is appearing gets removed from the visible DOM, then we
+// can never receive the mouseleave event, so we trigger it manually
+function hideTooltipIfDestroyed() {
+    if (quickRollMouseOverEl && !document.body.contains(quickRollMouseOverEl)) {
+        $(quickRollMouseOverEl).trigger('mouseleave');
+    }
+}
 
 var quickRollTooltipEl = null;
 function getQuickRollTooltip() {
