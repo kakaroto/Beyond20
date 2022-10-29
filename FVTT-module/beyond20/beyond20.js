@@ -61,7 +61,7 @@ class Beyond20 {
             actorData.details.cr = parseFloat(cr.includes("/") ? parseCR(cr) : parseInt(cr));
             // Calculate Proficiency (Formula from D&D 5e system)
             actorData.attributes.prof = Math.floor((Math.max(actorData.details.cr, 1) + 7) / 4);
-            actorData.attributes.hp.formula = request.character['hp-foruma'];
+            actorData.attributes.hp.formula = request.character['hp-formula'];
         } else {
             actorData.attributes.prof = parseInt(request.character.proficiency)
         }
