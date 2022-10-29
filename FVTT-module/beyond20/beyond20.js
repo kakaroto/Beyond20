@@ -5,9 +5,8 @@ class Beyond20 {
         return game.actors.find(a => a.isOwner && a.getFlag("beyond20", "user") === game.userId);
     }
     static async getUpdatedActor(request, items=[]) {
-        const actorData = await this.createActorData(request);
+        const actorData = await this.createActorData(request, items);
         const existing = this.getMyActor();
-        actorData.items.push(...items);
         if (existing) {
             await existing.update(actorData, {diff: false, recursive: false});
             return existing;
@@ -24,7 +23,8 @@ class Beyond20 {
         delete data.templates;
         return data;
     }
-    static async createActorData(request) {
+
+    static async createActorData(request, initialItems=[]) {
         const type = request.character.type == "Character" ? "character" : "npc";
         // get default actor template
         const actorData = this._getDefaultTemplate('Actor', type);
@@ -75,42 +75,101 @@ class Beyond20 {
         // Create a spell level of `true` because of https://gitlab.com/foundrynet/dnd5e/-/issues/1025
         actorData.spells[true] = {value: 1, max: 1, override: 1};
 
-        // Cache SRD classes compendium
+        // Cache SRD compendiums
         if (!this._srdClasses) {
+            // Cache SRD Classes
             const compendium = game.packs.get("dnd5e.classes")
-            this._srdClasses = compendium ? await compendium.getIndex() : []
+            this._srdClasses = compendium ? await compendium.getIndex() : [];
+            // Cache SRD items compendium
+            const itemsCompendium = game.packs.get("dnd5e.items")
+            this._srdItems = itemsCompendium ? await itemsCompendium.getIndex() : [];
+            // Cache SRD class features and racial features compendium
+            const classFeaturesCompendium = game.packs.get("dnd5e.classfeatures")
+            this._srdClassFeatures = classFeaturesCompendium ? await classFeaturesCompendium.getIndex() : [];
+            const racialFeaturesCompendium = game.packs.get("dnd5e.races")
+            this._srdRacialFeatures = racialFeaturesCompendium ? await racialFeaturesCompendium.getIndex() : [];
+            // Cache SRD monster features compendium
+            const monsterFeaturesCompendium = game.packs.get("dnd5e.monsterfeatures")
+            this._srdMonsterFeatures = monsterFeaturesCompendium ? await monsterFeaturesCompendium.getIndex() : [];
         }
-        const classes = [];
-        for (const [cls, level] of Object.entries(request.character.classes || {})) {
-            const itemIdx = this._srdClasses.find(c => c.name.toLowerCase() == cls.toLowerCase());
-            let item = null;
-            if (itemIdx) {
-                const compendium = game.packs.get("dnd5e.classes")
-                const document = compendium && await compendium.getDocument(itemIdx._id);
-                if (document) {
-                    item = duplicate(document._source);
-                    delete item._id;
+        let items = [];
+        if (type === "character") {
+            for (const [cls, level] of Object.entries(request.character.classes || {})) {
+                const item = await this.getItemDataFromSRD("dnd5e.classes", this._srdClasses, "class", cls, { templateFallback: true, defaultImg: request.character.avatar });
+                item.name = cls;
+                item.system.levels = parseInt(level);
+                items.push(item);
+            }
+            for (const feat of request.character['class-features'] || []) {
+                const item = await this.getItemDataFromSRD("dnd5e.classfeatures", this._srdClassFeatures, "feat", feat, { templateFallback: true, defaultImg: request.character.avatar });
+                item.name = feat;
+                items.push(item);
+            }
+            for (const trait of request.character['racial-features'] || []) {
+                const item = await this.getItemDataFromSRD("dnd5e.races", this._srdClassFeatures, "feat", trait, { templateFallback: true, defaultImg: request.character.avatar });
+                item.name = trait;
+                items.push(item);
+            }
+            for (const feat of request.character['feats'] || []) {
+                const item = await this.getItemDataFromSRD("dnd5e.classfeatures", this._srdClassFeatures, "feat", feat, { templateFallback: true, defaultImg: request.character.avatar });
+                item.name = feat;
+                items.push(item);
+            }
+        } else {
+            // NPC
+            for (const action of request.character.actions || []) {
+                let item = await this.getItemDataFromSRD("dnd5e.monsterfeatures", this._srdMonsterFeatures, "feat", action);
+                if (!item) {
+                    item = await this.getItemDataFromSRD("dnd5e.items", this._srdItems, "weapon", action, { templateFallback: true, defaultImg: request.character.avatar });
                 }
+                item.name = action;
+                items.push(item);
             }
-            if (!item) {
-                item = {
-                    system: this._getDefaultTemplate('Item', 'class'),
-                    effects: [],
-                    flags: {},
-                    folder: null,
-                    img: request.character.avatar,
-                    name: cls,
-                    sort: 0,
-                    type: 'class'
-                };
-            }
-            item.name = cls;
-            item.system.levels = parseInt(level);
-            classes.push(item);
         }
-        
+        for (const item of initialItems) {
+            // Make sure there are no default items that are named the same as the initially provided items
+            items = items.filter(i => i.name !== item.name);
+            items.push(item);
+        }
     
-        return {...baseAttributes, img: request.character.avatar, system: actorData, items: [...classes]}
+        return {...baseAttributes, img: request.character.avatar, system: actorData, items}
+    }
+
+    /**
+     * Get an Item from an SRD compendium and return a copy.
+     * Optionally create a blank item from template
+     * 
+     * @param {String} compendiumName       Name of the compendium to get the document from
+     * @param {Collection} index            An index of the compendium to look in
+     * @param {String} type                 The type of Item
+     * @param {String} name                 The name of the object
+     * 
+     * @returns 
+     */
+    static async getItemDataFromSRD(compendiumName, index, type, name, {templateFallback=false, defaultImg=undefined}={}) {
+        const itemIdx = index.find(c => c.name.toLowerCase() == name.toLowerCase());
+        let item = null;
+        if (itemIdx) {
+            const compendium = game.packs.get(compendiumName)
+            const document = compendium && await compendium.getDocument(itemIdx._id);
+            if (document) {
+                item = duplicate(document._source);
+                delete item._id;
+            }
+        }
+        if (!item && templateFallback) {
+            item = {
+                system: this._getDefaultTemplate('Item', type),
+                effects: [],
+                flags: {},
+                folder: null,
+                img: defaultImg,
+                name: name,
+                sort: 0,
+                type: type
+            };
+        }
+        return item;
     }
     static findToken(request) {
         let token = null;
