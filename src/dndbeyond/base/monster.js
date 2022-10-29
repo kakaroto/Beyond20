@@ -553,10 +553,12 @@ class Monster extends CharacterBase {
             blocks = stat_block.find(this._base + "__description-blocks " + this._base + "__description-block");
         }
 
+        this._actions = [];
 
         const handleAction = (action_name, block, action) => {
             if (action_name.slice(-1)[0] == ".")
                 action_name = action_name.slice(0, -1);
+            this._actions.push(action_name);
             //console.log("Action name: ", action_name);
             if (add_dice) {
                 let description = action.toArray ? 
@@ -817,6 +819,7 @@ class Monster extends CharacterBase {
             "temp-hp": this._temp_hp,
             "speed": this._speed,
             "abilities": this._abilities,
+            "actions": this._actions,
             "discord-target": this._parent_character && this._parent_character.getSetting("discord-target", undefined),
             "saves": this._saves,
             "skills": this._skills,
