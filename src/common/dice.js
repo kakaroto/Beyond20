@@ -9,6 +9,7 @@ class Beyond20BaseRoll {
         this._discarded = false;
         this._total = 0;
         this._roll_type = "custom";
+        this.onDiscardedChanged = null;
     }
 
     get formula() {
@@ -54,6 +55,11 @@ class Beyond20BaseRoll {
     }
     setDiscarded(discarded) {
         this._discarded = discarded;
+        if (this.onDiscardedChanged) {
+            try {
+                this.onDiscardedChanged(discarded);
+            } catch (err) {}
+        }
     }
     isDiscarded() {
         return this._discarded;

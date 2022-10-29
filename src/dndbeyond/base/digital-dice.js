@@ -124,10 +124,20 @@ class DigitalDice {
         this._rolls.forEach(roll => roll.calculateTotal());
         
         if (this._myResult) {
-            this._myResult.find(".dice_result__total-result").text(this._rolls[0].total);
-            this._myResult.find(".dice_result__info__results .dice_result__info__breakdown").text(this._rolls[0].formula)
+            const roll = this._rolls.find(roll => !roll.isDiscarded()) || this._rolls[0];
+            this._myResult.find(".dice_result__info__results .dice_result__info__breakdown").text(roll.formula)
             this._myResult.find(".dice_result__info__dicenotation").text(`${this._rolls.length} roll${this._rolls.length > 1 ? 's' : ''} sent to VTT`)
                 .prepend(E.img({ src: chrome.runtime.getURL("images/icons/icon32.png") }))
+            const resultEl = this._myResult.find(".dice_result__total-result");
+            resultEl.text(roll.total);
+            // On advantage/disadvantage, the discarded flag doesn't get set until after
+            // this method resolves. Let's set the total value to non discarded rolls when they get set
+            for (const r of this._rolls) {
+                r.onDiscardedChanged = () => {
+                    const roll = this._rolls.find(roll => !roll.isDiscarded()) || this._rolls[0];
+                    resultEl.text(roll.total);
+                };
+            }
         }
     }
 
