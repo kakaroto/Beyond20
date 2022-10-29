@@ -346,6 +346,11 @@ class Beyond20 {
             const potentialBonuses = Object.values(abilities).map(mod => modifier - mod);
             itemData.attackBonus = potentialBonuses.includes(0) ? 0 : Math.min(...potentialBonuses);
             itemData.ability = Object.entries(abilities).find(([abbr, mod]) => modifier === itemData.attackBonus + mod)[0];
+            // Guess proficiency for non standard attacks
+            if (itemData.proficient === false && itemData.attackBonus === parseInt(request.character.proficiency)) {
+                itemData.proficient = true;
+                itemData.attackBonus = 0;
+            }
         } else if (request.damages) {
             itemData.actionType = request["damage-types"].every(d => d.includes("Healing") || d === "Temp HP") ? "heal" : "util";
         }
