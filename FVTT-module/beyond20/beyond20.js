@@ -564,7 +564,7 @@ class Beyond20 {
         const rollMode = request.whisper === 0 ? "roll" : "gmroll";
         
         const roll = ['attack', 'spell-attack'].includes(request.type);
-        actorItem[roll ? 'roll' : 'displayCard']({configureDialog: false, rollMode, createMessage: true});
+        actorItem[roll ? 'use' : 'displayCard']({configureDialog: false, rollMode, createMessage: true});
         return true;
     }
 
