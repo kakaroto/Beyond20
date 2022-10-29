@@ -37,11 +37,11 @@ class Beyond20 {
                 }
             },
             permission: {
-                [game.userId]: CONST.ENTITY_PERMISSIONS.OWNER
+                [game.userId]: CONST.DOCUMENT_PERMISSION_LEVELS.OWNER
             }
         };
         if (!["Character", "Monster", "Creature"].includes(request.character.type)) {
-            return {...baseAttributes, img: "icons/svg/mystery-man.svg", data: actorData, items: []}
+            return {...baseAttributes, img: "icons/svg/mystery-man.svg", system: actorData, items: []}
         }
         for (let ability of request.character.abilities) {
             const [name, abbr, score, mod] = ability;
@@ -88,13 +88,13 @@ class Beyond20 {
                 const compendium = game.packs.get("dnd5e.classes")
                 const document = compendium && await compendium.getDocument(itemIdx._id);
                 if (document) {
-                    item = duplicate(document.data);
+                    item = duplicate(document._source);
                     delete item._id;
                 }
             }
             if (!item) {
                 item = {
-                    data: this._getDefaultTemplate('Item', 'class'),
+                    system: this._getDefaultTemplate('Item', 'class'),
                     effects: [],
                     flags: {},
                     folder: null,
@@ -105,12 +105,12 @@ class Beyond20 {
                 };
             }
             item.name = cls;
-            item.data.levels = parseInt(level);
+            item.system.levels = parseInt(level);
             classes.push(item);
         }
         
     
-        return {...baseAttributes, img: request.character.avatar, data: actorData, items: [...classes]}
+        return {...baseAttributes, img: request.character.avatar, system: actorData, items: [...classes]}
     }
     static findToken(request) {
         let token = null;
@@ -130,19 +130,6 @@ class Beyond20 {
         } finally {
             token._actor = originalActor;
         }
-    }
-    static createActor(request, data) {
-        const token = this.findToken(request);
-        const actor = new CONFIG.Actor.entityClass(data, {token});
-        // Need to override the update method because a spell will try to consume a slot automatically and will fail because the actor is
-        // temporary
-        actor.update = function (d) {
-            mergeObject(this._data, d, {diff: true});
-
-            // Trigger follow-up actions and return
-            this._onUpdate(d, {diff: true}, game.user.id);
-        }
-        return actor;
     }
 
     static createItemData(request) {
@@ -190,7 +177,7 @@ class Beyond20 {
         itemData.source = "Beyond20";
         itemData.description.value = request.description.replace(/\n/g, "</br>");
         return {
-            data: itemData,
+            system: itemData,
             effects: [],
             flags: {},
             folder: null,
@@ -397,7 +384,8 @@ class Beyond20 {
 
         if (!combat) {
             if (game.user.isGM) {
-                combat = await game.combats.object.create({scene: canvas.scene.id, active: true});
+                const Combat = getDocumentClass("Combat")
+                combat = await Combat.create({scene: canvas.scene.id, active: true});
             } else {
                 return null;
             }
@@ -411,21 +399,22 @@ class Beyond20 {
 
         const createData = tokens.reduce((arr, t) => {
         if ( t.inCombat ) return arr;
-        arr.push({tokenId: t.id, hidden: t.data.hidden || request.whisper});
+        arr.push({tokenId: t.id, hidden: t.hidden || request.whisper});
         return arr;
         }, []);
         if (createData.length) {
-            await combat.createEmbeddedEntity("Combatant", createData);
+            await combat.createEmbeddedDocuments("Combatant", createData);
         }
         const combatants = tokens.map(t => combat.getCombatantByToken(t.id));
         combat.rollInitiative(combatants.filter(c => !!c).map(c => c.id), {formula, messageOptions: this.getRollOptions(request)})
+
         //await token.actor.rollInitiative({createCombatants: true, rerollInitiative: true})
         return true;
     }
 
     static async rollSkill(request) {
         const actor = await this.getUpdatedActor(request);
-        const actorData = actor.data;
+        const actorData = actor.system;
         const token = this.findToken(request);
         
         const SKILLS = {
@@ -456,19 +445,19 @@ class Beyond20 {
             default:
                 break;
             case "Half Proficiency":
-                actorData.data.skills[skill].value = 0.5;
+                actorData.skills[skill].value = 0.5;
                 break;
             case "Proficiency": 
-                actorData.data.skills[skill].value = 1;
+                actorData.skills[skill].value = 1;
                 break;
             case "Expertise": 
-                actorData.data.skills[skill].value = 2;
+                actorData.skills[skill].value = 2;
                 break;
         }
-        const calculated = actorData.data.abilities[request.ability.toLowerCase()].mod + actorData.data.skills[skill].value * actorData.data.attributes.prof;
+        const calculated = actorData.abilities[request.ability.toLowerCase()].mod + actorData.skills[skill].value * actorData.attributes.prof;
         const bonus = parseInt(request.modifier) - calculated;
-        actorData.data.skills[skill].mod = calculated;
-        actorData.data.bonuses.abilities.skill = bonus;
+        actorData.skills[skill].mod = calculated;
+        actorData.bonuses.abilities.skill = bonus;
         
         // Compose roll parts and data
         const parts = ["@mod"];
@@ -484,7 +473,7 @@ class Beyond20 {
         mergeObject(rollOptions, {
             parts: parts,
             data: data,
-            title: game.i18n.format("DND5E.SkillPromptTitle", {skill: CONFIG.DND5E.skills[skill]}),
+            title: game.i18n.format("DND5E.SkillPromptTitle", {skill: CONFIG.DND5E.skills[skill].label}),
             messageData: {"flags.dnd5e.roll": {type: "skill", skill }}
         });
         rollOptions.speaker = ChatMessage.getSpeaker({actor: actor, token: token});
@@ -496,18 +485,18 @@ class Beyond20 {
 
     static async rollSavingThrow(request) {
         const actor = await this.getUpdatedActor(request);
-        const actorData = actor.data;
+        const actorData = actor.system;
         const token = this.findToken(request);
         
         const abl = request.ability.toLowerCase();
         const mod = parseInt(request.modifier)
-        const proficient = mod >= actorData.data.abilities[abl].mod + actorData.data.attributes.prof;
-        const calculated = actorData.data.abilities[abl].mod + proficient * actorData.data.attributes.prof;
+        const proficient = mod >= actorData.abilities[abl].mod + actorData.attributes.prof;
+        const calculated = actorData.abilities[abl].mod + proficient * actorData.attributes.prof;
         const bonus = mod - calculated;
 
-        actorData.data.abilities[abl].proficient = proficient;
-        actorData.data.abilities[abl].save = calculated;
-        actorData.data.bonuses.abilities.save = bonus;
+        actorData.abilities[abl].proficient = proficient;
+        actorData.abilities[abl].save = calculated;
+        actorData.bonuses.abilities.save = bonus;
         
         // Compose roll parts and data
         const parts = ["@mod"];
@@ -539,13 +528,13 @@ class Beyond20 {
         
         const abl = request.ability.toLowerCase();
         const mod = parseInt(request.modifier)
-        const bonus = mod - actor.data.data.abilities[abl].mod;
+        const bonus = mod - actor.system.abilities[abl].mod;
 
-        actor.data.data.bonuses.abilities.check = bonus;
+        actor.system.bonuses.abilities.check = bonus;
         
         // Compose roll parts and data
         const parts = ["@mod"];
-        const data = {mod: actor.data.data.abilities[abl].mod};
+        const data = {mod: actor.system.abilities[abl].mod};
 
         // Ability check bonus
         if ( bonus ) {
@@ -700,7 +689,7 @@ class Beyond20CreateNativeActorsApplication extends FormApplication {
                         }
                     },
                     permission: {
-                        [user.id]: CONST.ENTITY_PERMISSIONS.OWNER
+                        [user.id]: CONST.DOCUMENT_PERMISSION_LEVELS.OWNER
                     }
                 });
                 ui.notifications.info(`Created Beyond20 Actor for user ${user.name}`);
@@ -714,6 +703,7 @@ Hooks.on('beyond20Request', (action, request) => Beyond20.handleBeyond20Request(
 Hooks.on("renderChatMessage", (message, html, data) => Beyond20.handleChatMessage(message, html, data));
 
 Hooks.on('init', function () {
+    const foundryVersion = game.data.version || game.version;
     game.settings.register("beyond20", "notifyAtLoad", {
         name: "Notify player to activate Beyond20",
         hint: "Beyond20 extension doesn't load automatically for Foundry unless permission is granted. The module can show a notification to remind the player to activate it for the current tab.",
@@ -742,8 +732,8 @@ Hooks.on('init', function () {
         type: Boolean,
         onChange: async (v) => {
             if (!v) return;
-            if (!isNewerVersion(game.data.version || game.version, "0.8.8")) {
-                ui.notifications.warn(`Cannot enable Beyond20 native rolls on Foundry VTT v${game.data.version}. Please upgrade to version 0.8.9 or newer.`);
+            if (!isNewerVersion(foundryVersion, "10")) {
+                ui.notifications.warn(`Cannot enable Beyond20 native rolls on Foundry VTT v${foundryVersion}. Please upgrade to version 10 or newer.`);
                 return game.settings.set("beyond20", "nativeRolls", false);
             }
             if (Actor.canUserCreate(game.user)) return true;
@@ -761,6 +751,11 @@ Hooks.on('init', function () {
         type: Beyond20CreateNativeActorsApplication,   // A FormApplication subclass which should be created
         restricted: true
     });
+    // Disable native rolls if Foundry is pre v10
+    if (game.settings.get("beyond20", "nativeRolls") && !isNewerVersion(foundryVersion, "10")) {
+        ui.notifications.warn(`Disabled Beyond20 native rolls feature as it is incompatible with Foundry VTT v${foundryVersion}. Please upgrade to version 10 or newer.`);
+        game.settings.set("beyond20", "nativeRolls", false);
+    }
 });
 
 Hooks.on('ready', function () {
