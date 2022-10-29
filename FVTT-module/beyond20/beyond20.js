@@ -333,7 +333,8 @@ class Beyond20 {
                 itemData.actionType = request['attack-type'] === "Melee" ? "mwak" : "rwak";
             }
             let modifier = parseInt(request['to-hit']);
-            if (request.proficient || type === "spell") {
+            itemData.proficient = request.proficient || type === "spell" || request['attack-source'] === "item";
+            if (itemData.proficient) {
                 modifier -= parseInt(request.character.proficiency);
             }
             const abilities = {};
@@ -345,9 +346,6 @@ class Beyond20 {
             const potentialBonuses = Object.values(abilities).map(mod => modifier - mod);
             itemData.attackBonus = potentialBonuses.includes(0) ? 0 : Math.min(...potentialBonuses);
             itemData.ability = Object.entries(abilities).find(([abbr, mod]) => modifier === itemData.attackBonus + mod)[0];
-            if (request['attack-source'] === "item") {
-                itemData.proficient = request.proficient;
-            }
         } else if (request.damages) {
             itemData.actionType = request["damage-types"].every(d => d.includes("Healing") || d === "Temp HP") ? "heal" : "util";
         }
