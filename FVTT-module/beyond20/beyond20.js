@@ -182,12 +182,18 @@ class Beyond20 {
     static async callOnToken(actor, token, callback) {
         if (!token) return callback();
 
-        const originalActor = token._actor;
+        const originalActorId = token.document.actorId;
+        const originalLink = token.document.actorLink;
+        const originalActor = token.document._actor;
         try {
-            token._actor = actor;
+            token.document._actor = actor;
+            token.document.actorLink = true;
+            token.document.actorId = actor.id;
             await callback();
         } finally {
-            token._actor = originalActor;
+            token.document._actor = originalActor;
+            token.document.actorLink = originalLink;
+            token.document.actorId = originalActorId;
         }
     }
 
@@ -621,12 +627,15 @@ class Beyond20 {
     static async rollItems(request) {
         const item = this.createItemData(request);
         const actor = await this.getUpdatedActor(request, [item]);
+        const token = this.findToken(request);
         const actorItem = actor.items.find(i => i.type === item.type && i.name === item.name);
 
         const rollMode = request.whisper === 0 ? "roll" : "gmroll";
         
         const roll = ['attack', 'spell-attack'].includes(request.type);
-        actorItem[roll ? 'use' : 'displayCard']({configureDialog: false, rollMode, createMessage: true});
+        this.callOnToken(actor, token, () => {
+            actorItem[roll ? 'use' : 'displayCard']({configureDialog: false, rollMode, createMessage: true});
+        });
         return true;
     }
 
