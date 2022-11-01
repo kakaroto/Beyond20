@@ -2095,7 +2095,7 @@ function injectRollButton(paneClass) {
         let exhaustion_level = $(".ct-condition-manage-pane__condition--special .ct-number-bar__option--active,.ct-condition-manage-pane__condition--special .ddbc-number-bar__option--active").text();
         const conditions = [];
         for (let cond of j_conditions.toArray()) {
-            var condition_name = $(cond).find(".ct-condition-manage-pane__condition-name").text();
+            const condition_name = $(cond).find(".ct-condition-manage-pane__condition-name").text();
             conditions.push(condition_name);
         }
         if (exhaustion_level == "")
