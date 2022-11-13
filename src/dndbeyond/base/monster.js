@@ -635,6 +635,8 @@ class Monster extends CharacterBase {
                 // Usually <em><strong> || <strong><em> (Orcus is <span><em><strong>);
                 let action_name = $(firstChild).find("> :first-child").text().trim() || $(firstChild).text().trim();
                 if (!action_name) continue;
+                // Replace non-breaking space character with regular space so it can match the description
+                action_name = action_name.replace(/ /g, " ");
                 if (this.isBlockFinder && this.type() === "Vehicle") {
                     // Vehicles in source books will use data blocks just like any of the tidbits
                     // need to manually filter them out
