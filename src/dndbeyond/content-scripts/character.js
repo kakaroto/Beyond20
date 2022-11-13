@@ -2094,8 +2094,10 @@ function injectRollButton(paneClass) {
         const j_conditions = $(".ct-condition-manage-pane .ct-toggle-field--enabled,.ct-condition-manage-pane .ddbc-toggle-field--is-enabled").closest(".ct-condition-manage-pane__condition");
         let exhaustion_level = $(".ct-condition-manage-pane__condition--special .ct-number-bar__option--active,.ct-condition-manage-pane__condition--special .ddbc-number-bar__option--active").text();
         const conditions = [];
-        for (let cond of j_conditions.toArray())
-            conditions.push(cond.textContent);
+        for (let cond of j_conditions.toArray()) {
+            const condition_name = $(cond).find(".ct-condition-manage-pane__condition-name").text();
+            conditions.push(condition_name);
+        }
         if (exhaustion_level == "")
             exhaustion_level = 0;
         else
