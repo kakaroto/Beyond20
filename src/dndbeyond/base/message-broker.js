@@ -7,7 +7,7 @@ class DDBMessageBroker {
         this._hooks = {};
         this._characterId = (window.location.pathname.match(/\/characters\/([0-9]+)/) || [])[1];
         this.saveMessages = false;
-        this._debug = false;
+        this._debug = true;
     }
     uuid() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -139,7 +139,12 @@ class DDBMessageBroker {
             data.gameId = data.gameId || this._mb.gameId;
         }
         data.userId = data.userId || this._mb.userId;
-        this._mb.dispatch(data);
+        this._mb.dispatch(this._cleanupPostData(data));
+    }
+    _cleanupPostData(data) {
+        // Beyond20 requests will have character's class features and `Thieves' Cant` or `Hexblade's Curse`
+        // uses a non-ascii character (’) which gets corrupted when sent over the message broker
+        return JSON.parse(JSON.stringify(data).replace(/’/g, "'"))
     }
     flush() {
         this._messageQueue.length = 0;
