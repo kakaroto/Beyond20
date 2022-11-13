@@ -774,7 +774,7 @@ Hooks.on('beyond20Request', (action, request) => Beyond20.handleBeyond20Request(
 Hooks.on("renderChatMessage", (message, html, data) => Beyond20.handleChatMessage(message, html, data));
 
 Hooks.on('init', function () {
-    const foundryVersion = game.data.version || game.version;
+    const foundryVersion = game.version || game.data.version;
     game.settings.register("beyond20", "notifyAtLoad", {
         name: "Notify player to activate Beyond20",
         hint: "Beyond20 extension doesn't load automatically for Foundry unless permission is granted. The module can show a notification to remind the player to activate it for the current tab.",
@@ -822,19 +822,20 @@ Hooks.on('init', function () {
         type: Beyond20CreateNativeActorsApplication,   // A FormApplication subclass which should be created
         restricted: true
     });
-    // Disable native rolls if Foundry is pre v10
-    if (game.settings.get("beyond20", "nativeRolls") && !isNewerVersion(foundryVersion, "10")) {
-        ui.notifications.warn(`Disabled Beyond20 native rolls feature as it is incompatible with Foundry VTT v${foundryVersion}. Please upgrade to version 10 or newer.`);
-        game.settings.set("beyond20", "nativeRolls", false);
-    }
 });
 
 Hooks.on('ready', function () {
+    const foundryVersion = game.version || game.data.version;
     if (game.settings.get("beyond20", "nativeRolls")  && !Actor.canUserCreate(game.user)) {
         if (!Beyond20.getMyActor()) {
             ui.notifications.warn(`Cannot enable Beyond20 native rolls because native actor doesn't exist. Please ask your GM to create the actors from the Beyond20 module settings.`, {permanent: true});
             game.settings.set("beyond20", "nativeRolls", false);
         }
+    }
+    // Disable native rolls if Foundry is pre v10
+    if (game.settings.get("beyond20", "nativeRolls") && !isNewerVersion(foundryVersion, "10")) {
+        ui.notifications.warn(`Disabled Beyond20 native rolls feature as it is incompatible with Foundry VTT v${foundryVersion}. Please upgrade to version 10 or newer.`, {permanent: true});
+        game.settings.set("beyond20", "nativeRolls", false);
     }
     if (game.settings.get("beyond20", "notifyAtLoad") && !game.beyond20) {
         dialog = new Dialog({
