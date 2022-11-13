@@ -266,6 +266,9 @@ function onMessage(request, sender, sendResponse) {
         chrome.tabs.sendMessage(request.tab, request.message, {frameId: 0}, sendResponse)
         return true
     }
+    // Due to MV3 issues and a bug in chrome 99-101, apparently we need to always call sendResponse 
+    // to prevent the socket from being closed
+    sendResponse();
     return false
 }
 
