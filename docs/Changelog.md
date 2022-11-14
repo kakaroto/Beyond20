@@ -1,3 +1,42 @@
+v2.8.0 (November 13th 2022)
+===
+
+* **Feature**: Add advanced option to export and import your Beyond20 settings to/from file
+* **Feature**: Add new option on toggle hotkeys, allowing to permanently toggle options using hotkeys
+* **Feature**: Add ability to parse roll tables in Item pages, Spell pages, etc...
+* **Feature**: Add support for parsing dice, roll tables, read-aloud, etc.. in Races pages
+* **Feature**: Add support for new DDB type of statblocks, appearing in new source books (Spelljammer creatures)
+* **Feature**: Add option to allow display of attack description when sending to Discord
+* **Feature**: Add support for the new "Read Aloud" formatting D&D Beyond used in Lost Mine of Phandelver (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add support for Death Cleric: Circle of Mortality (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add special handling for Dragon Wing ranged weapon damages and the Flail of Tiamat, and allow setting a note to specify which damage to use (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Save the last user selection of damage queries to default to the same damage type
+* **Feature**: Ensure that all queries for advantage are done on the DDB side, rather than in the VTT
+* **Feature**: Send the list of monster actions in the Beyond20 requests in case the VTT needs to know that information
+* **Feature**: *Roll20*: Add new option to allow display of a spell's details during attacks (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix character parsing not working when accessing a character from the "My Characters" page due to a change in how DDB changes sites
+* **Bugfix**: Fix any hotkey modifier (for whisper/advantage/etc...) being forgotten if a user query is open during a roll (such as damage type for Chromatic Orb)
+* **Bugfix**: Fix the displayed total in Digital Dice notification to the non-discarded roll in case of advantage/disadvantage
+* **Bugfix**: Parse dice formulas in multi-paragraph monster actions (Gelatinous Cube's "Engulf", or a Beholder's "Eye Rays" for example)
+* **Bugfix**: Correctly show individual roll results in the Digital Dice notification when multiple dice are rolled
+* **Bugfix**: Do not apply the Paladin's Aura of Protection on Death Saves since the character is unconscious (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Do not apply Otherwordly Glamour to Charisma saves (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Fix Great Weapon Fighting not being applied to brutal critical damage dice when using the Polearm Master bonus attack (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Clean up formula parsing, which fixes among other things, some errors showing on Foundry VTT v10
+* **Bugfix**: Fix a leftover quickroll tooltip when rolling a saving throw from the sidebar
+* **Bugfix**: *FVTT module v1.5.1*: Fix NPC hp formula when using a Native Rolls actor
+* **Bugfix**: *FVTT module v1.5.1*: Port Native Rolls to require Foundry v10 and remove deprecation warnings
+* **Bugfix**: *FVTT module v1.5.1*: Fix support for automated animations with Native Rolls
+* **Bugfix**: *FVTT module v1.5.1*: Fix incorrect proficiency value being set on non-standard items when using Native Rolls
+* **Bugfix**: Remove possibility of a message broker error when sending Beyond20 requests through the Game Log
+* **Bugfix**: Fix issue not recognizing some monster actions when a non-breaking space is included in the action name
+* **Bugfix**: Fix the Restrained condition appearing as "RRestrained" due to the "R" in the svg icon (by [@IsaacAbramowitz](https://github.com/IsaacAbramowitz))
+* **Misc**: Remove support for Astral VTT as the site is now closed permanently
+* **Misc**: Add harpy.gg as a recognized VTT which added native support for Beyond20
+* **Misc**: Add alchemyrpg.com as a recognized VTT site (with plans to add native support for Beyond20)
+
+
+
 v2.7.0 (June 18th 2022)
 ===
 

@@ -1,4 +1,25 @@
-2.7.0
+v2.8.0 (November 13th 2022)
+===
+
+Hi everyone,
+
+It's been a long time since our last Beyond20 update, and it's a testament to how stable and 'perfect' your favorite chrome extension is! Ok, nothing is perfect 😁 but we've had very little activity in our issue tracker in recent months and things just seem to be working. I've been thinking a lot about the future of Beyond20, whether it's good as it is and to not change a working formula, or if it'd be worth it to expand our mission and add some new features that diverge from its core principle. The exciting thing about a new set of features will be a more active development again and more frequent releases. I'll let you know what gets decided.
+
+This long-awaited release adds quite a few small quality of life features, expanding on what we have already, and fixing a few rare bugs that were discovered. Among the most pressing though is a couple of changes to how D&D Beyond website works, especially with regards to accessing a character sheet from the "My Characters" page, which has stopped working recently. We also added support to the new "Read Aloud" text in LMoP adventure, and the new statblocks used in Spelljammer.
+
+Most of the bugfixes were for rare use cases, though some significant work went into adding Foundry V10 support, as well as dramatically improving the support for the "Native Rolls" feature in Foundry VTT (requires v10) with our most recent FVTT module update (1.5.x).
+
+This release adds quite a few features and bugfixes, so please refer to the [Changelog](/Changelog#v280) for the full details of the changes.
+
+One item that doesn't appear in the Changelog but which we worked on as well is the Chrome extension Manifest V3 support. One of the challenges we've had to face unfortunately is the forced upgrade by the Chrome store from Manifest V2 to their Manifest V3 for Chrome extensions. While we did the upgrade and it mostly worked, there were some issues with it that we couldn't fix reliably, and after delaying this release for too long, we decided to downgrade back to Manifest V2 for now so we don't release a version that may be unreliable to our users.
+The Chrome decision to force extensions to move to their new MV3 design (by June 2023) is a very controversial one and has been a headache for many developers. We'll take the time in the next few months to ensure the upgrade is smooth and doesn't introduce any new issues in how Beyond20 functions, and we'll hopefully release MV3 support in the next release, without affecting any of our features.
+
+As usual, thank you to all contributors, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters, who are making this possible. 
+
+Finally, while it may be a bit too early for it, I want to wish everyone happy holidays and happy new year!
+Keep rolling! 😄
+
+2.7.0 (June 18th 2022)
 ===
 
 Hi all, it's time for a Beyond20 update!
