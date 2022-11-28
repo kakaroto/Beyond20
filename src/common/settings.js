@@ -761,6 +761,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "motm-aasimar-radiant-soul": {
+        "title": "Aasimar: Celestial Revelation: Radiant Soul",
+        "description": "Unleash your divine soul to deal extra radiant damage equal to your proficiency.",
+        "type": "bool",
+        "default": false
+    },
     "halfling-lucky": {
         "title": "Halfling: Lucky",
         "description": "The luck of your people guides your steps",

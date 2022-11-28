@@ -464,9 +464,16 @@ function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, set
 function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {to_hit, action_name, item_name, spell_name, spell_level}={}) {
     // Racial Traits
     //Protector Aasimar: Radiant Soul Damage
-    if ((character.hasRacialTrait("Radiant Soul") || character.hasRacialTrait("Celestial Revelation: Radiant Soul")) &&
+    if (character.hasRacialTrait("Radiant Soul") &&
         character.getSetting("protector-aasimar-radiant-soul", false)) {
         damages.push(character._level);
+        damage_types.push("Radiant Soul");
+    }
+
+    // MotM Aasimar: Radiant Soul Damage
+    if (character.hasRacialTrait("Celestial Revelation: Radiant Soul") &&
+        character.getSetting("motm-aasimar-radiant-soul", false)) {
+        damages.push(character._proficiency);
         damage_types.push("Radiant Soul");
     }
 
