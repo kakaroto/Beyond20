@@ -116,6 +116,10 @@ function populateCharacter(response) {
             e = createHTMLOption("halfling-lucky", false, character_settings);
             options.append(e);
         }
+        if (response["racial-traits"].includes("Large Form")) {
+            e = createHTMLOption("goliath-large-form", false, character_settings);
+            options.append(e);
+        }
         if (response["class-features"].includes("Brutal Critical") ||
             response["racial-traits"].includes("Savage Attacks")) {
             e = createHTMLOption("brutal-critical", false, character_settings);

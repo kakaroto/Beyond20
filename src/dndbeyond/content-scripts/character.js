@@ -89,7 +89,8 @@ async function rollSkillCheck(paneClass) {
     }
     if (ability == "STR" &&
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
+            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)) ||
+            (character.hasRacialTrait("Large Form") && character.getSetting("goliath-large-form", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
     if (skill_name == "Acrobatics" && character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false)) {
@@ -236,7 +237,8 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
 
     if (ability == "STR" &&
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
+            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)) ||
+            (character.hasRacialTrait("Large Form") && character.getSetting("goliath-large-form", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
     }
     if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
@@ -1029,7 +1031,8 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                 }
                 if (ability == "STR" &&
                     ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-                        (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
+                        (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)) ||
+                        (character.hasRacialTrait("Large Form") && character.getSetting("goliath-large-form", false)))) {
                     roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
                 }
                 roll_properties.d20 = "1d20";

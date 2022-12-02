@@ -773,6 +773,12 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
+    "goliath-large-form": {
+        "title": "Goliath: Large Form",
+        "description": "As a Bonus Action, you change your Size to Large, provided you’re in a big enough space. This transformation lasts for 10 minutes or until you end it as a Bonus Action. During that duration, you have Advantage on Strength Checks, and your Speed increases by 10 feet. Once you use this trait, you can’t use it again until you finish a Long Rest.",
+        "type": "bool",
+        "default": false
+    },
     "discord-target": {
         "title": "Discord Destination",
         "description": "Send rolls to a character specific Discord channel",
