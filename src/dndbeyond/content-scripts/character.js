@@ -470,6 +470,13 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
         damage_types.push("Radiant Soul");
     }
 
+    // MotM Aasimar: Radiant Soul Damage
+    if (character.hasRacialTrait("Celestial Revelation: Radiant Soul") &&
+        character.getSetting("motm-aasimar-radiant-soul", false)) {
+        damages.push(character._proficiency);
+        damage_types.push("Radiant Soul");
+    }
+
     // Class Specific
     if (character.hasClass("Cleric")) {
         // Cleric: Blessed Strikes

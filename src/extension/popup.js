@@ -210,6 +210,10 @@ function populateCharacter(response) {
             e = createHTMLOption("protector-aasimar-radiant-soul", false, character_settings);
             options.append(e);
         }
+        if (response["racial-traits"].includes("Celestial Revelation: Radiant Soul")) {
+            e = createHTMLOption("motm-aasimar-radiant-soul", false, character_settings);
+            options.append(e);
+        }
         if (response["class-features"].includes("Bladesong")) {
             e = createHTMLOption("wizard-bladesong", false, character_settings);
             options.append(e);
