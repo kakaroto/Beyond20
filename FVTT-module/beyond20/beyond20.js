@@ -363,14 +363,9 @@ class Beyond20 {
         if (request.damages) {
             const damages = [];
             for (let i = 0; i < request.damages.length; i++) {
-                let damage = request.damages[i];
                 let type = (request['damage-types'][i] || "").trim();
                 // Add damage type in the flavor text for each damage
-                if (/^[0-9]+d[0-9]+$/.test(damage.trim())) {
-                    damage = `${damage}[${type}]`;
-                } else {
-                    damage = `{${damage}}[${type}]`;
-                }
+                const damage = `(${request.damages[i]})[${type}]`;
                 if (CONFIG.DND5E.damageTypes[type.toLowerCase()]) {
                     type = type.toLowerCase();
                 } else {
