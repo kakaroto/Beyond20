@@ -183,13 +183,6 @@ async function rollSkillCheck(paneClass) {
         roll_properties.modifier += character._proficiency;
     }
 
-    // Fey Wanderer Ranger - Otherworldly Glamour
-    if (character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
-        modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
-        modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-        roll_properties["modifier"] = modifier;
-    }
-
     return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 
