@@ -4,7 +4,8 @@ const key_modifiers = {
     disadvantage: false,
     super_advantage: false,
     super_disadvantage: false,
-    normal_roll: false
+    normal_roll: false,
+    display: false
 };
 const MAX_QUEUED_HOTKEY_EVENTS = 1000;
 const savedKeyEvents = [];

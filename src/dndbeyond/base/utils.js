@@ -307,7 +307,8 @@ async function sendRoll(character, rollType, fallback, args) {
         type: rollType,
         roll: cleanRoll(fallback),
         advantage: advantage,
-        whisper: whisper
+        whisper: whisper,
+        display: key_modifiers["display"]
     }
     for (let key in args)
         req[key] = args[key];

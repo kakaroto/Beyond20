@@ -1414,7 +1414,8 @@ let key_bindings = {
     ControlLeft: "disadvantage",
     ShiftRight: "super_advantage",
     ControlRight: "super_disadvantage",
-    AltLeft: "normal_roll"
+    AltLeft: "normal_roll",
+    D: "display"
 };
 try {
     // Mac OS X uses Command instead of Control, since Control+click = right click because mac mice have 1 button...
@@ -1441,6 +1442,7 @@ const BINDING_NAMES = {
     versatile_two_handed: "Use Versatile Weapon Two-handed",
     custom_modifier: "Custom Modifier",
     custom_damage: "Custom Damage",
+    display: "Display"
 }
 
 function configureHotKey(bindings, bindings_div, html, key) {

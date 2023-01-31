@@ -797,7 +797,7 @@ class Beyond20RollRenderer {
             return this.rollHitDice(request);
         } else if (request.type == "item") {
             return this.rollItem(request);
-        } else if (["feature", "trait", "action"].includes(request.type)) {
+        } else if (["feature", "trait", "action"].includes(request.type) || request.display) {
             return this.rollTrait(request);
         } else if (request.type == "death-save") {
             return this.rollDeathSave(request, custom_roll_dice);
