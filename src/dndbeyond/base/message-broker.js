@@ -7,7 +7,7 @@ class DDBMessageBroker {
         this._hooks = {};
         this._characterId = (window.location.pathname.match(/\/characters\/([0-9]+)/) || [])[1];
         this.saveMessages = false;
-        this._debug = true;
+        this._debug = false;
     }
     uuid() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
