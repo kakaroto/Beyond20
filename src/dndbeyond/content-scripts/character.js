@@ -772,6 +772,9 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
     if (is_infused.length > 0)
         properties["Infused"] = true;
     let is_versatile = false;
+    if (key_modifiers["display_attack"]) {
+        force_display = true;
+    }
     if (!force_display && Object.keys(properties).includes("Damage")) {
         const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
         let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
@@ -1072,6 +1075,9 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
 }
 
 async function rollAction(paneClass, force_to_hit_only = false, force_damages_only = false) {
+    if (key_modifiers["display_attack"]) {
+        return displayAction(paneClass);
+    }
     const properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property,." + paneClass + " .ddbc-property-list .ddbc-property-list__property"));
     //console.log("Properties are : " + String(properties));
     const action_name = $(".ct-sidebar__heading").text();
@@ -1482,6 +1488,9 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
     if (to_hit === null)
         to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit");
 
+    if (key_modifiers["display_attack"]) {
+        force_display = true;
+    }
     if (!force_display && (damage_modifiers.length > 0 || healing_modifiers.length > 0 || temp_hp_modifiers.length > 0 || to_hit !== null || properties["Attack/Save"] !== undefined)) {
         const damages = [];
         let damage_types = [];

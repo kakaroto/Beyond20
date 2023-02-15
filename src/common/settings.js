@@ -1441,6 +1441,7 @@ const BINDING_NAMES = {
     versatile_two_handed: "Use Versatile Weapon Two-handed",
     custom_modifier: "Custom Modifier",
     custom_damage: "Custom Damage",
+    display_attack: "Display instead of rolling an Attack"
 }
 
 function configureHotKey(bindings, bindings_div, html, key) {
