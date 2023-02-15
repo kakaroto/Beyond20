@@ -388,3 +388,7 @@ span.dice-roll.beyond20-tooltip-content {
     white-space: normal;
     word-wrap: break-word;
 }
+
+.ct-beyond20-icon {
+    vertical-align: middle;
+}
