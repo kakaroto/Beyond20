@@ -1,6 +1,9 @@
 var settings = null;
 var extension_url = "/modules/beyond20/";
 var fvttVersion = game.version || game.data?.version;
+// v10 uses .document for Placeables (tokens), or the Base object itself, instead of .data field
+// We use the new fields to avoid spamming the log with deprecation warnings
+const docData = (doc) => isNewerVersion(fvttVersion, "10") ? doc.document || doc : doc.data;
 
 class FVTTDisplayer {
     postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
@@ -163,7 +166,7 @@ class FVTTDisplayer {
         if (name === null)
             return ChatMessage.getSpeaker();
         const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
-        const actor = actors.find((actor) => actor.data.name.toLowerCase() == name.toLowerCase());
+        const actor = actors.find((actor) => docData(actor).name.toLowerCase() == name.toLowerCase());
         const speaker = ChatMessage.getSpeaker({ actor });
         speaker.alias = name;
         return speaker;
@@ -363,16 +366,16 @@ async function addInitiativeToCombat(roll) {
                     combatant = game.combat.getCombatantByToken(token.id);
                     if (isNewerVersion(fvttVersion, "9")) {
                         if (combatant) {
-                            await game.combat.updateEmbeddedDocuments("Combatant", [{ "_id": combatant.data._id, "initiative": roll.total }]);
+                            await game.combat.updateEmbeddedDocuments("Combatant", [{ "_id": docData(combatant)._id, "initiative": roll.total }]);
                         } else {
-                            await game.combat.createEmbeddedDocuments("Combatant", [{ "tokenId": token.id, "hidden": token.data.hidden, "initiative": roll.total }]);
+                            await game.combat.createEmbeddedDocuments("Combatant", [{ "tokenId": token.id, "hidden": docData(token).hidden, "initiative": roll.total }]);
                         }
                     } else {
                         if (combatant) {
                             idField = combatant._id ? "_id" : "id";
                             await game.combat.updateCombatant({ [idField]: combatant[idField], "initiative": roll.total });
                         } else {
-                            await game.combat.createCombatant({ "tokenId": token.id, "hidden": token.data.hidden, "initiative": roll.total });
+                            await game.combat.createCombatant({ "tokenId": token.id, "hidden": docData(token).hidden, "initiative": roll.total });
                         }
                     }
                 }
@@ -424,22 +427,32 @@ function updateHP(name, current, total, temp) {
 
     const tokens = canvas.tokens.placeables.filter((t) => (t.owner || t.isOwner) && t.name.toLowerCase().trim() == name);
 
-    const dnd5e_data = { "data.attributes.hp.value": current, "data.attributes.hp.temp": temp, "data.attributes.hp.max": total }
-    const sws_data = { "data.health.value": current + temp, "data.health.max": total }
+    const prefix = isNewerVersion(fvttVersion, "10") ? "system": "data";
+    const dnd5e_data = {
+        [`${prefix}.attributes.hp.value`]: current,
+        [`${prefix}.attributes.hp.temp`]: temp,
+        [`${prefix}.attributes.hp.max`]: total
+    }
+    const sws_data = {
+        [`${prefix}.health.value`]: current + temp,
+        [`${prefix}.health.max`]: total
+    }
     if (tokens.length == 0) {
         const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
         const actor = actors.find((a) => (a.owner || a.isOwner) && a.name.toLowerCase().trim() == name);
-        if (actor && getProperty(actor.data, "data.attributes.hp") !== undefined) {
+        const systemData = isNewerVersion(fvttVersion, "10") ? actor?.system : actor?.data?.data;
+        if (actor && getProperty(systemData, "attributes.hp") !== undefined) {
             actor.update(dnd5e_data);
-        } else if (actor && getProperty(actor.data, "data.health") !== undefined) {
+        } else if (actor && getProperty(systemData, "health") !== undefined) {
             actor.update(sws_data);
         }
     }
 
     for (let token of tokens) {
-        if (token.actor && getProperty(token.actor.data, "data.attributes.hp") !== undefined) {
+        const systemData = isNewerVersion(fvttVersion, "10") ? token.actor?.system : token.actor?.data?.data;
+        if (token.actor && getProperty(systemData, "attributes.hp") !== undefined) {
             token.actor.update(dnd5e_data);
-        } else if (token.actor && getProperty(token.actor.data, "data.health") !== undefined) {
+        } else if (token.actor && getProperty(systemData, "health") !== undefined) {
             token.actor.update(sws_data);
         }
     }
@@ -462,23 +475,23 @@ function updateConditions(request, name, conditions, exhaustion) {
 
     // Check for the beyond20 module, if (it's there, we can use its status effects.;
     const module = game.modules.get("beyond20");
-    if (module && isNewerVersion(module.data.version, "0.6")) {
+    if (module && isNewerVersion(module.version || module.data.version, "0.6")) {
         // Update status effects;
         name = name.toLowerCase().trim();
 
-        const tokens = canvas.tokens.placeables.filter((t) => t.data.name.toLowerCase().trim() === name);
+        const tokens = canvas.tokens.placeables.filter((t) => docData(t).name.toLowerCase().trim() === name);
         // look for an actor with the character name and search for a linked token to that actor
         const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
         const actor = actors.find((a) => (a.owner || a.isOwner) && a.name.toLowerCase().trim() === name);
         if (actor) {
             const linkedTokens = canvas.tokens.placeables.filter((t) => t.actor && t.actor.id === actor.id);
             // Only add linked tokens that do not name match to avoid duplicate operations
-            tokens.push(...linkedTokens.filter((t) => t.data.name.toLowerCase().trim() !== name));
+            tokens.push(...linkedTokens.filter((t) => docData(t).name.toLowerCase().trim() !== name));
         }
 
         const updates = [];
         for (let token of tokens) {
-            const effects = token.data.effects;
+            const effects = docData(token).effects;
             let new_effects = [];
 
             let new_conditions = conditions.map((c) => c.toLowerCase() + ".svg");
@@ -505,7 +518,7 @@ function updateConditions(request, name, conditions, exhaustion) {
             }
             console.log("From ", effects, "to ", new_effects, " still need to add ", new_conditions);
             new_effects = new_effects.concat(new_conditions.map((c) => "modules/beyond20/conditions/" + c));
-            const data = { "_id": token.data._id, "effects": new_effects };
+            const data = { "_id": docData(token)._id, "effects": new_effects };
             if (defeated) {
                 data["overlayEffect"] = "icons/svg/skull.svg";
             }
