@@ -10,7 +10,8 @@
 		"*://beyond20.kicks-ass.org/roll",
 		"*://app.roll20.net/editor/",
 		"*://*.dndbeyond.com/*",
-		"*://*.forge-vtt.com/game"
+		"*://*.forge-vtt.com/game",
+		"*://*.osrbeyond.com/*"
 	],
     "optional_permissions": ["*://*/"],
 	"icons": {
