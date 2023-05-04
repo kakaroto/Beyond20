@@ -36,7 +36,7 @@ function updateSettings(new_settings = null) {
 }
 chrome.runtime.onMessage.addListener(handleMessage);
 
-function sendRollToGameLog(message) {
+function sendMessageToBeyond20(message) {
     console.log(message)
     chrome.runtime.sendMessage(message)
 }
@@ -62,7 +62,7 @@ function handleIncomingSettings({ character, action, type} = {}) {
 }
 
 var registered_events = [];
-registered_events.push(addCustomEventListener("rendered-roll", sendRollToGameLog));
+registered_events.push(addCustomEventListener("send-message", sendMessageToBeyond20));
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
 registered_events.push(addCustomEventListener("settings", handleIncomingSettings));
 
