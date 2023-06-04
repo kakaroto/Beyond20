@@ -31,7 +31,7 @@ function updateSettings(new_settings = null) {
         sendCustomEvent("UpdateSettings", [settings]);
     } else {
         getStoredSettings((saved_settings) => {
-            sendCustomEvent("Loaded", []);
+            sendCustomEvent("Loaded", [saved_settings]);
             updateSettings(saved_settings);
         });
     }
@@ -70,5 +70,3 @@ registered_events.push(addCustomEventListener("settings", handleIncomingSettings
 
 updateSettings();
 chrome.runtime.sendMessage({ "action": "register-generic-tab" });
-
-sendCustomEvent("Beyond20_Loaded", {details: [settings]});
