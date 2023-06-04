@@ -2,6 +2,7 @@ const site = window.location.hostname;
 console.log("Beyond20: Custom Domain module loaded:", site);
 
 var settings = getDefaultSettings();
+var characterInternal = null;
 function handleMessage(request, sender, sendResponse) {
     console.log("Received Beyond20 message : ", request);
     if (request.action == "settings") {
@@ -36,5 +37,38 @@ function updateSettings(new_settings = null) {
     }
 }
 chrome.runtime.onMessage.addListener(handleMessage);
+
+function sendMessageToBeyond20(message) {
+    console.log(message)
+    chrome.runtime.sendMessage(message)
+}
+
+function disconnectAllEvents() {
+    registered_events.forEach((event) => {
+        event.disconnect();
+    })
+}
+
+function handleIncomingSettings({ character, action, type} = {}) {
+    characterInternal = character;
+    chrome.runtime.sendMessage({
+        action: "hp-update",
+        character
+    })
+    chrome.runtime.sendMessage({
+        action: "settings",
+        type: "character",
+        settings: character.settings,
+        id: character.id
+    })
+}
+
+var registered_events = [];
+registered_events.push(addCustomEventListener("send-message", sendMessageToBeyond20));
+registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
+registered_events.push(addCustomEventListener("settings", handleIncomingSettings));
+
 updateSettings();
 chrome.runtime.sendMessage({ "action": "register-generic-tab" });
+
+sendCustomEvent("Beyond20_Loaded", {details: [settings]});
