@@ -214,7 +214,7 @@ function onMessage(request, sender, sendResponse) {
         }
         const trackFailure = { "roll20": null, "fvtt": null, "custom": null }
         if (settings["vtt-tab"] && settings["vtt-tab"].vtt === "dndbeyond") {
-            sendResponse({ "success": false, "vtt": "dndbeyond", "error": null, "request": request })
+            sendResponse({ "success": false, "vtt": ["dndbeyond"], "error": null, "request": request })
         } else {
             sendMessageToRoll20(request, settings["vtt-tab"], makeFailureCB(trackFailure, "roll20", sendResponse))
             sendMessageToFVTT(request, settings["vtt-tab"], makeFailureCB(trackFailure, "fvtt", sendResponse))

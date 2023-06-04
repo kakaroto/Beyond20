@@ -645,7 +645,7 @@ function beyond20SendMessageFailure(character, response) {
     if (!response || (response.request && response.request.action === "update-combat"))
         return;
     console.log("Received response : ", response);
-    if (["roll", "rendered-roll"].includes(response.request.action)  && (response.vtt == "dndbeyond" || response.error)) {
+    if (["roll", "rendered-roll"].includes(response.request.action)  && (response.vtt[0] == "dndbeyond" || response.error)) {
         dndbeyondDiceRoller.handleRollError(response.request, response.error);
     } else if (response.error) {
         alertify.error("<strong>Beyond 20 : </strong>" + response.error);
