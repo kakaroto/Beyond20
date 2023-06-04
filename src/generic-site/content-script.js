@@ -1,4 +1,5 @@
-console.log("Beyond20: Custom Domain module loaded.");
+const site = window.location.hostname;
+console.log("Beyond20: Custom Domain module loaded:", site);
 
 var settings = getDefaultSettings();
 function handleMessage(request, sender, sendResponse) {
@@ -29,6 +30,7 @@ function updateSettings(new_settings = null) {
         sendCustomEvent("UpdateSettings", [settings]);
     } else {
         getStoredSettings((saved_settings) => {
+            sendCustomEvent("Loaded", []);
             updateSettings(saved_settings);
         });
     }
