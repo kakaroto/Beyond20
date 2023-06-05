@@ -39,7 +39,15 @@ function updateSettings(new_settings = null) {
 chrome.runtime.onMessage.addListener(handleMessage);
 
 function sendMessageToBeyond20(message) {
-    console.log(message)
+    if (!message || !message.action) {
+        console.error("Beyond20: Invalid message received: ", message);
+        return;
+    }
+    // Check for allowed actions only
+    if (!["roll", "rendered-roll", "hp-update", "conditions-update", "update-combat"].includes(message.action)) {
+        console.error("Beyond20: Invalid action received: ", message.action);
+        return;
+    }
     chrome.runtime.sendMessage(message)
 }
 
@@ -64,9 +72,9 @@ function handleIncomingSettings({ character, action, type} = {}) {
 }
 
 var registered_events = [];
-registered_events.push(addCustomEventListener("send-message", sendMessageToBeyond20));
+registered_events.push(addCustomEventListener("SendMessage", sendMessageToBeyond20));
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
-registered_events.push(addCustomEventListener("settings", handleIncomingSettings));
+//registered_events.push(addCustomEventListener("settings", handleIncomingSettings));
 
 updateSettings();
 chrome.runtime.sendMessage({ "action": "register-generic-tab" });
