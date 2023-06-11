@@ -512,13 +512,133 @@ When a message is sent which is meant to be dispatched to all VTTs, the sender w
 The `vtt` field is either `null` (in case of error) or an array of strings. The possible string values are: `roll20`, `fvtt`, `custom` and `dndbeyond`.
 It is possible to have a `success: false` even without an error. That can happen in the case of user configuration which tells Beyond20 not to send to any VTT. In that case, the `vtt` array will contain `dndbeyond` to instruct the DDB page to render the roll in its own page. 
 
-#### Beyond20 Character Format
-> TODO: Describe the following structure
 #### Whisper Type Format
-> TODO: Describe the following structure
+The whisper type is an enum, a `<number>` value which can take the following values:
+
+- `0`: Don't whisper the roll
+- `1`: Whisper the roll
+- `2`: Query the user for what type of roll to make
+- `3`: Don't whisper the roll but hide all revealing information (character name, attack name and description)
+
+
 #### Roll Type Format
-> TODO: Describe the following structure
+The roll type is an enum, a `<number>` value which can take the following values:
+
+- `0`: Normal roll
+- `1`: Roll twice any d20 rolls and display both
+- `2`: Query the user for what type of roll to make
+- `3`: Roll with advantage (roll twice and keep the highest)
+- `4`: Roll with disadvantage (roll twice and keep the lowest)
+- `5`: Roll 3 times any d20 rolls and display all 3 results
+- `6`: Roll with super advantage (roll 3 times and keep the highest)
+- `7`: Roll with super disadvantage (roll 3 times and keep the lowest)
+
+Internally, Beyond20 also uses the following values, though they should never appear in the messaging API as those would get replaced before being sent out:
+- `8`: Roll with advantage (override user choice due to a special feat or skill)
+- `9`: Roll with disadvantage (override user choice due to a special feat or skill)
+
+#### Beyond20 Character Format
+A Character object will represent the character sheet from which the rolls are being made.
+It must have the following fields in it:
+- `name`: The character name
+- `type`: The type of character
+- `url`: The URL to that character's sheet
+- `avatar`: (Optional) URL to the character's avatar
+Additional fields are also added for character and monster types.
+
+The type can be anything, such as a "spell" or a "feat" or an "item", etc... A `spell` character means that the rolls are being made from a D&D Beyond standalone spell page rather than the spell being rolled from a monster or character's sheet.
+
+Though the `type` can be any string to represent the type of sheet sending the roll requests, here are the ones used in Beyond20:
+- `spell`: A spell page
+- `item`: An item's page
+- `source`: A source book
+- `feat`: A feat page
+- `Character`: A PC character sheet
+- `Monster`: A monster's stat block
+- `Vehicle`: A vehicle's stat block
+- `Creature`: A creature's stat block. A creature is any monster/npc added to a PC's character sheet under the Extra tab
+- `Extra-Vehicle`: A vehicle's stat block from a character's Extra tab
+
+##### Character character fields
+The following fields are also included in the Character object for a character of type `Character`:
+```js
+{
+    "id",               // <string> The character sheet ID.
+    "abilities",        // <Array<Ability>> Array containing the abilities scores of the character
+    "classes",          // <Object<string:string>> An object where each key is a class the character has and the value is the level of that character in that class
+    "level",            // <string> The total level of the character
+    "race",             // <string> The character's race
+    "ac",               // <string> The character's AC
+    "proficiency",      // <string> The character's proficiency modifier
+    "speed",            // <number> The character's speed
+    "hp",               // <number> The character's current HP
+    "max-hp",           // <number> The character's maximum HP
+    "temp-hp":          // <number> The character's Temp HP
+    "exhaustion",       // <number> The exhaustion level of the character
+    "conditions",       // <Array<string>> Array of strings containing the conditions the character is suffering from
+    "class-features",   // <Array<string>> Array of strings containing the class features of the character
+    "racial-traits",    // <Array<string>> Array of strings containing the racial traits of the character
+    "feats",            // <Array<string>> Array of strings containing the feats of the character
+    "actions",          // <Array<string>> Array of strings containing the actions available to the character
+    "spell_modifiers",  // <Object<string:string>> An object where each key is a class the character has and the value is the spell modifier of that character in that class
+    "spell_saves",      // <Object<string:string>> An object where each key is a class the character has and the value is the Spell save DC of that character in that class
+    "spell_attacks",    // <Object<string:string>> An object where each key is a class the character has and the value is the Spell attack modifer of that character in that class
+    "settings",         // <Object> The character's settings
+    "discord-target"    // <string> (Optional) The discord target to send the rolls to
+}
+```
+
+
+The `saves` field is an object where each key is the saving throw's ability (in its abbreviated form, as it appears in the stat block) and the value is the saving throw's modifier.
+The `skills` field is an object where each key is the name of a skill check and the value is its modifier.
+The `discord-target` can be used to hold the first 12 character's a discord server's secret ID and is used to force the roll renderer to choose a specific discord target channel for the rolls from this character.
+The `settings` field is important as it will contain the character specific settings. While most of the settings will have been consumed in order to build a roll (like whether to include sneak attack damage or other similar feats), it's worth paying attention to the `settings.custom-roll-dice` field setting which will indicate a customer modifier to add to any d20 roll.
+
+See [Ability format](#ability-format) for the format of the ability scores array.
+
+##### Monster character fields
+The following fields are also included in the Character object for a character of type `Monster`, `Vehicle`, `Creature` or `Extra-Vehicle`:
+```js
+{
+    "id",               // <string> The monster or vehicle ID. In the case of a creature/extra-vehicle, it will contain the creature's name as the ID is not available
+    "cr",               // <string> The monster's Challenge rating
+    "ac",               // <string> The monster's AC
+    "hp",               // <string|number> The monster's current HP
+    "hp-formula",       // <string> The monster's HP Formula
+    "max-hp",           // <number> The monster's maximum HP (only applies to extras)
+    "temp-hp":          // <number> The monster's Temp HP (only applies to extras)
+    "speed",            // <string> The monster's speed
+    "abilities",        // <Array<Ability>> Array containing the abilities scores of the monster
+    "actions",          // <Array<string>> Array of strings containing the actions available to the monster
+    "saves",            // <Object<string:string>> Object of each saving throw modifier from the stat block
+    "skills",           // <Object<string:string>> Object of each skill check modifier from the stat block
+    "discord-target"   // <string> (Optional) The discord target to send the rolls to
+}
+```
+
+The `saves` field is an object where each key is the saving throw's ability (in its abbreviated form, as it appears in the stat block) and the value is the saving throw's modifier.
+The `skills` field is an object where each key is the name of a skill check and the value is its modifier.
+The `discord-target` can be used to hold the first 12 character's a discord server's secret ID and is used to force the roll renderer to choose a specific discord target channel for the rolls from this character.
+See [Ability format](#ability-format) for the format of the ability scores array.
+
+#### Ability Format
+A character or monster's abilities are represented by an array of 4 values of the form:
+`[ability_name, ability_abbreviation, ability_score, ability_modifier]`
+
+For example:
+```js
+abilities: [
+    ['Strength', 'STR', '12', '+1'],
+    ['Dexterity', 'DEX', '14', '+2'],
+    ['Constitution', 'CON', '16', '+3'],
+    ['Intelligence', 'INT', '3', '-4'],
+    ['Wisdom', 'WIS', '18', '+4'],
+    ['Charisma', 'CHA', '20', '+5']
+]
+```
+
 #### Roll Format
 > TODO: Describe the following structure
+
 ### Damage Roll Info Format
 > TODO: Describe the following structure
