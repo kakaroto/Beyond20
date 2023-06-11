@@ -159,7 +159,7 @@ Must be sent through a `forward` message to a specific tab.
     action,  // <String> Must be "get-character"
 }
 ```
-Returns a response of the format of a Beyond20 Character (see the `roll` message below for the format of a Character object)
+Returns a [Beyond20Character](#beyond20-character-format) object as response.
 
 
 #### settings
@@ -191,6 +191,7 @@ Message Format:
     roll,       // <String> The dice roll formula to roll as a fallback if the specific roll data is not recognized
     advantage,  // <RollType> The kind of roll advantage to use for this roll
     whisper,    // <WhisperType> The whisper setting used for this roll
+    preview,    // <String> (Optional) A URL to an image for the weapon/item/spell/etc.. used for the roll
     ...         // Extra arguments are added based on the type of roll being made
 }
 ```
@@ -240,7 +241,7 @@ Message Format:
 ```js
 {
     action,   // <String> Must be "hp-update"
-    character // <Character> The Character object describing the character
+    character // <Beyond20Character> The Character object describing the character
 }
 ```
 Returns a report about whether the request was successfully forwarded to a VTT. See [format](#forwarded-message-response-format)
@@ -253,7 +254,7 @@ Message Format:
 ```js
 {
     action,  // <String> Must be "conditions-update"
-    character // <Character> The Character object describing the character
+    character // <Beyond20Character> The Character object describing the character
 }
 ```
 Returns a report about whether the request was successfully forwarded to a VTT. See [format](#forwarded-message-response-format)
@@ -286,9 +287,7 @@ Here is the list of accepted values for the `type` field:
 - `ability`: Roll an ability check
 - `saving-throw`: Roll a saving throw
 - `skill`: Roll a skill check
-- `trait`: Display a character trait
-- `action`: Display a character action
-- `feature`: Display a character feature
+- `trait`: Display a character trait or feature
 - `item`: Display an item
 - `attack`: Roll an attack
 - `spell-card`: Display a spell card
@@ -300,24 +299,201 @@ Here is the list of accepted values for the `type` field:
 - `digital-dice`: Digital dice were rolled
 - `custom`: Roll a custom roll formula
 
-> TODO: Fill out details on the various types
+#### avatar
+This roll type is sent when clicking on the "Display avatar" button to show an avatar image to the other players.
+The avatar to show is to be taken from `request.character.avatar`. The default `roll` value is also set to the URL of the image to show as a fallback.
+
+Additional fields added to the roll request:
+- `name`: the alt title of the image. Can be the name of the character or monster whose image is being shown, or could be "Avatar" or "Item" or the name of the Item, etc...
+
+#### initiative
+Make an initiative roll. 
+
+Additional fields added to the roll request:
+- `initiative`: the initiative modifier
+
+
+#### ability
+Rolls an ability check
+
+Additional fields added to the roll request:
+- `name`: The name of the ability check being rolled
+- `ability`: The abbreviation for the ability being rolled (STR, DEX, CON, INT, WIS, CHA)
+- `modifier`: The ability modifier
+- `ability-score`: (Optional) The score value of the ability being rolled
+- `d20`: (Optional) The type of dice to roll if it's not a standard `1d20` (Can be `1d20min10` for a minimum roll of 10 for example, in the case of special features)
+
+
+#### saving-throw
+Rolls a saving throw.
+
+Additional fields added to the roll request:
+- `name`: The name of the saving throw check being rolled
+- `ability`: The abbreviation for the ability being rolled (STR, DEX, CON, INT, WIS, CHA)
+- `modifier`: The saving throw modifier
+- `proficiency`: (Optional) The type of proficiency the character has (can be `None`, `Proficient` or `Half Proficiency`, or `Expert`)
+- `d20`: (Optional) The type of dice to roll if it's not a standard `1d20` (Can be `1d20min10` for a minimum roll of 10 for example, in the case of special features)
+
+#### skill
+Rolls a skill check.
+
+Additional fields added to the roll request:
+- `skill`: The name of the skill check being rolled or the name of the tool being rolled
+- `ability`: The abbreviation for the ability being rolled (STR, DEX, CON, INT, WIS, CHA)
+- `modifier`: The skill check modifier
+- `proficiency`: (Optional) The type of proficiency the character has (can be `None`, `Proficient` or `Half Proficiency`, or `Expert`)
+- `d20`: (Optional) The type of dice to roll if it's not a standard `1d20` (Can be `1d20min10` for a minimum roll of 10 for example, in the case of special features)
+
+#### trait
+Display a character trait, class feature or special action. This can be used to display different kinds of features, no matter the source.
+The `roll` field should be set to `0`.
+
+Additional fields added to the roll request:
+- `name`: The trait name
+- `description`: The description of the trait
+- `source`: (Optional) The source of the trait (Background, Class, etc...)
+- `source-type`: (Optional) The source type of the trait (Action, Item, Feat, etc...)
+- `item-type`: (Optional) The item type from which this trait is derived (Infusion)
+
+#### item
+Display information about an item. 
+The `roll` field should be set to `0`.
+
+Additional fields added to the roll request:
+- `name`: The item name
+- `description`: The description of the item
+- `item-type`: (Optional) The item type (Weapon, Gear, Staff, Instrument, etc...)
+- `quantity`: (Optional) The quantity of the item that the character has, as an integer `<number>`
+- `tags`: (Optional) Array of strings for item specific tags (consumable, heal, utility, instrument, etc..)
+
+#### attack
+Roll an attack. This will generally be either rolling a weapon attack or a special action or class feature attack.
+
+Additional fields added to the roll request:
+- `name`: The name of the attack
+- `description`: The description of the item or attack
+- `to-hit`: The To Hit modifier to use for the attack
+- `damages`: An `<Array<String>>` array of damage dice/values if the attack hits
+- `damage-types`: An `<Array<String>>` array of damage types. The array size **must** match the size of the `damages` array
+- `critical-damages`: An `<Array<String>>` array of damage dice/values if the attack is a critical hit
+- `critical-damage-types`: An `<Array<String>>` array of critical damage types. The array size **must** match the size of the `critical-damages` array
+- `rollAttack`: A `<boolean>` to determine if the to-hit attack roll should be rolled
+- `rollDamage`: A `<boolean>` to determine if the damage rolls should be rolled
+- `rollCritical`: A `<boolean>` to determine if the damage being rolled should be critical damages (used if `rollAttack: false`)
+- `critical-limit`: (Optional) A `<number>` that determines the minimum value to consider the d20 roll as a critical hit. Defaults to 20. (used if `rollAttack: true`)
+- `d20`: (Optional) The d20 dice to use for the roll in case of special abilities. Defaults to `1d20` (can be set to `1d20min10` or `1d20ro<=1` for example)
+- `attack-source`: The attack source (Can be "item", "action", or "spell")
+- `attack-type`: The type of attack (can be "Melee" or "Ranged")
+- `reach`: (Optional) The reach distance for melee attacks
+- `range`: (Optional) The range distance for ranged attacks
+- `save-ability`: (Optional) The saving throw ability in case the attack requires the target to perform a saving throw
+- `save-dc`: (Optional) The DC for the target's saving throw.
+- `proficient`: (Optional) A `<boolean>` To determine if the character is proficient with this weapon (only for `attack-source: item`)
+- `properties`: (Optional) An `<Array<string>>` array of property strings that relate to the weapon being used (For example, "Light", "Finesse", "Two-handed", etc...)
+
+
+An attack roll (same for a [spell-attack](#spell-attack)) will generally have `rollAttack` or `rollDamage` set to `true` to define if we're rolling the to-hit or the damages. Both can also be set together to roll both at once. 
+If the attack roll is being made, the `critical-limit` value will determine if the attack succeeded as a critical hit or not. If only damages are rolled, then `rollCritical` will determine if the damage being rolled should be regular or critical damage.
+
+If the attack is a hit and damages are rolled, then the `damages` (and `damage-types`) array is used to roll for damages, if it's a critical hit, then both the `damages` and `critical-damages` arrays should be used. 
+The `critical-damages` array should contain only damages that would apply in the case of a critical hit (constant damage should not apply, unless the user is using a homebrew rule for critical calculations, and special abilities that deal extra damage on criticals should be added). 
+
+#### spell-card
+Display a spell's description card.
+The `roll` field should be set to `0`.
+
+Additional fields added to the roll request:
+- `name`: The spell name
+- `description`: The spell description
+- `level-school`: A string for the spell's level and school ("1st Level Divination", or "Evocation Cantrip" for example)
+- `cast-at`: (Optional) If the spell is being cast at a higher level, then this would display the level it is being cast at as a string ("3rd", "4th", etc...)
+- `range`: The range of the spell as a string ("Touch", "Self", "60ft.", etc..)            
+- `concentration`: A `<boolean>` on whether the spell requires concentration
+- `ritual`: A `<boolean>` on whether the spell can be cast as a ritual
+- `duration`: The duration of the spell ("Instantaneous", "1 round", "10 minutes", etc..)
+- `casting-time`: The time it takes to cast the spell ("1 action", "1 reaction", "10 minutes", etc...)
+- `components`: A comma separated string for the components required ("V" or "V, S" or "V, S, M (a crystal worth 50gp)" for example)
+- `aoe`: (Optional) The range of the Area of Effect if the spell has an AoE range
+- `aoe-shape`: (Optional) The shape of the AoE if the spell is an AoE ("Spehre", "Cube", etc...)
+
+#### spell-attack
+Roll a spell attack. 
+
+This combines the additional fields from both the [attack](#attack) and [spell-card](#spell-card) roll types, as it is both a spell and an attack roll.
+
+#### roll-table
+Roll from a table
+
+Additional fields added to the roll request:
+- `name`: The roll table name
+- `formula`: The dice formula to roll
+- `table`: The roll table content. This is a `<Object<string:Object>>` where each entry is a column in the table with the key being the column name and the value is itself an `<Object<string:string>>` mapping a roll result to a string result.
+
+Note that the roll results can be a range of values, for example, a d6 roll table of the form:
+| 1d6  | Treasure Type |
+|------|---------------|
+| 1-3  | Coins         |
+| 4    | Weapons       |
+| 5    | Armor         |
+| 6    | Magic Items   |
+
+This would cause the following roll action to be sent:
+```js
+{
+    action: "roll",
+    character: {...},
+    roll: "1d6",
+    advantage: 1,
+    whisper: 0,
+    name: "Treasure Chest",
+    formula: "1d6",
+    table: {
+        "Treasure Type": {
+            "1-3": "Coins",
+            "4": "Weapons",
+            "5": "Armor",
+            "6": "Magic Items"
+        }
+    }
+}
+```
+
+#### hit-dice
+Roll a Hit Die for the character
+
+Additional fields added to the roll request:
+- `class`: The class name for which the hit dice is being rolled
+- `multiclass`: A `<boolean>` to indicate whether the character is multiclassed
+- `hit-dice`: The Hit Die formula to roll
+
+#### death-save
+Roll a death saving throw
+
+Additional fields added to the roll request:
+- `modifier`: (Optional) The modifier to add to the death saving throw (would apply in case of magic items)
+
+#### chat-message
+Display a chat message.
+The `roll` field should be set to `0`.
+
+Additional fields added to the roll request:
+- `name`: The title of the message (usually empty or the source material)
+- `message`: The chat message to display as a string.
 
 #### digital-dice
 This type is only used as part of the `message.request` field in a `rendered-roll` message. It is used to notify a VTT that the user made a custom roll of digital dice in the D&D Beyond page and reports the result of the roll to the VTT.
 
-> TODO: Fill out details on the various types
-```
-        const request = {
-            action: "roll",
-            character: character.getDict(),
-            type: "digital-dice",
-            roll: digitalRoll.rolls[0].formula,
-            advantage: RollType.NORMAL,
-            whisper: whisper,
-            sendMessage: true,
-            name: digitalRoll.name
-        }
-```
+Additional fields added to the roll request:
+- `name`: The title of the digital dice roll
+
+#### custom
+Sent when a custom dice roll is being made. This is usually if you have a formula in a block of text and that custom formula gets rolled.
+The `roll` field will contain the formula to roll.
+
+Additional fields added to the roll request:
+- `name`: The title for this roll. It's usually the name of the item/feature that had the formula
+- `description`: (Optional) A description of the roll
+- `modifier`: (Optional) The dice formula to roll
 
 ### Beyond20 object formats
 
