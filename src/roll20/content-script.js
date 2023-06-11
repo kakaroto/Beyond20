@@ -614,7 +614,7 @@ async function handleRoll(request) {
         roll = rollHitDice(request);
     } else if (request.type == "item") {
         roll = rollItem(request);
-    } else if (["feature", "trait", "action"].includes(request.type)) {
+    } else if (request.type === "trait") {
         roll = rollTrait(request);
     } else if (request.type == "death-save") {
         roll = rollDeathSave(request, custom_roll_dice);

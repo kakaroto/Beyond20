@@ -1221,9 +1221,10 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
 
         return sendRollWithCharacter("attack", damages[0], roll_properties);
     } else {
-        return sendRollWithCharacter("action", 0, {
+        return sendRollWithCharacter("trait", 0, {
             "name": action_name,
-            "description": description
+            "description": description,
+            "source-type": "action"
         });
     }
 }
@@ -1654,7 +1655,7 @@ function displayFeature(paneClass) {
             description = `${description}\n> ${choiceText}`;
         }
     }
-    return sendRollWithCharacter("feature", 0, {
+    return sendRollWithCharacter("trait", 0, {
         "name": name,
         "source": source,
         "source-type": source_type,
@@ -1684,9 +1685,10 @@ function displayBackground() {
 function displayAction(paneClass) {
     const action_name = $(".ct-sidebar__heading").text();
     const description = descriptionToString(".ct-action-detail__description");
-    return sendRollWithCharacter("action", 0, {
+    return sendRollWithCharacter("trait", 0, {
         "name": action_name,
-        "description": description
+        "description": description,
+        "source-type": "action"
     });
 }
 

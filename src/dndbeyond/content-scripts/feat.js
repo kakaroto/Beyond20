@@ -34,7 +34,7 @@ function addDisplayFeatButton() {
         "display": "inline-block"
     });
     $(".ct-beyond20-roll").on('click', (event) => {
-        sendRoll(character, "feature", 0, {
+        sendRoll(character, "trait", 0, {
             "name": feat_name,
             "source-type": sourceType,
             "description": description,

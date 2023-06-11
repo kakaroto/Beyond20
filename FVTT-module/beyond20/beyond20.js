@@ -202,23 +202,19 @@ class Beyond20 {
         let type = "feat";
         switch (request.type) {
             default:
+            case 'trait':
+            case 'action':
             case 'feature':
                 type = 'feat';
                 itemData = this._getDefaultTemplate('Item', type);
-                itemData.requirements = `${request.source}: ${request['source-type']}`;
-                break;
-            case 'trait':
-                type = 'feat';
-                itemData = this._getDefaultTemplate('Item', type);
+                if (request.source) {
+                    itemData.requirements = `${request.source}: ${request['source-type']}`;
+                }
                 break;
             case 'item':
                 type = 'equipment';
                 itemData = this._getDefaultTemplate('Item', type);
                 itemData.rarity = request['item-type'];
-                break;
-            case 'action':
-                type = 'feat';
-                itemData = this._getDefaultTemplate('Item', type);
                 break;
             case 'spell-card': 
                 type = 'spell';
