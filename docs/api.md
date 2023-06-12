@@ -702,3 +702,64 @@ The damage flags will help determine what kind of damage it is. It is a bitfield
 - `16`: Critical damage
 
 
+## The DOM API
+The DOM API is a way for Beyond20 to communicate with other extensions or websites by sending custom events to the document itself. All events have the `Beyond20_` prefix and will hold the an array in the `detail` field of the `CustomEvent`, which represents the arguments of the event.
+
+On the D&D Beyond website itself, when rolls are made, they are sent both to VTT tabs but also as DOM events to the D&D Beyond website. The messages are in the format of `Beyond20_${request.action}` so you would expect to see `Beyond20_roll`, `Beyond20_rendered-roll`, `Beyond20-hp-update`, etc... with the `detail` field of the `CustomEvent` containing an array with a single element, which would be the request being sent.
+
+On a custom website, you receive instead the following events:
+- `Beyond20_Loaded()`: This event is sent when Beyond20 is loaded onto the website. It is a good way for a website to know if Beyond20 is enabled and loaded into it
+- `Beyond20_NewSettings(settings)`: This event is sent shortly after the `Beyond20_Loaded` event and is sent whenever Beyond20 global settings are updated.
+- `Beyond20_RenderedRoll(request)`: This event is sent with a `rendered-roll` request in it. If a `roll` message is received, the roll will first be pre-rendered (with `rendered: "fallback"` field set) and will be sent to the DOM as a `Beyond20_RenderedRoll` event too.
+- `Beyond20_UpdateHP(request)`: This event is sent with a `hp-update` request in it.
+- `Beyond20_UpdateConditions(request)`: This event is sent with a `conditions-update` request in it.
+- `Beyond20_UpdateCombat(request)`: This event is sent with a `update-combat` request in it.
+
+A custom website that wants to act as a character sheet can also send custom events to Beyond20 through its DOM in order to have the roll requests transmitted to other running VTTs.
+
+- `Beyond20_SendMessage(request)`: This event will send a message to Beyond20 for redistribution.
+
+Note that the `Beyond20_SendMessage` DOM event API expects to receive a `request` object in the `detail` field (as a single element array).
+The request must follow the format of the [Messaging API](#message-api) defined above, and only the following `action` values will be accepted and forwarded: `roll`, `rendered-roll`, `hp-update`, `conditions-update` and `update-combat`.
+
+### Listening to custom events
+Here is a simple helper function you can use to listen to custom Beyond20 events on a website's DOM:
+
+```js
+function addBeyond20EventListener(name, callback) {
+    const event = ["Beyond20_" + name, (evt) => {
+        const detail = evt.detail || [];
+        callback(...detail)
+    }, false];
+    document.addEventListener(...event);
+    return event;
+}
+```
+
+It can then be called like this (note that the `Beyond20_` prefix is not used in the name).
+```js
+addBeyond20EventListener("Loaded", () => console.log("Beyond20 is loaded on the site"));
+addBeyond20EventListener("RenderedRoll", (request) => displayBeyond20Roll(request));
+```
+The return value can be stored to be later used with a `document.removeEventListener`.
+
+### Sending custom events
+You can send a custom event to Beyond20 with the simple following code:
+```js
+function sendBeyond20Event(name, ...args) {
+    const event = new CustomEvent("Beyond20_" + name, { "detail": args });
+    document.dispatchEvent(event);
+}
+```
+
+Note that if you are trying to send that DOM event from a privileged scope (i.e: from a different extension), you may need to use the `cloneInto` function to clone the arguments data into the window's scope. This restriction only applies to FireFox which has a more restrictive security context for browser extensions.
+
+In that case, use the following:
+```js
+function sendBeyond20Event(name, ...args) {
+    // You would need a function isFirefox to check if the extension is running in Firefox
+    const detail = isFirefox() ? cloneInto(args, window) : args;
+    const event = new CustomEvent("Beyond20_" + name, { "detail": detail });
+    document.dispatchEvent(event);
+}
+```
