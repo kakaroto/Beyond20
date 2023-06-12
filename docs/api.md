@@ -19,6 +19,8 @@ Every message sent this way will have a field `action` which determines what the
 
 In the documentation below, any reference to a 'tab' will mean a browser tab and will therefor represent any website page(whether from D&D Beyond or a VTT or even the browser popup dialog when clicking the Beyond20 icon in the address bar)
 
+The easiest way to get examples and see what kind of data is being sent would be to open the dev console and make rolls with Beyond20. The console should display whenever it's sending a message, giving you access to the full data.
+
 Here is a list of the messages that are supported and what they do:
 
 ### Tab->Background specific messages
@@ -230,6 +232,8 @@ Message Format:
 }
 ```
 Returns a report about whether the request was successfully forwarded to a VTT. See [format](#forwarded-message-response-format)
+
+Note that a skill check or saving throw or even a custom dice roll will include the roll results in the `attack_rolls` field. That field is misnamed as it really means the 'primary' rolls, which are the d20 in the case of a skill check/ability roll/saving throw, or the to-hit d20 rolls in an attack roll, or the custom dice formula in the case of a custom roll.
 
 Structure definition of non standard fields: [Beyond20Character](#beyond20-character-format), [WhisperType](#whisper-type-format), [Roll](#roll-format) and [DamageRollInfo](#damage-roll-info-format)
 
@@ -638,7 +642,63 @@ abilities: [
 ```
 
 #### Roll Format
-> TODO: Describe the following structure
+A Roll object defines the result of a dice formula roll, which may contain zero or more actual dice formulas and multiple operands.
+
+It has the following format:
+```js
+{
+    "formula",          // <string> The dice formula that made the roll
+    "parts",            // <Array<DiceRoll|string|number>> An array of each portion of the formula
+    "fail-limit",       // <number|null> (Optional) The lower limit under which a dice roll is considered a critical failure (default 1)
+    "critical-limit",   // <number|null> (Optional) The higher limit above which a dice roll is considered a critical success (default 20)
+    "critical-failure", // <boolean> Whether the roll result was a critical failure
+    "critical-success", // <boolean> Whether the roll result was a critical success
+    "discarded",        // <boolean> Whether this roll is being discarded
+    "type",             // <string> The roll type
+    "total"             // <number> The total roll result
+}
+```
+
+The roll will contain a formula which will cause zero or more dice rolls to occur. Their results will be in the `parts` field and the total of all parts will be in `total`. The `type` of roll can be `to-hit` or `damage` or `saving-throw`, etc... 
+In the case of a advantage/disadvantage for example, the entire roll could be discarded and if that's the case, `discarded` will be `true`.
+
+The `parts` field is an array which will contain either a `DiceRoll` object (See [Dice Roll Format](#dice-roll-format) for the format of the dice rolls), a string representing the operator to use, or a number. For example a `1d20 + 3` formula would cause the parts to be `[DiceRoll, '+', 3]`
+
+#### Dice Roll Format
+A Dice Roll object defines the result of a dice roll. The difference with the above Roll object, is that this is specifically for dice being rolled and does not include any operands. It can also only have rolls of the same type of dice
+
+It has the following format:
+```js
+{
+    "formula",      // <string> The dice formula
+    "amount",       // <number> The number of dice that were rolled
+    "faces",        // <number> The number of faces on the dice being rolled
+    "total",        // <number> The total result of the roll
+    "modifiers",    // <string> (Optional) Any modifiers to the dice formula
+    "rolls": [      // <Array<Object>> Array of roll results 
+        {
+            "roll",         // <number> The result of the roll
+            "discarded",    // <boolean> (Optional) Whether this dice roll is discarded
+        }
+    ]
+}
+```
+
 
 ### Damage Roll Info Format
-> TODO: Describe the following structure
+Damage rolls are an array of 3 elements:
+- `<string>` The damage type
+- `<Roll>` The roll result
+- `<number>` The damage flags
+
+See the [Roll](#roll-format) structure above for the format of the Roll result object.
+The damage flags will help determine what kind of damage it is. It is a bitfield which can have multiple flags set at once. The available flags are:
+
+- `0`: The damage is a message to the user. In this case, the roll result will be ignore and the damage type contains the message. This is used in cases like "damage leaps to a target within 30 feet" (chaotic bolt). With a damage flag of 0, no other flag must be set
+- `1`: Regular damage from the weapon/spell
+- `2`: Damage from a versatile weapon used two handed
+- `4`: Additonal damage (anything other than the first damage from the weapon/spell)
+- `8`: Healing
+- `16`: Critical damage
+
+
