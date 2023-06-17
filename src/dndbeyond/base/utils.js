@@ -596,9 +596,21 @@ function recursiveDiceReplace(node, cb) {
         }
     } else if (node.nodeName == "#text") {
         const text = replaceRolls(node.textContent, (...args) => cb(node, ...args));
-        // Only replace if (we changed it, otherwise we might break existing html code bindings;
-        if (text != node.textContent)
-            $(node).replaceWith($.parseHTML(text));
+        // Only replace if we changed it, otherwise we might break existing html code bindings
+        if (text != node.textContent) {
+            // Try to catch the use case where part of the roll has a tooltip and is therefore a different node
+            // <strong><span tooltip>2</span>d4</strong>
+            const parent = $(node).parent();
+            const parentText = parent.text();
+            // The parent has another portion of the same dice formula, so we need to replace the whole parent
+            // with the replaced dice
+            if (parentText !== node.textContent && replaceRolls(parentText, () => "-") === "-") {
+                const text = replaceRolls(parentText, (...args) => cb(node, ...args));
+                parent.html($.parseHTML(text));
+            } else {
+                $(node).replaceWith($.parseHTML(text));
+            }
+        }
     }
 }
 
