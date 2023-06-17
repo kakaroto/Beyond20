@@ -21,6 +21,8 @@ function handleMessage(request, sender, sendResponse) {
         roll_renderer.handleRollRequest(request);
     } else if (request.action == "rendered-roll") {
         sendCustomEvent("RenderedRoll", [request]);
+    } else if (request.action == "open-options") {
+        alertFullSettings();
     }
 }
 
