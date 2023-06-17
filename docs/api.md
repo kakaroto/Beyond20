@@ -7,6 +7,63 @@ There are 3 types of APIs that Beyond20 includes.
 - The Messaging API which defines which message requests can be sent between websites and their data format
 - The DOM API which defines the DOM custom events that can be sent from and to Beyond20 with websites in order to communicate
 
+# Table of Contents
+
+- [Architecture](#architecture)
+- [Message API](#message-api)
+  - [Tab->Background specific messages](#tab-background-specific-messages)
+  - [Tab->Tab forwarded messages](#tab-tab-forwarded-messages)
+  - [Tab<->Tab dispatched messages](#tab-tab-dispatched-messages)
+  - [Message events](#message-events)
+    - [activate-icon](#activate-icon)
+    - [load-alertify](#load-alertify)
+    - [reload-me](#reload-me)
+    - [register-fvtt-tab](#register-fvtt-tab)
+    - [register-generic-tab](#register-generic-tab)
+    - [get-current-tab](#get-current-tab)
+    - [forward](#forward)
+    - [open-options](#open-options)
+    - [get-character](#get-character)
+    - [settings](#settings)
+    - **[roll](#roll)**
+    - **[rendered-roll](#rendered-roll)**
+    - **[hp-update](#hp-update)**
+    - **[conditions-update](#conditions-update)**
+    - **[update-combat](#update-combat)**
+  - [Roll types available](#roll-types-available)
+    - [avatar](#avatar)
+    - [initiative](#initiative)
+    - [ability](#ability)
+    - [saving-throw](#saving-throw)
+    - [skill](#skill)
+    - [trait](#trait)
+    - [item](#item)
+    - [attack](#attack)
+    - [spell-card](#spell-card)
+    - [spell-attack](#spell-attack)
+    - [roll-table](#roll-table)
+    - [hit-dice](#hit-dice)
+    - [death-save](#death-save)
+    - [chat-message](#chat-message)
+    - [digital-dice](#digital-dice)
+    - [custom](#custom)
+  - [Beyond20 object formats](#beyond20-object-formats)
+    - [Forwarded message response format](#forwarded-message-response-format)
+    - [Whisper Type Format](#whisper-type-format)
+    - [Roll Type Format](#roll-type-format)
+    - [Beyond20 Character Format](#beyond20-character-format)
+      - [Character character fields](#character-character-fields)
+      - [Monster character fields](#monster-character-fields)
+    - [Ability Format](#ability-format)
+    - [Roll Format](#roll-format)
+    - [Dice Roll Format](#dice-roll-format)
+    - [Damage Roll Info Format](#damage-roll-info-format)
+- [The DOM API](#the-dom-api)
+  - [Listening to custom events](#listening-to-custom-events)
+  - [Sending custom events](#sending-custom-events)
+
+
+
 ## Architecture
 The architecture of the Beyond20 extension is relatively simple, in that the extension loads scripts into the Character Sheet pages as well as the VTT pages. Beyond20 also has a background script that runs permanently and is the glue between the Sheet and VTT pages, allowing them to communicate with each other.
 A Sheet page can be anything, from a D&D Beyond Character Sheet, to a Spell description page, or a NPC page, or even the Encounter combat tracker. Those are all considered "character sheets" with a very loose definition of what a "character" is. With the recent addition of support for custom domains, a character sheet could also be any non D&D Beyond site.
@@ -685,7 +742,7 @@ It has the following format:
 ```
 
 
-### Damage Roll Info Format
+#### Damage Roll Info Format
 Damage rolls are an array of 3 elements:
 - `<string>` The damage type
 - `<Roll>` The roll result
