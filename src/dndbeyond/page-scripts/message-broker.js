@@ -102,9 +102,19 @@ function rollToDDBRoll(roll, forceResults=false) {
     return data;
 }
 
+function isWhispered(rollData) {
+    if (!rollData.request) return false;
+    // Fallback messages to the roll renderer will set whisper to 0 but
+    // will store the original whisper setting under 'original-whisper' field
+    const whisper = rollData.request["original-whisper"] === undefined
+            ? rollData.request.whisper
+            : rollData.request["original-whisper"];
+    return whisper !== 0;
+}
 let lastMessage = null;
 function pendingRoll(rollData) {
     //console.log("rolling ", rollData);
+    const toSelf = isWhispered(rollData);
     messageBroker.on("dice/roll/pending", (message) => {
         lastMessage = message;
         // If no roll data, then simply stop propagation but don't replace it
@@ -115,8 +125,8 @@ function pendingRoll(rollData) {
             entityType: message.entityType,
             entityId: message.entityId,
             gameId: message.gameId,
-            messageScope: message.messageScope,
-            messageTarget: message.messageTarget,
+            messageScope: toSelf ? "userId" : "gameId",
+            messageTarget: toSelf ?  message.userId : message.gameId,
             userId: message.userId,
             data: {
                 action: rollData.name,
@@ -141,6 +151,7 @@ function fulfilledRoll(rollData) {
             rollId: messageBroker.uuid()
         }
     };
+    const toSelf = isWhispered(rollData);
     // For initiative to work in the Encounter builder, it needs to have the action name "Initiative" and not "Initiative(+x)" that B20 sends
     const action = /^Initiative/.test(rollData.name) ? "Initiative" : rollData.name;
     messageBroker.postMessage({
@@ -149,8 +160,8 @@ function fulfilledRoll(rollData) {
         entityType: lastMessage.entityType,
         entityId: lastMessage.entityId,
         gameId: lastMessage.gameId,
-        messageScope: lastMessage.messageScope,
-        messageTarget: lastMessage.messageTarget,
+        messageScope: toSelf ? "userId" : "gameId",
+        messageTarget: toSelf ? lastMessage.userId : lastMessage.gameId,
         userId: lastMessage.userId,
         data: {
             action,
