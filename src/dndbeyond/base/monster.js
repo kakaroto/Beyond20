@@ -389,6 +389,16 @@ class Monster extends CharacterBase {
                     this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
                     roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
                 }
+                
+                if (this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character &&
+                    this._parent_character.getSetting("custom-ability-modifier", "")) {
+                    const custom = parseInt(this._parent_character.getSetting("custom-ability-modifier", "0")) || 0;
+                    if (custom != 0)  {
+                        let customModifier = parseInt(modifier) + custom;
+                        customModifier = customModifier >= 0 ? `+${customModifier}` : `${customModifier}`;
+                        roll_properties["modifier"] = customModifier;
+                    }
+                }
                 sendRoll(this, "ability", "1d20" + modifier, roll_properties);
                 break;
             }
