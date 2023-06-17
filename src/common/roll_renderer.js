@@ -393,7 +393,7 @@ class Beyond20RollRenderer {
         }
     }
 
-    postMessage(request, title, message) {
+    postChatMessage(request, title, message) {
         const character = (request.whisper == WhisperType.HIDE_NAMES) ? this._settings["hidden-monster-replacement"] : request.character.name;
         if (request.whisper == WhisperType.HIDE_NAMES)
             title = this._settings["hidden-monster-replacement"];
@@ -401,6 +401,12 @@ class Beyond20RollRenderer {
             this._displayer.sendMessage(request, title, message, character, request.whisper, false, '', {}, '', [], [], [], [], true);
         else
             this._displayer.postHTML(request, title, message, character, request.whisper, false, '', {}, '', [], [], [], [], true);
+            
+        const discordChannel = getDiscordChannel(this._settings, request.character)
+        postToDiscord(discordChannel ? discordChannel.secret : "", request, title, "", {}, "", [], [], [], [], false, this._settings).then(discord_error => {
+            if (discord_error != undefined)
+                this._displayer.displayError("Beyond20 Discord Integration: " + discord_error);
+        });
 
     }
 
@@ -808,7 +814,7 @@ class Beyond20RollRenderer {
         } else if (request.type == "spell-attack") {
             return this.rollSpellAttack(request, custom_roll_dice);
         } else if (request.type == "chat-message") {
-            return this.postMessage(request, request.name, request.message);
+            return this.postChatMessage(request, request.name, request.message);
         } else if (request.type == "roll-table") {
             return this.rollRollTable(request, request.name, request.formula, request.table);
         } else {
