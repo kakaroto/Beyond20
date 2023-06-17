@@ -714,35 +714,6 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
     return to_hit;
 }
 
-function addCustomDamages(damages, damage_types) {
-    const custom_damages = character.getSetting("custom-damage-dice", "");
-    if (custom_damages.length > 0) {
-        for (let custom_damage of split_custom_damages(custom_damages)) {
-            if (custom_damage.includes(":")) {
-                const parts = custom_damage.split(":", 2);
-                damages.push(parts[1].trim());
-                damage_types.push(parts[0].trim());
-            } else {
-                damages.push(custom_damage.trim());
-                damage_types.push("Custom");
-            }
-        }
-    }
-    for (const key in key_modifiers) {
-        if (!key.startsWith("custom_damage:") || !key_modifiers[key]) continue;
-        const custom_damage = key.slice("custom_damage:".length).trim();
-        if (!custom_damage) continue;
-        if (custom_damage.includes(":")) {
-            const parts = custom_damage.split(":", 2);
-            damages.push(parts[1].trim());
-            damage_types.push(parts[0].trim());
-        } else {
-            damages.push(custom_damage.trim());
-            damage_types.push("Custom");
-        }
-    }
-}
-
 function capitalize(str) {
     return str.replace(/\b\w/g, (c) => c.toUpperCase());
 }
@@ -903,7 +874,7 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
             damage_types.push(...spell_damage_types.map(t => `${t} (${group_name})`));
         }
 
-        addCustomDamages(damages, damage_types);
+        addCustomDamages(character, damages, damage_types);
 
         // Capitalize all Damage Types to ensure consistency for later processing
         damage_types = damage_types.map(t => capitalize(t.trim()));
@@ -1116,7 +1087,7 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
 
         const weapon_damage_length = damages.length;
 
-        addCustomDamages(damages, damage_types);
+        addCustomDamages(character, damages, damage_types);
 
         // Capitalize all Damage Types to ensure consistency for later processing
         damage_types = damage_types.map(t => capitalize(t.trim()));
@@ -1497,7 +1468,7 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
             damage_types.push(dmgtype);
         }
 
-        addCustomDamages(damages, damage_types);
+        addCustomDamages(character, damages, damage_types);
 
         // Capitalize all Damage Types to ensure consistency for later processing
         damage_types = damage_types.map(t => capitalize(t.trim()));

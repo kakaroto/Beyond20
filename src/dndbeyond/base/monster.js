@@ -34,6 +34,14 @@ class Monster extends CharacterBase {
         this._spells = {}
         this._cr = null;
     }
+    
+    getSetting(key, default_value = "", settings = null) {
+        // Use parent's settings for wild shape creatures
+        if (this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character) {
+            return this._parent_character.getSetting(key, default_value, settings);
+        }
+        return super.getSetting(key, default_value, settings);
+    }
 
     get isBlockFinder() {
         return this._base.includes(".stat-block-finder") || this._base.includes(".vehicle-block-finder");
@@ -570,15 +578,18 @@ class Monster extends CharacterBase {
                     const id = addRollButton(this, () => {
                         // Need to recreate roll properties, in case settings (whisper, custom dmg, etc..) have changed since button was added
                         const roll_properties = this.buildAttackRoll(action_name, description);
-                        if (this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character && 
-                            this._parent_character.hasClass("Barbarian") && this._parent_character.hasClassFeature("Rage") &&
-                            this._parent_character.getSetting("barbarian-rage", false) && description.match(/Melee(?: Weapon)? Attack:/) &&
+                        if (this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character &&
                             roll_properties["damages"] && roll_properties["damages"].length > 0) {
-                            // Barbarian: Rage
-                            const barbarian_level = this._parent_character.getClassLevel("Barbarian");
-                            const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
-                            roll_properties["damages"].push(String(rage_damage));
-                            roll_properties["damage-types"].push("Rage");
+                            if (this._parent_character.hasClass("Barbarian") && this._parent_character.hasClassFeature("Rage") &&
+                                this._parent_character.getSetting("barbarian-rage", false) && description.match(/Melee(?: Weapon)? Attack:/)) {
+                                // Barbarian: Rage
+                                const barbarian_level = this._parent_character.getClassLevel("Barbarian");
+                                const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
+                                roll_properties["damages"].push(String(rage_damage));
+                                roll_properties["damage-types"].push("Rage");
+                            }
+                            // Add custom damages to wild shape attacks
+                            addCustomDamages(character, roll_properties["damages"], roll_properties["damage-types"]);
                         }
                         if (roll_properties["damages"] && roll_properties["damages"].length > 0) {
                             for (const key in key_modifiers) {

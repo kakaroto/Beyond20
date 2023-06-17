@@ -284,6 +284,36 @@ async function buildAttackRoll(character, attack_source, name, description, prop
     return roll_properties;
 }
 
+
+function addCustomDamages(character, damages, damage_types) {
+    const custom_damages = character.getSetting("custom-damage-dice", "");
+    if (custom_damages.length > 0) {
+        for (let custom_damage of split_custom_damages(custom_damages)) {
+            if (custom_damage.includes(":")) {
+                const parts = custom_damage.split(":", 2);
+                damages.push(parts[1].trim());
+                damage_types.push(parts[0].trim());
+            } else {
+                damages.push(custom_damage.trim());
+                damage_types.push("Custom");
+            }
+        }
+    }
+    for (const key in key_modifiers) {
+        if (!key.startsWith("custom_damage:") || !key_modifiers[key]) continue;
+        const custom_damage = key.slice("custom_damage:".length).trim();
+        if (!custom_damage) continue;
+        if (custom_damage.includes(":")) {
+            const parts = custom_damage.split(":", 2);
+            damages.push(parts[1].trim());
+            damage_types.push(parts[0].trim());
+        } else {
+            damages.push(custom_damage.trim());
+            damage_types.push("Custom");
+        }
+    }
+}
+
 async function sendRoll(character, rollType, fallback, args) {
     let whisper = parseInt(character.getGlobalSetting("whisper-type", WhisperType.NO));
     const whisper_monster = parseInt(character.getGlobalSetting("whisper-type-monsters", WhisperType.YES));
@@ -330,7 +360,7 @@ async function sendRoll(character, rollType, fallback, args) {
         req.whisper = WhisperType.HIDE_NAMES;
 
     // Add custom roll modifiers from hotkeys
-    if (req.character.settings && req.character.settings) {
+    if (req.character.settings) {
         for (const key in key_modifiers) {
             if (!key.startsWith("custom_modifier:") || !key_modifiers[key]) continue;
             const modifier = key.slice("custom_modifier:".length).trim();
