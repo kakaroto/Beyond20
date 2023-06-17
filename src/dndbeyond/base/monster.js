@@ -812,10 +812,17 @@ class Monster extends CharacterBase {
     }
 
     getDict() {
+        let settings = undefined;
+        if (this.type() == "Creature" && this._parent_character && this._creatureType === "Wild Shape") {
+            const parentDict = this._parent_character.getDict();
+            settings = parentDict.settings;
+        }
         return {
             "name": this._name,
             "avatar": this._avatar,
             "type": this.type(),
+            "creatureType": this._creatureType,
+            "settings": settings,
             "id": this._id,
             "ac": this._ac,
             "hp": this._hp,

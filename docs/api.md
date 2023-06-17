@@ -673,7 +673,9 @@ The following fields are also included in the Character object for a character o
     "actions",          // <Array<string>> Array of strings containing the actions available to the monster
     "saves",            // <Object<string:string>> Object of each saving throw modifier from the stat block
     "skills",           // <Object<string:string>> Object of each skill check modifier from the stat block
-    "discord-target"   // <string> (Optional) The discord target to send the rolls to
+    "discord-target",   // <string> (Optional) The discord target to send the rolls to
+    "creatureType",     // <string> (Optional) if the type is "Creature" then this will specify the creature type (Familiar, Wild Shape, Beast Companion, etc...)
+    "settings",         // <Object> (Optional) character specific options (the parent character's in case of Wild Shape creature)
 }
 ```
 
