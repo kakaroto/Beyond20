@@ -57,24 +57,9 @@ function disconnectAllEvents() {
     })
 }
 
-function handleIncomingSettings({ character, action, type} = {}) {
-    characterInternal = character;
-    chrome.runtime.sendMessage({
-        action: "hp-update",
-        character
-    })
-    chrome.runtime.sendMessage({
-        action: "settings",
-        type: "character",
-        settings: character.settings,
-        id: character.id
-    })
-}
-
 var registered_events = [];
 registered_events.push(addCustomEventListener("SendMessage", sendMessageToBeyond20));
 registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
-//registered_events.push(addCustomEventListener("settings", handleIncomingSettings));
 
 updateSettings();
 chrome.runtime.sendMessage({ "action": "register-generic-tab" });
