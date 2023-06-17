@@ -61,7 +61,8 @@ There are 3 types of APIs that Beyond20 includes.
 - [The DOM API](#the-dom-api)
   - [Listening to custom events](#listening-to-custom-events)
   - [Sending custom events](#sending-custom-events)
-
+- [Integrating with Beyond20](#integrating-with-beyond20)
+  - [Example](#example)
 
 
 ## Architecture
@@ -822,3 +823,76 @@ function sendBeyond20Event(name, ...args) {
     document.dispatchEvent(event);
 }
 ```
+
+## Integrating with Beyond20
+
+To integrate your website or extension with Beyond20, it should now be fairly easy. Here are the steps to take:
+- Add an event listener on the DOM for Beyond20's `Loaded` event
+- If Beyond20 is loaded on the site, add support for integrating with it (adding Roll buttons to send requests to B20, listening to roll events from B20)
+- If your site is a VTT, when receiving a roll event, display the rendered html roll, or display the roll using the data in the request
+- If your site is a character sheet, send a roll event when the user clicks on the roll button
+
+Use the documentation above to find the available events you can send, and what fields they contain.
+
+The user will need to add your site's domain to Beyond20's custom domain list under the advanced options, or you can [contact us](https://github.com/kakaroto/Beyond20/issues/new) to add your site to the list of known sites which support Beyond20.
+
+### Example
+Using a simple website with source book content as an example, we can implement a small extension that integrates the read-aloud text with Beyond20 with the following code:
+
+```js
+// Copied from the documentation above
+function addBeyond20EventListener(name, callback) {
+    const event = ["Beyond20_" + name, (evt) => {
+        const detail = evt.detail || [];
+        callback(...detail)
+    }, false];
+    document.addEventListener(...event);
+    return event;
+}
+// Copied from the documentation above
+function sendBeyond20Event(name, ...args) {
+    const event = new CustomEvent("Beyond20_" + name, { "detail": args });
+    document.dispatchEvent(event);
+}
+
+// Beyond20 extension is loaded and listening for events on this site
+function loaded() {
+    console.log("Beyond20 is loaded on the site. Adding B20 roll icon...");
+    // Find the read aloud text divs in the page
+    const readAloud = document.querySelectorAll(".read-aloud");
+    for (const div of readAloud) {
+        const chapter = div.closest("h1,h2,h3,h4,h5,h6").textContent;
+        const message = div.querySelector(".content").textContent;
+        // Add a roll button icon to the div
+        const icon = document.createElement("i");
+        icon.style = "float: right; cursor: pointer;";
+        icon.classList.add("fas", "fa-dice-d20");
+        icon.title = "Send to VTT";
+        div.prepend(icon);
+        // On click, send a SendMessage DOM event with a roll action of type chat-message
+        icon.addEventListener("click", () => {
+            const request = {
+                action: "roll",
+                type: "chat-message",
+                character: {
+                    name: document.title,
+                    type: "Book",
+                    url: window.location.href
+                },
+                roll: 0,
+                advantage: 0,
+                whisper: 0,
+                // chat-message specific fields
+                name: chapter,
+                message: message
+            }
+            sendBeyond20Event("SendMessage", request);
+        });
+    }
+}
+
+// Listen to the Loaded event from Beyond20
+addBeyond20EventListener("Loaded", () => loaded());
+```
+
+For more complex rolls, see the messaging API documentation above for the other types of available actions or roll types. You can also make rolls in D&D Beyond to get good examples of what Beyond20 itself sends when rolls are made.
