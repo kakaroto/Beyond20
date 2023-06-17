@@ -786,8 +786,10 @@ class Beyond20RollRenderer {
 
     handleRollRequest(request) {
         let custom_roll_dice = "";
-        if (request.character.type == "Character")
+        if (request.character.type == "Character" ||
+            (request.character.type == "Creature" && request.character.creatureType === "Wild Shape")) {
             custom_roll_dice = request.character.settings["custom-roll-dice"] || "";
+        }
 
         if (request.type == "avatar") {
             return this.displayAvatar(request);

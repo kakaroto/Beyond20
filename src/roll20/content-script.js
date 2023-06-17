@@ -600,8 +600,10 @@ function convertRollToText(whisper, roll, standout=false) {
 
 async function handleRoll(request) {
     let custom_roll_dice = "";
-    if (request.character.type == "Character")
+    if (request.character.type == "Character"
+        (request.character.type == "Creature" && request.character.creatureType === "Wild Shape")) {
         custom_roll_dice = request.character.settings["custom-roll-dice"] || "";
+    }
     if (request.type == "skill") {
         roll = rollSkill(request, custom_roll_dice);
     } else if (request.type == "ability") {
