@@ -377,7 +377,7 @@ class Monster extends CharacterBase {
                     "modifier": modifier,
                     "ability-score": score
                 };
-                if (abbr == "STR" && this.type() == "Creature" && this._creatureType === "Wildshape" && this._parent_character && 
+                if (abbr == "STR" && this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character && 
                     this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
                     roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
                 }
@@ -417,7 +417,7 @@ class Monster extends CharacterBase {
             "ability": abbr,
             "modifier": mod
         };
-        if (abbr == "STR" && this.type() == "Creature" && this._creatureType === "Wildshape" && this._parent_character && 
+        if (abbr == "STR" && this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character && 
             this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
         }
@@ -432,7 +432,7 @@ class Monster extends CharacterBase {
             "ability": ability,
             "modifier": modifier
         };
-        if (ability == "STR" && this.type() == "Creature" && this._creatureType === "Wildshape" && this._parent_character && 
+        if (ability == "STR" && this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character && 
             this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
         }
@@ -570,7 +570,7 @@ class Monster extends CharacterBase {
                     const id = addRollButton(this, () => {
                         // Need to recreate roll properties, in case settings (whisper, custom dmg, etc..) have changed since button was added
                         const roll_properties = this.buildAttackRoll(action_name, description);
-                        if (this.type() == "Creature" && this._creatureType === "Wildshape" && this._parent_character && 
+                        if (this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character && 
                             this._parent_character.hasClass("Barbarian") && this._parent_character.hasClassFeature("Rage") &&
                             this._parent_character.getSetting("barbarian-rage", false) && description.match(/Melee(?: Weapon)? Attack:/) &&
                             roll_properties["damages"] && roll_properties["damages"].length > 0) {
