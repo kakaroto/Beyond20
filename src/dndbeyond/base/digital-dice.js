@@ -202,8 +202,14 @@ class DigitalDiceManager {
             if (this._pendingRolls.length > 0 && $(".ct-game-log-pane, .sidebar__pane-content .glc-game-log").length > 0) {
                 const collapse = $(".ct-sidebar__control--collapse, .sidebar__control:has(.sidebar__control--collaspe)");
                 // Collapse the side bar, or if it's locked, fake a click on the character name to change the sidepanel
-                if (collapse.length > 0) collapse.click();
-                else $(".ddbc-character-tidbits__heading h1").click();
+                if (collapse.length > 0) {
+                    collapse.click();
+                } else {
+                    // If there is no character profile to click (encounters page), then unlock the sidebar to collapse it
+                    const character = $(".ddbc-character-tidbits__heading h1");
+                    if (character.length > 0) character.click();
+                    else $(".sidebar__control:has(.sidebar__control--unlock)").click();
+                }
             }
             return;
         }
