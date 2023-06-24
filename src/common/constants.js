@@ -19,7 +19,8 @@ SUPPORTED_VTT_URLS = [
     "https://harpy.gg/*",
     "https://app.alchemyrpg.com/game/*",
     "https://dscryb.com/*",
-    "https://codex.dragonshorn.com/*"
+    "https://codex.dragonshorn.com/*",
+    "*://*.osrbeyond.com/*"
 ];
 
 
