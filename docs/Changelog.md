@@ -1,3 +1,25 @@
+v2.9.0 (June 24th 2023)
+===
+
+* **Feature**: Add support for custom sheet websites to send rolls to VTTs through Beyond20
+* **Feature**: Added full [API](/api) documentation for Beyond20 internal messaging and DOM events
+* **Feature**: Add support for custom modifiers/damages to Wild Shape extra creatures
+* **Feature**: Add support for posting read-aloud text to Discord
+* **Feature**: Add support for Radiant Soul from Celestial Aasimar (MotM) (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add a hotkey to display attack instead of rolling it
+* **Bugfix**: Send rolls to game log as "Self" when whispering
+* **Bugfix**: Fix Rage damage not applying to Wild Shape extra creatures anymore
+* **Bugfix**: Fix freeze when the game log sidebar is locked in the encounters page
+* **Bugfix**: Remove special support for Otherworldly Glamour for skill checks as DDB implemented it on their side, which caused it to double the bonus (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Change behavior of Vicious Weapon Damage to only display on critical hits as it only triggers on a roll of 20
+* **Bugfix**: Fix parsing of DDB dice formulas that include tooltips
+* **Bugfix**: Fix Beyond20 icon alignment in buttons
+* **Bugfix**: *FVTT*: Remove deprecation warnings for Foundry VTT v10
+* **Misc**: A few cleanups in how events are sent to make for a cleaner API
+* **Misc**: Added a few websites to the list of known VTT/Sheet domains for future implementation support
+* **Misc**: Add osrbeyond.com, codex.dragonshorn.com and dscryb.com to the list of known VTT/Sheet domains for their upcoming integration with Beyond20.
+
+
 v2.8.0 (November 13th 2022)
 ===
 

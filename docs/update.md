@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.8.0
+Congratulations! Beyond20 was just updated to the latest version : v2.9.0
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -17,23 +17,22 @@ Thank you all for your support!
 
 # Release Notes
 
-Hi everyone,
+Hi Beyond20 lovers!
 
-It's been a long time since our last Beyond20 update, and it's a testament to how stable and 'perfect' your favorite chrome extension is! Ok, nothing is perfect 😁 but we've had very little activity in our issue tracker in recent months and things just seem to be working. I've been thinking a lot about the future of Beyond20, whether it's good as it is and to not change a working formula, or if it'd be worth it to expand our mission and add some new features that diverge from its core principle. The exciting thing about a new set of features will be a more active development again and more frequent releases. I'll let you know what gets decided.
+It's time for another update to your favorite extension! This one has been cooking for a long time, and there's many reasons for that.
 
-This long-awaited release adds quite a few small quality of life features, expanding on what we have already, and fixing a few rare bugs that were discovered. Among the most pressing though is a couple of changes to how D&D Beyond website works, especially with regards to accessing a character sheet from the "My Characters" page, which has stopped working recently. We also added support to the new "Read Aloud" text in LMoP adventure, and the new statblocks used in Spelljammer.
+The OGL scandal from WotC in January has definitely had a negative impact on the community as a whole, but Beyond20 has also never been so stable and in need of so little maintenance. While the extension is pretty much "feature complete" at this stage, and the very few bugs that have been reported were not critical, we've still worked to bring a new exciting feature which I think might open up Beyond20 to even more future possibilities.
 
-Most of the bugfixes were for rare use cases, though some significant work went into adding Foundry V10 support, as well as dramatically improving the support for the "Native Rolls" feature in Foundry VTT (requires v10) with our most recent FVTT module update (1.5.x).
+This update brings a few corrections to small bugs that have been reported in the last months, as well as the addition of some new features. I encourage you to check the [Changelog](/Changelog#v290) for the full list of changes. The big chunk of this update though is the new ability for websites to integrate with Beyond20, not just as a VTT, but also as character sheets. This means that Beyond20 can become the glue that connects any character sheet website to any VTT website.
 
-This release adds quite a few features and bugfixes, so please refer to the [Changelog](/Changelog#v280) for the full details of the changes.
+In order to make that possible, an extensive documentation of our [API](/api) has been written and this should hopefully allow various websites to send their rolls to Beyond20, letting it pass along that data to the player's VTT, making it a truly universal extension. I have heard from quite a few websites who are excited to bring the ability to roll from their sheets to any VTT via Beyond20!
 
-One item that doesn't appear in the Changelog but which we worked on as well is the Chrome extension Manifest V3 support. One of the challenges we've had to face unfortunately is the forced upgrade by the Chrome store from Manifest V2 to their Manifest V3 for Chrome extensions. While we did the upgrade and it mostly worked, there were some issues with it that we couldn't fix reliably, and after delaying this release for too long, we decided to downgrade back to Manifest V2 for now so we don't release a version that may be unreliable to our users.
-The Chrome decision to force extensions to move to their new MV3 design (by June 2023) is a very controversial one and has been a headache for many developers. We'll take the time in the next few months to ensure the upgrade is smooth and doesn't introduce any new issues in how Beyond20 functions, and we'll hopefully release MV3 support in the next release, without affecting any of our features.
+I expect, as more websites start supporting Beyond20, that we'll see additional improvements to the API and a possible increase in activity to support various use cases that may be non-d&d specific.
+I can't wait to see what the future brings and how Beyond20's horizon gets expanded with this new feature.
 
-As usual, thank you to all contributors, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters, who are making this possible. 
+As usual, thank you to all contributors, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters, who are making this all possible. 
 
-Finally, while it may be a bit too early for it, I want to wish everyone happy holidays and happy new year!
-Keep rolling! 😄
+Thank you everyone and keep on rolling!😄
 
 ---
 
@@ -41,42 +40,26 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-v2.8.0 (November 13th 2022)
+v2.9.0 (June 24th 2023)
 ===
 
-* **Feature**: Add advanced option to export and import your Beyond20 settings to/from file
-* **Feature**: Add new option on toggle hotkeys, allowing to permanently toggle options using hotkeys
-* **Feature**: Add ability to parse roll tables in Item pages, Spell pages, etc...
-* **Feature**: Add support for parsing dice, roll tables, read-aloud, etc.. in Races pages
-* **Feature**: Add support for new DDB type of statblocks, appearing in new source books (Spelljammer creatures)
-* **Feature**: Add option to allow display of attack description when sending to Discord
-* **Feature**: Add support for the new "Read Aloud" formatting D&D Beyond used in Lost Mine of Phandelver (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add support for Death Cleric: Circle of Mortality (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Add special handling for Dragon Wing ranged weapon damages and the Flail of Tiamat, and allow setting a note to specify which damage to use (by [@Aeristoka](https://github.com/Aeristoka))
-* **Feature**: Save the last user selection of damage queries to default to the same damage type
-* **Feature**: Ensure that all queries for advantage are done on the DDB side, rather than in the VTT
-* **Feature**: Send the list of monster actions in the Beyond20 requests in case the VTT needs to know that information
-* **Feature**: *Roll20*: Add new option to allow display of a spell's details during attacks (by [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Fix character parsing not working when accessing a character from the "My Characters" page due to a change in how DDB changes sites
-* **Bugfix**: Fix any hotkey modifier (for whisper/advantage/etc...) being forgotten if a user query is open during a roll (such as damage type for Chromatic Orb)
-* **Bugfix**: Fix the displayed total in Digital Dice notification to the non-discarded roll in case of advantage/disadvantage
-* **Bugfix**: Parse dice formulas in multi-paragraph monster actions (Gelatinous Cube's "Engulf", or a Beholder's "Eye Rays" for example)
-* **Bugfix**: Correctly show individual roll results in the Digital Dice notification when multiple dice are rolled
-* **Bugfix**: Do not apply the Paladin's Aura of Protection on Death Saves since the character is unconscious (by [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Do not apply Otherwordly Glamour to Charisma saves (by [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Fix Great Weapon Fighting not being applied to brutal critical damage dice when using the Polearm Master bonus attack (by [@Aeristoka](https://github.com/Aeristoka))
-* **Bugfix**: Clean up formula parsing, which fixes among other things, some errors showing on Foundry VTT v10
-* **Bugfix**: Fix a leftover quickroll tooltip when rolling a saving throw from the sidebar
-* **Bugfix**: *FVTT module v1.5.1*: Fix NPC hp formula when using a Native Rolls actor
-* **Bugfix**: *FVTT module v1.5.1*: Port Native Rolls to require Foundry v10 and remove deprecation warnings
-* **Bugfix**: *FVTT module v1.5.1*: Fix support for automated animations with Native Rolls
-* **Bugfix**: *FVTT module v1.5.1*: Fix incorrect proficiency value being set on non-standard items when using Native Rolls
-* **Bugfix**: Remove possibility of a message broker error when sending Beyond20 requests through the Game Log
-* **Bugfix**: Fix issue not recognizing some monster actions when a non-breaking space is included in the action name
-* **Bugfix**: Fix the Restrained condition appearing as "RRestrained" due to the "R" in the svg icon (by [@IsaacAbramowitz](https://github.com/IsaacAbramowitz))
-* **Misc**: Remove support for Astral VTT as the site is now closed permanently
-* **Misc**: Add harpy.gg as a recognized VTT which added native support for Beyond20
-* **Misc**: Add alchemyrpg.com as a recognized VTT site (with plans to add native support for Beyond20)
+* **Feature**: Add support for custom sheet websites to send rolls to VTTs through Beyond20
+* **Feature**: Added full [API](/api) documentation for Beyond20 internal messaging and DOM events
+* **Feature**: Add support for custom modifiers/damages to Wild Shape extra creatures
+* **Feature**: Add support for posting read-aloud text to Discord
+* **Feature**: Add support for Radiant Soul from Celestial Aasimar (MotM) (by [@Aeristoka](https://github.com/Aeristoka))
+* **Feature**: Add a hotkey to display attack instead of rolling it
+* **Bugfix**: Send rolls to game log as "Self" when whispering
+* **Bugfix**: Fix Rage damage not applying to Wild Shape extra creatures anymore
+* **Bugfix**: Fix freeze when the game log sidebar is locked in the encounters page
+* **Bugfix**: Remove special support for Otherworldly Glamour for skill checks as DDB implemented it on their side, which caused it to double the bonus (by [@Aeristoka](https://github.com/Aeristoka))
+* **Bugfix**: Change behavior of Vicious Weapon Damage to only display on critical hits as it only triggers on a roll of 20
+* **Bugfix**: Fix parsing of DDB dice formulas that include tooltips
+* **Bugfix**: Fix Beyond20 icon alignment in buttons
+* **Bugfix**: *FVTT*: Remove deprecation warnings for Foundry VTT v10
+* **Misc**: A few cleanups in how events are sent to make for a cleaner API
+* **Misc**: Added a few websites to the list of known VTT/Sheet domains for future implementation support
+* **Misc**: Add osrbeyond.com, codex.dragonshorn.com and dscryb.com to the list of known VTT/Sheet domains for their upcoming integration with Beyond20.
 
 
 ---

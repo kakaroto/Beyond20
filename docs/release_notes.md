@@ -1,3 +1,24 @@
+v2.9.0 (June 24th 2023)
+===
+
+Hi Beyond20 lovers!
+
+It's time for another update to your favorite extension! This one has been cooking for a long time, and there's many reasons for that.
+
+The OGL scandal from WotC in January has definitely had a negative impact on the community as a whole, but Beyond20 has also never been so stable and in need of so little maintenance. While the extension is pretty much "feature complete" at this stage, and the very few bugs that have been reported were not critical, we've still worked to bring a new exciting feature which I think might open up Beyond20 to even more future possibilities.
+
+This update brings a few corrections to small bugs that have been reported in the last months, as well as the addition of some new features. I encourage you to check the [Changelog](/Changelog#v290) for the full list of changes. The big chunk of this update though is the new ability for websites to integrate with Beyond20, not just as a VTT, but also as character sheets. This means that Beyond20 can become the glue that connects any character sheet website to any VTT website.
+
+In order to make that possible, an extensive documentation of our [API](/api) has been written and this should hopefully allow various websites to send their rolls to Beyond20, letting it pass along that data to the player's VTT, making it a truly universal extension. I have heard from quite a few websites who are excited to bring the ability to roll from their sheets to any VTT via Beyond20!
+
+I expect, as more websites start supporting Beyond20, that we'll see additional improvements to the API and a possible increase in activity to support various use cases that may be non-d&d specific.
+I can't wait to see what the future brings and how Beyond20's horizon gets expanded with this new feature.
+
+As usual, thank you to all contributors, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters, who are making this all possible. 
+
+Thank you everyone and keep on rolling!😄
+
+
 v2.8.0 (November 13th 2022)
 ===
 
