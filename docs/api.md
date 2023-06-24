@@ -625,6 +625,7 @@ Though the `type` can be any string to represent the type of sheet sending the r
 The following fields are also included in the Character object for a character of type `Character`:
 ```js
 {
+    "source",           // <string> The source site of the character sheet (default: "D&D Beyond")
     "id",               // <string> The character sheet ID.
     "abilities",        // <Array<Ability>> Array containing the abilities scores of the character
     "classes",          // <Object<string:string>> An object where each key is a class the character has and the value is the level of that character in that class
@@ -876,6 +877,7 @@ function loaded() {
                 type: "chat-message",
                 character: {
                     name: document.title,
+                    source: "My Custom Site",
                     type: "Book",
                     url: window.location.href
                 },

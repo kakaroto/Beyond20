@@ -427,6 +427,7 @@ class Character extends CharacterBase {
         }
         return {
             "name": this._name,
+            "source": "D&D Beyond",
             "avatar": this._avatar,
             "id": this._id,
             "type": this.type(),

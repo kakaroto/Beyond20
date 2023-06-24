@@ -29,7 +29,12 @@ class CharacterBase {
     }
 
     getDict() {
-        return { "name": this._name, "type": this._type, "url": this._url }
+        return {
+            "name": this._name,
+            "source": "D&D Beyond",
+            "type": this._type,
+            "url": this._url
+        };
     }
 }
 

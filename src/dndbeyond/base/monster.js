@@ -840,6 +840,7 @@ class Monster extends CharacterBase {
         }
         return {
             "name": this._name,
+            "source": "D&D Beyond",
             "avatar": this._avatar,
             "type": this.type(),
             "creatureType": this._creatureType,
