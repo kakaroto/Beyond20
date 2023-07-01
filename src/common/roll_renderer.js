@@ -764,7 +764,12 @@ class Beyond20RollRenderer {
 
     displayAvatar(request) {
         const character = (request.whisper !== WhisperType.NO) ? this._settings["hidden-monster-replacement"] : request.character.name;
-        this._displayer.postHTML(request, request.name, `<img src='${request.character.avatar}' width='100%'>`, {}, character, false, false);
+        const html = `<img src='${request.character.avatar}' width='100%'>`;
+        if (request.sendMessage && this._displayer.sendMessage) {
+            this._displayer.sendMessage(request, request.name, html, character, request.whisper, false, '', {}, '', [], [], [], [], true);
+        } else {
+            this._displayer.postHTML(request, request.name, html, {}, character, false, false);
+        }
         this.displayAvatarToDiscord(request);
     }
     displayAvatarToDiscord(request) {
