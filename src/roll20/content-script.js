@@ -630,6 +630,12 @@ async function handleRoll(request) {
         roll = request.message;
     } else if (request.type == "roll-table") {
         roll = await rollRollTable(request);
+    } else if (request.type == "avatar") {
+        roll = rollAvatarDisplay(request);
+        // Always hide monster name if whispering
+        if (request.whisper !== WhisperType.NO) {
+            request.whisper = WhisperType.HIDE_NAMES;
+        }
     } else {
         // 'custom' || anything unexpected;
         const mod = request.modifier != undefined ? request.modifier : request.roll;
@@ -928,21 +934,15 @@ function handleMessage(request, sender, sendResponse) {
             postChatMessage(message, character_name);
         }
     } else if (request.action == "roll") {
-        if (request.type == "avatar") {
-            roll_renderer.displayAvatarToDiscord(request);
-            roll = rollAvatarDisplay(request);
-            const character_name = request.whisper !== WhisperType.NO ? settings["hidden-monster-replacement"] : request.character.name;
-            return postChatMessage(roll, character_name);
-        } else if (request.type == "chat-message") {
-            const character_name = request.whisper == WhisperType.HIDE_NAMES ? settings["hidden-monster-replacement"] : request.character.name;
-            return postChatMessage(request.message, character_name);
-        }
         const isOGL = $("#isOGL").val() === "1";
         if (settings["roll20-template"] === "default" ||
             settings["roll20-template"] === "beyond20" ||
             !isOGL) {
             return roll_renderer.handleRollRequest(request);
         }
+        if (request.type == "avatar") {
+            roll_renderer.displayAvatarToDiscord(request);
+        }    
         handleRoll(request);
     } else if (request.action == "rendered-roll") {
         handleRenderedRoll(request);
