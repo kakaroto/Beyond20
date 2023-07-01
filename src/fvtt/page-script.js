@@ -347,13 +347,15 @@ function rollInitiative(request, custom_roll_dice = "") {
     });
 }
 
-function popAvatar(request) {
+function popAvatar(request, sendToDiscord=true) {
     new ImagePopout(request.character.avatar, {
         "shareable": false,
         "title": (request.whisper !== WhisperType.NO) ? settings["hidden-monster-replacement"] : request.character.name,
         "entity": { "type": "User", "id": game.user.id }
     }).render(true).shareImage(true);
-    roll_renderer.displayAvatarToDiscord(request);
+    if (sendToDiscord) {
+        roll_renderer.displayAvatarToDiscord(request);
+    }
 }
 
 async function addInitiativeToCombat(roll) {
@@ -408,6 +410,9 @@ function handleRenderedRoll(request) {
     // The hook would return "false" to stop propagation, meaning that it was handled
     const handledNatively = Hooks.call("beyond20Request", request.action, request);
     if (handledNatively === false) return;
+    if (request.request.type == "avatar") {
+        return popAvatar(request.request, false);
+    }
 
     roll_renderer._displayer.postHTML(request.request, request.title,
         request.html, request.character, request.whisper, 
