@@ -820,6 +820,10 @@ async function handleRenderedRoll(request) {
         settings["roll20-template"] === "beyond20")) {
         return handleOGLRenderedRoll(request);
     }
+    
+    if (["chat-message", "avatar"].includes(request.request.type)) {
+        return handleRoll(request.request);
+    }
     const properties = {};
     if (request.source)
         properties.source = request.source;
