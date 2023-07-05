@@ -181,9 +181,10 @@ No. Beyond20 is exclusively a D&D Beyond extension and I have no plans or any wi
 
 ### Can you add support for &lt;insert new VTT name&gt;?
 
-The answer is most probably no. While I used to have a policy of "If you can do the work and send me a PR, I will gladly review and merge it", I have recently changed my stance on this (and it has nothing to do with having my own [VTT hosting service](https://forge-vtt.com/)).
+The answer is most probably no. The issue is that there is nearly one new VTT that comes out every week, and adding support for every possible VTT is too much. Even if someone else does the job and sends it as a PR (Pull Request), it would still involve a massive amount of code review, add a lot of complexity to the overall software, and require long term maintenance as well as an increase in tech support questions relating to that VTT which we wouldn't know how to answer.
 
-The issue is that there is nearly one new VTT that comes out every week, and adding support for every possible VTT is too much. Even if someone else does the job and sends it as a PR (Pull Request), it would still involve a massive amount of code review, add a lot of complexity to the overall software, and require long term maintenance as well as an increase in tech support questions relating to that VTT which we wouldn't know how to answer.
+However, you do not need Beyond20 to support a specific VTT for it to work with it. Any website owner, whether for character sheets, or for a VTT, can integrate with Beyond20 and add support for it natively.
 
-That being said, the answer isn't a definite no, it's a "most probably no". If the VTT is a major one, and not one of the dozen that are announced every month, if it has a large number of users and has enough polish and stability and isn't yet another "niche VTT", then contact me and if you are willing to implement support for it and provide the long term maintenance and tech support as well, then I might be willing to merge it.
+It is also possible to create an extension that bridges the gap between a specific VTT and the Beyond20 extension.
 
+In order to support Beyond20 and integrate with it, read our [API](/api) documentation and see the examples provided.
