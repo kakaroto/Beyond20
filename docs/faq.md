@@ -147,13 +147,13 @@ You can find the companion module [here](https://github.com/kakaroto/Beyond20/tr
 
 Enabling Discord integration is easy and can be done in 4 simple steps : 
 1. [Invite](https://beyond20.kicks-ass.org/invite) the Beyond20 bot to your server
-2. Send `!beyond20 secret` command in the channel of your choice
+2. Send `/secret` command in the channel of your choice
 3. Set the `secret key` you received in Beyond20's options.
 4. Share the `secret key` with your group.
 
 Make sure you didn't disallow link previews and embeds as the Discord bot uses embed messages to display its rolls.
 
-You can read the more detailed discord integration instructions [here](https://beyond20.here-for-more.info/discord)
+You can read the more detailed discord integration instructions, and see additional options [here](https://beyond20.here-for-more.info/discord)
 
 ### Why doesn't Beyond20 allow me to make a melee attack with my magic staffs?
 
