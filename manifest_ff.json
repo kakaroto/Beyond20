@@ -176,7 +176,7 @@
 		},
 		{
 			"matches": [
-				"*://app.roll20.net/editor/"
+				"*://app.roll20.net/editor/*"
 			],
 			"css": [
 				"libs/css/alertify.css",

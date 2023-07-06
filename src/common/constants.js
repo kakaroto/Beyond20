@@ -1,4 +1,4 @@
-ROLL20_URL = "*://app.roll20.net/editor/";
+ROLL20_URL = "*://app.roll20.net/editor/*";
 FVTT_URL = "*://*/*game";
 DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
 DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
