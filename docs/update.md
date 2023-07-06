@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.9.0
+Congratulations! Beyond20 was just updated to the latest version : v2.9.1
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -16,6 +16,22 @@ Thank you all for your support!
 {% include_relative known_issues.md %}
 
 # Release Notes
+v2.9.1 (July 5th 2023)
+===
+
+Hi again everyone!
+
+We're releasing the 2.9.1 update for your favorite extension already! This is a very small bugfix release, which is released urgently as it addresses a critical issue with Roll20.
+Earlier today, Roll20 have changed something in their app's URL which causes Beyond20 to stop recognizing it, this update should fix that.
+There's also a few small fixes to the "Display Avatar" feature that also snuck in as they were fixed recently as well.
+
+We hope Roll20 don't change anything further and the extension continues to work for months to come.
+
+As usual, thank you to all contributors, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters, who are making this all possible. 
+
+Thanks and enjoy!
+
+v2.9.0 (June 24th 2023)
 
 Hi Beyond20 lovers!
 
@@ -39,6 +55,14 @@ Thank you everyone and keep on rolling!😄
 Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
+
+v2.9.1 (July 5th 2023)
+===
+
+- **Bugfix**: *Roll20*: Fix detection of Roll20 tab after today's Roll20 change to their app's URL
+- **Bugfix**: Fix the "Display avatar" option on a character sheet when digital dice are enabled
+- **Bugfix**: *Roll20*: Fix display of avatars with the default sheet option
+- **Bugfix**: *FVTT*: Correct open a popup dialog for a shared avatar when using digital dice
 
 v2.9.0 (June 24th 2023)
 ===

@@ -1,3 +1,11 @@
+v2.9.1 (July 5th 2023)
+===
+
+- **Bugfix**: *Roll20*: Fix detection of Roll20 tab after today's Roll20 change to their app's URL
+- **Bugfix**: Fix the "Display avatar" option on a character sheet when digital dice are enabled
+- **Bugfix**: *Roll20*: Fix display of avatars with the default sheet option
+- **Bugfix**: *FVTT*: Correct open a popup dialog for a shared avatar when using digital dice
+
 v2.9.0 (June 24th 2023)
 ===
 

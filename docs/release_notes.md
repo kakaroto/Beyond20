@@ -1,3 +1,19 @@
+v2.9.1 (July 5th 2023)
+===
+
+Hi again everyone!
+
+We're releasing the 2.9.1 update for your favorite extension already! This is a very small bugfix release, which is released urgently as it addresses a critical issue with Roll20.
+Earlier today, Roll20 have changed something in their app's URL which causes Beyond20 to stop recognizing it, this update should fix that.
+There's also a few small fixes to the "Display Avatar" feature that also snuck in as they were fixed recently as well.
+
+We hope Roll20 don't change anything further and the extension continues to work for months to come.
+
+As usual, thank you to all contributors, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters, who are making this all possible. 
+
+Thanks and enjoy!
+
+
 v2.9.0 (June 24th 2023)
 ===
 
