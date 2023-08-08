@@ -195,10 +195,10 @@ class Beyond20 {
         }
         return item;
     }
-    static findToken(request) {
+    static findToken(name) {
         let token = null;
-        if (request.character.name) {
-            const name = request.character.name.toLowerCase().trim();
+        if (name) {
+            name = name.toLowerCase().trim();
             token = canvas.tokens.placeables.find((t) => t.owner && t.name.toLowerCase().trim() == name);
         }
         return token || canvas.tokens.controlled[0];
