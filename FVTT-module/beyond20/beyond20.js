@@ -195,10 +195,10 @@ class Beyond20 {
         }
         return item;
     }
-    static findToken(name) {
+    static findToken(request) {
         let token = null;
-        if (name) {
-            name = name.toLowerCase().trim();
+        if (request.character.name) {
+            const name = request.character.name.toLowerCase().trim();
             token = canvas.tokens.placeables.find((t) => t.owner && t.name.toLowerCase().trim() == name);
         }
         return token || canvas.tokens.controlled[0];
@@ -698,7 +698,7 @@ class Beyond20 {
 
     static _addTargets(message, html) {
         if (!game.settings.get(moduleName, "rollTargets") || message.getFlag(moduleName, "hasTargets") || message.type != 5) return;
-        let [title, dummy] = html.find("img").eq(0).attr("title")?.split("(");
+        let title = html.find("img").eq(0).attr("title"); //?.split("(");
         if (!this.skipTargets.includes(title)) {
             // Find user's targets
             let targets = game.user.targets;
@@ -838,14 +838,6 @@ Hooks.on('init', function () {
         default: true,
         type: Boolean
     });
-    game.settings.register(moduleName, "tokenTargets", {
-        name: "Track targets by token",
-        hint: "Stores target information in tokens and activates targets by currently selected token or tokens,",
-        scope: "client",
-        config: true,
-        default: true,
-        type: Boolean
-    });
     game.settings.register(moduleName, "rollTargets", {
         name: "Add roll targets",
         hint: "Adds targets to rolls.  Targets are determined by user or by token if no user targets are selected and target tracking is activated.",
@@ -928,45 +920,5 @@ Hooks.on('ready', function () {
             }
         }
         setTimeout(cb, 500)
-    }
-});
-
-Hooks.on("controlToken", (token, controlled) => {
-    if (!game.settings.get(moduleName, "tokenTargets")) return;
-
-    // Determine new target set
-    const targets = [];
-    const controlledTokens = Array.from(canvas.tokens.controlled);
-    for (i = 0; i < controlledTokens.length; i++) {
-        controlledTokens[i].document.getFlag(moduleName, "targets")?.map(t => targets.push(t));
-    }
-
-    /* check for tokens deleted from scene */
-    const canvasTokens = Array.from(canvas.tokens.placeables).map(t => t.id);
-    let culledTargets = canvasTokens.filter(c => targets.includes(c));
-    if (targets !== culledTargets) {
-        for (i = 0; i < controlledTokens.length; i++) {
-            controlledTokens[i].document.setFlag(moduleName, "targets", culledTargets);
-        }
-    }
-    game.user.updateTokenTargets(culledTargets);
-});
-
-Hooks.on("targetToken", async (user, token, targeted) => {
-    if (!game.settings.get(moduleName, "tokenTargets")) return;
-    if (canvas.tokens.controlled.length == 0) return;
-
-
-    // Get targets from all controlled tokens
-    let currTargets = Array.from(game.user.targets).map(t => t.id);
-
-    if (user.id === game.userId) {
-        let tokens = Array.from(canvas.tokens.controlled);
-        for (let i = 0; i < tokens.length; i++) {
-            tokens[i].document.setFlag(moduleName, "targets", currTargets);
-        }
-    } else {
-        /* refresh current users targets in case of changes from user/GM */
-        game.user.updateTokenTargets(currTargets);
     }
 });
