@@ -1070,7 +1070,7 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             "modifier": inspiration_die
         });
     } else if (action_name.includes("Blood Curse of the Eyeless")) {
-        const bloodhunter_level = character.getClassLevel("Bloodhunter");
+        const bloodhunter_level = character.getClassLevel("Blood Hunter");
         let hemocraft_die = bloodhunter_level < 5 ? "1d4" : (bloodhunter_level < 11 ? "1d6" : (bloodhunter_level < 17 ? "1d8" : "1d10"));
         return sendRollWithCharacter("custom", hemocraft_die, {
             "name": action_name,
