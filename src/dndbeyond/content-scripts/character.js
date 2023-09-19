@@ -1928,8 +1928,9 @@ function injectRollButton(paneClass) {
         const action_name = $(".ct-sidebar__heading").text();
         const action_parent = $(".ct-sidebar__header-parent").text();
         const to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
-        if ((action_name == "Superiority Dice" || action_parent == "Maneuvers") ||
-            (action_name == "Bardic Inspiration" || action_parent == "Blade Flourish") ||
+        if (action_name == "Superiority Dice" || action_parent == "Maneuvers" ||
+            action_name == "Bardic Inspiration" || action_parent == "Blade Flourish" ||
+            action_name.includes("Blood Curse of the Eyeless") ||
             (properties["Damage"] !== undefined || to_hit !== null || properties["Attack/Save"] !== undefined)) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true });
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
