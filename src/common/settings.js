@@ -558,7 +558,7 @@ const character_settings = {
         "default": true
     },
     "cleric-circle-of-mortality": {
-        "title": "Cleric: Death Domain: Circle of Mortality",
+        "title": "Cleric: Grave Domain: Circle of Mortality",
         "description": "Manipulating the line between life and death, your healing on a creature with 0 hp is maximized",
         "type": "bool",
         "default": false
