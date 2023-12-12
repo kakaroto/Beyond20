@@ -493,7 +493,7 @@ class Monster extends CharacterBase {
         }
         for (let dmg of healing_matches) {
             const damage = dmg[2] || dmg[1];
-			const healingType = dmg[3] ? "Temp HP" : "Healing"
+            const healingType = dmg[3] ? "Temp HP" : "Healing"
             if (damage) {
                 damages.push(damage.replace("plus", "+"));
                 damage_types.push(healingType);
