@@ -236,18 +236,31 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
         const min = character.getAbility("STR").score - parseInt(modifier);
         roll_properties.d20 = `1d20min${min}`
     }
-    // Wizard Bladesong Concentration Check Bonus
-    if (character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false) &&
-        rollType == "saving-throw" && ability == "CON") {
-        // Using confirm because the parent function is not async
-        if (confirm('Your Bladesong whispers: "Is this a Concentration Check?"')) {
-            const intelligence = character.getAbility("INT") || {mod: 0};
-            const mod = Math.max((parseInt(intelligence.mod) || 0), 1);
-            modifier = parseInt(modifier) + mod;
-            modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-            roll_properties["modifier"] = modifier;
+
+    // Concentration checks
+    if (rollType == "saving-throw" && ability == "CON") {
+        const has_warcaster = character.hasFeat("War Caster");
+        const has_bladesong = character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false);
+        if (has_warcaster || has_bladesong) {
+            const confirmation = has_bladesong ? 'Your Bladesong whispers: "Is this a Concentration Check?"' : 'Is this a Concentration Check?';
+            // Using confirm because the parent function is not async
+            if (confirm(confirmation)) {
+                // Wizard Bladesong Concentration Check Bonus
+                if (has_bladesong) {
+                    const intelligence = character.getAbility("INT") || {mod: 0};
+                    const mod = Math.max((parseInt(intelligence.mod) || 0), 1);
+                    modifier = parseInt(modifier) + mod;
+                    modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
+                    roll_properties["modifier"] = modifier;
+                }
+                // Feat - War Caster - Concentration Check Bonus
+                if (has_warcaster) {
+                    roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+                }
+            }
         }
     }
+    
     // Wizard - War Magic - Saving Throw Bonus
     if (character.hasClassFeature("Durable Magic") && character.getSetting("wizard-durable-magic", false) &&
         rollType == "saving-throw") {
