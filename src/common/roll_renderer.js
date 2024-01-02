@@ -464,22 +464,22 @@ class Beyond20RollRenderer {
 
     async rollSkill(request, custom_roll_dice = "") {
         const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-        return this.rollD20(request, request.skill + "(" + request.modifier + ")", data, "skill-check");
+        return this.rollD20(request, request.skill + " (" + request.modifier + ")", data, "skill-check");
     }
 
     rollAbility(request, custom_roll_dice = "") {
         const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-        return this.rollD20(request, request.name + "(" + request.modifier + ")", data, "ability-check");
+        return this.rollD20(request, request.name + " (" + request.modifier + ")", data, "ability-check");
     }
 
     rollSavingThrow(request, custom_roll_dice = "") {
         const data = { [request.ability]: request.modifier, "custom_dice": custom_roll_dice }
-        return this.rollD20(request, request.name + " Save" + "(" + request.modifier + ")", data, "saving-throw");
+        return this.rollD20(request, request.name + " Save" + " (" + request.modifier + ")", data, "saving-throw");
     }
 
     rollInitiative(request, custom_roll_dice = "") {
         const data = { "initiative": request.initiative, "custom_dice": custom_roll_dice }
-        return this.rollD20(request, "Initiative" + "(" + request.initiative + ")", data, "initiative");
+        return this.rollD20(request, "Initiative" + " (" + request.initiative + ")", data, "initiative");
     }
 
     rollHitDice(request) {
@@ -701,7 +701,7 @@ class Beyond20RollRenderer {
 
         let source = request["level-school"];
         if (request["cast-at"] !== undefined)
-            source = request["level-school"] + "(Cast at " + request["cast-at"] + " Level)";
+            source = request["level-school"] + " (Cast at " + request["cast-at"] + " Level)";
 
         if (request.ritual)
             data["Ritual"] = "Can be cast as a ritual";
@@ -829,7 +829,7 @@ class Beyond20RollRenderer {
             const mod = request.modifier || request.roll;
             const rname = request.name || request.type;
 
-            return this.rollDice(request, rname + "(" + mod + ")", mod, {});
+            return this.rollDice(request, rname + " (" + mod + ")", mod, {});
         }
     }
 }

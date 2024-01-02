@@ -1165,9 +1165,9 @@ function setVTTTabSetting(name, settings) {
                     "This " + current_campaign,
                     "This Specific Tab"];
                 if (current_vtt == vtt) {
-                    new_options.push("Another tab || " + campaign.toLowerCase() + "(No change)");
+                    new_options.push("Another tab || " + campaign.toLowerCase() + " (No change)");
                 } else {
-                    new_options.push("A " + vtt_name + " " + campaign.toLowerCase() + "(No change)");
+                    new_options.push("A " + vtt_name + " " + campaign.toLowerCase() + " (No change)");
                 }
             }
         } else {
