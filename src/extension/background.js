@@ -66,6 +66,8 @@ function sendMessageToRoll20(request, limit = null, failure = null) {
         let failedSendingViaContentPort = sendMessageToContentScript(request);
         if(failedSendingViaContentPort) {
             sendMessageTo(ROLL20_URL, request, failure);
+        } else {
+            failure(failedSendingViaContentPort);
         }
     }
 }
