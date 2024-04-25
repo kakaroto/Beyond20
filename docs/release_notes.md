@@ -1,3 +1,22 @@
+v2.9.2 (April 24th 2024)
+===
+
+Hi everyone, long time no see!
+
+Today, D&D Beyond has released an update to their character sheets which unfortunately broke Beyond 20 support as many things have changed behind the scenes, making it unable to parse the sheet and make rolls.
+This hotfix update fixes that and restores full Beyond 20 functionality, as well as adds a few other bugfixes to the extension and some small new features (See [Changelog](/Changelog#v292) for the full list).
+Hopefully I didn't miss anything and it won't break again in the near future, but if D&D Beyond are going to push additional updates, I thank you all in advance for your patience and I promise to be on top of things and release fixes as soon as humanly possible!
+
+In other news, I have been working on Beyond20 recently to add a new cool feature, but it's not yet ready for release. I'm quite excited about this and I can't wait to show you all what we've been cooking up in secret 🤫!
+
+For now, enjoy this small update, and stay ready for a larger upcoming release!
+
+As usual, thank you to all contributors, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters, who are making this all possible and keep me motivated. 
+
+Thanks and happy rolling!
+
+
+
 v2.9.1 (July 5th 2023)
 ===
 

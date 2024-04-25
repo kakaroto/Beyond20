@@ -1,3 +1,22 @@
+v2.9.2 (April 24th 2024)
+===
+- **Feature**: Added support for NPC healing actions, such as the Unicorn (by [@lunethefirst](https://github.com/lunethefirst))
+- **Feature**: Prompt for Concentration check if character is War Caster and a Constitution save is rolled (by [@rthorpeii](https://github.com/rthorpeii))
+- **Feature**: Add support for clicking on the Digital Dice Versatile damage button to roll damage two handed
+- **Feature**: Add a "Display to VTT" button for Blood Curse of the Eyeless feature
+- **Feature**: Add support for using a service worker and switch to the Manifest V3 extension specification for Chrome/Edge browsers
+- **Bugfix**: Fix character sheet parsing due to updated D&D Beyond website on April 24th 2024 which broke weapon rolls, spells, skills, death saves and other side effects
+- **Bugfix**: Fix Digital Dice advantage/disadvantage rolls being summed when the results are identical 
+- **Bugfix**: Fix rolling hemocraft die for Blood Curse of the Eyeless
+- **Bugfix**: Fix issue rolling a custom skill check with a +0 modifier when rolling with advantage/disadvantage from Digital Dice context menu
+- **Bugfix**: Fix a typo which may have caused quick roll buttons for damage only rolls to do a full attack
+- **Bugfix**: Fix empty damage type for Chaos Bolt
+- **Bugfix**: Fix Circle of Mortality setting label from Death Domain to Grave Domain (by [@Bracciata](https://github.com/Bracciata))
+- **Bugfix**: Improve display of damage restrictions by adding a space between the damage type and the restriction
+- **Bugfix**: Improve display of various roll results which include extra information between parenthesis to be preceded by a space (by [@Bracciata](https://github.com/Bracciata))
+- **Bugfix**: *FVTT*: Fix rolling Chaos Bolt on Foundry using Native Rolls due to missing damage type
+
+
 v2.9.1 (July 5th 2023)
 ===
 
