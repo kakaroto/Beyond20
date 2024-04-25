@@ -2423,7 +2423,7 @@ function activateQuickRolls() {
                 execute(paneClass, {force_to_hit_only, force_damages_only});
             } else {
                 quick_roll_force_attack = force_to_hit_only;
-                quick_roll_force_damge = force_damages_only;
+                quick_roll_force_damage = force_damages_only;
                 quick_roll = true;
             }
         });
@@ -2462,12 +2462,12 @@ function activateQuickRolls() {
                     $(".ddbc-character-tidbits__menu-callout").trigger('click');
                     name_element.trigger('click');
                     quick_roll_force_attack = force_to_hit_only;
-                    quick_roll_force_damge = force_damages_only;
+                    quick_roll_force_damage = force_damages_only;
                     quick_roll = true;
                 }
             } else {
                 quick_roll_force_attack = force_to_hit_only;
-                quick_roll_force_damge = force_damages_only;
+                quick_roll_force_damage = force_damages_only;
                 quick_roll = true;
             }
         });
