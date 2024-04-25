@@ -77,6 +77,8 @@ class DigitalDice {
                     const result = results.shift();
                     if (result.match(/\([0-9,]+\)/)) {
                         rolls = result.slice(1, -1).split(",").map(r => ({roll: parseInt(r)}));
+                        // Don't try to parse the result of the results as if we had just parsed the first dice roll
+                        i += rolls.length - 1;
                         if (mod === "kh1") {
                             let max = 0;
                             for (let r of rolls) {
