@@ -731,7 +731,7 @@ function capitalize(str) {
     return str.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-async function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, spell_group = null) {
+async function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, force_versatile = false, spell_group = null) {
     const prop_list = $(".ct-item-pane .ct-item-detail [role=list] > div");
     const properties = propertyListToDict(prop_list);
     properties["Properties"] = properties["Properties"] || "";
@@ -795,6 +795,9 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                         versatile_choice = "one"
                     if (key_modifiers.versatile_two_handed)
                         versatile_choice = "two";
+                    if (force_versatile) {
+                        versatile_choice = "two";
+                    }
                     if (versatile_choice == "one") {
                         damages.push(damage);
                         if (character.getGlobalSetting("weapon-handedness", false)){
@@ -1724,8 +1727,8 @@ function handleCustomText(paneClass) {
     return customRolls;
 }
 
-async function execute(paneClass, {force_to_hit_only = false, force_damages_only = false, spell_group=null}={}) {
-    console.log("Beyond20: Executing panel : " + paneClass, force_to_hit_only, force_damages_only);
+async function execute(paneClass, {force_to_hit_only = false, force_damages_only = false, force_versatile = false, spell_group=null}={}) {
+    console.log("Beyond20: Executing panel : " + paneClass, force_to_hit_only, force_damages_only, force_versatile);
     const rollCustomText = async (customTextList) => {
         for (const customText of customTextList) {
             await sendRollWithCharacter("chat-message", 0, {
@@ -1751,7 +1754,7 @@ async function execute(paneClass, {force_to_hit_only = false, force_damages_only
             else if (paneClass == "ct-initiative-pane")
                 await rollInitiative();
             else if (paneClass == "ct-item-pane")
-                await rollItem(false, force_to_hit_only, force_damages_only, spell_group);
+                await rollItem(false, force_to_hit_only, force_damages_only, force_versatile, spell_group);
             else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
                 await rollAction(paneClass, force_to_hit_only, force_damages_only);
             else if (paneClass == "ct-spell-pane")
@@ -2289,6 +2292,7 @@ function injectSettingsButton() {
 var quick_roll = false;
 var quick_roll_force_attack = false;
 var quick_roll_force_damage = false;
+var quick_roll_force_versatile = false;
 var quick_roll_timeout = 0;
 
 
@@ -2301,7 +2305,7 @@ function deactivateQuickRolls() {
     const skills = $(".ct-skills .ct-skills__list .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__list .ddbc-skills__col--modifier");
     const actions = $(".ct-combat-attack .ct-combat-attack__icon,.ddbc-combat-attack .ddbc-combat-attack__icon");
     const actions_to_hit = $(".ddbc-combat-attack .ddbc-combat-attack__tohit .integrated-dice__container");
-    const actions_damage = $(".ddbc-combat-attack .ddbc-combat-attack__damage .integrated-dice__container:first-of-type");
+    const actions_damage = $(".ddbc-combat-attack .ddbc-combat-attack__damage .integrated-dice__container");
     const spells = $(".ct-spells-spell .ct-spells-spell__action,.ddbc-spells-spell .ddbc-spells-spell__action");
     const spells_to_hit = $(".ct-spells-spell .ct-spells-spell__tohit .integrated-dice__container, .ddbc-spells-spell .ddbc-spells-spell__tohit .integrated-dice__container");
     const spells_damage = $(".ct-spells-spell .ct-spells-spell__damage .integrated-dice__container, .ddc-spells-spell .ddc-spells-spell__damage .integrated-dice__container");
@@ -2401,7 +2405,7 @@ function activateQuickRolls() {
         });
     }
 
-    const activateQRAction = (action, force_to_hit_only, force_damages_only) => {
+    const activateQRAction = (action, force_to_hit_only, force_damages_only, force_versatile) => {
         action = $(action);
         // To the right for attack and damage, to the left for to hit
         const position = force_to_hit_only ? 'left' : 'right';
@@ -2420,10 +2424,11 @@ function activateQuickRolls() {
             const pane_name = pane.find(".ct-sidebar__heading").text();
 
             if (name == pane_name) {
-                execute(paneClass, {force_to_hit_only, force_damages_only});
+                execute(paneClass, {force_to_hit_only, force_damages_only, force_versatile});
             } else {
                 quick_roll_force_attack = force_to_hit_only;
                 quick_roll_force_damage = force_damages_only;
+                quick_roll_force_versatile = force_versatile;
                 quick_roll = true;
             }
         });
@@ -2436,7 +2441,7 @@ function activateQuickRolls() {
         activateQRAction(action, true, false);
     }
     for (let action of actions_damage.toArray()) {
-        activateQRAction(action, false, true);
+        activateQRAction(action, false, true, action.previousElementSibling !== null);
     }
 
     const activateQRSpell = (spell, force_to_hit_only, force_damages_only) => {
@@ -2463,11 +2468,13 @@ function activateQuickRolls() {
                     name_element.trigger('click');
                     quick_roll_force_attack = force_to_hit_only;
                     quick_roll_force_damage = force_damages_only;
+                    quick_roll_force_versatile = false;
                     quick_roll = true;
                 }
             } else {
                 quick_roll_force_attack = force_to_hit_only;
                 quick_roll_force_damage = force_damages_only;
+                quick_roll_force_versatile = false;
                 quick_roll = true;
             }
         });
@@ -2486,9 +2493,14 @@ function activateQuickRolls() {
 function executeQuickRoll(paneClass) {
     quick_roll_timeout = 0;
     console.log("EXECUTING QUICK ROLL!");
-    execute(paneClass, {force_to_hit_only: quick_roll_force_attack, force_damages_only: quick_roll_force_damage});
+    execute(paneClass, {
+        force_to_hit_only: quick_roll_force_attack,
+        force_damages_only: quick_roll_force_damage,
+        force_versatile: quick_roll_force_versatile
+    });
     quick_roll_force_attack = false;
     quick_roll_force_damage = false;
+    quick_roll_force_versatile = false;
     quick_roll = false;
 }
 
