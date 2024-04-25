@@ -198,6 +198,11 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                 damages.splice(0, 0, base_damage);
                 damage_types.splice(0, 0, "Chaotic Energy");
             }
+            // Chaos Bolt has a 1d6 damage with no damage type assigned
+            const no_type_idx = damage_types.findIndex(t => t === "");
+            if (no_type_idx > -1) {
+                damage_types[no_type_idx] = "Chaotic Energy";
+            }
         } else if (roll_properties.name == "Toll the Dead") {
             const ttd_dice = await dndbeyondDiceRoller.queryGeneric(roll_properties.name, "Is the target missing any of its hit points ?", { "d12": "Yes", "d8": "No" }, "ttd_dice", ["d12", "d8"]);
             if (ttd_dice === null) return null;
