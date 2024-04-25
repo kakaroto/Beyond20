@@ -2512,14 +2512,36 @@ function documentModified(mutations, observer) {
     if (customRoll && settings['use-digital-dice']) {
         dndbeyondDiceRoller.sendCustomDigitalDice(character, customRoll);
     }
+
+    const SUPPORTED_PANES = [
+        "ct-custom-skill-pane",
+        "ct-skill-pane",
+        "ct-ability-pane",
+        "ct-ability-saving-throws-pane",
+        "ct-initiative-pane",
+        "ct-class-feature-pane",
+        "ct-racial-trait-pane",
+        "ct-feat-pane",
+        "ct-background-pane",
+        "ct-trait-pane",
+        "ct-item-pane",
+        "ct-infusion-choice-pane",
+        "ct-action-pane",
+        "ct-custom-action-pane",
+        "ct-spell-pane",
+        "ct-reset-pane",
+        "ct-health-manage-pane",
+        "ct-creature-pane",
+        "ct-vehicle-pane",
+        "ct-condition-manage-pane",
+        "ct-proficiencies-pane",
+        "ct-character-manage-pane"
+    ]
     
-    const pane = $(".ct-sidebar__pane-content > div");
+    const pane = $(SUPPORTED_PANES.map(pane => `.${pane}`).join(","));
     if (pane.length > 0) {
         for (let div = 0; div < pane.length; div++) {
             const paneClass = pane[div].className;
-            if (paneClass == "ct-sidebar__pane-controls" || paneClass == "ct-beyond20-settings-pane") {
-                continue;
-            }
             console.log("Beyond20: New side panel is : " + paneClass);
             injectRollButton(paneClass);
             if (quick_roll) {
