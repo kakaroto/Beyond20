@@ -354,7 +354,7 @@ function tabMatches(tab, url) {
 
 function actOnCurrentTab(tab) {
     setCurrentTab(tab);
-    if (urlMatches(tab.url, ROLL20_URL) || isFVTT(tab.title)) {
+    if (isRoll20(tab.title) || isFVTT(tab.title)) {
         const vtt = isFVTT(tab.title) ? "Foundry VTT" : "Roll20";
         const options = $(".beyond20-options");
         options.append(

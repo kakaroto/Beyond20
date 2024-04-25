@@ -108,6 +108,10 @@ function roll20Title(title) {
     return title.replace(" | Roll20", "");
 }
 
+function isRoll20(title) {
+    return title.includes("| Roll20");
+}
+
 function isFVTT(title) {
     return title.includes("Foundry Virtual Tabletop");
 }
