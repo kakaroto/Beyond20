@@ -409,3 +409,11 @@ if (getBrowser() == "Chrome") {
     }
 }
 action.onClicked.addListener(browserActionClicked);
+
+// With MV3, background script is actually a service worker, which would get terminated after 30 seconds if it doesn't
+// call an API, so we call a local storage API every 20 seconds to keep it alive
+if (manifest.manifest_version >= 3) {
+    setInterval(() => {
+        chrome.storage.local.get({"ignore": "me"}, () => {});
+    }, 20000);
+}
