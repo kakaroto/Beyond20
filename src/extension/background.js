@@ -62,8 +62,11 @@ function sendMessageToRoll20(request, limit = null, failure = null) {
         } else {
             failure(true)
         }
-    } else {
-        sendMessageTo(ROLL20_URL, request, failure)
+    } else { //First try to send via content script port in case we are in Discord Activity
+        let failedSendingViaContentPort = sendMessageToContentScript(request);
+        if(failedSendingViaContentPort) {
+            sendMessageTo(ROLL20_URL, request, failure);
+        }
     }
 }
 
@@ -376,6 +379,27 @@ chrome.tabs.onUpdated.addListener(onTabsUpdated)
 chrome.tabs.onRemoved.addListener(onTabRemoved)
 chrome.permissions.onAdded.addListener(onPermissionsUpdated)
 chrome.permissions.onRemoved.addListener(onPermissionsUpdated)
+
+let contentScriptPort;
+
+chrome.runtime.onConnect.addListener((p) => {
+    console.log("Port connected");
+    contentScriptPort = p;
+});
+
+function sendMessageToContentScript(msg) {
+    if(contentScriptPort) {
+        let succeeded = true;
+        try {
+            contentScriptPort.postMessage(msg);
+        } catch(e) {
+            succeeded = false;
+        }
+        return !succeeded;
+    } else {
+        return true;
+    }
+}
 
 chrome.permissions.getAll((permissions) => {
     currentPermissions = permissions;
