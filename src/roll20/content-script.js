@@ -407,7 +407,7 @@ function rollSpellCard(request) {
     }
 
     if (request["cast-at"] !== undefined)
-        properties["level"] = request["level-school"] + "(Cast at " + request["cast-at"] + " Level)";
+        properties["level"] = request["level-school"] + " (Cast at " + request["cast-at"] + " Level)";
     else
         properties["level"] = request["level-school"];
 

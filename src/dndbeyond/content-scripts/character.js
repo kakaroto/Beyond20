@@ -57,7 +57,7 @@ async function rollSkillCheck(paneClass) {
             modifier = mod >= 0 ? `+${mod}` : `${mod}`;
         }
     }
-    //console.log("Skill " + skill_name + "(" + ability + ") : " + modifier);
+    //console.log("Skill " + skill_name + " (" + ability + ") : " + modifier);
     const roll_properties = {
         "skill": skill_name,
         "ability": ability,
@@ -2000,7 +2000,7 @@ function injectRollButton(paneClass) {
                     const id = addRollButton(character, async () => {
                         const props = await buildAttackRoll(character,
                             "action",
-                            spell_name + "(" + sizeStr + ")",
+                            spell_name + " (" + sizeStr + ")",
                             sizeStr + " animated object",
                             {},
                             [dmg],
