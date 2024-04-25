@@ -82,13 +82,25 @@ class DigitalDice {
                             for (let r of rolls) {
                                 if (r.roll > max) max = r.roll;
                             }
-                            rolls.forEach(r => r.discarded = r.roll !== max);
+                            if (rolls.every(r => r.roll === max) && rolls.length > 1) {
+                                // If all rolls are the same, keep the first one
+                                rolls.forEach(r => r.discarded = true);
+                                rolls[0].discarded = false;
+                            } else {
+                                rolls.forEach(r => r.discarded = r.roll !== max);
+                            }
                         } else if (mod === "kl1") {
                             let min = faces;
                             for (let r of rolls) {
                                 if (r.roll < min) min = r.roll;
                             }
-                            rolls.forEach(r => r.discarded = r.roll !== min);
+                            if (rolls.every(r => r.roll === min) && rolls.length > 1) {
+                                // If all rolls are the same, keep the first one
+                                rolls.forEach(r => r.discarded = true);
+                                rolls[0].discarded = false;
+                            } else {
+                                rolls.forEach(r => r.discarded = r.roll !== min);
+                            }
                         }
                     } else {
                         rolls = [{roll: parseInt(result || 0)}];
