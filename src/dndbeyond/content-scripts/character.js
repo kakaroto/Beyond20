@@ -831,7 +831,7 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                     if (dmg != "") {
                         dmg = dmg.replace(dmg_info, "");
                         if (dmg_info != "")
-                            dmg_type += "(" + dmg_info + ")";
+                            dmg_type += " (" + dmg_info + ")";
 
                         if ((character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&
                             properties["Attack Type"] == "Melee" &&
