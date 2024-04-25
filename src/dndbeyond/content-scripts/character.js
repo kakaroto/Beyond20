@@ -732,7 +732,7 @@ function capitalize(str) {
 }
 
 async function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, spell_group = null) {
-    const prop_list = $(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property");
+    const prop_list = $(".ct-item-pane .ct-item-detail [role=list] > div");
     const properties = propertyListToDict(prop_list);
     properties["Properties"] = properties["Properties"] || "";
     //console.log("Properties are : " + String(properties));
@@ -768,8 +768,9 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
         const damages = [];
         let damage_types = [];
         for (let i = 0; i < prop_list.length; i++) {
-            if (prop_list.eq(i).find(".ct-property-list__property-label,.ddbc-property-list__property-label").text() == "Damage:") {
-                const value = prop_list.eq(i).find(".ct-property-list__property-content,.ddbc-property-list__property-content");
+            const prop = propertyListToDict(prop_list.eq(i));
+            if (Object.keys(prop)[0] == "Damage") {
+                const value = prop_list.eq(i).find("> p").filter((idx, el) => el.textContent === prop["Damage"]);
                 let damage = value.find(".ct-damage__value,.ddbc-damage__value").text();
                 let damage_type = properties["Damage Type"] || "";
                 let versatile_damage = value.find(".ct-item-detail__versatile-damage,.ddbc-item-detail__versatile-damage").text().slice(1, -1);
@@ -1055,7 +1056,8 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
     if (key_modifiers["display_attack"]) {
         return displayAction(paneClass);
     }
-    const properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property,." + paneClass + " .ddbc-property-list .ddbc-property-list__property"));
+    // ct-action-pane and ct-custom-action-page both use ct-action-detail for the details
+    const properties = propertyListToDict($("." + paneClass + " .ct-action-detail [role=list] > div"));
     //console.log("Properties are : " + String(properties));
     const action_name = $(".ct-sidebar__heading").text();
     const action_parent = $(".ct-sidebar__header-parent").text();
@@ -1432,7 +1434,7 @@ function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {sp
 }
 
 async function rollSpell(force_display = false, force_to_hit_only = false, force_damages_only = false) {
-    const properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property,.ct-spell-pane .ddbc-property-list .ddbc-property-list__property"));
+    const properties = propertyListToDict($(".ct-spell-pane .ct-spell-detail [role=list] > div"));
     //console.log("Properties are : " + String(properties));
     const spell_source = $(".ct-sidebar__header-parent").text();
     const spell_full_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name").text();
@@ -1454,7 +1456,7 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
     }
     
     // Find the icon with the AoE effect (<i class="i-aoe-sphere">) and convert it to a word
-    const range_shape = $(".ct-spell-pane .ddbc-property-list__property .ct-spell-detail__range-shape .ddbc-aoe-type-icon");
+    const range_shape = $(".ct-spell-pane .ct-spell-detail__properties .ct-spell-detail__range-shape .ddbc-aoe-type-icon");
     const aoe_class = (range_shape.attr("class") || "").split(" ").find(c => c.startsWith("ddbc-aoe-type-icon--"));
     // Remove class prefix and capitalize first letter
     const aoe_shape = aoe_class ? aoe_class.replace(/^ddbc-aoe-type-icon--(.)/, (_, g) => g.toUpperCase()) : undefined;
@@ -1704,7 +1706,7 @@ function handleCustomText(paneClass) {
     // Relative to normal roll msg
     const rollOrderTypes = ["before", "after", "replace"];
     const pane = $(`.${paneClass}`);
-    const notes = descriptionToString(pane.find(".ddbc-property-list__property:contains('Notes:')"));
+    const notes = descriptionToString(pane.find("[role=list] > div:contains('Note')"));
     const description = descriptionToString(pane.find(".ct-action-detail__description, .ct-spell-detail__description, .ct-item-detail__description, .ddbc-action-detail__description, .ddbc-spell-detail__description, .ddbc-item-detail__description"));
 
     // Look for all the roll orders
@@ -1902,7 +1904,7 @@ function injectRollButton(paneClass) {
         removeRollButtons(pane);
 
         checkAndInjectDiceToRolls(".ct-item-detail__description", item_name);
-        const properties = propertyListToDict($(".ct-item-pane .ct-property-list .ct-property-list__property,.ct-item-pane .ddbc-property-list .ddbc-property-list__property"));
+        const properties = propertyListToDict($(".ct-item-pane .ct-item-detail [role=list] > div"));
         if (Object.keys(properties).includes("Damage")) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true });
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
@@ -1937,7 +1939,7 @@ function injectRollButton(paneClass) {
         if (isRollButtonAdded())
             return;
 
-        const properties = propertyListToDict($("." + paneClass + " .ct-property-list .ct-property-list__property,." + paneClass + " .ddbc-property-list .ddbc-property-list__property"));
+        const properties = propertyListToDict($("." + paneClass + " .ct-action-detail [role=list] > div"));
         const action_name = $(".ct-sidebar__heading").text();
         const action_parent = $(".ct-sidebar__header-parent").text();
         const to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
@@ -1964,7 +1966,7 @@ function injectRollButton(paneClass) {
 
         const damages = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier");
         const healings = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier");
-        const properties = propertyListToDict($(".ct-spell-pane .ct-property-list .ct-property-list__property,.ct-spell-pane .ddbc-property-list .ddbc-property-list__property"));
+        const properties = propertyListToDict($(".ct-spell-pane .ct-spell-detail [role=list] > div"));
         let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
         if (to_hit === null)
             to_hit = findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");

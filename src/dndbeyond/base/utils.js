@@ -44,9 +44,22 @@ function abbreviationToAbility(abbr) {
 function propertyListToDict(propList) {
     const properties = {}
     for (let i = 0; i < propList.length; i++) {
-        const label = propList.eq(i).find(".ct-property-list__property-label,.ddbc-property-list__property-label").text().slice(0, -1);
-        const value = propList.eq(i).find(".ct-property-list__property-content,.ddbc-property-list__property-content").text();
-        properties[label] = value;
+        const prop = propList.eq(i);
+        let labelElement = prop.find(".ct-property-list__property-label,.ddbc-property-list__property-label");
+        let valueElement = prop.find(".ct-property-list__property-content,.ddbc-property-list__property-content");
+        // April 2024 website redesign now uses dynamic class names with styled components
+        if (labelElement.length === 0 || valueElement.length === 0) {
+            labelElement = prop.children().filter((i, el) => el.className.includes("Label"));
+            valueElement = prop.children().filter((i, el) => el.className.includes("Value"));
+        }
+        if (labelElement.length > 0 && valueElement.length > 0) {
+            let label = labelElement.text().trim();
+            const value = valueElement.text().trim();
+            if (label.endsWith(":")) {
+                label = label.slice(0, -1);
+            }
+            properties[label] = value;
+        }
     }
     return properties;
 }
