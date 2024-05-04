@@ -717,6 +717,25 @@ function beyond20SendMessageFailure(character, response) {
 }
 
 
+/**
+ * Sends messages to the extension if a custom SendMessage is received on the DOM
+ * This allows extensions to send DOM API calls to Beyond20 from the ddb site itself
+ */
+function _sendCustomMessageToBeyond20(message) {
+    if (isExtensionDisconnected()) {
+        return;
+    }
+    if (!message || !message.action) {
+        console.error("Beyond20: Invalid message received: ", message);
+        return;
+    }
+    // Check for allowed actions only
+    if (!["roll", "rendered-roll", "hp-update", "conditions-update", "update-combat"].includes(message.action)) {
+        console.error("Beyond20: Invalid action received: ", message.action);
+        return;
+    }
+    chrome.runtime.sendMessage(message, (resp) => beyond20SendMessageFailure(character, resp))
+}
 
 function deactivateTooltipListeners(el) {
     return el.off('mouseenter').off('mouseleave').off('click');
