@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.9.1
+Congratulations! Beyond20 was just updated to the latest version : v2.9.2
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -16,6 +16,7 @@ Thank you all for your support!
 {% include_relative known_issues.md %}
 
 # Release Notes
+
 v2.9.2 (April 24th 2024)
 ===
 

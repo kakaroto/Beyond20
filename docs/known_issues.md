@@ -1,6 +1,6 @@
 Some issues are already known and being worked on.
 
-- On April 24th 2024, D&amp;D Beyond has updated their website which broke parsing for most rolls from weapons, actions, spells, etc... The [issue](https://github.com/kakaroto/Beyond20/issues/1107) is known and being actively worked on. You can expect a release with a fix very soon.
+- On May 7th 2024, D&amp;D Beyond has updated their website (again) which broke parsing for spells, making users unable to roll spells. The [issue](https://github.com/kakaroto/Beyond20/issues/1119) is known and being actively worked on. You can expect a release with a fix very soon.
 
 To check the latest list of known issues or feature suggestions, you can head to the [github issue tracker](https://github.com/kakaroto/Beyond20/issues).
 
