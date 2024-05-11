@@ -8,6 +8,10 @@ You can install Beyond20 by visiting the [Chrome Webstore](https://chrome.google
 
 For those using Firefox, the extension is now available on the [Mozilla Add-ons](https://addons.mozilla.org/en-US/firefox/addon/beyond-20/) website, simply click the `Add to Firefox` button to get it installed.
 
+# Install for Microsoft Edge
+
+For those using MS Edge, the extension is now available on the [Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/beyond-20/pdjnkppffhaiimjopdpdkdaddgcmnbpp?hl=en-US) website and click the `Get` button to get it installed.
+
 # Install the development version
 
 If you want to download, review and/or learn from the source code of this extension, feel free to head over to the [github](https://github.com/kakaroto/Beyond20/) repository page to download the latest version.
