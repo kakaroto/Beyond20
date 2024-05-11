@@ -1,6 +1,6 @@
 Some issues are already known and being worked on.
 
-- On May 7th 2024, D&amp;D Beyond has updated their website (again) which broke parsing for spells, making users unable to roll spells. The [issue](https://github.com/kakaroto/Beyond20/issues/1119) is known and being actively worked on. You can expect a release with a fix very soon.
+- On May 7th 2024, D&amp;D Beyond has updated their website (again) which broke parsing for spells, making users unable to roll spells, or saving throws/initiative. The [issue](https://github.com/kakaroto/Beyond20/issues/1119) is known and has been fixed. The v2.9.3 release (currently pending review in addon stores) will contain the fix.
 
 To check the latest list of known issues or feature suggestions, you can head to the [github issue tracker](https://github.com/kakaroto/Beyond20/issues).
 
