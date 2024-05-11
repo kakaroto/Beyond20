@@ -119,10 +119,10 @@ class Character extends CharacterBase {
         for (let ability of abilities.toArray()) {
             const name = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__label,.ddbc-ability-summary__heading .ddbc-ability-summary__label").text();
             const abbr = $(ability).find(".ct-ability-summary__heading .ct-ability-summary__abbr,.ddbc-ability-summary__heading .ddbc-ability-summary__abbr").text().toUpperCase();
-            let modifier = $(ability).find(".ct-ability-summary__primary .ct-signed-number,.ddbc-ability-summary__primary .ddbc-signed-number").text();
+            let modifier = $(ability).find(".ct-ability-summary__primary .ct-signed-number,.ddbc-ability-summary__primary .ddbc-signed-number,.ddbc-ability-summary__primary span[class*='styles_numberDisplay']").text();
             let value = $(ability).find(".ct-ability-summary__secondary,.ddbc-ability-summary__secondary").text();
             if (modifier == "") {
-                modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number,.ddbc-ability-summary__secondary .ddbc-signed-number").text();
+                modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number,.ddbc-ability-summary__secondary .ddbc-signed-number, .ct-ability-summary__secondary span[class*='styles_numberDisplay']").text();
                 value = $(ability).find(".ct-ability-summary__primary,.ddbc-ability-summary__primary").text();
             }
             this._abilities.push([name, abbr, value, modifier]);

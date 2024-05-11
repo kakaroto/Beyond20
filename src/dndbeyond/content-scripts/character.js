@@ -190,7 +190,7 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
     const ability_string = $("." + paneClass + " .ct-sidebar__heading").text();
     const ability_name = ability_string.split(" ")[0];
     const ability = ability_abbreviations[ability_name];
-    let modifier = $("." + paneClass + "__modifier .ct-signed-number,." + paneClass + "__modifier .ddbc-signed-number").text();
+    let modifier = $(`.${paneClass}__modifier .ct-signed-number,.${paneClass}__modifier .ddbc-signed-number,.${paneClass}__modifier span[class*='styles_numberDisplay']`).text();
 
 
     if (rollType == "ability") {
@@ -290,7 +290,7 @@ function rollSavingThrow() {
 }
 
 function rollInitiative() {
-    let initiative = $(".ct-initiative-box__value .ddbc-signed-number").text();
+    let initiative = $(".ct-initiative-box__value .ddbc-signed-number, .ct-initiative-box__value span[class*='styles_numberDisplay']").text();
     let advantage = $(".ct-initiative-box__advantage").length > 0;
     if (initiative == "") {
         initiative = $(".ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value").text();
@@ -2300,7 +2300,7 @@ function deactivateQuickRolls() {
     let abilities = $(".ddbc-ability-summary .ddbc-ability-summary__primary .integrated-dice__container");
     // If digital dice are disabled, look up where the modifier is
     if (abilities.length === 0)
-        abilities = $(".ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary .ddbc-signed-number, .ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__primary .ddbc-signed-number");
+        abilities = $(".ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary .ddbc-signed-number, .ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__primary .ddbc-signed-number, .ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary span[class*='styles_numberDisplay'], .ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__primary span[class*='styles_numberDisplay']");
     const saving_throws = $(".ct-saving-throws-summary__ability .ct-saving-throws-summary__ability-modifier,.ddbc-saving-throws-summary__ability .ddbc-saving-throws-summary__ability-modifier");
     const skills = $(".ct-skills .ct-skills__list .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__list .ddbc-skills__col--modifier");
     const actions = $(".ct-combat-attack .ct-combat-attack__icon,.ddbc-combat-attack .ddbc-combat-attack__icon");
@@ -2311,7 +2311,7 @@ function deactivateQuickRolls() {
     const spells_damage = $(".ct-spells-spell .ct-spells-spell__damage .integrated-dice__container, .ddc-spells-spell .ddc-spells-spell__damage .integrated-dice__container");
     let initiative = $(".ct-initiative-box__value .integrated-dice__container, .ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value .integrated-dice__container");
     if (initiative.length === 0)
-        initiative = $(".ct-initiative-box__value .ddbc-signed-number, .ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value .ddbc-signed-number");
+        initiative = $(".ct-initiative-box__value .ddbc-signed-number, .ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value .ddbc-signed-number, .ct-initiative-box__value span[class*='styles_numberDisplay'], .ct-combat-mobile__extra--initiative .ct-combat-mobile__extra-value span[class*='styles_numberDisplay']");
     hideTooltipIfDestroyed();
     deactivateTooltipListeners(initiative);
     deactivateTooltipListeners(abilities);
