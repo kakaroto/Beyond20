@@ -1,3 +1,10 @@
+v2.9.3 (May 10th 2024)
+===
+- **Feature**: Allow extensions to send rolls to Beyond20 via the custom DOM API through DDB pages
+- **Bugfix**: Fix rolling of spells, initative, ability checks and saving throws, due to DDB character sheet change from May 7th's website update
+- **Misc**: Add link to the Edge store on the install page
+
+
 v2.9.2 (April 24th 2024)
 ===
 - **Feature**: Added support for NPC healing actions, such as the Unicorn (by [@lunethefirst](https://github.com/lunethefirst))

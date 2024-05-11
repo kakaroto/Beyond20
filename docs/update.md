@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.9.2
+Congratulations! Beyond20 was just updated to the latest version : v2.9.3
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -16,6 +16,22 @@ Thank you all for your support!
 {% include_relative known_issues.md %}
 
 # Release Notes
+
+v2.9.3 (May 10th 2024)
+===
+
+Hi again,
+
+D&D Beyond have updated their website once more on May 7th, which broke the ability to roll saving throws, ability checks, initiative, and spells.
+As this is the second breaking update in 2 weeks and it took over a week last time to get the new update approved on the Firefox and Edge stores, I've reached out to the D&D Beyond team to work together to avoid this situation in the future. While waiting for their team to reach out, we've also seen DDB revert their website changes on May 9th, but only for a short period of time, before breaking the extension again. This made me very weary on pushing an update prematurely if the site was in constant flux.
+
+At this time, as it's been 3 days (thanks everyone for your patience), I've decided to release a fix and I made sure that the new update would continue to function without breaking, even if DDB reverts their website back again to the older version, so this should satisfy everybody.
+
+I'm keeping a close eye on the situation, and I expect to be in contact again with the DDB team soon so that future updates can have a minimal impact on your games.
+
+Thanks for everyone who helped out with this issue and provided support on Github and Discord. And as usual, thank you as well to all contributors and to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
+
+Enjoy!
 
 v2.9.2 (April 24th 2024)
 ===
@@ -40,6 +56,12 @@ Thanks and happy rolling!
 Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
+
+v2.9.3 (May 10th 2024)
+===
+- **Feature**: Allow extensions to send rolls to Beyond20 via the custom DOM API through DDB pages
+- **Bugfix**: Fix rolling of spells, initative, ability checks and saving throws, due to DDB character sheet change from May 7th's website update
+- **Misc**: Add link to the Edge store on the install page
 
 v2.9.2 (April 24th 2024)
 ===

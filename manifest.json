@@ -1,6 +1,6 @@
 {
 	"name": "Beyond 20",
-	"version": "2.9.2",
+	"version": "2.9.3",
 	"manifest_version": 3,
 	"description": "Integrates the D&D Beyond Character Sheets with Roll20 and Foundry VTT.",
 	"permissions": [
