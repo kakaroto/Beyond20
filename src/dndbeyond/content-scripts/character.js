@@ -1440,16 +1440,16 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
     const properties = propertyListToDict($(".ct-spell-pane .ct-spell-detail [role=list] > div"));
     //console.log("Properties are : " + String(properties));
     const spell_source = $(".ct-sidebar__header-parent").text();
-    const spell_full_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name").text();
-    const spell_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name")[0].firstChild.textContent;
+    const spell_full_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name, .ct-sidebar__heading span[class*='styles_spellName']").text();
+    const spell_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name, .ct-sidebar__heading span[class*='styles_spellName']")[0].firstChild.textContent;
     const description = descriptionToString(".ct-spell-pane .ct-spell-detail__description");
     const damage_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage");
     const healing_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp");
     const temp_hp_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--temp");
     const castas = $(".ct-spell-caster__casting-level-current").text();
     const level = $(".ct-spell-pane .ct-spell-detail__level-school-item").toArray().map((i) => i.textContent).join(" ");
-    const ritual = $(".ct-spell-pane .ct-spell-name__icon--ritual,.ct-spell-pane .ddbc-spell-name__icon--ritual").length > 0;
-    let concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration,.ct-spell-pane .ddbc-spell-name__icon--concentration").length > 0;
+    const ritual = $(".ct-spell-pane .ct-spell-name__icon--ritual,.ct-spell-pane .ddbc-spell-name__icon--ritual, .ct-spell-pane .ct-sidebar__header-primary ddbc-ritual-icon").length > 0;
+    let concentration = $(".ct-spell-pane .ct-spell-name__icon--concentration,.ct-spell-pane .ddbc-spell-name__icon--concentration, .ct-spell-pane .ct-sidebar__header-primary ddbc-concentration-icon").length > 0;
     let duration = properties["Duration"] || "";
     if (duration.includes("Concentration")) {
         duration = duration.replace("Concentration, ", "");
@@ -1467,9 +1467,9 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
     let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
 
     if (to_hit === null)
-        to_hit = findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
+        to_hit = findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name,span[class*='styles_spellName']", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
     if (to_hit === null)
-        to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit");
+        to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name,span[class*='styles_spellName']", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit");
 
     if (key_modifiers["display_attack"]) {
         force_display = true;
@@ -1957,8 +1957,8 @@ function injectRollButton(paneClass) {
         }
         checkAndInjectDiceToRolls(".ct-action-detail__description,.ddbc-action-detail__description", action_name);
     } else if (paneClass == "ct-spell-pane") {
-        const spell_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name")[0].firstChild.textContent;
-        const spell_full_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name").text();
+        const spell_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name, .ct-sidebar__heading span[class*='styles_spellName']")[0].firstChild.textContent;
+        const spell_full_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name, .ct-sidebar__heading span[class*='styles_spellName']").text();
         const spell_level = $(".ct-spell-caster__casting-level-current").text();
         if (isRollButtonAdded() && spell_full_name == lastSpellName && spell_level == lastSpellLevel)
             return;
@@ -1972,9 +1972,9 @@ function injectRollButton(paneClass) {
         const properties = propertyListToDict($(".ct-spell-pane .ct-spell-detail [role=list] > div"));
         let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
         if (to_hit === null)
-            to_hit = findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
+            to_hit = findToHit(spell_full_name, ".ct-combat-attack--spell,.ddbc-combat-attack--spell", ".ct-spell-name,.ddbc-spell-name,span[class*='styles_spellName']", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
         if (to_hit === null)
-            to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit");
+            to_hit = findToHit(spell_full_name, ".ct-spells-spell,.ddbc-spells-spell", ".ct-spell-name,.ddbc-spell-name,span[class*='styles_spellName']", ".ct-spells-spell__tohit,.ddbc-spells-spell__tohit");
 
         if (damages.length > 0 || healings.length > 0 || to_hit !== null || properties["Attack/Save"] !== undefined) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { text: "Cast on VTT", small: true });
@@ -2450,10 +2450,10 @@ function activateQuickRolls() {
         const position = force_to_hit_only ? 'left' : 'right';
         activateTooltipListeners(spell, position, beyond20_tooltip, (el) => {
             const name_element = el.closest(".ct-spells-spell,.ddbc-spells-spell")
-                .find(".ct-spell-name,.ddbc-spell-name");
+                .find(".ct-spell-name,.ddbc-spell-name,span[class*='styles_spellName']");
             const name = name_element.trigger('click').text();
             // If same item, clicking will be a noop && it won't modify the document;
-            const pane_name = $(".ct-spell-pane .ct-sidebar__heading .ct-spell-name,.ct-spell-pane .ct-sidebar__heading .ddbc-spell-name").text();
+            const pane_name = $(".ct-spell-pane .ct-sidebar__heading .ct-spell-name,.ct-spell-pane .ct-sidebar__heading .ddbc-spell-name, .ct-spell-pane .ct-sidebar__heading span[class*='styles_spellName']").text();
             if (name == pane_name) {
                 // For spells, check the spell level. DNDB doesn't switch to the right level when clicking the spell if
                 // it's already the right spell (but wrong level)
