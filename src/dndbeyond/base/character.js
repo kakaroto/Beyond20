@@ -365,10 +365,22 @@ class Character extends CharacterBase {
         if (substring) return this._actions.some(f => f.includes(name));
         else return this._actions.includes(name);
     }
+    /**
+     * Blood Hunter was renamed to "Blood Hunter (archived)"
+     * Try to find the blood h
+     */
+    fixBloodHunterClassName(name) {
+        if (name !== "Blood Hunter") return name;
+        const new_name = Object.keys(this._classes).find(c => c.includes("Blood Hunter"));
+        if (new_name) return new_name;
+        return "Blood Hunter (archived)";
+    }
     getClassLevel(name) {
+        name = this.fixBloodHunterClassName(name);
         return this._classes[name] || 0;
     }
     hasClass(name) {
+        name = this.fixBloodHunterClassName(name);
         return this._classes[name] !== undefined;
     }
     getAbility(abbr) {
