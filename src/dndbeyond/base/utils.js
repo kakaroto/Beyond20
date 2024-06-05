@@ -45,8 +45,8 @@ function propertyListToDict(propList) {
     const properties = {}
     for (let i = 0; i < propList.length; i++) {
         const prop = propList.eq(i);
-        let labelElement = prop.find(".ct-property-list__property-label,.ddbc-property-list__property-label");
-        let valueElement = prop.find(".ct-property-list__property-content,.ddbc-property-list__property-content");
+        let labelElement = prop.find(".ct-property-list__property-label,.ddbc-property-list__property-label,[class*='InfoItem_label']");
+        let valueElement = prop.find(".ct-property-list__property-content,.ddbc-property-list__property-content,[class*='InfoItem_value']");
         // April 2024 website redesign now uses dynamic class names with styled components
         if (labelElement.length === 0 || valueElement.length === 0) {
             labelElement = prop.children().filter((i, el) => el.className.includes("Label"));
