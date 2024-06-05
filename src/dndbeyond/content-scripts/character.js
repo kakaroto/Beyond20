@@ -2576,8 +2576,10 @@ function updateSettings(new_settings = null) {
         if (settings['hotkeys-bindings']) {
             updateHotkeysList();
         }
+        sendCustomEvent("NewSettings", [settings, chrome.runtime.getURL("")]);
     } else {
         getStoredSettings((saved_settings) => {
+            sendCustomEvent("Loaded", [saved_settings]);
             updateSettings(saved_settings);
             documentModified();
         });

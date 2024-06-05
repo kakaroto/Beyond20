@@ -20,9 +20,11 @@ function updateSettings(new_settings = null) {
         settings = new_settings;
         if (character)
             character.setGlobalSettings(settings);
-        key_bindings = getKeyBindings(settings)
+        key_bindings = getKeyBindings(settings);
+        sendCustomEvent("NewSettings", [settings, chrome.runtime.getURL("")]);
     } else {
         getStoredSettings((saved_settings) => {
+            sendCustomEvent("Loaded", [saved_settings]);
             updateSettings(saved_settings);
             documentLoaded(settings);
         });
