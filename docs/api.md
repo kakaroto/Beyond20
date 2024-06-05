@@ -768,9 +768,11 @@ The DOM API is a way for Beyond20 to communicate with other extensions or websit
 
 On the D&D Beyond website itself, when rolls are made, they are sent both to VTT tabs but also as DOM events to the D&D Beyond website. The messages are in the format of `Beyond20_${request.action}` so you would expect to see `Beyond20_roll`, `Beyond20_rendered-roll`, `Beyond20-hp-update`, etc... with the `detail` field of the `CustomEvent` containing an array with a single element, which would be the request being sent.
 
-On a custom website, you receive instead the following events:
+On a custom website and on DnD Beyond itself, you receive instead the following events:
 - `Beyond20_Loaded(settings)`: This event is sent when Beyond20 is loaded onto the website. It is a good way for a website to know if Beyond20 is enabled and loaded into it
 - `Beyond20_NewSettings(settings)`: This event is sent shortly after the `Beyond20_Loaded` event and is sent whenever Beyond20 global settings are updated.
+
+On a custom website, you receive the following events:
 - `Beyond20_RenderedRoll(request)`: This event is sent with a `rendered-roll` request in it. If a `roll` message is received, the roll will first be pre-rendered (with `rendered: "fallback"` field set) and will be sent to the DOM as a `Beyond20_RenderedRoll` event too.
 - `Beyond20_UpdateHP(request)`: This event is sent with a `hp-update` request in it.
 - `Beyond20_UpdateConditions(request)`: This event is sent with a `conditions-update` request in it.
