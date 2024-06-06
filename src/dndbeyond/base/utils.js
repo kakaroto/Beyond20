@@ -49,8 +49,8 @@ function propertyListToDict(propList) {
         let valueElement = prop.find(".ct-property-list__property-content,.ddbc-property-list__property-content,[class*='InfoItem_value']");
         // April 2024 website redesign now uses dynamic class names with styled components
         if (labelElement.length === 0 || valueElement.length === 0) {
-            labelElement = prop.children().filter((i, el) => el.className.includes("Label"));
-            valueElement = prop.children().filter((i, el) => el.className.includes("Value"));
+            labelElement = prop.children().filter((i, el) => el.className.toLowerCase().includes("label"));
+            valueElement = prop.children().filter((i, el) => el.className.toLowerCase().includes("value"));
         }
         if (labelElement.length > 0 && valueElement.length > 0) {
             let label = labelElement.text().trim();
