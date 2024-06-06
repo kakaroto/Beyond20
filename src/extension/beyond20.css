@@ -392,3 +392,8 @@ span.dice-roll.beyond20-tooltip-content {
 .ct-beyond20-icon {
     vertical-align: middle;
 }
+
+/* Stops Beyond20 buttons overlaying ddb tidbits */
+.ct-character-header-info .ddbc-character-tidbits {
+    min-width:auto;
+}
