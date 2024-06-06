@@ -1,3 +1,11 @@
+v2.9.4 (June 5th 2024)
+===
+- **Bugfix**: Fix rolling of spells and weapons due to DDB character sheet change from June 4th's website update (by [@Azmoria](https://github.com/Azmoria))
+- **Bugfix**: Fix support for Blood Hunter class and abilities which broke when DDB changed the class name to "Blood Hunter (archived)"
+- **Bugfix**: Add msising `Loaded` and `NewSettings` DOM API calls on D&D Beyond website (by [@carrierfry](https://github.com/carrierfry))
+- **Bugfix**: Fix Beyond20 Settings button on the character sheet overlapping the character info on small sized tablets (by [@lindenmckenzie](https://github.com/lindenmckenzie))
+
+
 v2.9.3 (May 10th 2024)
 ===
 - **Feature**: Allow extensions to send rolls to Beyond20 via the custom DOM API through DDB pages

@@ -1,3 +1,18 @@
+v2.9.4 (June 5th 2024)
+===
+
+Hi everyone,
+
+Yesterday, D&D Beyond updated their website slightly again, which broke rolling items and spells from the character sheet.
+This small update fixes that as well as a couple of other small issues.
+
+A special thank you for those who debugged the issue, contributed fixes to Beyond20 and helped with support. I love seeing the open-source spirit within our community.
+
+Thank you as well to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
+
+Enjoy!
+
+
 v2.9.3 (May 10th 2024)
 ===
 
