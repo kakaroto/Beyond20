@@ -1,9 +1,11 @@
 var settings = null;
 var extension_url = "/modules/beyond20/";
 var fvttVersion = game.version || game.data?.version;
+//isNewerVersion is deprecated in Foundry 12
+const fvtt_isNewer = window.foundry && foundry.utils && foundry.utils.isNewerVersion ? (v1, v0) => foundry.utils.isNewerVersion(v1, v0) : isNewerVersion;
 // v10 uses .document for Placeables (tokens), or the Base object itself, instead of .data field
 // We use the new fields to avoid spamming the log with deprecation warnings
-const docData = (doc) => isNewerVersion(fvttVersion, "10") ? doc.document || doc : doc.data;
+const docData = (doc) => fvtt_isNewer(fvttVersion, "10") ? doc.document || doc : doc.data;
 
 class FVTTDisplayer {
     postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
@@ -54,15 +56,9 @@ class FVTTDisplayer {
                 const result = []
                 const parts = [];
                 r.class = "Roll";
-                if (isNewerVersion(fvttVersion, "0.8")) {
+                if (fvtt_isNewer(fvttVersion, "0.8")) {
                     // Foundry 0.8.x API
                     r.parts.forEach(p => {
-                        if (parts.length > 0) parts.push({
-                            class: "OperatorTerm",
-                            evaluated: true,
-                            expression: "+",
-                            options: {}
-                        });
                         if (p.formula) {
                             parts.push({
                                 class: "Die",
@@ -76,17 +72,31 @@ class FVTTDisplayer {
                             });
                         } else {
                             const numeric = parseFloat(p);
-                            parts.push({
+                            const term = {
                                 class: isNaN(numeric) ? "OperatorTerm" : "NumericTerm",
                                 evaluated: true,
                                 expression: isNaN(numeric) ? p : numeric,
                                 options: {}
-                            })
+                            };
+                            if (isNaN(numeric)) {
+                                term.operator = p.trim();
+                            }
+                            else {
+                                term.number = numeric;
+                                if (parts.length > 0 && "OperatorTerm" !== parts[parts.length - 1].class) parts.push({
+                                    class: "OperatorTerm",
+                                    evaluated: true,
+                                    expression: "+",
+                                    operator: "+",
+                                    options: {}
+                                });
+                            }
+                            parts.push(term);
                         }
                     });
                     r.parts = undefined;
                     r.terms = parts;
-                } else if (isNewerVersion(fvttVersion, "0.7")) {
+                } else if (fvtt_isNewer(fvttVersion, "0.7")) {
                     r.parts.forEach(p => {
                         if (parts.length > 0 && !["+", "-"].includes(parts[parts.length - 1])) parts.push("+");
                         if (p.formula) {
@@ -128,14 +138,14 @@ class FVTTDisplayer {
                 }
                 return Roll.fromData(r)
             });
-            if (isNewerVersion(fvttVersion, "10")) {
+            if (fvtt_isNewer(fvttVersion, "10")) {
                 data.rolls = fvttRolls;
-            } else if (isNewerVersion(fvttVersion, "0.8")) {
+            } else if (fvtt_isNewer(fvttVersion, "0.8")) {
                 // Foundry 0.8.x API
                 // This will accept backware compatible fvttRolls format
                 const pool = PoolTerm.fromRolls(fvttRolls);
                 data.roll = Roll.fromTerms([pool]);
-            } else if (isNewerVersion(fvttVersion, "0.7")) {
+            } else if (fvtt_isNewer(fvttVersion, "0.7")) {
                 // Foundry 0.7.x API
                 // This will accept backware compatible fvttRolls format
                 const pool = new DicePool({rolls: fvttRolls}).evaluate();
@@ -206,7 +216,7 @@ class FVTTRoll extends Beyond20BaseRoll {
 
     get dice() {
         // 0.7.x Dice Roll API is different
-        if (isNewerVersion(fvttVersion, "0.7")) {
+        if (fvtt_isNewer(fvttVersion, "0.7")) {
             return this._roll.dice.map(d => {
                 return {
                     amount: d.amount || d.number,
@@ -223,7 +233,7 @@ class FVTTRoll extends Beyond20BaseRoll {
 
     get parts() {
         // 0.7.x Dice Roll API is different
-        if (isNewerVersion(fvttVersion, "0.8")) {
+        if (fvtt_isNewer(fvttVersion, "0.8")) {
             return this._roll.terms.map(t => {
                 if (t instanceof Die) {
                     return {
@@ -249,7 +259,7 @@ class FVTTRoll extends Beyond20BaseRoll {
                     return t.expression;
                 }
             });
-        } else if (isNewerVersion(fvttVersion, "0.7")) {
+        } else if (fvtt_isNewer(fvttVersion, "0.7")) {
             return this._roll.terms.map(t => {
                 if (t instanceof Die) {
                     return {
@@ -366,7 +376,7 @@ async function addInitiativeToCombat(roll) {
             } else {
                 for (let token of canvas.tokens.controlled) {
                     combatant = game.combat.getCombatantByToken(token.id);
-                    if (isNewerVersion(fvttVersion, "9")) {
+                    if (fvtt_isNewer(fvttVersion, "9")) {
                         if (combatant) {
                             await game.combat.updateEmbeddedDocuments("Combatant", [{ "_id": docData(combatant)._id, "initiative": roll.total }]);
                         } else {
@@ -432,7 +442,7 @@ function updateHP(name, current, total, temp) {
 
     const tokens = canvas.tokens.placeables.filter((t) => (t.owner || t.isOwner) && t.name.toLowerCase().trim() == name);
 
-    const prefix = isNewerVersion(fvttVersion, "10") ? "system": "data";
+    const prefix = fvtt_isNewer(fvttVersion, "10") ? "system": "data";
     const dnd5e_data = {
         [`${prefix}.attributes.hp.value`]: current,
         [`${prefix}.attributes.hp.temp`]: temp,
@@ -445,7 +455,7 @@ function updateHP(name, current, total, temp) {
     if (tokens.length == 0) {
         const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
         const actor = actors.find((a) => (a.owner || a.isOwner) && a.name.toLowerCase().trim() == name);
-        const systemData = isNewerVersion(fvttVersion, "10") ? actor?.system : actor?.data?.data;
+        const systemData = fvtt_isNewer(fvttVersion, "10") ? actor?.system : actor?.data?.data;
         if (actor && getProperty(systemData, "attributes.hp") !== undefined) {
             actor.update(dnd5e_data);
         } else if (actor && getProperty(systemData, "health") !== undefined) {
@@ -454,7 +464,7 @@ function updateHP(name, current, total, temp) {
     }
 
     for (let token of tokens) {
-        const systemData = isNewerVersion(fvttVersion, "10") ? token.actor?.system : token.actor?.data?.data;
+        const systemData = fvtt_isNewer(fvttVersion, "10") ? token.actor?.system : token.actor?.data?.data;
         if (token.actor && getProperty(systemData, "attributes.hp") !== undefined) {
             token.actor.update(dnd5e_data);
         } else if (token.actor && getProperty(systemData, "health") !== undefined) {
@@ -480,7 +490,7 @@ function updateConditions(request, name, conditions, exhaustion) {
 
     // Check for the beyond20 module, if (it's there, we can use its status effects.;
     const module = game.modules.get("beyond20");
-    if (module && isNewerVersion(module.version || module.data.version, "0.6")) {
+    if (module && fvtt_isNewer(module.version || module.data.version, "0.6")) {
         // Update status effects;
         name = name.toLowerCase().trim();
 
