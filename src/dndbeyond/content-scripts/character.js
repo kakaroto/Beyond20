@@ -1058,7 +1058,7 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
     if (key_modifiers["display_attack"]) {
         return displayAction(paneClass);
     }
-    // ct-action-pane and ct-custom-action-page both use ct-action-detail for the details
+    // b20-action-pane and ct-custom-action-page both use ct-action-detail for the details
     const properties = propertyListToDict($("." + paneClass + " .ct-action-detail [role=list] > div"));
     //console.log("Properties are : " + String(properties));
     const action_name = $(".ct-sidebar__heading").text();
@@ -1754,7 +1754,7 @@ async function execute(paneClass, {force_to_hit_only = false, force_damages_only
                 await rollInitiative();
             else if (paneClass == "ct-item-pane")
                 await rollItem(false, force_to_hit_only, force_damages_only, force_versatile, spell_group);
-            else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
+            else if (["b20-action-pane", "ct-custom-action-pane"].includes(paneClass))
                 await rollAction(paneClass, force_to_hit_only, force_damages_only);
             else if (paneClass == "ct-spell-pane")
                 await rollSpell(false, force_to_hit_only, force_damages_only);
@@ -1781,7 +1781,7 @@ function displayPanel(paneClass) {
             return displayFeature(paneClass);
         else if (paneClass == "ct-trait-pane")
             return displayTrait();
-        else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass))
+        else if (["b20-action-pane", "ct-custom-action-pane"].includes(paneClass))
             return displayAction(paneClass);
         else if (paneClass == "ct-background-pane")
             return displayBackground();
@@ -1937,7 +1937,7 @@ function injectRollButton(paneClass) {
 
         checkAndInjectDiceToRolls(".ct-infusion-choice-pane__description", infusion_name);
         addDisplayButtonEx(paneClass, ".ct-sidebar__heading", { append: false, small: false });
-    } else if (["ct-action-pane", "ct-custom-action-pane"].includes(paneClass)) {
+    } else if (["b20-action-pane", "ct-custom-action-pane"].includes(paneClass)) {
         if (isRollButtonAdded())
             return;
 
@@ -2425,7 +2425,7 @@ function activateQuickRolls() {
             let pane = null;
             let paneClass = null;
             // Need to check all types of panes to find the right one;
-            for (paneClass of ["ct-item-pane", "ct-action-pane", "ct-custom-action-pane", "ct-spell-pane"]) {
+            for (paneClass of ["ct-item-pane", "b20-action-pane", "ct-custom-action-pane", "ct-spell-pane"]) {
                 pane = $("." + paneClass);
                 if (pane.length > 0)
                     break;
@@ -2546,7 +2546,6 @@ function documentModified(mutations, observer) {
         "ct-trait-pane",
         "ct-item-pane",
         "ct-infusion-choice-pane",
-        "ct-action-pane",
         "ct-custom-action-pane",
         "ct-spell-pane",
         "ct-reset-pane",
@@ -2561,7 +2560,8 @@ function documentModified(mutations, observer) {
     const SPECIAL_PANES = {
         ability: "b20-ability-pane",
         savingThrow: "b20-ability-saving-throws-pane",
-        initiative: "b20-initiative-pane"
+        initiative: "b20-initiative-pane",
+        action: "b20-action-pane"
     }
 
     const ABILITIES = [
@@ -2573,6 +2573,11 @@ function documentModified(mutations, observer) {
         "charisma",
     ]
 
+    const ACTIONS = [ // add more actions here when needed
+        "unarmed", // unarmed strike
+        "vampiric" // vampire fang bite
+    ]
+
     function handlePane(paneClass) {
         console.log("Beyond20: New side panel is : " + paneClass);
         injectRollButton(paneClass);
@@ -2581,32 +2586,37 @@ function documentModified(mutations, observer) {
             quick_roll_timeout = setTimeout(() => executeQuickRoll(paneClass), 50);
         }
     }
+
+    function markPane(sidebar, paneClass) {
+        if (!sidebar.parent().hasClass(paneClass)) {
+            sidebar.parent().addClass(paneClass);
+        }
+    }
     
     const pane = $(SUPPORTED_PANES.map(pane => `.${pane}`).join(","));
     if (pane.length > 0) {
         pane.each((_, div) => handlePane(div.className));
     } else {
         const sidebar = $(".ct-sidebar__portal .ct-sidebar__header");
-        const sideBarHeader = sidebar.text().toLowerCase();
-    
-        if (sideBarHeader.startsWith("saving")) {
-            const paneClass = SPECIAL_PANES.savingThrow;
-            if (!sidebar.parent().hasClass(paneClass)) {
-                sidebar.parent().addClass(paneClass);
+        if (sidebar.length > 0) {
+            const sideBarHeader = sidebar.text().toLowerCase();
+            if (sideBarHeader.startsWith("saving")) {
+                const paneClass = SPECIAL_PANES.savingThrow;
+                markPane(sidebar, paneClass);
+                handlePane(paneClass);
+            } else if (ABILITIES.some(ability => sideBarHeader.startsWith(ability))) {
+                const paneClass = SPECIAL_PANES.ability;
+                markPane(sidebar, paneClass);
+                handlePane(paneClass);
+            } if (sideBarHeader.startsWith("initiative")) {
+                const paneClass = SPECIAL_PANES.initiative;
+                markPane(sidebar, paneClass);
+                handlePane(paneClass);
+            } if (ACTIONS.some(action => sideBarHeader.startsWith(action))) {
+                const paneClass = SPECIAL_PANES.action;
+                markPane(sidebar, paneClass);
+                handlePane(paneClass);
             }
-            handlePane(paneClass);
-        } else if (ABILITIES.some(ability => sideBarHeader.startsWith(ability))) {
-            const paneClass = SPECIAL_PANES.ability;
-            if (!sidebar.parent().hasClass(paneClass)) {
-                sidebar.parent().addClass(paneClass);
-            }
-            handlePane(paneClass);
-        } if (sideBarHeader.startsWith("initiative")) {
-            const paneClass = SPECIAL_PANES.initiative;
-            if (!sidebar.parent().hasClass(paneClass)) {
-                sidebar.parent().addClass(paneClass);
-            }
-            handlePane(paneClass);
         }
     }
 }
