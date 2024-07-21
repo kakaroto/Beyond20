@@ -2564,20 +2564,6 @@ function documentModified(mutations, observer) {
         action: "b20-action-pane"
     }
 
-    const ABILITIES = [
-        "strength",
-        "dexterity",
-        "constitution",
-        "intelligence",
-        "wisdom",
-        "charisma",
-    ]
-
-    const ACTIONS = [ // add more actions here when needed
-        "unarmed", // unarmed strike
-        "vampiric" // vampire fang bite
-    ]
-
     function handlePane(paneClass) {
         console.log("Beyond20: New side panel is : " + paneClass);
         injectRollButton(paneClass);
@@ -2598,21 +2584,22 @@ function documentModified(mutations, observer) {
         pane.each((_, div) => handlePane(div.className));
     } else {
         const sidebar = $(".ct-sidebar__portal .ct-sidebar__header");
+        const initRegex = /\b\w+\s\(([-+]?\d+)\)/g;
         if (sidebar.length > 0) {
             const sideBarHeader = sidebar.text().toLowerCase();
-            if (sideBarHeader.startsWith("saving")) {
+            if (sidebar.closest("svg[class*='ddbc-ability-icon']").length > 0 && sidebar.closest(".ddbc-ability-score-manager").length === 0) {
                 const paneClass = SPECIAL_PANES.savingThrow;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
-            } else if (ABILITIES.some(ability => sideBarHeader.startsWith(ability))) {
+            } else if (sidebar.closest(".ddbc-ability-score-manager").length > 0) {
                 const paneClass = SPECIAL_PANES.ability;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
-            } if (sideBarHeader.startsWith("initiative")) {
+            } if (sideBarHeader.match(initRegex)) {
                 const paneClass = SPECIAL_PANES.initiative;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
-            } if (ACTIONS.some(action => sideBarHeader.startsWith(action))) {
+            } if (sidebar.find("span[class*='ddbc-action-name']").length > 0) {
                 const paneClass = SPECIAL_PANES.action;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
