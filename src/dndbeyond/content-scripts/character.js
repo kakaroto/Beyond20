@@ -1627,9 +1627,9 @@ async function displaySpell() {
 
 function displayFeature(paneClass) {
     const source_types = {
-        "ct-class-feature-pane": "Class",
+        "b20-class-feature-pane": "Class",
         "ct-racial-trait-pane": "Race",
-        "ct-feat-pane": "Feat"
+        "b20-feat-pane": "Feat"
     }
     const name = $(".ct-sidebar__heading").text();
     const source = $(".ct-sidebar__header-parent").text();
@@ -1777,7 +1777,7 @@ function displayPanel(paneClass) {
             return displayInfusion();
         else if (paneClass == "ct-spell-pane")
             return displaySpell();
-        else if (["ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane"].includes(paneClass))
+        else if (["b20-class-feature-pane", "ct-racial-trait-pane", "b20-feat-pane"].includes(paneClass))
             return displayFeature(paneClass);
         else if (paneClass == "ct-trait-pane")
             return displayTrait();
@@ -1882,7 +1882,7 @@ function injectRollButton(paneClass) {
         if (isRollButtonAdded())
             return;
         addRollButtonEx(paneClass, ".ct-sidebar__heading");
-    } else if (["ct-class-feature-pane", "ct-racial-trait-pane", "ct-feat-pane"].includes(paneClass)) {
+    } else if (["b20-class-feature-pane", "ct-racial-trait-pane", "b20-feat-pane"].includes(paneClass)) {
         if (isRollButtonAdded())
             return;
         addRollButtonEx(paneClass, ".ct-sidebar__heading", { image: false });
@@ -2539,9 +2539,7 @@ function documentModified(mutations, observer) {
     const SUPPORTED_PANES = [
         "ct-custom-skill-pane",
         "ct-skill-pane",
-        "ct-class-feature-pane",
         "ct-racial-trait-pane",
-        "ct-feat-pane",
         "ct-background-pane",
         "ct-trait-pane",
         "ct-item-pane",
@@ -2561,7 +2559,9 @@ function documentModified(mutations, observer) {
         ability: "b20-ability-pane",
         savingThrow: "b20-ability-saving-throws-pane",
         initiative: "b20-initiative-pane",
-        action: "b20-action-pane"
+        action: "b20-action-pane",
+        feat: "b20-feat-pane",
+        feature: "b20-class-feature-pane"
     }
 
     function handlePane(paneClass) {
@@ -2595,12 +2595,20 @@ function documentModified(mutations, observer) {
                 const paneClass = SPECIAL_PANES.ability;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
-            } if (sideBarHeader.match(initRegex)) {
+            } else if (sideBarHeader.match(initRegex)) {
                 const paneClass = SPECIAL_PANES.initiative;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
-            } if (sidebar.find("span[class*='ddbc-action-name']").length > 0) {
+            } else if (sidebar.find("span[class*='ddbc-action-name']").length > 0) {
                 const paneClass = SPECIAL_PANES.action;
+                markPane(sidebar, paneClass);
+                handlePane(paneClass);
+            } else if (sidebar.parent().find(".ct-feature-snippet--feat").length > 0) {
+                const paneClass = SPECIAL_PANES.feat;
+                markPane(sidebar, paneClass);
+                handlePane(paneClass);
+            } else if (sidebar.parent().find(".ct-feature-snippet--class").length > 0) {
+                const paneClass = SPECIAL_PANES.feature;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
             }
