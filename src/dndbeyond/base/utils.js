@@ -810,7 +810,7 @@ function getQuickRollTooltip() {
             "position": "absolute",
             "background": `url("${chrome.runtime.getURL("images/quick-roll-background.png")}") 50% center no-repeat transparent`,
             "background-size": "contain",
-            "z-index": "20"
+            "z-index": "10000"
         });
         beyond20_tooltip.off('mouseenter').off('mouseleave').on('mouseleave', (e) => {
             if (quickRollHideId)
