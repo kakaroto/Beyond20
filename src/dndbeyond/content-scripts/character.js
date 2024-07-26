@@ -1629,6 +1629,7 @@ function displayFeature(paneClass) {
     const source_types = {
         "b20-class-feature-pane": "Class",
         "ct-racial-trait-pane": "Race",
+        "b20-racial-trait-pane": "Race",
         "b20-feat-pane": "Feat"
     }
     const name = $(".ct-sidebar__heading").text();
@@ -1754,7 +1755,7 @@ async function execute(paneClass, {force_to_hit_only = false, force_damages_only
                 await rollInitiative();
             else if (paneClass == "ct-item-pane")
                 await rollItem(false, force_to_hit_only, force_damages_only, force_versatile, spell_group);
-            else if (["b20-action-pane", "ct-custom-action-pane"].includes(paneClass))
+            else if (["b20-action-pane", "ct-custom-action-pane", "b20-custom-action-pane"].includes(paneClass))
                 await rollAction(paneClass, force_to_hit_only, force_damages_only);
             else if (paneClass == "ct-spell-pane")
                 await rollSpell(false, force_to_hit_only, force_damages_only);
@@ -1777,11 +1778,11 @@ function displayPanel(paneClass) {
             return displayInfusion();
         else if (paneClass == "ct-spell-pane")
             return displaySpell();
-        else if (["b20-class-feature-pane", "ct-racial-trait-pane", "b20-feat-pane"].includes(paneClass))
+        else if (["b20-class-feature-pane", "ct-racial-trait-pane", "b20-racial-trait-pane", "b20-feat-pane"].includes(paneClass))
             return displayFeature(paneClass);
         else if (paneClass == "ct-trait-pane")
             return displayTrait();
-        else if (["b20-action-pane", "ct-custom-action-pane"].includes(paneClass))
+        else if (["b20-action-pane", "ct-custom-action-pane", "b20-custom-action-pane"].includes(paneClass))
             return displayAction(paneClass);
         else if (paneClass == "ct-background-pane")
             return displayBackground();
@@ -1882,7 +1883,7 @@ function injectRollButton(paneClass) {
         if (isRollButtonAdded())
             return;
         addRollButtonEx(paneClass, ".ct-sidebar__heading");
-    } else if (["b20-class-feature-pane", "ct-racial-trait-pane", "b20-feat-pane"].includes(paneClass)) {
+    } else if (["b20-class-feature-pane", "ct-racial-trait-pane", "b20-racial-trait-pane", "b20-feat-pane"].includes(paneClass)) {
         if (isRollButtonAdded())
             return;
         addRollButtonEx(paneClass, ".ct-sidebar__heading", { image: false });
@@ -1937,7 +1938,7 @@ function injectRollButton(paneClass) {
 
         checkAndInjectDiceToRolls(".ct-infusion-choice-pane__description", infusion_name);
         addDisplayButtonEx(paneClass, ".ct-sidebar__heading", { append: false, small: false });
-    } else if (["b20-action-pane", "ct-custom-action-pane"].includes(paneClass)) {
+    } else if (["b20-action-pane", "ct-custom-action-pane", "b20-custom-action-pane"].includes(paneClass)) {
         if (isRollButtonAdded())
             return;
 
@@ -2415,7 +2416,7 @@ function activateQuickRolls() {
             let pane = null;
             let paneClass = null;
             // Need to check all types of panes to find the right one;
-            for (paneClass of ["ct-item-pane", "b20-action-pane", "ct-custom-action-pane", "ct-spell-pane"]) {
+            for (paneClass of ["ct-item-pane", "b20-action-pane", "ct-custom-action-pane", "b20-custom-action-pane", "ct-spell-pane"]) {
                 pane = $("." + paneClass);
                 if (pane.length > 0)
                     break;
@@ -2550,8 +2551,10 @@ function documentModified(mutations, observer) {
         savingThrow: "b20-ability-saving-throws-pane",
         initiative: "b20-initiative-pane",
         action: "b20-action-pane",
+        customAction: "b20-custom-action-pane",
         feat: "b20-feat-pane",
-        feature: "b20-class-feature-pane"
+        feature: "b20-class-feature-pane",
+        racialTrait: "b20-racial-trait-pane",
     }
 
     function handlePane(paneClass) {
@@ -2599,12 +2602,22 @@ function documentModified(mutations, observer) {
                 const paneClass = SPECIAL_PANES.action;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
+            } else if (sidebar.parent().find(".ct-custom-action-pane__actions").length > 0) {
+                // In case DDB remove the ct-custom-action-pane class from the sidebar
+                const paneClass = SPECIAL_PANES.customAction;
+                markPane(sidebar, paneClass);
+                handlePane(paneClass);
             } else if (sidebar.parent().find(".ct-feature-snippet--feat").length > 0) {
                 const paneClass = SPECIAL_PANES.feat;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
             } else if (sidebar.parent().find(".ct-feature-snippet--class").length > 0) {
                 const paneClass = SPECIAL_PANES.feature;
+                markPane(sidebar, paneClass);
+                handlePane(paneClass);
+            } else if (sidebar.parent().find(".ct-feature-snippet--racial-trait").length > 0) {
+                // In case DDB remove the ct-racial-trait-pane class from the sidebar
+                const paneClass = SPECIAL_PANES.racialTrait;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
             }
