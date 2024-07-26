@@ -190,7 +190,7 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
     const ability_string = $("." + paneClass + " .ct-sidebar__heading").text();
     const ability_name = ability_string.split(" ")[0];
     const ability = ability_abbreviations[ability_name];
-    let modifier = $(`.${paneClass}__modifier .ct-signed-number,.${paneClass}__modifier .ddbc-signed-number, span[class*='styles_modifier'] span[class*='styles_numberDisplay']`).text();
+    let modifier = $(`.${paneClass}__modifier .ct-signed-number,.${paneClass}__modifier .ddbc-signed-number, .${paneClass} span[class*='styles_modifier'] span[class*='styles_numberDisplay']`).text();
 
     if (rollType == "ability") {
         // Remarkable Athelete and Jack of All Trades don't stack, we give priority to RA instead of JoaT because
@@ -289,11 +289,14 @@ function rollSavingThrow() {
 }
 
 function rollInitiative() {
-    let initiative = $(".ct-combat__summary-group--initiative .integrated-dice__container, span[class*='styles_value'] span[class*='styles_numberDisplay']").text();
-    let advantage = $(".ct-initiative-box__advantage").length > 0;
+    let initiative = $(".ct-combat__summary-group--initiative span[class*='styles_numberDisplay'], .ct-combat-tablet__extra--initiative span[class*='styles_numberDisplay']").text();
+    let advantage = $(".ct-combat__summary-group--initiative div[class*='styles_advantage'], .ct-combat-tablet__extra--initiative div[class*='styles_advantage']").length > 0;
     if (initiative == "") {
-        initiative = $(".ct-combat-mobile__extras section div[class*='styles_value'] .integrated-dice__container span[class*='styles_numberDisplay']").text();
-        advantage = $(".ct-combat-mobile__advantage").length > 0;
+        // TODO: use label perhaps to find the right section for initiative? 
+        // it works now, but it's likely that DDB will update the sheet so that
+        // every extra info becomes a styled component as a section with no discernable class
+        initiative = $(".ct-combat-mobile__extras > section[class*='styles_boxMobile'] span[class*='styles_numberDisplay']").text();
+        advantage = $(".ct-combat-mobile__extras > section[class*='styles_boxMobile'] div[class*='styles_advantage']").length > 0;
     }
     //console.log("Initiative " + ("with" if (advantage else "without") + " advantage ) { " + initiative);
 
@@ -2309,7 +2312,7 @@ function deactivateQuickRolls() {
     const spells = $(".ct-spells-spell .ct-spells-spell__action,.ddbc-spells-spell .ddbc-spells-spell__action");
     const spells_to_hit = $(".ct-spells-spell .ct-spells-spell__tohit .integrated-dice__container, .ddbc-spells-spell .ddbc-spells-spell__tohit .integrated-dice__container");
     const spells_damage = $(".ct-spells-spell .ct-spells-spell__damage .integrated-dice__container, .ddc-spells-spell .ddc-spells-spell__damage .integrated-dice__container");
-    const initiative = $(".ct-combat__summary-group--initiative div[class*='styles_value'] .integrated-dice__container, .ct-combat-tablet__extra--initiative .integrated-dice__container, .ct-combat-mobile__extras section div[class*='styles_value'] .integrated-dice__container");
+    const initiative = $(".ct-combat__summary-group--initiative .integrated-dice__container, .ct-combat__summary-group--initiative span[class*='styles_numberDisplay'], .ct-combat-tablet__extra--initiative .integrated-dice__container, .ct-combat-tablet__extra--initiative span[class*='styles_numberDisplay'], .ct-combat-mobile__extras > section[class*='styles_boxMobile'] span[class*='styles_numberDisplay']");
 
     hideTooltipIfDestroyed();
     deactivateTooltipListeners(initiative);
@@ -2348,7 +2351,7 @@ function activateQuickRolls() {
         return;
 
     activateTooltipListeners(initiative, 'up', beyond20_tooltip, (el) => {
-        el.closest(".ct-combat__summary-group--initiative section[class*='styles_box'] div, section, div[class*='styles_label']").trigger('click');
+        el.closest("div[class*='styles_value']").trigger('click');
 
         if ($(".b20-initiative-pane").length)
             execute("b20-initiative-pane");
