@@ -59,8 +59,9 @@ class FVTTDisplayer {
                 if (fvtt_isNewer(fvttVersion, "0.8")) {
                     // Foundry 0.8.x API
                     r.parts.forEach(p => {
+                        let term;
                         if (p.formula) {
-                            parts.push({
+                            term = {
                                 class: "Die",
                                 evaluated: true,
                                 expression: p.formula,
@@ -69,30 +70,29 @@ class FVTTDisplayer {
                                 faces: p.faces,
                                 modifiers: [],
                                 results: p.rolls.map(roll => ({active: !roll.discarded, result: roll.roll}))
-                            });
+                            };
                         } else {
                             const numeric = parseFloat(p);
-                            const term = {
+                            term = {
                                 class: isNaN(numeric) ? "OperatorTerm" : "NumericTerm",
                                 evaluated: true,
                                 expression: isNaN(numeric) ? p : numeric,
+                                operator: isNaN(numeric) ? p : undefined,
+                                number: isNaN(numeric) ? undefined : numeric,
                                 options: {}
                             };
-                            if (isNaN(numeric)) {
-                                term.operator = p.trim();
-                            }
-                            else {
-                                term.number = numeric;
-                                if (parts.length > 0 && "OperatorTerm" !== parts[parts.length - 1].class) parts.push({
-                                    class: "OperatorTerm",
-                                    evaluated: true,
-                                    expression: "+",
-                                    operator: "+",
-                                    options: {}
-                                });
-                            }
-                            parts.push(term);
                         }
+                        if (term.class !== "OperatorTerm" && 
+                            parts.length > 0 && parts[parts.length - 1].class !== "OperatorTerm") {
+                            parts.push({
+                                class: "OperatorTerm",
+                                evaluated: true,
+                                expression: "+",
+                                operator: "+",
+                                options: {}
+                            });
+                        }
+                        parts.push(term);
                     });
                     r.parts = undefined;
                     r.terms = parts;
