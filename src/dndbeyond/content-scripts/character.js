@@ -2348,10 +2348,6 @@ function activateQuickRolls() {
 
     activateTooltipListeners(initiative, 'up', beyond20_tooltip, (el) => {
         el.closest(".ct-combat__summary-group--initiative section[class*='styles_box'] div, section, div[class*='styles_label']").trigger('click');
-        
-        if(!$(".ct-sidebar__portal .ct-sidebar__header").parent().hasClass("b20-initiative-pane")) {
-            $(".ct-sidebar__portal .ct-sidebar__header").parent().addClass("b20-initiative-pane");
-        };
 
         if ($(".b20-initiative-pane").length)
             execute("b20-initiative-pane");
@@ -2364,9 +2360,6 @@ function activateQuickRolls() {
                 .find(".ct-ability-summary__heading .ct-ability-summary__label,.ddbc-ability-summary__heading .ddbc-ability-summary__label")
                 .trigger('click').text();
             // If same item, clicking will be a noop && it won't modify the document;
-            if(!$(".ct-sidebar__portal .ct-sidebar__header").parent().hasClass("b20-ability-pane")) {
-                $(".ct-sidebar__portal .ct-sidebar__header").parent().addClass("b20-ability-pane");
-            };
             const pane_name = $(".b20-ability-pane .ct-sidebar__heading").text().split(" ")[0];
             if (name == pane_name)
                 execute("b20-ability-pane");
@@ -2380,10 +2373,7 @@ function activateQuickRolls() {
             const name = el.closest(".ct-saving-throws-summary__ability,.ddbc-saving-throws-summary__ability")
                 .find(".ct-saving-throws-summary__ability-name,.ddbc-saving-throws-summary__ability-name")
                 .trigger('click').text().slice(0, 3).toLowerCase();
-            // If same spell, clicking will be a noop && it won't modify it;
-            if(!$(".ct-sidebar__portal .ct-sidebar__header").parent().hasClass("b20-ability-saving-throws-pane")) {
-                $(".ct-sidebar__portal .ct-sidebar__header").parent().addClass("b20-ability-saving-throws-pane");
-            };
+            // If same save ability, clicking will be a noop && it won't modify it;
             const pane_name = $(".b20-ability-saving-throws-pane .ct-sidebar__heading").text().slice(0, 3).toLowerCase();
             if (name == pane_name)
                 execute("b20-ability-saving-throws-pane");
