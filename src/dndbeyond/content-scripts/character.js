@@ -2584,15 +2584,21 @@ function documentModified(mutations, observer) {
         pane.each((_, div) => handlePane(div.className));
     } else {
         const sidebar = $(".ct-sidebar__portal .ct-sidebar__header");
-        const initRegex = /\b\w+\s\(([-+]?\d+)\)/g;
         if (sidebar.length > 0) {
             const sideBarHeader = sidebar.text().toLowerCase();
-            if (sidebar.closest("svg[class*='ddbc-ability-icon']").length > 0 && sidebar.closest(".ddbc-ability-score-manager").length === 0) {
-                const paneClass = SPECIAL_PANES.savingThrow;
+            // Look for initiative followed by a modifier value.
+            // This should be safe against translated pages since chrome will translate the text after
+            // the page is modified, giving us enoguh time to catch "Initiative" string and add the class name
+            // to the div, before the text gets translated
+            const initRegex = /\bInitiative\s\(([-+]?\d+)\)/i;
+            if (sidebar.parent().find(".ddbc-ability-score-manager").length > 0) {
+                const paneClass = SPECIAL_PANES.ability;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
-            } else if (sidebar.closest(".ddbc-ability-score-manager").length > 0) {
-                const paneClass = SPECIAL_PANES.ability;
+            } else if (sidebar.find("svg[class*='ddbc-ability-icon']").length > 0) {
+                // Saving throws have no specific class, but the preview icon has the ddbc-ability-icon class
+                // so we can use that to detect saving throws (excluding ability scores, already handled above)
+                const paneClass = SPECIAL_PANES.savingThrow;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
             } else if (sideBarHeader.match(initRegex)) {
