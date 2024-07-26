@@ -2312,7 +2312,7 @@ function deactivateQuickRolls() {
     const spells = $(".ct-spells-spell .ct-spells-spell__action,.ddbc-spells-spell .ddbc-spells-spell__action");
     const spells_to_hit = $(".ct-spells-spell .ct-spells-spell__tohit .integrated-dice__container, .ddbc-spells-spell .ddbc-spells-spell__tohit .integrated-dice__container");
     const spells_damage = $(".ct-spells-spell .ct-spells-spell__damage .integrated-dice__container, .ddc-spells-spell .ddc-spells-spell__damage .integrated-dice__container");
-    const initiative = $(".ct-combat__summary-group--initiative .integrated-dice__container, .ct-combat__summary-group--initiative span[class*='styles_numberDisplay'], .ct-combat-tablet__extra--initiative .integrated-dice__container, .ct-combat-tablet__extra--initiative span[class*='styles_numberDisplay'], .ct-combat-mobile__extras > section[class*='styles_boxMobile'] span[class*='styles_numberDisplay']");
+    const initiative = $(".ct-combat__summary-group--initiative .integrated-dice__container, .ct-combat__summary-group--initiative span[class*='styles_numberDisplay'], .ct-combat-tablet__extra--initiative .integrated-dice__container, .ct-combat-tablet__extra--initiative span[class*='styles_numberDisplay'], .ct-combat-mobile__extras > section[class*='styles_boxMobile'] .integrated-dice__container, .ct-combat-mobile__extras > section[class*='styles_boxMobile'] span[class*='styles_numberDisplay']");
 
     hideTooltipIfDestroyed();
     deactivateTooltipListeners(initiative);
