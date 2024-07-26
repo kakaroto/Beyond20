@@ -1441,7 +1441,7 @@ function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {sp
 async function rollSpell(force_display = false, force_to_hit_only = false, force_damages_only = false) {
     const properties = propertyListToDict($(".ct-spell-pane .ct-spell-detail [role=list] > div"));
     //console.log("Properties are : " + String(properties));
-    const spell_source = $(".ct-sidebar__header-parent").text();
+    const spell_source = $(".ct-sidebar__header-parent").text() || $(".ct-sidebar__header > div").text();
     const spell_full_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name, .ct-sidebar__heading span[class*='styles_spellName']").text();
     const spell_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name, .ct-sidebar__heading span[class*='styles_spellName']")[0].firstChild.textContent;
     const description = descriptionToString(".ct-spell-pane .ct-spell-detail__description");
