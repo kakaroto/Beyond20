@@ -1,3 +1,13 @@
+v2.9.5 (JuLy 27th 2024)
+===
+- **Bugfix**: Fix support for rolling Initiative (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for rolling Ability checks (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for rolling Saving Throws (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for rolling Character Actions (unarmed strike, vampirire bite, etc..) (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for rolling Class features and Feats (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: *FVTT*: Fix roll data in chat messages failing to display on recent dnd5e system (by [@AlanWaiss](https://github.com/AlanWaiss))
+- **Bugfix**: Fix parsing of a spell's source, which was required for class specific spell modifiers, like the Artificer's Arcane Firearm.
+
 v2.9.4 (June 5th 2024)
 ===
 - **Bugfix**: Fix rolling of spells and weapons due to DDB character sheet change from June 4th's website update (by [@Azmoria](https://github.com/Azmoria))

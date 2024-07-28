@@ -17,17 +17,20 @@ Thank you all for your support!
 
 # Release Notes
 
-v2.9.4 (June 5th 2024)
+v2.9.5 (JuLy 27th 2024)
 ===
 
 Hi everyone,
 
-Yesterday, D&D Beyond updated their website slightly again, which broke rolling items and spells from the character sheet.
-This small update fixes that as well as a couple of other small issues.
+Another bugfix release for Beyond20, to fix various rolls which broke after D&D Beyond progressively updated their character sheets in the recent weeks, which eventually broke rolling ability checks, saving throws, initiative, character actions, class features, feats, and the parsing of spell sources. 
 
-A special thank you for those who debugged the issue, contributed fixes to Beyond20 and helped with support. I love seeing the open-source spirit within our community.
+This release also works around a bug in Foundry's v12 dnd5e system which prevented the rolls from Beyond20 from appearing in the chat log.
 
-Thank you as well to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
+After multiple pokes, and waiting more than reasonable, it appears that D&D Beyond has no interest in re-establishing communications with the Beyond20 team and ensuring the extension remains compatible with their continuous changes to the website. It is certainly a great disapointment to be honest, but it is what it is, unfortunately.
+
+This release is dedicated to [@dmportella](https://linktr.ee/dmportella) from the community who has stepped up in the past couple of weeks, submitted all the fixes for the extension and helped with github issues. A huge huge thank you for taking care of things while I was incapacitated, and I'd recommend people [buy him a coffee](https://ko-fi.com/gothyl) instead of me this time around! 
+
+As always, thank you everyone who contributed to the project, including my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
 
 Enjoy!
 
@@ -37,13 +40,15 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-v2.9.4 (June 5th 2024)
+v2.9.5 (JuLy 27th 2024)
 ===
-- **Bugfix**: Fix rolling of spells and weapons due to DDB character sheet change from June 4th's website update (by [@Azmoria](https://github.com/Azmoria))
-- **Bugfix**: Fix support for Blood Hunter class and abilities which broke when DDB changed the class name to "Blood Hunter (archived)"
-- **Bugfix**: Add msising `Loaded` and `NewSettings` DOM API calls on D&D Beyond website (by [@carrierfry](https://github.com/carrierfry))
-- **Bugfix**: Fix Beyond20 Settings button on the character sheet overlapping the character info on small sized tablets (by [@lindenmckenzie](https://github.com/lindenmckenzie))
-
+- **Bugfix**: Fix support for rolling Initiative (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for rolling Ability checks (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for rolling Saving Throws (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for rolling Character Actions (unarmed strike, vampirire bite, etc..) (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for rolling Class features and Feats (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: *FVTT*: Fix roll data in chat messages failing to display on recent dnd5e system (by [@AlanWaiss](https://github.com/AlanWaiss))
+- **Bugfix**: Fix parsing of a spell's source, which was required for class specific spell modifiers, like the Artificer's Arcane Firearm.
 ---
 
 Click [here](/Changelog) for the full Changelog of previous versions.

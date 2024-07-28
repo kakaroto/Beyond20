@@ -1,3 +1,20 @@
+v2.9.5 (JuLy 27th 2024)
+===
+
+Hi everyone,
+
+Another bugfix release for Beyond20, to fix various rolls which broke after D&D Beyond progressively updated their character sheets in the recent weeks, which eventually broke rolling ability checks, saving throws, initiative, character actions, class features, feats, and the parsing of spell sources. 
+
+This release also works around a bug in Foundry's v12 dnd5e system which prevented the rolls from Beyond20 from appearing in the chat log.
+
+After multiple pokes, and waiting more than reasonable, it appears that D&D Beyond has no interest in re-establishing communications with the Beyond20 team and ensuring the extension remains compatible with their continuous changes to the website. It is certainly a great disapointment to be honest, but it is what it is, unfortunately.
+
+This release is dedicated to [@dmportella](https://linktr.ee/dmportella) from the community who has stepped up in the past couple of weeks, submitted all the fixes for the extension and helped with github issues. A huge huge thank you for taking care of things while I was incapacitated, and I'd recommend people [buy him a coffee](https://ko-fi.com/gothyl) instead of me this time around! 
+
+As always, thank you everyone who contributed to the project, including my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
+
+Enjoy!
+
 v2.9.4 (June 5th 2024)
 ===
 
