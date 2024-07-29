@@ -956,6 +956,22 @@ function handleMessage(request, sender, sendResponse) {
 }
 
 chrome.runtime.onMessage.addListener(handleMessage);
+
+function checkForActivity (tab) {
+    const origin = `${new URL(tab.url).protocol}//${new URL(tab.url).hostname}/*`;
+    if(origin.includes("discord.com") && isRoll20(document.title)) {
+        console.log("Detected Roll20 Discord Activity, using content port...");
+        //We have to use a content port rather than tab messaging in Discord Activity.
+        let myPort = chrome.runtime.connect({ });
+
+        myPort.onMessage.addListener((m) => {
+        handleMessage(m);
+        });
+    }
+}
+
+chrome.runtime.sendMessage({ "action": "get-current-tab" }, checkForActivity);
+
 updateSettings();
 chrome.runtime.sendMessage({ "action": "activate-icon" });
 sendCustomEvent("disconnect");
