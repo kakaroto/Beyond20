@@ -23,6 +23,10 @@ function documentModified(mutations, observer) {
         removeRollButtons();
         character = new Monster("Monster", null, settings);
         character.parseStatBlock(monster);
+        const activeCombatant = $(".is-turn").find(".combatant-summary__name").text();
+        if (activeCombatant && (activeCombatant.includes(monster_name))) {
+            character._name = activeCombatant;
+        }
     }
     const customRoll = DigitalDiceManager.updateNotifications();
     if (customRoll && settings['use-digital-dice']) {
