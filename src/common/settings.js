@@ -1769,9 +1769,9 @@ function createCustomDomainsSetting(name, short) {
         ev.preventDefault();
         const domains = getCustomDomainsSetting(name);
         for (const url of domains) {
-            chrome.permissions.contains({origins: [url]}, (hasPermission) => {
+            chrome.permissions.contains({origins: [url]}).then((hasPermission) => {
                 if (hasPermission) return;
-                chrome.permissions.request({origins: [url]}, (response) => {
+                chrome.permissions.request({origins: [url]}).then((response) => {
                     if (response) {
                         console.log("Permission was granted");
                         alertify.success(`Beyond20 will now load automatically on ${url}`);
@@ -1779,6 +1779,8 @@ function createCustomDomainsSetting(name, short) {
                         console.log("Permission was refused");
                         alertify.error(`Error requesting permission for ${url}`);
                     }
+                }).catch(err => {
+                    console.error("Error requesting permission for ", url, err);
                 });
             });
         }

@@ -390,7 +390,7 @@ function actOnCurrentTab(tab) {
     // We cannot use the url or its origin, because Firefox, in its great magnificent wisdom
     // decided that ports in the origin would break the whole permissions system
     const origin = `${new URL(tab.url).protocol}//${new URL(tab.url).hostname}/*`;
-    chrome.permissions.contains({origins: [origin]}, (hasPermission) => {
+    chrome.permissions.contains({origins: [origin]}).then((hasPermission) => {
         if (!hasPermission) {
             const options = $(".beyond20-options");
             const request = createHTMLOptionEx("default-popup", {
@@ -401,7 +401,7 @@ function actOnCurrentTab(tab) {
             options.prepend(request);
             request.addEventListener("click", (ev) => {
                 console.log("Clicked, requesting permissions!");
-                chrome.permissions.request({origins: [origin]}, function onResponse(response) {
+                chrome.permissions.request({origins: [origin]}).then((response) => {
                     if (response) {
                         console.log("Permission was granted");
                         request.remove();

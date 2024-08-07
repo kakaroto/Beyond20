@@ -32,6 +32,7 @@ const SRC_FILES = {
         "src/extension/background.js"
     ],
     options: [
+        "src/common/constants.js",
         "src/common/utils.js",
         "libs/FileSaver.min.js",
         "src/common/settings.js",
