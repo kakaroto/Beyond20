@@ -73,6 +73,14 @@ const options_list = {
         "advanced": true
         // callbacks will be added after the functions are defined
     },
+    "roll20-discord-activity": {
+        "title": "Support Roll20 Discord Activity",
+        "description": "Integrate with Roll20's Discord Activity.\nThis requires opening Discord in the browser so Beyond20 can be loaded and communicate with the activity.",
+        "type": "special",
+        "default": null,
+        "advanced": true
+        // callbacks will be added after the functions are defined
+    },
 
     "hide-results-on-whisper-to-discord": {
         "title": "Hide roll results on D&D Beyond when whispering to Discord",
@@ -1804,6 +1812,74 @@ function getCustomDomainsSetting(name) {
 }
 
 
+function createRoll20DiscordActivitySetting(name, short) {
+    const opt = options_list[name];
+    const description_p = opt.description.split("\n").map(desc => E.p({}, desc));
+    for (let p of description_p)
+        p.classList.add("select");
+    let apply_button = null;
+    if (getBrowser() === "Firefox") {
+        apply_button = E.div({class: "save button-group"},
+            E.span({}, "You", E.b({}, " must click "), " the Beyond 20 icon from the Firefox toolbar on the VTT page to load the addon")
+        );
+    } else {
+        apply_button = E.div({class: "save button-group"},
+            E.span({}, "You", E.b({}, " must "), " press Apply to request missing permissions"),
+            E.button({ class: "beyond20-option-input btn", type: "button"}, "Apply")
+        );
+    }
+    const label = E.div({ style: "text-align: center; position: absolute; right: 0px; top: 50%; transform: translateY(-50%);" },
+        E.p({}, "✅"),
+        E.p({ id: name, name }, "Permissions granted"),
+    );
+    const setting = E.li({
+        id: "beyond20-option-roll20-discord-activity",
+        class: "list-group-item beyond20-option beyond20-option-text" 
+    },
+        E.label({ class: "list-content", for: name },
+            E.h4({}, opt.title),
+            ...description_p,
+            apply_button,
+            label,
+        )
+    );
+    const button = $(setting).find("button");
+    button.click(ev => {
+        ev.stopPropagation();
+        ev.preventDefault();
+        chrome.permissions.contains({origins: ROLL20_DISCORD_ACTIVITY_DOMAINS}).then((hasPermission) => {
+            if (hasPermission) return;
+            chrome.permissions.request({origins: ROLL20_DISCORD_ACTIVITY_DOMAINS}).then((response) => {
+                if (response) {
+                    console.log("Permission was granted");
+                    alertify.success(`Beyond20 will now load automatically on Roll20 Discord activity`);
+                    $(label).show();
+                    $(apply_button).hide();
+                } else {
+                    console.log("Permission was refused");
+                    alertify.error(`Error requesting permission for Roll20 Discord activity`);
+                }
+            });
+        });
+    });
+    // Hide both the apply button and checkbox until we know if we have the permissions
+    $(label).hide();
+    $(apply_button).hide();
+    chrome.permissions.contains({origins: ROLL20_DISCORD_ACTIVITY_DOMAINS}).then((hasPermission) => {
+        if (hasPermission) {
+            $(label).show();
+        } else {
+            $(apply_button).show();
+        }
+    });
+
+    return setting;
+}
+function setRoll20DiscordActivitySetting(name, settings) {
+}
+function getRoll20DiscordActivitySetting(name) {
+}
+
 function createBackupRestoreSetting(name, short) {
     const backup = (name === "backup-settings");
     const opt = options_list[name];
@@ -1899,6 +1975,9 @@ options_list["hotkeys-bindings"]["get"] = getHotkeysSetting;
 options_list["custom-domains"]["createHTMLElement"] = createCustomDomainsSetting;
 options_list["custom-domains"]["set"] = setCustomDomainsSetting;
 options_list["custom-domains"]["get"] = getCustomDomainsSetting;
+options_list["roll20-discord-activity"]["createHTMLElement"] = createRoll20DiscordActivitySetting;
+options_list["roll20-discord-activity"]["set"] = setRoll20DiscordActivitySetting;
+options_list["roll20-discord-activity"]["get"] = getRoll20DiscordActivitySetting;
 character_settings["discord-target"]["createHTMLElement"] = createDiscordTargetSetting;
 character_settings["discord-target"]["set"] = setDiscordTargetSetting;
 character_settings["discord-target"]["get"] = getDiscordTargetSetting;
