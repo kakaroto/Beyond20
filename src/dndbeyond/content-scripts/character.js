@@ -2116,9 +2116,9 @@ function injectRollButton(paneClass) {
         for (const group of proficiencies.toArray()) {
             addRollButton(character, () => displayProficiencies(group), group, { small: true, prepend: true, image: false });
         }
-    } else if (paneClass == "ct-character-manage-pane") {
-        const avatar = $(".ct-character-manage-pane .ct-character-manage-pane__summary-avatar");
-        const char_name = $(".ct-character-manage-pane .ct-character-manage-pane__character-name h1").text().trim();
+    } else if (paneClass == "b20-character-manage-pane") {
+        const avatar = $(".b20-character-manage-pane .ddbc-character-avatar__portrait");
+        const char_name = $(".b20-character-manage-pane div[class*='styles_characterName'] h1").text().trim();
         let avatar_link = avatar.css('background-image');
         if (avatar_link && avatar_link.startsWith("url("))
             avatar_link = avatar_link.slice(5, -2);
@@ -2545,8 +2545,7 @@ function documentModified(mutations, observer) {
         "ct-creature-pane",
         "ct-vehicle-pane",
         "ct-condition-manage-pane",
-        "ct-proficiencies-pane",
-        "ct-character-manage-pane"
+        "ct-proficiencies-pane"
     ]
 
     const SPECIAL_PANES = {
@@ -2558,6 +2557,7 @@ function documentModified(mutations, observer) {
         feat: "b20-feat-pane",
         feature: "b20-class-feature-pane",
         racialTrait: "b20-racial-trait-pane",
+        character: "b20-character-manage-pane"
     }
 
     function handlePane(paneClass) {
@@ -2622,6 +2622,14 @@ function documentModified(mutations, observer) {
                 // In case DDB remove the ct-racial-trait-pane class from the sidebar
                 const paneClass = SPECIAL_PANES.racialTrait;
                 markPane(sidebar, paneClass);
+                handlePane(paneClass);
+            }
+        } else {
+            // Special panes with now headers
+            const avatarPane = $(".ct-sidebar__inner div[class*='styles_characterManagePane']");
+            if (avatarPane.length > 0) {
+                const paneClass = SPECIAL_PANES.character;
+                markPane(avatarPane, paneClass);
                 handlePane(paneClass);
             }
         }
