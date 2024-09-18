@@ -222,7 +222,7 @@ class Character extends CharacterBase {
     }
 
     featureDetailsToList(selector, name) {
-        const features = $(selector).find(".ct-feature-snippet--class > div[class*='styles_heading']");
+        const features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading, .ct-feature-snippet--class > div[class*='styles_heading'], .ct-feature-snippet--racial-trait > div[class*='styles_heading'], .ct-feature-snippet--feat > div[class*='styles_heading']")
         const feature_list = [];
         for (let feat of features.toArray()) {
             const feat_name = feat.childNodes[0].textContent.trim();
@@ -256,7 +256,7 @@ class Character extends CharacterBase {
             this._class_features = this.getSetting("class-features", []);
         }
 
-        const race_detail = $(".ct-features .ct-race-detail");
+        const race_detail = $(".ct-features .ct-content-group:has(.ct-feature-snippet--racial-trait)");
         if (race_detail.length > 0) {
             this._racial_traits = this.featureDetailsToList(race_detail, "Racial Traits");
             if (!isListEqual(this._racial_traits, this.getSetting("racial-traits", []))) {
