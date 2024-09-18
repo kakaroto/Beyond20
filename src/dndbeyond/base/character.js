@@ -222,7 +222,7 @@ class Character extends CharacterBase {
     }
 
     featureDetailsToList(selector, name) {
-        const features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading");
+        const features = $(selector).find(".ct-feature-snippet--class > div[class*='styles_heading']");
         const feature_list = [];
         for (let feat of features.toArray()) {
             const feat_name = feat.childNodes[0].textContent.trim();
