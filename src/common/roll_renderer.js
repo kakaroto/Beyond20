@@ -579,7 +579,6 @@ class Beyond20RollRenderer {
                 }
             }
         
-
             await this._roller.resolveRolls(request.name, all_rolls, request)
             
             // Moved after the new resolveRolls so it can access the roll results
@@ -608,6 +607,50 @@ class Beyond20RollRenderer {
                         critical_damage_types[0] = chaotic_type;
                         critical_damage_types[1] = chaotic_type;
                         break;
+                    }
+                }
+            } else if (request.name.includes("Sorcerous Burst")) {
+                const mods = Object.keys(request.character.spell_modifiers);
+                let burstRollsLeft = 0;
+                let burstRollCount = 0;
+                let selectedModifier = null;
+                for (let [i, dmg_roll] of damage_rolls.entries()) {
+                    const [dmg_type, roll, flags] = dmg_roll;
+                    const faces = parseInt(roll.dice[0].faces);
+                    const burstCount = roll.dice[0].rolls.filter(x => x.roll === faces).length; // Count how many max rolls occurred
+
+                    if (burstCount > 0) {
+                        burstRollCount++;
+                        // Prompt for the ability modifier if needed (only if there are multiple options)
+                        if (mods.length > 1 && selectedModifier === null) {
+                            const result = await this.queryGeneric("Spellcasting Ability Modifier", "Burst Ability Modifier", mods);
+                            selectedModifier = (result !== null) ? mods[result] : mods[0]; // Use first one if not selected.
+                        }
+
+                        const modifier = parseInt(request.character.spell_modifiers[selectedModifier]);
+                        burstRollsLeft = (burstRollsLeft != 0) ? burstRollsLeft : modifier; // Set burstRollsLeft to the modifier value if not already set
+                        
+                        // Calculate how many rolls are allowed for the burst (delta)
+                        const delta = Math.min(burstCount, burstRollsLeft); // Only allow as many burst rolls as available in burstRollsLeft
+                        
+                        // Reduce burstRollsLeft by delta, ensuring it doesn't go below zero
+                        burstRollsLeft -= delta;
+
+                        // Perform the burst rolls if delta > 0
+                        if (delta > 0 && burstRollsLeft >= 0) {
+                            const burstRoll = this._roller.roll(delta + "d" + faces); // Roll delta number of dice
+                            burstRoll.setRollType("damage"); // Set the roll type to damage
+
+                            // Add the burst damage roll to the damage rolls array
+                            damage_rolls.push([`Burst (${burstRollCount})`, burstRoll, DAMAGE_FLAGS.ADDITIONAL]);
+
+                            // Handle critical damage for burst rolls if applicable
+                            critical_damages.push(...damagesToCrits(character, [burstRoll._formula]));
+                            critical_damage_types.push(`Burst (${burstRollCount})`);
+
+                            // Resolve the burst roll
+                            await this._roller.resolveRolls(request.name, [burstRoll], request);
+                        }
                     }
                 }
             }
