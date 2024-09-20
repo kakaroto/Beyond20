@@ -625,6 +625,8 @@ class Beyond20RollRenderer {
                         if (mods.length > 1 && selectedModifier === null) {
                             const result = await this.queryGeneric("Spellcasting Ability Modifier", "Burst Ability Modifier", mods);
                             selectedModifier = (result !== null) ? mods[result] : mods[0]; // Use first one if not selected.
+                        } else { 
+                            selectedModifier = mods[0];
                         }
 
                         const modifier = parseInt(request.character.spell_modifiers[selectedModifier]);
