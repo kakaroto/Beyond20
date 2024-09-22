@@ -609,53 +609,6 @@ class Beyond20RollRenderer {
                         break;
                     }
                 }
-            } else if (request.name.includes("Sorcerous Burst")) {
-                const mods = request.character.spell_modifiers;
-                const sorcererMod = Object.keys(mods).find(x => x.toLowerCase() === "sorcerer");
-                let burstRollsLeft = 0;
-                let burstRollCount = 0;
-                let selectedModifier = null;
-                const mainDamage = damage_rolls[0][1];
-
-                const faces = parseInt(mainDamage.dice[0].faces);
-                const initialBurstCount = mainDamage.dice[0].rolls.filter(x => x.roll === faces).length;
-                
-                if (initialBurstCount > 0) {
-                    // Determine the selected modifier, prompt only if multiple options and no sorcerer
-                    if (!sorcererMod && Object.keys(mods).length > 1) {
-                        const result = await this.queryGeneric("Spellcasting Ability Modifier", "Burst Ability Modifier", Object.keys(mods));
-                        selectedModifier = result !== null ? Object.keys(mods)[result] : Object.keys(mods)[0];
-                    } else {
-                        selectedModifier = sorcererMod || Object.keys(mods)[0];
-                    }
-                    burstRollsLeft = parseInt(mods[selectedModifier]);
-                
-                    for (let i = 0; i < damage_rolls.length; i++) {
-                        const [dmg_type, roll] = damage_rolls[i];
-                
-                        if (i === 0 || dmg_type.startsWith("Burst")) {
-                            const burstCount = roll.dice[0].rolls.filter(x => x.roll === faces).length;
-                
-                            if (burstCount > 0) {
-                                burstRollCount++;
-                                const delta = Math.min(burstCount, burstRollsLeft);
-                                burstRollsLeft = Math.max(0, burstRollsLeft - delta); // Ensure non-negative burstRollsLeft
-                
-                                if (delta > 0) {
-                                    const burstRoll = this._roller.roll(`${delta}d${faces}`);
-                                    burstRoll.setRollType("damage");
-                
-                                    damage_rolls.push([`Burst (${burstRollCount})`, burstRoll, DAMAGE_FLAGS.ADDITIONAL]);
-                
-                                    critical_damages.push(...damagesToCrits(character, [burstRoll._formula]));
-                                    critical_damage_types.push(`Burst (${burstRollCount})`);
-                
-                                    await this._roller.resolveRolls(request.name, [burstRoll], request);
-                                }
-                            }
-                        }
-                    }
-                }
             }
 
             // If rolling the attack, check for critical hit, otherwise, use argument.
@@ -687,6 +640,57 @@ class Beyond20RollRenderer {
                     damage_rolls.push([dmg_type + suffix, roll, damage_flags | DAMAGE_FLAGS.CRITICAL]);
                 }
                 await this._roller.resolveRolls(request.name, critical_damage_rolls, request);
+            }
+            
+            // Process Sorcerous Burst after critical hits so we can deploy bursts out of the critical
+            // damage dice as well.
+            if (request.name.includes("Sorcerous Burst")) {
+                const mods = request.character.spell_modifiers;
+                const sorcererMod = Object.keys(mods).find(x => x.toLowerCase() === "sorcerer");
+                const mainDamage = damage_rolls.find((roll) => roll[2] === DAMAGE_FLAGS.REGULAR);
+                const critDamage = damage_rolls.find((roll) => roll[2] === (DAMAGE_FLAGS.REGULAR | DAMAGE_FLAGS.CRITICAL));
+
+                const faces = parseInt(mainDamage[1].dice[0].faces);
+                let burstCount = mainDamage[1].dice[0].rolls.filter(x => x.roll === faces).length;
+                if (critDamage) {
+                    burstCount += critDamage[1].dice[0].rolls.filter(x => x.roll === faces).length;
+                }
+                
+                if (burstCount > 0) {
+                    // Determine the selected modifier, prompt only if multiple options and no sorcerer
+                    let selectedModifier = sorcererMod || Object.keys(mods)[0];
+                    if (!sorcererMod && Object.keys(mods).length > 1) {
+                        const result = await this.queryGeneric("Spellcasting Ability Modifier", "Burst Ability Modifier", Object.keys(mods));
+                        selectedModifier = result !== null ? Object.keys(mods)[result] : Object.keys(mods)[0];
+                    }
+                    let burstRollsLeft = parseInt(mods[selectedModifier]);
+
+                    const critRule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
+                    const doubleForCrit = is_critical && [CriticalRules.PHB, CriticalRules.HOMEBREW_REROLL, CriticalRules.HOMEBREW_MOD].includes(critRule);
+
+                    const rollBurstDamage = async (burst) => {
+                        if (burstRollsLeft <= 0) {
+                            return [];
+                        }
+                        burst = Math.min(burst, burstRollsLeft);
+                        burstRollsLeft -= burst;
+                        const amount = doubleForCrit ? burst * 2 : burst;
+                        const burstRoll = this._roller.roll(`${amount}d${faces}`);
+                        burstRoll.setRollType("damage");
+                        const rolls = [burstRoll];
+                        await this._roller.resolveRolls(request.name, rolls, request);
+                        const newBurstCount = burstRoll.dice[0].rolls.filter(x => x.roll === faces).length;
+                        if (newBurstCount > 0) {
+                            rolls.push(...await rollBurstDamage(newBurstCount));
+                        }
+                        return rolls;
+                    }
+                    const burstRolls = await rollBurstDamage(burstCount);
+                    let burstRollCount = 1;
+                    for (let burstRoll of burstRolls) {
+                        damage_rolls.push([`Burst (${burstRollCount++})`, burstRoll, DAMAGE_FLAGS.ADDITIONAL]);
+                    }
+                }
             }
         } else {
             // If no damages, still need to resolve to hit rolls
