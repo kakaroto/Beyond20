@@ -579,7 +579,6 @@ class Beyond20RollRenderer {
                 }
             }
         
-
             await this._roller.resolveRolls(request.name, all_rolls, request)
             
             // Moved after the new resolveRolls so it can access the roll results
@@ -608,6 +607,54 @@ class Beyond20RollRenderer {
                         critical_damage_types[0] = chaotic_type;
                         critical_damage_types[1] = chaotic_type;
                         break;
+                    }
+                }
+            } else if (request.name.includes("Sorcerous Burst")) {
+                const mods = request.character.spell_modifiers;
+                const hasSorcerer = Object.keys(mods).some(x => x.toLowerCase() === "sorcerer");
+                let burstRollsLeft = 0;
+                let burstRollCount = 0;
+                let selectedModifier = null;
+
+                const faces = parseInt(damage_rolls[0][1].dice[0].faces);
+                const initialBurstCount = damage_rolls[0][1].dice[0].rolls.filter(x => x.roll === faces).length;
+                
+                if (initialBurstCount > 0) {
+                    // Determine the selected modifier, prompt only if multiple options and no sorcerer
+                    if (!hasSorcerer && Object.keys(mods).length > 1) {
+                        const result = await this.queryGeneric("Spellcasting Ability Modifier", "Burst Ability Modifier", Object.keys(mods));
+                        selectedModifier = result !== null ? Object.keys(mods)[result] : Object.keys(mods)[0];
+                    } else {
+                        selectedModifier = Object.keys(mods)[0];
+                    }
+                
+                    const modifier = parseInt(mods[selectedModifier]);
+                    burstRollsLeft = modifier;
+                
+                    for (let i = 0; i < damage_rolls.length; i++) {
+                        const [dmg_type, roll] = damage_rolls[i];
+                
+                        if (i === 0 || dmg_type.startsWith("Burst")) {
+                            const burstCount = roll.dice[0].rolls.filter(x => x.roll === faces).length;
+                
+                            if (burstCount > 0) {
+                                burstRollCount++;
+                                const delta = Math.min(burstCount, burstRollsLeft);
+                                burstRollsLeft = Math.max(0, burstRollsLeft - delta); // Ensure non-negative burstRollsLeft
+                
+                                if (delta > 0) {
+                                    const burstRoll = this._roller.roll(`${delta}d${faces}`);
+                                    burstRoll.setRollType("damage");
+                
+                                    damage_rolls.push([`Burst (${burstRollCount})`, burstRoll, DAMAGE_FLAGS.ADDITIONAL]);
+                
+                                    critical_damages.push(...damagesToCrits(character, [burstRoll._formula]));
+                                    critical_damage_types.push(`Burst (${burstRollCount})`);
+                
+                                    await this._roller.resolveRolls(request.name, [burstRoll], request);
+                                }
+                            }
+                        }
                     }
                 }
             }
