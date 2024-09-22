@@ -611,25 +611,24 @@ class Beyond20RollRenderer {
                 }
             } else if (request.name.includes("Sorcerous Burst")) {
                 const mods = request.character.spell_modifiers;
-                const hasSorcerer = Object.keys(mods).some(x => x.toLowerCase() === "sorcerer");
+                const sorcererMod = Object.keys(mods).find(x => x.toLowerCase() === "sorcerer");
                 let burstRollsLeft = 0;
                 let burstRollCount = 0;
                 let selectedModifier = null;
+                const mainDamage = damage_rolls[0][1];
 
-                const faces = parseInt(damage_rolls[0][1].dice[0].faces);
-                const initialBurstCount = damage_rolls[0][1].dice[0].rolls.filter(x => x.roll === faces).length;
+                const faces = parseInt(mainDamage.dice[0].faces);
+                const initialBurstCount = mainDamage.dice[0].rolls.filter(x => x.roll === faces).length;
                 
                 if (initialBurstCount > 0) {
                     // Determine the selected modifier, prompt only if multiple options and no sorcerer
-                    if (!hasSorcerer && Object.keys(mods).length > 1) {
+                    if (!sorcererMod && Object.keys(mods).length > 1) {
                         const result = await this.queryGeneric("Spellcasting Ability Modifier", "Burst Ability Modifier", Object.keys(mods));
                         selectedModifier = result !== null ? Object.keys(mods)[result] : Object.keys(mods)[0];
                     } else {
-                        selectedModifier = Object.keys(mods)[0];
+                        selectedModifier = sorcererMod || Object.keys(mods)[0];
                     }
-                
-                    const modifier = parseInt(mods[selectedModifier]);
-                    burstRollsLeft = modifier;
+                    burstRollsLeft = parseInt(mods[selectedModifier]);
                 
                     for (let i = 0; i < damage_rolls.length; i++) {
                         const [dmg_type, roll] = damage_rolls[i];
