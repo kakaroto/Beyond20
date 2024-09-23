@@ -1,3 +1,11 @@
+v2.9.6 (September 22nd 2024)
+===
+- **Feature**: Add support for Sorcerous Burst (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Add support for Roll20 Discord Activity (by [@rileydutton](https://github.com/rileydutton), [@dmportella](https://github.com/dmportella) and [@kakaroto](https://github.com/kakaroto))
+- **Bugfix**: Fix support for parsing a character's class features, feats, racial features (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for detecting the character panel and avatar sharing (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: *FVTT module*: Fix support for applying damages from chat tooltip
+
 v2.9.5 (JuLy 27th 2024)
 ===
 - **Bugfix**: Fix support for rolling Initiative (by [@dmportella](https://github.com/dmportella))

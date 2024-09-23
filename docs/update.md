@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.9.5
+Congratulations! Beyond20 was just updated to the latest version : v2.9.6
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -17,20 +17,18 @@ Thank you all for your support!
 
 # Release Notes
 
-v2.9.5 (JuLy 27th 2024)
+v2.9.6 (September 22nd 2024)
 ===
 
 Hi everyone,
 
-Another bugfix release for Beyond20, to fix various rolls which broke after D&D Beyond progressively updated their character sheets in the recent weeks, which eventually broke rolling ability checks, saving throws, initiative, character actions, class features, feats, and the parsing of spell sources. 
+I'm releasing another small bugfix update to Beyond20 after recent changes to D&D Beyond website broke some functionality of the extension, more specifically, the detection of class features, feats and racial features from your characters.
 
-This release also works around a bug in Foundry's v12 dnd5e system which prevented the rolls from Beyond20 from appearing in the chat log.
+This update also includes support for the Roll20 Discord Activity, thanks to the contribution by Riley Dutton from Roll20. Note however that it only works if you open Discord inside of your browser alongside the D&D Beyond page. Also note that Chrome/Edge users will need to click on the Beyond20 icon in the address bar and authorize the extension to work on the Discord page before you can use the new feature.
 
-After multiple pokes, and waiting more than reasonable, it appears that D&D Beyond has no interest in re-establishing communications with the Beyond20 team and ensuring the extension remains compatible with their continuous changes to the website. It is certainly a great disappointment to be honest, but it is what it is, unfortunately.
+Another big thank you to [@dmportella](https://linktr.ee/dmportella) who helped fix the issue with class feature detection and added support for Sorcereus Burst. And like last time, you should continue to direct your thanks to him, perhaps via his [Ko-fi page](https://ko-fi.com/gothyl)! 
 
-This release is dedicated to [@dmportella](https://linktr.ee/dmportella) from the community who has stepped up in the past couple of weeks, submitted all the fixes for the extension and helped with github issues. A huge huge thank you for taking care of things while I was incapacitated, and I'd recommend people [buy him a coffee](https://ko-fi.com/gothyl) instead of me this time around! 
-
-As always, thank you everyone who contributed to the project, including my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
+As always, thank you everyone who contributed to the project, and thank you to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
 
 Enjoy!
 
@@ -40,15 +38,14 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-v2.9.5 (JuLy 27th 2024)
+v2.9.6 (September 22nd 2024)
 ===
-- **Bugfix**: Fix support for rolling Initiative (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix support for rolling Ability checks (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix support for rolling Saving Throws (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix support for rolling Character Actions (unarmed strike, vampirire bite, etc..) (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix support for rolling Class features and Feats (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: *FVTT*: Fix roll data in chat messages failing to display on recent dnd5e system (by [@AlanWaiss](https://github.com/AlanWaiss))
-- **Bugfix**: Fix parsing of a spell's source, which was required for class specific spell modifiers, like the Artificer's Arcane Firearm.
+- **Feature**: Add support for Sorcerous Burst (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Add support for Roll20 Discord Activity (by [@rileydutton](https://github.com/rileydutton), [@dmportella](https://github.com/dmportella) and [@kakaroto](https://github.com/kakaroto))
+- **Bugfix**: Fix support for parsing a character's class features, feats, racial features (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for detecting the character panel and avatar sharing (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: *FVTT module*: Fix support for applying damages from chat tooltip
+
 ---
 
 Click [here](/Changelog) for the full Changelog of previous versions.
