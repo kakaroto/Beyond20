@@ -1824,13 +1824,13 @@ function createRoll20DiscordActivitySetting(name, short) {
         );
     } else {
         apply_button = E.div({class: "save button-group"},
-            E.span({}, "You", E.b({}, " must "), " press Apply to request missing permissions"),
-            E.button({ class: "beyond20-option-input btn", type: "button"}, "Apply")
+            E.span({id: name, name}, "🚫 Permissions missing"),
+            E.button({ class: "beyond20-option-input btn", type: "button"}, "Request")
         );
     }
-    const label = E.div({ style: "text-align: center; position: absolute; right: 0px; top: 50%; transform: translateY(-50%);" },
-        E.p({}, "✅"),
-        E.p({ id: name, name }, "Permissions granted"),
+    const label = E.div({ class: "save button-group" },
+        E.span({id: name, name}, "✅ Permissions granted"),
+        E.button({ class: "beyond20-option-input btn", type: "button"}, "Revoke")
     );
     const setting = E.li({
         id: "beyond20-option-roll20-discord-activity",
@@ -1843,18 +1843,19 @@ function createRoll20DiscordActivitySetting(name, short) {
             label,
         )
     );
-    const button = $(setting).find("button");
+    const button = $(apply_button).find("button");
     button.click(ev => {
         ev.stopPropagation();
         ev.preventDefault();
-        chrome.permissions.contains({origins: ROLL20_DISCORD_ACTIVITY_DOMAINS}).then((hasPermission) => {
+        chrome.permissions.contains(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((hasPermission) => {
             if (hasPermission) return;
-            chrome.permissions.request({origins: ROLL20_DISCORD_ACTIVITY_DOMAINS}).then((response) => {
+            chrome.permissions.request(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((response) => {
                 if (response) {
                     console.log("Permission was granted");
                     alertify.success(`Beyond20 will now load automatically on Roll20 Discord activity`);
                     $(label).show();
                     $(apply_button).hide();
+                    chrome.runtime.sendMessage({ "action": "discord-permissions-updated", permissions: true });
                 } else {
                     console.log("Permission was refused");
                     alertify.error(`Error requesting permission for Roll20 Discord activity`);
@@ -1865,12 +1866,24 @@ function createRoll20DiscordActivitySetting(name, short) {
     // Hide both the apply button and checkbox until we know if we have the permissions
     $(label).hide();
     $(apply_button).hide();
-    chrome.permissions.contains({origins: ROLL20_DISCORD_ACTIVITY_DOMAINS}).then((hasPermission) => {
+    chrome.permissions.contains(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((hasPermission) => {
         if (hasPermission) {
             $(label).show();
         } else {
             $(apply_button).show();
         }
+    });
+    const revokeButton = $(label).find("button");
+    revokeButton.click(ev => {
+        ev.stopPropagation();
+        ev.preventDefault();
+        chrome.permissions.remove(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((removed) => {
+            if (removed) {
+                $(label).hide();
+                $(apply_button).show();
+                chrome.runtime.sendMessage({ "action": "discord-permissions-updated", permissions: false });
+            }
+        });
     });
 
     return setting;

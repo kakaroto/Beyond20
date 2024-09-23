@@ -15,17 +15,30 @@ const DNDBEYOND_FEATS_URL = "*://*.dndbeyond.com/feats/*";
 const CHANGELOG_URL = "https://beyond20.here-for-more.info/update";
 const DISCORD_BOT_INVITE_URL = "https://beyond20.kicks-ass.org/invite";
 const DISCORD_BOT_API_URL = "https://beyond20.kicks-ass.org/roll";
-const ROLL20_DISCORD_ACTIVITY_DOMAINS = [
-    "*://discord.com/*", // discord.com since the activity is an iframe within discord's app? 
-    "*://1199271093882589195.discordsays.com/*" // Roll20 Discord activity
-]
+const DISCORD_URL = "*://discord.com/*";
+const ROLL20_DISCORD_ACTIVITY_DOMAIN = "*://1199271093882589195.discordsays.com/*";
+const DISCORD_ACTIVITY_DOMAINS = [
+    // discord.com is needed since the activity is an iframe within discord's app
+    // without discord.com, a request from the popup.html will fail to pop up the settings
+    DISCORD_URL, 
+     // Roll20 Discord activity URL
+    ROLL20_DISCORD_ACTIVITY_DOMAIN,
+];
+const DISCORD_ACTIVITY_PERMISSIONS = [
+    "webNavigation", // Necessary to listen to navigations inside the discord activity iframe
+];
+const DISCORD_ACTIVITY_PERMISSION_DETAILS = {
+    origins: DISCORD_ACTIVITY_DOMAINS,
+    permissions: DISCORD_ACTIVITY_PERMISSIONS
+};
+
 const SUPPORTED_VTT_URLS = [
     "https://harpy.gg/*",
     "https://app.alchemyrpg.com/game/*",
     "https://dscryb.com/*",
     "https://codex.dragonshorn.com/*",
     "*://*.osrbeyond.com/*",
-    ...ROLL20_DISCORD_ACTIVITY_DOMAINS
+    ...DISCORD_ACTIVITY_DOMAINS
 ];
 
 

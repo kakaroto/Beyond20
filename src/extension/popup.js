@@ -390,7 +390,8 @@ function actOnCurrentTab(tab) {
     // We cannot use the url or its origin, because Firefox, in its great magnificent wisdom
     // decided that ports in the origin would break the whole permissions system
     const origin = `${new URL(tab.url).protocol}//${new URL(tab.url).hostname}/*`;
-    chrome.permissions.contains({origins: [origin]}).then((hasPermission) => {
+    const permissions = urlMatches(origin, DISCORD_URL) ? DISCORD_ACTIVITY_PERMISSION_DETAILS : {origins: [origin]};
+    chrome.permissions.contains(permissions).then((hasPermission) => {
         if (!hasPermission) {
             const options = $(".beyond20-options");
             const request = createHTMLOptionEx("default-popup", {
@@ -401,10 +402,13 @@ function actOnCurrentTab(tab) {
             options.prepend(request);
             request.addEventListener("click", (ev) => {
                 console.log("Clicked, requesting permissions!");
-                chrome.permissions.request({origins: [origin]}).then((response) => {
+                chrome.permissions.request(permissions).then((response) => {
                     if (response) {
                         console.log("Permission was granted");
                         request.remove();
+                        if (urlMatches(origin, DISCORD_URL)) {
+                            chrome.runtime.sendMessage({ "action": "discord-permissions-updated", permissions: true });
+                        }
                     } else {
                         console.log("Permission was refused");
                     }

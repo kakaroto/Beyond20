@@ -4,6 +4,7 @@ var custom_tabs = []
 var tabRemovalTimers = {};
 var currentPermissions = {origins: []};
 var openedChangelog = false;
+var webNavigationReady = false;
 const manifest = chrome.runtime.getManifest();
 // Manifest V3 uses action instead of browserAction
 const action = manifest.manifest_version >= 3 ? chrome.action : chrome.browserAction;
@@ -254,6 +255,14 @@ function onMessage(request, sender, sendResponse) {
     } else if (request.action == "register-generic-tab") {
         action.setPopup({ "tabId": sender.tab.id, "popup": "popup.html" });
         addCustomTab(sender.tab);
+    } else if (request.action == "discord-permissions-updated") {
+        console.log("Discord permissions updated : ", request.permissions);
+        if (request.permissions) {
+            listenToDiscordFrames();
+        } else {
+            // The previous listener, if there was one, would have been removed automatically at this point
+            webNavigationReady = false;
+        }
     } else if (request.action == "reload-me") {
         chrome.tabs.reload(sender.tab.id)
     } else if (request.action == "load-alertify") {
@@ -280,35 +289,39 @@ function injectGenericSiteScripts(tabs) {
     insertCSSs(tabs, ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css", "dist/beyond20.css"])
     executeScripts(tabs, ["libs/alertify.min.js", "libs/jquery-3.4.1.min.js", "dist/generic_site.js"])
 }
+function injectRoll20Scripts(tabs, frame_id = 0) {
+    insertCSSs(tabs, ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css", "dist/beyond20.css"], undefined, frame_id)
+    executeScripts(tabs, ["libs/alertify.min.js", "libs/jquery-3.4.1.min.js", "dist/roll20.js"], undefined, frame_id)
+}
 
-function insertCSSs(tabs, css_files, callback) {
+function insertCSSs(tabs, css_files, callback, frame_id = 0) {
     for (let tab of tabs) {
         // Use new Manifest V3 scripting API 
         if (manifest.manifest_version >= 3) {
             chrome.scripting.insertCSS( {
-                target: {tabId: tab.id},
+                target: { tabId: tab.id, frameIds: [frame_id] },
                 files: css_files
             }, callback);
         } else {
             for (let file of css_files) {
-                chrome.tabs.insertCSS(tab.id, { "file": file }, callback)
+                chrome.tabs.insertCSS(tab.id, { "file": file, frameId: frame_id }, callback)
             }
         }
     }
 }
 
-async function executeScripts(tabs, js_files, callback) {
+async function executeScripts(tabs, js_files, callback, frame_id = 0) {
     for (let tab of tabs) {
         // Use new Manifest V3 scripting API 
         if (manifest.manifest_version >= 3) {
             console.log("Target is : ", tab);
             chrome.scripting.executeScript( {
-                target: {tabId: tab.id},
+                target: { tabId: tab.id, frameIds: [frame_id] },
                 files: js_files
             }, callback);
         } else {
             for (let file of js_files) {
-                chrome.tabs.executeScript(tab.id, { file: file }, callback)
+                chrome.tabs.executeScript(tab.id, { file: file, frameId: frame_id }, callback)
             }
         }
     }
@@ -391,6 +404,20 @@ chrome.permissions.getAll((permissions) => {
         })
     }
 });
+
+function listenToDiscordFrames() {
+    if (!chrome.webNavigation || webNavigationReady) return;
+    console.log("Listening to webNavigation events");
+    chrome.webNavigation.onCompleted.addListener((details) => {
+        if (details.documentLifecycle === "active" && details.frameType == "sub_frame" &&
+            urlMatches(details.url, ROLL20_DISCORD_ACTIVITY_DOMAIN)) {
+            console.log("Injecting roll20 content script into frame : ", details.frameId);
+            injectRoll20Scripts([{id: details.tabId}], details.frameId);
+        }
+    });
+    webNavigationReady = true;
+}
+listenToDiscordFrames();
 
 if (getBrowser() == "Chrome") {
     // Re-inject scripts when reloading the extension, on Chrome
