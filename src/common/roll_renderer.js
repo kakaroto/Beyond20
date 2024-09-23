@@ -686,8 +686,21 @@ class Beyond20RollRenderer {
                     }
                     const burstRolls = await rollBurstDamage(burstCount);
                     let burstRollCount = 1;
+                    let burstCriticalAmount = 0;
                     for (let burstRoll of burstRolls) {
                         damage_rolls.push([`Burst (${burstRollCount++})`, burstRoll, DAMAGE_FLAGS.ADDITIONAL]);
+                        // Accumulate critical damage if needed
+                        if (is_critical && critRule === CriticalRules.HOMEBREW_MAX) {
+                            burstCriticalAmount += burstRoll.dice.reduce((sum, die) => sum + (die.amount * die.faces), 0);
+                        }
+                    }
+
+                    // Handle critical burst damage roll if needed
+                    if(is_critical && critRule === CriticalRules.HOMEBREW_MAX && burstCriticalAmount > 0) {
+                        const criticalRoll = this._roller.roll(burstCriticalAmount.toString());
+                        criticalRoll.setRollType("critical-damage");
+                        damage_rolls.push([`Burst Critical`, criticalRoll, DAMAGE_FLAGS.ADDITIONAL | DAMAGE_FLAGS.CRITICAL]);
+                        await this._roller.resolveRolls(request.name, [criticalRoll], request);
                     }
                 }
             }
