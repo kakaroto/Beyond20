@@ -10,7 +10,9 @@
 		"*://beyond20.kicks-ass.org/roll",
 		"*://app.roll20.net/editor/",
 		"*://*.dndbeyond.com/*",
-		"*://*.forge-vtt.com/game"
+		"*://*.forge-vtt.com/game",
+		"*://discord.com/*",
+		"*://1199271093882589195.discordsays.com/*"
 	],
     "optional_permissions": ["*://*/"],
 	"browser_specific_settings": {
@@ -188,6 +190,22 @@
 				"libs/jquery-3.4.1.min.js",
 				"dist/roll20.js"
 			]
+		},
+		{
+			"matches": [
+				"*://1199271093882589195.discordsays.com/*"
+			],
+			"css": [
+				"libs/css/alertify.css",
+				"libs/css/alertify-themes/default.css",
+				"libs/css/alertify-themes/beyond20.css"
+			],
+			"js": [
+				"libs/alertify.min.js",
+				"libs/jquery-3.4.1.min.js",
+				"dist/roll20.js"
+			],
+			"all_frames": true
 		}
 	]
 }

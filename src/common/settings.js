@@ -1866,25 +1866,33 @@ function createRoll20DiscordActivitySetting(name, short) {
     // Hide both the apply button and checkbox until we know if we have the permissions
     $(label).hide();
     $(apply_button).hide();
-    chrome.permissions.contains(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((hasPermission) => {
-        if (hasPermission) {
-            $(label).show();
-        } else {
-            $(apply_button).show();
-        }
-    });
     const revokeButton = $(label).find("button");
-    revokeButton.click(ev => {
-        ev.stopPropagation();
-        ev.preventDefault();
-        chrome.permissions.remove(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((removed) => {
-            if (removed) {
-                $(label).hide();
+    if (getBrowser() === "Firefox") {
+        // Consider Firefox permissions to always be given as we can't request them
+        // dynamically, so they have to be hardcoded in manifest.json
+        $(label).show();
+        // And we can't remove them either
+        $(revokeButton).hide();
+    } else {
+        chrome.permissions.contains(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((hasPermission) => {
+            if (hasPermission) {
+                $(label).show();
+            } else {
                 $(apply_button).show();
-                chrome.runtime.sendMessage({ "action": "discord-permissions-updated", permissions: false });
             }
         });
-    });
+        revokeButton.click(ev => {
+            ev.stopPropagation();
+            ev.preventDefault();
+            chrome.permissions.remove(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((removed) => {
+                if (removed) {
+                    $(label).hide();
+                    $(apply_button).show();
+                    chrome.runtime.sendMessage({ "action": "discord-permissions-updated", permissions: false });
+                }
+            });
+        });
+    }
 
     return setting;
 }
