@@ -649,10 +649,12 @@ class Beyond20RollRenderer {
                 const sorcererMod = Object.keys(mods).find(x => x.toLowerCase() === "sorcerer");
                 const mainDamage = damage_rolls.find((roll) => roll[2] === DAMAGE_FLAGS.REGULAR);
                 const critDamage = damage_rolls.find((roll) => roll[2] === (DAMAGE_FLAGS.REGULAR | DAMAGE_FLAGS.CRITICAL));
+                const critRule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
+                const doubleForCrit = is_critical && [CriticalRules.PHB, CriticalRules.HOMEBREW_REROLL, CriticalRules.HOMEBREW_MOD].includes(critRule);
 
                 const faces = parseInt(mainDamage[1].dice[0].faces);
                 let burstCount = mainDamage[1].dice[0].rolls.filter(x => x.roll === faces).length;
-                if (critDamage) {
+                if (critRule !== CriticalRules.HOMEBREW_MAX && critDamage) {
                     burstCount += critDamage[1].dice[0].rolls.filter(x => x.roll === faces).length;
                 }
                 
@@ -664,10 +666,7 @@ class Beyond20RollRenderer {
                         selectedModifier = result !== null ? Object.keys(mods)[result] : Object.keys(mods)[0];
                     }
                     let burstRollsLeft = parseInt(mods[selectedModifier]);
-
-                    const critRule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
-                    const doubleForCrit = is_critical && [CriticalRules.PHB, CriticalRules.HOMEBREW_REROLL, CriticalRules.HOMEBREW_MOD].includes(critRule);
-
+          
                     const rollBurstDamage = async (burst) => {
                         if (burstRollsLeft <= 0) {
                             return [];
