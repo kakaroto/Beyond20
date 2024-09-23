@@ -719,7 +719,7 @@ class Beyond20 {
             const button = $(`<button title="${data.label}" style="background-color: ${data.color};"><i class="fas fa-${data.icon}"></i></button>`);
             button.on('click', async () => {
                 for (const token of canvas.tokens.controlled) {
-                    await token.actor?.applyDamage(damage, data.multiplier);
+                    await token.actor?.applyDamage(damage, { multiplier: data.multiplier });
                 };
             })
             buttonContainer.append(button);
