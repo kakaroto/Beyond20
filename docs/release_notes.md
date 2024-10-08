@@ -5,7 +5,7 @@ Hi everyone,
 
 I'm releasing another small bugfix update to Beyond20 after recent changes to D&D Beyond website broke some functionality of the extension, more specifically, the detection of class features, feats and racial features from your characters.
 
-This update also includes support for the Roll20 Discord Activity, thanks to the contribution by Riley Dutton from Roll20. Note however that it only works if you open Discord inside of your browser alongside the D&D Beyond page. Also note that Chrome/Edge users will need to click on the Beyond20 icon in the address bar and authorize the extension to work on the Discord page before you can use the new feature.
+This update also includes support for the Roll20 Discord Activity, thanks to the contribution by Riley Dutton from Roll20. Note however that it only works if you open Discord inside of your browser alongside the D&D Beyond page. Also note that Chrome/Edge users will need to click on the Beyond20 icon in the address bar and authorize the extension to work on the Discord page before you can use the new feature. Firefox users will be prompted to accept the new permissions upon updating, as unfortunately, Firefox does not support optional permissions and the permissions request API.
 
 Another big thank you to [@dmportella](https://linktr.ee/dmportella) who helped fix the issue with class feature detection and added support for the Sorcereus Burst spell. And like last time, you should continue to direct your thanks to him, perhaps via his [Ko-fi page](https://ko-fi.com/gothyl)! 
 
