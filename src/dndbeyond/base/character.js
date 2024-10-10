@@ -225,8 +225,9 @@ class Character extends CharacterBase {
         const features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading, .ct-feature-snippet--class > div[class*='styles_heading'], .ct-feature-snippet--racial-trait > div[class*='styles_heading'], .ct-feature-snippet--feat > div[class*='styles_heading']")
         const feature_list = [];
         for (let feat of features.toArray()) {
-            const feat_reference = $(feat).parent().find("span[class*='styles_metaItem'] > p[class*='styles_reference'] > span[class*='styles_name']");
-            const feat_name = this.getFeatureVersionName(feat.childNodes[0].textContent.trim(), feat_reference.length > 0 ? feat_reference[0].textContent.trim() : undefined);
+            const feat_reference = $(feat).parent().find("span[class*='styles_metaItem'] > p[class*='styles_reference'] > span[class*='styles_name']").eq(0).text();
+            const feat_base_name = feat.childNodes[0].textContent.trim()
+            const feat_name = this.getFeatureVersionName(feat_base_name, feat_reference);
             feature_list.push(feat_name);
             const options = $(feat).parent().find(".ct-feature-snippet__option > .ct-feature-snippet__heading");
             for (let option of options.toArray()) {

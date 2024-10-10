@@ -443,7 +443,7 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
     }
 
     if (to_hit !== null && 
-        character.getSetting("great-weapon-master-2024", false) &&
+        character.getSetting("great-weapon-master-2024", true) &&
         character.hasFeat("Great Weapon Master 2024") &&
         (properties["Properties"] && properties["Properties"].includes("Heavy") ||
         action_name.includes("Polearm Master")) &&
@@ -451,7 +451,6 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
         const proficiency = parseInt(character._proficiency);
         damages.push(proficiency.toString());
         damage_types.push("Great Weapon Master");
-        settings_to_change["great-weapon-master-2024"] = false;
     }
 
 
