@@ -6,7 +6,7 @@ v2.9.6 (September 22nd 2024)
 - **Bugfix**: Fix support for detecting the character panel and avatar sharing (by [@dmportella](https://github.com/dmportella))
 - **Bugfix**: *FVTT module*: Fix support for applying damages from chat tooltip
 
-v2.9.5 (JuLy 27th 2024)
+v2.9.5 (July 27th 2024)
 ===
 - **Bugfix**: Fix support for rolling Initiative (by [@dmportella](https://github.com/dmportella))
 - **Bugfix**: Fix support for rolling Ability checks (by [@dmportella](https://github.com/dmportella))
