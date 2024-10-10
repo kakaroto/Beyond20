@@ -752,7 +752,7 @@ const character_settings = {
         "default": false
     },
     "great-weapon-master-2024": {
-        "title": "Feat: Great Weapon Master 2024 (Apply to next roll only)",
+        "title": "Feat: Great Weapon Master 2024",
         "description": "Heavy Weapon Mastery. Apply extra damage equals your Proficiency Bonus.",
         "type": "bool",
         "default": true
