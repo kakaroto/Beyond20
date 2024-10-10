@@ -14,7 +14,7 @@ As always, thank you everyone who contributed to the project, and thank you to m
 Enjoy!
 
 
-v2.9.5 (JuLy 27th 2024)
+v2.9.5 (July 27th 2024)
 ===
 
 Hi everyone,

@@ -4,7 +4,7 @@ Congratulations! Beyond20 was just updated to the latest version : v2.9.6
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
-If you enjoy using Beyond20 and find it useful for your games, please considerg [showing your appreciation](/rations) by offering me some rations or your patronage.
+If you enjoy using Beyond20 and find it useful for your games, please consider [showing your appreciation](/rations) by offering me some rations or your patronage.
 
 Thank you all for your support!
 
