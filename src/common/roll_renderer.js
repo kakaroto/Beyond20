@@ -649,10 +649,12 @@ class Beyond20RollRenderer {
                 const sorcererMod = Object.keys(mods).find(x => x.toLowerCase() === "sorcerer");
                 const mainDamage = damage_rolls.find((roll) => roll[2] === DAMAGE_FLAGS.REGULAR);
                 const critDamage = damage_rolls.find((roll) => roll[2] === (DAMAGE_FLAGS.REGULAR | DAMAGE_FLAGS.CRITICAL));
+                const critRule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
+                const doubleForCrit = is_critical && [CriticalRules.PHB, CriticalRules.HOMEBREW_REROLL, CriticalRules.HOMEBREW_MOD].includes(critRule);
 
                 const faces = parseInt(mainDamage[1].dice[0].faces);
                 let burstCount = mainDamage[1].dice[0].rolls.filter(x => x.roll === faces).length;
-                if (critDamage) {
+                if (critRule !== CriticalRules.HOMEBREW_MAX && critDamage) {
                     burstCount += critDamage[1].dice[0].rolls.filter(x => x.roll === faces).length;
                 }
                 
@@ -664,10 +666,7 @@ class Beyond20RollRenderer {
                         selectedModifier = result !== null ? Object.keys(mods)[result] : Object.keys(mods)[0];
                     }
                     let burstRollsLeft = parseInt(mods[selectedModifier]);
-
-                    const critRule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
-                    const doubleForCrit = is_critical && [CriticalRules.PHB, CriticalRules.HOMEBREW_REROLL, CriticalRules.HOMEBREW_MOD].includes(critRule);
-
+          
                     const rollBurstDamage = async (burst) => {
                         if (burstRollsLeft <= 0) {
                             return [];
@@ -687,8 +686,21 @@ class Beyond20RollRenderer {
                     }
                     const burstRolls = await rollBurstDamage(burstCount);
                     let burstRollCount = 1;
+                    let burstCriticalAmount = 0;
                     for (let burstRoll of burstRolls) {
                         damage_rolls.push([`Burst (${burstRollCount++})`, burstRoll, DAMAGE_FLAGS.ADDITIONAL]);
+                        // Accumulate critical damage if needed
+                        if (is_critical && critRule === CriticalRules.HOMEBREW_MAX) {
+                            burstCriticalAmount += burstRoll.dice.reduce((sum, die) => sum + (die.amount * die.faces), 0);
+                        }
+                    }
+
+                    // Handle critical burst damage roll if needed
+                    if(is_critical && critRule === CriticalRules.HOMEBREW_MAX && burstCriticalAmount > 0) {
+                        const criticalRoll = this._roller.roll(burstCriticalAmount.toString());
+                        criticalRoll.setRollType("critical-damage");
+                        damage_rolls.push([`Burst Critical`, criticalRoll, DAMAGE_FLAGS.ADDITIONAL | DAMAGE_FLAGS.CRITICAL]);
+                        await this._roller.resolveRolls(request.name, [criticalRoll], request);
                     }
                 }
             }
