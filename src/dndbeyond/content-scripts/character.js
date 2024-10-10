@@ -442,6 +442,18 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
         settings_to_change["great-weapon-master"] = false;
     }
 
+    if (to_hit !== null && 
+        character.getSetting("great-weapon-master-2024", true) &&
+        character.hasFeat("Great Weapon Master 2024") &&
+        (properties["Properties"] && properties["Properties"].includes("Heavy") ||
+        action_name.includes("Polearm Master")) &&
+        properties["Proficient"] == "Yes") {
+        const proficiency = parseInt(character._proficiency);
+        damages.push(proficiency.toString());
+        damage_types.push("Great Weapon Master");
+    }
+
+
     // Charger Feat
     if (character.hasFeat("Charger") &&
         character.getSetting("charger-feat")) {

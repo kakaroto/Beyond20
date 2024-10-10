@@ -225,17 +225,38 @@ class Character extends CharacterBase {
         const features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading, .ct-feature-snippet--class > div[class*='styles_heading'], .ct-feature-snippet--racial-trait > div[class*='styles_heading'], .ct-feature-snippet--feat > div[class*='styles_heading']")
         const feature_list = [];
         for (let feat of features.toArray()) {
-            const feat_name = feat.childNodes[0].textContent.trim();
+            const feat_reference = $(feat).parent().find("span[class*='styles_metaItem'] > p[class*='styles_reference'] > span[class*='styles_name']").eq(0).text();
+            const feat_base_name = feat.childNodes[0].textContent.trim()
+            const feat_name = this.getFeatureVersionName(feat_base_name, feat_reference);
             feature_list.push(feat_name);
             const options = $(feat).parent().find(".ct-feature-snippet__option > .ct-feature-snippet__heading");
             for (let option of options.toArray()) {
                 const option_name = option.childNodes[0].textContent.trim();
                 feature_list.push(feat_name + ": " + option_name);
             }
+            const choices = $(feat).parent().find(".ct-feature-snippet__choices .ct-feature-snippet__choice");
+            if (choices.length > 0) {
+                for (const choice of choices.toArray()) {
+                    const choiceText = descriptionToString(choice);
+                    feature_list.push(feat_name + ": " + choiceText);
+                }
+            }            
         }
 
         //console.log(name, feature_list);
         return feature_list;
+    }
+
+    getFeatureVersionName(feat_name, feat_reference) {
+        if (!feat_reference) return feat_name;
+        if((feat_name.toLowerCase() === "great weapon master" ||
+            feat_name.toLowerCase() === "sharpshooter") && 
+            feat_reference.toLowerCase().includes("2024")) {
+            return `${feat_name} 2024`; // just using something set by us so if it changes in the future we dont care
+        } else {
+            return feat_name;
+        }
+        
     }
 
     updateFeatures() {

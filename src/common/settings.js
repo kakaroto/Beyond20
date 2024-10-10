@@ -751,6 +751,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "great-weapon-master-2024": {
+        "title": "Feat: Great Weapon Master 2024 (Apply to next roll only)",
+        "description": "Heavy Weapon Mastery. Apply extra damage equals your Proficiency Bonus.",
+        "type": "bool",
+        "default": true
+    },
     "sharpshooter": {
         "title": "Feat: Sharpshooter (Apply to next roll only)",
         "description": "Apply Sharpshooter -5 penalty to roll and +10 to damage",
