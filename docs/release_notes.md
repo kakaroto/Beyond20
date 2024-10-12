@@ -1,3 +1,14 @@
+v2.9.7 (October 11th 2024)
+===
+
+Hi again,
+
+Another few weeks have passed and another update to D&D Beyond's website has broken Beyond 20. This update fixes the recent issue of being unable to roll items/weapon attacks. It also adds support to some of the new 2024 rules and minor bugfixes.
+
+As always, thank you to [@dmportella](https://linktr.ee/dmportella) for his contributions and to everyone who supports the project, and thank you to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
+
+Enjoy!
+
 v2.9.6 (September 22nd 2024)
 ===
 

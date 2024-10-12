@@ -1,3 +1,10 @@
+v2.9.7 (October 11th 2024)
+===
+- **Feature**: Add support for 2024 variants of Great Weapon Master and Sharpshooter (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix parsing of item names on character sheet (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for parsing class feature options and choices (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for Sorcerous Burst when using "Perfect rolls" for the homebrew critical hit rules  (by [@dmportella](https://github.com/dmportella))
+
 v2.9.6 (September 22nd 2024)
 ===
 - **Feature**: Add support for Sorcerous Burst (by [@dmportella](https://github.com/dmportella))
