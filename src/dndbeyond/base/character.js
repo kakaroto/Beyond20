@@ -89,10 +89,10 @@ class Character extends CharacterBase {
             }
         }
         if (Object.keys(this._to_hit_cache).length == 0) {
-            const items = $(".ct-combat-attack--item .ct-item-name,.ddbc-combat-attack--item .ddbc-item-name");
+            const items = $(".ct-combat-attack--item .ct-item-name,.ddbc-combat-attack--item .ddbc-item-name,.ddbc-combat-attack--item span[class*='styles_itemName']");
             for (let item of items.toArray()) {
                 const item_name = item.textContent;
-                const to_hit = findToHit(item_name, ".ct-combat-attack--item,.ddbc-combat-attack--item", ".ct-item-name,.ddbc-item-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
+                const to_hit = findToHit(item_name, ".ct-combat-attack--item,.ddbc-combat-attack--item", ".ct-item-name,.ddbc-item-name,span[class*='styles_itemName']", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
                 //console.log("Caching to hit for ", item_name, " : ", to_hit);
                 this._to_hit_cache[item_name] = to_hit;
             }

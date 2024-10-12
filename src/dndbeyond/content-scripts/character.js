@@ -1915,7 +1915,7 @@ function injectRollButton(paneClass) {
             return;
         addRollButtonEx(paneClass, ".ct-trait-pane__content", { image: false });
     } else if (paneClass == "ct-item-pane") {
-        const item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
+        const item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name, .ct-item-pane .ct-sidebar__heading span[class*='styles_itemName']").text();
         if (isRollButtonAdded() && item_name == lastItemName)
             return;
         lastItemName = item_name;
