@@ -1,3 +1,7 @@
+v2.9.8 (October 12th 2024)
+===
+- **Bugfix**: Fix detection and use of the correct To Hit value on weapon attacks
+
 v2.9.7 (October 11th 2024)
 ===
 - **Feature**: Add support for 2024 variants of Great Weapon Master and Sharpshooter (by [@dmportella](https://github.com/dmportella))
