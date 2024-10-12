@@ -767,12 +767,12 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
         force_display = true;
     }
     if (!force_display && Object.keys(properties).includes("Damage")) {
-        const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name").text();
+        const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name, .ct-item-pane .ct-sidebar__heading span[class*='styles_itemName']").text();
         let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
         const settings_to_change = {}
 
         if (to_hit === null)
-            to_hit = findToHit(item_full_name, ".ct-combat-attack--item,.ddbc-combat-attack--item", ".ct-item-name,.ddbc-item-name", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
+            to_hit = findToHit(item_full_name, ".ct-combat-attack--item,.ddbc-combat-attack--item", ".ct-item-name,.ddbc-item-name,span[class*='styles_itemName']", ".ct-combat-attack__tohit,.ddbc-combat-attack__tohit");
 
         if (to_hit !== null)
             character._cacheToHit(item_full_name, to_hit);
