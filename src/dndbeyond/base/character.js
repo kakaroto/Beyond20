@@ -227,7 +227,7 @@ class Character extends CharacterBase {
         for (let feat of features.toArray()) {
             const feat_reference = $(feat).parent().find("span[class*='styles_metaItem'] > p[class*='styles_reference'] > span[class*='styles_name']").eq(0).text();
             const feat_base_name = feat.childNodes[0].textContent.trim()
-            const feat_name = this.getFeatureVersionName(feat_base_name, feat_reference);
+            const [feat_name, is2024] = this.getFeatureVersionName(feat_base_name, feat_reference);
             feature_list.push(feat_name);
             const options = $(feat).parent().find(".ct-feature-snippet__option > .ct-feature-snippet__heading");
             for (let option of options.toArray()) {
@@ -238,7 +238,8 @@ class Character extends CharacterBase {
             if (choices.length > 0) {
                 for (const choice of choices.toArray()) {
                     const choiceText = descriptionToString(choice);
-                    feature_list.push(feat_name + ": " + choiceText);
+                    if (is2024) feature_list.push(feat_name + ": " + `${choiceText} 2024`);
+                    else feature_list.push(feat_name + ": " + choiceText);
                 }
             }            
         }
@@ -249,14 +250,20 @@ class Character extends CharacterBase {
 
     getFeatureVersionName(feat_name, feat_reference) {
         if (!feat_reference) return feat_name;
+        let is2024 = false;
         if((feat_name.toLowerCase() === "great weapon master" ||
-            feat_name.toLowerCase() === "sharpshooter") && 
+            feat_name.toLowerCase() === "sharpshooter" ||
+            feat_name.toLowerCase() === "polearm master") && 
             feat_reference.toLowerCase().includes("2024")) {
-            return `${feat_name} 2024`; // just using something set by us so if it changes in the future we dont care
-        } else {
-            return feat_name;
+                is2024 = true;
+        } else if ((feat_name.toLowerCase() === "fighting style" ||
+            feat_name.toLowerCase() === "great weapon fighting") &&
+            feat_reference.toLowerCase().includes("free-rules")) {
+                is2024 = true;
         }
-        
+
+        if (is2024) return [`${feat_name} 2024`, is2024]; // just using something set by us so if it changes in the future we dont care
+        else return [feat_name, is2024];
     }
 
     updateFeatures() {
