@@ -2632,13 +2632,14 @@ function documentModified(mutations, observer) {
             // the page is modified, giving us enoguh time to catch "Initiative" string and add the class name
             // to the div, before the text gets translated
             const initRegex = /\bInitiative\s\(([-+]?\d+)\)/i;
-            if (sidebar.parent().find(".ddbc-ability-score-manager").length > 0) {
+            if (sidebar.parent().find("svg[class*='ddbc-ability-icon']").length > 0 && sidebar.find("div[class*='styles_interactive']").length === 0) { // not saving throw
                 const paneClass = SPECIAL_PANES.ability;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
-            } else if (sidebar.find("svg[class*='ddbc-ability-icon']").length > 0) {
+            } else if (sidebar.parent().find("svg[class*='ddbc-ability-icon']").length > 0 && sidebar.find("div[class*='styles_interactive']").length > 0) {
                 // Saving throws have no specific class, but the preview icon has the ddbc-ability-icon class
                 // so we can use that to detect saving throws (excluding ability scores, already handled above)
+                // Also checking for saving throws text bit exist since dndbeyond added that.
                 const paneClass = SPECIAL_PANES.savingThrow;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
