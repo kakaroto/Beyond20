@@ -458,11 +458,24 @@ class Monster extends CharacterBase {
     }
 
     parseAttackInfo(description) {
-        const m = description.match(/(Melee|Ranged)(?: Weapon| Spell)? Attack:.*?(\+[0-9]+) to hit.*?, (?:reach |ranged? |Gibletish )?(.*?)(?:,.*?)?\./i)
+        // changed for 2024 info descriptions
+        const m = description.match(/(Melee|Ranged|Spell)(?: Weapon| Spell| Attack) ?(?: Attack|Roll):.*?(\+[0-9]+)(?: to hit.*?|\s?,) (?:reach |ranged? |Gibletish )?(.*?)(?:,.*?)?\./i);
         if (m)
             return m.slice(1, 4);
         else
             return null;
+    }
+
+    parseSaveInfo(description) {
+        const regex2024 = /(?<save>Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma)(?: Saving Throw:).DC (?<dc>[0-9]+)/;
+        const regex2014 = /DC ([0-9]+) (.*?) saving throw/;
+
+        const match2014 = description.match(regex2014);
+        const match2024 = description.match(regex2024);
+
+        if(match2014) return [match2014[2], match2014[1]];
+        else if(match2024) return [match2024[1], match2024[2]]
+        else return null;
     }
 
     parseHitInfo(description) {
@@ -500,10 +513,10 @@ class Monster extends CharacterBase {
             }
         }
         let save = null;
-        const m = hit.match(/DC ([0-9]+) (.*?) saving throw/)
+        const m = this.parseSaveInfo(hit);
         let preDCDamages = damages.length;
         if (m) {
-            save = [m[2], m[1]];
+            save = m;
             preDCDamages = damage_matches.reduce((total, match) => {
                 if (match.index < m.index)
                     total++;
