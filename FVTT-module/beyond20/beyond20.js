@@ -36,8 +36,8 @@ class Beyond20 {
                     user: game.user.id
                 }
             },
-            permission: {
-                [game.userId]: CONST.DOCUMENT_PERMISSION_LEVELS.OWNER
+            ownership: {
+                [game.userId]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
             }
         };
         if (!["Character", "Monster", "Creature"].includes(request.character.type)) {
@@ -750,8 +750,8 @@ class Beyond20CreateNativeActorsApplication extends FormApplication {
                             user: user.id
                         }
                     },
-                    permission: {
-                        [user.id]: CONST.DOCUMENT_PERMISSION_LEVELS.OWNER
+                    ownership: {
+                        [user.id]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
                     }
                 });
                 ui.notifications.info(`Created Beyond20 Actor for user ${user.name}`);
