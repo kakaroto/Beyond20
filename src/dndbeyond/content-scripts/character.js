@@ -2089,7 +2089,7 @@ function injectRollButton(paneClass) {
                 })
             }, ".ct-health-manager__deathsaves-group--fails", { custom: true });
         }
-    } else if (paneClass == "ct-creature-pane") {
+    } else if (paneClass == "b20-creature-pane") {
         if (isRollButtonAdded() || isCustomRollIconsAdded()) {
             if (creature)
                 creature.updateInfo();
@@ -2554,7 +2554,6 @@ function documentModified(mutations, observer) {
         "ct-spell-pane",
         "ct-reset-pane",
         "ct-health-manage-pane",
-        "ct-creature-pane",
         "ct-vehicle-pane",
         "ct-condition-manage-pane",
         "ct-proficiencies-pane"
@@ -2569,7 +2568,9 @@ function documentModified(mutations, observer) {
         feat: "b20-feat-pane",
         feature: "b20-class-feature-pane",
         racialTrait: "b20-racial-trait-pane",
-        character: "b20-character-manage-pane"
+        character: "b20-character-manage-pane",
+        creature: "b20-creature-pane"
+
     }
 
     function handlePane(paneClass) {
@@ -2633,6 +2634,11 @@ function documentModified(mutations, observer) {
             } else if (sidebar.parent().find(".ct-feature-snippet--racial-trait").length > 0) {
                 // In case DDB remove the ct-racial-trait-pane class from the sidebar
                 const paneClass = SPECIAL_PANES.racialTrait;
+                markPane(sidebar, paneClass);
+                handlePane(paneClass);
+            } else if (sidebar.parent().find(".ddbc-creature-block").length > 0) {
+                // In case DDB remove the ct-racial-trait-pane class from the sidebar
+                const paneClass = SPECIAL_PANES.creature;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
             }
