@@ -2637,7 +2637,6 @@ function documentModified(mutations, observer) {
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
             } else if (sidebar.parent().find(".ddbc-creature-block").length > 0) {
-                // In case DDB remove the ct-racial-trait-pane class from the sidebar
                 const paneClass = SPECIAL_PANES.creature;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
