@@ -1752,17 +1752,10 @@ function createCustomDomainsSetting(name, short) {
     const description_p = opt.description.split("\n").map(desc => E.p({}, desc));
     for (let p of description_p)
         p.classList.add("select");
-    let apply_button = null;
-    if (getBrowser() === "Firefox") {
-        apply_button = E.div({class: "save button-group"},
-            E.span({}, "You", E.b({}, " must click "), " the Beyond 20 icon from the Firefox toolbar on the VTT page to load the addon")
-        );
-    } else {
-        apply_button = E.div({class: "save button-group"},
-            E.span({}, "You", E.b({}, " must "), " press Apply to request missing permissions"),
-            E.button({ class: "beyond20-option-input btn", type: "button"}, "Apply")
-        );
-    }
+    const apply_button = E.div({class: "save button-group"},
+        E.span({}, "You", E.b({}, " must "), " press Apply to request missing permissions"),
+        E.button({ class: "beyond20-option-input btn", type: "button"}, "Apply")
+    );
     const setting = E.li({
         id: "beyond20-option-custom-domains",
         class: "list-group-item beyond20-option beyond20-option-text" 
@@ -1783,9 +1776,10 @@ function createCustomDomainsSetting(name, short) {
         ev.preventDefault();
         const domains = getCustomDomainsSetting(name);
         for (const url of domains) {
-            chrome.permissions.contains({origins: [url]}).then((hasPermission) => {
+            const chromeOrBrowser = getBrowser() === "Firefox" ? browser : chrome;
+            chromeOrBrowser.permissions.contains({origins: [url]}).then((hasPermission) => {
                 if (hasPermission) return;
-                chrome.permissions.request({origins: [url]}).then((response) => {
+                chromeOrBrowser.permissions.request({origins: [url]}).then((response) => {
                     if (response) {
                         console.log("Permission was granted");
                         alertify.success(`Beyond20 will now load automatically on ${url}`);
@@ -1823,17 +1817,10 @@ function createRoll20DiscordActivitySetting(name, short) {
     const description_p = opt.description.split("\n").map(desc => E.p({}, desc));
     for (let p of description_p)
         p.classList.add("select");
-    let apply_button = null;
-    if (getBrowser() === "Firefox") {
-        apply_button = E.div({class: "save button-group"},
-            E.span({}, "You", E.b({}, " must click "), " the Beyond 20 icon from the Firefox toolbar on the VTT page to load the addon")
-        );
-    } else {
-        apply_button = E.div({class: "save button-group"},
-            E.span({id: name, name}, "🚫 Permissions missing"),
-            E.button({ class: "beyond20-option-input btn", type: "button"}, "Request")
-        );
-    }
+    const apply_button = E.div({class: "save button-group"},
+        E.span({id: name, name}, "🚫 Permissions missing"),
+        E.button({ class: "beyond20-option-input btn", type: "button"}, "Request")
+    );
     const label = E.div({ class: "save button-group" },
         E.span({id: name, name}, "✅ Permissions granted"),
         E.button({ class: "beyond20-option-input btn", type: "button"}, "Revoke")
@@ -1853,9 +1840,10 @@ function createRoll20DiscordActivitySetting(name, short) {
     button.click(ev => {
         ev.stopPropagation();
         ev.preventDefault();
-        chrome.permissions.contains(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((hasPermission) => {
+        const chromeOrBrowser = getBrowser() === "Firefox" ? browser : chrome;
+        chromeOrBrowser.permissions.contains(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((hasPermission) => {
             if (hasPermission) return;
-            chrome.permissions.request(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((response) => {
+            chromeOrBrowser.permissions.request(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((response) => {
                 if (response) {
                     console.log("Permission was granted");
                     alertify.success(`Beyond20 will now load automatically on Roll20 Discord activity`);
@@ -1880,7 +1868,8 @@ function createRoll20DiscordActivitySetting(name, short) {
         // And we can't remove them either
         $(revokeButton).hide();
     } else {
-        chrome.permissions.contains(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((hasPermission) => {
+        const chromeOrBrowser = getBrowser() === "Firefox" ? browser : chrome;
+        chromeOrBrowser.permissions.contains(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((hasPermission) => {
             if (hasPermission) {
                 $(label).show();
             } else {
@@ -1890,7 +1879,7 @@ function createRoll20DiscordActivitySetting(name, short) {
         revokeButton.click(ev => {
             ev.stopPropagation();
             ev.preventDefault();
-            chrome.permissions.remove(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((removed) => {
+            chromeOrBrowser.permissions.remove(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((removed) => {
                 if (removed) {
                     $(label).hide();
                     $(apply_button).show();
