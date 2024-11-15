@@ -829,15 +829,15 @@ class Monster extends CharacterBase {
         let hp = null;
         let max_hp = null;
         let temp_hp = null;
-        const groups = $(".b20-creature-pane .ct-collapsible__content .b20-creature-pane__adjuster-group,.b20-creature-pane .ddbc-collapsible__content .b20-creature-pane__adjuster-group");
+        const groups = $(".b20-creature-pane .ddbc-collapsible__content div[class*='styles_adjusterGroup']");
         for (let item of groups.toArray()) {
-            const label = $(item).find(".b20-creature-pane__adjuster-group-label").text();
+            const label = $(item).find("div[class*='styles_adjusterLabel']").text();
             if (label == "Current HP") {
-                hp = parseInt($(item).find(".b20-creature-pane__adjuster-group-value").text());
+                hp = parseInt($(item).find("div[class*='styles_adjusterValue']").text());
             } else if (label == "Max HP") {
-                max_hp = parseInt($(item).find(".b20-creature-pane__adjuster-group-value").text());
+                max_hp = parseInt($(item).find("div[class*='styles_adjusterValue']").text());
             } else if (label == "Temp HP") {
-                temp_hp = parseInt($(item).find(".b20-creature-pane__adjuster-group-value input").val());
+                temp_hp = parseInt($(item).find("div[class*='styles_adjusterValue'] input").val());
             }
         }
         if (hp !== null && max_hp !== null && (this._hp != hp || this._max_hp != max_hp || this._temp_hp != temp_hp)) {
