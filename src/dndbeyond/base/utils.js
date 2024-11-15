@@ -284,7 +284,8 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                         crit_damages.push(damagesToCrits(character, [brutal_dmg])[0]);
                     } else {
                         // Apply great weapon fighting to brutal damage dice
-                        if ((character.hasClassFeature("Great Weapon Fighting", true) || character.hasFeat("Great Weapon Fighting", true)) &&
+                        // TODO need to support 2024 version for GWF and Polearm Master (action name is pole strike now) and feats can be mixed
+                        if ((character.hasClassFeature("Great Weapon Fighting", false) || character.hasFeat("Great Weapon Fighting", false)) &&
                             ((properties["Attack Type"] == "Melee" &&
                             ((properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice") != "one") || properties["Properties"].includes("Two-Handed"))) ||
                             name == "Polearm Master - Bonus Attack")) {
