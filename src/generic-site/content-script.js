@@ -9,20 +9,10 @@ function handleMessage(request, sender, sendResponse) {
         if (request.type == "general") {
             updateSettings(request.settings);
         }
-    } if (request.action == "hp-update") {
-        sendCustomEvent("UpdateHP", [request, request.character.name, request.character.hp, request.character["max-hp"], request.character["temp-hp"]]);
-    } else if (request.action === "update-combat") {
-        sendCustomEvent("UpdateCombat", [request, request.combat, settings]);
-    } else if (request.action == "conditions-update") {
-        sendCustomEvent("UpdateConditions", [request, request.character.name, request.character.conditions, request.character.exhaustion]);
-    } else if (request.action == "roll") {
-        // Let's run it through the roll renderer and let the site decide to use
-        // the original request or the rendered version
-        roll_renderer.handleRollRequest(request);
-    } else if (request.action == "rendered-roll") {
-        sendCustomEvent("RenderedRoll", [request]);
     } else if (request.action == "open-options") {
         alertFullSettings();
+    } else {
+        forwardMessageToDOM(request);
     }
 }
 

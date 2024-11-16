@@ -21,6 +21,8 @@ const DNDBEYOND_PAGE_DEPS = [
     "src/dndbeyond/base/base.js",
     "src/dndbeyond/base/hotkeys.js",
     "src/dndbeyond/base/utils.js",
+    // Second renderer on DDB pages to allow rednering roll to the DOM
+    "src/generic-site/renderer.js",
 ];
 
 const SRC_FILES = {

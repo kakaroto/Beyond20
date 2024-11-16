@@ -280,3 +280,20 @@ function initializeAlertify() {
         alertify.dialog('Beyond20Roll', function () { return {}; }, false, "alert");
     
 }
+
+function forwardMessageToDOM(request) {
+    if (request.action == "hp-update") {
+        sendCustomEvent("UpdateHP", [request, request.character.name, request.character.hp, request.character["max-hp"], request.character["temp-hp"]]);
+    } else if (request.action === "update-combat") {
+        sendCustomEvent("UpdateCombat", [request, request.combat, settings]);
+    } else if (request.action == "conditions-update") {
+        sendCustomEvent("UpdateConditions", [request, request.character.name, request.character.conditions, request.character.exhaustion]);
+    } else if (request.action == "roll") {
+        // Let's run it through the roll renderer and let the site decide to use
+        // the original request or the rendered version
+        // Requires roll_renderer to be set (currently in generic-site and ddb pages)
+        roll_renderer.handleRollRequest(request);
+    } else if (request.action == "rendered-roll") {
+        sendCustomEvent("RenderedRoll", [request]);
+    } 
+}

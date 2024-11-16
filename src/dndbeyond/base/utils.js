@@ -422,6 +422,7 @@ async function sendRoll(character, rollType, fallback, args) {
 
 function sendRollRequestToDOM(request) {
     sendCustomEvent(request.action, [request]);
+    forwardMessageToDOM(request);
 }
 
 function isRollButtonAdded(where) {
