@@ -256,6 +256,7 @@ class Character extends CharacterBase {
             feat_reference.toLowerCase().includes("2024")) {
                 is2024 = true;
         } else if ((feat_name.toLowerCase() === "fighting style" ||
+            feat_name.toLowerCase() === "additional fighting style" ||
             feat_name.toLowerCase() === "great weapon fighting") &&
             feat_reference.toLowerCase().includes("free-rules")) {
                 is2024 = true;
