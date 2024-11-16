@@ -2146,8 +2146,8 @@ function injectRollButton(paneClass) {
         monster = new Monster("Extra-Vehicle", base, settings, {character});
         monster.parseStatBlock();
     } else if (paneClass == "ct-condition-manage-pane") {
-        const j_conditions = $(".ct-condition-manage-pane .ct-toggle-field--enabled,.ct-condition-manage-pane .ddbc-toggle-field--is-enabled").closest(".ct-condition-manage-pane__condition");
-        let exhaustion_level = $(".ct-condition-manage-pane__condition--special .ct-number-bar__option--active,.ct-condition-manage-pane__condition--special .ddbc-number-bar__option--active").text();
+        const j_conditions = $(".ct-condition-manage-pane .ct-toggle-field--enabled,.ct-condition-manage-pane .ddbc-toggle-field--is-enabled, .ct-condition-manage-pane button[class*='styles_toggle'][class*='styles_checked']").closest(".ct-condition-manage-pane__condition");
+        let exhaustion_level = $(".ct-condition-manage-pane__condition--special .ct-number-bar__option--active,.ct-condition-manage-pane__condition--special .ddbc-number-bar__option--active, .ct-condition-manage-pane__condition--special button[class*='styles_bar'][class*='styles_active']").text();
         const conditions = [];
         for (let cond of j_conditions.toArray()) {
             const condition_name = $(cond).find(".ct-condition-manage-pane__condition-name").text();
