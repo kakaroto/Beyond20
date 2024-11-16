@@ -407,6 +407,30 @@ class Character extends CharacterBase {
         if (new_name) return new_name;
         return "Blood Hunter (archived)";
     }
+    /**
+     * Checks if the character has Great Weapon Fighting, which can be a Feat, or a Fighting Style
+     * or an "Additional Fighting Style" (Champion Fighter at level 7) and can be the 2014 or 2024 variant
+     * @param {Number} version - Accepts only undefined, 2014 and 2024 as values. If set to 2024, checks
+     *                           for the 2024 variant of the feature, if set to 2014 checks for 2014 variant
+     *                           and if left undefined, checks for either variant
+     * @returns {boolean} - True if the character has Great Weapon Fighting
+     */
+    hasGreatWeaponFighting(version) {
+        const check2014 = version === 2014 || version === undefined;
+        const check2024 = version === 2024 || version === undefined;
+        if (!check2014 && !check2024) {
+            console.error("Invalid version for hasGreatWeaponFighting, expected 2014, 2024 or undefined, got", version);
+            return false;
+        }
+        const hasGWF2014 = this.hasClassFeature("Fighting Style: Great Weapon Fighting") ||
+                this.hasClassFeature("Additional Fighting Style: Great Weapon Fighting") ||
+                this.hasClassFeature("Fighting Initiate: Great Weapon Fighting") ||
+                this.hasFeat("Great Weapon Fighting");
+        const hasGWF2024 = this.hasClassFeature("Fighting Style 2024: Great Weapon Fighting") ||
+                this.hasClassFeature("Additional Fighting Style 2024: Great Weapon Fighting") ||
+                this.hasFeat("Great Weapon Fighting 2024");
+        return (check2014 && hasGWF2014) || (check2024 && hasGWF2024);
+    }
     getClassLevel(name) {
         name = this.fixBloodHunterClassName(name);
         return this._classes[name] || 0;

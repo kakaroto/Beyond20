@@ -790,9 +790,7 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                 let damage = value.find(".ct-damage__value,.ddbc-damage__value").text();
                 let damage_type = properties["Damage Type"] || "";
                 let versatile_damage = value.find(".ct-item-detail__versatile-damage,.ddbc-item-detail__versatile-damage").text().slice(1, -1);
-                if (damages.length == 0 &&
-                    ((character.hasClassFeature("Fighting Style: Great Weapon Fighting", false)) &&
-                    (!character.hasClassFeature("Great Weapon Fighting 2024", false) || !character.hasFeat("Great Weapon Fighting 2024", false))) &&
+                if (damages.length == 0 && character.hasGreatWeaponFighting(2014) &&
                     properties["Attack Type"] == "Melee" &&
                     (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
                     if (versatile_damage != "") {
@@ -801,8 +799,7 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                         damage = damage.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
                     }
                 }
-                if (damages.length == 0 &&
-                    (character.hasClassFeature("Great Weapon Fighting 2024", false) || character.hasFeat("Great Weapon Fighting 2024", false)) &&
+                if (damages.length == 0 && character.hasGreatWeaponFighting(2024) &&
                     properties["Attack Type"] == "Melee" &&
                     (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
                     if (versatile_damage != "") {
@@ -864,14 +861,13 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                         if (dmg_info != "")
                             dmg_type += " (" + dmg_info + ")";
 
-                        if (((character.hasClassFeature("Fighting Style: Great Weapon Fighting", false)) && 
-                            (!character.hasClassFeature("Great Weapon Fighting 2024", false) || !character.hasFeat("Great Weapon Fighting 2024", false))) &&
+                        if (character.hasGreatWeaponFighting(2014) &&
                             properties["Attack Type"] == "Melee" &&
                             (properties["Properties"].includes("Two-Handed") ||
                                 (properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice", "both") === "two")))
                                 dmg = dmg.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
 
-                        if (((character.hasClassFeature("Great Weapon Fighting 2024", false) || character.hasFeat("Great Weapon Fighting 2024", false))) && 
+                        if (character.hasGreatWeaponFighting(2024) && 
                             properties["Attack Type"] == "Melee" &&
                             (properties["Properties"].includes("Two-Handed") ||
                                 (properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice", "both") === "two")))
@@ -1159,13 +1155,9 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             critical_limit = 19;
         // Polearm master bonus attack using the other end of the polearm is considered a melee attack.
         // check for both versions
-        if (action_name.includes("Polearm Master") && 
-            ((character.hasClassFeature("Fighting Style: Great Weapon Fighting", false)) && 
-            (!character.hasClassFeature("Great Weapon Fighting 2024", false) || !character.hasFeat("Great Weapon Fighting 2024", false)))) {
+        if (action_name.includes("Polearm Master") && character.hasGreatWeaponFighting(2014)) {
             damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
-        } else if (action_name.includes("Polearm Master") && 
-        ((!character.hasClassFeature("Fighting Style: Great Weapon Fighting", false)) && 
-        (character.hasClassFeature("Great Weapon Fighting 2024", false) || character.hasFeat("Great Weapon Fighting 2024", false)))) {
+        } else if (action_name.includes("Polearm Master") && character.hasGreatWeaponFighting(2024)) {
             damages[0] = damages[0].replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
                 return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
             });
@@ -1173,12 +1165,12 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
 
         // check for both versions
         if (action_name.includes("Pole Strike") && (character.hasFeat("Polearm Master 2024", false)) && 
-            (character.hasClassFeature("Great Weapon Fighting 2024", false) || character.hasFeat("Great Weapon Fighting 2024", false))) {
+            character.hasGreatWeaponFighting(2024)) {
             damages[0] = damages[0].replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
                 return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
             });
         } else if (action_name.includes("Pole Strike") && (character.hasFeat("Polearm Master 2024", false)) && 
-            (character.hasClassFeature("Fighting Style: Great Weapon Fighting", false))) {
+            character.hasGreatWeaponFighting(2014)) {
             damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
         }
 
