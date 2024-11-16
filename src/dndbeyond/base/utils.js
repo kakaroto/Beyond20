@@ -657,7 +657,12 @@ function recursiveDiceReplace(node, cb) {
             const parentText = parent.text();
             // The parent has another portion of the same dice formula, so we need to replace the whole parent
             // with the replaced dice
-            if (parentText !== node.textContent && replaceRolls(parentText, () => "-") === "-") {
+            const parentReplaced = replaceRolls(parentText, () => "-");
+            if (parentText !== node.textContent &&
+                (parentReplaced === "-" ||
+                 parentReplaced === "--" ||
+                 parentReplaced === "+-" // Emanate Wrath has "+2d6" which gets "2d6" parsed and leaves "+-"
+                )) {
                 const text = replaceRolls(parentText, (...args) => cb(node, ...args));
                 parent.html($.parseHTML(text));
             } else {
