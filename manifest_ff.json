@@ -10,11 +10,12 @@
 		"*://beyond20.kicks-ass.org/roll",
 		"*://app.roll20.net/editor/",
 		"*://*.dndbeyond.com/*",
-		"*://*.forge-vtt.com/game",
-		"*://discord.com/*",
-		"*://1199271093882589195.discordsays.com/*"
+		"*://*.forge-vtt.com/game"
 	],
-    "optional_permissions": ["*://*/"],
+    "optional_permissions": [
+		"*://*/",
+		"webNavigation"
+	],
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "beyond20@kakaroto.homelinux.net"

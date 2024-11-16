@@ -373,7 +373,8 @@ function onTabRemoved(id, info) {
 }
 
 function onPermissionsUpdated() {
-    chrome.permissions.getAll((permissions) => {
+    const chromeOrBrowser = getBrowser() === "Firefox" ? browser : chrome;
+    chromeOrBrowser.permissions.getAll((permissions) => {
         currentPermissions = permissions;
     });
 }
@@ -387,10 +388,11 @@ updateSettings()
 chrome.runtime.onMessage.addListener(onMessage)
 chrome.tabs.onUpdated.addListener(onTabsUpdated)
 chrome.tabs.onRemoved.addListener(onTabRemoved)
-chrome.permissions.onAdded.addListener(onPermissionsUpdated)
-chrome.permissions.onRemoved.addListener(onPermissionsUpdated)
+const chromeOrBrowser = getBrowser() === "Firefox" ? browser : chrome;
+chromeOrBrowser.permissions.onAdded.addListener(onPermissionsUpdated)
+chromeOrBrowser.permissions.onRemoved.addListener(onPermissionsUpdated)
 
-chrome.permissions.getAll((permissions) => {
+chromeOrBrowser.permissions.getAll((permissions) => {
     currentPermissions = permissions;
     for (const pattern of currentPermissions.origins) {
         // Inject script in existing tabs

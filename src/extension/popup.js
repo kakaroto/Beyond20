@@ -390,12 +390,14 @@ function actOnCurrentTab(tab) {
     }
     canAlertify(tab.id);
     // Do not check for permissions if it's running from inside the page script
-    if (!chrome.permissions) return;
+    const chromeOrBrowser = getBrowser() === "Firefox" ? browser : chrome;
+    console.log("Checking permissions for ", tab.url, chrome.permissions, chromeOrBrowser.permissions);
+    if (!chromeOrBrowser.permissions) return;
     // We cannot use the url or its origin, because Firefox, in its great magnificent wisdom
     // decided that ports in the origin would break the whole permissions system
     const origin = `${new URL(tab.url).protocol}//${new URL(tab.url).hostname}/*`;
     const permissions = urlMatches(origin, DISCORD_URL) ? DISCORD_ACTIVITY_PERMISSION_DETAILS : {origins: [origin]};
-    chrome.permissions.contains(permissions).then((hasPermission) => {
+    chromeOrBrowser.permissions.contains(permissions).then((hasPermission) => {
         if (!hasPermission) {
             const options = $(".beyond20-options");
             const request = createHTMLOptionEx("default-popup", {
@@ -406,7 +408,7 @@ function actOnCurrentTab(tab) {
             options.prepend(request);
             request.addEventListener("click", (ev) => {
                 console.log("Clicked, requesting permissions!");
-                chrome.permissions.request(permissions).then((response) => {
+                chromeOrBrowser.permissions.request(permissions).then((response) => {
                     if (response) {
                         console.log("Permission was granted");
                         request.remove();
