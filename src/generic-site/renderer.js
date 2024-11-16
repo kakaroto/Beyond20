@@ -24,7 +24,7 @@ class GenericDisplayer {
             total_damages,
             open
         }
-        sendCustomEvent("RenderedRoll", [req]);
+        forwardMessageToDOM(req);
     }
     
     displayError(message) {

@@ -36,7 +36,7 @@ class DNDBDisplayer {
         });
     }
 
-    async sendMessage(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
+    async sendMessageToDOM(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
         const req = {
             action: "rendered-roll",
             request,
@@ -54,9 +54,13 @@ class DNDBDisplayer {
             total_damages,
             open
         }
+        sendRollRequestToDOM(req);
+        return req;
+    }
+    async sendMessage(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
+        const req = sendMessageToDOM(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);        
         console.log("Sending message: ", req);
         chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(character, resp));
-        sendRollRequestToDOM(req);
     }
     displayError(message) {
         alertify.error(message);

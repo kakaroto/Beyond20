@@ -380,6 +380,9 @@ class Beyond20RollRenderer {
             this._displayer.sendMessage(request, title, html, character, request.whisper, play_sound, source, attributes, description, json_attack_rolls, roll_info, json_damage_rolls, json_total_damages, open)
         } else if (canPostHTML) {
             this._displayer.postHTML(request, title, html, character, request.whisper, play_sound, source, attributes, description, json_attack_rolls, roll_info, json_damage_rolls, json_total_damages, open);
+            if (this._displayer.sendMessageToDOM) {
+                this._displayer.sendMessageToDOM(request, title, html, character, request.whisper, play_sound, source, attributes, description, json_attack_rolls, roll_info, json_damage_rolls, json_total_damages, open)
+            } 
         }
 
         if (attack_rolls.length > 0) {

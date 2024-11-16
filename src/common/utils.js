@@ -281,6 +281,17 @@ function initializeAlertify() {
     
 }
 
+const bouncedFallbackRenders = {};
+function simpleHash(input) {
+    let hash = 0;
+    for (let i = 0; i < input.length; i++) {
+        const char = input.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash |= 0; // Convert to 32-bit integer
+    }
+    return hash;
+}
+
 function forwardMessageToDOM(request) {
     if (request.action == "hp-update") {
         sendCustomEvent("UpdateHP", [request, request.character.name, request.character.hp, request.character["max-hp"], request.character["temp-hp"]]);
@@ -294,6 +305,30 @@ function forwardMessageToDOM(request) {
         // Requires roll_renderer to be set (currently in generic-site and ddb pages)
         roll_renderer.handleRollRequest(request);
     } else if (request.action == "rendered-roll") {
-        sendCustomEvent("RenderedRoll", [request]);
+        // Hash the original request to be able to match it with the rendered one in case of fallback
+        // But don't use the whole request since it can change by the time we render it (original-whisper is added)
+        const reqHash = simpleHash(JSON.stringify({
+            action: request.request.action,
+            type: request.request.type,
+            character: request.request.character,
+            roll: request.request.roll,
+            name: request.request.name,
+            ability: request.request.ability,
+            modifier: request.request.modifier,
+            description: request.request.description
+        }));
+        if (request.rendered === "fallback") {
+            // This is a fallback render, if we're sending it from DDB, we might end up with
+            // a double render, so bounce this one for 500ms to let the real render happen if it's
+            // going to, then override the fallback render if we do.
+            bouncedFallbackRenders[reqHash] = setTimeout(() => {
+                delete bouncedFallbackRenders[reqHash];
+                sendCustomEvent("RenderedRoll", [request]);
+            }, 500);
+        } else {
+            clearTimeout(bouncedFallbackRenders[reqHash]);
+            delete bouncedFallbackRenders[reqHash];
+            sendCustomEvent("RenderedRoll", [request]);
+        }
     } 
 }
