@@ -30,7 +30,7 @@ function updateSettings(new_settings = null) {
     if (new_settings) {
         settings = new_settings;
         roll_renderer.setSettings(settings);
-        sendCustomEvent("UpdateSettings", [settings]);
+        sendCustomEvent("NewSettings", [settings, chrome.runtime.getURL("")]);
     } else {
         getStoredSettings((saved_settings) => {
             sendCustomEvent("Loaded", [saved_settings]);
