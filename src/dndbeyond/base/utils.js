@@ -642,6 +642,10 @@ function recursiveDiceReplace(node, cb) {
             // don't replace anything inside of a roll button itself
             if ($(child).hasClass("ct-beyond20-roll") || $(child).hasClass("ct-beyond20-custom-roll"))
                 continue;
+            
+            // Skip anything inside user comments
+            if ($(child).hasClass("homebrew-comments"))
+                continue;
             // don't replace anything inside of an embedded script or style tag
             if (["STYLE", "SCRIPT"].includes(node.nodeName))
                 continue
@@ -677,6 +681,8 @@ function injectDiceToRolls(selector, character, name = "", replacementFn = null)
     const tables = $(selector).find("table");
     for (let table of tables.toArray()) {
         table = $(table);
+        // Skip any table found inside user comments
+        if (table.closest(".homebrew-comments").length > 0) continue;
         if (isRollButtonAdded(table)) continue;
         const tableName = name instanceof Function ? name(table) : name;
         const roll_table = RollTable.parseTable(table, tableName, {character});
