@@ -58,7 +58,7 @@ class DNDBDisplayer {
         return req;
     }
     async sendMessage(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
-        const req = sendMessageToDOM(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);        
+        const req = await this.sendMessageToDOM(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open);        
         console.log("Sending message: ", req);
         chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(character, resp));
     }
