@@ -411,8 +411,9 @@ function listenToDiscordFrames() {
     if (!chrome.webNavigation || webNavigationReady) return;
     console.log("Listening to webNavigation events");
     chrome.webNavigation.onCompleted.addListener((details) => {
-        if (details.documentLifecycle === "active" && details.frameType == "sub_frame" &&
-            urlMatches(details.url, ROLL20_DISCORD_ACTIVITY_DOMAIN)) {
+        if (urlMatches(details.url, ROLL20_DISCORD_ACTIVITY_DOMAIN) &&
+            ((details.documentLifecycle === "active" && details.frameType == "sub_frame") ||
+              details.documentLifecycle === undefined /* Firefox... */)) {
             console.log("Injecting roll20 content script into frame : ", details.frameId);
             injectRoll20Scripts([{id: details.tabId}], details.frameId);
         }
