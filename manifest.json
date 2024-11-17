@@ -159,12 +159,14 @@
 				"*://*.dndbeyond.com/sources/*",
 				"*://*.dndbeyond.com/classes/*",
 				"*://*.dndbeyond.com/races/*",
-				"*://*.dndbeyond.com/species/*"
+				"*://*.dndbeyond.com/species/*",
+				"*://*.dndbeyond.com/backgrounds/*"
 			],
             "exclude_matches": [
 				"*://*.dndbeyond.com/classes/*/edit",
 				"*://*.dndbeyond.com/races/*/edit",
-				"*://*.dndbeyond.com/species/*/edit"
+				"*://*.dndbeyond.com/species/*/edit",
+				"*://*.dndbeyond.com/backgrounds/*/edit"
             ],
 			"css": [
 				"dist/beyond20.css"
