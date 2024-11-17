@@ -195,22 +195,6 @@
 				"libs/jquery-3.4.1.min.js",
 				"dist/roll20.js"
 			]
-		},
-		{
-			"matches": [
-				"*://1199271093882589195.discordsays.com/*"
-			],
-			"css": [
-				"libs/css/alertify.css",
-				"libs/css/alertify-themes/default.css",
-				"libs/css/alertify-themes/beyond20.css"
-			],
-			"js": [
-				"libs/alertify.min.js",
-				"libs/jquery-3.4.1.min.js",
-				"dist/roll20.js"
-			],
-			"all_frames": true
 		}
 	]
 }

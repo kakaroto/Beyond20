@@ -1777,19 +1777,20 @@ function createCustomDomainsSetting(name, short) {
         const domains = getCustomDomainsSetting(name);
         for (const url of domains) {
             const chromeOrBrowser = getBrowser() === "Firefox" ? browser : chrome;
-            chromeOrBrowser.permissions.contains({origins: [url]}).then((hasPermission) => {
-                if (hasPermission) return;
-                chromeOrBrowser.permissions.request({origins: [url]}).then((response) => {
-                    if (response) {
-                        console.log("Permission was granted");
-                        alertify.success(`Beyond20 will now load automatically on ${url}`);
-                    } else {
-                        console.log("Permission was refused");
-                        alertify.error(`Error requesting permission for ${url}`);
-                    }
-                }).catch(err => {
-                    console.error("Error requesting permission for ", url, err);
-                });
+            if (!chromeOrBrowser.permissions) {
+                alertify.error("Cannot request permissions. Please open the extension's options page and try again");
+                return;
+            }
+            chromeOrBrowser.permissions.request({origins: [url]}).then((response) => {
+                if (response) {
+                    console.log("Permission was granted");
+                    alertify.success(`Beyond20 will now load automatically on ${url}`);
+                } else {
+                    console.log("Permission was refused");
+                    alertify.error(`Error requesting permission for ${url}`);
+                }
+            }).catch(err => {
+                console.error("Error requesting permission for ", url, err);
             });
         }
     });
@@ -1841,34 +1842,29 @@ function createRoll20DiscordActivitySetting(name, short) {
         ev.stopPropagation();
         ev.preventDefault();
         const chromeOrBrowser = getBrowser() === "Firefox" ? browser : chrome;
-        chromeOrBrowser.permissions.contains(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((hasPermission) => {
-            if (hasPermission) return;
-            chromeOrBrowser.permissions.request(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((response) => {
-                if (response) {
-                    console.log("Permission was granted");
-                    alertify.success(`Beyond20 will now load automatically on Roll20 Discord activity`);
-                    $(label).show();
-                    $(apply_button).hide();
-                    chrome.runtime.sendMessage({ "action": "discord-permissions-updated", permissions: true });
-                } else {
-                    console.log("Permission was refused");
-                    alertify.error(`Error requesting permission for Roll20 Discord activity`);
-                }
-            });
+        if (!chromeOrBrowser.permissions) {
+            alertify.error("Cannot request permissions. Please open the extension's options page and try again");
+            return;
+        }
+        chromeOrBrowser.permissions.request(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((response) => {
+            if (response) {
+                console.log("Permission was granted");
+                alertify.success(`Beyond20 will now load automatically on Roll20 Discord activity`);
+                $(label).show();
+                $(apply_button).hide();
+                chrome.runtime.sendMessage({ "action": "discord-permissions-updated", permissions: true });
+            } else {
+                console.log("Permission was refused");
+                alertify.error(`Error requesting permission for Roll20 Discord activity`);
+            }
         });
     });
     // Hide both the apply button and checkbox until we know if we have the permissions
     $(label).hide();
     $(apply_button).hide();
     const revokeButton = $(label).find("button");
-    if (getBrowser() === "Firefox") {
-        // Consider Firefox permissions to always be given as we can't request them
-        // dynamically, so they have to be hardcoded in manifest.json
-        $(label).show();
-        // And we can't remove them either
-        $(revokeButton).hide();
-    } else {
-        const chromeOrBrowser = getBrowser() === "Firefox" ? browser : chrome;
+    const chromeOrBrowser = getBrowser() === "Firefox" ? browser : chrome;
+    if (chromeOrBrowser.permissions) {
         chromeOrBrowser.permissions.contains(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((hasPermission) => {
             if (hasPermission) {
                 $(label).show();
@@ -1876,18 +1872,25 @@ function createRoll20DiscordActivitySetting(name, short) {
                 $(apply_button).show();
             }
         });
-        revokeButton.click(ev => {
-            ev.stopPropagation();
-            ev.preventDefault();
-            chromeOrBrowser.permissions.remove(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((removed) => {
-                if (removed) {
-                    $(label).hide();
-                    $(apply_button).show();
-                    chrome.runtime.sendMessage({ "action": "discord-permissions-updated", permissions: false });
-                }
-            });
-        });
+    } else {
+        // No permissions API? Probably an alertify options dialog on Firefox, assume no permissions found
+        $(apply_button).show();
     }
+    revokeButton.click(ev => {
+        ev.stopPropagation();
+        ev.preventDefault();
+        if (!chromeOrBrowser.permissions) {
+            alertify.error("Cannot revoke permissions. Please open the extension's options page and try again");
+            return;
+        }
+        chromeOrBrowser.permissions.remove(DISCORD_ACTIVITY_PERMISSION_DETAILS).then((removed) => {
+            if (removed) {
+                $(label).hide();
+                $(apply_button).show();
+                chrome.runtime.sendMessage({ "action": "discord-permissions-updated", permissions: false });
+            }
+        });
+    });
 
     return setting;
 }

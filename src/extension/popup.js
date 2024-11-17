@@ -388,7 +388,12 @@ function actOnCurrentTab(tab) {
     } else {
         initializeSettings(gotSettings);
     }
-    canAlertify(tab.id);
+    // If on Firefox, we can't use the permissions API from the alertify window
+    // so let the "More Options" open the options page in Firefox itself
+    // unless the popup is opened in an alertify dialog already
+    if (getBrowser() !== "Firefox" || !chrome.runtime.openOptionsPage) {
+        canAlertify(tab.id);
+    }
     // Do not check for permissions if it's running from inside the page script
     const chromeOrBrowser = getBrowser() === "Firefox" ? browser : chrome;
     console.log("Checking permissions for ", tab.url, chrome.permissions, chromeOrBrowser.permissions);
