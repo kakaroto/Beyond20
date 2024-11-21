@@ -433,7 +433,7 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
     if (to_hit !== null && 
         character.getSetting("great-weapon-master", false) &&
         character.hasFeat("Great Weapon Master") && 
-        this.IsHeavyOrPoleArm(properties, action_name))
+        (this.IsHeavy(properties) || this.IsPoleArmMasterAttack(properties, action_name)))
          {
         to_hit += " - 5";
         damages.push("10");
@@ -444,7 +444,8 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
     if (to_hit !== null && 
         character.getSetting("great-weapon-master-2024", true) &&
         character.hasFeat("Great Weapon Master 2024") &&
-        this.IsHeavyOrPoleArm(properties, action_name)) {
+        this.IsHeavy(properties) &&
+        !this.IsPoleArmMasterAttack(properties, action_name)) {
         const proficiency = parseInt(character._proficiency);
         damages.push(proficiency.toString());
         damage_types.push("Great Weapon Master");
@@ -461,10 +462,12 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
     return to_hit;
 }
 
-function IsHeavyOrPoleArm(properties, action_name) {
-    return ((properties["Properties"] && properties["Properties"].includes("Heavy")) ||
-    (action_name.includes("Polearm Master") || action_name.includes("Pole Strike")) &&
-    properties["Proficient"] == "Yes");
+function IsPoleArmMasterAttack(properties, action_name) {
+    return (properties["Proficient"] == "Yes" && (action_name.includes("Polearm Master") || action_name.includes("Pole Strike")));
+}
+
+function IsHeavy(properties) {
+    return ((properties["Properties"] && properties["Properties"].includes("Heavy")) && properties["Proficient"] == "Yes");
 }
 
 function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {to_hit, action_name=""}={}) {
