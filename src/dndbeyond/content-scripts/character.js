@@ -490,6 +490,16 @@ function IsHeavy(properties) {
     return ((properties["Properties"] && properties["Properties"].includes("Heavy")) && properties["Proficient"] == "Yes");
 }
 
+function IsPoleArmMasterAttack(properties, action_name) {
+    return ((properties["Properties"] && properties["Properties"].includes("Heavy")) &&
+    (action_name.includes("Polearm Master") || action_name.includes("Pole Strike")) &&
+    properties["Proficient"] == "Yes");
+}
+
+function IsHeavy(properties) {
+    return ((properties["Properties"] && properties["Properties"].includes("Heavy")) && properties["Proficient"] == "Yes");
+}
+
 function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {to_hit, action_name=""}={}) {
     // Feats
     // Sharpshooter Feat
