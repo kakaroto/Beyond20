@@ -283,19 +283,29 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                     if (rule == CriticalRules.HOMEBREW_MAX) {
                         crit_damages.push(damagesToCrits(character, [brutal_dmg])[0]);
                     } else {
-                        // Apply great weapon fighting to brutal damage dice
-                        // TODO need to support 2024 version for GWF and Polearm Master (action name is pole strike now) and feats can be mixed
-                        if (character.hasGreatWeaponFighting(2014) &&
-                            ((properties["Attack Type"] == "Melee" &&
-                            ((properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice") != "one") || properties["Properties"].includes("Two-Handed"))) ||
-                            name == "Polearm Master - Bonus Attack")) {
-                            brutal_dmg += "ro<=2"
+                        // check for both versions
+                        if (name.includes("Polearm Master") && (character.hasFeat("Polearm Master", false)) || properties["Attack Type"] == "Melee" && (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
+                            if (character.hasGreatWeaponFighting(2014)) {
+                                brutal_dmg = brutal_dmg.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
+                            } else if (character.hasGreatWeaponFighting(2024)) {
+                                brutal_dmg = brutal_dmg.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
+                                    return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
+                                });
+                            }
+                        } else if (name.includes("Pole Strike") && (character.hasFeat("Polearm Master 2024", false)) || properties["Attack Type"] == "Melee" && (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
+                            if (character.hasGreatWeaponFighting(2024)) {
+                                brutal_dmg = brutal_dmg.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
+                                    return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
+                                });
+                            } else if (character.hasGreatWeaponFighting(2014)) {
+                                    brutal_dmg = brutal_dmg.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
+                            }
                         }
+                                                
                         crit_damages.push(brutal_dmg);
                     }
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
                 }
-
             }
         }
         roll_properties["critical-damages"] = crit_damages;
