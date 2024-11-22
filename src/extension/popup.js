@@ -121,6 +121,10 @@ function populateCharacter(response) {
             e = createHTMLOption("brutal-critical", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Brutal Strike")) {
+            e = createHTMLOption("brutal-strike", false, character_settings);
+            options.append(e);
+        }
         if (Object.keys(response.classes).includes("Rogue")) {
             e = createHTMLOption("rogue-sneak-attack", false, character_settings);
             options.append(e);

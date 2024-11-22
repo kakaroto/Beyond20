@@ -775,6 +775,12 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
+    "brutal-strike": {
+        "title": "Brutal Strike: Roll extra die",
+        "description": "If you use Reckless Attack, you can forgo any Advantage on one Strength-based attack roll of your choice on your turn.",
+        "type": "bool",
+        "default": false
+    },
     "protector-aasimar-radiant-soul": {
         "title": "Aasimar: Protector: Radiant Soul",
         "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
