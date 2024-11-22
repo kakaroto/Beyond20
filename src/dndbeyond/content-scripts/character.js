@@ -883,6 +883,32 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
             }
         }
 
+        // 2024 brutal strike
+        if (character.getSetting("brutal-strike")) {
+            let strikeDieCount = character.hasClassFeature("Brutal Strike") ? 1 : 0;
+            if (character.hasClassFeature("Improved Brutal Strike")) strikeDieCount += 1;
+
+            let brutal_strike_dmg = `${strikeDieCount}d10`;
+
+            if(((properties["Attack Type"] == "Melee" && ((properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice") != "one") || 
+                properties["Properties"].includes("Two-Handed"))) ||
+                item_name == "Polearm Master - Bonus Attack" ||
+                item_name == "Pole Strike")) {
+                if(character.hasGreatWeaponFighting(2014)) {
+                    brutal_strike_dmg += "ro<=2";
+                } else if(character.hasGreatWeaponFighting(2024)) {
+                    brutal_strike_dmg = brutal_strike_dmg.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
+                        return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
+                    });
+                }
+            }
+            
+            damages.push(brutal_strike_dmg);
+            damage_types.push("Brutal Strike");
+
+            settings_to_change["brutal-strike"] = false;
+        }
+
         // Handle Dragon Wing * Ranged Weapons
         if (item_name.includes("Dragon Wing") || item_name === "Flail of Tiamat") {
             damages.splice(2,damages.length - 2);
@@ -1153,26 +1179,47 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
         if (character.hasClassFeature("Hexblade’s Curse") &&
             character.getSetting("warlock-hexblade-curse", false))
             critical_limit = 19;
-        // Polearm master bonus attack using the other end of the polearm is considered a melee attack.
-        // check for both versions
-        if (action_name.includes("Polearm Master") && character.hasGreatWeaponFighting(2014)) {
-            damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
-        } else if (action_name.includes("Polearm Master") && character.hasGreatWeaponFighting(2024)) {
-            damages[0] = damages[0].replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
-                return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
-            });
+
+        const applyGWFIfRequired = (damageDie) => {
+            // Polearm master bonus attack using the other end of the polearm is considered a melee attack.
+            // check for both versions
+            if (action_name.includes("Polearm Master") && character.hasGreatWeaponFighting(2014)) {
+                damageDie = damageDie.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
+            } else if (action_name.includes("Polearm Master") && character.hasGreatWeaponFighting(2024)) {
+                damageDie = damageDie.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
+                    return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
+                });
+            }
+
+            // check for both versions
+            if (action_name.includes("Pole Strike") && (character.hasFeat("Polearm Master 2024", false)) && 
+                character.hasGreatWeaponFighting(2024)) {
+                damageDie = damageDie.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
+                    return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
+                });
+            } else if (action_name.includes("Pole Strike") && (character.hasFeat("Polearm Master 2024", false)) && 
+                character.hasGreatWeaponFighting(2014)) {
+                damageDie = damageDie.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
+            }
+
+            return damageDie;
         }
 
-        // check for both versions
-        if (action_name.includes("Pole Strike") && (character.hasFeat("Polearm Master 2024", false)) && 
-            character.hasGreatWeaponFighting(2024)) {
-            damages[0] = damages[0].replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
-                return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
-            });
-        } else if (action_name.includes("Pole Strike") && (character.hasFeat("Polearm Master 2024", false)) && 
-            character.hasGreatWeaponFighting(2014)) {
-            damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
+        // 2024 brutal strike add extra die and apply GWF
+        if (character.getSetting("brutal-strike")) {
+            let strikeDieCount = character.hasClassFeature("Brutal Strike") ? 1 : 0;
+            if (character.hasClassFeature("Improved Brutal Strike")) strikeDieCount += 1;
+
+            let brutal_strike_dmg = applyGWFIfRequired(`${strikeDieCount}d10`);
+
+            damages.push(brutal_strike_dmg);
+            damage_types.push("Brutal Strike");
+
+            settings_to_change["brutal-strike"] = false;
         }
+
+        // apply for normal die
+        damages[0] = applyGWFIfRequired(damages[0]);
 
         const isMeleeAttack = action_name.includes("Polearm Master") || action_name.includes("Pole Strike") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
         || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")

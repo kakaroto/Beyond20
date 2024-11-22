@@ -262,6 +262,7 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                 } 
             }
                        
+            // applies to only 2014 brutal critical 2024 has replaced this with brutal strike
             if (brutal > 0) {
                 const rule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
                 let highest_dice = 0;
@@ -295,9 +296,9 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                     }
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
                 }
-
             }
         }
+
         roll_properties["critical-damages"] = crit_damages;
         roll_properties["critical-damage-types"] = crit_damage_types;
         
