@@ -221,7 +221,7 @@ class Character extends CharacterBase {
         }
     }
 
-    featureDetailsToList(selector, name) {
+    featureDetailsToList(selector) {
         const features = $(selector).find(".ct-feature-snippet > .ct-feature-snippet__heading, .ct-feature-snippet--class > div[class*='styles_heading'], .ct-feature-snippet--racial-trait > div[class*='styles_heading'], .ct-feature-snippet--feat > div[class*='styles_heading']")
         const feature_list = [];
         for (let feat of features.toArray()) {
@@ -240,10 +240,13 @@ class Character extends CharacterBase {
                     const choiceText = descriptionToString(choice);
                     feature_list.push(feat_name + ": " + choiceText);
                 }
-            }            
+            }
+            const actions = $(feat).parent().find(".ct-feature-snippet__action > .ct-feature-snippet__action-summary");
+            for (let action of actions.toArray()) {
+                const action_name = action.childNodes[0].textContent.trim();
+                feature_list.push(feat_name + ": " + action_name);
+            }
         }
-
-        //console.log(name, feature_list);
         return feature_list;
     }
 
@@ -257,7 +260,8 @@ class Character extends CharacterBase {
                 is2024 = true;
         } else if ((feat_name.toLowerCase() === "fighting style" ||
             feat_name.toLowerCase() === "additional fighting style" ||
-            feat_name.toLowerCase() === "great weapon fighting") &&
+            feat_name.toLowerCase() === "great weapon fighting" ||
+            feat_name.toLowerCase() === "sneak attack") &&
             feat_reference.toLowerCase().includes("free-rules")) {
                 is2024 = true;
         }
@@ -397,6 +401,11 @@ class Character extends CharacterBase {
         if (substring) return this._actions.some(f => f.includes(name));
         else return this._actions.includes(name);
     }
+
+    getClassFeatureChoices(name) {
+        return this._class_features.filter(f => f.startsWith(`${name}:`)).map(m => m.replace(`${name}: `, ""))
+    }
+
     /**
      * Blood Hunter was renamed to "Blood Hunter (archived)"
      * Try to find the blood h

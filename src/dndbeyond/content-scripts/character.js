@@ -720,14 +720,15 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
     
     if (character.hasClass("Rogue")) {
         // Rogue: Sneak Attack
-        if (character.getSetting("rogue-sneak-attack", false) &&
-            (properties["Attack Type"] == "Ranged" ||
+        if(character.getSetting("rogue-sneak-attack", false) && (properties["Attack Type"] == "Ranged" ||
             (properties["Properties"] && properties["Properties"].includes("Finesse")) ||
-            (action_name && (action_name.includes("Psychic Blade") || action_name.includes("Shadow Blade"))))) {
-            const sneak_attack = Math.ceil(character._classes["Rogue"] / 2) + "d6";
-            damages.push(sneak_attack);
-            damage_types.push("Sneak Attack");
-        }
+            (action_name && (action_name.includes("Psychic Blade") || action_name.includes("Shadow Blade"))))){
+            if (character.hasClassFeature("Sneak Attack")) {
+                const sneak_attack = Math.ceil(character._classes["Rogue"] / 2) + "d6";
+                damages.push(sneak_attack);
+                damage_types.push("Sneak Attack");
+            }
+        }        
     }
 
     if (character.hasClass("Warlock")) {
