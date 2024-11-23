@@ -252,6 +252,7 @@ class Character extends CharacterBase {
         let is2024 = false;
         if((feat_name.toLowerCase() === "great weapon master" ||
             feat_name.toLowerCase() === "sharpshooter" ||
+            feat_name.toLowerCase() === "charger" ||
             feat_name.toLowerCase() === "polearm master") && 
             feat_reference.toLowerCase().includes("2024")) {
                 is2024 = true;

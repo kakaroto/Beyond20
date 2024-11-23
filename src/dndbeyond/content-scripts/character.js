@@ -456,6 +456,26 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
         damages.push("+5");
         damage_types.push("Charger Feat");
         settings_to_change["charger-feat"] = false;
+    } else if (character.hasFeat("Charger 2024") &&
+        character.getSetting("charger-feat")) {
+            let charge_dmg = "1d8";
+            // apply GWF if needed
+            if(((properties["Attack Type"] == "Melee" && ((properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice") != "one") || 
+                properties["Properties"].includes("Two-Handed"))) ||
+                action_name == "Polearm Master - Bonus Attack" ||
+                action_name == "Pole Strike")) {
+                if(character.hasGreatWeaponFighting(2014)) {
+                    charge_dmg += "ro<=2";
+                } else if(character.hasGreatWeaponFighting(2024)) {
+                    charge_dmg = charge_dmg.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
+                        return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
+                    });
+                }
+            }
+
+            damages.push(charge_dmg);
+            damage_types.push("Charger Feat");
+            settings_to_change["charger-feat"] = false;
     }
     
     return to_hit;
