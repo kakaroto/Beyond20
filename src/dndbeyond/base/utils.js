@@ -285,21 +285,25 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                                 damages.push(sneak_attack);
                             } // do anything if sneak action the damage at zero is the die number
                         } else {
-                            roll_properties["cunning-strike-effects"] = choices.filter(f => f.action !== "None").map(m => m.action).join(", ");
                             const effectCost = choices.reduce((acc, current) => current["die"] ? acc + current.die : acc, 0);
-                            if(effectCost === sneakDieCount) {
-                                if(name.includes("Sneak Attack")) {
-                                    damages[0] = "0"
-                                } else {
-                                    damages.push("0");
+                            if(effectCost > sneakDieCount) {
+                                selectionErrorDontApplySneak = true;
+                            } else {
+                                roll_properties["cunning-strike-effects"] = choices.filter(f => f.action !== "None").map(m => m.action).join(", ");
+                                if(effectCost === sneakDieCount) {
+                                    if(name.includes("Sneak Attack")) {
+                                        damages[0] = "0"
+                                    } else {
+                                        damages.push("0");
+                                    }
+                                } else if(effectCost < sneakDieCount) {
+                                    if(name.includes("Sneak Attack")) {
+                                        damages[0] = `${sneakDieCount - effectCost}d6`;
+                                    } else {
+                                        damages.push(`${sneakDieCount - effectCost}d6`);
+                                    }
                                 }
-                            } else if(effectCost < sneakDieCount) {
-                                if(name.includes("Sneak Attack")) {
-                                    damages[0] = `${sneakDieCount - effectCost}d6`;
-                                } else {
-                                    damages.push(`${sneakDieCount - effectCost}d6`);
-                                }
-                            } else if(effectCost > sneakDieCount) selectionErrorDontApplySneak = true;
+                            }
                         }
                 } else {
                     if(!name.includes("Sneak Attack")) {
