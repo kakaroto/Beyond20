@@ -1,3 +1,24 @@
+v2.10.0 (November 17th 2024)
+===
+- **Feature**: *Firefox*: Add support for optional permission requests, and remove mandatory Discord permissions
+- **Feature**: Added support for 2024 edition of Great Weapon Fighting (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added support for 2024 edition of Great Weapon MAster (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added support for 2024 edition of Polearm Master (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Sent custom DOM API events to D&D Beyond pages
+- **Feature**: Add support for species pages
+- **Feature**: Add support for backgrounds pages
+- **Bugfix**: Fix support for Monster actions using new terminology introduced in 2024 rules (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for character creatures (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix parsing of creature's HP
+- **Bugfix**: Fix distinguishing between ability checks and saving throws
+- **Bugfix**: Fix support for character conditons and exhaustion levels
+- **Bugfix**: Fix DOM API message for custom domains when settings are updated
+- **Bugfix**: Fix parsing of Emanate Wrath action
+- **Bugfix**: Prevent parsing of dice formulas in user comments
+- **Bugfix**: *FVTT*: Fix creating Beyond20 actors on Foundry VTT v12 (by [@zambo](https://github.com/zambo))
+- **Bugfix**: *Firefox*: Fix support for Roll20 Discord Activity
+
+
 v2.9.8 (October 12th 2024)
 ===
 - **Bugfix**: Fix detection and use of the correct To Hit value on weapon attacks
