@@ -981,7 +981,9 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
             brutal,
             force_to_hit_only,
             force_damages_only,
-            {weapon_damage_length});
+            {weapon_damage_length},
+            settings_to_change
+        );
         if (roll_properties === null) {
             // A query was cancelled, so let's cancel the roll
             return;
@@ -1231,7 +1233,8 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             brutal,
             force_to_hit_only,
             force_damages_only,
-            {weapon_damage_length});
+            {weapon_damage_length},
+            settings_to_change);
 
         if (roll_properties === null) {
             // A query was cancelled, so let's cancel the roll
@@ -1596,7 +1599,9 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
             to_hit,
             0,
             force_to_hit_only,
-            force_damages_only);
+            force_damages_only,
+            {},
+            settings_to_change);
 
         if (roll_properties === null) {
             // A query was cancelled, so let's cancel the roll
