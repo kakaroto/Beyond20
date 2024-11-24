@@ -154,18 +154,22 @@ async function queryCunningStrike(properties, action_name) {
         
     if(hasImprovedCunningStrike) {
         const choice = await dndbeyondDiceRoller.queryDoubleGeneric("Sneak Attack: Cunning Strike", "Cunning Strike effect", options, "Improved Cunning Strike effect", options, "sneak-attack", options, options, "None", "None");
-        selection.push(...choice.map(m => {
-            if (!m || m === "None") return {action: "None"};
-            const option = m.split(":")[0];
-            return actions.find(f => f.action === option);
-        }));
+        if (choice) {
+            selection.push(...choice.map(m => {
+                if (!m || m === "None") return {action: "None"};
+                const option = m.split(":")[0];
+                return actions.find(f => f.action === option);
+            }));
+        }
     } else {
         const choice = [await dndbeyondDiceRoller.queryGeneric("Sneak Attack: Cunning Strike", "Cunning Strike effect", options, "sneak-attack", options, "None")];
-        selection.push(...choice.map(m => {
-            if (!m || m === "None") return {action: "None"};
-            const option = m.split(":")[0];
-            return actions.find(f => f.action === option);
-        }));
+        if(choice) {
+            selection.push(...choice.map(m => {
+                if (!m || m === "None") return {action: "None"};
+                const option = m.split(":")[0];
+                return actions.find(f => f.action === option);
+            }));
+        }
     }
     
     return selection;
