@@ -130,45 +130,34 @@ async function queryDamageTypeFromArray(name, damages, damage_types, possible_ty
     return choice;
 }
 
-async function queryCunningStrike(properties, action_name) {
+async function queryCunningStrike() {
     const selection = [];
     // Sneak Attack free-rules, pg. 129
     // Cunning Strike free-rules, pg. 130
     const actions = [{ action: "None" }];
     const hasImprovedCunningStrike = character.hasClassFeature("Improved Cunning Strike");
-    const getActions = (name) => {
-        const regex = /(?:Sneak Attack: )(.*?) \(Cost: (\d)+d\d+\)/;
-        return character.getClassFeatureChoices(name).map(m => {
-            let result = m.match(regex);
-            return m = result && result.length !== 0 ? { action: result[1].trim(), die: parseInt(result[2]) } : null;
-        });
-
-    }
-    actions.push(...getActions("Cunning Strike"));
-    // Supreme Sneak free-rules, pg. 137
-    if(character.hasClassFeature("Supreme Sneak")) actions.push(...getActions("Supreme Sneak"));
-    // Devious Strikes free-rules, pg. 131
-    if(character.hasClassFeature("Devious Strikes")) actions.push(...getActions("Devious Strikes"));
+    
+    actions.push(...character.getSneakAttackActions());
     
     const options = [...actions.map(m => m["die"] ? `${m.action}: ${m.die}D6` : `${m.action}`)];
+
+    const getSelection = choices => {
+        return choices.map(m => {
+            if (!m || m === "None") return {action: "None"};
+            const option = m.split(":")[0];
+            return actions.find(f => f.action === option);
+        });
+    }
         
     if(hasImprovedCunningStrike) {
         const choice = await dndbeyondDiceRoller.queryDoubleGeneric("Sneak Attack: Cunning Strike", "Cunning Strike effect", options, "Improved Cunning Strike effect", options, "sneak-attack", options, options, "None", "None");
         if (choice) {
-            selection.push(...choice.map(m => {
-                if (!m || m === "None") return {action: "None"};
-                const option = m.split(":")[0];
-                return actions.find(f => f.action === option);
-            }));
+            selection.push(...getSelection(choice));
         }
     } else {
         const choice = [await dndbeyondDiceRoller.queryGeneric("Sneak Attack: Cunning Strike", "Cunning Strike effect", options, "sneak-attack", options, "None")];
         if(choice) {
-            selection.push(...choice.map(m => {
-                if (!m || m === "None") return {action: "None"};
-                const option = m.split(":")[0];
-                return actions.find(f => f.action === option);
-            }));
+            selection.push(...getSelection(choice));
         }
     }
     
@@ -282,7 +271,7 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                 // Rogue: Sneak Attack
                 if(character.hasClassFeature("Cunning Strike") && character.getSetting("rogue-cunning-strike", false)) {
                         settings_to_change["rogue-cunning-strike"] = false;
-                        const choices = await queryCunningStrike(properties, name);
+                        const choices = await queryCunningStrike();
                         const nothingSelected = choices.every(s => s.action === "None");
                         if(nothingSelected) {
                             if(!name.includes("Sneak Attack")) {

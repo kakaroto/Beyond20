@@ -406,6 +406,27 @@ class Character extends CharacterBase {
         return this._class_features.filter(f => f.startsWith(`${name}:`)).map(m => m.replace(`${name}: `, ""))
     }
 
+    getSneakAttackActions() {
+        // Define the regex only once
+        const regex = /(?:Sneak Attack: )(.*?) \(Cost: (\d+)[dD]\d+\)/;
+    
+        // Filter and transform logic
+        const transform = (features) =>
+            features.map(f => {
+                const match = f.match(regex);
+                return match && match.length === 3 ? { action: match[1].trim(), die: parseInt(match[2]) } : null;
+            }).filter(Boolean); // Remove null entries
+    
+        // Combine all filtered and transformed arrays
+        const actions = [
+            ...transform(this._class_features),
+            ...transform(this._racial_traits),
+            ...transform(this._feats)
+        ];
+    
+        return actions;
+    }
+
     /**
      * Blood Hunter was renamed to "Blood Hunter (archived)"
      * Try to find the blood h
