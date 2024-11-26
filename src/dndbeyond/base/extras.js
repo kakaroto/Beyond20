@@ -4,6 +4,7 @@ class MonsterExtras extends CharacterBase {
         if (base) {
             this._base = base;
         }
+        this._prefix = "monster_extras_";
         this._creatureType = creatureType;
         this._parent_character = character;
         this._stat_block = $(this._base);
@@ -42,6 +43,7 @@ class MonsterExtras extends CharacterBase {
         const inject_descriptions = this.getGlobalSetting('subst-dndbeyond-stat-blocks', true);
         const beyond20_tooltip = add_dice || inject_descriptions ? getQuickRollTooltip() : null;
         const base = this._base;
+        const classNames = {};
         if (!stat_block)
             stat_block = $(base);
 
@@ -56,10 +58,16 @@ class MonsterExtras extends CharacterBase {
             addDisplayButton(() => this.displayAvatar(), avatar, { small: false, image: true });
         }
 
+        // Attributes
+
         const attributes = stat_block.find("div[class*='styles_attribute__']");
         for (let attr of attributes.toArray()) {
             const label = $(attr).find("h2[class*='styles_attributeLabel']").text().trim();
             const values = $(attr).find("p[class*='styles_attributeValue']");
+
+            classNames["attribute"] = $(attr).attr("class");
+            classNames["label"] = $(attr).find("h2[class*='styles_attributeLabel']").attr("class");
+            classNames["value"] = $(values).eq(0).attr("class");
             
             if (label == "Armor Class") {
                 if(values.length != 0) {
@@ -73,7 +81,7 @@ class MonsterExtras extends CharacterBase {
                     this._hp_formula = values[1] ? $(values[1]).text().trim().replace(/[()]/g, '') : undefined;
                     
                     if (add_dice) {
-                        const digitalDiceBox = $(attr).find(base + "__attribute-data-extra .integrated-dice__container");
+                        const digitalDiceBox = $(attr).find(this._prefix + "__attribute-data-extra .integrated-dice__container");
                         if (digitalDiceBox.length > 0) {
                             // Use the digital Dice box (encounters page)
                             digitalDiceBox.off('click').on('click', (e) => {
@@ -96,19 +104,20 @@ class MonsterExtras extends CharacterBase {
             } else if (label == "Speed") {
                 this._speed = $(values[0]).text().trim();
             }
-            this._attributes[label] = [$(values[0]).text().trim(), values.length > 1 ? $(values[0]).text().trim() : undefined].filter(Boolean).join(", ");
+            this._attributes[label] = [...$(values)].map(m => $(m).text().trim()).filter(Boolean).join(", ");
         }
 
-        let abilities = stat_block.find("div[class*='styles_stats'] > div[class*='styles_stat']");
-        const prefix = "__ability";
-        //let initiative_selector = base + "__beyond20-roll-initiative";
+        // Abilities
+
+        const abilities = stat_block.find("div[class*='styles_stats'] > div[class*='styles_stat']");
+        let initiative_selector = this._prefix + "__beyond20-roll-initiative";
         for (let ability of abilities.toArray()) {
             const abbr = $(ability).find("h2[class*='styles_statHeading']").text().toUpperCase();
             const score = $(ability).find("p[class*='styles_statScore']").text();
             const modifier = $(ability).find("p[class*='styles_statModifier']").text().slice(1, -1);
             this._abilities.push([abbreviationToAbility(abbr), abbr, score, modifier]);
             if (add_dice) {
-                const digitalDiceBox = $(ability).find(prefix + "modifier .integrated-dice__container");
+                const digitalDiceBox = $(ability).find(this._prefix + "modifier .integrated-dice__container");
                 if (digitalDiceBox.length > 0) {
                     // Use the digital Dice box (encounters page)
                     digitalDiceBox.off('click').on('click', (e) => {
@@ -120,11 +129,9 @@ class MonsterExtras extends CharacterBase {
                 } else {
                     addIconButton(this, () => this.rollAbilityCheck(abbr), ability, { prepend: true });
                 }
-                /*if (abbr == "DEX") {
+                if (abbr == "DEX") {
+                    const lastAttribute = attributes.last();
                     let roll_initiative = stat_block.find(initiative_selector);
-                    const attributes = this.isBlockFinder ? 
-                        stat_block.find(".red-statblock-text") :
-                        stat_block.find(base + "__attributes");
                     if (attributes.length > 0) {
                         let initiative = roll_initiative.eq(0);
                         // Make sure the modifier didn't change (encounters)
@@ -143,23 +150,98 @@ class MonsterExtras extends CharacterBase {
                                     )
                                 );
                             } else { 
-                                const attribute_prefix = `${base.slice(1)}__attribute`
+                                const attribute_prefix = `${this._prefix}__attribute`
                                 initiative = $(
-                                    E.div({ class: `${attribute_prefix} ${initiative_selector.slice(1)}`,
+                                    E.div({ class: `${attribute_prefix} ${initiative_selector} ${classNames["attribute"]}`,
                                             "data-modifier": modifier },
-                                        E.span({ class: `${attribute_prefix}-label` }, "Roll Initiative!"),
+                                        E.span({ class: `${attribute_prefix}-label ${classNames["label"]}` }, "Roll Initiative!"),
                                         E.span({ class: `${attribute_prefix}-data` },
-                                            E.span({ class: `${attribute_prefix}-data-value` }, "  " + modifier)
+                                            E.span({ class: `${attribute_prefix}-data-value ${classNames["value"]}` }, "  " + modifier)
                                         )
                                     )
                                 );
                             }
                         }
-                        attributes.eq(0).append(initiative);
+                        attributes.last().after(initiative);
                         addIconButton(this, () => this.rollInitiative(), initiative, { append: true });
                     }
-                }*/
+                }
             }
+        }
+
+        // tidbits
+
+        const tidbits = stat_block.find("div[class*='styles_tidbit']");
+        for (let tidbit of tidbits.toArray()) {
+            const label = $(tidbit).find("h2[class*='styles_tidbitLabel']").text().trim();
+            const data = $(tidbit).find("p");
+            const value = $(data).text().trim();
+            const digitalDiceBoxes = data.find(".integrated-dice__container");
+            if (label == "Saving Throws") {
+                const saves = value.split(", ");
+                const useDigitalDice = digitalDiceBoxes.length === saves.length;
+                if (add_dice && !useDigitalDice) data.html("");
+                for (let save of saves) {
+                    const parts = save.split(" ");
+                    const abbr = parts[0];
+                    const mod = parts.slice(1).join(" ");
+                    this._saves[abbr] = mod;
+                    if (useDigitalDice) {
+                        // Hook into the existing digital dice boxes
+                        const idx = saves.indexOf(save);
+                        const digitalDiceBox = digitalDiceBoxes.eq(idx);
+                        // Use the digital Dice box (encounters page)
+                        digitalDiceBox.off('click').on('click', (e) => {
+                            e.stopPropagation();
+                            this.rollSavingThrow(abbr);
+                        })
+                        deactivateTooltipListeners(digitalDiceBox);
+                        activateTooltipListeners(digitalDiceBox, "down", beyond20_tooltip, () => this.rollSavingThrow(abbr));
+                    } else if (add_dice) {
+                        data.append(abbr + " " + mod);
+                        addIconButton(this, () => this.rollSavingThrow(abbr), data, { append: true });
+                        if (saves.length > Object.keys(this._saves).length)
+                            data.append(", ");
+                    }
+                }
+            } else if (label == "Skills") {
+                const skills = value.split(", ");
+                const useDigitalDice = digitalDiceBoxes.length === skills.length;
+                for (let skill of skills) {
+                    const match = skill.match(/(.+?)([+-]?)\s*([0-9]+)/);
+                    if (match) {
+                        const name = match[1].trim();
+                        const mod = `${match[2] || "+"}${match[3]}`;
+                        this._skills[name] = mod;
+                        // Hook into the existing digital dice boxes
+                        if (useDigitalDice) {
+                            const idx = skills.indexOf(skill);
+                            const digitalDiceBox = digitalDiceBoxes.eq(idx);
+                            // Use the digital Dice box (encounters page)
+                            digitalDiceBox.off('click').on('click', (e) => {
+                                e.stopPropagation();
+                                this.rollSkillCheck(name)
+                            })
+                            deactivateTooltipListeners(digitalDiceBox);
+                            activateTooltipListeners(digitalDiceBox, "down", beyond20_tooltip, () => this.rollSkillCheck(name));
+                        }
+                    }
+                }
+                if (useDigitalDice || !add_dice)
+                    continue;
+                data.html("");
+                let first = true;
+                for (let skill in this._skills) {
+                    if (!first)
+                        data.append(", ");
+                    first = false;
+                    data.append(skill + " " + this._skills[skill]);
+                    addIconButton(this, () => this.rollSkillCheck(skill), data, { append: true });
+                }
+            } else if (label == "Challenge") {
+                this._cr = value.split(" ")[0];
+            }
+            this._tidbits[label] = value;
         }
 
         //console.log("Done parsing stat block:", this);
@@ -200,6 +282,58 @@ class MonsterExtras extends CharacterBase {
                 break;
             }
         }
+    }
+    
+    rollInitiative() {
+        for (let ability of this._abilities) {
+            if (ability[1] == "DEX") {
+                const modifier = ability[3];
+
+                let initiative = modifier;
+                if (this.getGlobalSetting("initiative-tiebreaker", false)) {
+                    const tiebreaker = ability[2];
+
+                    // Add tiebreaker as a decimal;
+                    initiative = parseFloat(initiative) + parseFloat(tiebreaker) / 100;
+
+                    // Render initiative as a string that begins with '+' || '-';
+                    initiative = initiative >= 0 ? '+' + initiative.toString() : initiative.toString();
+                }
+
+                sendRoll(this, "initiative", "1d20" + initiative, { "initiative": initiative });
+                break;
+            }
+        }
+    }
+
+    rollSavingThrow(abbr) {
+        const mod = this._saves[abbr];
+        const name = abbreviationToAbility(abbr);
+        const roll_properties = {
+            "name": name,
+            "ability": abbr,
+            "modifier": mod
+        };
+        if (abbr == "STR" && this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character && 
+            this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
+            roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+        }
+        sendRoll(this, "saving-throw", "1d20" + mod, roll_properties);
+    }
+
+    rollSkillCheck(skill) {
+        const modifier = this._skills[skill];
+        const ability = skillToAbility(skill);
+        const roll_properties = {
+            "skill": skill,
+            "ability": ability,
+            "modifier": modifier
+        };
+        if (ability == "STR" && this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character && 
+            this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
+            roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+        }
+        sendRoll(this, "skill", "1d20" + modifier, roll_properties);
     }
 
     displayAvatar() {
