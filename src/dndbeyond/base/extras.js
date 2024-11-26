@@ -266,12 +266,12 @@ class MonsterExtras extends CharacterBase {
                     "modifier": modifier,
                     "ability-score": score
                 };
-                if (abbr == "STR" && this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character && 
+                if (abbr == "STR" && this.type() == "Creature" && this._creatureType?.startsWith("Wild Shape") && this._parent_character && 
                     this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
                     roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
                 }
                 
-                if (this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character &&
+                if (this.type() == "Creature" && this._creatureType?.startsWith("Wild Shape") && this._parent_character &&
                     this._parent_character.getSetting("custom-ability-modifier", "")) {
                     const custom = parseInt(this._parent_character.getSetting("custom-ability-modifier", "0")) || 0;
                     if (custom != 0)  {
@@ -316,7 +316,7 @@ class MonsterExtras extends CharacterBase {
             "ability": abbr,
             "modifier": mod
         };
-        if (abbr == "STR" && this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character && 
+        if (abbr == "STR" && this.type() == "Creature" && this._creatureType?.startsWith("Wild Shape") && this._parent_character && 
             this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
         }
@@ -331,7 +331,7 @@ class MonsterExtras extends CharacterBase {
             "ability": ability,
             "modifier": modifier
         };
-        if (ability == "STR" && this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character && 
+        if (ability == "STR" && this.type() == "Creature" && this._creatureType?.startsWith("Wild Shape") && this._parent_character && 
             this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
         }
@@ -490,7 +490,7 @@ class MonsterExtras extends CharacterBase {
                     const id = addRollButton(this, () => {
                         // Need to recreate roll properties, in case settings (whisper, custom dmg, etc..) have changed since button was added
                         const roll_properties = this.buildAttackRoll(action_name, description);
-                        if (this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character &&
+                        if (this.type() == "Creature" && this._creatureType?.startsWith("Wild Shape") && this._parent_character &&
                             roll_properties["damages"] && roll_properties["damages"].length > 0) {
                             if (this._parent_character.hasClass("Barbarian") && this._parent_character.hasClassFeature("Rage") &&
                                 this._parent_character.getSetting("barbarian-rage", false) && description.match(/Melee(?: Weapon)? Attack:/)) {
@@ -673,7 +673,36 @@ class MonsterExtras extends CharacterBase {
     }
 
     updateInfo() {
+        if (this.type() != "Creature" && this.type() != "Extra-Vehicle") return;
+        // Creature name could change/be between.includes(customized) calls;
+        this._name = this._stat_block.find("section[class*='styles_creatureBlock'] > h1[class*='styles_header']").text().trim();
+        let hp = null;
+        let max_hp = null;
+        let temp_hp = null;
+        const groups = $(".b20-creature-pane .ddbc-collapsible__content div[class*='styles_adjusterGroup']");
+        for (let item of groups.toArray()) {
+            const label = $(item).find("div[class*='styles_adjusterLabel']").text();
+            if (label == "Current HP") {
+                hp = parseInt($(item).find("div[class*='styles_adjusterValue']").text());
+            } else if (label == "Max HP") {
+                max_hp = parseInt($(item).find("div[class*='styles_adjusterValue']").text());
+            } else if (label == "Temp HP") {
+                temp_hp = parseInt($(item).find("div[class*='styles_adjusterValue'] input").val());
+            }
+        }
+        if (hp !== null && max_hp !== null && (this._hp != hp || this._max_hp != max_hp || this._temp_hp != temp_hp)) {
+            this._hp = hp;
+            this._max_hp = max_hp;
+            this._temp_hp = temp_hp;
+            console.log("Monster HP updated to : (" + hp + "+" + temp_hp + ")/" + max_hp);
 
+            if (this.getGlobalSetting("update-hp", true)) {
+                const req = { "action": "hp-update", "character": this.getDict() }
+                console.log("Sending message: ", req);
+                chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(this, resp));
+                sendRollRequestToDOM(req);
+            }
+        }
     }
 
     getDict() {
