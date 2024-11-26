@@ -467,9 +467,7 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
                 if(character.hasGreatWeaponFighting(2014)) {
                     charge_dmg += "ro<=2";
                 } else if(character.hasGreatWeaponFighting(2024)) {
-                    charge_dmg = charge_dmg.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
-                        return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
-                    });
+                    charge_dmg += "min3";
                 }
             }
 
