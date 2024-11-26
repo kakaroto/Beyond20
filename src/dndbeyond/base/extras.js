@@ -55,7 +55,7 @@ class MonsterExtras extends CharacterBase {
         const avatar = $(base).parent().find("img[class*='styles_img']");
         if (avatar.length > 0) {
             this._avatar = avatar[0].src;
-            addDisplayButton(() => this.displayAvatar(), avatar, { small: false, image: true });
+            addDisplayButton(() => this.displayAvatar(), avatar, { append: false, small: false, image: true });
         }
 
         // Attributes
@@ -244,7 +244,9 @@ class MonsterExtras extends CharacterBase {
             this._tidbits[label] = value;
         }
 
-        //console.log("Done parsing stat block:", this);
+        this.lookForActions(stat_block, add_dice, inject_descriptions);
+        if (add_dice)
+            this.lookForSpells(stat_block);
     }
 
     rollHitPoints() {
@@ -338,6 +340,336 @@ class MonsterExtras extends CharacterBase {
 
     displayAvatar() {
         sendRoll(this, "avatar", this._avatar, { "name": "Avatar" });
+    }
+
+    parseAttackInfo(description) {
+        // changed for 2024 info descriptions
+        const m = description.match(/(Melee|Ranged|Spell)(?: Weapon| Spell| Attack) ?(?: Attack|Roll):.*?(\+[0-9]+)(?: to hit.*?|\s?,) (?:reach |ranged? |Gibletish )?(.*?)(?:,.*?)?\./i);
+        if (m)
+            return m.slice(1, 4);
+        else
+            return null;
+    }
+
+    parseSaveInfo(description) {
+        const regex2024 = /(?<save>Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma)(?: Saving Throw:).DC (?<dc>[0-9]+)/;
+        const regex2014 = /DC ([0-9]+) (.*?) saving throw/;
+
+        const match2014 = description.match(regex2014);
+        const match2024 = description.match(regex2024);
+
+        if(match2014) return [match2014[2], match2014[1]];
+        else if(match2024) return [match2024[1], match2024[2]]
+        else return null;
+    }
+
+    parseHitInfo(description) {
+        const hit_idx = description.indexOf("Hit:");
+        let hit = description;
+        if (hit_idx > 0)
+            hit = description.slice(hit_idx);
+        // Using match with global modifier then map to regular match because RegExp.matchAll isn't available on every browser
+        const damage_regexp = new RegExp(/([\w]* )(?:([0-9]+)(?!d))?(?: *\(?([0-9]*d[0-9]+(?:\s*[-+]\s*[0-9]+)?(?: plus [^\)]+)?)\)?)? ([\w ]+?) damage/)
+        const healing_regexp = new RegExp(/gains (?:([0-9]+)(?!d))?(?: *\(?([0-9]*d[0-9]+(?:\s*[-+]\s*[0-9]+)?)(?: plus [^\)]+)?\)?)? (temporary)?\s*hit points/)
+        const damage_matches = reMatchAll(damage_regexp, hit) || [];
+        const healing_matches = reMatchAll(healing_regexp, hit) || [];
+        const damages = [];
+        const damage_types = [];
+        for (let dmg of damage_matches) {
+            // Skip any damage that starts wit "DC" because of "DC 13 saving throw or take damage" which could match.
+            // A lookbehind would be a simple solution here but rapydscript doesn't let me.
+            // Also skip "target reduced to 0 hit points by this damage" from demon-grinder vehicle.
+            if (dmg[1] == "DC " || dmg[4] == "hit points by this") {
+                continue;
+            }
+            const damage = dmg[3] || dmg[2];
+            // Make sure we did match a damage ('  some damage' would match the regexp, but there is no value)
+            if (damage) {
+                damages.push(damage.replace("plus", "+"));
+                damage_types.push(dmg[4]);
+            }
+        }
+        for (let dmg of healing_matches) {
+            const damage = dmg[2] || dmg[1];
+            const healingType = dmg[3] ? "Temp HP" : "Healing"
+            if (damage) {
+                damages.push(damage.replace("plus", "+"));
+                damage_types.push(healingType);
+            }
+        }
+        let save = null;
+        const m = this.parseSaveInfo(hit);
+        let preDCDamages = damages.length;
+        if (m) {
+            save = m;
+            preDCDamages = damage_matches.reduce((total, match) => {
+                if (match.index < m.index)
+                    total++;
+                return total
+            }, 0);
+        } else {
+            const m2 = hit.match(/escape DC ([0-9]+)/);
+            if (m2)
+                save = ["Escape", m2[1]];
+        }
+
+        if (damages.length == 0 && save === null)
+            return null;
+        return [damages, damage_types, save, preDCDamages];
+    }
+
+    buildAttackRoll(name, description) {
+        const roll_properties = {
+            "name": name,
+            "preview": this._avatar,
+            "attack-source": "monster-action",
+            "description": description,
+            "rollAttack": true,
+            "rollDamage": this.getGlobalSetting("auto-roll-damage", true),
+        }
+
+        const attackInfo = this.parseAttackInfo(description);
+        //console.log("Attack info for ", name, attackInfo);
+        if (attackInfo) {
+            const [attack_type, to_hit, reach_range] = attackInfo;
+            roll_properties["to-hit"] = to_hit;
+            roll_properties["attack-type"] = attack_type;
+            roll_properties[attack_type == "Melee" ? "reach" : "range"] = reach_range;
+        }
+
+
+        const hitInfo = this.parseHitInfo(description);
+        //console.log("Hit info for ", name, hitInfo);
+        if (hitInfo) {
+            const [damages, damage_types, save, toCrit] = hitInfo;
+            if (damages.length > 0) {
+                roll_properties["damages"] = damages;
+                roll_properties["damage-types"] = damage_types;
+                const crits = damagesToCrits(this, damages.slice(0, toCrit), damage_types.slice(0, toCrit));
+                const crit_damages = [];
+                const crit_damage_types = [];
+                for (let [i, dmg] of crits.entries()) {
+                    if (dmg != "") {
+                        crit_damages.push(dmg);
+                        crit_damage_types.push(damage_types[i]);
+                    }
+                }
+                roll_properties["critical-damages"] = crit_damages;
+                roll_properties["critical-damage-types"] = crit_damage_types;
+            }
+            if (save) {
+                roll_properties["save-ability"] = save[0];
+                roll_properties["save-dc"] = save[1];
+            }
+        }
+
+        if (attackInfo || hitInfo)
+            return roll_properties;
+
+        return null;
+    }
+
+    lookForActions(stat_block, add_dice, inject_descriptions) {
+        const headings = stat_block.find("div[class*='styles_descriptions'] > h2[class*='styles_descriptionHeading']");
+        const descriptions = stat_block.find("div[class*='styles_descriptions'] > div[class*='styles_description']");
+
+        this._actions = [];
+
+        const handleAction = (action_name, block, action) => {
+            if (action_name.slice(-1)[0] == ".")
+                action_name = action_name.slice(0, -1);
+            this._actions.push(action_name);
+            //console.log("Action name: ", action_name);
+            if (add_dice) {
+                let description = action.toArray ? 
+                    action.toArray().map(a => descriptionToString(a)).join("\n")
+                    : descriptionToString(action);
+                description = description.replace(/−/g, "-");
+                const roll_properties = this.buildAttackRoll(action_name, description);
+                if (roll_properties) {
+                    const id = addRollButton(this, () => {
+                        // Need to recreate roll properties, in case settings (whisper, custom dmg, etc..) have changed since button was added
+                        const roll_properties = this.buildAttackRoll(action_name, description);
+                        if (this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character &&
+                            roll_properties["damages"] && roll_properties["damages"].length > 0) {
+                            if (this._parent_character.hasClass("Barbarian") && this._parent_character.hasClassFeature("Rage") &&
+                                this._parent_character.getSetting("barbarian-rage", false) && description.match(/Melee(?: Weapon)? Attack:/)) {
+                                // Barbarian: Rage
+                                const barbarian_level = this._parent_character.getClassLevel("Barbarian");
+                                const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
+                                roll_properties["damages"].push(String(rage_damage));
+                                roll_properties["damage-types"].push("Rage");
+                            }
+                            // Add custom damages to wild shape attacks
+                            addCustomDamages(character, roll_properties["damages"], roll_properties["damage-types"]);
+                        }
+                        if (roll_properties["damages"] && roll_properties["damages"].length > 0) {
+                            for (const key in key_modifiers) {
+                                if (!key.startsWith("custom_damage:") || !key_modifiers[key]) continue;
+                                const custom_damage = key.slice("custom_damage:".length);
+                                if (custom_damage.includes(":")) {
+                                    const parts = custom_damage.split(":", 2);
+                                    roll_properties["damages"].push(parts[1].trim());
+                                    roll_properties["damage-types"].push(parts[0].trim());
+                                } else {
+                                    roll_properties["damages"].push(custom_damage.trim());
+                                    roll_properties["damage-types"].push("Custom");
+                                }
+                            }
+                        }
+                        if (roll_properties["to-hit"]) {
+                            for (const key in key_modifiers) {
+                                if (!key.startsWith("custom_modifier:") || !key_modifiers[key]) continue;
+                                const modifier = key.slice("custom_modifier:".length).trim();
+                                const operator = ["+", "-"].includes(modifier[0]) ? "" : "+ "
+                                roll_properties["to-hit"] += ` ${operator}${modifier}`;
+                            }
+                        }
+                    
+                        if (key_modifiers["display_attack"]) {
+                            return sendRoll(this, "trait", "0", roll_properties);
+                        }
+                        sendRoll(this, "attack", "1d20" + (roll_properties["to-hit"] || ""), roll_properties)
+                    }, block, {small: true, before: true, image: true, text: action_name});
+                    $("#" + id).css({ "float": "", "text-align": "", "margin-top": "15px" });
+                } else {
+                    const id = addRollButton(this, () => {
+                        const roll_properties = {
+                            name: action_name,
+                            description
+                        };
+                        sendRoll(this, "trait", "0", roll_properties);
+                    }, block, {small: true, before: true, image: false, text: action_name});
+                    $("#" + id).css({ "float": "", "text-align": "", "margin-top": "15px" });
+                }
+            }
+            if (inject_descriptions) {
+                injectDiceToRolls(action, this, action_name, (...args) => this._injectDiceReplacement(...args));
+            }
+        }
+
+        let blockFinderPastTidbits = false;
+
+        const headingsArray = headings.toArray();
+        const descriptionsArray = descriptions.toArray();
+
+        // Ensure the iteration accounts for mismatched pairs
+        for (let i = 0; i < headingsArray.length; i++) {
+            let heading = headingsArray[i];
+            let description = descriptionsArray[i]; // Attempt to get the paired description
+            
+            // Extract heading text
+            const headingText = $(heading).text().trim();
+            let paragraphs;
+            let outerParagraphs;
+            // Determine the appropriate method to extract paragraphs
+            if (description) {
+                if (!$(description).hasClass('ddbc-html-content')) {
+                    // Case 1: No 'ddbc-html-content' class; check for direct <p> or nested within '.ddbc-html-content > p'
+                    paragraphs = $(description).find('.ddbc-html-content > p').toArray();
+
+                    // Case 1: Look for <p> tags directly inside the description container
+                    outerParagraphs = $(description).children('p').toArray();
+
+                    // Combine both lists into a single array
+                    if (paragraphs.length === 0) {
+                        // Fallback to any <p> directly within the description
+                        paragraphs = $(description).find('p').toArray();
+                    } else if (outerParagraphs.length !== 0) {
+                        paragraphs = [...paragraphs, ...outerParagraphs];
+                    }
+                } else if ($(description).hasClass('ddbc-html-content')) {
+                    // Case 2: Properly nested content with 'ddbc-html-content'
+                    paragraphs = $(description).find('p').toArray();
+                } else {
+                    // Case 3: No specific class, fallback to find any <p>
+                    paragraphs = $(description).find('p').toArray();
+                }                 
+            }
+
+            let lastAction = null;
+            for (const p of paragraphs) {
+                //console.log("Found action: ", action);
+                const firstChild = p.firstElementChild;
+                if (!firstChild) continue;
+                // Usually <em><strong> || <strong><em> (Orcus is <span><em><strong>);
+                let action_name = $(firstChild).find("> :first-child").text().trim() || $(firstChild).text().trim();
+                if (!action_name) continue;
+                // Replace non-breaking space character with regular space so it can match the description
+                action_name = action_name.replace(/ /g, " ");
+                const description = descriptionToString(p).trim();
+                if (!description.startsWith(action_name)) continue;
+                if (lastAction) {
+                    // Found a new action, parse all DOM elements in between as an action
+                    const action = $(lastAction.block).nextUntil(p).addBack();
+                    handleAction(lastAction.name, lastAction.block, action);
+                }
+                // Store action for later processing
+                lastAction = { name: action_name, block: p };
+            }
+            if (lastAction) {
+                // Grab all the remaining elements
+                const action = $(lastAction.block).nextUntil().addBack();
+                handleAction(lastAction.name, lastAction.block, action);
+            }
+        }
+    }
+
+    _injectDiceReplacement(node, formula, dice, modifier, name, defaultReplacement) {
+        // Check if the formula is inside a digital dice button, if yes, don't replace anything
+        const originalFormula = dice + modifier;
+        const digitalDiceBox = $(node).closest(".integrated-dice__container");
+        if (digitalDiceBox.length === 1) {
+            // Trim parenthesis from the formula, as DDB tends to add them
+            const digitalDiceFormula = digitalDiceBox.text().replace(/^[\(\)]+|[\(\)]+$/g, "");
+            // Make sure the closest dice box contains the formula we're replacing
+            if (digitalDiceFormula === originalFormula) {
+                digitalDiceBox.off('click').on('click', (e) => {
+                    e.stopPropagation();
+                    sendRoll(this, "custom", formula, { "name": name });
+                })
+                deactivateTooltipListeners(digitalDiceBox);
+                activateTooltipListeners(digitalDiceBox, "up", getQuickRollTooltip(), () => sendRoll(this, "custom", formula, { "name": name }));
+                // Return null to prevent modifying the html
+                return null;
+            }
+        }
+        return defaultReplacement;
+    }
+
+    injectSpellRolls(element, url) {
+        const icon = chrome.runtime.getURL("images/icons/badges/spell20.png");
+        const roll_icon = $('<img class="ct-beyond20-spell-icon" x-beyond20-spell-url="' + url + '"></img>');
+
+        $(element).after(roll_icon);
+
+        $(".ct-beyond20-spell-icon").css("margin-right", "3px");
+        $(".ct-beyond20-spell-icon").css("margin-left", "3px");
+        $(".ct-beyond20-spell-icon").attr("src", icon);
+        $(".ct-beyond20-spell-icon").off('click');
+        $(".ct-beyond20-spell-icon").on('click', (event) => {
+            const spell_url = $(event.currentTarget).attr("x-beyond20-spell-url");
+            if (this._spells[spell_url] !== undefined) {
+                this._spells[spell_url].display();
+            } else {
+                //console.log("Fetching Spell Tooltip from URL : ", spell_url);
+                $.get(spell_url, (text) => {
+                    const spell_json = JSON.parse(text.slice(1, -1));
+                    const spell = new Spell($(spell_json.Tooltip), this, "tooltip");
+                    spell.display();
+                    this._spells[spell_url] = spell;
+                });
+            }
+        });
+    }
+
+    lookForSpells(stat_block) {
+        const spells = stat_block.find("div[class*='styles_descriptions'] > div[class*='styles_description']").find("a.spell-tooltip");
+        for (let spell of spells.toArray()) {
+            const tooltip_href = $(spell).attr("data-tooltip-href");
+            const tooltip_url = tooltip_href.replace(/-tooltip.*$/, "/tooltip");
+            this.injectSpellRolls(spell, tooltip_url);
+        }
     }
 
     updateInfo() {
