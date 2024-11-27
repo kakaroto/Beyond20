@@ -123,6 +123,7 @@ const SRC_FILES = {
         ...DNDBEYOND_PAGE_DEPS,
         "src/dndbeyond/base/spell.js",
         "src/dndbeyond/base/monster.js",
+        "src/dndbeyond/base/extras.js",
         "src/dndbeyond/base/character.js",
         "src/dndbeyond/content-scripts/character.js",
     ],
