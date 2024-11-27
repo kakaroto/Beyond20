@@ -425,8 +425,10 @@ Additional fields added to the roll request:
 - `name`: The item name
 - `description`: The description of the item
 - `item-type`: (Optional) The item type (Weapon, Gear, Staff, Instrument, etc...)
+- `item-customizations`: (Optional) Array of string containing the item customizations for this character/item (like 'Pact Weapon')
 - `quantity`: (Optional) The quantity of the item that the character has, as an integer `<number>`
 - `tags`: (Optional) Array of strings for item specific tags (consumable, heal, utility, instrument, etc..)
+- `mastery`: (Optional) The mastery type that the character has over this weapon
 
 #### attack
 Roll an attack. This will generally be either rolling a weapon attack or a special action or class feature attack.
