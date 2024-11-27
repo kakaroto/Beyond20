@@ -123,7 +123,7 @@ class Character extends CharacterBase {
             let modifier = $(ability).find(".ct-ability-summary__primary .ct-signed-number,.ddbc-ability-summary__primary .ddbc-signed-number,.ddbc-ability-summary__primary span[class*='styles_numberDisplay']").text();
             let value = $(ability).find(".ct-ability-summary__secondary,.ddbc-ability-summary__secondary").text();
             if (modifier == "") {
-                modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number,.ddbc-ability-summary__secondary .ddbc-signed-number, .ct-ability-summary__secondary span[class*='styles_numberDisplay']").text();
+                modifier = $(ability).find(".ct-ability-summary__secondary .ct-signed-number,.ddbc-ability-summary__secondary .ddbc-signed-number,.ddbc-ability-summary__secondary span[class*='styles_numberDisplay'], .ct-ability-summary__secondary span[class*='styles_numberDisplay']").text();  
                 value = $(ability).find(".ct-ability-summary__primary,.ddbc-ability-summary__primary").text();
             }
             this._abilities.push([name, abbr, value, modifier]);
