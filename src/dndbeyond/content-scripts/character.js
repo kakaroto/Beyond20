@@ -812,10 +812,12 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                 let damage_type = properties["Damage Type"] || "";
                 let versatile_damage = value.find(".ct-item-detail__versatile-damage,.ddbc-item-detail__versatile-damage").text().slice(1, -1);
 
-                if (versatile_damage != "") {
-                    versatile_damage = applyGWFIfRequired(item_name, properties, versatile_damage);
-                } else {
-                    damage = applyGWFIfRequired(item_name, properties, damage);
+                if(damages.length == 0) {
+                    if (versatile_damage != "") {
+                        versatile_damage = applyGWFIfRequired(item_name, properties, versatile_damage);
+                    } else {
+                        damage = applyGWFIfRequired(item_name, properties, damage);
+                    }
                 }
 
                 if (character.hasClass("Ranger") &&

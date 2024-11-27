@@ -305,8 +305,8 @@ function applyGWFIfRequired(action_name, properties, damage) {
         (
             (properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice") != "one") || 
             properties["Properties"].includes("Two-Handed"))) ||
-            action_name == "Polearm Master - Bonus Attack" ||
-            action_name == "Pole Strike")
+            action_name.includes("Polearm Master") && character.hasFeat("Polearm Master", false)  ||
+            action_name.includes("Pole Strike") && character.hasFeat("Polearm Master 2024", false))
         ) {
         if(character.hasGreatWeaponFighting(2014)) {
             damage = damage.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
