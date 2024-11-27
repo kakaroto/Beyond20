@@ -25,6 +25,7 @@ class Character extends CharacterBase {
         this._to_hit_cache = {}
         this._conditions = [];
         this._exhaustion = 0;
+        this._version = 2014;
     }
 
     updateInfo() {
@@ -252,6 +253,7 @@ class Character extends CharacterBase {
         let is2024 = false;
         if((feat_name.toLowerCase() === "great weapon master" ||
             feat_name.toLowerCase() === "sharpshooter" ||
+            feat_name.toLowerCase() === "charger" ||
             feat_name.toLowerCase() === "polearm master") && 
             feat_reference.toLowerCase().includes("2024")) {
                 is2024 = true;
@@ -287,6 +289,13 @@ class Character extends CharacterBase {
         } else {
             this._class_features = this.getSetting("class-features", []);
         }
+
+        const regex2024 = /Core (?:.*?).Traits/; // all 2024 classes (not homebrew) have core traits
+        const traits = this._class_features.some(s => {
+            const match = s.match(regex2024);
+            return match && match.length !== 0
+        }); // 2024 class with 2014 classes multiclassed will be treated as 2024 classes
+        this._version = traits ? 2024 : 2014;
 
         const race_detail = $(".ct-features .ct-content-group:has(.ct-feature-snippet--racial-trait)");
         if (race_detail.length > 0) {
@@ -520,7 +529,8 @@ class Character extends CharacterBase {
             "spell_modifiers": this._spell_modifiers,
             "spell_saves": this._spell_saves,
             "spell_attacks": this._spell_attacks,
-            "url": this._url
+            "url": this._url,
+            "version": this._version
         }
     }
 }
