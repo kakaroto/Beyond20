@@ -784,6 +784,13 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
     const description = descriptionToString(".ct-item-detail__description");
     const quantity = $(".ct-item-pane .ct-simple-quantity .ct-simple-quantity__value .ct-simple-quantity__input").val();
     const is_infused = $(".ct-item-pane .ct-item-detail__infusion");
+    const has_mastery = $(".ct-item-pane div[class*='styles_action'] div[class*='styles_label']");
+    if(has_mastery.length >0){
+        const regex = /Mastery:\s+(.+)/;
+        const match = has_mastery.text().trim().match(regex);
+        const mastery = match ? match[1].trim() : null;
+        if(mastery) properties["Mastery"] = mastery;
+    }
     if (is_infused.length > 0)
         properties["Infused"] = true;
     let is_versatile = false;
@@ -1008,6 +1015,9 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
         if (roll_properties === null) {
             // A query was cancelled, so let's cancel the roll
             return;
+        }
+        if (properties["Mastery"]) {
+            roll_properties["mastery"] = properties["Mastery"];
         }
         roll_properties["item-type"] = item_type;
         roll_properties["item-customizations"] = item_customizations;
@@ -2161,9 +2171,9 @@ function injectRollButton(paneClass) {
                 creature.updateInfo();
             return;
         }
-        const base = $(".ct-creature-block").length > 0 ? ".ct-creature-block" : ".ddbc-creature-block";
-        const creatureType = $(".ct-sidebar__header-parent").text();
-        creature = new Monster("Creature", base, settings, {creatureType, character});
+        const base = ".b20-creature-pane div[class*='styles_block']";
+        const creatureType = $(".ct-sidebar__header > div:first-child").text();
+        creature = new MonsterExtras("Creature", base, settings, {creatureType, character});
         creature.parseStatBlock();
         creature.updateInfo();
     } else if (paneClass == "ct-vehicle-pane") {
@@ -2622,7 +2632,8 @@ function documentModified(mutations, observer) {
         "ct-health-manage-pane",
         "ct-vehicle-pane",
         "ct-condition-manage-pane",
-        "ct-proficiencies-pane"
+        "ct-proficiencies-pane",
+        "ct-extra-manage-pane"
     ]
 
     const SPECIAL_PANES = {
@@ -2703,7 +2714,7 @@ function documentModified(mutations, observer) {
                 const paneClass = SPECIAL_PANES.racialTrait;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
-            } else if (sidebar.parent().find(".ddbc-creature-block").length > 0) {
+            } else if (sidebar.parent().find("div[class*='styles_block'] section[class*='styles_creatureBlock']").length > 0) {
                 const paneClass = SPECIAL_PANES.creature;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);

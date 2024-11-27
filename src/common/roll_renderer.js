@@ -786,6 +786,8 @@ class Beyond20RollRenderer {
         }
 
         const roll_info = [];
+        if (request["mastery"] !== undefined)
+            roll_info.push(["Mastery", request["mastery"]]);
         if (request["save-dc"] != undefined)
             roll_info.push(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
         if (request["cunning-strike-effects"] != undefined)
@@ -859,12 +861,12 @@ class Beyond20RollRenderer {
                 }
             }
         }
-
+        if (request["mastery"] !== undefined)
+            roll_info.push(["Mastery", request["mastery"]]);
         if (request["save-dc"] !== undefined)
             roll_info.push(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
         if (request["cunning-strike-effects"] != undefined)
             roll_info.push(["Cunning Strike Effects", request["cunning-strike-effects"]]);
-
 
         const [attack_rolls, damage_rolls] = await this.buildAttackRolls(request, custom_roll_dice);
 
