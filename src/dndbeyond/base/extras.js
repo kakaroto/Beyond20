@@ -32,7 +32,7 @@ class MonsterExtras extends CharacterBase {
     
     getSetting(key, default_value = "", settings = null) {
         // Use parent's settings for wild shape creatures
-        if (this.type() == "creature" && this._creatureType?.startsWith("Wild Shape") && this._parent_character) {
+        if (this.type() == "Creature" && this._creatureType?.startsWith("Wild Shape") && this._parent_character) {
             return this._parent_character.getSetting(key, default_value, settings);
         }
         return super.getSetting(key, default_value, settings);
@@ -50,6 +50,7 @@ class MonsterExtras extends CharacterBase {
         this._stat_block = stat_block;
         this._name = stat_block.find("section[class*='styles_creatureBlock'] > h1[class*='styles_header']").text().trim();
         this._id = this._name;
+        this._url = window.location.href;
         this._meta = stat_block.find("section[class*='styles_creatureBlock'] > p[class*='styles_meta']").text().trim();
 
         const avatar = $(base).parent().find("img[class*='styles_img']");
@@ -72,7 +73,7 @@ class MonsterExtras extends CharacterBase {
             if (label == "Armor Class") {
                 if(values.length != 0) {
                     this._ac = $(values[0]).text().trim();
-                    this._ac_meta = values[1] ? $(values[1]).text().trim().replace(/[()]/g, '') : undefined;
+                    this._ac_meta = values[1] ? $(values[1]).text().trim().replace(/^\(|\)$/g, '') : undefined;
                 }
                 // add wild shape 2024 feature here if the player has the class level
             } else if (label == "Hit Points") {
@@ -130,9 +131,9 @@ class MonsterExtras extends CharacterBase {
                     addIconButton(this, () => this.rollAbilityCheck(abbr), ability, { prepend: true });
                 }
                 if (abbr == "DEX") {
-                    const lastAttribute = attributes.last();
                     let roll_initiative = stat_block.find(initiative_selector);
-                    if (attributes.length > 0) {
+                    const monsterAttributes = stat_block.find("div[class*='styles_attribute__']");
+                    if (monsterAttributes.length > 0) {
                         let initiative = roll_initiative.eq(0);
                         // Make sure the modifier didn't change (encounters)
                         if (roll_initiative.length > 0 && roll_initiative.attr("data-modifier") !== modifier) {
@@ -162,7 +163,7 @@ class MonsterExtras extends CharacterBase {
                                 );
                             }
                         }
-                        attributes.last().after(initiative);
+                        monsterAttributes.last().after(initiative);
                         addIconButton(this, () => this.rollInitiative(), initiative, { append: true });
                     }
                 }
@@ -707,7 +708,7 @@ class MonsterExtras extends CharacterBase {
 
     getDict() {
         let settings = undefined;
-        if (this.type() == "creature" && this._parent_character && this._creatureType?.startsWith("Wild Shape")) {
+        if (this.type() == "Creature" && this._parent_character && this._creatureType?.startsWith("Wild Shape")) {
             const parentDict = this._parent_character.getDict();
             settings = parentDict.settings;
         }
