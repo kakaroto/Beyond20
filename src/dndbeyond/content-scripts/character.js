@@ -783,6 +783,13 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
     const description = descriptionToString(".ct-item-detail__description");
     const quantity = $(".ct-item-pane .ct-simple-quantity .ct-simple-quantity__value .ct-simple-quantity__input").val();
     const is_infused = $(".ct-item-pane .ct-item-detail__infusion");
+    const has_mastery = $(".ct-item-pane div[class*='styles_action'] div[class*='styles_label']");
+    if(has_mastery.length >0){
+        const regex = /Mastery:\s+(.+)/;
+        const match = has_mastery.text().trim().match(regex);
+        const mastery = match ? match[1].trim() : null;
+        if(mastery) properties["Mastery"] = mastery;
+    }
     if (is_infused.length > 0)
         properties["Infused"] = true;
     let is_versatile = false;
@@ -1005,6 +1012,9 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
         if (roll_properties === null) {
             // A query was cancelled, so let's cancel the roll
             return;
+        }
+        if (properties["Mastery"]) {
+            roll_properties["mastery"] = properties["Mastery"];
         }
         roll_properties["item-type"] = item_type;
         roll_properties["item-customizations"] = item_customizations;
