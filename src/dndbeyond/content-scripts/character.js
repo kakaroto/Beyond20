@@ -747,6 +747,25 @@ function capitalize(str) {
     return str.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+function applyGWFIfRequired(action_name, properties, damage) {
+    if(((properties["Attack Type"] == "Melee" && 
+        (
+            (properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice") != "one") || 
+            properties["Properties"].includes("Two-Handed"))) ||
+            action_name == "Polearm Master - Bonus Attack" ||
+            action_name == "Pole Strike")
+        ) {
+        if(character.hasGreatWeaponFighting(2014)) {
+            damage = damage.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
+        } else if(character.hasGreatWeaponFighting(2024)) {
+            damage = damage.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
+                return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
+            });
+        }
+    }
+    return damage;
+}
+
 async function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, force_versatile = false, spell_group = null) {
     const prop_list = $(".ct-item-pane .ct-item-detail [role=list] > div");
     const properties = propertyListToDict(prop_list);
@@ -790,28 +809,13 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                 let damage = value.find(".ct-damage__value,.ddbc-damage__value").text();
                 let damage_type = properties["Damage Type"] || "";
                 let versatile_damage = value.find(".ct-item-detail__versatile-damage,.ddbc-item-detail__versatile-damage").text().slice(1, -1);
-                if (damages.length == 0 && character.hasGreatWeaponFighting(2014) &&
-                    properties["Attack Type"] == "Melee" &&
-                    (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
-                    if (versatile_damage != "") {
-                        versatile_damage = versatile_damage.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
-                    } else {
-                        damage = damage.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
-                    }
+
+                if (versatile_damage != "") {
+                    versatile_damage = applyGWFIfRequired(item_name, properties, versatile_damage);
+                } else {
+                    damage = applyGWFIfRequired(item_name, properties, damage);
                 }
-                if (damages.length == 0 && character.hasGreatWeaponFighting(2024) &&
-                    properties["Attack Type"] == "Melee" &&
-                    (properties["Properties"].includes("Versatile") || properties["Properties"].includes("Two-Handed"))) {
-                    if (versatile_damage != "") {
-                        versatile_damage = versatile_damage.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
-                            return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
-                        });
-                    } else {
-                        damage = damage.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
-                            return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
-                        });
-                    }
-                }
+
                 if (character.hasClass("Ranger") &&
                     character.hasClassFeature("Planar Warrior") &&
                     character.getSetting("ranger-planar-warrior", false))
@@ -861,19 +865,7 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                         if (dmg_info != "")
                             dmg_type += " (" + dmg_info + ")";
 
-                        if (character.hasGreatWeaponFighting(2014) &&
-                            properties["Attack Type"] == "Melee" &&
-                            (properties["Properties"].includes("Two-Handed") ||
-                                (properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice", "both") === "two")))
-                                dmg = dmg.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
-
-                        if (character.hasGreatWeaponFighting(2024) && 
-                            properties["Attack Type"] == "Melee" &&
-                            (properties["Properties"].includes("Two-Handed") ||
-                                (properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice", "both") === "two")))
-                            dmg = dmg.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
-                                return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
-                            });
+                        dmg = applyGWFIfRequired(item_name, properties, dmg);
 
                         damages.push(dmg);
                         damage_types.push(dmg_type);
@@ -884,24 +876,11 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
         }
 
         // 2024 brutal strike
-        if (character.getSetting("brutal-strike")) {
-            let strikeDieCount = character.hasClassFeature("Brutal Strike") ? 1 : 0;
-            if (character.hasClassFeature("Improved Brutal Strike")) strikeDieCount += 1;
-
+        if (character.getSetting("brutal-strike") && character.hasClassFeature("Brutal Strike"))  {  
+            let strikeDieCount = character.hasClassFeature("Improved Brutal Strike") ? 2 : 1; 
             let brutal_strike_dmg = `${strikeDieCount}d10`;
-
-            if(((properties["Attack Type"] == "Melee" && ((properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice") != "one") || 
-                properties["Properties"].includes("Two-Handed"))) ||
-                item_name == "Polearm Master - Bonus Attack" ||
-                item_name == "Pole Strike")) {
-                if(character.hasGreatWeaponFighting(2014)) {
-                    brutal_strike_dmg += "ro<=2";
-                } else if(character.hasGreatWeaponFighting(2024)) {
-                    brutal_strike_dmg = brutal_strike_dmg.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
-                        return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
-                    });
-                }
-            }
+            
+            brutal_strike_dmg = applyGWFIfRequired(item_name, properties, brutal_strike_dmg);
             
             damages.push(brutal_strike_dmg);
             damage_types.push("Brutal Strike");
@@ -1180,37 +1159,11 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             character.getSetting("warlock-hexblade-curse", false))
             critical_limit = 19;
 
-        const applyGWFIfRequired = (damageDie) => {
-            // Polearm master bonus attack using the other end of the polearm is considered a melee attack.
-            // check for both versions
-            if (action_name.includes("Polearm Master") && character.hasGreatWeaponFighting(2014)) {
-                damageDie = damageDie.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
-            } else if (action_name.includes("Polearm Master") && character.hasGreatWeaponFighting(2024)) {
-                damageDie = damageDie.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
-                    return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
-                });
-            }
-
-            // check for both versions
-            if (action_name.includes("Pole Strike") && (character.hasFeat("Polearm Master 2024", false)) && 
-                character.hasGreatWeaponFighting(2024)) {
-                damageDie = damageDie.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
-                    return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
-                });
-            } else if (action_name.includes("Pole Strike") && (character.hasFeat("Polearm Master 2024", false)) && 
-                character.hasGreatWeaponFighting(2014)) {
-                damageDie = damageDie.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
-            }
-
-            return damageDie;
-        }
-
         // 2024 brutal strike add extra die and apply GWF
-        if (character.getSetting("brutal-strike")) {
-            let strikeDieCount = character.hasClassFeature("Brutal Strike") ? 1 : 0;
-            if (character.hasClassFeature("Improved Brutal Strike")) strikeDieCount += 1;
+        if (character.getSetting("brutal-strike") && character.hasClassFeature("Brutal Strike"))  {  
+            let strikeDieCount = character.hasClassFeature("Improved Brutal Strike") ? 2 : 1; 
 
-            let brutal_strike_dmg = applyGWFIfRequired(`${strikeDieCount}d10`);
+            let brutal_strike_dmg = applyGWFIfRequired(action_name, properties, `${strikeDieCount}d10`);
 
             damages.push(brutal_strike_dmg);
             damage_types.push("Brutal Strike");
@@ -1219,7 +1172,7 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
         }
 
         // apply for normal die
-        damages[0] = applyGWFIfRequired(damages[0]);
+        damages[0] = applyGWFIfRequired(action_name, properties, damages[0]);
 
         const isMeleeAttack = action_name.includes("Polearm Master") || action_name.includes("Pole Strike") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
         || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
