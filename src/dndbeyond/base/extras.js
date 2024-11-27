@@ -132,8 +132,8 @@ class MonsterExtras extends CharacterBase {
                 }
                 if (abbr == "DEX") {
                     let roll_initiative = stat_block.find(initiative_selector);
-                    const monsterAttributes = stat_block.find("div[class*='styles_attribute__']");
-                    if (monsterAttributes.length > 0) {
+                    const lastAttribute = stat_block.find("div[class*='styles_attribute__']").last();
+                    if (lastAttribute.length > 0) {
                         let initiative = roll_initiative.eq(0);
                         // Make sure the modifier didn't change (encounters)
                         if (roll_initiative.length > 0 && roll_initiative.attr("data-modifier") !== modifier) {
@@ -163,7 +163,7 @@ class MonsterExtras extends CharacterBase {
                                 );
                             }
                         }
-                        monsterAttributes.last().after(initiative);
+                        lastAttribute.after(initiative);
                         addIconButton(this, () => this.rollInitiative(), initiative, { append: true });
                     }
                 }
