@@ -2155,9 +2155,9 @@ function injectRollButton(paneClass) {
                 creature.updateInfo();
             return;
         }
-        const base = $(".ct-creature-block").length > 0 ? ".ct-creature-block" : ".ddbc-creature-block";
-        const creatureType = $(".ct-sidebar__header-parent").text();
-        creature = new Monster("Creature", base, settings, {creatureType, character});
+        const base = ".b20-creature-pane div[class*='styles_block']";
+        const creatureType = $(".ct-sidebar__header > div:first-child").text();
+        creature = new MonsterExtras("Creature", base, settings, {creatureType, character});
         creature.parseStatBlock();
         creature.updateInfo();
     } else if (paneClass == "ct-vehicle-pane") {
@@ -2616,7 +2616,8 @@ function documentModified(mutations, observer) {
         "ct-health-manage-pane",
         "ct-vehicle-pane",
         "ct-condition-manage-pane",
-        "ct-proficiencies-pane"
+        "ct-proficiencies-pane",
+        "ct-extra-manage-pane"
     ]
 
     const SPECIAL_PANES = {
@@ -2697,7 +2698,7 @@ function documentModified(mutations, observer) {
                 const paneClass = SPECIAL_PANES.racialTrait;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
-            } else if (sidebar.parent().find(".ddbc-creature-block").length > 0) {
+            } else if (sidebar.parent().find("div[class*='styles_block'] section[class*='styles_creatureBlock']").length > 0) {
                 const paneClass = SPECIAL_PANES.creature;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
