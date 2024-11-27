@@ -747,25 +747,6 @@ function capitalize(str) {
     return str.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function applyGWFIfRequired(action_name, properties, damage) {
-    if(((properties["Attack Type"] == "Melee" && 
-        (
-            (properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice") != "one") || 
-            properties["Properties"].includes("Two-Handed"))) ||
-            action_name == "Polearm Master - Bonus Attack" ||
-            action_name == "Pole Strike")
-        ) {
-        if(character.hasGreatWeaponFighting(2014)) {
-            damage = damage.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
-        } else if(character.hasGreatWeaponFighting(2024)) {
-            damage = damage.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
-                return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
-            });
-        }
-    }
-    return damage;
-}
-
 async function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, force_versatile = false, spell_group = null) {
     const prop_list = $(".ct-item-pane .ct-item-detail [role=list] > div");
     const properties = propertyListToDict(prop_list);
