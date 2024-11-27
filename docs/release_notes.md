@@ -1,3 +1,19 @@
+v2.10.0 (November 17th 2024)
+===
+
+Hi everyone,
+
+It's time for another update to Beyond20. This release fixes some of the few parsing issues that have slowly crept up during the last month, due to D&D Beyond continuously changing their character sheets, but it also has a few new features as well.
+
+Other than adding support for some of the new 2024 rules (new monsters, species, backgrounds, Great Weapon Fighting, Great Weapon Master, Polearm Master), it also finally properly implements Firefox's optional permissions API, allowing Firefox users to enjoy the same dynamic permissions as Chrome user had. This also removes for Firefox users the previously mandatory discord permissions and brings support for Roll20's Discord Activity on par with the Chrome implementation.
+
+There's more work to be done in the next few weeks and months to continue supporting the new changes with the 2024 rules, but this is a very good starting point.
+You can see the full list of changes in the [Changelog](/Changelog#v2100).
+
+As usual, thank you to all contributors, especially [@dmportella](https://linktr.ee/dmportella), as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
+
+Happy rolling!
+
 v2.9.8 (October 12th 2024)
 ===
 
