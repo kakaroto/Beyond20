@@ -602,7 +602,7 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
     return to_hit;
 }
 
-function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {action_name="", item_customizations=[], item_type="", to_hit}={}) {
+function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {action_name="", item_customizations=[], item_type="", item_name="", to_hit}={}) {
     // Class Specific
     if (character.hasClass("Artificer")) {
         //Artificer: Battlemaster: Arcane Jolt
@@ -741,15 +741,17 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
     
     if (character.hasClass("Rogue")) {
         // Rogue: Sneak Attack
-        if(character.getSetting("rogue-sneak-attack", false) && (properties["Attack Type"] == "Ranged" ||
+        const name = action_name || item_name || "";
+        if(character.hasClassFeature("Sneak Attack") && character.getSetting("rogue-sneak-attack", false) &&
+            (properties["Attack Type"] == "Ranged" ||
             (properties["Properties"] && properties["Properties"].includes("Finesse")) ||
-            (action_name && (action_name.includes("Psychic Blade") || action_name.includes("Shadow Blade"))))){
-            if (character.hasClassFeature("Sneak Attack")) {
-                const sneak_attack = Math.ceil(character._classes["Rogue"] / 2) + "d6";
-                damages.push(sneak_attack);
-                damage_types.push("Sneak Attack");
-            }
-        }        
+            name.includes("Psychic Blade") ||
+            name.includes("Shadow Blade"))) {
+            const sneakDieCount = Math.ceil(character._classes["Rogue"] / 2);
+            const sneak_attack = `${sneakDieCount}d6`;
+            damages.push(sneak_attack);
+            damage_types.push("Sneak Attack");
+        }
     }
 
     if (character.hasClass("Warlock")) {
@@ -952,7 +954,7 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
 
         to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, item_name});
 
-        to_hit = handleSpecialWeaponAttacks(damages, damage_types, properties, settings_to_change, {item_customizations, item_type, to_hit});
+        to_hit = handleSpecialWeaponAttacks(damages, damage_types, properties, settings_to_change, {item_customizations, item_type, to_hit, item_name});
 
         if (properties["Attack Type"] == "Melee") {
             to_hit = handleSpecialMeleeAttacks(damages, damage_types, properties, settings_to_change, {to_hit});

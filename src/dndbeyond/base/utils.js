@@ -261,55 +261,34 @@ async function buildAttackRoll(character, attack_source, name, description, prop
             if (choice === null) return null; // Query was cancelled;
         }
 
-        if (character.getSetting("rogue-sneak-attack", false) && character.hasClass("Rogue") && character.hasClassFeature("Sneak Attack 2024") && !name.includes("Psionic Power: Psychic Whispers") && 
+        if (character.hasClass("Rogue") && character.hasClassFeature("Sneak Attack 2024") && 
+            character.getSetting("rogue-sneak-attack", false) && 
+            !name.includes("Psionic Power: Psychic Whispers") && 
             (properties["Attack Type"] == "Ranged" ||
             (properties["Properties"] && properties["Properties"].includes("Finesse")) ||
-            (name && (name.includes("Psychic Blade") || name.includes("Shadow Blade") || name.includes("Sneak Attack"))))) {
-                const sneakDieCount = Math.ceil(character._classes["Rogue"] / 2);
-                const sneak_attack = sneakDieCount + "d6";
-                let selectionErrorDontApplySneak = false;
-                // Rogue: Sneak Attack
-                if(character.hasClassFeature("Cunning Strike") && character.getSetting("rogue-cunning-strike", false)) {
-                        settings_to_change["rogue-cunning-strike"] = false;
-                        const choices = await queryCunningStrike();
-                        const nothingSelected = choices.every(s => s.action === "None");
-                        if(nothingSelected) {
-                            if(!name.includes("Sneak Attack")) {
-                                damages.push(sneak_attack);
-                            } // do anything if sneak action the damage at zero is the die number
-                        } else {
-                            const effectCost = choices.reduce((acc, current) => current["die"] ? acc + current.die : acc, 0);
-                            if(effectCost > sneakDieCount) {
-                                selectionErrorDontApplySneak = true;
-                            } else {
-                                roll_properties["cunning-strike-effects"] = choices.filter(f => f.action !== "None").map(m => m.action).join(", ");
-                                if(effectCost === sneakDieCount) {
-                                    if(name.includes("Sneak Attack")) {
-                                        damages[0] = "0"
-                                    } else {
-                                        damages.push("0");
-                                    }
-                                } else if(effectCost < sneakDieCount) {
-                                    if(name.includes("Sneak Attack")) {
-                                        damages[0] = `${sneakDieCount - effectCost}d6`;
-                                    } else {
-                                        damages.push(`${sneakDieCount - effectCost}d6`);
-                                    }
-                                }
-                            }
-                        }
-                } else {
-                    if(!name.includes("Sneak Attack")) {
-                        damages.push(sneak_attack);
-                    }
+            name.includes("Psychic Blade") ||
+            name.includes("Shadow Blade") ||
+            name.includes("Sneak Attack"))) {
+            let sneakDieCount = Math.ceil(character._classes["Rogue"] / 2);
+            // Rogue: Sneak Attack
+            if (character.hasClassFeature("Cunning Strike") && character.getSetting("rogue-cunning-strike", false)) {
+                const choices = await queryCunningStrike();
+                for (const choice of choices) {
+                    if (choice.action === "None") continue;
+                    if (choice["die"] > sneakDieCount) continue;
+                    sneakDieCount -= choice["die"];
                 }
-                if(!selectionErrorDontApplySneak) {
-                    if(!name.includes("Sneak Attack")) {
-                        damage_types.push("Sneak Attack");
-                    }
-                }
+                roll_properties["cunning-strike-effects"] = choices.filter(f => f.action !== "None").map(m => m.action).join(", ") || undefined;
+                settings_to_change["rogue-cunning-strike"] = false;
+            }
+            const sneak_attack = sneakDieCount > 0 ? `${sneakDieCount}d6` : "0";
+            if (name.includes("Sneak Attack")) {
+                damages[0] = sneak_attack;
+            } else {
+                damages.push(sneak_attack);
+                damage_types.push("Sneak Attack");
+            }
         }
-        
         const crits = damagesToCrits(character, damages, damage_types);
         const crit_damages = [];
         const crit_damage_types = [];
@@ -344,7 +323,7 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                     crit_damage_types.push("Vicious (20 On The Attack Roll)");
                 } 
             }
-                       
+
             // applies to only 2014 brutal critical 2024 has replaced this with brutal strike
             if (brutal > 0) {
                 const rule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
