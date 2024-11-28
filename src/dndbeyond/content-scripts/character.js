@@ -741,14 +741,15 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
     
     if (character.hasClass("Rogue")) {
         // Rogue: Sneak Attack
-        if (character.getSetting("rogue-sneak-attack", false) &&
-            (properties["Attack Type"] == "Ranged" ||
+        if(character.getSetting("rogue-sneak-attack", false) && (properties["Attack Type"] == "Ranged" ||
             (properties["Properties"] && properties["Properties"].includes("Finesse")) ||
-            (action_name && (action_name.includes("Psychic Blade") || action_name.includes("Shadow Blade"))))) {
-            const sneak_attack = Math.ceil(character._classes["Rogue"] / 2) + "d6";
-            damages.push(sneak_attack);
-            damage_types.push("Sneak Attack");
-        }
+            (action_name && (action_name.includes("Psychic Blade") || action_name.includes("Shadow Blade"))))){
+            if (character.hasClassFeature("Sneak Attack")) {
+                const sneak_attack = Math.ceil(character._classes["Rogue"] / 2) + "d6";
+                damages.push(sneak_attack);
+                damage_types.push("Sneak Attack");
+            }
+        }        
     }
 
     if (character.hasClass("Warlock")) {
@@ -996,7 +997,9 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
             brutal,
             force_to_hit_only,
             force_damages_only,
-            {weapon_damage_length});
+            {weapon_damage_length},
+            settings_to_change
+        );
         if (roll_properties === null) {
             // A query was cancelled, so let's cancel the roll
             return;
@@ -1244,7 +1247,8 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             brutal,
             force_to_hit_only,
             force_damages_only,
-            {weapon_damage_length});
+            {weapon_damage_length},
+            settings_to_change);
 
         if (roll_properties === null) {
             // A query was cancelled, so let's cancel the roll
@@ -1609,7 +1613,9 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
             to_hit,
             0,
             force_to_hit_only,
-            force_damages_only);
+            force_damages_only,
+            {},
+            settings_to_change);
 
         if (roll_properties === null) {
             // A query was cancelled, so let's cancel the roll

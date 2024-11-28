@@ -129,6 +129,10 @@ function populateCharacter(response) {
             e = createHTMLOption("rogue-sneak-attack", false, character_settings);
             options.append(e);
         }
+        if (Object.keys(response.classes).includes("Rogue") && response["class-features"].includes("Sneak Attack 2024") && response["class-features"].includes("Cunning Strike")) {
+            e = createHTMLOption("rogue-cunning-strike", false, character_settings);
+            options.append(e);
+        }
         if (response["class-features"].includes("Jack of All Trades")) {
             e = createHTMLOption("bard-joat", false, character_settings);
             options.append(e);

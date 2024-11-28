@@ -61,6 +61,47 @@ class Beyond20RollRenderer {
         });
     }
 
+    async queryDoubleGeneric(title, question, choices, question2, choices2, select_id = "generic-query", order, order2, selection, selection2, {prefix=""}={}) {
+        let html = "<form>";
+        if (prefix) {
+            html += `<div class="beyond20-query-prefix">${prefix}</div>`;
+        }
+
+        // query one
+        html += `<div class="beyond20-form-row"><label>${question}</label><select id="${select_id}-one" name="${select_id}-one">`;
+
+        if (!order) order = Object.keys(choices);
+        for (let [i, option] of order.entries()) {
+            const isSelected = (selection && selection == option) || (!selection && i === 0);
+            const value = choices[option] || option;
+            html += `<option value="${option}"${isSelected ? " selected" : ""}>${value}</option>`;
+        }
+        html += `;</select></div>`;
+
+        // query two
+        html += `<div class="beyond20-form-row"><label>${question2}</label><select id="${select_id}-two" name="${select_id}-two">`;
+
+        if (!order2) order2 = Object.keys(choices2);
+        for (let [i, option] of order2.entries()) {
+            const isSelected = (selection2 && selection2 == option) || (!selection2 && i === 0);
+            const value = choices2[option] || option;
+            html += `<option value="${option}"${isSelected ? " selected" : ""}>${value}</option>`;
+        }
+        html += `;</select></div>`;
+        
+        html += `</form>`;
+        return new Promise((resolve) => {
+            this._prompter.prompt(title, html, "Roll").then((html) => {
+                if (html) {
+                    resolve([html.find("#" + select_id + "-one").val(), html.find("#" + select_id + "-two").val()]);
+                } else {
+                    // return null in case it got cancelled
+                    resolve(null);
+                }
+            });
+        });
+    }
+
     async queryAdvantage(title, reason="") {
         const choices = {
             [RollType.NORMAL]: "Normal Roll",
@@ -749,6 +790,8 @@ class Beyond20RollRenderer {
             roll_info.push(["Mastery", request["mastery"]]);
         if (request["save-dc"] != undefined)
             roll_info.push(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
+        if (request["cunning-strike-effects"] != undefined)
+            roll_info.push(["Cunning Strike Effects", request["cunning-strike-effects"]]);
 
         return this.postDescription(request, request.name, null, data, request.description || "", to_hit, roll_info, damage_rolls);
     }
@@ -822,6 +865,8 @@ class Beyond20RollRenderer {
             roll_info.push(["Mastery", request["mastery"]]);
         if (request["save-dc"] !== undefined)
             roll_info.push(["Save", request["save-ability"] + " DC " + request["save-dc"]]);
+        if (request["cunning-strike-effects"] != undefined)
+            roll_info.push(["Cunning Strike Effects", request["cunning-strike-effects"]]);
 
         const [attack_rolls, damage_rolls] = await this.buildAttackRolls(request, custom_roll_dice);
 

@@ -679,6 +679,12 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
+    "rogue-cunning-strike": {
+        "title": "Rogue: Cunning Strike",
+        "description": "When you deal Sneak Attack damage, you can add Cunning Strike effects to the roll.",
+        "type": "bool",
+        "default": false
+    },
     "rogue-assassinate": {
         "title": "Rogue: Assassin: Assassinate Surprise Attack (Apply to next roll only)",
         "description": "Roll with advantage and roll critical damage dice",
