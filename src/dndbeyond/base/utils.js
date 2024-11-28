@@ -262,6 +262,7 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                 } 
             }
                        
+            // applies to only 2014 brutal critical 2024 has replaced this with brutal strike
             if (brutal > 0) {
                 const rule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
                 let highest_dice = 0;
@@ -283,21 +284,14 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                     if (rule == CriticalRules.HOMEBREW_MAX) {
                         crit_damages.push(damagesToCrits(character, [brutal_dmg])[0]);
                     } else {
-                        // Apply great weapon fighting to brutal damage dice
-                        // TODO need to support 2024 version for GWF and Polearm Master (action name is pole strike now) and feats can be mixed
-                        if (character.hasGreatWeaponFighting(2014) &&
-                            ((properties["Attack Type"] == "Melee" &&
-                            ((properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice") != "one") || properties["Properties"].includes("Two-Handed"))) ||
-                            name == "Polearm Master - Bonus Attack")) {
-                            brutal_dmg += "ro<=2"
-                        }
+                        brutal_dmg = applyGWFIfRequired(name, properties, brutal_dmg);
                         crit_damages.push(brutal_dmg);
                     }
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
                 }
-
             }
         }
+
         roll_properties["critical-damages"] = crit_damages;
         roll_properties["critical-damage-types"] = crit_damage_types;
         
@@ -306,6 +300,24 @@ async function buildAttackRoll(character, attack_source, name, description, prop
     return roll_properties;
 }
 
+function applyGWFIfRequired(action_name, properties, damage) {
+    if(((properties["Attack Type"] == "Melee" && 
+        (
+            (properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice") != "one") || 
+            properties["Properties"].includes("Two-Handed"))) ||
+            action_name.includes("Polearm Master") && character.hasFeat("Polearm Master", false)  ||
+            action_name.includes("Pole Strike") && character.hasFeat("Polearm Master 2024", false))
+        ) {
+        if(character.hasGreatWeaponFighting(2014)) {
+            damage = damage.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
+        } else if(character.hasGreatWeaponFighting(2024)) {
+            damage = damage.replace(/([0-9]*)d([0-9]+)([^\s+-]*)(.*)/g, (match, amount, faces, roll_mods, mods) => {
+                return new Array(parseInt(amount) || 1).fill(`1d${faces}${roll_mods}min3`).join(" + ") + mods;
+            });
+        }
+    }
+    return damage;
+}
 
 function addCustomDamages(character, damages, damage_types) {
     const custom_damages = character.getSetting("custom-damage-dice", "");
