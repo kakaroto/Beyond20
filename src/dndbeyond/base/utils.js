@@ -261,6 +261,7 @@ async function buildAttackRoll(character, attack_source, name, description, prop
             if (choice === null) return null; // Query was cancelled;
         }
 
+        // TODO: refactor into a method and remove it from build attack roll 
         if (character.hasClass("Rogue") && character.hasClassFeature("Sneak Attack 2024") && 
             character.getSetting("rogue-sneak-attack", false) && 
             !name.includes("Psionic Power: Psychic Whispers") && 
@@ -273,12 +274,14 @@ async function buildAttackRoll(character, attack_source, name, description, prop
             // Rogue: Sneak Attack
             if (character.hasClassFeature("Cunning Strike") && character.getSetting("rogue-cunning-strike", false)) {
                 const choices = await queryCunningStrike();
+                const validChoices = [];
                 for (const choice of choices) {
                     if (choice.action === "None") continue;
                     if (choice["die"] > sneakDieCount) continue;
                     sneakDieCount -= choice["die"];
+                    validChoices.push(choice);
                 }
-                roll_properties["cunning-strike-effects"] = choices.filter(f => f.action !== "None").map(m => m.action).join(", ") || undefined;
+                roll_properties["cunning-strike-effects"] = validChoices.filter(f => f.action !== "None").map(m => m.action).join(", ") || undefined;
                 settings_to_change["rogue-cunning-strike"] = false;
             }
             const sneak_attack = sneakDieCount > 0 ? `${sneakDieCount}d6` : "0";
@@ -367,7 +370,7 @@ function applyGWFIfRequired(action_name, properties, damage) {
         ((properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice") != "one") || 
             properties["Properties"].includes("Two-Handed"))) ||
             (action_name.includes("Polearm Master") && character.hasFeat("Polearm Master", false)) ||
-            a(ction_name.includes("Pole Strike") && character.hasFeat("Polearm Master 2024", false))
+            (action_name.includes("Pole Strike") && character.hasFeat("Polearm Master 2024", false))
         ) {
         if(character.hasGreatWeaponFighting(2014)) {
             damage = damage.replace(/[0-9]*d[0-9]+/g, "$&ro<=2");
