@@ -1882,14 +1882,21 @@ function findModifiers(character, custom_roll) {
             // If text length changes, we can check again for another modifier;
             text_len = text.length;
 
-            find_static_modifier = (name, value, {add_your=true}={}) => {
-                const mod_string = add_your ? " + your " + name : name;
-                if (text.toLowerCase().startsWith(mod_string)) {
-                    strong.append(text.substring(0, mod_string.length));
-                    roll_formula += " + " + value;
-                    text = text.substring(mod_string.length);
+            find_static_modifier = (name, value, { add_your = true } = {}) => {
+                // Define the modifier strings to check
+                const mod_strings = add_your 
+                    ? [` + your ${name}`, ` plus your ${name}`] 
+                    : [name];
+                
+                for (const mod_string of mod_strings) {
+                    if (text.toLowerCase().startsWith(mod_string)) {
+                        strong.append(text.substring(0, mod_string.length));
+                        roll_formula += " + " + value;
+                        text = text.substring(mod_string.length);
+                        break; // Exit loop once a match is found
+                    }
                 }
-            }
+            };
 
             for (let ability of character._abilities)
                 find_static_modifier(ability[0].toLowerCase() + " modifier", ability[3]);
