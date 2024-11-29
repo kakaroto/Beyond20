@@ -281,7 +281,7 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                     sneakDieCount -= choice["die"];
                     validChoices.push(choice);
                 }
-                roll_properties["cunning-strike-effects"] = validChoices.filter(f => f.action !== "None").map(m => m.action).join(", ") || undefined;
+                roll_properties["cunning-strike-effects"] = validChoices.map(m => m.action).join(", ") || undefined;
                 settings_to_change["rogue-cunning-strike"] = false;
             }
             const sneak_attack = sneakDieCount > 0 ? `${sneakDieCount}d6` : "0";
