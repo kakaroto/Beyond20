@@ -526,7 +526,8 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
         if ((((item_name || action_name) && to_hit != null) || (spell_name && spell_level.includes("Cantrip"))) &&
             character.hasClassFeature("Blessed Strikes") &&
             character.getSetting("cleric-blessed-strikes", false)) {
-            damages.push("1d8");
+            if(character.hasClassFeature("Improved Blessed Strikes")) damages.push("2d8");
+            else damages.push("1d8");
             damage_types.push("Blessed Strikes");
         }
     }
