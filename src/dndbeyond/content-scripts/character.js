@@ -704,9 +704,18 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
     if (character.hasClass("Ranger")) {
         // Ranger: Gloom Stalker: Dread Ambusher
         if (character.getSetting("ranger-dread-ambusher", false)) {
-            damages.push("1d8");
-            damage_types.push("Dread Ambusher");
-            settings_to_change["ranger-dread-ambusher"] = false;
+            const hasDreadAmbusher = character.hasClassFeature("Dread Ambusher");
+            const hasDreadAmbusher2024 = character.hasClassFeature("Dread Ambusher 2024");
+            
+            if (hasDreadAmbusher || hasDreadAmbusher2024) {
+                damages.push(
+                    hasDreadAmbusher 
+                        ? "1d8" 
+                        : (character.hasClassFeature("Stalker’s Flurry 2024") ? "2d8" : "2d6")
+                );
+                damage_types.push("Dread Ambusher");
+                settings_to_change["ranger-dread-ambusher"] = false;
+            }
         }
         
         // Ranger: Hunter: Colossus Slayer
