@@ -505,6 +505,38 @@ const character_settings = {
         "type": "string",
         "default": ""
     },
+
+    // effects
+
+    "effects-bless": {
+        "title": "Effect: Bless",
+        "description": "Whenever a target makes an attack roll or a saving throw before the spell ends, the target adds 1d4 to the attack roll or save.",
+        "type": "bool",
+        "default": false
+    },
+
+    "effects-bane": {
+        "title": "Effect: Bane",
+        "description": "Whenever a target makes an attack roll or a saving throw before the spell ends, the target subtracks 1d4 to the attack roll or save.",
+        "type": "bool",
+        "default": false
+    },
+
+    "effects-enlarge": {
+        "title": "Effect: Enlarge",
+        "description": "Until the spell ends, the target also has advantage on Strength checks and Strength saving throws. While these weapons are enlarged, the target's attack with them deal 1d4 extra damage.",
+        "type": "bool",
+        "default": false
+    },
+
+    "effects-reduce": {
+        "title": "Effect: Reduce",
+        "description": "Until the spell ends, the target also has disadvantage on Strength checks and Strength saving throws. While these weapons are reduced, the target's attacks with them deal 1d4 less damage (this can't reduce the damage below 1).",
+        "type": "bool",
+        "default": false
+    },
+
+    // class features
     "artificer-alchemical-savant": {
         "title": "Artificer: Alchemist: Alchemical Savant",
         "description": "Use your Alchemist's supplies as spellcasting focus, dealing extra damage or healing equal to your Intelligence Modifier",
