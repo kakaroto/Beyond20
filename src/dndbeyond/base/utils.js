@@ -300,7 +300,7 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                 crit_damages.push(dmg);
                 crit_damage_types.push(damage_types[i]);
             }
-        }
+        }      
         if (to_hit) {
             if (character.hasFeat("Piercer")) {
                 for (let i = 0; i < damage_types.length; i++) {
@@ -355,18 +355,17 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
                 }
             }
-
-            // effects
-            if(properties["Attack Type"] == "Melee" || properties["Attack Type"] == "Unarmed Strike") {
-                if(character.getSetting("effects-enlarge", false)) {
-                    damages.push("+1d4");
-                    damage_types.push("Enlarge");
-                    addEffect(roll_properties, "Enlarge");
-                } else if(character.getSetting("effects-reduce", false)) {
-                    damages.push("-1d4");
-                    damage_types.push("Reduce");
-                    addEffect(roll_properties, "Reduce");
-                }
+        }
+        // effects
+        if(properties["Attack Type"] == "Melee" || properties["Attack Type"] == "Unarmed Strike" || name.includes("Shadow Blade")) {
+            if(character.getSetting("effects-enlarge", false)) {
+                damages.push("+1d4");
+                damage_types.push("Enlarge");
+                addEffect(roll_properties, "Enlarge");
+            } else if(character.getSetting("effects-reduce", false)) {
+                damages.push("-1d4");
+                damage_types.push("Reduce");
+                addEffect(roll_properties, "Reduce");
             }
         }
 
@@ -477,6 +476,11 @@ async function sendRoll(character, rollType, fallback, args) {
             const modifier = key.slice("custom_modifier:".length).trim();
             const operator = ["+", "-"].includes(modifier[0]) ? "" : "+"
             req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + ` ${operator}${modifier}`;
+        }
+
+        if(req.character.settings["effects-bless"] && req["to-hit"] && (req.type === "attack" || req.type === "spell-attack")) {
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " +1d4";
+            addEffect(req, "Bless");
         }
     }
         
