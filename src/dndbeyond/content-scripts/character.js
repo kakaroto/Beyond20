@@ -312,10 +312,20 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
 }
 
 function adjustRollAndKeyModifiersWithAdvantage(roll_properties) {
-    if(!roll_properties["advantage"]) roll_properties["advantage"] = RollType.ADVANTAGE;
-    if(roll_properties["advantage"] == RollType.NORMAL) roll_properties["advantage"] = RollType.ADVANTAGE;
-    else if(roll_properties["advantage"] == RollType.DISADVANTAGE || roll_properties["advantage"] == RollType.OVERRIDE_DISADVANTAGE) roll_properties["advantage"] = RollType.NORMAL;
-    else if(roll_properties["advantage"] == RollType.SUPER_DISADVANTAGE) roll_properties["advantage"] = RollType.DISADVANTAGE;
+    // Adjust roll_properties["advantage"]
+    const advantageMapping = {
+        [RollType.NORMAL]: RollType.ADVANTAGE,
+        [RollType.DISADVANTAGE]: RollType.NORMAL,
+        [RollType.OVERRIDE_DISADVANTAGE]: RollType.NORMAL,
+        [RollType.SUPER_DISADVANTAGE]: RollType.DISADVANTAGE
+    };
+
+    if (roll_properties["advantage"] === undefined) {
+        roll_properties["advantage"] = RollType.ADVANTAGE;
+    } else if (roll_properties["advantage"] in advantageMapping) {
+        roll_properties["advantage"] = advantageMapping[roll_properties["advantage"]];
+    }
+    
     if(key_modifiers.normal_roll) {
         key_modifiers.normal_roll = false;
         key_modifiers.advantage = true;
@@ -331,10 +341,20 @@ function adjustRollAndKeyModifiersWithAdvantage(roll_properties) {
 }
 
 function adjustRollAndKeyModifiersWithDisadvantage(roll_properties) {
-    if(!roll_properties["advantage"]) roll_properties["advantage"] = RollType.NORMAL;
-    if(roll_properties["advantage"] == RollType.NORMAL) roll_properties["advantage"] = RollType.DISADVANTAGE;
-    else if(roll_properties["advantage"] == RollType.ADVANTAGE || roll_properties["advantage"] == RollType.OVERRIDE_ADVANTAGE) roll_properties["advantage"] = RollType.NORMAL;
-    else if(roll_properties["advantage"] == RollType.SUPER_ADVANTAGE) roll_properties["advantage"] = RollType.ADVANTAGE;
+    // Adjust roll_properties["advantage"]
+    const disadvantageMapping = {
+        [RollType.NORMAL]: RollType.DISADVANTAGE,
+        [RollType.ADVANTAGE]: RollType.NORMAL,
+        [RollType.OVERRIDE_ADVANTAGE]: RollType.NORMAL,
+        [RollType.SUPER_ADVANTAGE]: RollType.ADVANTAGE
+    };
+
+    if (roll_properties["advantage"] === undefined) {
+        roll_properties["advantage"] = RollType.DISADVANTAGE;
+    } else if (roll_properties["advantage"] in disadvantageMapping) {
+        roll_properties["advantage"] = disadvantageMapping[roll_properties["advantage"]];
+    }
+
     if(key_modifiers.normal_roll) {
         key_modifiers.normal_roll = false;
         key_modifiers.disadvantage = true;
