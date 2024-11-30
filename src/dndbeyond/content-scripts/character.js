@@ -526,7 +526,8 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
         if ((((item_name || action_name) && to_hit != null) || (spell_name && spell_level.includes("Cantrip"))) &&
             character.hasClassFeature("Blessed Strikes") &&
             character.getSetting("cleric-blessed-strikes", false)) {
-            damages.push("1d8");
+            if(character.hasClassFeature("Improved Blessed Strikes")) damages.push("2d8");
+            else damages.push("1d8");
             damage_types.push("Blessed Strikes");
         }
     }
@@ -703,9 +704,18 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
     if (character.hasClass("Ranger")) {
         // Ranger: Gloom Stalker: Dread Ambusher
         if (character.getSetting("ranger-dread-ambusher", false)) {
-            damages.push("1d8");
-            damage_types.push("Dread Ambusher");
-            settings_to_change["ranger-dread-ambusher"] = false;
+            const hasDreadAmbusher = character.hasClassFeature("Dread Ambusher");
+            const hasDreadAmbusher2024 = character.hasClassFeature("Dread Ambusher 2024");
+            
+            if (hasDreadAmbusher || hasDreadAmbusher2024) {
+                damages.push(
+                    hasDreadAmbusher 
+                        ? "1d8" 
+                        : (character.hasClassFeature("Stalker’s Flurry 2024") ? "2d8" : "2d6")
+                );
+                damage_types.push("Dread Ambusher");
+                settings_to_change["ranger-dread-ambusher"] = false;
+            }
         }
         
         // Ranger: Hunter: Colossus Slayer
@@ -1881,14 +1891,21 @@ function findModifiers(character, custom_roll) {
             // If text length changes, we can check again for another modifier;
             text_len = text.length;
 
-            find_static_modifier = (name, value, {add_your=true}={}) => {
-                const mod_string = add_your ? " + your " + name : name;
-                if (text.toLowerCase().startsWith(mod_string)) {
-                    strong.append(text.substring(0, mod_string.length));
-                    roll_formula += " + " + value;
-                    text = text.substring(mod_string.length);
+            find_static_modifier = (name, value, { add_your = true } = {}) => {
+                // Define the modifier strings to check
+                const mod_strings = add_your 
+                    ? [` + your ${name}`, ` plus your ${name}`] 
+                    : [name];
+                
+                for (const mod_string of mod_strings) {
+                    if (text.toLowerCase().startsWith(mod_string)) {
+                        strong.append(text.substring(0, mod_string.length));
+                        roll_formula += " + " + value;
+                        text = text.substring(mod_string.length);
+                        break; // Exit loop once a match is found
+                    }
                 }
-            }
+            };
 
             for (let ability of character._abilities)
                 find_static_modifier(ability[0].toLowerCase() + " modifier", ability[3]);
