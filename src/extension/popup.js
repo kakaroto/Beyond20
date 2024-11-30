@@ -189,7 +189,7 @@ function populateCharacter(response) {
             e = createHTMLOption("bloodhunter-crimson-rite", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Dread Ambusher")) {
+        if (response["class-features"].includes("Dread Ambusher") || response["class-features"].includes("Dread Ambusher 2024")) {
             e = createHTMLOption("ranger-dread-ambusher", false, character_settings);
             options.append(e);
         }
