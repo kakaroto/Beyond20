@@ -30,6 +30,9 @@ function createOptionList() {
                     E.a({ id: "openOptions", href: '#', style: "flex-grow: 1;" },
                         E.h4({}, "More Options")
                     ),
+                    E.a({ id: "openEffects", href: '#', style: "flex-grow: 1;" },
+                        E.h4({}, "▼ Effects")
+                    ),
                     E.a({ id: "toggleAdvanced", href: '#', style: "display: none;" },
                         E.h4({}, "▼ Advanced Options")
                     )
@@ -46,6 +49,11 @@ function createOptionList() {
     $("#openOptions").on('click', (ev) => {
         chrome.runtime.openOptionsPage();
     });
+
+    $("#openEffects").on('click', (ev) => {
+        $(".beyond20-options .effects-option").toggle();
+    });
+
     $("#toggleAdvanced").on('click', () => {
         $(".beyond20-options .advanced-option").toggle();
     });
@@ -112,6 +120,18 @@ function populateCharacter(response) {
         options.append(e);
         e = createHTMLOption("versatile-choice", false, character_settings);
         options.append(e);
+
+        // effects
+        e = createHTMLOption("effects-bless", false, character_settings);
+        e.classList.add("effects-option");
+        options.append(e);
+        e = createHTMLOption("effects-enlarge", false, character_settings);
+        e.classList.add("effects-option");
+        options.append(e);
+        e = createHTMLOption("effects-reduce", false, character_settings);
+        e.classList.add("effects-option");
+        options.append(e);
+
         if (response["racial-traits"].includes("Lucky")) {
             e = createHTMLOption("halfling-lucky", false, character_settings);
             options.append(e);
@@ -328,7 +348,8 @@ function populateCharacter(response) {
             // When loading settings, the discord target combobox gets replaced in order to be filled,
             // so we need to fetch it again to add the advanced-option class to it
             $("#beyond20-option-discord-target").addClass("advanced-option");
-        }
+        
+        options.find(".effects-option").hide();}
         options.find(".advanced-option").hide();
         $("#toggleAdvanced").show();
     });
