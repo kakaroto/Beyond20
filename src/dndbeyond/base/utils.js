@@ -481,6 +481,9 @@ async function sendRoll(character, rollType, fallback, args) {
         if(req.character.settings["effects-bless"] && req["to-hit"] && (req.type === "attack" || req.type === "spell-attack")) {
             req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " +1d4";
             addEffect(req, "Bless");
+        } else if(req.character.settings["effects-bane"] && req["to-hit"] && (req.type === "attack" || req.type === "spell-attack")) {
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " -1d4";
+            addEffect(req, "Bane");
         }
     }
         

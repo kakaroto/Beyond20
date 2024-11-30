@@ -125,6 +125,9 @@ function populateCharacter(response) {
         e = createHTMLOption("effects-bless", false, character_settings);
         e.classList.add("effects-option");
         options.append(e);
+        e = createHTMLOption("effects-bane", false, character_settings);
+        e.classList.add("effects-option");
+        options.append(e);
         e = createHTMLOption("effects-enlarge", false, character_settings);
         e.classList.add("effects-option");
         options.append(e);

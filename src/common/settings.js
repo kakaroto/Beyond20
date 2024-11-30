@@ -515,6 +515,13 @@ const character_settings = {
         "default": false
     },
 
+    "effects-bane": {
+        "title": "Effect: Bane",
+        "description": "Whenever a target makes an attack roll or a saving throw before the spell ends, the target subtracks 1d4 to the attack roll or save.",
+        "type": "bool",
+        "default": false
+    },
+
     "effects-enlarge": {
         "title": "Effect: Enlarge",
         "description": "Until the spell ends, the target also has advantage on Strength checks and Strength saving throws. While these weapons are enlarged, the target's attack with them deal 1d4 extra damage.",
