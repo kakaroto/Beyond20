@@ -5,8 +5,8 @@ function sendRollWithCharacter(rollType, fallback, args) {
     if (preview && preview.startsWith("url("))
         args.preview = preview.slice(5, -2);
     // Add halfling luck
-    if (character.hasRacialTrait("Lucky") && character.getSetting("halfling-lucky", false) && ["skill", "ability", "saving-throw", "death-save",
-        "initiative", "attack", "spell-attack"].includes(rollType)) {
+    if ((character.hasRacialTrait("Lucky") || character.hasRacialTrait("Luck")) && character.getSetting("halfling-lucky", false) &&
+        ["skill", "ability", "saving-throw", "death-save", "initiative", "attack", "spell-attack"].includes(rollType)) {
         args.d20 = args.d20 || "1d20";
         args.d20 += "ro<=1";
     }
