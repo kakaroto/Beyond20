@@ -501,6 +501,12 @@ class MonsterExtras extends CharacterBase {
                                 roll_properties["damages"].push(String(rage_damage));
                                 roll_properties["damage-types"].push("Rage");
                             }
+
+                            if(this._parent_character.hasClass("Druid") && this._parent_character.hasClassFeature("Improved Lunar Radiance", true) && this._parent_character.getSetting("druid-improved-lunar-radiance", false))
+                            {
+                                roll_properties["damages"].push(String("2d10"));
+                                roll_properties["damage-types"].push("Lunar Radiance");
+                            }
                             // Add custom damages to wild shape attacks
                             addCustomDamages(character, roll_properties["damages"], roll_properties["damage-types"]);
                         }
