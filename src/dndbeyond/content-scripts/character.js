@@ -409,8 +409,8 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
     }
 
     if (character.hasClass("Paladin")) {
-        //Paladin: Improved Divine Smite
-        if (character.hasClassFeature("Improved Divine Smite") &&
+        //Paladin: Radiant Strikes (Formerly: Improved Divine Smite)
+        if ((character.hasClassFeature("Radiant Strikes") || character.hasClassFeature("Improved Divine Smite")) &&
             character.getSetting("paladin-improved-divine-smite", true)) {
             damages.push("1d8");
             damage_types.push("Radiant");

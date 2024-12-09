@@ -608,7 +608,7 @@ const character_settings = {
         "default": true
     },
     "paladin-improved-divine-smite": {
-        "title": "Paladin: Improved Divine Smite",
+        "title": "Paladin: Radiant Strikes (Improved Divine Smite)",
         "description": "Roll an extra 1d8 radiant damage whenever you hit with a melee weapon",
         "type": "bool",
         "default": true
