@@ -189,7 +189,7 @@ function populateCharacter(response) {
             e = createHTMLOption("ranger-gathered-swarm", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Improved Divine Smite")) {
+        if (response["class-features"].includes("Radiant Strikes") || response["class-features"].includes("Improved Divine Smite")) {
             e = createHTMLOption("paladin-improved-divine-smite", false, character_settings);
             options.append(e);
         }
