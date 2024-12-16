@@ -485,6 +485,14 @@ async function sendRoll(character, rollType, fallback, args) {
             req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " -1d4";
             addEffect(req, "Bane");
         }
+
+        if(req.character.settings["effects-bless"] && req.type === "saving-throw") {
+            args["modifier"] += " +1d4";
+            addEffect(req, "Bless");
+        } else if(req.character.settings["effects-bane"] && req.type === "saving-throw") {
+            args["modifier"] += " -1d4";
+            addEffect(req, "Bane");
+        }
     }
         
     if (req.whisper === WhisperType.QUERY) {

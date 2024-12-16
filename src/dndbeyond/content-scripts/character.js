@@ -295,14 +295,6 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
             roll_properties.d20 = "1d20min10";
 
     // effects 
-    if(rollType == "saving-throw" && character.getSetting("effects-bless", false)) {
-        roll_properties["modifier"] += "+1d4";
-        addEffect(roll_properties, "Bless");
-    } else if(rollType == "saving-throw" && character.getSetting("effects-bane", false)) {
-        roll_properties["modifier"] += "-1d4";
-        addEffect(roll_properties, "Bane");
-    }
-
     if((rollType == "saving-throw" || rollType == "ability") && roll_properties.ability == "STR" && character.getSetting("effects-enlarge", false)) {
         adjustRollAndKeyModifiersWithAdvantage(roll_properties);
         addEffect(roll_properties, "Enlarge");
