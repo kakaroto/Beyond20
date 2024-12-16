@@ -478,19 +478,11 @@ async function sendRoll(character, rollType, fallback, args) {
             req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + ` ${operator}${modifier}`;
         }
 
-        if(req.character.settings["effects-bless"] && req["to-hit"] && (req.type === "attack" || req.type === "spell-attack")) {
+        if (req.character.settings["effects-bless"] && ["attack", "spell-attack", "saving-throw"].includes(req.type)) {
             req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " +1d4";
             addEffect(req, "Bless");
-        } else if(req.character.settings["effects-bane"] && req["to-hit"] && (req.type === "attack" || req.type === "spell-attack")) {
+        } else if (req.character.settings["effects-bane"] && ["attack", "spell-attack", "saving-throw"].includes(req.type)) {  
             req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " -1d4";
-            addEffect(req, "Bane");
-        }
-
-        if(req.character.settings["effects-bless"] && req.type === "saving-throw") {
-            req["modifier"] += "+1d4";
-            addEffect(req, "Bless");
-        } else if(req.character.settings["effects-bane"] && req.type === "saving-throw") {
-            req["modifier"] += "-1d4";
             addEffect(req, "Bane");
         }
     }
@@ -514,10 +506,10 @@ async function sendRoll(character, rollType, fallback, args) {
     }
 
     // effects 
-    if((rollType == "saving-throw" || rollType == "ability" || rollType == "skill") && req.ability == "STR" && character.getSetting("effects-enlarge", false)) {
+    if(["saving-throw", "ability", "skill"].includes(rollType) && req.ability == "STR" && req.character.settings["effects-enlarge"]) {
         adjustRollAndKeyModifiersWithAdvantage(req);
         addEffect(req, "Enlarge");
-    } else if((rollType == "saving-throw" || rollType == "ability") && req.ability == "STR" && character.getSetting("effects-reduce", false)) {
+    } else if(["saving-throw", "ability", "skill"].includes(rollType) && req.ability == "STR" && req.character.settings["effects-reduce"]) {
         adjustRollAndKeyModifiersWithDisadvantage(req);
         addEffect(req, "Reduce");
     }

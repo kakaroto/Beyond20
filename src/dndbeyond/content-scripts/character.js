@@ -190,15 +190,6 @@ async function rollSkillCheck(paneClass) {
         roll_properties.modifier += character._proficiency;
     }
 
-    // effects
-    if(roll_properties.ability == "STR" && character.getSetting("effects-enlarge", false)) {
-        adjustRollAndKeyModifiersWithAdvantage(roll_properties);
-        addEffect(roll_properties, "Enlarge");
-    } else if(roll_properties.ability == "STR" && character.getSetting("effects-reduce", false)) {
-        adjustRollAndKeyModifiersWithDisadvantage(roll_properties);
-        addEffect(roll_properties, "Reduce");
-    }
-
     return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 
