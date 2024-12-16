@@ -311,6 +311,10 @@ function populateCharacter(response) {
             e = createHTMLOption("cleric-circle-of-mortality", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Lunar Form: Wild Shape: Improved Lunar Radiance")) {
+            e = createHTMLOption("druid-improved-lunar-radiance", false, character_settings);
+            options.append(e);
+        }
     }
     $('.beyond20-option-input').off('change', save_settings);
     $('.beyond20-option-input').change(save_settings);
