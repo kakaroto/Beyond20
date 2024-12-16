@@ -513,6 +513,14 @@ async function sendRoll(character, rollType, fallback, args) {
         }
     }
 
+    // effects 
+    if((rollType == "saving-throw" || rollType == "ability" || rollType == "skill") && req.ability == "STR" && character.getSetting("effects-enlarge", false)) {
+        adjustRollAndKeyModifiersWithAdvantage(req);
+        addEffect(req, "Enlarge");
+    } else if((rollType == "saving-throw" || rollType == "ability") && req.ability == "STR" && character.getSetting("effects-reduce", false)) {
+        adjustRollAndKeyModifiersWithDisadvantage(req);
+        addEffect(req, "Reduce");
+    }
 
     if (character.getGlobalSetting("use-digital-dice", false) && DigitalDiceManager.isEnabled()) {
         req.sendMessage = true;
@@ -521,6 +529,38 @@ async function sendRoll(character, rollType, fallback, args) {
         console.log("Sending message: ", req);
         chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(character, resp));
         sendRollRequestToDOM(req);
+    }
+}
+
+function adjustRollAndKeyModifiersWithAdvantage(roll_properties) {
+    // Adjust roll_properties["advantage"]
+    const advantageMapping = {
+        [RollType.NORMAL]: RollType.ADVANTAGE,
+        [RollType.DISADVANTAGE]: RollType.NORMAL,
+        [RollType.OVERRIDE_DISADVANTAGE]: RollType.NORMAL,
+        [RollType.SUPER_DISADVANTAGE]: RollType.DISADVANTAGE
+    };
+
+    if (roll_properties["advantage"] === undefined) {
+        roll_properties["advantage"] = RollType.ADVANTAGE;
+    } else if (roll_properties["advantage"] in advantageMapping) {
+        roll_properties["advantage"] = advantageMapping[roll_properties["advantage"]];
+    }
+}
+
+function adjustRollAndKeyModifiersWithDisadvantage(roll_properties) {
+    // Adjust roll_properties["advantage"]
+    const disadvantageMapping = {
+        [RollType.NORMAL]: RollType.DISADVANTAGE,
+        [RollType.ADVANTAGE]: RollType.NORMAL,
+        [RollType.OVERRIDE_ADVANTAGE]: RollType.NORMAL,
+        [RollType.SUPER_ADVANTAGE]: RollType.ADVANTAGE
+    };
+
+    if (roll_properties["advantage"] === undefined) {
+        roll_properties["advantage"] = RollType.DISADVANTAGE;
+    } else if (roll_properties["advantage"] in disadvantageMapping) {
+        roll_properties["advantage"] = disadvantageMapping[roll_properties["advantage"]];
     }
 }
 

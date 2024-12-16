@@ -293,75 +293,8 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
     // Sorcerer: Clockwork Soul - Trance of Order
     if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
-
-    // effects 
-    if((rollType == "saving-throw" || rollType == "ability") && roll_properties.ability == "STR" && character.getSetting("effects-enlarge", false)) {
-        adjustRollAndKeyModifiersWithAdvantage(roll_properties);
-        addEffect(roll_properties, "Enlarge");
-    } else if((rollType == "saving-throw" || rollType == "ability") && roll_properties.ability == "STR" && character.getSetting("effects-reduce", false)) {
-        adjustRollAndKeyModifiersWithDisadvantage(roll_properties);
-        addEffect(roll_properties, "Reduce");
-    }
-    
+   
     return sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
-}
-
-function adjustRollAndKeyModifiersWithAdvantage(roll_properties) {
-    // Adjust roll_properties["advantage"]
-    const advantageMapping = {
-        [RollType.NORMAL]: RollType.ADVANTAGE,
-        [RollType.DISADVANTAGE]: RollType.NORMAL,
-        [RollType.OVERRIDE_DISADVANTAGE]: RollType.NORMAL,
-        [RollType.SUPER_DISADVANTAGE]: RollType.DISADVANTAGE
-    };
-
-    if (roll_properties["advantage"] === undefined) {
-        roll_properties["advantage"] = RollType.ADVANTAGE;
-    } else if (roll_properties["advantage"] in advantageMapping) {
-        roll_properties["advantage"] = advantageMapping[roll_properties["advantage"]];
-    }
-    
-    if(key_modifiers.normal_roll) {
-        key_modifiers.normal_roll = false;
-        key_modifiers.advantage = true;
-    }
-    if(key_modifiers.disadvantage) {
-        key_modifiers.normal_roll = true;
-        key_modifiers.disadvantage = false;
-    }
-    if(key_modifiers.super_disadvantage) {
-        key_modifiers.disadvantage = true;
-        key_modifiers.super_disadvantage = false;
-    }
-}
-
-function adjustRollAndKeyModifiersWithDisadvantage(roll_properties) {
-    // Adjust roll_properties["advantage"]
-    const disadvantageMapping = {
-        [RollType.NORMAL]: RollType.DISADVANTAGE,
-        [RollType.ADVANTAGE]: RollType.NORMAL,
-        [RollType.OVERRIDE_ADVANTAGE]: RollType.NORMAL,
-        [RollType.SUPER_ADVANTAGE]: RollType.ADVANTAGE
-    };
-
-    if (roll_properties["advantage"] === undefined) {
-        roll_properties["advantage"] = RollType.DISADVANTAGE;
-    } else if (roll_properties["advantage"] in disadvantageMapping) {
-        roll_properties["advantage"] = disadvantageMapping[roll_properties["advantage"]];
-    }
-
-    if(key_modifiers.normal_roll) {
-        key_modifiers.normal_roll = false;
-        key_modifiers.disadvantage = true;
-    }
-    if(key_modifiers.advantage) {
-        key_modifiers.normal_roll = true;
-        key_modifiers.advantage = false;
-    }
-    if(key_modifiers.super_advantage) {
-        key_modifiers.advantage = true;
-        key_modifiers.super_advantage = false;
-    }
 }
 
 function rollAbilityCheck() {
