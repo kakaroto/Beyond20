@@ -259,6 +259,7 @@ class Character extends CharacterBase {
             feat_name.toLowerCase() === "dread ambusher" ||
             feat_name.toLowerCase() === "stalker’s flurry" ||            
             feat_name.toLowerCase() === "charger" ||
+            feat_name.toLowerCase() === "tavern brawler" ||
             feat_name.toLowerCase() === "polearm master") && 
             feat_reference.toLowerCase().includes("2024")) {
                 is2024 = true;
