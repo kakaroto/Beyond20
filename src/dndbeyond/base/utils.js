@@ -487,10 +487,10 @@ async function sendRoll(character, rollType, fallback, args) {
         }
 
         if(req.character.settings["effects-bless"] && req.type === "saving-throw") {
-            args["modifier"] += " +1d4";
+            req["modifier"] += "+1d4";
             addEffect(req, "Bless");
         } else if(req.character.settings["effects-bane"] && req.type === "saving-throw") {
-            args["modifier"] += " -1d4";
+            req["modifier"] += "-1d4";
             addEffect(req, "Bane");
         }
     }
