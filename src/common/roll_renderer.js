@@ -505,7 +505,7 @@ class Beyond20RollRenderer {
         this.processToHitAdvantage(request.advantage, rolls);
 
         const roll_info = [];
-        if (request["effects"] !== undefined && request["effects"].length !== 0)
+        if (Array.isArray(request["effects"]) && request["effects"].length > 0)
             roll_info.push(["Effects", request["effects"].join(', ')]);
 
         return this.postDescription(request, title, null, {}, null, rolls, roll_info);
