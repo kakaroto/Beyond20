@@ -831,6 +831,12 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
+    "druid-improved-lunar-radiance": {
+        "title": "Druid: Improved Lunar Radiance",
+        "description": "Once per turn, you can deal an extra 2d10 Radiant damage to a target you hit with a Wild Shape forms attack.",
+        "type": "bool",
+        "default": false
+    },
     "discord-target": {
         "title": "Discord Destination",
         "description": "Send rolls to a character specific Discord channel",

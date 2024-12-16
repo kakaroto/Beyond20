@@ -5,8 +5,8 @@ function sendRollWithCharacter(rollType, fallback, args) {
     if (preview && preview.startsWith("url("))
         args.preview = preview.slice(5, -2);
     // Add halfling luck
-    if (character.hasRacialTrait("Lucky") && character.getSetting("halfling-lucky", false) && ["skill", "ability", "saving-throw", "death-save",
-        "initiative", "attack", "spell-attack"].includes(rollType)) {
+    if ((character.hasRacialTrait("Lucky") || character.hasRacialTrait("Luck")) && character.getSetting("halfling-lucky", false) &&
+        ["skill", "ability", "saving-throw", "death-save", "initiative", "attack", "spell-attack"].includes(rollType)) {
         args.d20 = args.d20 || "1d20";
         args.d20 += "ro<=1";
     }
@@ -533,6 +533,13 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
         const proficiency = parseInt(character._proficiency);
         damages.push(proficiency.toString());
         damage_types.push("Great Weapon Master");
+    }
+    
+    // enhanced unarmed strike
+    if(to_hit !== null && 
+        character.hasFeat("Tavern Brawler 2024") &&
+        action_name.toLocaleLowerCase() === "enhanced unarmed strike") {
+        damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=1");
     }
 
     // Charger Feat

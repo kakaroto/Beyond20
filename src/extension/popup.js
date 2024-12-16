@@ -135,7 +135,8 @@ function populateCharacter(response) {
         e.classList.add("effects-option");
         options.append(e);
 
-        if (response["racial-traits"].includes("Lucky")) {
+        if (response["racial-traits"].includes("Lucky") ||
+            response["racial-traits"].includes("Luck")) {
             e = createHTMLOption("halfling-lucky", false, character_settings);
             options.append(e);
         }
@@ -331,6 +332,10 @@ function populateCharacter(response) {
         }
         if (response["class-features"].includes("Circle of Mortality")) {
             e = createHTMLOption("cleric-circle-of-mortality", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Lunar Form: Wild Shape: Improved Lunar Radiance")) {
+            e = createHTMLOption("druid-improved-lunar-radiance", false, character_settings);
             options.append(e);
         }
     }
