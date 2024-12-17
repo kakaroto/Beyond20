@@ -417,9 +417,13 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
     }
 
     if (character.hasClass("Paladin")) {
-        //Paladin: Improved Divine Smite
-        if (character.hasClassFeature("Improved Divine Smite") &&
-            character.getSetting("paladin-improved-divine-smite", true)) {
+        // Paladin: Improved Divine Smite
+        // Radiant Strikes works on melee and unarmed strikes, while Improved Divine Smite
+        // only works on melee weapon attacks, so check for action_name which would indicate a non weapon attack
+        if ((character.hasClassFeature("Improved Divine Smite") &&
+            character.getSetting("paladin-improved-divine-smite", true) && !action_name) ||
+            (character.hasClassFeature("Radiant Strikes") &&
+            character.getSetting("paladin-radiant-strikes", true))) {
             damages.push("1d8");
             damage_types.push("Radiant");
         }

@@ -645,6 +645,12 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
+    "paladin-radiant-strikes": {
+        "title": "Paladin: Radiant Strikes",
+        "description": "Roll an extra 1d8 radiant damage whenever you hit with a melee weapon or an unarmed strike",
+        "type": "bool",
+        "default": true
+    },
     "paladin-invincible-conqueror": {
         "title": "Paladin: Oath of Conquest: Invincible Conqueror",
         "description": "You can harness extraordinary martial prowess for 1 minute.",
