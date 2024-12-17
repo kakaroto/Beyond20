@@ -300,7 +300,7 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                 crit_damages.push(dmg);
                 crit_damage_types.push(damage_types[i]);
             }
-        }
+        }      
         if (to_hit) {
             if (character.hasFeat("Piercer")) {
                 for (let i = 0; i < damage_types.length; i++) {
@@ -354,6 +354,18 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                     }
                     crit_damage_types.push(isBrutal && isSavage ? "Savage Attacks & Brutal" : (isBrutal ? "Brutal" : "Savage Attacks"));
                 }
+            }
+        }
+        // effects
+        if(properties["Attack Type"] == "Melee" || properties["Attack Type"] == "Unarmed Strike" || name.includes("Shadow Blade")) {
+            if(character.getSetting("effects-enlarge", false)) {
+                damages.push("+1d4");
+                damage_types.push("Enlarge");
+                addEffect(roll_properties, "Enlarge");
+            } else if(character.getSetting("effects-reduce", false)) {
+                damages.push("-1d4");
+                damage_types.push("Reduce");
+                addEffect(roll_properties, "Reduce");
             }
         }
 
@@ -465,6 +477,14 @@ async function sendRoll(character, rollType, fallback, args) {
             const operator = ["+", "-"].includes(modifier[0]) ? "" : "+"
             req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + ` ${operator}${modifier}`;
         }
+
+        if (req.character.settings["effects-bless"] && ["attack", "spell-attack", "saving-throw"].includes(req.type)) {
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " +1d4";
+            addEffect(req, "Bless");
+        } else if (req.character.settings["effects-bane"] && ["attack", "spell-attack", "saving-throw"].includes(req.type)) {  
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " -1d4";
+            addEffect(req, "Bane");
+        }
     }
         
     if (req.whisper === WhisperType.QUERY) {
@@ -485,6 +505,14 @@ async function sendRoll(character, rollType, fallback, args) {
         }
     }
 
+    // effects 
+    if(["saving-throw", "ability", "skill"].includes(rollType) && req.ability == "STR" && req.character.settings["effects-enlarge"]) {
+        adjustRollAndKeyModifiersWithAdvantage(req);
+        addEffect(req, "Enlarge");
+    } else if(["saving-throw", "ability", "skill"].includes(rollType) && req.ability == "STR" && req.character.settings["effects-reduce"]) {
+        adjustRollAndKeyModifiersWithDisadvantage(req);
+        addEffect(req, "Reduce");
+    }
 
     if (character.getGlobalSetting("use-digital-dice", false) && DigitalDiceManager.isEnabled()) {
         req.sendMessage = true;
@@ -493,6 +521,38 @@ async function sendRoll(character, rollType, fallback, args) {
         console.log("Sending message: ", req);
         chrome.runtime.sendMessage(req, (resp) => beyond20SendMessageFailure(character, resp));
         sendRollRequestToDOM(req);
+    }
+}
+
+function adjustRollAndKeyModifiersWithAdvantage(roll_properties) {
+    // Adjust roll_properties["advantage"]
+    const advantageMapping = {
+        [RollType.NORMAL]: RollType.ADVANTAGE,
+        [RollType.DISADVANTAGE]: RollType.NORMAL,
+        [RollType.OVERRIDE_DISADVANTAGE]: RollType.NORMAL,
+        [RollType.SUPER_DISADVANTAGE]: RollType.DISADVANTAGE
+    };
+
+    if (roll_properties["advantage"] === undefined) {
+        roll_properties["advantage"] = RollType.ADVANTAGE;
+    } else if (roll_properties["advantage"] in advantageMapping) {
+        roll_properties["advantage"] = advantageMapping[roll_properties["advantage"]];
+    }
+}
+
+function adjustRollAndKeyModifiersWithDisadvantage(roll_properties) {
+    // Adjust roll_properties["advantage"]
+    const disadvantageMapping = {
+        [RollType.NORMAL]: RollType.DISADVANTAGE,
+        [RollType.ADVANTAGE]: RollType.NORMAL,
+        [RollType.OVERRIDE_ADVANTAGE]: RollType.NORMAL,
+        [RollType.SUPER_ADVANTAGE]: RollType.ADVANTAGE
+    };
+
+    if (roll_properties["advantage"] === undefined) {
+        roll_properties["advantage"] = RollType.DISADVANTAGE;
+    } else if (roll_properties["advantage"] in disadvantageMapping) {
+        roll_properties["advantage"] = disadvantageMapping[roll_properties["advantage"]];
     }
 }
 

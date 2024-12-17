@@ -13,6 +13,12 @@ function sendRollWithCharacter(rollType, fallback, args) {
     return sendRoll(character, rollType, fallback, args);
 }
 
+function addEffect(rollProperties, effect) {
+    rollProperties["effects"] = rollProperties["effects"] || [];
+    if (!rollProperties["effects"].includes(effect)) {
+        rollProperties["effects"].push(effect);
+    }
+}
 
 async function rollSkillCheck(paneClass) {
     const skill_name = $("." + paneClass + "__header-name").text();
@@ -91,6 +97,7 @@ async function rollSkillCheck(paneClass) {
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
             (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+        if(character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) addEffect(roll_properties, "Rage");
     }
     if (skill_name == "Acrobatics" && character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false)) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
@@ -230,6 +237,7 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
             (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+        addEffect(roll_properties, "Rage");
     }
     if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
         const min = character.getAbility("STR").score - parseInt(modifier);
@@ -276,7 +284,7 @@ function rollAbilityOrSavingThrow(paneClass, rollType) {
     // Sorcerer: Clockwork Soul - Trance of Order
     if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
-
+   
     return sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
 }
 

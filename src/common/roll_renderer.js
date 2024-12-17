@@ -503,7 +503,12 @@ class Beyond20RollRenderer {
         const {rolls} = this.getToHit(request, "", data, type)
         await this._roller.resolveRolls(title, rolls, request);
         this.processToHitAdvantage(request.advantage, rolls);
-        return this.postDescription(request, title, null, {}, null, rolls);
+
+        const roll_info = [];
+        if (Array.isArray(request["effects"]) && request["effects"].length > 0)
+            roll_info.push(["Effects", request["effects"].join(', ')]);
+
+        return this.postDescription(request, title, null, {}, null, rolls, roll_info);
     }
 
     async rollSkill(request, custom_roll_dice = "") {
@@ -786,6 +791,8 @@ class Beyond20RollRenderer {
         }
 
         const roll_info = [];
+        if (request["effects"] !== undefined)
+            roll_info.push(["Effects", request["effects"]]);
         if (request["mastery"] !== undefined)
             roll_info.push(["Mastery", request["mastery"]]);
         if (request["save-dc"] != undefined)
@@ -861,6 +868,8 @@ class Beyond20RollRenderer {
                 }
             }
         }
+        if (request["effects"] !== undefined)
+            roll_info.push(["Effects", request["effects"]]);
         if (request["mastery"] !== undefined)
             roll_info.push(["Mastery", request["mastery"]]);
         if (request["save-dc"] !== undefined)
