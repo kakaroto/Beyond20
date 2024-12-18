@@ -598,6 +598,20 @@ function convertRollToText(whisper, roll, standout=false) {
     return result;
 };
 
+function displayExtraInfo(request) {
+    let extra = "";
+    if (request["mastery"]) {
+        extra += "Mastery: " + request["mastery"] + "\n";
+    }
+    if (Array.isArray(request["effects"]) && request["effects"].length > 0) {
+        extra += "Effects: " + request["effects"].join(", ") + "\n";
+    }
+    if (extra != "") {
+        return "\n" + template(request, "desc", { desc: extra });
+    }
+    return "";
+}
+
 async function handleRoll(request) {
     let custom_roll_dice = "";
     if (request.character.type == "Character" ||
@@ -648,6 +662,7 @@ async function handleRoll(request) {
             "normal": 1
         });
     }
+    roll += displayExtraInfo(request);
     const character_name = request.whisper == WhisperType.HIDE_NAMES ? settings["hidden-monster-replacement"] : request.character.name;
     postChatMessage(roll, character_name);
 }
@@ -807,6 +822,7 @@ async function handleOGLRenderedRoll(request) {
         }
         message += template(request, "dmg", dmg_props) + "\n";
     }
+    message += displayExtraInfo(originalRequest);
     postChatMessage(message, request.character);
 
     if (rollDamages) {
