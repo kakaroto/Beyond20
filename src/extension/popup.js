@@ -298,7 +298,7 @@ function populateCharacter(response) {
             e = createHTMLOption("artificer-arcane-jolt", false, character_settings);
             options.append(e);
         }
-        if (response["feats"].some(f => f.toLowerCase().includes("charger"))) {
+        if (response["feats"].includes("Charger") || response["feats"].includes("Charger 2024")) {
             e = createHTMLOption("charger-feat", false, character_settings);
             options.append(e);
         }
