@@ -409,7 +409,7 @@ function actOnCurrentTab(tab) {
         );
         let e = null;
         if (vtt == "Roll20") {
-            e = createHTMLOption("roll20-template", false);
+            e = createHTMLOption("roll20-template", false, undefined, { advanced: true });
             options.append(e);
         }
         e = createHTMLOption("display-conditions", false);
