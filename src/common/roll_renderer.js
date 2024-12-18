@@ -792,7 +792,7 @@ class Beyond20RollRenderer {
 
         const roll_info = [];
         if (request["effects"] !== undefined)
-            roll_info.push(["Effects", request["effects"]]);
+            roll_info.push(["Effects", request["effects"].join(', ')]);
         if (request["mastery"] !== undefined)
             roll_info.push(["Mastery", request["mastery"]]);
         if (request["save-dc"] != undefined)
@@ -869,7 +869,7 @@ class Beyond20RollRenderer {
             }
         }
         if (request["effects"] !== undefined)
-            roll_info.push(["Effects", request["effects"]]);
+            roll_info.push(["Effects", request["effects"].join(', ')]);
         if (request["mastery"] !== undefined)
             roll_info.push(["Mastery", request["mastery"]]);
         if (request["save-dc"] !== undefined)
