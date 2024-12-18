@@ -52,7 +52,7 @@ function createOptionList() {
 
     $("#openEffects").on('click', (ev) => {
         $(".beyond20-options .effects-option").toggle();
-    });
+    }).hide();
 
     $("#toggleAdvanced").on('click', () => {
         $(".beyond20-options .advanced-option").toggle();
@@ -134,6 +134,7 @@ function populateCharacter(response) {
         e = createHTMLOption("effects-reduce", false, character_settings);
         e.classList.add("effects-option");
         options.append(e);
+        $("#openEffects").show();
 
         if (response["racial-traits"].includes("Lucky") ||
             response["racial-traits"].includes("Luck")) {
@@ -361,7 +362,8 @@ function populateCharacter(response) {
             // so we need to fetch it again to add the advanced-option class to it
             $("#beyond20-option-discord-target").addClass("advanced-option");
         
-        options.find(".effects-option").hide();}
+        }
+        options.find(".effects-option").hide();
         options.find(".advanced-option").hide();
         $("#toggleAdvanced").show();
     });
