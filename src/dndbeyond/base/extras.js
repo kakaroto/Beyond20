@@ -155,7 +155,7 @@ class MonsterExtras extends CharacterBase {
                                 initiative = $(
                                     E.div({ class: `${attribute_prefix} ${initiative_selector} ${classNames["attribute"]}`,
                                             "data-modifier": modifier },
-                                        E.span({ class: `${attribute_prefix}-label ${classNames["label"]}` }, "Roll Initiative!"),
+                                        E.strong({ class: `${attribute_prefix}-label ${classNames["label"]}` }, "Roll Initiative!"),
                                         E.span({ class: `${attribute_prefix}-data` },
                                             E.span({ class: `${attribute_prefix}-data-value ${classNames["value"]}` }, "  " + modifier)
                                         )
