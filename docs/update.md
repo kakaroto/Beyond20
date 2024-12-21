@@ -38,6 +38,7 @@ Enjoy and may you have a peaceful holiday season.
 Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
+
 v2.11.0 (December 21st 2024)
 ===
 - **Feature**: Added support for user selectable Spell effects (Bless, Bane, Enlarge, Reduce)! (by [@dmportella](https://github.com/dmportella))
