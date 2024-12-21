@@ -1,3 +1,27 @@
+v2.11.0 (December 21st 2024)
+===
+- **Feature**: Added support for user selectable Spell effects (Bless, Bane, Enlarge, Reduce)! (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added support for Charger 2024 feat with GWF support (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added support for weapon Mastery and display mastery of weapons in rolls (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added support for GWF (2014 and 2024 editions) with Brutal Critical attacks (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added support for the Barbarian's Brutal Strike 2024 feature (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added support for 2024 version of sneak attack (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added support for the Rogue's Cunning Strikes and Improved Cunning Strike (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added support for Cleric's Improved Blessed Strikes (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added support for Cleric's Radiance of the Dawn (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added support for Paladin's Radiant Strike (by [@Lott](https://github.com/lott))
+- **Feature**: Added support for Ranger's Dreadful Strike (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added support for Druid's Lunar Radiance 2024 (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added support for Tavern Brawler 2024 feat (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added support for Halfling's Luck 2024 feature (by [@raystuart](https://github.com/raystuart))
+- **Bugfix**: Fix detection of ability modifier when using non default ability score/modifier display setting (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for new statblock format of creature extras in character sheets (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix detection of Wild Shape creature type in extras (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for creature's HP in extras (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix illegal application of GWM 2024 to Polearms feat attacks (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix missing Roll20 template option in the popup options on Roll20 tabs
+- **Bugfix**: Use bolded text for "Roll Initiative" line in monster statblocks (by [@dmportella](https://github.com/dmportella))
+
 v2.10.0 (November 17th 2024)
 ===
 - **Feature**: *Firefox*: Add support for optional permission requests, and remove mandatory Discord permissions

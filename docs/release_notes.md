@@ -1,3 +1,20 @@
+v2.11.0 (December 21st 2024)
+===
+
+Hello players!
+
+In the last month, [@dmportella](https://linktr.ee/dmportella) has contributed a ton of new features and fixes to Beyond20, and it's time for you to enjoy them!
+This release, the last release of 2024, brings support for many of the new class features introduced in the 2024 version of the rulebook as well as fixes various new issues that appeared with the character sheet in the last month as D&D Beyond continues to make changes to their website.
+
+One of the new features that was introduced that I'm particularly happy about is the support for spell effects, with an initial support for Bless, Bane, Enlarge and Reduce. With one option (or hotkey) you can toggle the effects of one of those spells on your rolls. 
+
+The biggest issue we've seen with the DDB site changes that this release fixes is the statblocks of creatures in Extras tab which had stopped working, as well as rolling ability checks when using non default ability score/modifier display setting. You can see the full list of changes in the [Changelog](/Changelog#v2110).
+
+As usual, thank you to all contributors, especially [@dmportella](https://linktr.ee/dmportella) who did most of the work in this release, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
+
+Enjoy and may you have a peaceful holiday season.
+
+
 v2.10.0 (November 17th 2024)
 ===
 

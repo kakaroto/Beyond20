@@ -90,11 +90,13 @@ If it's an issue, the best way to avoid it is to either disable 3D dice, or go t
 
 ### How can I add Bless/Guidance bonus or use Elemental Weapon?
 
-You can add custom bonuses for rolls and damages on a per-character basis, simply open the quick settings popup (the "Beyond20" button you see in the top of the character sheet, next to the character name) and enter the value there.
+You can add custom bonuses for rolls and damages on a per-character basis, simply open the quick settings popup (the "Beyond20" button you see in the top of the character sheet, next to the character name) and under the advanced option, enter the value there.
 
 In the case of [Bless](https://www.dndbeyond.com/spells/bless) or [Guidance](https://www.dndbeyond.com/spells/guidance) for example, you can enter in the roll bonus : `1d4`
 
-Since v2.3, you can also assign a hotkey to toggle the bonus by going to "More Options" then click the "Set Hotkeys" button.
+Since v2.11.0 however, Bless spell effect is natively supported and can be toggled under the Effects options in the quick settings popup.
+
+You can also assign a hotkey to toggle the bonus by going to "More Options" then click the "Set Hotkeys" button.
 
 In the case of [Elemental Weapon](https://www.dndbeyond.com/spells/elemental-weapon), you can enter `+ 1` in the custom roll modifier and `1d4 + 1` in the custom damage modifier.
 
