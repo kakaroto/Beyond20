@@ -21,6 +21,7 @@ v2.11.0 (December 21st 2024)
 - **Bugfix**: Fix illegal application of GWM 2024 to Polearms feat attacks (by [@dmportella](https://github.com/dmportella))
 - **Bugfix**: Fix missing Roll20 template option in the popup options on Roll20 tabs
 - **Bugfix**: Use bolded text for "Roll Initiative" line in monster statblocks (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix rolling Sorcerous Burst on Foundry VTT
 
 v2.10.0 (November 17th 2024)
 ===
