@@ -698,7 +698,7 @@ class Beyond20RollRenderer {
                 const sorcererMod = Object.keys(mods).find(x => x.toLowerCase() === "sorcerer");
                 const mainDamage = damage_rolls.find((roll) => roll[2] === DAMAGE_FLAGS.REGULAR);
                 const critDamage = damage_rolls.find((roll) => roll[2] === (DAMAGE_FLAGS.REGULAR | DAMAGE_FLAGS.CRITICAL));
-                const critRule = parseInt(character.getGlobalSetting("critical-homebrew", CriticalRules.PHB));
+                const critRule = parseInt(this._settings["critical-homebrew"] || CriticalRules.PHB);
                 const doubleForCrit = is_critical && [CriticalRules.PHB, CriticalRules.HOMEBREW_REROLL, CriticalRules.HOMEBREW_MOD].includes(critRule);
 
                 const faces = parseInt(mainDamage[1].dice[0].faces);
