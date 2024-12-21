@@ -52,10 +52,12 @@ function createOptionList() {
 
     $("#openEffects").on('click', (ev) => {
         $(".beyond20-options .effects-option").toggle();
+        $(".beyond20-options .advanced-option").hide();
     }).hide();
 
     $("#toggleAdvanced").on('click', () => {
         $(".beyond20-options .advanced-option").toggle();
+        $(".beyond20-options .effects-option").hide();
     });
 }
 
@@ -118,9 +120,6 @@ function populateCharacter(response) {
         e = createHTMLOption("custom-critical-limit", false, character_settings);
         e.classList.add("advanced-option");
         options.append(e);
-        e = createHTMLOption("versatile-choice", false, character_settings);
-        options.append(e);
-
         // effects
         e = createHTMLOption("effects-bless", false, character_settings);
         e.classList.add("effects-option");
@@ -135,6 +134,9 @@ function populateCharacter(response) {
         e.classList.add("effects-option");
         options.append(e);
         $("#openEffects").show();
+
+        e = createHTMLOption("versatile-choice", false, character_settings);
+        options.append(e);
 
         if (response["racial-traits"].includes("Lucky") ||
             response["racial-traits"].includes("Luck")) {
