@@ -505,13 +505,15 @@ async function sendRoll(character, rollType, fallback, args) {
         }
     }
 
-    // effects 
-    if(["saving-throw", "ability", "skill"].includes(rollType) && req.ability == "STR" && req.character.settings["effects-enlarge"]) {
-        adjustRollAndKeyModifiersWithAdvantage(req);
-        addEffect(req, "Enlarge");
-    } else if(["saving-throw", "ability", "skill"].includes(rollType) && req.ability == "STR" && req.character.settings["effects-reduce"]) {
-        adjustRollAndKeyModifiersWithDisadvantage(req);
-        addEffect(req, "Reduce");
+    if(req.character.settings){
+        // effects 
+        if(["saving-throw", "ability", "skill"].includes(rollType) && req.ability == "STR" && req.character.settings["effects-enlarge"]) {
+            adjustRollAndKeyModifiersWithAdvantage(req);
+            addEffect(req, "Enlarge");
+        } else if(["saving-throw", "ability", "skill"].includes(rollType) && req.ability == "STR" && req.character.settings["effects-reduce"]) {
+            adjustRollAndKeyModifiersWithDisadvantage(req);
+            addEffect(req, "Reduce");
+        }
     }
 
     if (character.getGlobalSetting("use-digital-dice", false) && DigitalDiceManager.isEnabled()) {
