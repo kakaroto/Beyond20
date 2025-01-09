@@ -1150,7 +1150,7 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
         return displayAction(paneClass);
     }
     // b20-action-pane and ct-custom-action-page both use ct-action-detail for the details
-    const properties = propertyListToDict($("." + paneClass + " [role=list] > div, .ct-action-detail [role=list] > div"));
+    const properties = propertyListToDict($(`.${paneClass} [role=list] > div, .${paneClass} .ct-action-detail [role=list] > div`));
     //console.log("Properties are : " + String(properties));
     const action_name = $(".ct-sidebar__heading").text();
     const action_parent = $(".ct-sidebar__header-parent").text();
