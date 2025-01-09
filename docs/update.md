@@ -16,6 +16,7 @@ Thank you all for your support!
 {% include_relative known_issues.md %}
 
 # Release Notes
+
 v2.11.1 (January 8th 2025)
 ===
 
