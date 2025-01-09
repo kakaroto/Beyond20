@@ -1,3 +1,8 @@
+v2.11.1 (January 8th 2025)
+===
+- **Bugfix**: Fix rolling character actions (unarmed strikes for example) (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix rolling Strength check from a character's extra creature (by [@dmportella](https://github.com/dmportella))
+
 v2.11.0 (December 21st 2024)
 ===
 - **Feature**: Added support for user selectable Spell effects (Bless, Bane, Enlarge, Reduce)! (by [@dmportella](https://github.com/dmportella))

@@ -1,3 +1,17 @@
+v2.11.1 (January 8th 2025)
+===
+
+Happy New Year,
+
+I hope everyone had a chance to rest and find moments of peace and reflection during the holidays.
+
+We're releasing today a bugfix release as character sheet changes continue on D&D Beyond and rolling actions (like unarmed strike) from character sheets were broken. This release also fixes the bug preventing Strength checks from working from within a character sheet's Extra creature's statblock.
+
+Thanks again to [@dmportella](https://linktr.ee/dmportella) for the fixes, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
+
+Enjoy.
+
+
 v2.11.0 (December 21st 2024)
 ===
 
