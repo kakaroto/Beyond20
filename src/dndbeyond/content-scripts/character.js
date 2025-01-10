@@ -2281,10 +2281,11 @@ function injectRollToSpellAttack() {
 
 function injectRollToSnippets() {
     const groups = $(`.ct-actions .ct-actions-list .ct-actions-list__activatable .ct-feature-snippet,
-                        .ct-features .ct-class-detail .ct-feature-snippet,
-                        .ct-features .ct-race-detail .ct-feature-snippet,
-                        .ct-features .ct-feats-detail .ct-feature-snippet`);
-
+                        .ct-actions div[class*='styles_activatable'] .ct-feature-snippet,
+                        .ct-features .ct-class-detail .ct-feature-snippet, .ct-features .ct-feature-snippet--class,
+                        .ct-features .ct-race-detail .ct-feature-snippet, .ct-features .ct-feature-snippet--racial-trait,
+                        .ct-features .ct-feats-detail .ct-feature-snippet, .ct-features .ct-feature-snippet--feat`);
+                        
     for (let group of groups.toArray()) {
         const snippet = $(group);
                 
@@ -2293,8 +2294,9 @@ function injectRollToSnippets() {
         // get modified.
         if (snippet.find(".ct-beyond20-custom-roll").length > 0)
             continue;
-        const name = snippet.find(".ct-feature-snippet__heading")[0].childNodes[0].textContent.trim();
-        const content = snippet.find(".ct-feature-snippet__content")
+
+        const name = snippet.find(".ct-feature-snippet__heading, div[class*='styles_heading']")[0].childNodes[0].textContent.trim();
+        const content = snippet.find(".ct-feature-snippet__content, div[class*='styles_content']");
         checkAndInjectDiceToRolls(content, name);
         // DDB now displays tooltips on the modifiers, so it's not "1d4+3" it's "1d4<span>+3</span>" which causes
         // Beyond20 to see it as two separate formulas, a "1d4" and a "+3" which rolls as "1d20 + 3"
