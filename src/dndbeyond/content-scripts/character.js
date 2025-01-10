@@ -1154,7 +1154,7 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
     //console.log("Properties are : " + String(properties));
     const action_name = $(".ct-sidebar__heading").text();
     const action_parent = $(".ct-sidebar__header-parent").text();
-    const description = descriptionToString(".ct-action-detail__description, .${paneClass} div[class*='styles_description']");
+    const description = descriptionToString(`.ct-action-detail__description, .${paneClass} div[class*='styles_description']`);
     let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
 
     if (action_name == "Superiority Dice" || action_parent == "Maneuvers") {
