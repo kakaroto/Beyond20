@@ -485,6 +485,13 @@ async function sendRoll(character, rollType, fallback, args) {
             req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " -1d4";
             addEffect(req, "Bane");
         }
+
+        if (req.character.exhaustion && req.character.exhaustion != 0 && req.character.settings["effects-exhaustion"] && 
+            (["attack", "spell-attack"].includes(req.type) && req["to-hit"] || 
+            ["initiative", "ability", "saving-throw", "skill", "death-save"].includes(req.type))) {
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + ` -${req.character.exhaustion * 2}`;
+            addEffect(req, `Exhaustion (${req.character.exhaustion})`);
+        }
     }
         
     if (req.whisper === WhisperType.QUERY) {
