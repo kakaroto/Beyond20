@@ -485,6 +485,20 @@ async function sendRoll(character, rollType, fallback, args) {
             req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + " -1d4";
             addEffect(req, "Bane");
         }
+
+        if (req.character.exhaustion && req.character.exhaustion != 0 && req.character.settings["effects-exhaustion-2024"] && 
+            (["attack", "spell-attack"].includes(req.type) && req["to-hit"] || 
+            ["initiative", "ability", "saving-throw", "skill", "death-save"].includes(req.type))) {
+            req.character.settings["custom-roll-dice"] = (req.character.settings["custom-roll-dice"] || "") + ` -${req.character.exhaustion * 2}`;
+            addEffect(req, `Exhaustion (${req.character.exhaustion})`);
+        } else if (req.character.exhaustion && req.character.exhaustion != 0 && req.character.settings["effects-exhaustion-2014"]) {
+            if((["attack", "spell-attack"].includes(req.type) && req["to-hit"] || ["saving-throw"].includes(req.type)) && req.character.exhaustion && req.character.exhaustion >= 3) {
+                adjustRollAndKeyModifiersWithDisadvantage(req);
+            } else if (["initiative", "ability", "skill", "death-save"].includes(req.type) && req.character.exhaustion && req.character.exhaustion >= 1) {
+                adjustRollAndKeyModifiersWithDisadvantage(req);
+            }
+            addEffect(req, `Exhaustion (${req.character.exhaustion})`);
+        }
     }
         
     if (req.whisper === WhisperType.QUERY) {

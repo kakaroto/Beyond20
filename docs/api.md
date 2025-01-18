@@ -373,7 +373,7 @@ Make an initiative roll.
 
 Additional fields added to the roll request:
 - `initiative`: the initiative modifier
-- `effects`: (Optional) An `<Array<string>>` array of spell effect names that are applied to this roll
+- `effects`: (Optional) An `<Array<string>>` array of effect names that are applied to this roll
 
 
 #### ability
@@ -385,7 +385,7 @@ Additional fields added to the roll request:
 - `modifier`: The ability modifier
 - `ability-score`: (Optional) The score value of the ability being rolled
 - `d20`: (Optional) The type of dice to roll if it's not a standard `1d20` (Can be `1d20min10` for a minimum roll of 10 for example, in the case of special features)
-- `effects`: (Optional) An `<Array<string>>` array of spell effect names that are applied to this roll
+- `effects`: (Optional) An `<Array<string>>` array of effect names that are applied to this roll
 
 
 #### saving-throw
@@ -397,7 +397,7 @@ Additional fields added to the roll request:
 - `modifier`: The saving throw modifier
 - `proficiency`: (Optional) The type of proficiency the character has (can be `None`, `Proficient` or `Half Proficiency`, or `Expert`)
 - `d20`: (Optional) The type of dice to roll if it's not a standard `1d20` (Can be `1d20min10` for a minimum roll of 10 for example, in the case of special features)
-- `effects`: (Optional) An `<Array<string>>` array of spell effect names that are applied to this roll
+- `effects`: (Optional) An `<Array<string>>` array of effect names that are applied to this roll
 
 #### skill
 Rolls a skill check.
@@ -408,7 +408,7 @@ Additional fields added to the roll request:
 - `modifier`: The skill check modifier
 - `proficiency`: (Optional) The type of proficiency the character has (can be `None`, `Proficient` or `Half Proficiency`, or `Expert`)
 - `d20`: (Optional) The type of dice to roll if it's not a standard `1d20` (Can be `1d20min10` for a minimum roll of 10 for example, in the case of special features)
-- `effects`: (Optional) An `<Array<string>>` array of spell effect names that are applied to this roll
+- `effects`: (Optional) An `<Array<string>>` array of effect names that are applied to this roll
 
 #### trait
 Display a character trait, class feature or special action. This can be used to display different kinds of features, no matter the source.
@@ -458,7 +458,7 @@ Additional fields added to the roll request:
 - `proficient`: (Optional) A `<boolean>` To determine if the character is proficient with this weapon (only for `attack-source: item`)
 - `properties`: (Optional) An `<Array<string>>` array of property strings that relate to the weapon being used (For example, "Light", "Finesse", "Two-handed", etc...)
 - `mastery`: (Optional) A `<string>` with the name of the mastery that the character has over this weapon
-- `effects`: (Optional) An `<Array<string>>` array of spell effect names that are applied to this roll
+- `effects`: (Optional) An `<Array<string>>` array of effect names that are applied to this roll
 
 
 An attack roll (same for a [spell-attack](#spell-attack)) will generally have `rollAttack` or `rollDamage` set to `true` to define if we're rolling the to-hit or the damages. Both can also be set together to roll both at once. 
@@ -534,14 +534,14 @@ Additional fields added to the roll request:
 - `class`: The class name for which the hit dice is being rolled
 - `multiclass`: A `<boolean>` to indicate whether the character is multiclassed
 - `hit-dice`: The Hit Die formula to roll
-- `effects`: (Optional) An `<Array<string>>` array of spell effect names that are applied to this roll
+- `effects`: (Optional) An `<Array<string>>` array of effect names that are applied to this roll
 
 #### death-save
 Roll a death saving throw
 
 Additional fields added to the roll request:
 - `modifier`: (Optional) The modifier to add to the death saving throw (would apply in case of magic items)
-- `effects`: (Optional) An `<Array<string>>` array of spell effect names that are applied to this roll
+- `effects`: (Optional) An `<Array<string>>` array of effect names that are applied to this roll
 
 #### chat-message
 Display a chat message.

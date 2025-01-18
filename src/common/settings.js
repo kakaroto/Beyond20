@@ -508,6 +508,20 @@ const character_settings = {
 
     // effects
 
+    "effects-exhaustion-2024": {
+        "title": "Effect: Exhaustion 2024",
+        "description": "Applies 2024 rules for exhaustion. This condition is cumulative and effects all D20 rolls applying a -2 * exhaustion level modifier to the roll.",
+        "type": "bool",
+        "default": false
+    },
+
+    "effects-exhaustion-2014": {
+        "title": "Effect: Exhaustion 2014",
+        "description": "Applies 2014 rules for exhaustion. This condition is cumulative and applies disadvantage on ability checks at exhaustion >= 1 and disadvantage on attacks and saving throws on exhaustion >= 3.",
+        "type": "bool",
+        "default": false
+    },
+
     "effects-bless": {
         "title": "Effect: Bless",
         "description": "Whenever a target makes an attack roll or a saving throw before the spell ends, the target adds 1d4 to the attack roll or save.",
