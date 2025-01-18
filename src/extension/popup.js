@@ -121,7 +121,10 @@ function populateCharacter(response) {
         e.classList.add("advanced-option");
         options.append(e);
         // effects
-        e = createHTMLOption("effects-exhaustion", false, character_settings);
+        e = createHTMLOption("effects-exhaustion-2024", false, character_settings);
+        e.classList.add("effects-option");
+        options.append(e);
+        e = createHTMLOption("effects-exhaustion-2014", false, character_settings);
         e.classList.add("effects-option");
         options.append(e);
         e = createHTMLOption("effects-bless", false, character_settings);

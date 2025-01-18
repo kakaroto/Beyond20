@@ -508,9 +508,16 @@ const character_settings = {
 
     // effects
 
-    "effects-exhaustion": {
-        "title": "Effect: Exhaustion",
-        "description": "Applies 2024 rules for exhaustion. This condition is cumulative and effects all D20 roles applying a -2 * exhaustion level modifier to the roll.",
+    "effects-exhaustion-2024": {
+        "title": "Effect: Exhaustion 2024",
+        "description": "Applies 2024 rules for exhaustion. This condition is cumulative and effects all D20 rolls applying a -2 * exhaustion level modifier to the roll.",
+        "type": "bool",
+        "default": false
+    },
+
+    "effects-exhaustion-2014": {
+        "title": "Effect: Exhaustion 2014",
+        "description": "Applies 2014 rules for exhaustion. This condition is cumulative and applies disadvantage on ability checks at exhaustion >= 1 and disadvantage on attacks and saving throws on exhaustion >= 3.",
         "type": "bool",
         "default": false
     },
