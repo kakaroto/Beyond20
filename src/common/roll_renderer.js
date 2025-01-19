@@ -248,8 +248,8 @@ class Beyond20RollRenderer {
             roll_type_class += ' beyond20-roll-detail-discarded';
         if (is_total)
             roll_type_class += ' beyond20-roll-total dice-total';
-
-        const total = `<span class='${roll_type_class}'>${roll.total}</span>`;
+        const totalValue = Number.isInteger(roll.total) ? roll.total : roll.total.toFixed(2);
+        const total = `<span class='${roll_type_class}'>${totalValue}</span>`;
         const tooltip = await roll.getTooltip();
         return `<span class='beyond20-tooltip'>${total}<span class='dice-roll beyond20-tooltip-content'>` +
             `<div class='dice-formula beyond20-roll-formula'>${roll.formula}</div>${tooltip}</span></span>`;

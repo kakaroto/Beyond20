@@ -419,7 +419,7 @@ class Monster extends CharacterBase {
                     initiative = parseFloat(initiative) + parseFloat(tiebreaker) / 100;
 
                     // Render initiative as a string that begins with '+' || '-';
-                    initiative = initiative >= 0 ? '+' + initiative.toString() : initiative.toString();
+                    initiative = initiative >= 0 ? '+' + initiative.toFixed(2) : initiative.toFixed(2);
                 }
 
                 sendRoll(this, "initiative", "1d20" + initiative, { "initiative": initiative });
