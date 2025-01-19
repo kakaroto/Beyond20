@@ -64,24 +64,33 @@ class MonsterExtras extends CharacterBase {
         const attributes = stat_block.find("div[class*='styles_attribute__']");
         for (let attr of attributes.toArray()) {
             const label = $(attr).find("h2[class*='styles_attributeLabel']").text().trim();
-            const values = $(attr).find("p[class*='styles_attributeValue']");
+            const data = $(attr).find("p");
+            const value = $(data[0]).text().trim();
 
             classNames["attribute"] = $(attr).attr("class");
             classNames["label"] = $(attr).find("h2[class*='styles_attributeLabel']").attr("class");
-            classNames["value"] = $(values).eq(0).attr("class");
+
+            const digitalDiceBoxes = data.find(".integrated-dice__container");
+
+            const addAttribute = (label, data) => this._attributes[label] = [...$(data)].map(m => $(m).text().trim()).filter(Boolean).join(", ");
+            const addTidbits = (label, data) => this._tidbits[label] = $(data).text().trim();
             
             if (label == "Armor Class") {
-                if(values.length != 0) {
-                    this._ac = $(values[0]).text().trim();
-                    this._ac_meta = values[1] ? $(values[1]).text().trim().replace(/^\(|\)$/g, '') : undefined;
+                if(data.length != 0) {
+                    const acValues = value.split(' ');
+                    this._ac = acValues[0];
+                    this._ac_meta = acValues.length > 1 ? acValues[1].replace(/^\(|\)$/g, '') : undefined;
+
+                    addAttribute(label, data);
                 }
                 // add wild shape 2024 feature here if the player has the class level
             } else if (label == "Hit Points") {
-                if(values.length != 0) {
-                    this._hp = $(values[0]).text().trim();
-                    this._hp_formula = values[1] ? $(values[1]).text().trim().replace(/[()]/g, '') : undefined;
+                if(data.length != 0) {
+                    const hpValues = value.split(' ');
+                    this._hp = hpValues[0];
+                    this._hp_formula = hpValues.length > 1 ? value.split(' ')[1].replace(/[()]/g, '') : undefined;
                     
-                    if (add_dice) {
+                    if (add_dice && this._hp_formula) {
                         const digitalDiceBox = $(attr).find(this._prefix + "__attribute-data-extra .integrated-dice__container");
                         if (digitalDiceBox.length > 0) {
                             // Use the digital Dice box (encounters page)
@@ -95,17 +104,83 @@ class MonsterExtras extends CharacterBase {
                             if (this.isBlockFinder) {
                                 addIconButton(this, () => this.rollHitPoints(), $(attr), {custom: true, append: true});
                             } else {
-                                addIconButton(this, () => this.rollHitPoints(), $(values[1]), {custom: true});
+                                addIconButton(this, () => this.rollHitPoints(), $(data[0]), {custom: true});
                             }
                         }
                     }
+                    addAttribute(label, data);
                 }
-                
-                
+           
             } else if (label == "Speed") {
-                this._speed = $(values[0]).text().trim();
+                this._speed = value;
+                addAttribute(label, data);
+            } else if (label == "Saving Throws") {
+                const saves = value.split(", ");
+                const useDigitalDice = digitalDiceBoxes.length === saves.length;
+                if (add_dice && !useDigitalDice) data.html("");
+                for (let save of saves) {
+                    const parts = save.split(" ");
+                    const abbr = parts[0];
+                    const mod = parts.slice(1).join(" ");
+                    this._saves[abbr] = mod;
+                    if (useDigitalDice) {
+                        // Hook into the existing digital dice boxes
+                        const idx = saves.indexOf(save);
+                        const digitalDiceBox = digitalDiceBoxes.eq(idx);
+                        // Use the digital Dice box (encounters page)
+                        digitalDiceBox.off('click').on('click', (e) => {
+                            e.stopPropagation();
+                            this.rollSavingThrow(abbr);
+                        })
+                        deactivateTooltipListeners(digitalDiceBox);
+                        activateTooltipListeners(digitalDiceBox, "down", beyond20_tooltip, () => this.rollSavingThrow(abbr));
+                    } else if (add_dice) {
+                        data.append(abbr + " " + mod);
+                        addIconButton(this, () => this.rollSavingThrow(abbr), data, { append: true });
+                        if (saves.length > Object.keys(this._saves).length)
+                            data.append(", ");
+                    }
+                }
+                addTidbits(label, data);
+            } else if (label == "Skills") {
+                const skills = value.split(", ");
+                const useDigitalDice = digitalDiceBoxes.length === skills.length;
+                for (let skill of skills) {
+                    const match = skill.match(/(.+?)([+-]?)\s*([0-9]+)/);
+                    if (match) {
+                        const name = match[1].trim();
+                        const mod = `${match[2] || "+"}${match[3]}`;
+                        this._skills[name] = mod;
+                        // Hook into the existing digital dice boxes
+                        if (useDigitalDice) {
+                            const idx = skills.indexOf(skill);
+                            const digitalDiceBox = digitalDiceBoxes.eq(idx);
+                            // Use the digital Dice box (encounters page)
+                            digitalDiceBox.off('click').on('click', (e) => {
+                                e.stopPropagation();
+                                this.rollSkillCheck(name)
+                            })
+                            deactivateTooltipListeners(digitalDiceBox);
+                            activateTooltipListeners(digitalDiceBox, "down", beyond20_tooltip, () => this.rollSkillCheck(name));
+                        }
+                    }
+                }
+                if (useDigitalDice || !add_dice)
+                    continue;
+                data.html("");
+                let first = true;
+                for (let skill in this._skills) {
+                    if (!first)
+                        data.append(", ");
+                    first = false;
+                    data.append(skill + " " + this._skills[skill]);
+                    addIconButton(this, () => this.rollSkillCheck(skill), data, { append: true });
+                }
+                addTidbits(label, data);
+            } else if (label == "Challenge") {
+                this._cr = value.split(" ")[0];
+                addTidbits(label, data);
             }
-            this._attributes[label] = [...$(values)].map(m => $(m).text().trim()).filter(Boolean).join(", ");
         }
 
         // Abilities
@@ -168,81 +243,6 @@ class MonsterExtras extends CharacterBase {
                     }
                 }
             }
-        }
-
-        // tidbits
-
-        const tidbits = stat_block.find("div[class*='styles_tidbit']");
-        for (let tidbit of tidbits.toArray()) {
-            const label = $(tidbit).find("h2[class*='styles_tidbitLabel']").text().trim();
-            const data = $(tidbit).find("p");
-            const value = $(data).text().trim();
-            const digitalDiceBoxes = data.find(".integrated-dice__container");
-            if (label == "Saving Throws") {
-                const saves = value.split(", ");
-                const useDigitalDice = digitalDiceBoxes.length === saves.length;
-                if (add_dice && !useDigitalDice) data.html("");
-                for (let save of saves) {
-                    const parts = save.split(" ");
-                    const abbr = parts[0];
-                    const mod = parts.slice(1).join(" ");
-                    this._saves[abbr] = mod;
-                    if (useDigitalDice) {
-                        // Hook into the existing digital dice boxes
-                        const idx = saves.indexOf(save);
-                        const digitalDiceBox = digitalDiceBoxes.eq(idx);
-                        // Use the digital Dice box (encounters page)
-                        digitalDiceBox.off('click').on('click', (e) => {
-                            e.stopPropagation();
-                            this.rollSavingThrow(abbr);
-                        })
-                        deactivateTooltipListeners(digitalDiceBox);
-                        activateTooltipListeners(digitalDiceBox, "down", beyond20_tooltip, () => this.rollSavingThrow(abbr));
-                    } else if (add_dice) {
-                        data.append(abbr + " " + mod);
-                        addIconButton(this, () => this.rollSavingThrow(abbr), data, { append: true });
-                        if (saves.length > Object.keys(this._saves).length)
-                            data.append(", ");
-                    }
-                }
-            } else if (label == "Skills") {
-                const skills = value.split(", ");
-                const useDigitalDice = digitalDiceBoxes.length === skills.length;
-                for (let skill of skills) {
-                    const match = skill.match(/(.+?)([+-]?)\s*([0-9]+)/);
-                    if (match) {
-                        const name = match[1].trim();
-                        const mod = `${match[2] || "+"}${match[3]}`;
-                        this._skills[name] = mod;
-                        // Hook into the existing digital dice boxes
-                        if (useDigitalDice) {
-                            const idx = skills.indexOf(skill);
-                            const digitalDiceBox = digitalDiceBoxes.eq(idx);
-                            // Use the digital Dice box (encounters page)
-                            digitalDiceBox.off('click').on('click', (e) => {
-                                e.stopPropagation();
-                                this.rollSkillCheck(name)
-                            })
-                            deactivateTooltipListeners(digitalDiceBox);
-                            activateTooltipListeners(digitalDiceBox, "down", beyond20_tooltip, () => this.rollSkillCheck(name));
-                        }
-                    }
-                }
-                if (useDigitalDice || !add_dice)
-                    continue;
-                data.html("");
-                let first = true;
-                for (let skill in this._skills) {
-                    if (!first)
-                        data.append(", ");
-                    first = false;
-                    data.append(skill + " " + this._skills[skill]);
-                    addIconButton(this, () => this.rollSkillCheck(skill), data, { append: true });
-                }
-            } else if (label == "Challenge") {
-                this._cr = value.split(" ")[0];
-            }
-            this._tidbits[label] = value;
         }
 
         this.lookForActions(stat_block, add_dice, inject_descriptions);
