@@ -270,6 +270,7 @@ class MonsterExtras extends CharacterBase {
                 if (abbr == "STR" && this.type() == "Creature" && this._creatureType?.startsWith("Wild Shape") && this._parent_character && 
                     this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
                     roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+                    addEffect(roll_properties, "Rage");
                 }
                 
                 if (this.type() == "Creature" && this._creatureType?.startsWith("Wild Shape") && this._parent_character &&
@@ -320,6 +321,7 @@ class MonsterExtras extends CharacterBase {
         if (abbr == "STR" && this.type() == "Creature" && this._creatureType?.startsWith("Wild Shape") && this._parent_character && 
             this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+            addEffect(roll_properties, "Rage");
         }
         sendRoll(this, "saving-throw", "1d20" + mod, roll_properties);
     }
@@ -335,6 +337,7 @@ class MonsterExtras extends CharacterBase {
         if (ability == "STR" && this.type() == "Creature" && this._creatureType?.startsWith("Wild Shape") && this._parent_character && 
             this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+            addEffect(roll_properties, "Rage");
         }
         sendRoll(this, "skill", "1d20" + modifier, roll_properties);
     }
@@ -500,6 +503,7 @@ class MonsterExtras extends CharacterBase {
                                 const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
                                 roll_properties["damages"].push(String(rage_damage));
                                 roll_properties["damage-types"].push("Rage");
+                                addEffect(roll_properties, "Rage");
                             }
 
                             if(this._parent_character.hasClass("Druid") && this._parent_character.hasClassFeature("Improved Lunar Radiance", true) && this._parent_character.getSetting("druid-improved-lunar-radiance", false))

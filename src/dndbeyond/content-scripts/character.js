@@ -97,7 +97,9 @@ async function rollSkillCheck(paneClass) {
         ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
             (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-        if(character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) addEffect(roll_properties, "Rage");
+        if(character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) {
+            addEffect(roll_properties, "Rage");
+        }
     }
     if (skill_name == "Acrobatics" && character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false)) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
@@ -395,7 +397,7 @@ function isItemAnInstruction(item_name, item_tags) {
     return item_tags.includes("Instrument") || item_name.includes(" Drum");
 }
 
-function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {to_hit, action_name=""}={}) {
+function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, settings_to_change={}, { to_hit, action_name="", effects=[] }={}) {
     if (character.hasClass("Barbarian")) {
         // Barbarian: Rage
         if (character.hasClassFeature("Rage") &&
@@ -404,6 +406,7 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
             const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
             damages.push(String(rage_damage));
             damage_types.push("Rage");
+            effects.push("Rage");
         }
     }
 
@@ -507,7 +510,7 @@ function IsHeavy(properties) {
     return ((properties["Properties"] && properties["Properties"].includes("Heavy")) && properties["Proficient"] == "Yes");
 }
 
-function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {to_hit, action_name=""}={}) {
+function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, settings_to_change={}, { to_hit, action_name="", effects=[] }={}) {
     // Feats
     // Sharpshooter Feat
     if (to_hit !== null && 
@@ -985,12 +988,13 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
 
         to_hit = handleSpecialWeaponAttacks(damages, damage_types, properties, settings_to_change, {item_customizations, item_type, to_hit, item_name});
 
+        const effects = [];
         if (properties["Attack Type"] == "Melee") {
-            to_hit = handleSpecialMeleeAttacks(damages, damage_types, properties, settings_to_change, {to_hit});
+            to_hit = handleSpecialMeleeAttacks(damages, damage_types, properties, settings_to_change, { to_hit, effects });
         }
 
         if (properties["Attack Type"] == "Ranged") {
-            to_hit = handleSpecialRangedAttacks(damages, damage_types, properties, settings_to_change, {to_hit});
+            to_hit = handleSpecialRangedAttacks(damages, damage_types, properties, settings_to_change, { to_hit, effects });
         }
         
         let critical_limit = 20;
@@ -1035,6 +1039,7 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
             // A query was cancelled, so let's cancel the roll
             return;
         }
+        effects.forEach(effect => addEffect(roll_properties, effect));
         if (properties["Mastery"]) {
             roll_properties["mastery"] = properties["Mastery"];
         }
@@ -1105,6 +1110,7 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                     ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
                         (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
                     roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+                    addEffect(roll_properties, "Rage");
                 }
                 roll_properties.d20 = "1d20";
                 // Set Reliable Talent flag if character has the feature and skill is proficient/expertise
@@ -1252,12 +1258,13 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             }
         }
 
+        const effects = [];
         if (isMeleeAttack) {
-            to_hit = handleSpecialMeleeAttacks(damages, damage_types, properties, settings_to_change, {to_hit, action_name});
+            to_hit = handleSpecialMeleeAttacks(damages, damage_types, properties, settings_to_change, { to_hit, action_name, effects });
         }
 
         if (isRangedAttack) {
-            to_hit = handleSpecialRangedAttacks(damages, damage_types, properties, settings_to_change, {to_hit, action_name});
+            to_hit = handleSpecialRangedAttacks(damages, damage_types, properties, settings_to_change, { to_hit, action_name, effects });
         }
 
         // Circle of Spores - Symbiotic Entity
@@ -1285,6 +1292,7 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             // A query was cancelled, so let's cancel the roll
             return;
         }
+        effects.forEach(effect => addEffect(roll_properties, effect));
         if (critical_limit != 20)
             roll_properties["critical-limit"] = critical_limit;
 

@@ -388,6 +388,7 @@ class Monster extends CharacterBase {
                 if (abbr == "STR" && this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character && 
                     this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
                     roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+                    addEffect(roll_properties, "Rage");
                 }
                 
                 if (this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character &&
@@ -438,6 +439,7 @@ class Monster extends CharacterBase {
         if (abbr == "STR" && this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character && 
             this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+            addEffect(roll_properties, "Rage");
         }
         sendRoll(this, "saving-throw", "1d20" + mod, roll_properties);
     }
@@ -453,6 +455,7 @@ class Monster extends CharacterBase {
         if (ability == "STR" && this.type() == "Creature" && this._creatureType === "Wild Shape" && this._parent_character && 
             this._parent_character.hasClassFeature("Rage") && this._parent_character.getSetting("barbarian-rage", false)) {
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+            addEffect(roll_properties, "Rage");
         }
         sendRoll(this, "skill", "1d20" + modifier, roll_properties);
     }
@@ -620,6 +623,7 @@ class Monster extends CharacterBase {
                                 const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
                                 roll_properties["damages"].push(String(rage_damage));
                                 roll_properties["damage-types"].push("Rage");
+                                addEffect(roll_properties, "Rage");
                             }
                             // Add custom damages to wild shape attacks
                             addCustomDamages(character, roll_properties["damages"], roll_properties["damage-types"]);
