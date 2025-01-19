@@ -1759,7 +1759,7 @@ function displayFeature(paneClass) {
 
 function displayTrait() {
     const trait = $(".ct-sidebar__heading").text();
-    const description = descriptionToString(".ct-trait-pane__input, .ct-trait-pane div[class*='styles_description']");
+    const description = descriptionToString(".ct-trait-pane__input, .ct-trait-pane textarea, .ct-trait-pane div[class*='styles_description']");
     return sendRollWithCharacter("trait", 0, {
         "name": trait,
         "description": description
@@ -2010,7 +2010,7 @@ function injectRollButton(paneClass) {
     } else if (paneClass == "ct-trait-pane") {
         if (isRollButtonAdded())
             return;
-        addRollButtonEx(paneClass, ".ct-trait-pane__content", { image: false });
+        addRollButtonEx(paneClass, ".ct-sidebar__heading", { image: false });
     } else if (paneClass == "ct-item-pane") {
         const item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name, .ct-item-pane .ct-sidebar__heading span[class*='styles_itemName']").text();
         if (isRollButtonAdded() && item_name == lastItemName)
