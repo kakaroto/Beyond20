@@ -36,10 +36,11 @@ function rollToDDBRoll(roll, forceResults=false) {
     const results = [];
     // constant, total, count, dieValue and result.values must be ints so it doesn't crash the mobile app
     for (const part of roll.parts) {
+        const signMultiplier = (lastOperation === "+" ? 1 : -1);
         if (['-', '+'].includes(part)) {
             lastOperation = part;
         } else if (typeof(part) === "number") {
-            constant = constant + parseInt(part) * (lastOperation === "+" ? 1 : -1);
+            constant = constant + parseInt(part) * signMultiplier;
         } else if (part.formula) {
             let operation = 0; // sum
             if (part.modifiers.includes("kl") || part.modifiers.includes("dh"))
@@ -49,13 +50,13 @@ function rollToDDBRoll(roll, forceResults=false) {
             // the game log will crash if a message is posted with a dieType that isn't supported
             const dieType = [4, 6, 8, 10, 12, 20, 100].includes(part.faces) ? `d${part.faces}` : 'd100';
             sets.push({
-                count: parseInt(part.amount),
+                count: parseInt(part.amount) * signMultiplier,
                 dieType,
                 operation,
                 dice: part.rolls.filter(r => !r.discarded).map(r => ({dieType, dieValue: r.roll || 0}))
             });
             if (part.total !== undefined) {
-                results.push(...part.rolls.filter(r => !r.discarded).map(r => parseInt(r.roll) || 0));
+                results.push(...part.rolls.filter(r => !r.discarded).map(r => (parseInt(r.roll) || 0) * signMultiplier));
             }
         }
     }
