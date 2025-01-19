@@ -1768,7 +1768,7 @@ function displayTrait() {
 
 function displayBackground() {
     const background = $(".ct-sidebar__heading").text();
-    const description = descriptionToString(".ct-background-pane__description > p, .ct-background-pane div[class*='styles_description']");
+    const description = descriptionToString(".ct-background-pane__description > p, div[class*='styles_pane'] .ddbc-html-content > p");
     return sendRollWithCharacter("trait", 0, {
         name: background,
         source: "Background",
@@ -1889,7 +1889,7 @@ function displayPanel(paneClass) {
             return displayTrait();
         else if (["b20-action-pane", "ct-custom-action-pane", "b20-custom-action-pane"].includes(paneClass))
             return displayAction(paneClass);
-        else if (paneClass == "ct-background-pane")
+        else if (paneClass == "b20-background-pane")
             return displayBackground();
         else
             alertify.alert("Not recognizing the currently open sidebar");
@@ -2001,12 +2001,12 @@ function injectRollButton(paneClass) {
         addRollButtonEx(paneClass, ".ct-sidebar__heading", { image: false });
         const name = $(".ct-sidebar__heading").text();
         checkAndInjectDiceToRolls("." + paneClass + " .ct-snippet__content,." + paneClass + " .ddbc-snippet__content", name);
-    } else if (paneClass === "ct-background-pane") {
+    } else if (paneClass === "b20-background-pane") {
         if (isRollButtonAdded())
             return;
         addRollButtonEx(paneClass, ".ct-sidebar__heading", { image: false });
         const name = $(".ct-sidebar__heading").text();
-        checkAndInjectDiceToRolls("." + paneClass + " .ct-background-pane__description", name);
+        checkAndInjectDiceToRolls(`.${paneClass} .ct-background-pane__description, div[class*='styles_pane'] .ddbc-html-content`, name);
     } else if (paneClass == "ct-trait-pane") {
         if (isRollButtonAdded())
             return;
@@ -2645,7 +2645,6 @@ function documentModified(mutations, observer) {
         "ct-custom-skill-pane",
         "ct-skill-pane",
         "ct-racial-trait-pane",
-        "ct-background-pane",
         "ct-trait-pane",
         "ct-item-pane",
         "ct-infusion-choice-pane",
@@ -2669,8 +2668,8 @@ function documentModified(mutations, observer) {
         feature: "b20-class-feature-pane",
         racialTrait: "b20-racial-trait-pane",
         character: "b20-character-manage-pane",
-        creature: "b20-creature-pane"
-
+        creature: "b20-creature-pane",
+        background: "b20-background-pane"
     }
 
     function handlePane(paneClass) {
@@ -2735,6 +2734,11 @@ function documentModified(mutations, observer) {
             } else if (sidebar.parent().find(".ct-feature-snippet--racial-trait").length > 0) {
                 // In case DDB remove the ct-racial-trait-pane class from the sidebar
                 const paneClass = SPECIAL_PANES.racialTrait;
+                markPane(sidebar, paneClass);
+                handlePane(paneClass);
+            } else if (Array.from(sidebar.parent().find("h4, h5"))
+                    .some(e => e.textContent.includes("Suggested Characteristics"))) {
+                const paneClass = SPECIAL_PANES.background;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
             } else if (sidebar.parent().find("div[class*='styles_block'] section[class*='styles_creatureBlock']").length > 0) {
