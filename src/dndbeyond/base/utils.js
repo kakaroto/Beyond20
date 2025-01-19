@@ -697,7 +697,7 @@ function addDisplayButton(callback, where, { text = "Display in VTT", append = t
         "margin-right": "auto"
     });
     $(".ct-beyond20-roll-display").css("margin-top", "2px");
-    $(button).on('click', (event) => callback());
+    $(button).on('click', (event) => callback(event));
     return button;
 }
 

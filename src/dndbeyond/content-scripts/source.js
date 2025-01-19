@@ -4,6 +4,13 @@ class SourceBookCharacter extends CharacterBase {
     constructor(global_settings) {
         super("source", global_settings);
     }
+    getDict() {
+        const dict = super.getDict();
+        if (this.avatar) {
+            dict.avatar = this.avatar;
+        }
+        return dict;
+    }
 }
 
 var settings = getDefaultSettings();
@@ -49,6 +56,35 @@ function documentLoaded(settings) {
                 "right": "0",
             });
         }
+
+        // Add a display on all images
+        const images = $(".compendium-image, .compendium-art");
+        for (const image of images.toArray()) {
+            const imageSrc = $(image).find("img").attr("src");
+            // Place the button inside the <a> tag if it exists, so it is properly displayed/centered
+            // otherwise, it can mess up the layout of the page
+            let placement = $(image).find("a");
+            if (placement.length !== 1) {
+                placement = image;
+            }
+            addDisplayButton(async (event) => {
+                // We add the button inside the <a> tag, so we need to prevent the click event from bubbling up
+                // and opening the lightbox
+                event.stopPropagation();
+                event.preventDefault();
+                character.avatar = imageSrc;
+                await sendRoll(character, "avatar", imageSrc, { "name": source_name });
+                character.avatar = null;
+            }, placement, { small: false, image: true });
+        }
+
+        // Add display button on lightbox ("view player version")
+        addDisplayButton(async () => {
+            const imageSrc = $("#lightbox img").attr("src");
+            character.avatar = imageSrc;
+            await sendRoll(character, "avatar", imageSrc, { "name": source_name });
+            character.avatar = null;
+        }, $("#lightbox"), { small: false, image: true });
 
         for (const block of $("div.stat-block-finder, div.vehicle-block-finder")) {
             const statblock = $(block)
