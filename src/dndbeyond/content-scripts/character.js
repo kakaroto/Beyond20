@@ -812,7 +812,7 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
     const source = item_type.trim().toLowerCase();
     const is_tool = isItemATool(item_name, source);
     const is_instrument = isItemAnInstruction(item_name, item_tags);
-    const description = descriptionToString(".ct-item-detail__description");
+    const description = descriptionToString(`.ct-item-detail__description, .ct-item-pane div[class*='styles_description']`);
     const quantity = $(".ct-item-pane .ct-simple-quantity .ct-simple-quantity__value .ct-simple-quantity__input").val();
     const is_infused = $(".ct-item-pane .ct-item-detail__infusion");
     const has_mastery = $(".ct-item-pane div[class*='styles_action'] div[class*='styles_label']");
@@ -1544,7 +1544,7 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
     const spell_source = $(".ct-sidebar__header-parent").text() || $(".ct-sidebar__header > div").text();
     const spell_full_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name, .ct-sidebar__heading span[class*='styles_spellName']").text();
     const spell_name = $(".ct-sidebar__heading .ct-spell-name,.ct-sidebar__heading .ddbc-spell-name, .ct-sidebar__heading span[class*='styles_spellName']")[0].firstChild.textContent;
-    const description = descriptionToString(".ct-spell-pane .ct-spell-detail__description");
+    const description = descriptionToString(`.ct-spell-pane .ct-spell-detail__description, .ct-spell-pane div[class*='styles_description']`);
     const damage_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--damages .ct-spell-caster__modifier--damage");
     const healing_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--hp");
     const temp_hp_modifiers = $(".ct-spell-pane .ct-spell-caster__modifiers--healing .ct-spell-caster__modifier--temp");
@@ -1740,7 +1740,7 @@ function displayFeature(paneClass) {
     const name = $(".ct-sidebar__heading").text();
     const source = $(".ct-sidebar__header-parent").text();
     const source_type = source_types[paneClass];
-    let description = descriptionToString(`.${paneClass} .ct-snippet__content,.${paneClass} .ddbc-snippet__content`);
+    let description = descriptionToString(`.${paneClass} .ct-snippet__content,.${paneClass} .ddbc-snippet__content, .${paneClass} div[class*='styles_description']`);
     const choices = $(`.${paneClass} .ct-feature-snippet__choices .ct-feature-snippet__choice`);
     if (choices.length > 0) {
         description += "\n";
@@ -1759,7 +1759,7 @@ function displayFeature(paneClass) {
 
 function displayTrait() {
     const trait = $(".ct-sidebar__heading").text();
-    const description = descriptionToString(".ct-trait-pane__input");
+    const description = descriptionToString(".ct-trait-pane__input, .ct-trait-pane div[class*='styles_description']");
     return sendRollWithCharacter("trait", 0, {
         "name": trait,
         "description": description
@@ -1768,7 +1768,7 @@ function displayTrait() {
 
 function displayBackground() {
     const background = $(".ct-sidebar__heading").text();
-    const description = descriptionToString(".ct-background-pane__description > p");
+    const description = descriptionToString(".ct-background-pane__description > p, .ct-background-pane div[class*='styles_description']");
     return sendRollWithCharacter("trait", 0, {
         name: background,
         source: "Background",
@@ -1778,7 +1778,7 @@ function displayBackground() {
 
 function displayAction(paneClass) {
     const action_name = $(".ct-sidebar__heading").text();
-    const description = descriptionToString(".ct-action-detail__description");
+    const description = descriptionToString(".ct-action-detail__description, .ct-action-pane div[class*='styles_description']");
     return sendRollWithCharacter("trait", 0, {
         "name": action_name,
         "description": description,
@@ -1788,7 +1788,7 @@ function displayAction(paneClass) {
 
 function displayInfusion() {
     const infusion = $(".ct-sidebar__heading").text();
-    const description = descriptionToString(".ct-infusion-choice-pane__description");
+    const description = descriptionToString(".ct-infusion-choice-pane__description, .ct-infusion-choice-pane div[class*='styles_description']");
     return sendRollWithCharacter("trait", 0, {
         "name": infusion,
         "description": description,
@@ -1815,7 +1815,7 @@ function handleCustomText(paneClass) {
     const rollOrderTypes = ["before", "after", "replace"];
     const pane = $(`.${paneClass}`);
     const notes = descriptionToString(pane.find("[role=list] > div:contains('Note')"));
-    const description = descriptionToString(pane.find(".ct-action-detail__description, .ct-spell-detail__description, .ct-item-detail__description, .ddbc-action-detail__description, .ddbc-spell-detail__description, .ddbc-item-detail__description"));
+    const description = descriptionToString(pane.find(".ct-action-detail__description, .ct-spell-detail__description, .ct-item-detail__description, .ddbc-action-detail__description, .ddbc-spell-detail__description, .ddbc-item-detail__description, div[class*='styles_description']"));
 
     // Look for all the roll orders
     for (const rollOrder of rollOrderTypes) {
