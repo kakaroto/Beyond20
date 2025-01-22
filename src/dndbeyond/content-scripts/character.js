@@ -1226,7 +1226,9 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
         }
 
         // apply for normal die
-        damages[0] = applyGWFIfRequired(action_name, properties, damages[0]);
+        if (damages.length != 0) {
+            damages[0] = applyGWFIfRequired(action_name, properties, damages[0]);
+        }
 
         const isMeleeAttack = action_name.includes("Polearm Master") || action_name.includes("Pole Strike") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
         || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
