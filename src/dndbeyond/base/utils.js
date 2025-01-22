@@ -218,7 +218,7 @@ async function buildAttackRoll(character, attack_source, name, description, prop
             const choice = await queryDamageTypeFromArray(roll_properties.name, damages, damage_types, ["Acid", "Cold", "Fire", "Lightning", "Poison", "Thunder"]);
             if (choice === null) return null; // Query was cancelled;
         } else if (roll_properties.name === "Sorcerous Burst") {
-            // fix dndbeyond dmg issue
+            // HACK ALERT: temporarily use acid damage....
             damages = damages.map(m => damages[0]); // set everything to the correct acid dmg
             roll_properties["damages"] = damages; // reset roll_properties
             const choice = await queryDamageTypeFromArray(roll_properties.name, damages, damage_types, ["Acid", "Cold", "Fire", "Lightning", "Poison", "Psychic", "Thunder"]);
