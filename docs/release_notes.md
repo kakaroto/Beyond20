@@ -1,3 +1,19 @@
+v2.12.0 (January 25th 2025)
+===
+
+Hi,
+
+We've had a lot of changes to the D&D Beyond website in recent weeks and a few things continue to break, requiring more fixes. 
+
+This release adds quite a few bugfixes and improvements, and adds a few interesting features as well, such as the ability to send to the VTT the images and art from source books, as well as the ability to apply exhaustion effects on your rolls automatically.
+
+Check out the full [Changelog](/Changelog#v2120) to see all the changes added in this release.
+
+As usual, a big thank you to [@dmportella](https://linktr.ee/dmportella) as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
+
+Enjoy.
+
+
 v2.11.1 (January 8th 2025)
 ===
 

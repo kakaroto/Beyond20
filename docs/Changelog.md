@@ -1,3 +1,22 @@
+v2.12.0 (January 25th 2025)
+===
+- **Feature**: Add support for Exhaustion rules (2014 and 2024) in the character's Effects (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Add support for displaying art and images from a source book
+- **Feature**: Add support for displaying Rage effect when rolling with Rage enabled
+- **Feature**: Add support for parsing "+ PB" in formulas for adding the character's proficiency bonus
+- **Bugfix**: Fix support for dice formulas on actions and features (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix parsing of roll descriptions (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for changes tidbits and attributes in monster stat blocks (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix display of custom actions that have no damage (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for parsing of descriptions
+- **Bugfix**: Fix support for character traits
+- **Bugfix**: Fix rolling character backgrounds
+- **Bugfix**: Fix display of formula in the gamer log when substracting a dice roll (like Bane effect)
+- **Bugfix**: Added a workaround for broken data in DDB causing damage choices to be invalid for Sorcerous Burst (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix parsing of dice formula in Repair feature of the Steel Defender
+- **Bugfix**: *FVTT*: Fix display of initiative result in some situations when using initiative tie breaker
+
+
 v2.11.1 (January 8th 2025)
 ===
 - **Bugfix**: Fix rolling character actions (unarmed strikes for example) (by [@dmportella](https://github.com/dmportella))
