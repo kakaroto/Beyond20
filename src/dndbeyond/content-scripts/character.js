@@ -1944,6 +1944,7 @@ function findModifiers(character, custom_roll) {
                 find_static_modifier(" + half your " + class_name.toLowerCase() + " level", half_level, {add_your: false});
             }
             find_static_modifier("proficiency bonus", character._proficiency);
+            find_static_modifier(" + PB", character._proficiency, { add_your: false });
             find_static_modifier("ac", character._ac);
             find_static_modifier("armor class", character._ac);
 
