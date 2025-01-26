@@ -813,10 +813,23 @@ function recursiveDiceReplace(node, cb) {
             // Try to catch the use case where part of the roll has a tooltip and is therefore a different node
             // <strong><span tooltip>2</span>d4</strong>
             const parent = $(node).parent();
-            const parentText = parent.text();
+            let parentText = parent.text();
             // The parent has another portion of the same dice formula, so we need to replace the whole parent
             // with the replaced dice
-            const parentReplaced = replaceRolls(parentText, () => "-");
+            let parentReplaced = replaceRolls(parentText, () => "-");
+            // Steel Defender has <strong>2d8+</strong><span>2</span> so we try to see if the
+            // text ends in "+" so we can get the modifier from the sibling node
+            if (parentReplaced === "-+") { 
+                const sibling = parent.next();
+                const siblingText = sibling.text();
+                // Check that the entire sibling content is a number, so we can add it to the original text
+                // and delete the sibling node
+                if (siblingText && parseInt(siblingText) == siblingText) {
+                    parentText += parseInt(siblingText);
+                    parentReplaced = replaceRolls(parentText, () => "-");
+                    sibling.remove();
+                }
+            }
             if (parentText !== node.textContent &&
                 (parentReplaced === "-" ||
                  parentReplaced === "--" ||
