@@ -144,22 +144,22 @@ class Character extends CharacterBase {
             max_hp = parseInt(health_pane.find(".ct-health-manager__health-item--max .ct-health-manager__health-item-value .ct-health-manager__health-max-current").text());
             temp_hp = parseInt(health_pane.find(".ct-health-manager__health-item--temp .ct-health-manager__health-item-value input").val());
         } else {
-            const hp_items = $(".ct-health-summary__hp-group--primary .ct-health-summary__hp-item");
+            const hp_items = $(".ct-health-summary__hp-group--primary .ct-health-summary__hp-item, .ct-quick-info__health div[class*='styles_hitPointsBox'] div[class*='styles_innerContainer'] div[class*='styles_item']");
             for (let item of hp_items.toArray()) {
-                const label = $(item).find(".ct-health-summary__hp-item-label").text().trim();
+                const label = $(item).find("h2[class*='styles_label']").text().trim();
                 if (label == "Current") {
                     // Make sure it's !an input being modified;
-                    const number = $(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number");
+                    const number = $(item).find("button[class*='styles_valueButton']");
                     if (number.length > 0)
                         hp = parseInt(number.text());
                 } else if (label == "Max") {
-                    max_hp = parseInt($(item).find(".ct-health-summary__hp-item-content .ct-health-summary__hp-number").text());
+                    max_hp = parseInt($(item).find("div[class*='styles_number']").text());
                 }
             }
-            const temp_item = $(".ct-health-summary__hp-group--temp .ct-health-summary__hp-item--temp .ct-health-summary__hp-item-content");
+            const temp_item = $(".ct-health-summary__hp-group--temp .ct-health-summary__hp-item--temp .ct-health-summary__hp-item-content, .ct-quick-info__health div[class*='styles_temp']");
             if (temp_item.length > 0) {
                 // Can be hp-empty class instead;
-                temp_hp = parseInt(temp_item.find(".ct-health-summary__hp-number").text()) || 0;
+                temp_hp = parseInt(temp_item.find(".ct-health-summary__hp-number, button[class*='styles_valueButton']").text()) || 0;
             } else {
                 temp_hp = this._temp_hp;
             }
