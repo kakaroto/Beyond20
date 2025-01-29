@@ -467,7 +467,7 @@ class Character extends CharacterBase {
         const hasGWF2014 = this.hasClassFeature("Fighting Style: Great Weapon Fighting") ||
                 this.hasClassFeature("Additional Fighting Style: Great Weapon Fighting") ||
                 this.hasClassFeature("Fighting Initiate: Great Weapon Fighting") ||
-                this.hasFeat("Great Weapon Fighting");
+                this.hasFeat("Fighting Initiate: Great Weapon Fighting");
         const hasGWF2024 = this.hasClassFeature("Fighting Style 2024: Great Weapon Fighting") ||
                 this.hasClassFeature("Additional Fighting Style 2024: Great Weapon Fighting") ||
                 this.hasFeat("Great Weapon Fighting 2024");
