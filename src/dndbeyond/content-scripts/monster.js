@@ -5,7 +5,10 @@ var character = null;
 
 function documentLoaded(settings) {
     cleanupAlertifyComments();
-    character = new Monster("Monster", null, settings);
+
+    const isLegacy = $("#legacy-badge").length != 0 || $("div.mon-stat-block").length != 0;
+
+    character = isLegacy ? new Monster("Monster", null, settings) : new MonsterExtras("Monster", null, settings);
     // We reloaded the extension ? reload the page too...;
     if (isRollButtonAdded()) {
         chrome.runtime.sendMessage({ "action": "reload-me" });
