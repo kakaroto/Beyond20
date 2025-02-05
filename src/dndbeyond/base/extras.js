@@ -13,6 +13,7 @@ class MonsterExtras extends CharacterBase {
         this._avatar = null;
         this._meta = null;
         this._attributes = {}
+        this._initiative = null;
         this._ac = null;
         this._ac_meta = null;
         this._hp = null;
@@ -75,7 +76,7 @@ class MonsterExtras extends CharacterBase {
             const addAttribute = (label, data) => this._attributes[label] = [...$(data)].map(m => $(m).text().trim()).filter(Boolean).join(", ");
             const addTidbits = (label, data) => this._tidbits[label] = $(data).text().trim();
             
-            if (label == "Armor Class") {
+            if (["Armor Class", "AC"].includes(label)) {
                 if(data.length != 0) {
                     const acValues = value.split(' ');
                     this._ac = acValues[0];
@@ -84,7 +85,7 @@ class MonsterExtras extends CharacterBase {
                     addAttribute(label, data);
                 }
                 // add wild shape 2024 feature here if the player has the class level
-            } else if (label == "Hit Points") {
+            } else if (["Hit Points", "HP"].includes(label)) {
                 if(data.length != 0) {
                     const hpValues = value.split(' ');
                     this._hp = hpValues[0];
@@ -111,10 +112,35 @@ class MonsterExtras extends CharacterBase {
                     addAttribute(label, data);
                 }
            
+            } else if (["Initiative"].includes(label)) {
+                if(data.length != 0) {
+                    const initValues = value.split(' ');
+                    this._initiative = initValues[0];
+                                        
+                    if (add_dice) {
+                        const digitalDiceBox = $(attr).find(this._prefix + "__attribute-data-extra .integrated-dice__container");
+                        if (digitalDiceBox.length > 0) {
+                            // Use the digital Dice box (encounters page)
+                            digitalDiceBox.off('click').on('click', (e) => {
+                                e.stopPropagation();
+                                this.rollInitiative();
+                            })
+                            deactivateTooltipListeners(digitalDiceBox);
+                            activateTooltipListeners(digitalDiceBox, "right", beyond20_tooltip, () => this.rollInitiative());
+                        } else {
+                            if (this.isBlockFinder) {
+                                addIconButton(this, () => this.rollInitiative(), $(attr), {custom: true, append: true});
+                            } else {
+                                addIconButton(this, () => this.rollInitiative(), $(data[0]), {custom: true});
+                            }
+                        }
+                    }
+                    addAttribute(label, data);
+                }
             } else if (label == "Speed") {
                 this._speed = value;
                 addAttribute(label, data);
-            } else if (label == "Saving Throws") {
+            } else if (label == "Saving Throws") { // 2014 ONLY
                 const saves = value.split(", ");
                 const useDigitalDice = digitalDiceBoxes.length === saves.length;
                 if (add_dice && !useDigitalDice) data.html("");
@@ -180,19 +206,26 @@ class MonsterExtras extends CharacterBase {
             } else if (label == "Challenge") {
                 this._cr = value.split(" ")[0];
                 addTidbits(label, data);
-            }
+            } // TODO add immunities, senses, languages, cr
         }
 
         // Abilities
-
-        const abilities = stat_block.find("div[class*='styles_stats'] > div[class*='styles_stat']");
+        const abilities = stat_block.find("div[class*='styles_stats'] > div[class*='styles_stat'], div[class*='styles_stats'] table[class*='styles_statTable'] tbody > tr");
         let initiative_selector = this._prefix + "__beyond20-roll-initiative";
         for (let ability of abilities.toArray()) {
-            const abbr = $(ability).find("h2[class*='styles_statHeading']").text().toUpperCase();
-            const score = $(ability).find("p[class*='styles_statScore']").text();
-            const modifier = $(ability).find("p[class*='styles_statModifier']").text().slice(1, -1);
+            const abbr = $(ability).find("h2[class*='styles_statHeading'], th").text().toUpperCase();
+            const score = $(ability).find("p[class*='styles_statScore']").text() || $(ability).find("td:first").text();
+            const modifier = $(ability).find("p[class*='styles_statModifier']").text().slice(1, -1) || $(ability).find("td[class*='styles_modifier']:first").text();
+            const save = $(ability).find("td[class*='styles_modifier']:last").text();
+            const is2024StatBlock = save || false;
+
             this._abilities.push([abbreviationToAbility(abbr), abbr, score, modifier]);
+            if(is2024StatBlock) {
+                this._saves[abbr] = save;
+            }
             if (add_dice) {
+                const elementAbilityDiceRoll = is2024StatBlock ? $(ability).find("td[class*='styles_modifier']:first") : ability;
+                const elementSaveDiceRoll = $(ability).find("td[class*='styles_modifier']:last");
                 const digitalDiceBox = $(ability).find(this._prefix + "modifier .integrated-dice__container");
                 if (digitalDiceBox.length > 0) {
                     // Use the digital Dice box (encounters page)
@@ -203,13 +236,15 @@ class MonsterExtras extends CharacterBase {
                     deactivateTooltipListeners(digitalDiceBox);
                     activateTooltipListeners(digitalDiceBox, "down", beyond20_tooltip, () => this.rollAbilityCheck(abbr));
                 } else {
-                    addIconButton(this, () => this.rollAbilityCheck(abbr), ability, { prepend: true });
+                    addIconButton(this, () => this.rollAbilityCheck(abbr), elementAbilityDiceRoll, { prepend: !is2024StatBlock, append: is2024StatBlock });
+                    if(is2024StatBlock) addIconButton(this, () => this.rollSavingThrow(abbr), elementSaveDiceRoll, { append: true, margins: false });
                 }
                 if (abbr == "DEX") {
                     let roll_initiative = stat_block.find(initiative_selector);
                     const lastAttribute = stat_block.find("div[class*='styles_attribute__']").last();
                     if (lastAttribute.length > 0) {
                         let initiative = roll_initiative.eq(0);
+                        this._initiative = this._initiative || modifier;
                         // Make sure the modifier didn't change (encounters)
                         if (roll_initiative.length > 0 && roll_initiative.attr("data-modifier") !== modifier) {
                             initiative = null;
@@ -220,19 +255,19 @@ class MonsterExtras extends CharacterBase {
                             if (this.isBlockFinder) {
                                 initiative = $(
                                     E.p({ class: `Stat-Block-Styles_Stat-Block-Data ${initiative_selector.slice(1)}`,
-                                            "data-modifier": modifier },
+                                            "data-modifier": this._initiative },
                                         E.strong({ class: `block-finder-attribute-label` }, "Roll Initiative!"),
-                                        E.span({ class: `block-finder-data` }, "  " + modifier)
+                                        E.span({ class: `block-finder-data` }, "  " + this._initiative)
                                     )
                                 );
                             } else { 
                                 const attribute_prefix = `${this._prefix}__attribute`
                                 initiative = $(
                                     E.div({ class: `${attribute_prefix} ${initiative_selector} ${classNames["attribute"]}`,
-                                            "data-modifier": modifier },
+                                            "data-modifier": this._initiative },
                                         E.strong({ class: `${attribute_prefix}-label ${classNames["label"]}` }, "Roll Initiative!"),
                                         E.span({ class: `${attribute_prefix}-data` },
-                                            E.span({ class: `${attribute_prefix}-data-value ${classNames["value"]}` }, "  " + modifier)
+                                            E.span({ class: `${attribute_prefix}-data-value ${classNames["value"]}` }, "  " + this._initiative)
                                         )
                                     )
                                 );
@@ -291,9 +326,8 @@ class MonsterExtras extends CharacterBase {
     rollInitiative() {
         for (let ability of this._abilities) {
             if (ability[1] == "DEX") {
-                const modifier = ability[3];
+                let initiative = this._initiative;
 
-                let initiative = modifier;
                 if (this.getGlobalSetting("initiative-tiebreaker", false)) {
                     const tiebreaker = ability[2];
 

@@ -722,12 +722,12 @@ function addHitDieButtons(rollCallback) {
     }
 }
 
-function addIconButton(character, callback, where, { append = false, prepend = false, custom = false } = {}) {
+function addIconButton(character, callback, where, { append = false, prepend = false, custom = false, margins = false } = {}) {
     const rolltype_class = getRollTypeButtonClass(character);
     const icon = custom ? chrome.runtime.getURL("images/icons/badges/custom20.png") :
                         getBadgeIconFromClass(rolltype_class);
     const id = "beyond20-roll-" + (custom ? "custom-" : "") + Math.random().toString().slice(2);
-    const button = E.span({ class: "ct-beyond20-" + (custom ? "custom-roll-button" : "roll"), id, style: "margin-right:3px; margin-left: 3px;" },
+    const button = E.span({ class: "ct-beyond20-" + (custom ? "custom-roll-button" : "roll"), id, style: margins ? "margin-right:3px; margin-left: 3px;" : "" },
         E.img({ class: "ct-beyond20-" + (custom ? "custom-icon" : "icon"), src: icon })
     );
 
