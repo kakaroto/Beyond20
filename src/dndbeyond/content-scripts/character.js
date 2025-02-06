@@ -2065,7 +2065,7 @@ function injectRollButton(paneClass) {
         if (isRollButtonAdded())
             return;
 
-        const properties = propertyListToDict($("." + paneClass + " .ct-action-detail [role=list] > div"));
+        const properties = propertyListToDict($(`.${paneClass} [role=list] > div, .${paneClass} .ct-action-detail [role=list] > div`));
         const action_name = $(".ct-sidebar__heading").text();
         const action_parent = $(".ct-sidebar__header-parent").text();
         const to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
