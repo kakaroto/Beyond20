@@ -1,6 +1,7 @@
 v2.13.0 (February 13th 2025)
 ===
 - **Feature**: Added support for 2024 Monster statblocks (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Display Skill check effects: Reliable Talent and Silver Tongue
 - **Bugfix**: Fix HP syncing (by [@dmportella](https://github.com/dmportella))
 - **Bugfix**: Fix support for Great Weapon Fighting as a Fighting Initiate choice (by [@dmportella](https://github.com/dmportella))
 - **Bugfix**: Fix missing "Display to VTT" button on some actions

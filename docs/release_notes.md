@@ -10,6 +10,8 @@ Check out the full [Changelog](/Changelog#v2130) to see all the changes added in
 
 As usual, a big thank you to [@dmportella](https://linktr.ee/dmportella) as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
 
+P.S: The version 2.13.0 being released on February 13th is purely a coincidence! :D
+
 Enjoy.
 
 
