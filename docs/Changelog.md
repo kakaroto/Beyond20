@@ -1,3 +1,10 @@
+v2.13.0 (February 13th 2025)
+===
+- **Feature**: Added support for 2024 Monster statblocks (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix HP syncing (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for Great Weapon Fighting as a Fighting Initiate choice (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix missing "Display to VTT" button on some actions
+
 v2.12.0 (January 25th 2025)
 ===
 - **Feature**: Add support for Exhaustion rules (2014 and 2024) in the character's Effects (by [@dmportella](https://github.com/dmportella))

@@ -1,3 +1,19 @@
+v2.13.0 (February 13th 2025)
+===
+
+Hi everyone,
+
+With the release last week of the new Monster Manual 2024, we have seen the introduction of a new statblock format to the monsters!
+Today's update adds support for the new 2024 monster stat blocks, as well as adds a couple of small bugfixes.
+
+Check out the full [Changelog](/Changelog#v2130) to see all the changes added in this release.
+
+As usual, a big thank you to [@dmportella](https://linktr.ee/dmportella) as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
+
+Enjoy.
+
+
+
 v2.12.0 (January 25th 2025)
 ===
 

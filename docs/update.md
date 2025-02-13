@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.12.0
+Congratulations! Beyond20 was just updated to the latest version : v2.13.0
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -17,20 +17,20 @@ Thank you all for your support!
 
 # Release Notes
 
-v2.12.0 (January 25th 2025)
+v2.13.0 (February 13th 2025)
 ===
 
-Hi,
+Hi everyone,
 
-We've had a lot of changes to the D&D Beyond website in recent weeks and a few things continue to break, requiring more fixes. 
+With the release last week of the new Monster Manual 2024, we have seen the introduction of a new statblock format to the monsters!
+Today's update adds support for the new 2024 monster stat blocks, as well as adds a couple of small bugfixes.
 
-This release adds quite a few bugfixes and improvements, and adds a few interesting features as well, such as the ability to send to the VTT the images and art from source books, as well as the ability to apply exhaustion effects on your rolls automatically.
-
-Check out the full [Changelog](/Changelog#v2120) to see all the changes added in this release.
+Check out the full [Changelog](/Changelog#v2130) to see all the changes added in this release.
 
 As usual, a big thank you to [@dmportella](https://linktr.ee/dmportella) as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
 
 Enjoy.
+
 
 
 ---
@@ -39,23 +39,12 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-v2.12.0 (January 25th 2025)
+v2.13.0 (February 13th 2025)
 ===
-- **Feature**: Add support for Exhaustion rules (2014 and 2024) in the character's Effects (by [@dmportella](https://github.com/dmportella))
-- **Feature**: Add support for displaying art and images from a source book
-- **Feature**: Add support for displaying Rage effect when rolling with Rage enabled
-- **Feature**: Add support for parsing "+ PB" in formulas for adding the character's proficiency bonus
-- **Bugfix**: Fix support for dice formulas on actions and features (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix parsing of roll descriptions (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix support for changes tidbits and attributes in monster stat blocks (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix display of custom actions that have no damage (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix support for parsing of descriptions
-- **Bugfix**: Fix support for character traits
-- **Bugfix**: Fix rolling character backgrounds
-- **Bugfix**: Fix display of formula in the gamer log when substracting a dice roll (like Bane effect)
-- **Bugfix**: Added a workaround for broken data in DDB causing damage choices to be invalid for Sorcerous Burst (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix parsing of dice formula in Repair feature of the Steel Defender
-- **Bugfix**: *FVTT*: Fix display of initiative result in some situations when using initiative tie breaker
+- **Feature**: Added support for 2024 Monster statblocks (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix HP syncing (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for Great Weapon Fighting as a Fighting Initiate choice (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix missing "Display to VTT" button on some actions
 
 ---
 

@@ -106,11 +106,15 @@ async function rollSkillCheck(paneClass) {
     }
     roll_properties.d20 = "1d20";
     // Set Reliable Talent flag if character has the feature and skill is proficient/expertise
-    if (character.hasClassFeature("Reliable Talent") && ["Proficiency", "Expertise"].includes(proficiency))
+    if (character.hasClassFeature("Reliable Talent") && ["Proficiency", "Expertise"].includes(proficiency)) {
         roll_properties.d20 = "1d20min10";
+        addEffect(roll_properties, "Reliable Talent");
+    }
     // Set Silver Tongue if Deception or Persuasion
-    if (character.hasClassFeature("Silver Tongue") && (skill_name === "Deception" || skill_name === "Persuasion"))
+    if (character.hasClassFeature("Silver Tongue") && (skill_name === "Deception" || skill_name === "Persuasion")) {
         roll_properties.d20 = "1d20min10";
+        addEffect(roll_properties, "Silver Tongue");
+    }
     
     // Sorcerer: Clockwork Soul - Trance of Order
     if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
