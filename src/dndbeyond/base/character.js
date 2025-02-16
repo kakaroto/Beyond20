@@ -135,18 +135,33 @@ class Character extends CharacterBase {
     }
 
     updateHP() {
-        const health_pane = $(".ct-health-manager");
+        const health_pane = $(".b20-health-manage-pane");
         let hp = null;
         let max_hp = null;
         let temp_hp = null;
         if (health_pane.length > 0) {
-            hp = parseInt(health_pane.find(".ct-health-manager__health-item--cur .ct-health-manager__health-item-value").text());
-            max_hp = parseInt(health_pane.find(".ct-health-manager__health-item--max .ct-health-manager__health-item-value .ct-health-manager__health-max-current").text());
-            temp_hp = parseInt(health_pane.find(".ct-health-manager__health-item--temp .ct-health-manager__health-item-value input").val());
-        } else {
-            const hp_items = $(".ct-health-summary__hp-group--primary .ct-health-summary__hp-item, .ct-quick-info__health div[class*='styles_hitPointsBox'] div[class*='styles_innerContainer'] div[class*='styles_item']");
+            const hp_items = health_pane.find("div[class*='styles_container'] div[class*='styles_innerContainer'] div[class*='styles_item']");
             for (let item of hp_items.toArray()) {
-                const label = $(item).find("h2[class*='styles_label']").text().trim();
+                const label = $(item).find("label[class*='styles_label'], span[class*='styles_label']").text().trim();
+                if (label == "Current") {
+                    const number = $(item).find("input[class*='styles_input']");
+                    if (number.length > 0)
+                        hp = parseInt(number.val());
+                } else if (label == "Max") {
+                    max_hp = parseInt($(item).find("div[class*='styles_maxContainer']").text());
+                }
+            }
+            const temp_item = health_pane.find("div[class*='styles_container'] div[class*='styles_temp']");
+            if (temp_item.length > 0) {
+                // Can be hp-empty class instead;
+                temp_hp = parseInt(temp_item.find("input[class*='styles_input']").val()) || 0;
+            } else {
+                temp_hp = this._temp_hp;
+            }
+        } else {
+            const hp_items = $(".ct-health-summary__hp-group--primary .ct-health-summary__hp-item, .ct-quick-info__health div[class*='styles_container'] div[class*='styles_innerContainer'] div[class*='styles_item']");
+            for (let item of hp_items.toArray()) {
+                const label = $(item).find("label[class*='styles_label'], span[class*='styles_label']").text().trim();
                 if (label == "Current") {
                     // Make sure it's !an input being modified;
                     const number = $(item).find("button[class*='styles_valueButton']");
