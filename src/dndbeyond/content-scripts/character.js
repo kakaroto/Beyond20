@@ -2156,15 +2156,15 @@ function injectRollButton(paneClass) {
                 return
             removeRollButtons(pane);
         }
-    } else if (paneClass == "ct-health-manage-pane") {
-        const deathsaves = $(".ct-health-manage-pane .ct-health-manager__deathsaves");
+    } else if (paneClass == "b20-health-manage-pane") {
+        const deathsaves = $(".b20-health-manage-pane .ct-health-manager__deathsaves");
         if (deathsaves.length > 0) {
             if (isRollButtonAdded(deathsaves) || isCustomRollIconsAdded(deathsaves))
                 return;
             
             // Check for Advantage/Disadvantage Badges, as Lineages: Reborn advantage on Death Saves or similar will supply
-            const skill_badge_adv = $(".ct-health-manage-pane .ct-health-manager__deathsaves .ddbc-advantage-icon").length > 0;
-            const skill_badge_disadv = $(".ct-health-manage-pane .ct-health-manager__deathsaves .ddbc-disadvantage-icon").length > 0;
+            const skill_badge_adv = $(".b20-health-manage-pane .ct-health-manager__deathsaves .ddbc-advantage-icon").length > 0;
+            const skill_badge_disadv = $(".b20-health-manage-pane .ct-health-manager__deathsaves .ddbc-disadvantage-icon").length > 0;
             let deathSaveRollType = RollType.NORMAL;
             if (skill_badge_adv && skill_badge_disadv) {
                 deathSaveRollType = RollType.QUERY;
@@ -2666,7 +2666,6 @@ function documentModified(mutations, observer) {
         "ct-custom-action-pane",
         "ct-spell-pane",
         "ct-reset-pane",
-        "ct-health-manage-pane",
         "ct-vehicle-pane",
         "ct-condition-manage-pane",
         "ct-proficiencies-pane",
@@ -2684,7 +2683,8 @@ function documentModified(mutations, observer) {
         racialTrait: "b20-racial-trait-pane",
         character: "b20-character-manage-pane",
         creature: "b20-creature-pane",
-        background: "b20-background-pane"
+        background: "b20-background-pane",
+        healthManager: "b20-health-manage-pane"
     }
 
     function handlePane(paneClass) {
@@ -2760,7 +2760,12 @@ function documentModified(mutations, observer) {
                 const paneClass = SPECIAL_PANES.creature;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
-            }
+            } else if (Array.from(sidebar.parent().find("h1, h2"))
+                .some(e => e.textContent.includes("HP Management"))) {
+                    const paneClass = SPECIAL_PANES.healthManager;
+                    markPane(sidebar, paneClass);
+                    handlePane(paneClass);
+                }
         } else {
             // Special panes with now headers
             const avatarPane = $(".ct-sidebar__inner div[class*='styles_characterManagePane']");
