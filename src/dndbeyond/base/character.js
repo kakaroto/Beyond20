@@ -135,50 +135,62 @@ class Character extends CharacterBase {
     }
 
     updateHP() {
-        const health_pane = $(".b20-health-manage-pane");
-        let hp = null;
-        let max_hp = null;
-        let temp_hp = null;
-        if (health_pane.length > 0) {
-            const hp_items = health_pane.find("div[class*='styles_container'] div[class*='styles_innerContainer'] div[class*='styles_item']");
-            for (let item of hp_items.toArray()) {
-                const label = $(item).find("label[class*='styles_label'], span[class*='styles_label']").text().trim();
-                if (label == "Current") {
-                    const number = $(item).find("input[class*='styles_input']");
-                    if (number.length > 0)
-                        hp = parseInt(number.val());
-                } else if (label == "Max") {
-                    max_hp = parseInt($(item).find("div[class*='styles_maxContainer']").text());
+        const getHpValues = (container, selectors) => {
+            let hp = null, max_hp = null;
+            for (let item of container.find(selectors.item).toArray()) {
+                const label = $(item).find(selectors.label).text().trim();
+                if (label === "Current") {
+                    const number = $(item).find(selectors.current);
+                    if (number.length > 0) hp = parseInt(number.val() || number.text());
+                } else if (label === "Max") {
+                    max_hp = parseInt($(item).find(selectors.max).text());
                 }
             }
-            const temp_item = health_pane.find("div[class*='styles_container'] div[class*='styles_temp']");
-            if (temp_item.length > 0) {
-                // Can be hp-empty class instead;
-                temp_hp = parseInt(temp_item.find("input[class*='styles_input']").val()) || 0;
-            } else {
+            return { hp, max_hp };
+        };
+        
+        const getTempHp = (container, selectors) => {
+            const tempItem = container.find(selectors.temp);
+            return tempItem.length > 0 ? parseInt(tempItem.find(selectors.tempValue).val() || tempItem.find(selectors.tempValue).text()) || 0 : null;
+        };
+        
+        const healthPane = $(".b20-health-manage-pane");
+        const quickAccessPane = $(".ct-health-summary__hp-group--primary, .ct-quick-info__health");
+        
+        const selectors = {
+            pane: {
+                item: "div[class*='styles_container'] div[class*='styles_innerContainer'] div[class*='styles_item']",
+                label: "label[class*='styles_label'], span[class*='styles_label']",
+                current: "input[class*='styles_input']",
+                max: "div[class*='styles_maxContainer']",
+                temp: "div[class*='styles_container'] div[class*='styles_temp']",
+                tempValue: "input[class*='styles_input']"
+            },
+            quickAccess: {
+                item: ".ct-health-summary__hp-item, div[class*='styles_container'] div[class*='styles_innerContainer'] div[class*='styles_item']",
+                label: "label[class*='styles_label'], span[class*='styles_label']",
+                current: "button[class*='styles_valueButton']",
+                max: "div[class*='styles_number']",
+                temp: ".ct-health-summary__hp-group--temp .ct-health-summary__hp-item--temp .ct-health-summary__hp-item-content, div[class*='styles_temp']",
+                tempValue: ".ct-health-summary__hp-number, button[class*='styles_valueButton'], input[class*='styles_input']"
+            }
+        };
+        
+        let hp = 0, max_hp = 0, temp_hp = 0;
+        if(healthPane || quickAccessPane){
+            ({ hp, max_hp } = getHpValues(healthPane, selectors.pane));
+            if (hp === null || max_hp === null) {
+                ({ hp, max_hp } = getHpValues(quickAccessPane, selectors.quickAccess));
+            }
+           
+            temp_hp = getTempHp(healthPane, selectors.pane);
+            if (temp_hp === null) {
+                temp_hp = getTempHp(quickAccessPane, selectors.quickAccess);
+            }
+            if (temp_hp === null) {
                 temp_hp = this._temp_hp;
             }
         } else {
-            const hp_items = $(".ct-health-summary__hp-group--primary .ct-health-summary__hp-item, .ct-quick-info__health div[class*='styles_container'] div[class*='styles_innerContainer'] div[class*='styles_item']");
-            for (let item of hp_items.toArray()) {
-                const label = $(item).find("label[class*='styles_label'], span[class*='styles_label']").text().trim();
-                if (label == "Current") {
-                    // Make sure it's !an input being modified;
-                    const number = $(item).find("button[class*='styles_valueButton']");
-                    if (number.length > 0)
-                        hp = parseInt(number.text());
-                } else if (label == "Max") {
-                    max_hp = parseInt($(item).find("div[class*='styles_number']").text());
-                }
-            }
-            const temp_item = $(".ct-health-summary__hp-group--temp .ct-health-summary__hp-item--temp .ct-health-summary__hp-item-content, .ct-quick-info__health div[class*='styles_temp']");
-            if (temp_item.length > 0) {
-                // Can be hp-empty class instead;
-                temp_hp = parseInt(temp_item.find(".ct-health-summary__hp-number, button[class*='styles_valueButton']").text()) || 0;
-            } else {
-                temp_hp = this._temp_hp;
-            }
-
             const mobile_hp = $(".ct-status-summary-mobile__hp-current");
             if (mobile_hp.length > 0) {
                 hp = parseInt(mobile_hp.text());
@@ -190,14 +202,15 @@ class Character extends CharacterBase {
                     temp_hp = 0;
                 hp = hp - temp_hp;
             }
-            if ($(".ct-status-summary-mobile__deathsaves-group").length > 0 ||
-                $(".ct-health-summary__deathsaves").length > 0) {
-                // if (we find death saving section, then it means the HP is 0;
-                hp = 0;
-                temp_hp = 0;
-                max_hp = this._max_hp;
-            }
         }
+        if ($(".ct-status-summary-mobile__deathsaves-group, .ct-quick-info__health div[class*='styles_deathSaves'], .b20-health-manage-pane div[class*='styles_deathSavesGroups']").length > 0 ||
+            $(".ct-health-summary__deathsaves").length > 0) {
+            // if (we find death saving section, then it means the HP is 0;
+            hp = 0;
+            temp_hp = 0;
+            max_hp = this._max_hp;
+        }
+        
         if (hp !== null && max_hp !== null && (this._hp != hp || this._max_hp != max_hp || this._temp_hp != temp_hp)) {
             this._hp = hp;
             this._max_hp = max_hp;
