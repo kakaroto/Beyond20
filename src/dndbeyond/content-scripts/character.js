@@ -2157,14 +2157,14 @@ function injectRollButton(paneClass) {
             removeRollButtons(pane);
         }
     } else if (paneClass == "b20-health-manage-pane") {
-        const deathsaves = $(".b20-health-manage-pane .ct-health-manager__deathsaves");
+        const deathsaves = $(".b20-health-manage-pane .ct-health-manager__deathsaves, .b20-health-manage-pane div[class*='styles_deathSavesGroups']");
         if (deathsaves.length > 0) {
             if (isRollButtonAdded(deathsaves) || isCustomRollIconsAdded(deathsaves))
                 return;
             
             // Check for Advantage/Disadvantage Badges, as Lineages: Reborn advantage on Death Saves or similar will supply
-            const skill_badge_adv = $(".b20-health-manage-pane .ct-health-manager__deathsaves .ddbc-advantage-icon").length > 0;
-            const skill_badge_disadv = $(".b20-health-manage-pane .ct-health-manager__deathsaves .ddbc-disadvantage-icon").length > 0;
+            const skill_badge_adv = $(".b20-health-manage-pane .ct-health-manager__deathsaves .ddbc-advantage-icon, .b20-health-manage-pane div[class*='styles_diceAdjustments'] span[class*='ddbc-advantage-icon']").length > 0;
+            const skill_badge_disadv = $(".b20-health-manage-pane .ct-health-manager__deathsaves .ddbc-disadvantage-icon, .b20-health-manage-pane div[class*='styles_diceAdjustments'] span[class*='ddbc-disadvantage-icon']").length > 0;
             let deathSaveRollType = RollType.NORMAL;
             if (skill_badge_adv && skill_badge_disadv) {
                 deathSaveRollType = RollType.QUERY;
@@ -2199,7 +2199,7 @@ function injectRollButton(paneClass) {
                     "modifier": modifier,
                     "advantage": deathSaveRollType
                 })
-            }, ".ct-health-manager__deathsaves-group--fails", { custom: true });
+            }, ".b20-health-manage-pane div[class*='styles_deathSavesGroups'] div[class*='styles_container']:first", { custom: true });
         }
     } else if (paneClass == "b20-creature-pane") {
         if (isRollButtonAdded() || isCustomRollIconsAdded()) {
