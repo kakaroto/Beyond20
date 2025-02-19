@@ -153,12 +153,9 @@ class Character extends CharacterBase {
             const tempItem = container.find(selectors.temp);
             return tempItem.length > 0 ? parseInt(tempItem.find(selectors.tempValue).val() || tempItem.find(selectors.tempValue).text()) || 0 : null;
         };
-        
-        const healthPane = $(".b20-health-manage-pane");
-        const quickAccessPane = $(".ct-health-summary__hp-group--primary, .ct-quick-info__health");
-        
         const selectors = {
             pane: {
+                group: ".b20-health-manage-pane",
                 item: "div[class*='styles_container'] div[class*='styles_innerContainer'] div[class*='styles_item']",
                 label: "label[class*='styles_label'], span[class*='styles_label']",
                 current: "input[class*='styles_input']",
@@ -167,6 +164,7 @@ class Character extends CharacterBase {
                 tempValue: "input[class*='styles_input']"
             },
             quickAccess: {
+                group: ".ct-health-summary__hp-group--primary, .ct-quick-info__health",
                 item: ".ct-health-summary__hp-item, div[class*='styles_container'] div[class*='styles_innerContainer'] div[class*='styles_item']",
                 label: "label[class*='styles_label'], span[class*='styles_label']",
                 current: "button[class*='styles_valueButton']",
@@ -176,8 +174,11 @@ class Character extends CharacterBase {
             }
         };
         
+        const healthPane = $(selectors.pane.group);
+        const quickAccessPane = $(selectors.quickAccess.group);
+        
         let hp = 0, max_hp = 0, temp_hp = 0;
-        if(healthPane || quickAccessPane){
+        if (healthPane.length > 0 || quickAccessPane.length > 0) {
             ({ hp, max_hp } = getHpValues(healthPane, selectors.pane));
             if (hp === null || max_hp === null) {
                 ({ hp, max_hp } = getHpValues(quickAccessPane, selectors.quickAccess));
@@ -203,9 +204,11 @@ class Character extends CharacterBase {
                 hp = hp - temp_hp;
             }
         }
-        if ($(".ct-status-summary-mobile__deathsaves-group, .ct-quick-info__health div[class*='styles_deathSaves'], .b20-health-manage-pane div[class*='styles_deathSavesGroups']").length > 0 ||
-            $(".ct-health-summary__deathsaves").length > 0) {
-            // if (we find death saving section, then it means the HP is 0;
+        if ($(`.ct-status-summary-mobile__deathsaves-group, 
+            .ct-quick-info__health div[class*='styles_deathSaves'], 
+            .b20-health-manage-pane div[class*='styles_deathSavesGroups'],
+            .ct-health-summary__deathsaves`).length > 0) {
+            // if we find death saving section, then it means the HP is 0
             hp = 0;
             temp_hp = 0;
             max_hp = this._max_hp;
