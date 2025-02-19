@@ -1792,7 +1792,7 @@ function displayBackground() {
 
 function displayAction(paneClass) {
     const action_name = $(".ct-sidebar__heading").text();
-    const description = descriptionToString(".ct-action-detail__description, .ct-action-pane div[class*='styles_description']");
+    const description = descriptionToString(`.ct-action-detail__description, .${paneClass} div[class*='styles_description']`);
     return sendRollWithCharacter("trait", 0, {
         "name": action_name,
         "description": description,
