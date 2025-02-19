@@ -1,3 +1,15 @@
+v2.13.1 (February 19th 2025)
+===
+
+Hi,
+
+We're releasing today a hotfix release as D&D Beyond have changed their site and the HP syncing fix from last week's release already needed to be rewritten.
+
+This hotfix release fixes HP syncing as well as the missing description when displaying actions.
+
+Thanks and enjoy!
+
+
 v2.13.0 (February 13th 2025)
 ===
 

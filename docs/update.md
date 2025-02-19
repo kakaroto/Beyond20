@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.13.0
+Congratulations! Beyond20 was just updated to the latest version : v2.13.1
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -16,6 +16,17 @@ Thank you all for your support!
 {% include_relative known_issues.md %}
 
 # Release Notes
+
+v2.13.1 (February 19th 2025)
+===
+
+Hi,
+
+We're releasing today a hotfix release as D&D Beyond have changed their site and the HP syncing fix from last week's release already needed to be rewritten.
+
+This hotfix release fixes HP syncing as well as the missing description when displaying actions.
+
+Thanks and enjoy!
 
 v2.13.0 (February 13th 2025)
 ===
@@ -39,6 +50,11 @@ Enjoy.
 Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
+
+v2.13.1 (February 19th 2025)
+===
+- **Bugfix**: Fix HP syncing again (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix missing action description when using the "Display to VTT" option
 
 v2.13.0 (February 13th 2025)
 ===

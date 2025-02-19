@@ -1,3 +1,8 @@
+v2.13.1 (February 19th 2025)
+===
+- **Bugfix**: Fix HP syncing again (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix missing action description when using the "Display to VTT" option
+
 v2.13.0 (February 13th 2025)
 ===
 - **Feature**: Added support for 2024 Monster statblocks (by [@dmportella](https://github.com/dmportella))
