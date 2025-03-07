@@ -526,6 +526,17 @@ function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, set
         damage_types.push("Sharpshooter");
         settings_to_change["sharpshooter"] = false;
     }
+
+    // Feats
+    // Great Weapon Master Feat 2024 It applies to longbow and heavy crossbow and any other ranged weapon with heavy property
+    if (to_hit !== null && 
+        character.getSetting("great-weapon-master-2024", true) &&
+        character.hasFeat("Great Weapon Master 2024") &&
+        this.IsHeavy(properties)) {
+        const proficiency = parseInt(character._proficiency);
+        damages.push(proficiency.toString());
+        damage_types.push("Great Weapon Master");
+    }
     
     return to_hit;
 }
