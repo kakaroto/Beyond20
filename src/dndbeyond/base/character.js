@@ -43,9 +43,10 @@ class Character extends CharacterBase {
                 this._name = null;
         }
         if (this._avatar === null) {
-            const avatar = $(".ddbc-character-avatar__portrait").css('background-image');
-            if (avatar && avatar.startsWith("url("))
-                this._avatar = avatar.slice(5, -2);
+            const avatar = $(".ddbc-character-avatar__portrait");
+            const link = avatar.attr("src");
+            if (avatar && link)
+                this._avatar = avatar.attr("src");
         }
         if (this._race === null) {
             this._race = $(".ddbc-character-summary__race").text();
