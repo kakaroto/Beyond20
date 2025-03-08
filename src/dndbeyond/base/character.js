@@ -129,7 +129,7 @@ class Character extends CharacterBase {
             }
             this._abilities.push([name, abbr, value, modifier]);
         }
-        if (this._settings) {
+        if (this._settings && this._abilities.length > 0) {
             this.updateHP();
             this.updateFeatures();
         }
