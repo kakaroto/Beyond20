@@ -109,7 +109,7 @@ class Character extends CharacterBase {
         if (speed == "")
             speed = $(".ct-combat-mobile__extra--speed .ct-combat-mobile__extra-value .ct-distance-number__number,.ddbc-combat-mobile__extra--speed .ddbc-combat-mobile__extra-value .ddbc-distance-number__number, .ct-combat-mobile__extra--speed .ct-combat-mobile__extra-value").text();
         if (speed != "")
-            this._speed = speed;
+            this._speed = parseInt(speed);
         let abilities = $(".ct-quick-info__ability,.ddbc-quick-info__ability");
         if (abilities.length == 0)
             abilities = $(".ct-main-mobile__ability,.ddbc-main-mobile__ability");
