@@ -43,9 +43,10 @@ class Character extends CharacterBase {
                 this._name = null;
         }
         if (this._avatar === null) {
-            const avatar = $(".ddbc-character-avatar__portrait").css('background-image');
-            if (avatar && avatar.startsWith("url("))
-                this._avatar = avatar.slice(5, -2);
+            const avatar = $(".ddbc-character-avatar__portrait");
+            const link = avatar.attr("src");
+            if (avatar && link)
+                this._avatar = avatar.attr("src");
         }
         if (this._race === null) {
             this._race = $(".ddbc-character-summary__race").text();
@@ -104,9 +105,9 @@ class Character extends CharacterBase {
             ac = $(".ct-combat-mobile__extra--ac .ct-combat-mobile__extra-value,.ddbc-combat-mobile__extra--ac .ddbc-combat-mobile__extra-value").text();
         if (ac != "")
             this._ac = ac;
-        let speed = $(".ct-speed-box__box-value .ct-distance-number__number,.ddbc-speed-box__box-value .ddbc-distance-number__number").text();
+        let speed = $(".ct-speed-box__box-value .ct-distance-number__number,.ddbc-speed-box__box-value .ddbc-distance-number__number, .ct-speed-box .ct-speed-box__box-value ").text();
         if (speed == "")
-            speed = $(".ct-combat-mobile__extra--speed .ct-combat-mobile__extra-value .ct-distance-number__number,.ddbc-combat-mobile__extra--speed .ddbc-combat-mobile__extra-value .ddbc-distance-number__number").text();
+            speed = $(".ct-combat-mobile__extra--speed .ct-combat-mobile__extra-value .ct-distance-number__number,.ddbc-combat-mobile__extra--speed .ddbc-combat-mobile__extra-value .ddbc-distance-number__number, .ct-combat-mobile__extra--speed .ct-combat-mobile__extra-value").text();
         if (speed != "")
             this._speed = speed;
         let abilities = $(".ct-quick-info__ability,.ddbc-quick-info__ability");

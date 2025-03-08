@@ -2243,9 +2243,7 @@ function injectRollButton(paneClass) {
     } else if (paneClass == "b20-character-manage-pane") {
         const avatar = $(".b20-character-manage-pane .ddbc-character-avatar__portrait");
         const char_name = $(".b20-character-manage-pane div[class*='styles_characterName'] h1").text().trim();
-        let avatar_link = avatar.css('background-image');
-        if (avatar_link && avatar_link.startsWith("url("))
-            avatar_link = avatar_link.slice(5, -2);
+        const avatar_link = avatar.attr("src");
         if (!avatar_link || isRollButtonAdded())
             return;
         const button = addDisplayButton(() => sendRoll(character, "avatar", avatar_link, { "name": char_name }), avatar, { small: true, append: false, image: false });
