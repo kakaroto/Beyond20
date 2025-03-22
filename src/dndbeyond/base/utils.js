@@ -266,7 +266,8 @@ async function buildAttackRoll(character, attack_source, name, description, prop
 
         // TODO: refactor into a method and remove it from build attack roll 
         if (character.hasClass("Rogue") && character.hasClassFeature("Sneak Attack 2024") && 
-            character.getSetting("rogue-sneak-attack", false) && 
+            (character.getSetting("rogue-sneak-attack", false) || 
+            name.includes("Sneak Attack") && !character.getSetting("rogue-sneak-attack", false) && character.getSetting("rogue-cunning-strike", false)) && 
             !name.includes("Psionic Power: Psychic Whispers") && 
             (properties["Attack Type"] == "Ranged" ||
             (properties["Properties"] && properties["Properties"].includes("Finesse")) ||
@@ -285,7 +286,8 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                     validChoices.push(choice);
                 }
                 roll_properties["cunning-strike-effects"] = validChoices.map(m => m.action).join(", ") || undefined;
-                settings_to_change["rogue-cunning-strike"] = false;
+                const isLocked = character.getSetting("rogue-cunning-strike-lock", false);
+                if(!isLocked) settings_to_change["rogue-cunning-strike"] = false;
             }
             const sneak_attack = sneakDieCount > 0 ? `${sneakDieCount}d6` : "0";
             if (name.includes("Sneak Attack")) {

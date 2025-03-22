@@ -735,6 +735,11 @@ const character_settings = {
         "title": "Rogue: Cunning Strike",
         "description": "When you deal Sneak Attack damage, you can add Cunning Strike effects to the roll.",
         "type": "bool",
+        "default": false,
+        "lock": "rogue-cunning-strike-lock"
+    },
+    "rogue-cunning-strike-lock": {
+        "type": "bool",
         "default": false
     },
     "rogue-assassinate": {
@@ -974,12 +979,17 @@ function createHTMLOptionEx(name, option, short = false, {advanced=false}={}) {
     const description = short ? option.short_description : option.description;
     const description_p = description ? description.split("\n").map(desc => E.p({}, desc)) : [];
     const title = short ? option.short : option.title;
+    const lock = option.lock;
     let e = null;
     if (option.type == "bool") {
         e = E.li({ class: "list-group-item beyond20-option beyond20-option-bool" },
             E.label({ class: "list-content", for: name },
                 E.h4({}, title),
                 ...description_p,
+                (_ => lock ? E.div({ class: 'material-switch--padlock pull-right' },
+                    E.input({ id: lock, class: "beyond20-option-input", lock, type: "checkbox" }),
+                    E.label({ for: lock })
+                ) : null )(),
                 E.div({ class: 'material-switch pull-right' },
                     E.input({ id: name, class: "beyond20-option-input", name, type: "checkbox" }),
                     E.label({ for: name, class: "label-default" })
@@ -1126,7 +1136,8 @@ function extractSettingsData(_list = options_list) {
     return settings;
 }
 
-function loadSettings(settings, _list = options_list) {
+function 
+loadSettings(settings, _list = options_list) {
     for (let option in settings) {
         if (!_list[option]) {
             continue;

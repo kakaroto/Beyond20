@@ -99,6 +99,37 @@
 	    left: 20px;
 	}
 
+	/* Scoped under .material-switch--padlock to prevent conflicts */
+.material-switch--padlock {
+    position: absolute;
+    right: 55px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-right: 5px;
+}
+
+.material-switch--padlock > input[type="checkbox"] {
+    display: none;
+}
+
+.material-switch--padlock > label {
+	font-size: 24px;
+	cursor: pointer;
+	transition: color 0.3s ease-in-out;
+	user-select: none;
+	font-family: "Segoe UI Symbol", "Segoe UI", Arial, sans-serif;
+}
+
+.material-switch--padlock > label::before {
+    content: "\01F513"; /* 🔓 */
+    color: #9E9E9E;
+}
+
+.material-switch--padlock > input[type="checkbox"]:checked + label::before {
+    content: "\01F512"; /* 🔒 */
+    color: rgb(66, 133, 244);
+}
+
 
 .disabled {
     pointer-events: none;
