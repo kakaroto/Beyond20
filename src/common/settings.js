@@ -736,8 +736,13 @@ const character_settings = {
         "default": false
     },
     "rogue-sneak-attack": {
-        "title": "Rogue: Sneak Attack",
+        "title": "Rogue: Sneak Attack (Apply to next roll only)",
         "description": "Send Sneak Attack damage with each attack roll",
+        "type": "bool",
+        "default": true,
+        "lock": "rogue-sneak-attack-lock"
+    },
+    "rogue-sneak-attack-lock": {
         "type": "bool",
         "default": true
     },

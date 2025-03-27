@@ -304,6 +304,9 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                 damages.push(sneak_attack);
                 damage_types.push("Sneak Attack");
             }
+
+            const isLocked = character.getSetting("rogue-sneak-attack-lock", false);
+            if(!isLocked) settings_to_change["rogue-sneak-attack"] = false;
         }
         const crits = damagesToCrits(character, damages, damage_types);
         const crit_damages = [];

@@ -810,6 +810,9 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
             const sneak_attack = `${sneakDieCount}d6`;
             damages.push(sneak_attack);
             damage_types.push("Sneak Attack");
+
+            const isLocked = character.getSetting("rogue-sneak-attack-lock", false);
+            if(!isLocked) settings_to_change["rogue-sneak-attack"] = false;
         }
     }
 
