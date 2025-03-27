@@ -682,7 +682,8 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
                 blades_dmg = "8d6"
             damages.push(blades_dmg);
             damage_types.push("Psychic Blades");
-            settings_to_change["bard-psychic-blades"] = false;
+            const isLocked = character.getSetting("bard-psychic-blades-lock", false);
+            if(!isLocked) settings_to_change["bard-psychic-blades"] = false;
         }
     }
 

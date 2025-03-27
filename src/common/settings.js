@@ -579,6 +579,11 @@ const character_settings = {
         "title": "Bard: College of Whispers: Psychic Blades",
         "description": "Use your Bardic Inspiration to deal extra psychic damage (Apply to next roll only)",
         "type": "bool",
+        "default": false,
+        "lock": "bard-psychic-blades-lock"
+    },
+    "bard-psychic-blades-lock": {
+        "type": "bool",
         "default": false
     },
     "bard-spiritual-focus": {
