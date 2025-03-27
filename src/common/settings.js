@@ -821,6 +821,11 @@ const character_settings = {
         "title": "Feat: Charger Extra Damage (Apply to next roll only)",
         "description": "You charge into battle, lending weight to your blow!",
         "type": "bool",
+        "default": false,
+        "lock": "charger-feat-lock"
+    },
+    "charger-feat-lock": {
+        "type": "bool",
         "default": false
     },
     "great-weapon-master": {

@@ -482,7 +482,9 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
         character.getSetting("charger-feat")) {
         damages.push("+5");
         damage_types.push("Charger Feat");
-        settings_to_change["charger-feat"] = false;
+
+        const isLocked = character.getSetting("charger-feat-lock", false);
+        if(!isLocked) settings_to_change["charger-feat"] = false;
     } else if (character.hasFeat("Charger 2024") &&
         character.getSetting("charger-feat")) {
             let charge_dmg = "1d8";
@@ -500,7 +502,9 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
 
             damages.push(charge_dmg);
             damage_types.push("Charger Feat");
-            settings_to_change["charger-feat"] = false;
+
+            const isLocked = character.getSetting("charger-feat-lock", false);
+            if(!isLocked) settings_to_change["charger-feat"] = false;            
     }
     
     return to_hit;
