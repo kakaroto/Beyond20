@@ -752,7 +752,8 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
                         : (character.hasClassFeature("Stalker’s Flurry 2024") ? "2d8" : "2d6")
                 );
                 damage_types.push("Dread Ambusher");
-                settings_to_change["ranger-dread-ambusher"] = false;
+                const isLocked = character.getSetting("ranger-dread-ambusher-lock", false);
+                if(!isLocked) settings_to_change["ranger-dread-ambusher"] = false;
             }
         }
         

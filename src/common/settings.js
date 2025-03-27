@@ -698,6 +698,11 @@ const character_settings = {
         "title": "Ranger: Gloom Stalker: Dread Ambusher (Apply to next roll only)",
         "description": "You skills in ambushing your enemies lend more damage to your initial strike",
         "type": "bool",
+        "default": false,
+        "lock": "ranger-dread-ambusher-lock"
+    },
+    "ranger-dread-ambusher-lock": {
+        "type": "bool",
         "default": false
     },
     "ranger-planar-warrior": {
