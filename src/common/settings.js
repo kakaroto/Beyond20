@@ -854,6 +854,11 @@ const character_settings = {
         "title": "Feat: Sharpshooter (Apply to next roll only)",
         "description": "Apply Sharpshooter -5 penalty to roll and +10 to damage",
         "type": "bool",
+        "default": false,
+        "lock": "sharpshooter-lock"
+    },
+    "sharpshooter-lock": {
+        "type": "bool",
         "default": false
     },
     "brutal-critical": {

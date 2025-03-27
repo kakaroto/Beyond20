@@ -531,7 +531,8 @@ function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, set
         to_hit += " - 5";
         damages.push("10");
         damage_types.push("Sharpshooter");
-        settings_to_change["sharpshooter"] = false;
+        const isLocked = character.getSetting("sharpshooter-lock", false);
+        if(!isLocked) settings_to_change["sharpshooter"] = false;
     }
 
     // Feats
