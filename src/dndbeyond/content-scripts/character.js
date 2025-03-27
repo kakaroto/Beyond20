@@ -457,7 +457,8 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
         to_hit += " - 5";
         damages.push("10");
         damage_types.push("Great Weapon Master");
-        settings_to_change["great-weapon-master"] = false;
+        const isLocked = character.getSetting("great-weapon-master-lock", false);
+        if(!isLocked) settings_to_change["great-weapon-master"] = false;
     }
 
     if (to_hit !== null && 
@@ -468,6 +469,8 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
         const proficiency = parseInt(character._proficiency);
         damages.push(proficiency.toString());
         damage_types.push("Great Weapon Master");
+        const isLocked = character.getSetting("great-weapon-master-2024-lock", false);
+        if(!isLocked) settings_to_change["great-weapon-master-2024"] = false;
     }
     
     // enhanced unarmed strike
@@ -540,6 +543,8 @@ function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, set
         const proficiency = parseInt(character._proficiency);
         damages.push(proficiency.toString());
         damage_types.push("Great Weapon Master");
+        const isLocked = character.getSetting("great-weapon-master-2024-lock", false);
+        if(!isLocked) settings_to_change["great-weapon-master-2024"] = false;
     }
     
     return to_hit;
