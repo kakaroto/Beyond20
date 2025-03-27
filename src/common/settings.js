@@ -733,7 +733,7 @@ const character_settings = {
     },
     "rogue-cunning-strike": {
         "title": "Rogue: Cunning Strike",
-        "description": "When you deal Sneak Attack damage, you can add Cunning Strike effects to the roll.",
+        "description": "When you deal Sneak Attack damage, you can add Cunning Strike effects to the roll. (Apply to next roll only)",
         "type": "bool",
         "default": false,
         "lock": "rogue-cunning-strike-lock"
@@ -980,16 +980,17 @@ function createHTMLOptionEx(name, option, short = false, {advanced=false}={}) {
     const description_p = description ? description.split("\n").map(desc => E.p({}, desc)) : [];
     const title = short ? option.short : option.title;
     const lock = option.lock;
+    const lockDiv = lock ? E.div({ class: 'material-switch--padlock pull-right' },  
+            E.input({ id: lock, class: "beyond20-option-input", lock, type: "checkbox" }),  
+            E.label({ for: lock })
+        ): null; 
     let e = null;
     if (option.type == "bool") {
         e = E.li({ class: "list-group-item beyond20-option beyond20-option-bool" },
             E.label({ class: "list-content", for: name },
                 E.h4({}, title),
                 ...description_p,
-                (_ => lock ? E.div({ class: 'material-switch--padlock pull-right' },
-                    E.input({ id: lock, class: "beyond20-option-input", lock, type: "checkbox" }),
-                    E.label({ for: lock })
-                ) : null )(),
+                ...(lock ? [lockDiv] : []),
                 E.div({ class: 'material-switch pull-right' },
                     E.input({ id: name, class: "beyond20-option-input", name, type: "checkbox" }),
                     E.label({ for: name, class: "label-default" })

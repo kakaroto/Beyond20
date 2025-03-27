@@ -265,15 +265,23 @@ async function buildAttackRoll(character, attack_source, name, description, prop
         }
 
         // TODO: refactor into a method and remove it from build attack roll 
-        if (character.hasClass("Rogue") && character.hasClassFeature("Sneak Attack 2024") && 
-            (character.getSetting("rogue-sneak-attack", false) || 
-            name.includes("Sneak Attack") && !character.getSetting("rogue-sneak-attack", false) && character.getSetting("rogue-cunning-strike", false)) && 
-            !name.includes("Psionic Power: Psychic Whispers") && 
-            (properties["Attack Type"] == "Ranged" ||
-            (properties["Properties"] && properties["Properties"].includes("Finesse")) ||
-            name.includes("Psychic Blade") ||
-            name.includes("Shadow Blade") ||
-            name.includes("Sneak Attack"))) {
+        if (character.hasClass("Rogue") &&
+            character.hasClassFeature("Sneak Attack 2024") &&
+            !name.includes("Psionic Power: Psychic Whispers") &&
+            (
+                character.getSetting("rogue-sneak-attack", false) ||
+                (
+                    name.includes("Sneak Attack") &&
+                    character.getSetting("rogue-cunning-strike", false)
+                )
+            ) && (
+                properties["Attack Type"] === "Ranged" ||
+                (properties["Properties"] && properties["Properties"].includes("Finesse")) ||
+                name.includes("Psychic Blade") ||
+                name.includes("Shadow Blade") ||
+                name.includes("Sneak Attack")
+            )
+        ) {
             let sneakDieCount = Math.ceil(character._classes["Rogue"] / 2);
             // Rogue: Sneak Attack
             if (character.hasClassFeature("Cunning Strike") && character.getSetting("rogue-cunning-strike", false)) {
