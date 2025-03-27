@@ -576,8 +576,8 @@ const character_settings = {
         "default": true
     },
     "bard-psychic-blades": {
-        "title": "Bard: College of Whispers: Psychic Blades",
-        "description": "Use your Bardic Inspiration to deal extra psychic damage (Apply to next roll only)",
+        "title": "Bard: College of Whispers: Psychic Blades (Apply to next roll only)",
+        "description": "Use your Bardic Inspiration to deal extra psychic damage.",
         "type": "bool",
         "default": false,
         "lock": "bard-psychic-blades-lock"
@@ -742,8 +742,8 @@ const character_settings = {
         "default": true
     },
     "rogue-cunning-strike": {
-        "title": "Rogue: Cunning Strike",
-        "description": "When you deal Sneak Attack damage, you can add Cunning Strike effects to the roll. (Apply to next roll only)",
+        "title": "Rogue: Cunning Strike (Apply to next roll only)",
+        "description": "When you deal Sneak Attack damage, you can add Cunning Strike effects to the roll.",
         "type": "bool",
         "default": false,
         "lock": "rogue-cunning-strike-lock"
@@ -754,7 +754,12 @@ const character_settings = {
     },
     "rogue-assassinate": {
         "title": "Rogue: Assassin: Assassinate Surprise Attack (Apply to next roll only)",
-        "description": "Roll with advantage and roll critical damage dice",
+        "description": "Roll with advantage and roll critical damage dice.",
+        "type": "bool",
+        "default": false,
+        "lock": "rogue-assassinate-lock"
+    },
+    "rogue-assassinate-lock": {
         "type": "bool",
         "default": false
     },

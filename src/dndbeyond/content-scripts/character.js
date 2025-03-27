@@ -1078,7 +1078,10 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
             character.getSetting("rogue-assassinate", false)) {
             roll_properties["critical-limit"] = 1;
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-            settings_to_change["rogue-assassinate"] = false;
+
+            const isLocked = character.getSetting("rogue-assassinate-lock", false);
+            if(!isLocked) settings_to_change["rogue-assassinate"] = false;
+            
         }
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
@@ -1327,7 +1330,9 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             character.getSetting("rogue-assassinate", false)) {
             roll_properties["critical-limit"] = 1;
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-            settings_to_change["rogue-assassinate"] = false;
+            
+            const isLocked = character.getSetting("rogue-assassinate-lock", false);
+            if(!isLocked) settings_to_change["rogue-assassinate"] = false;
         }
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
@@ -1715,7 +1720,9 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
             character.getSetting("rogue-assassinate", false)) {
             roll_properties["critical-limit"] = 1;
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-            settings_to_change["rogue-assassinate"] = false;
+            
+            const isLocked = character.getSetting("rogue-assassinate-lock", false);
+            if(!isLocked) settings_to_change["rogue-assassinate"] = false;
         }
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
