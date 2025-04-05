@@ -213,7 +213,7 @@ function onMessage(request, sender, sendResponse) {
                 }
             }
         }
-        if (request.character?.settings["use-vtt"] == false || request.request?.character?.settings["use-vtt"] == false) {
+        if (request.character?.settings?.["use-vtt"] == false || request.request?.character?.settings?.["use-vtt"] == false) {
             sendResponse({ "success": true, "vtt": [], "error": null, "request": request })
             return true;
         }
