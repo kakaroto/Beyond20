@@ -213,6 +213,10 @@ function onMessage(request, sender, sendResponse) {
                 }
             }
         }
+        if (request.character?.settings["use-vtt"] == false || request.request?.character?.settings["use-vtt"] == false) {
+            sendResponse({ "success": true, "vtt": [], "error": null, "request": request })
+            return true;
+        }
         const trackFailure = { "roll20": null, "fvtt": null, "custom": null }
         if (settings["vtt-tab"] && settings["vtt-tab"].vtt === "dndbeyond") {
             sendResponse({ "success": false, "vtt": ["dndbeyond"], "error": null, "request": request })

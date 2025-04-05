@@ -481,6 +481,13 @@ const character_settings = {
             "two": "Use weapon Two-handed"
         }
     },
+    "use-vtt": {
+        "short": "Use VTT",
+        "title": "Use VTT",
+        "description": "Send rolls to the default VTT.",
+        "type": "bool",
+        "default": true
+    },
     "custom-roll-dice": {
         "title": "Custom Roll dice formula bonus",
         "description": "Add custom formula to d20 rolls (Bless, Guidance, Bane, Magic Weapon, etc..)",
