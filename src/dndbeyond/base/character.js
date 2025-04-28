@@ -286,21 +286,24 @@ class Character extends CharacterBase {
     getFeatureVersionName(feat_name, feat_reference) {
         if (!feat_reference) return feat_name;
         let is2024 = false;
-        if((feat_name.toLowerCase() === "great weapon master" ||
-            feat_name.toLowerCase() === "sharpshooter" ||
-            feat_name.toLowerCase() === "dread ambusher" ||
-            feat_name.toLowerCase() === "stalker’s flurry" ||            
-            feat_name.toLowerCase() === "charger" ||
-            feat_name.toLowerCase() === "tavern brawler" ||
-            feat_name.toLowerCase() === "polearm master") && 
-            feat_reference.toLowerCase().includes("2024")) {
-                is2024 = true;
-        } else if ((feat_name.toLowerCase() === "fighting style" ||
-            feat_name.toLowerCase() === "additional fighting style" ||
-            feat_name.toLowerCase() === "great weapon fighting" ||
-            feat_name.toLowerCase() === "sneak attack") &&
-            feat_reference.toLowerCase().includes("free-rules")) {
-                is2024 = true;
+        if (
+            (
+                feat_name.toLowerCase() === "great weapon master" ||
+                feat_name.toLowerCase() === "sharpshooter" ||
+                feat_name.toLowerCase() === "dread ambusher" ||
+                feat_name.toLowerCase() === "stalker’s flurry" ||            
+                feat_name.toLowerCase() === "charger" ||
+                feat_name.toLowerCase() === "tavern brawler" ||
+                feat_name.toLowerCase() === "polearm master" ||
+                feat_name.toLowerCase() === "fighting style" ||
+                feat_name.toLowerCase() === "additional fighting style" ||
+                feat_name.toLowerCase() === "great weapon fighting" ||
+                feat_name.toLowerCase() === "sneak attack"       
+            ) && ( 
+                feat_reference.toLowerCase().includes("2024")) ||
+                feat_reference.toLowerCase().includes("free-rules")
+         ) {
+            is2024 = true;
         }
 
         if (is2024) {
