@@ -411,8 +411,11 @@ class Beyond20RollRenderer {
         const isWhispering = request.whisper === WhisperType.YES;
         const isSendingResultToDiscordOnly = this._settings["vtt-tab"] && this._settings["vtt-tab"].vtt === "dndbeyond";
         const shouldHideResultsOnWhispersToDiscord = this._settings["hide-results-on-whisper-to-discord"];
+        const useDD = this._settings["use-digital-dice"];
+        const shouldHideResultswithDD = this._settings["hide-results-with-digital-dice"];
 
-        const canPostHTML = !isWhispering || !isSendingResultToDiscordOnly || !shouldHideResultsOnWhispersToDiscord;
+        const canPostHTML = !(isWhispering && isSendingResultToDiscordOnly && shouldHideResultsOnWhispersToDiscord) &&
+                            !(useDD && shouldHideResultswithDD);
 
         const json_attack_rolls = attack_rolls.map(r => r.toJSON ? r.toJSON() : r);
         const json_damage_rolls = damage_rolls.map(([l, r, f]) => r.toJSON ? [l, r.toJSON(), f] : [l, r, f]);

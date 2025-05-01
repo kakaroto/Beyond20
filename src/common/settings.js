@@ -90,6 +90,14 @@ const options_list = {
         "advanced": true
     },
 
+    "hide-results-with-digital-dice": {
+        "title": "Hide roll results on D&D Beyond when using Digital Dice",
+        "description": "If using Digital Dice and no VTT is found, don't show the roll results on D&D Beyond.",
+        "type": "bool",
+        "default": false,
+        "advanced": true
+    },
+
     "roll-type": {
         "short": "Type of Roll",
         "title": "Type of Roll (Advantange/Disadvantage)",

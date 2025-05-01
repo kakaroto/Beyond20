@@ -111,6 +111,15 @@ dndbeyondDiceRoller.handleRollError = (request, error) => {
     if (request.action === "rendered-roll") {
         // If it was a custom digital dice roll, then don't show it would be redundant
         if (request.request.type === "digital-dice") return;
+        
+        const useDD = settings["use-digital-dice"];
+        const shouldHideResultswithDD = settings["hide-results-with-digital-dice"];
+
+        if (useDD && shouldHideResultswithDD) {
+            // If we are using digital dice and the user has set to hide results, then don't show it
+            return;
+        }
+
         return dndbeyondDiceRoller._displayer.postHTML(request.request, request.title,
             request.html, request.character, request.whisper,
             request.play_sound, request.source, request.attributes, 
