@@ -457,7 +457,8 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
         to_hit += " - 5";
         damages.push("10");
         damage_types.push("Great Weapon Master");
-        settings_to_change["great-weapon-master"] = false;
+        const isLocked = character.getSetting("great-weapon-master-lock", false);
+        if(!isLocked) settings_to_change["great-weapon-master"] = false;
     }
 
     if (to_hit !== null && 
@@ -468,6 +469,8 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
         const proficiency = parseInt(character._proficiency);
         damages.push(proficiency.toString());
         damage_types.push("Great Weapon Master");
+        const isLocked = character.getSetting("great-weapon-master-2024-lock", false);
+        if(!isLocked) settings_to_change["great-weapon-master-2024"] = false;
     }
     
     // enhanced unarmed strike
@@ -482,7 +485,9 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
         character.getSetting("charger-feat")) {
         damages.push("+5");
         damage_types.push("Charger Feat");
-        settings_to_change["charger-feat"] = false;
+
+        const isLocked = character.getSetting("charger-feat-lock", false);
+        if(!isLocked) settings_to_change["charger-feat"] = false;
     } else if (character.hasFeat("Charger 2024") &&
         character.getSetting("charger-feat")) {
             let charge_dmg = "1d8";
@@ -500,7 +505,9 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
 
             damages.push(charge_dmg);
             damage_types.push("Charger Feat");
-            settings_to_change["charger-feat"] = false;
+
+            const isLocked = character.getSetting("charger-feat-lock", false);
+            if(!isLocked) settings_to_change["charger-feat"] = false;            
     }
     
     return to_hit;
@@ -524,7 +531,8 @@ function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, set
         to_hit += " - 5";
         damages.push("10");
         damage_types.push("Sharpshooter");
-        settings_to_change["sharpshooter"] = false;
+        const isLocked = character.getSetting("sharpshooter-lock", false);
+        if(!isLocked) settings_to_change["sharpshooter"] = false;
     }
 
     // Feats
@@ -536,6 +544,8 @@ function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, set
         const proficiency = parseInt(character._proficiency);
         damages.push(proficiency.toString());
         damage_types.push("Great Weapon Master");
+        const isLocked = character.getSetting("great-weapon-master-2024-lock", false);
+        if(!isLocked) settings_to_change["great-weapon-master-2024"] = false;
     }
     
     return to_hit;
@@ -682,7 +692,8 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
                 blades_dmg = "8d6"
             damages.push(blades_dmg);
             damage_types.push("Psychic Blades");
-            settings_to_change["bard-psychic-blades"] = false;
+            const isLocked = character.getSetting("bard-psychic-blades-lock", false);
+            if(!isLocked) settings_to_change["bard-psychic-blades"] = false;
         }
     }
 
@@ -751,7 +762,8 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
                         : (character.hasClassFeature("Stalker’s Flurry 2024") ? "2d8" : "2d6")
                 );
                 damage_types.push("Dread Ambusher");
-                settings_to_change["ranger-dread-ambusher"] = false;
+                const isLocked = character.getSetting("ranger-dread-ambusher-lock", false);
+                if(!isLocked) settings_to_change["ranger-dread-ambusher"] = false;
             }
         }
         
@@ -798,6 +810,9 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
             const sneak_attack = `${sneakDieCount}d6`;
             damages.push(sneak_attack);
             damage_types.push("Sneak Attack");
+
+            const isLocked = character.getSetting("rogue-sneak-attack-lock", false);
+            if(!isLocked) settings_to_change["rogue-sneak-attack"] = false;
         }
     }
 
@@ -1076,7 +1091,10 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
             character.getSetting("rogue-assassinate", false)) {
             roll_properties["critical-limit"] = 1;
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-            settings_to_change["rogue-assassinate"] = false;
+
+            const isLocked = character.getSetting("rogue-assassinate-lock", false);
+            if(!isLocked) settings_to_change["rogue-assassinate"] = false;
+            
         }
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
@@ -1325,7 +1343,9 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             character.getSetting("rogue-assassinate", false)) {
             roll_properties["critical-limit"] = 1;
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-            settings_to_change["rogue-assassinate"] = false;
+            
+            const isLocked = character.getSetting("rogue-assassinate-lock", false);
+            if(!isLocked) settings_to_change["rogue-assassinate"] = false;
         }
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
@@ -1713,7 +1733,9 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
             character.getSetting("rogue-assassinate", false)) {
             roll_properties["critical-limit"] = 1;
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
-            settings_to_change["rogue-assassinate"] = false;
+            
+            const isLocked = character.getSetting("rogue-assassinate-lock", false);
+            if(!isLocked) settings_to_change["rogue-assassinate"] = false;
         }
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))

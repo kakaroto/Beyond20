@@ -576,8 +576,13 @@ const character_settings = {
         "default": true
     },
     "bard-psychic-blades": {
-        "title": "Bard: College of Whispers: Psychic Blades",
-        "description": "Use your Bardic Inspiration to deal extra psychic damage (Apply to next roll only)",
+        "title": "Bard: College of Whispers: Psychic Blades (Apply to next roll only)",
+        "description": "Use your Bardic Inspiration to deal extra psychic damage.",
+        "type": "bool",
+        "default": false,
+        "lock": "bard-psychic-blades-lock"
+    },
+    "bard-psychic-blades-lock": {
         "type": "bool",
         "default": false
     },
@@ -693,6 +698,11 @@ const character_settings = {
         "title": "Ranger: Gloom Stalker: Dread Ambusher (Apply to next roll only)",
         "description": "You skills in ambushing your enemies lend more damage to your initial strike",
         "type": "bool",
+        "default": false,
+        "lock": "ranger-dread-ambusher-lock"
+    },
+    "ranger-dread-ambusher-lock": {
+        "type": "bool",
         "default": false
     },
     "ranger-planar-warrior": {
@@ -726,20 +736,35 @@ const character_settings = {
         "default": false
     },
     "rogue-sneak-attack": {
-        "title": "Rogue: Sneak Attack",
+        "title": "Rogue: Sneak Attack (Apply to next roll only)",
         "description": "Send Sneak Attack damage with each attack roll",
+        "type": "bool",
+        "default": true,
+        "lock": "rogue-sneak-attack-lock"
+    },
+    "rogue-sneak-attack-lock": {
         "type": "bool",
         "default": true
     },
     "rogue-cunning-strike": {
-        "title": "Rogue: Cunning Strike",
+        "title": "Rogue: Cunning Strike (Apply to next roll only)",
         "description": "When you deal Sneak Attack damage, you can add Cunning Strike effects to the roll.",
+        "type": "bool",
+        "default": false,
+        "lock": "rogue-cunning-strike-lock"
+    },
+    "rogue-cunning-strike-lock": {
         "type": "bool",
         "default": false
     },
     "rogue-assassinate": {
         "title": "Rogue: Assassin: Assassinate Surprise Attack (Apply to next roll only)",
-        "description": "Roll with advantage and roll critical damage dice",
+        "description": "Roll with advantage and roll critical damage dice.",
+        "type": "bool",
+        "default": false,
+        "lock": "rogue-assassinate-lock"
+    },
+    "rogue-assassinate-lock": {
         "type": "bool",
         "default": false
     },
@@ -801,23 +826,43 @@ const character_settings = {
         "title": "Feat: Charger Extra Damage (Apply to next roll only)",
         "description": "You charge into battle, lending weight to your blow!",
         "type": "bool",
+        "default": false,
+        "lock": "charger-feat-lock"
+    },
+    "charger-feat-lock": {
+        "type": "bool",
         "default": false
     },
     "great-weapon-master": {
         "title": "Feat: Great Weapon Master (Apply to next roll only)",
         "description": "Apply Great Weapon Master -5 penalty to roll and +10 to damage",
         "type": "bool",
+        "default": false,
+        "lock": "great-weapon-master-lock"
+    },
+    "great-weapon-master-lock": {
+        "type": "bool",
         "default": false
     },
     "great-weapon-master-2024": {
-        "title": "Feat: Great Weapon Master 2024",
+        "title": "Feat: Great Weapon Master 2024 (Apply to next roll only)",
         "description": "Heavy Weapon Mastery. Apply extra damage equals your Proficiency Bonus.",
         "type": "bool",
-        "default": true
+        "default": true,
+        "lock": "great-weapon-master-2024-lock"
+    },
+    "great-weapon-master-2024-lock": {
+        "type": "bool",
+        "default": false
     },
     "sharpshooter": {
         "title": "Feat: Sharpshooter (Apply to next roll only)",
         "description": "Apply Sharpshooter -5 penalty to roll and +10 to damage",
+        "type": "bool",
+        "default": false,
+        "lock": "sharpshooter-lock"
+    },
+    "sharpshooter-lock": {
         "type": "bool",
         "default": false
     },
@@ -974,12 +1019,18 @@ function createHTMLOptionEx(name, option, short = false, {advanced=false}={}) {
     const description = short ? option.short_description : option.description;
     const description_p = description ? description.split("\n").map(desc => E.p({}, desc)) : [];
     const title = short ? option.short : option.title;
+    const lock = option.lock;
+    const lockDiv = lock ? E.div({ class: 'material-switch--padlock pull-right' },  
+            E.input({ id: lock, class: "beyond20-option-input", lock, type: "checkbox" }),  
+            E.label({ for: lock })
+        ): null; 
     let e = null;
     if (option.type == "bool") {
         e = E.li({ class: "list-group-item beyond20-option beyond20-option-bool" },
             E.label({ class: "list-content", for: name },
                 E.h4({}, title),
                 ...description_p,
+                ...(lock ? [lockDiv] : []),
                 E.div({ class: 'material-switch pull-right' },
                     E.input({ id: name, class: "beyond20-option-input", name, type: "checkbox" }),
                     E.label({ for: name, class: "label-default" })
@@ -1126,7 +1177,8 @@ function extractSettingsData(_list = options_list) {
     return settings;
 }
 
-function loadSettings(settings, _list = options_list) {
+function 
+loadSettings(settings, _list = options_list) {
     for (let option in settings) {
         if (!_list[option]) {
             continue;
