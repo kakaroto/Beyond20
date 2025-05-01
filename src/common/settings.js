@@ -584,7 +584,7 @@ const character_settings = {
         "default": true
     },
     "bard-psychic-blades": {
-        "title": "Bard: College of Whispers: Psychic Blades (Apply to next roll only)",
+        "title": "Bard: College of Whispers: Psychic Blades (Apply to next roll only, unless locked)",
         "description": "Use your Bardic Inspiration to deal extra psychic damage.",
         "type": "bool",
         "default": false,
@@ -703,7 +703,7 @@ const character_settings = {
         "default": false
     },
     "ranger-dread-ambusher": {
-        "title": "Ranger: Gloom Stalker: Dread Ambusher (Apply to next roll only)",
+        "title": "Ranger: Gloom Stalker: Dread Ambusher (Apply to next roll only, unless locked)",
         "description": "You skills in ambushing your enemies lend more damage to your initial strike",
         "type": "bool",
         "default": false,
@@ -744,7 +744,7 @@ const character_settings = {
         "default": false
     },
     "rogue-sneak-attack": {
-        "title": "Rogue: Sneak Attack (Apply to next roll only)",
+        "title": "Rogue: Sneak Attack (Apply to next roll only, unless locked)",
         "description": "Send Sneak Attack damage with each attack roll",
         "type": "bool",
         "default": true,
@@ -755,7 +755,7 @@ const character_settings = {
         "default": true
     },
     "rogue-cunning-strike": {
-        "title": "Rogue: Cunning Strike (Apply to next roll only)",
+        "title": "Rogue: Cunning Strike (Apply to next roll only, unless locked)",
         "description": "When you deal Sneak Attack damage, you can add Cunning Strike effects to the roll.",
         "type": "bool",
         "default": false,
@@ -766,7 +766,7 @@ const character_settings = {
         "default": false
     },
     "rogue-assassinate": {
-        "title": "Rogue: Assassin: Assassinate Surprise Attack (Apply to next roll only)",
+        "title": "Rogue: Assassin: Assassinate Surprise Attack (Apply to next roll only, unless locked)",
         "description": "Roll with advantage and roll critical damage dice.",
         "type": "bool",
         "default": false,
@@ -831,7 +831,7 @@ const character_settings = {
         "default": false
     },
     "charger-feat": {
-        "title": "Feat: Charger Extra Damage (Apply to next roll only)",
+        "title": "Feat: Charger Extra Damage (Apply to next roll only, unless locked)",
         "description": "You charge into battle, lending weight to your blow!",
         "type": "bool",
         "default": false,
@@ -842,7 +842,7 @@ const character_settings = {
         "default": false
     },
     "great-weapon-master": {
-        "title": "Feat: Great Weapon Master (Apply to next roll only)",
+        "title": "Feat: Great Weapon Master (Apply to next roll only, unless locked)",
         "description": "Apply Great Weapon Master -5 penalty to roll and +10 to damage",
         "type": "bool",
         "default": false,
@@ -853,7 +853,7 @@ const character_settings = {
         "default": false
     },
     "great-weapon-master-2024": {
-        "title": "Feat: Great Weapon Master 2024 (Apply to next roll only)",
+        "title": "Feat: Great Weapon Master 2024 (Apply to next roll only, unless locked)",
         "description": "Heavy Weapon Mastery. Apply extra damage equals your Proficiency Bonus.",
         "type": "bool",
         "default": true,
@@ -864,7 +864,7 @@ const character_settings = {
         "default": false
     },
     "sharpshooter": {
-        "title": "Feat: Sharpshooter (Apply to next roll only)",
+        "title": "Feat: Sharpshooter (Apply to next roll only, unless locked)",
         "description": "Apply Sharpshooter -5 penalty to roll and +10 to damage",
         "type": "bool",
         "default": false,
