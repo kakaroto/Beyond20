@@ -112,9 +112,18 @@ dndbeyondDiceRoller.handleRollError = (request, error) => {
         // If it was a custom digital dice roll, then don't show it would be redundant
         if (request.request.type === "digital-dice") return;
         
+        const isWhispering = request.whisper === WhisperType.YES;
+        const isSendingResultToDiscordOnly = settings["vtt-tab"] && settings["vtt-tab"].vtt === "dndbeyond";
+        const shouldHideResultsOnWhispersToDiscord = settings["hide-results-on-whisper-to-discord"];
         const useDD = settings["use-digital-dice"];
         const shouldHideResultswithDD = settings["hide-results-with-digital-dice"];
 
+        if (isWhispering && isSendingResultToDiscordOnly && shouldHideResultsOnWhispersToDiscord) {
+            // If we are whispering to Discord and the user has set to hide results, then don't show it
+            // and clear the digital dice results so the user doesn't see the whispered results
+            DigitalDiceManager.clearResults();
+            return
+        }
         if (useDD && shouldHideResultswithDD) {
             // If we are using digital dice and the user has set to hide results, then don't show it
             return;
