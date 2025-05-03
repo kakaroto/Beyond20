@@ -1,3 +1,16 @@
+v2.14.0 (May 3rd 2025)
+===
+- **Feature**: Add the ability to lock/unlock some character specific options instead of resetting after use (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added option to hide the Beyond20 roll results from D&D Beyond when using Digital Dice
+- **Feature**: Added support for Great Weapon Master 2024 ranged weapons with heavy property (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix detection of 2024 features with the new source reference change in DDB (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix display of character's avatar (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix parsing of character's speed (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix display of Sacred Weapon option in per-character settings (by [@ibaaske](https://github.com/ibaaske))
+- **Bugfix**: Fix bug preventing the "hide results when whispering to Discord" to work as expected
+- **Bugfix**: Fix missing abilities from the initial `hp-update` message to VTTs on page open
+- **Misc**: Update documentation
+
 v2.13.1 (February 19th 2025)
 ===
 - **Bugfix**: Fix HP syncing again (by [@dmportella](https://github.com/dmportella))

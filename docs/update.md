@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.13.1
+Congratulations! Beyond20 was just updated to the latest version : v2.14.0
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -17,32 +17,23 @@ Thank you all for your support!
 
 # Release Notes
 
-v2.13.1 (February 19th 2025)
-===
-
-Hi,
-
-We're releasing today a hotfix release as D&D Beyond have changed their site and the HP syncing fix from last week's release already needed to be rewritten.
-
-This hotfix release fixes HP syncing as well as the missing description when displaying actions.
-
-Thanks and enjoy!
-
-v2.13.0 (February 13th 2025)
+v2.14.0 (May 3rd 2025)
 ===
 
 Hi everyone,
 
-With the release last week of the new Monster Manual 2024, we have seen the introduction of a new statblock format to the monsters!
-Today's update adds support for the new 2024 monster stat blocks, as well as adds a couple of small bugfixes.
+I'm excited about today's release as it brings a much requested feature to Beyond20: The ability to lock certain character specific options!
 
-Check out the full [Changelog](/Changelog#v2130) to see all the changes added in this release.
+Thanks to the work by [@dmportella](https://github.com/dmportella), all options which previously had "apply to next roll only" (like Sharpshooter, Dread Ambusher, etc..) will have a lock icon next to them so you can lock the option so it doesn't reset automatically after use.
+We've also added the lock feature to the Sneak Attack option (locked by default) so you can have the Sneak Attack option only apply to the next roll if you wish it to behave that way.
 
-As usual, a big thank you to [@dmportella](https://linktr.ee/dmportella) as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
+Apart form that, this release also brings many small bugfixes, continuing to catch up to changes to the D&D Beyond website that continue to break Beyond20 functionality. 
 
-P.S: The version 2.13.0 being released on February 13th is purely a coincidence! :D
+Check out the full [Changelog](/Changelog#v2140) to see all the changes added in this release.
 
-Enjoy.
+As usual, a big thank you to [@dmportella](https://linktr.ee/dmportella) for the work they've done, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
+
+Have fun!
 
 
 ---
@@ -51,18 +42,18 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-v2.13.1 (February 19th 2025)
+v2.14.0 (May 3rd 2025)
 ===
-- **Bugfix**: Fix HP syncing again (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix missing action description when using the "Display to VTT" option
-
-v2.13.0 (February 13th 2025)
-===
-- **Feature**: Added support for 2024 Monster statblocks (by [@dmportella](https://github.com/dmportella))
-- **Feature**: Display Skill check effects: Reliable Talent and Silver Tongue
-- **Bugfix**: Fix HP syncing (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix support for Great Weapon Fighting as a Fighting Initiate choice (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix missing "Display to VTT" button on some actions
+- **Feature**: Add the ability to lock/unlock some character specific options instead of resetting after use (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Added option to hide the Beyond20 roll results from D&D Beyond when using Digital Dice
+- **Feature**: Added support for Great Weapon Master 2024 ranged weapons with heavy property (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix detection of 2024 features with the new source reference change in DDB (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix display of character's avatar (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix parsing of character's speed (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix display of Sacred Weapon option in per-character settings (by [@ibaaske](https://github.com/ibaaske))
+- **Bugfix**: Fix bug preventing the "hide results when whispering to Discord" to work as expected
+- **Bugfix**: Fix missing abilities from the initial `hp-update` message to VTTs on page open
+- **Misc**: Update documentation
 
 ---
 

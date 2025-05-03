@@ -1,3 +1,23 @@
+
+v2.14.0 (May 3rd 2025)
+===
+
+Hi everyone,
+
+I'm excited about today's release as it brings a much requested feature to Beyond20: The ability to lock certain character specific options!
+
+Thanks to the work by [@dmportella](https://github.com/dmportella), all options which previously had "apply to next roll only" (like Sharpshooter, Dread Ambusher, etc..) will have a lock icon next to them so you can lock the option so it doesn't reset automatically after use.
+We've also added the lock feature to the Sneak Attack option (locked by default) so you can have the Sneak Attack option only apply to the next roll if you wish it to behave that way.
+
+Apart form that, this release also brings many small bugfixes, continuing to catch up to changes to the D&D Beyond website that continue to break Beyond20 functionality. 
+
+Check out the full [Changelog](/Changelog#v2140) to see all the changes added in this release.
+
+As usual, a big thank you to [@dmportella](https://linktr.ee/dmportella) for the work they've done, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
+
+Have fun!
+
+
 v2.13.1 (February 19th 2025)
 ===
 

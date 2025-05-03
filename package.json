@@ -1,6 +1,6 @@
 {
     "name": "beyond20",
-    "version": "2.13.1",
+    "version": "2.14.0",
     "description": "Beyond20: D&D Beyond & Roll20/Foundry VTT Integration",
     "directories": {
         "doc": "docs"
