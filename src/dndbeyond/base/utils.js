@@ -393,6 +393,15 @@ async function buildAttackRoll(character, attack_source, name, description, prop
     return roll_properties;
 }
 
+function ensureModifier(damageStr, modValue) {
+    const hasMod = /\d+d\d+\s*[+-]\s*\d+/.test(damageStr);
+    if (hasMod) return damageStr;
+
+    // If mod is positive, add '+' explicitly
+    const sign = modValue >= 0 ? "+" : "";
+    return `${damageStr}${sign}${modValue}`;
+}
+
 function applyGWFIfRequired(action_name, properties, damage) {
     if((properties["Attack Type"] == "Melee" && 
         ((properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice") != "one") || 
