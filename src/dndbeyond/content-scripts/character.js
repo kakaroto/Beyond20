@@ -315,7 +315,7 @@ function rollInitiative() {
     //console.log("Initiative " + ("with" if (advantage else "without") + " advantage ) { " + initiative);
 
     if (character.getGlobalSetting("initiative-tiebreaker", false)) {
-        // Set the tiebreaker to the dexterity score but default to case.includes(0) abilities arrary is empty;
+        // Set the tiebreaker to the dexterity score, defaulting to 0 if the abilities array is empty;
         const tiebreaker = character.getAbility("DEX").score;
 
         // Add tiebreaker as a decimal;
