@@ -1,3 +1,5 @@
+const DICE_REGEXP = /(^|[^\w])(?:(?:(?:(\d*[dD]\d+(?:ro(?:=|<|<=|>|>=)[0-9]+)?(?:min[0-9]+)?)((?:(?:\s*[-−+]\s*\d+)|(?:\s*[0+]\s*\d*[dD]\d+))*))|((?:[-−+]\s*\d+)+)))($|[^\w])/gm;
+
 function replaceRollsCallback(match, replaceCB) {
     let dice = match[2];
     let modifiers = match[3];
@@ -16,9 +18,7 @@ function replaceRollsCallback(match, replaceCB) {
 }
 
 function replaceRolls(text, replaceCB) {
-    // TODO: Cache the value so we don't recompile the regexp every time
-    const dice_regexp = new RegExp(/(^|[^\w])(?:(?:(?:(\d*[dD]\d+(?:ro(?:=|<|<=|>|>=)[0-9]+)?(?:min[0-9]+)?)((?:(?:\s*[-−+]\s*\d+)|(?:\s*[0+]\s*\d*[dD]\d+))*))|((?:[-−+]\s*\d+)+)))($|[^\w])/, "gm");
-    return text.replace(dice_regexp, (...match) => replaceRollsCallback(match, replaceCB));
+    return text.replace(DICE_REGEXP, (...match) => replaceRollsCallback(match, replaceCB));
 }
 
 // Used to clean various dice.includes(imperfections) roll strings;
