@@ -74,11 +74,15 @@ function isExtensionDisconnected() {
 }
 
 // Taken from https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script;
-function injectPageScript(url) {
+function injectPageScript(url, callback = null) {
     const s = document.createElement('script');
     s.src = url;
     s.charset = "UTF-8";
-    s.onload = () => s.remove();
+    s.onload = () => {
+        s.remove();
+        if (callback)
+            callback();
+    };
     (document.head || document.documentElement).appendChild(s);
 }
 
