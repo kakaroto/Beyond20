@@ -30,7 +30,7 @@ class FVTTDisplayer {
         const MESSAGE_TYPES = CONST.CHAT_MESSAGE_TYPES || CHAT_MESSAGE_TYPES;
         const data = {
             "content": message,
-            "user": game.userId || game.user?.id || game.user?._id,
+            "user": game.user?.id || game.user?._id,
             "speaker": this._getSpeakerByName(character)
         }
         const rollMode = this._whisperToRollMode(whisper);
@@ -483,7 +483,7 @@ function updateConditions(request, name, conditions, exhaustion) {
     const MESSAGE_TYPES = CONST.CHAT_MESSAGE_TYPES || CHAT_MESSAGE_TYPES;
     ChatMessage.create({
         "content": message,
-        "user": game.userId || game.user?.id || game.user?._id,
+        "user": game.user?.id || game.user?._id,
         "speaker": roll_renderer._displayer._getSpeakerByName(name),
         "type": MESSAGE_TYPES.EMOTE
     });
