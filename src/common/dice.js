@@ -247,7 +247,7 @@ class DNDBDice {
                 return r;
             });
         }
-        // Restore drop/keep case.includes(amount) of rerolls;
+        // Restore drop/keep count for rerolls;
         this._dk.amount = dk_amount;
 
         return this.calculateTotal();

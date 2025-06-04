@@ -26,7 +26,7 @@ If however, you do not want to use Patreon or Github Sponsors or don't want to p
 
 Oh, I misunderstood, you're the ones in need of support! Well, fear not, I am here to help!
 
-If you want to ask for help, give feedaback or discuss an issue, you can join our [discord server](https://discord.gg/ZAasSVS).
+If you want to ask for help, give feedback or discuss an issue, you can join our [discord server](https://discord.gg/ZAasSVS).
 
 [![Discord](/images/discord-logo.png){:width="400px"}](https://discord.gg/ZAasSVS)
 
