@@ -56,14 +56,14 @@ function sendMessageToRoll20(request, limit = null, failure = null) {
         const vtt = limit.vtt || "roll20"
         if (vtt == "roll20") {
             chrome.tabs.query({ "url": ROLL20_URL }, (tabs) => {
-                found = filterVTTTab(request, limit, tabs, roll20Title)
+                let found = filterVTTTab(request, limit, tabs, roll20Title)
                 if (failure)
                     failure(!found)
             })
         } else {
             failure(true)
         }
-    } else { 
+    } else {
         sendMessageTo(ROLL20_URL, request, failure);
     }
 }
@@ -73,7 +73,7 @@ function sendMessageToFVTT(request, limit, failure = null) {
     if (limit) {
         const vtt = limit.vtt || "fvtt"
         if (vtt == "fvtt") {
-            found = filterVTTTab(request, limit, fvtt_tabs, fvttTitle)
+            let found = filterVTTTab(request, limit, fvtt_tabs, fvttTitle)
             if (failure)
                 failure(!found)
         } else {
