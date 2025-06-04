@@ -30,7 +30,7 @@ class FVTTDisplayer {
         const MESSAGE_TYPES = CONST.CHAT_MESSAGE_TYPES || CHAT_MESSAGE_TYPES;
         const data = {
             "content": message,
-            "user": game.user._id,
+            "user": game.user?.id || game.user?._id,
             "speaker": this._getSpeakerByName(character)
         }
         const rollMode = this._whisperToRollMode(whisper);
@@ -175,7 +175,7 @@ class FVTTDisplayer {
     _getSpeakerByName(name) {
         if (name === null)
             return ChatMessage.getSpeaker();
-        const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
+        const actors = game.actors?.contents || game.actors?.entities || game.actors; // v13 compatibility
         const actor = actors.find((actor) => docData(actor).name.toLowerCase() == name.toLowerCase());
         const speaker = ChatMessage.getSpeaker({ actor });
         speaker.alias = name;
@@ -453,7 +453,7 @@ function updateHP(name, current, total, temp) {
         [`${prefix}.health.max`]: total
     }
     if (tokens.length == 0) {
-        const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
+        const actors = game.actors?.contents || game.actors?.entities || game.actors; // v13 compatibility
         const actor = actors.find((a) => (a.owner || a.isOwner) && a.name.toLowerCase().trim() == name);
         const systemData = fvtt_isNewer(fvttVersion, "10") ? actor?.system : actor?.data?.data;
         if (actor && getProperty(systemData, "attributes.hp") !== undefined) {
@@ -483,7 +483,7 @@ function updateConditions(request, name, conditions, exhaustion) {
     const MESSAGE_TYPES = CONST.CHAT_MESSAGE_TYPES || CHAT_MESSAGE_TYPES;
     ChatMessage.create({
         "content": message,
-        "user": game.user._id,
+        "user": game.user?.id || game.user?._id,
         "speaker": roll_renderer._displayer._getSpeakerByName(name),
         "type": MESSAGE_TYPES.EMOTE
     });
@@ -496,7 +496,7 @@ function updateConditions(request, name, conditions, exhaustion) {
 
         const tokens = canvas.tokens.placeables.filter((t) => docData(t).name.toLowerCase().trim() === name);
         // look for an actor with the character name and search for a linked token to that actor
-        const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
+        const actors = game.actors?.contents || game.actors?.entities || game.actors; // v13 compatibility
         const actor = actors.find((a) => (a.owner || a.isOwner) && a.name.toLowerCase().trim() === name);
         if (actor) {
             const linkedTokens = canvas.tokens.placeables.filter((t) => t.actor && t.actor.id === actor.id);
