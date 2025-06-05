@@ -916,7 +916,7 @@ function updateSettings(new_settings = null) {
 }
 
 function handleMessage(request, sender, sendResponse) {
-    console.log("Got message : ", request);
+    console.log("Received message:", request);
     if (request.action == "settings") {
         if (request.type == "general")
             updateSettings(request.settings);
