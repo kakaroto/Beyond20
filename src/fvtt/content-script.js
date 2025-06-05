@@ -57,6 +57,8 @@ function injectSettingsButton() {
 
 const observer = new window.MutationObserver(titleSet);
 observer.observe(document.getElementsByTagName("title")[0], { "childList": true });
+if (document.getElementsByTagName("title")[0].textContent)
+    titleSet(null, observer);
 sendCustomEvent("disconnect");
 injectPageScript(chrome.runtime.getURL("libs/alertify.min.js"), () => {
     initializeAlertify();
