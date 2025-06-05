@@ -1740,6 +1740,10 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
             roll_properties.d20 = "1d20min10";
+        // Spells: Toll the Dead
+        // HACK: using versatile to allow toll the dead to roll both damage types separate
+        if(spell_full_name.toLowerCase() === "toll the dead" && character.getSetting("toll-choice") === "both")
+            roll_properties["is_versatile"] = true;
         // Apply batched updates to settings, if any:
         if (Object.keys(settings_to_change).length > 0)
             character.mergeCharacterSettings(settings_to_change);

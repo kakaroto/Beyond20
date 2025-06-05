@@ -489,6 +489,16 @@ const character_settings = {
             "two": "Use weapon Two-handed"
         }
     },
+    "toll-choice": {
+        "title": "Toll the Dead choice",
+        "description": "How to roll damage for toll the Dead",
+        "type": "combobox",
+        "default": "query",
+        "choices": {
+            "both": "Roll both damages separately",
+            "query": "Query Damage"            
+        }
+    },
     "custom-roll-dice": {
         "title": "Custom Roll dice formula bonus",
         "description": "Add custom formula to d20 rolls (Bless, Guidance, Bane, Magic Weapon, etc..)",

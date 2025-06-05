@@ -377,6 +377,21 @@ class Beyond20RollRenderer {
                 delete total_damages["Critical 2-Handed Damage"];
                 total_damages["Critical 2-Handed Damage"] = two_handed;
             }
+            // HACK: need to be simplified and merged with the code above
+            if(request.name.includes("Toll the Dead") && request.character.settings["toll-choice"] === "both") {
+                if(total_damages["2-Handed Damage"]) {
+                    total_damages["Full HP Damage"] = total_damages["1-Handed Damage"];
+                    total_damages["Missing HP Damage"] = total_damages["2-Handed Damage"];
+                    delete total_damages["1-Handed Damage"];
+                    delete total_damages["2-Handed Damage"];
+                }
+                if (total_damages["Critical 2-Handed Damage"]) {
+                    total_damages["Critical Full HP Damage"] = total_damages["Critical 1-Handed Damage"];
+                    total_damages["Critical Missing HP Damage"] = total_damages["Critical 2-Handed Damage"];
+                    delete total_damages["Critical 1-Handed Damage"];
+                    delete total_damages["Critical 2-Handed Damage"];
+                }
+            }
             html += "<div class='beyond20-roll-result'><b><hr/></b></div>";
         }
 
