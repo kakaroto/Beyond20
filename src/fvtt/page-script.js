@@ -303,12 +303,20 @@ class FVTTRoll extends Beyond20BaseRoll {
     }
 
     async roll() {
-        await this._roll.roll({async: true});
+        if (typeof this._roll.evaluate === "function") {
+            await this._roll.evaluate();
+        } else {
+            await this._roll.roll();
+        }
         return this;
     }
 
     async reroll() {
-        this._roll = await this._roll.reroll({async: true});
+        if (typeof this._roll.reroll === "function") {
+            this._roll = await this._roll.reroll();
+        } else if (typeof this._roll.evaluate === "function") {
+            await this._roll.evaluate();
+        }
         return this;
     }
 }
