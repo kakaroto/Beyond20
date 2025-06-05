@@ -24,7 +24,7 @@ function sendMessageTo(url, request, failure = null) {
         if (failure)
             failure(tabs.length === 0)
         for (let tab of tabs)
-            chrome.tabs.sendMessage(tab.id, request)
+            chrome.tabs.sendMessage(tab.id, request, () => {})
     })
 }
 
@@ -33,7 +33,7 @@ function filterVTTTab(request, limit, tabs, titleCB) {
     for (let tab of tabs) {
         if ((limit.id == 0 || tab.id == limit.id) &&
             (limit.title == null || titleCB(tab.title) == limit.title)) {
-            chrome.tabs.sendMessage(tab.id, request)
+            chrome.tabs.sendMessage(tab.id, request, () => {})
             found = true
         }
     }
@@ -42,7 +42,7 @@ function filterVTTTab(request, limit, tabs, titleCB) {
         mergeSettings({ "vtt-tab": limit })
         for (let tab of tabs) {
             if (titleCB(tab.title) == limit.title) {
-                chrome.tabs.sendMessage(tab.id, request)
+                chrome.tabs.sendMessage(tab.id, request, () => {})
                 found = true
                 break
             }
@@ -83,7 +83,7 @@ function sendMessageToFVTT(request, limit, failure = null) {
         if (failure)
             failure(fvtt_tabs.length == 0)
         for (let tab of fvtt_tabs) {
-            chrome.tabs.sendMessage(tab.id, request)
+            chrome.tabs.sendMessage(tab.id, request, () => {})
         }
     }
 }
@@ -93,7 +93,7 @@ function sendMessageToCustomSites(request, limit, failure = null) {
     if (failure)
         failure(custom_tabs.length == 0)
     for (let tab of custom_tabs) {
-        chrome.tabs.sendMessage(tab.id, request)
+        chrome.tabs.sendMessage(tab.id, request, () => {})
     }
 }
 
