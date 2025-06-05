@@ -917,7 +917,7 @@ class Beyond20RollRenderer {
         let custom_roll_dice = "";
         if (request.character.type == "Character" ||
             (request.character.type == "Creature" && request.character.creatureType === "Wild Shape")) {
-            custom_roll_dice = request.character.settings["custom-roll-dice"] || "";
+            custom_roll_dice = request.character.settings?.["custom-roll-dice"] || "";
         }
 
         if (request.type == "avatar") {
