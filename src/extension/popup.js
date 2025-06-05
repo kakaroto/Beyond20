@@ -144,6 +144,9 @@ function populateCharacter(response) {
         e = createHTMLOption("versatile-choice", false, character_settings);
         options.append(e);
 
+        e = createHTMLOption("toll-choice", false, character_settings);
+        options.append(e);
+
         if (response["racial-traits"].includes("Lucky") ||
             response["racial-traits"].includes("Luck")) {
             e = createHTMLOption("halfling-lucky", false, character_settings);
