@@ -117,11 +117,15 @@ function isRoll20(title) {
 }
 
 function isFVTT(title) {
-    return title.includes("Foundry Virtual Tabletop");
+    return title.includes("Foundry Virtual Tabletop") || title.includes("Foundry VTT");
 }
 
 function fvttTitle(title) {
-    return title.replace(" • Foundry Virtual Tabletop", "");
+    return title
+        .replace(" • Foundry Virtual Tabletop", "")
+        .replace(" • Foundry VTT", "")
+        .replace(" - Foundry VTT", "")
+        .replace(" - Foundry Virtual Tabletop", "");
 }
 
 function urlMatches(url, matching) {
