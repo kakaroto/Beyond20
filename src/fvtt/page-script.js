@@ -1,4 +1,4 @@
-var settings = null;
+var settings = getDefaultSettings();
 var extension_url = "/modules/beyond20/";
 var fvttVersion = game.version || game.data?.version;
 //isNewerVersion is deprecated in Foundry 12
