@@ -570,14 +570,17 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
     // Class Specific
     if (character.hasClass("Fighter")) {
         if(character.hasClassFeature("Psionic Power")) {
-            // HACK ALERT: fixes dndbeyond missing mods but incase they are added in the future we ensure the mdo is applied if not present if it is present it is not applied
+            // HACK ALERT: fixes dndbeyond missing mods but incase they are added in the future we ensure the mod is applied if not present if it is present it is not applied
             const intelligence = character.getAbility("INT") || {mod: 0};
             const mod = parseInt(intelligence.mod) || 0;
             const psychic_action = action_name.toLocaleLowerCase();
             if(["psionic power: psionic strike"].includes(psychic_action)) {
+                // Use full modifier, even if deeply negative
                 damages[0] = ensureModifier(damages[0], mod);
             } else if(["psionic power: protective field"].includes(psychic_action)) {
-                damages[0] = ensureModifier(damages[0], mod).replace(/[0-9]*d[0-9]+/g, "$&min1");
+                // Clamp the modifier to minimum of -1, not below that
+                const cappedMod = mod < -1 ? -1 : mod;
+                damages[0] = ensureModifier(damages[0], cappedMod);
             }
         } 
     }
