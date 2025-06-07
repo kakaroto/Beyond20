@@ -39,7 +39,8 @@ class FVTTDisplayer {
     }
 
     _postChatMessage(message, character, whisper, play_sound = false, attack_rolls, damage_rolls) {
-        const MESSAGE_TYPES = CONST.CHAT_MESSAGE_TYPES || CHAT_MESSAGE_TYPES;
+        const MESSAGE_STYLES = CONST.CHAT_MESSAGE_STYLES || CONST.CHAT_MESSAGE_TYPES || CHAT_MESSAGE_STYLES || CHAT_MESSAGE_TYPES;
+        const styleProp = fvtt_isNewer(fvttVersion, "13") ? "style" : "type";
         const data = {
             "content": message,
             "user": game.user?.id || game.user?._id,
@@ -48,11 +49,11 @@ class FVTTDisplayer {
         const rollMode = this._whisperToRollMode(whisper);
         if (["gmroll", "blindroll"].includes(rollMode)) {
             data["whisper"] = (ChatMessage.getWhisperRecipients || ChatMessage.getWhisperIDs).call(ChatMessage, "GM");
-            data['type'] = MESSAGE_TYPES.WHISPER;
+            data[styleProp] = MESSAGE_STYLES.WHISPER;
             if (rollMode == "blindroll")
                 data["blind"] = true;
         } else {
-            data['type'] = MESSAGE_TYPES.OOC;
+            data[styleProp] = MESSAGE_STYLES.OOC;
         }
         if (play_sound)
             data["sound"] = CONFIG.sounds.dice;
@@ -179,7 +180,7 @@ class FVTTDisplayer {
                 pool_roll._rolled = true;
                 data.roll = pool_roll;
             }
-            data.type = MESSAGE_TYPES.ROLL;
+            data[styleProp] = MESSAGE_STYLES.ROLL;
         }
         return ChatMessage.create(data, {rollMode});
     }
@@ -500,12 +501,13 @@ function updateConditions(request, name, conditions, exhaustion) {
     if (exhaustion > 0)
         display_conditions = conditions.concat(["Exhausted (Level " + exhaustion + ")"]);
     const message = name + (display_conditions.length == 0 ? " has no active condition" : " is : " + display_conditions.join(", "));
-    const MESSAGE_TYPES = CONST.CHAT_MESSAGE_TYPES || CHAT_MESSAGE_TYPES;
+    const MESSAGE_STYLES = CONST.CHAT_MESSAGE_STYLES || CONST.CHAT_MESSAGE_TYPES || CHAT_MESSAGE_STYLES || CHAT_MESSAGE_TYPES;
+    const styleProp = fvtt_isNewer(fvttVersion, "13") ? "style" : "type";
     ChatMessage.create({
         "content": message,
         "user": game.user?.id || game.user?._id,
         "speaker": roll_renderer._displayer._getSpeakerByName(name),
-        "type": MESSAGE_TYPES.EMOTE
+        [styleProp]: MESSAGE_STYLES.EMOTE
     });
 
     // Check for the beyond20 module, if (it's there, we can use its status effects.;
