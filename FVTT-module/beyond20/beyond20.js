@@ -643,7 +643,13 @@ class Beyond20 {
 
     static handleBeyond20Request(action, request) {
         if (action !== "roll") return;
-        if (!game.settings.get("beyond20", "nativeRolls")) return;
+        let nativeRolls = false;
+        try {
+            nativeRolls = game.settings.get("beyond20", "nativeRolls");
+        } catch (err) {
+            nativeRolls = false;
+        }
+        if (!nativeRolls) return;
         // return false to interrupt the beyond20 
         switch (request.type) {
             case "skill":
@@ -670,7 +676,13 @@ class Beyond20 {
      * Add Chat Damage buttons to Beyond20 chat messages;
      */
     static handleChatMessage(message, html, data) {
-        if (!game.settings.get("beyond20", "damageButtons")) return;
+        let showButtons = false;
+        try {
+            showButtons = game.settings.get("beyond20", "damageButtons");
+        } catch (err) {
+            showButtons = false;
+        }
+        if (!showButtons) return;
         if (!(html instanceof jQuery)) html = $(html);
         const damages = html.find(".beyond20-message .beyond20-roll-damage, .beyond20-message .beyond20-total-damage");
         if (damages.length === 0) return;
