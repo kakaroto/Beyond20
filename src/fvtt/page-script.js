@@ -180,7 +180,9 @@ class FVTTDisplayer {
                 pool_roll._rolled = true;
                 data.roll = pool_roll;
             }
-            data[styleProp] = MESSAGE_STYLES.ROLL;
+            if (!fvtt_isNewer(fvttVersion, "13")) {
+                data[styleProp] = MESSAGE_STYLES.ROLL;
+            }
         }
         return ChatMessage.create(data, {rollMode});
     }
