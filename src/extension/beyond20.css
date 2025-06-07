@@ -43,6 +43,7 @@
 .beyond20-roll-result,
 .beyond20-roller-error {
     position: relative;
+    overflow: visible;
     padding: 0px 5px;
 }
 
