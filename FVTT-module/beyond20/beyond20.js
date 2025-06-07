@@ -1,5 +1,7 @@
 
 
+const fvtt_isNewer = foundry && foundry.utils && foundry.utils.isNewerVersion ? foundry.utils.isNewerVersion : isNewerVersion;
+
 class Beyond20 {
     static getMyActor() {
         return game.actors.find(a => a.isOwner && a.getFlag("beyond20", "user") === (game.user?.id || game.userId));
@@ -38,7 +40,7 @@ class Beyond20 {
             },
         };
         // In v10, permission field was changed into ownership
-        if (isNewerVersion(game.version || game.data.version, "10")) {
+        if (fvtt_isNewer(game.version || game.data.version, "10")) {
             baseAttributes["ownership"] = {
                 [game.user?.id || game.userId]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
             }
@@ -760,7 +762,7 @@ class Beyond20CreateNativeActorsApplication extends FormApplication {
                     }
                 }
                 // In v10, permission field was changed into ownership
-                if (isNewerVersion(game.version || game.data.version, "10")) {
+                if (fvtt_isNewer(game.version || game.data.version, "10")) {
                     actorData["ownership"] = {
                         [user.id]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
                     }
@@ -778,7 +780,7 @@ class Beyond20CreateNativeActorsApplication extends FormApplication {
 }
 
 Hooks.on('beyond20Request', (action, request) => Beyond20.handleBeyond20Request(action, request))
-const chatHook = isNewerVersion(game.version || game.data.version, "13") ? "renderChatMessageHTML" : "renderChatMessage";
+const chatHook = fvtt_isNewer(game.version || game.data.version, "13") ? "renderChatMessageHTML" : "renderChatMessage";
 Hooks.on(chatHook, (message, html, data) => Beyond20.handleChatMessage(message, html, data));
 
 Hooks.on('init', function () {
@@ -811,7 +813,7 @@ Hooks.on('init', function () {
         type: Boolean,
         onChange: async (v) => {
             if (!v) return;
-            if (!isNewerVersion(foundryVersion, "10")) {
+            if (!fvtt_isNewer(foundryVersion, "10")) {
                 ui.notifications.warn(`Cannot enable Beyond20 native rolls on Foundry VTT v${foundryVersion}. Please upgrade to version 10 or newer.`);
                 return game.settings.set("beyond20", "nativeRolls", false);
             }
@@ -841,7 +843,7 @@ Hooks.on('ready', function () {
         }
     }
     // Disable native rolls if Foundry is pre v10
-    if (game.settings.get("beyond20", "nativeRolls") && !isNewerVersion(foundryVersion, "10")) {
+    if (game.settings.get("beyond20", "nativeRolls") && !fvtt_isNewer(foundryVersion, "10")) {
         ui.notifications.warn(`Disabled Beyond20 native rolls feature as it is incompatible with Foundry VTT v${foundryVersion}. Please upgrade to version 10 or newer.`, {permanent: true});
         game.settings.set("beyond20", "nativeRolls", false);
     }

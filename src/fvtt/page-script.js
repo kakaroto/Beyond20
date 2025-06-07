@@ -3,6 +3,8 @@ var extension_url = "/modules/beyond20/";
 var fvttVersion = game.version || game.data?.version;
 //isNewerVersion is deprecated in Foundry 12
 const fvtt_isNewer = window.foundry && foundry.utils && foundry.utils.isNewerVersion ? (v1, v0) => foundry.utils.isNewerVersion(v1, v0) : isNewerVersion;
+// getProperty is deprecated in Foundry 13
+const fvtt_getProperty = window.foundry && foundry.utils && foundry.utils.getProperty ? (obj, path) => foundry.utils.getProperty(obj, path) : getProperty;
 // v10 uses .document for Placeables (tokens), or the Base object itself, instead of .data field
 // We use the new fields to avoid spamming the log with deprecation warnings
 const docData = (doc) => fvtt_isNewer(fvttVersion, "10") ? doc.document || doc : doc.data;
@@ -471,18 +473,18 @@ function updateHP(name, current, total, temp) {
         const actors = game.actors?.contents || game.actors?.entities || game.actors; // v13 compatibility
         const actor = actors.find((a) => docIsOwner(a) && a.name.toLowerCase().trim() == name);
         const systemData = fvtt_isNewer(fvttVersion, "10") ? actor?.system : actor?.data?.data;
-        if (actor && getProperty(systemData, "attributes.hp") !== undefined) {
+        if (actor && fvtt_getProperty(systemData, "attributes.hp") !== undefined) {
             actor.update(dnd5e_data);
-        } else if (actor && getProperty(systemData, "health") !== undefined) {
+        } else if (actor && fvtt_getProperty(systemData, "health") !== undefined) {
             actor.update(sws_data);
         }
     }
 
     for (let token of tokens) {
         const systemData = fvtt_isNewer(fvttVersion, "10") ? token.actor?.system : token.actor?.data?.data;
-        if (token.actor && getProperty(systemData, "attributes.hp") !== undefined) {
+        if (token.actor && fvtt_getProperty(systemData, "attributes.hp") !== undefined) {
             token.actor.update(dnd5e_data);
-        } else if (token.actor && getProperty(systemData, "health") !== undefined) {
+        } else if (token.actor && fvtt_getProperty(systemData, "health") !== undefined) {
             token.actor.update(sws_data);
         }
     }
