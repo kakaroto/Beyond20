@@ -182,7 +182,7 @@ class Beyond20 {
         let token = null;
         if (request.character.name) {
             const name = request.character.name.toLowerCase().trim();
-            token = canvas.tokens.placeables.find((t) => t.owner && t.name.toLowerCase().trim() == name);
+            token = canvas.tokens.placeables.find((t) => ('isOwner' in t ? t.isOwner : t.owner) && t.name.toLowerCase().trim() == name);
         }
         return token || canvas.tokens.controlled[0];
     }
@@ -435,7 +435,7 @@ class Beyond20 {
 
     static async rollInitiative(request) {
         const characterName = request.character.name.toLowerCase().trim();
-        const characterTokens = canvas.tokens.placeables.filter((t) => t.owner && t.name.toLowerCase().trim() == characterName);
+        const characterTokens = canvas.tokens.placeables.filter((t) => ('isOwner' in t ? t.isOwner : t.owner) && t.name.toLowerCase().trim() == characterName);
         const tokens = characterTokens.length > 0 ? characterTokens : canvas.tokens.controlled;
         if (tokens.length === 0) {
             ui.notifications.warn("Beyond20: No tokens found to roll initiative for");

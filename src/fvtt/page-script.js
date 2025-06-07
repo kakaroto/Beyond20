@@ -6,6 +6,11 @@ const fvtt_isNewer = window.foundry && foundry.utils && foundry.utils.isNewerVer
 // v10 uses .document for Placeables (tokens), or the Base object itself, instead of .data field
 // We use the new fields to avoid spamming the log with deprecation warnings
 const docData = (doc) => fvtt_isNewer(fvttVersion, "10") ? doc.document || doc : doc.data;
+// Determine ownership of a Foundry document without triggering deprecated getters
+const docIsOwner = (doc) => {
+    if (doc && 'isOwner' in doc) return doc.isOwner;
+    return doc?.owner;
+};
 
 class FVTTDisplayer {
     postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
@@ -448,7 +453,7 @@ function updateHP(name, current, total, temp) {
     console.log(`Updating HP for ${name} : (${current} + ${temp})/${total}`);
     name = name.toLowerCase().trim();
 
-    const tokens = canvas.tokens.placeables.filter((t) => (t.owner || t.isOwner) && t.name.toLowerCase().trim() == name);
+    const tokens = canvas.tokens.placeables.filter((t) => docIsOwner(t) && t.name.toLowerCase().trim() == name);
 
     const prefix = fvtt_isNewer(fvttVersion, "10") ? "system": "data";
     const dnd5e_data = {
@@ -462,7 +467,7 @@ function updateHP(name, current, total, temp) {
     }
     if (tokens.length == 0) {
         const actors = game.actors?.contents || game.actors?.entities || game.actors; // v13 compatibility
-        const actor = actors.find((a) => (a.owner || a.isOwner) && a.name.toLowerCase().trim() == name);
+        const actor = actors.find((a) => docIsOwner(a) && a.name.toLowerCase().trim() == name);
         const systemData = fvtt_isNewer(fvttVersion, "10") ? actor?.system : actor?.data?.data;
         if (actor && getProperty(systemData, "attributes.hp") !== undefined) {
             actor.update(dnd5e_data);
@@ -505,7 +510,7 @@ function updateConditions(request, name, conditions, exhaustion) {
         const tokens = canvas.tokens.placeables.filter((t) => docData(t).name.toLowerCase().trim() === name);
         // look for an actor with the character name and search for a linked token to that actor
         const actors = game.actors?.contents || game.actors?.entities || game.actors; // v13 compatibility
-        const actor = actors.find((a) => (a.owner || a.isOwner) && a.name.toLowerCase().trim() === name);
+        const actor = actors.find((a) => docIsOwner(a) && a.name.toLowerCase().trim() === name);
         if (actor) {
             const linkedTokens = canvas.tokens.placeables.filter((t) => t.actor && t.actor.id === actor.id);
             // Only add linked tokens that do not name match to avoid duplicate operations
