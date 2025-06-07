@@ -667,6 +667,7 @@ class Beyond20 {
      */
     static handleChatMessage(message, html, data) {
         if (!game.settings.get("beyond20", "damageButtons")) return;
+        if (!(html instanceof jQuery)) html = $(html);
         const damages = html.find(".beyond20-message .beyond20-roll-damage, .beyond20-message .beyond20-total-damage");
         if (damages.length === 0) return;
         for (let i = 0; i < damages.length; i++) {
@@ -777,7 +778,8 @@ class Beyond20CreateNativeActorsApplication extends FormApplication {
 }
 
 Hooks.on('beyond20Request', (action, request) => Beyond20.handleBeyond20Request(action, request))
-Hooks.on("renderChatMessage", (message, html, data) => Beyond20.handleChatMessage(message, html, data));
+const chatHook = isNewerVersion(game.version || game.data.version, "13") ? "renderChatMessageHTML" : "renderChatMessage";
+Hooks.on(chatHook, (message, html, data) => Beyond20.handleChatMessage(message, html, data));
 
 Hooks.on('init', function () {
     const foundryVersion = game.version || game.data.version;

@@ -14,7 +14,9 @@ const docIsOwner = (doc) => {
 
 class FVTTDisplayer {
     postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
-        Hooks.once('renderChatMessage', (chat_message, html, data) => {
+        const hookName = fvtt_isNewer(fvttVersion, "13") ? 'renderChatMessageHTML' : 'renderChatMessage';
+        Hooks.once(hookName, (chat_message, html, data) => {
+            if (!(html instanceof jQuery)) html = $(html);
             const icon = extension_url + "images/icons/badges/custom20.png";
             html.find(".ct-beyond20-custom-icon").attr('src', icon);
             html.find(".ct-beyond20-custom-roll").on('click', (event) => {
