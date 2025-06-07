@@ -5,6 +5,9 @@ var fvttVersion = game.version || game.data?.version;
 const fvtt_isNewer = window.foundry && foundry.utils && foundry.utils.isNewerVersion ? (v1, v0) => foundry.utils.isNewerVersion(v1, v0) : isNewerVersion;
 // getProperty is deprecated in Foundry 13
 const fvtt_getProperty = window.foundry && foundry.utils && foundry.utils.getProperty ? (obj, path) => foundry.utils.getProperty(obj, path) : getProperty;
+// Die and PoolTerm moved under foundry.dice.terms in Foundry 13
+const fvtt_Die = window.foundry && foundry.dice?.terms?.Die ? foundry.dice.terms.Die : Die;
+const fvtt_PoolTerm = window.foundry && foundry.dice?.terms?.PoolTerm ? foundry.dice.terms.PoolTerm : PoolTerm;
 // v10 uses .document for Placeables (tokens), or the Base object itself, instead of .data field
 // We use the new fields to avoid spamming the log with deprecation warnings
 const docData = (doc) => fvtt_isNewer(fvttVersion, "10") ? doc.document || doc : doc.data;
@@ -152,7 +155,7 @@ class FVTTDisplayer {
             } else if (fvtt_isNewer(fvttVersion, "0.8")) {
                 // Foundry 0.8.x API
                 // This will accept backware compatible fvttRolls format
-                const pool = PoolTerm.fromRolls(fvttRolls);
+                const pool = fvtt_PoolTerm.fromRolls(fvttRolls);
                 data.roll = Roll.fromTerms([pool]);
             } else if (fvtt_isNewer(fvttVersion, "0.7")) {
                 // Foundry 0.7.x API
@@ -244,7 +247,7 @@ class FVTTRoll extends Beyond20BaseRoll {
         // 0.7.x Dice Roll API is different
         if (fvtt_isNewer(fvttVersion, "0.8")) {
             return this._roll.terms.map(t => {
-                if (t instanceof Die) {
+                if (t instanceof fvtt_Die) {
                     return {
                         amount: t.amount || t.number,
                         faces: t.faces,
@@ -252,7 +255,7 @@ class FVTTRoll extends Beyond20BaseRoll {
                         total: t.total,
                         rolls: t.results.map(r => ({discarded: r.discarded || r.rerolled, roll: r.result}))
                     }
-                } else if (t instanceof PoolTerm) {
+                } else if (t instanceof fvtt_PoolTerm) {
                     const dice = t.rolls[0]?.dice[0];
                     // A DicePool means a "minX", so don't include it in the roll results
                     const results = t.results.slice(0, t.results.length - 1);
@@ -270,7 +273,7 @@ class FVTTRoll extends Beyond20BaseRoll {
             });
         } else if (fvtt_isNewer(fvttVersion, "0.7")) {
             return this._roll.terms.map(t => {
-                if (t instanceof Die) {
+                if (t instanceof fvtt_Die) {
                     return {
                         amount: t.amount || t.number,
                         faces: t.faces,

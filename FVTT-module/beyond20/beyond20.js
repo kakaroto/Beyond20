@@ -1,6 +1,8 @@
 
 
 const fvtt_isNewer = foundry && foundry.utils && foundry.utils.isNewerVersion ? foundry.utils.isNewerVersion : isNewerVersion;
+const fvtt_Die = foundry && foundry.dice && foundry.dice.terms && foundry.dice.terms.Die ? foundry.dice.terms.Die : Die;
+const fvtt_PoolTerm = foundry && foundry.dice && foundry.dice.terms && foundry.dice.terms.PoolTerm ? foundry.dice.terms.PoolTerm : PoolTerm;
 
 class Beyond20 {
     static getMyActor() {
