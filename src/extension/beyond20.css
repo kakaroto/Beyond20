@@ -53,6 +53,11 @@
     overflow: visible;
 }
 
+/* Foundry sets overflow:hidden which clips tooltips */
+.beyond20-message .message-content {
+    overflow: visible;
+}
+
 .beyond20-total-damage {
     font-size: 1.05em;
     font-weight: bold;
