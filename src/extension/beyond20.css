@@ -47,6 +47,12 @@
     padding: 0px 5px;
 }
 
+/* Ensure hover tooltips aren't clipped by surrounding elements */
+.beyond20-message,
+.beyond20-tooltip {
+    overflow: visible;
+}
+
 .beyond20-total-damage {
     font-size: 1.05em;
     font-weight: bold;
