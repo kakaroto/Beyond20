@@ -371,7 +371,8 @@ function popAvatar(request, sendToDiscord=true) {
 async function addInitiativeToCombat(roll) {
     if (canvas.tokens.controlled.length > 0) {
         if (game.combat) {
-            if (game.combat.scene.id != canvas.scene.id) {
+            // Known Issue game.combat.scene are not longer set so you can add combatants from other scenes by mistake
+            if (!fvtt_isNewer(fvttVersion, "13") && (game.combat.scene?.id != canvas.scene.id)) {
                 ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene");
             } else {
                 for (let token of canvas.tokens.controlled) {
