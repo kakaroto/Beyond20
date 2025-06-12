@@ -82,7 +82,7 @@ class FVTTDisplayer {
                                 options: {}
                             };
                         }
-                        if (term.class !== "OperatorTerm" && 
+                        if (term.class !== "OperatorTerm" &&
                             parts.length > 0 && parts[parts.length - 1].class !== "OperatorTerm") {
                             parts.push({
                                 class: "OperatorTerm",
@@ -433,9 +433,9 @@ function handleRenderedRoll(request) {
     }
 
     roll_renderer._displayer.postHTML(request.request, request.title,
-        request.html, request.character, request.whisper, 
-        request.play_sound, request.source, request.attributes, 
-        request.description, request.attack_rolls, request.roll_info, 
+        request.html, request.character, request.whisper,
+        request.play_sound, request.source, request.attributes,
+        request.description, request.attack_rolls, request.roll_info,
         request.damage_rolls, request.total_damages, request.open);
     if (request.request.type === "initiative" && settings["initiative-tracker"]) {
         const initiative = request.attack_rolls.find((roll) => !roll.discarded);
@@ -568,26 +568,26 @@ function disconnectAllEvents() {
 }
 
 function setTitle() {
-    const chatControls = $("#chat-controls");
+    // Look for the chat-controls (pre-v13) or chat-message (v13+) container
+    const chatControls = $("#chat-controls, #chat-message");
     if (chatControls.length) {
         const title = document.getElementsByTagName("title")[0];
-        const worldTitle = game.world.title || game.world.data?.title || "";
+        const worldTitle = game.world?.title || game.world?.data?.title || "";
         // Make sure the mutation gets triggerred if we reload the extension
         title.textContent = "Foundry Virtual Tabletop";
-        title.textContent = worldTitle + " • Foundry Virtual Tabletop";
+        title.textContent = `${worldTitle} • Foundry Virtual Tabletop`;
     } else {
         // Wait for the world and UI to be loaded;
         Hooks.once("renderChatLog", setTitle);
     }
-    if (game) {
-        game.beyond20 = {loaded: true};
-    }
+    // Mark Beyond20 as loaded as soon as game is defined
+    if (game) game.beyond20 = {loaded: true};
     // Re-set the game version on ready in case the game data wasn't initialized on Beyond20 load
     Hooks.on("ready", () => {
         fvttVersion = game.version || game.data?.version;
         game.beyond20 = {loaded: true};
     });
-}
+  }
 
 console.log("Beyond20: Foundry VTT Page Script loaded");
 const registered_events = [];

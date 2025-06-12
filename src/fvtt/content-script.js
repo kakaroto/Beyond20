@@ -57,9 +57,6 @@ function injectSettingsButton() {
 
 const observer = new window.MutationObserver(titleSet);
 observer.observe(document.getElementsByTagName("title")[0], { "childList": true });
-const currentTitle = document.getElementsByTagName("title")[0].textContent;
-if (currentTitle.includes("Foundry Virtual Tabletop"))
-    titleSet(null, observer);
 sendCustomEvent("disconnect");
 injectPageScript(chrome.runtime.getURL("libs/alertify.min.js"), () => {
     initializeAlertify();
