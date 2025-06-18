@@ -1,8 +1,32 @@
-
-
+const moduleName = "beyond20";
 class Beyond20 {
+    static skipTargets = [
+        "Acrobatics",
+        "Animal Handling",
+        "Arcana",
+        "History",
+        "Insight",
+        "Initiative",
+        "Investigation",
+        "Medicine",
+        "Nature",
+        "Perception",
+        "Performance",
+        "Religion",
+        "Sleight of Hand",
+        "Stealth",
+        "Survival",
+        "Spellcasing",
+        "Strength Save",
+        "Dexterity Save",
+        "Constitution Save",
+        "Intelligence Save",
+        "Wisdom Save",
+        "Charisma Save"
+    ];
+
     static getMyActor() {
-        return game.actors.find(a => a.isOwner && a.getFlag("beyond20", "user") === game.userId);
+        return game.actors.find(a => a.isOwner && a.getFlag(moduleName, "user") === game.userId);
     }
     static async getUpdatedActor(request, items=[]) {
         const actorData = await this.createActorData(request, items);
@@ -209,19 +233,23 @@ class Beyond20 {
         let type = "feat";
         switch (request.type) {
             default:
-            case 'trait':
-            case 'action':
             case 'feature':
                 type = 'feat';
                 itemData = this._getDefaultTemplate('Item', type);
-                if (request.source) {
-                    itemData.requirements = `${request.source}: ${request['source-type']}`;
-                }
+                itemData.requirements = `${request.source}: ${request['source-type']}`;
+                break;
+            case 'trait':
+                type = 'feat';
+                itemData = this._getDefaultTemplate('Item', type);
                 break;
             case 'item':
                 type = 'equipment';
                 itemData = this._getDefaultTemplate('Item', type);
                 itemData.rarity = request['item-type'];
+                break;
+            case 'action':
+                type = 'feat';
+                itemData = this._getDefaultTemplate('Item', type);
                 break;
             case 'spell-card': 
                 type = 'spell';
@@ -242,7 +270,7 @@ class Beyond20 {
         if (!itemData) {
             itemData = this._getDefaultTemplate('Item', type);
         }
-        itemData.source = "Beyond20";
+        itemData.source = moduleName;
         itemData.description.value = request.description.replace(/\n/g, "</br>");
         return {
             system: itemData,
@@ -481,7 +509,7 @@ class Beyond20 {
     static async rollSkill(request) {
         const actor = await this.getUpdatedActor(request);
         const actorData = actor.system;
-        const token = this.findToken(request);
+        const token = this.findToken(request.character.name);
         
         const SKILLS = {
             "Acrobatics": "acr",
@@ -552,7 +580,7 @@ class Beyond20 {
     static async rollSavingThrow(request) {
         const actor = await this.getUpdatedActor(request);
         const actorData = actor.system;
-        const token = this.findToken(request);
+        const token = this.findToken(request.character.name);
         
         const abl = request.ability.toLowerCase();
         const mod = parseInt(request.modifier)
@@ -590,7 +618,7 @@ class Beyond20 {
     
     static async rollAbility(request) {
         const actor = await this.getUpdatedActor(request);
-        const token = this.findToken(request);
+        const token = this.findToken(request.character.name);
         
         const abl = request.ability.toLowerCase();
         const mod = parseInt(request.modifier)
@@ -625,7 +653,7 @@ class Beyond20 {
     static async rollItems(request) {
         const item = this.createItemData(request);
         const actor = await this.getUpdatedActor(request, [item]);
-        const token = this.findToken(request);
+        const token = this.findToken(request.character.name);
         const actorItem = actor.items.find(i => i.type === item.type && i.name === item.name);
 
         const rollMode = request.whisper === 0 ? "roll" : "gmroll";
@@ -639,7 +667,7 @@ class Beyond20 {
 
     static handleBeyond20Request(action, request) {
         if (action !== "roll") return;
-        if (!game.settings.get("beyond20", "nativeRolls")) return;
+        if (!game.settings.get(moduleName, "nativeRolls")) return;
         // return false to interrupt the beyond20 
         switch (request.type) {
             case "skill":
@@ -666,13 +694,38 @@ class Beyond20 {
      * Add Chat Damage buttons to Beyond20 chat messages;
      */
     static handleChatMessage(message, html, data) {
-        if (!game.settings.get("beyond20", "damageButtons")) return;
+        this._addTargets(message, html);
+        if (!game.settings.get(moduleName, "damageButtons")) return;
         const damages = html.find(".beyond20-message .beyond20-roll-damage, .beyond20-message .beyond20-total-damage");
         if (damages.length === 0) return;
         for (let i = 0; i < damages.length; i++) {
             this._addChatDamageButtons(damages.eq(i));
         }
     }
+
+    static _addTargets(message, html) {
+        if (!game.settings.get(moduleName, "rollTargets") || message.getFlag(moduleName, "hasTargets") || message.type != 5) return;
+        let title = html.find("img").eq(0).attr("title"); //?.split("(");
+        if (!this.skipTargets.includes(title)) {
+            // Find user's targets
+            let targets = game.user.targets;
+            if (targets.size > 0) {
+                const targetsArray = Array.from(targets).map((t) => t.name).reverse();
+                let targetsDetails = "<div class='beyond20-targets'><details><summary>Target";
+                if (targetsArray.length > 1) targetsDetails += "s";
+                targetsDetails += ": " + targetsArray.pop();
+                if (targetsArray.length > 0) targetsDetails += "...";
+                targetsDetails += "</summary >" + targetsArray.join(", ");
+                targetsDetails += "</details></div>";
+                // Add targets to roll
+                let msg = html.find(".message-content");
+                let roll = msg.eq(0).find(".beyond20-roll-result");
+                roll.eq(0).before($(targetsDetails));
+                message.update({ content: msg.html(), flags: { beyond20: { hasTargets: true, targets: targets } } });
+            }
+        }
+    }
+
     static _addChatDamageButtons(roll) {
         let valueSpan = roll.find(".beyond20-roll-value");
         if (valueSpan.length === 0) {
@@ -740,12 +793,12 @@ class Beyond20CreateNativeActorsApplication extends FormApplication {
         if (!game.user.isGM) {
             return ui.notifications.error("Only the GM can create actors for Beyond20.");
         }
-        let folder = game.folders.find(f => f.name === "Beyond20" && f.type === "Actor");
+        let folder = game.folders.find(f => f.name === moduleName && f.type === "Actor");
         if (!folder) {
-            folder = await Folder.create({name: "Beyond20", type: "Actor"});
+            folder = await Folder.create({name: moduleName, type: "Actor"});
         }
         for (const user of game.users.contents) {
-            const actor = game.actors.find(a => a.getFlag("beyond20", "user") === user.id);
+            const actor = game.actors.find(a => a.getFlag(moduleName, "user") === user.id);
             if (!actor) {
                 const actorData = {
                     name: user.name,
@@ -776,12 +829,12 @@ class Beyond20CreateNativeActorsApplication extends FormApplication {
     }
 }
 
-Hooks.on('beyond20Request', (action, request) => Beyond20.handleBeyond20Request(action, request))
+Hooks.on('beyond20Request', (action, request) => Beyond20.handleBeyond20Request(action, request));
 Hooks.on("renderChatMessage", (message, html, data) => Beyond20.handleChatMessage(message, html, data));
 
 Hooks.on('init', function () {
     const foundryVersion = game.version || game.data.version;
-    game.settings.register("beyond20", "notifyAtLoad", {
+    game.settings.register(moduleName, "notifyAtLoad", {
         name: "Notify player to activate Beyond20",
         hint: "Beyond20 extension doesn't load automatically for Foundry unless permission is granted. The module can show a notification to remind the player to activate it for the current tab.",
         scope: "client",
@@ -792,7 +845,7 @@ Hooks.on('init', function () {
     /**
      * Inspired by chatdamagebuttons-beyond20 module by Victor Ling: https://gitlab.com/Ionshard/foundry-vtt-chatdamagebuttons-beyond20/
      */
-    game.settings.register("beyond20", "damageButtons", {
+    game.settings.register(moduleName, "damageButtons", {
         name: "Add chat damage buttons",
         hint: "Adds chat damage buttons to rolls to more easily apply damage or healing to tokens",
         scope: "client",
@@ -800,7 +853,15 @@ Hooks.on('init', function () {
         default: true,
         type: Boolean
     });
-    game.settings.register("beyond20", "nativeRolls", {
+    game.settings.register(moduleName, "rollTargets", {
+        name: "Add roll targets",
+        hint: "Adds targets to rolls.  Targets are determined by user or by token if no user targets are selected and target tracking is activated.",
+        scope: "client",
+        config: true,
+        default: true,
+        type: Boolean
+    });
+    game.settings.register(moduleName, "nativeRolls", {
         name: "Use Foundry native rolls (EXPERIMENTAL)",
         hint: "If enabled, will use Foundry native rolls instead of the Beyond20 roll renderer. Cannot work when D&D Beyond Digital Dice are enabled. All Beyond20 features may not be supported.",
         scope: "client",
@@ -811,16 +872,16 @@ Hooks.on('init', function () {
             if (!v) return;
             if (!isNewerVersion(foundryVersion, "10")) {
                 ui.notifications.warn(`Cannot enable Beyond20 native rolls on Foundry VTT v${foundryVersion}. Please upgrade to version 10 or newer.`);
-                return game.settings.set("beyond20", "nativeRolls", false);
+                return game.settings.set(moduleName, "nativeRolls", false);
             }
             if (Actor.canUserCreate(game.user)) return true;
             if (!Beyond20.getMyActor()) {
                 ui.notifications.warn(`Cannot enable Beyond20 native rolls because native actor doesn't exist. Please ask your GM to create the actors from the Beyond20 module settings.`, {permanent: true});
-                return game.settings.set("beyond20", "nativeRolls", false);
+                return game.settings.set(moduleName, "nativeRolls", false);
             }
         }
     });
-    game.settings.registerMenu("beyond20", "createNativeActors", {
+    game.settings.registerMenu(moduleName, "createNativeActors", {
         name: "Create native rolls Actors",
         label: "Create Actors",      // The text label used in the button
         hint: "Creates a Beyond20 native rolls actor for each user (if one doesn't exist), allowing them to use the native rolls feature.",
@@ -832,18 +893,18 @@ Hooks.on('init', function () {
 
 Hooks.on('ready', function () {
     const foundryVersion = game.version || game.data.version;
-    if (game.settings.get("beyond20", "nativeRolls")  && !Actor.canUserCreate(game.user)) {
+    if (game.settings.get(moduleName, "nativeRolls") && !Actor.canUserCreate(game.user)) {
         if (!Beyond20.getMyActor()) {
-            ui.notifications.warn(`Cannot enable Beyond20 native rolls because native actor doesn't exist. Please ask your GM to create the actors from the Beyond20 module settings.`, {permanent: true});
-            game.settings.set("beyond20", "nativeRolls", false);
+            ui.notifications.warn(`Cannot enable Beyond20 native rolls because native actor doesn't exist. Please ask your GM to create the actors from the Beyond20 module settings.`, { permanent: true });
+            game.settings.set(moduleName, "nativeRolls", false);
         }
     }
     // Disable native rolls if Foundry is pre v10
-    if (game.settings.get("beyond20", "nativeRolls") && !isNewerVersion(foundryVersion, "10")) {
-        ui.notifications.warn(`Disabled Beyond20 native rolls feature as it is incompatible with Foundry VTT v${foundryVersion}. Please upgrade to version 10 or newer.`, {permanent: true});
-        game.settings.set("beyond20", "nativeRolls", false);
+    if (game.settings.get(moduleName, "nativeRolls") && !isNewerVersion(foundryVersion, "10")) {
+        ui.notifications.warn(`Disabled Beyond20 native rolls feature as it is incompatible with Foundry VTT v${foundryVersion}. Please upgrade to version 10 or newer.`, { permanent: true });
+        game.settings.set(moduleName, "nativeRolls", false);
     }
-    if (game.settings.get("beyond20", "notifyAtLoad") && !game.beyond20) {
+    if (game.settings.get(moduleName, "notifyAtLoad") && !game.beyond20) {
         dialog = new Dialog({
             title: `Beyond20`,
             content: "<p>Beyond20 does not load automatically for FVTT games on custom domains.</p>" +
@@ -857,7 +918,7 @@ Hooks.on('ready', function () {
                     icon: '<i class="fas fa-times"></i>',
                     label: "Dismiss",
                     callback: html => {
-                        game.settings.set("beyond20", "notifyAtLoad", !html.find("input[name=dontaskagain]")[0].checked);
+                        game.settings.set(moduleName, "notifyAtLoad", !html.find("input[name=dontaskagain]")[0].checked);
                         dialog = null;
                     }
                 }
@@ -874,5 +935,5 @@ Hooks.on('ready', function () {
             }
         }
         setTimeout(cb, 500)
-    } 
-})
+    }
+});
