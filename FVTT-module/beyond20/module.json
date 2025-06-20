@@ -21,8 +21,8 @@
     "download": "https://raw.githubusercontent.com/kakaroto/Beyond20/fvtt-module-v1.5.5/FVTT-module/beyond20.zip",
     "compatibility": {
         "minimum": "0.6.0",
-        "verified": "12"
+        "verified": "13"
     },
     "minimumCoreVersion": "0.6.0",
-    "compatibleCoreVersion": "12"
+    "compatibleCoreVersion": "13"
 }

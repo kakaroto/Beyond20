@@ -2,7 +2,7 @@
 
 class Beyond20 {
     static getMyActor() {
-        return game.actors.find(a => a.isOwner && a.getFlag("beyond20", "user") === game.userId);
+        return game.actors.find(a => a.isOwner && a.getFlag("beyond20", "user") === (game.user?.id || game.userId));
     }
     static async getUpdatedActor(request, items=[]) {
         const actorData = await this.createActorData(request, items);
@@ -40,11 +40,11 @@ class Beyond20 {
         // In v10, permission field was changed into ownership
         if (isNewerVersion(game.version || game.data.version, "10")) {
             baseAttributes["ownership"] = {
-                [game.userId]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
+                [game.user?.id || game.userId]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
             }
         } else {
             baseAttributes["permission"] = {
-                [game.userId]: CONST.DOCUMENT_PERMISSION_LEVELS.OWNER
+                [game.user?.id || game.userId]: CONST.DOCUMENT_PERMISSION_LEVELS.OWNER
             }
         }
         if (!["Character", "Monster", "Creature"].includes(request.character.type)) {
