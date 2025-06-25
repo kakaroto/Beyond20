@@ -575,13 +575,15 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
             const intelligence = character.getAbility("INT") || {mod: 0};
             const mod = parseInt(intelligence.mod) || 0;
             const psychic_action = action_name.toLocaleLowerCase();
-            if(["psionic power: psionic strike"].includes(psychic_action)) {
+            if(["psionic power: psionic strike", "psionic power: protective field"].includes(psychic_action)) {
                 // Use full modifier, even if deeply negative
                 damages[0] = ensureModifier(damages[0], mod);
-            } else if(["psionic power: protective field"].includes(psychic_action)) {
-                // Clamp the modifier to minimum of -1, not below that
-                const cappedMod = mod < -1 ? -1 : mod;
-                damages[0] = ensureModifier(damages[0], cappedMod);
+
+                if(mod < 0 && ["psionic power: protective field"].includes(psychic_action)) {
+                    // Set the min value to 1 + (negative mod) ensures that the results are never negative
+                    const minValue = 1 + Math.abs(mod);
+                    damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, match => `${match}min${minValue}`);
+                }
             }
         } 
     }
