@@ -422,7 +422,7 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
                 damage_types.push("Symbiotic Entity");
         }
     }
-
+    
     if (character.hasClass("Paladin")) {
         // Paladin: Improved Divine Smite
         // Radiant Strikes works on melee and unarmed strikes, while Improved Divine Smite
@@ -568,6 +568,25 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
     }
 
     // Class Specific
+    if (character.hasClass("Fighter")) {
+        if(character.hasClassFeature("Psionic Power")) {
+            // HACK ALERT: fixes dndbeyond missing mods but incase they are added in the future we ensure the mod is applied if not present if it is present it is not applied
+            const intelligence = character.getAbility("INT") || {mod: 0};
+            const mod = parseInt(intelligence.mod) || 0;
+            const psychic_action = action_name.toLocaleLowerCase();
+            if(["psionic power: psionic strike", "psionic power: protective field"].includes(psychic_action)) {
+                // Use full modifier, even if deeply negative
+                damages[0] = ensureModifier(damages[0], mod);
+
+                if(mod < 0 && ["psionic power: protective field"].includes(psychic_action)) {
+                    // Set the min value to 1 + (negative mod) ensures that the results are never negative
+                    const minValue = 1 + Math.abs(mod);
+                    damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, match => `${match}min${minValue}`);
+                }
+            }
+        } 
+    }
+
     if (character.hasClass("Cleric")) {
         // Cleric: Blessed Strikes
         if ((((item_name || action_name) && to_hit != null) || (spell_name && spell_level.includes("Cantrip"))) &&
