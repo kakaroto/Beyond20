@@ -48,7 +48,7 @@ class Beyond20RollRenderer {
             const value = choices[option] || option;
             html += `<option value="${option}"${isSelected ? " selected" : ""}>${value}</option>`;
         }
-        html += `;</select></div></form>`;
+        html += `</select></div></form>`;
         return new Promise((resolve) => {
             this._prompter.prompt(title, html, "Roll").then((html) => {
                 if (html) {
@@ -76,7 +76,7 @@ class Beyond20RollRenderer {
             const value = choices[option] || option;
             html += `<option value="${option}"${isSelected ? " selected" : ""}>${value}</option>`;
         }
-        html += `;</select></div>`;
+        html += `</select></div>`;
 
         // query two
         html += `<div class="beyond20-form-row"><label>${question2}</label><select id="${select_id}-two" name="${select_id}-two">`;
@@ -87,7 +87,7 @@ class Beyond20RollRenderer {
             const value = choices2[option] || option;
             html += `<option value="${option}"${isSelected ? " selected" : ""}>${value}</option>`;
         }
-        html += `;</select></div>`;
+        html += `</select></div>`;
         
         html += `</form>`;
         return new Promise((resolve) => {
