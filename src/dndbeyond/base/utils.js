@@ -294,14 +294,14 @@ async function buildAttackRoll(character, attack_source, name, description, prop
             }
         } else if (roll_properties.name.includes("Toll the Dead")) {
             if (character.getSetting("toll-choice") === "both") {
-                damages.splice(1, 0, upgradeDice(damages[0], 8, 12));
+                damages.splice(1, 0, damages[0].replace("d8", "d12"));
                 damage_types.splice(1, 0, damage_types[0] + ' (Missing HP)');
                 damage_types[0] = damage_types[0] + ' (Full HP)';
             } else {
                 const ttd_dice = await dndbeyondDiceRoller.queryGeneric(roll_properties.name, "Is the target missing any of its hit points ?", { "d12": "Yes", "d8": "No" }, "ttd_dice", ["d12", "d8"]);
                 if (ttd_dice === null) return null;
                 damages[0] = damages[0].replace("d8", ttd_dice);
-                damage_types[0] = damage_types[0] + ttd_dice === "d8" ? ' (Full HP)' : ' (Missng HP)';
+                damage_types[0] = damage_types[0] + (ttd_dice === "d8" ? ' (Full HP)' : ' (Missing HP)');
             }
         }  else if (roll_properties.name === "Spirit Shroud") {
             const choice = await queryDamageTypeFromArray(roll_properties.name, damages, damage_types, ["Cold", "Necrotic", "Radiant"]);
