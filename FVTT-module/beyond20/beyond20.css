@@ -4,7 +4,19 @@
 .beyond20-roll-result,
 .beyond20-roller-error {
     position: relative;
+    overflow: visible;
     padding: 0px 5px;
+}
+
+/* Ensure hover tooltips aren't clipped by surrounding elements */
+.beyond20-message,
+.beyond20-tooltip {
+    overflow: visible;
+}
+
+/* Foundry sets overflow:hidden which clips tooltips */
+.beyond20-message .message-content {
+    overflow: visible;
 }
 
 .beyond20-total-damage {

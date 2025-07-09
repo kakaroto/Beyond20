@@ -17,7 +17,7 @@ function updateSettings(new_settings = null) {
 }
 
 function handleMessage(request, sender, sendResponse) {
-    console.log("Got message : ", request);
+    console.log("Received message:", request);
     if (request.action == "settings") {
         if (request.type == "general")
             updateSettings(request.settings);
@@ -58,6 +58,7 @@ function injectSettingsButton() {
 const observer = new window.MutationObserver(titleSet);
 observer.observe(document.getElementsByTagName("title")[0], { "childList": true });
 sendCustomEvent("disconnect");
-injectPageScript(chrome.runtime.getURL("libs/alertify.min.js"));
-injectPageScript(chrome.runtime.getURL('dist/fvtt_script.js'));
-initializeAlertify();
+injectPageScript(chrome.runtime.getURL("libs/alertify.min.js"), () => {
+    initializeAlertify();
+    injectPageScript(chrome.runtime.getURL('dist/fvtt_script.js'));
+});

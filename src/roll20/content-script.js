@@ -616,7 +616,7 @@ async function handleRoll(request) {
     let custom_roll_dice = "";
     if (request.character.type == "Character" ||
         (request.character.type == "Creature" && request.character.creatureType === "Wild Shape")) {
-        custom_roll_dice = request.character.settings["custom-roll-dice"] || "";
+        custom_roll_dice = request.character.settings?.["custom-roll-dice"] || "";
     }
     if (request.type == "skill") {
         roll = rollSkill(request, custom_roll_dice);
@@ -916,7 +916,7 @@ function updateSettings(new_settings = null) {
 }
 
 function handleMessage(request, sender, sendResponse) {
-    console.log("Got message : ", request);
+    console.log("Received message:", request);
     if (request.action == "settings") {
         if (request.type == "general")
             updateSettings(request.settings);

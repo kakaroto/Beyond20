@@ -74,12 +74,16 @@ function isExtensionDisconnected() {
 }
 
 // Taken from https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script;
-function injectPageScript(url) {
+function injectPageScript(url, callback = null) {
     const s = document.createElement('script');
     s.src = url;
     s.charset = "UTF-8";
-    s.onload = () => s.remove();
-    (document.head || document.documentElement).appendChild(s);
+    s.onload = () => {
+        s.remove();
+        if (callback)
+            callback();
+    }
+        ; (document.head || document.documentElement).appendChild(s);
 }
 
 function injectCSS(css) {
@@ -88,7 +92,7 @@ function injectCSS(css) {
     (document.head || document.documentElement).appendChild(s);
 }
 
-function sendCustomEvent(name, data=[]) {
+function sendCustomEvent(name, data = []) {
     if (getBrowser() === "Firefox")
         data = cloneInto(data, window);
     const event = new CustomEvent("Beyond20_" + name, { "detail": data });
@@ -142,8 +146,8 @@ function alertSettings(url, title) {
         alertify.dialog('Beyond20Settings', function () { return {}; }, false, "alert");
 
     const popup = chrome.runtime.getURL(url);
-    const img = E.img({src: chrome.runtime.getURL("images/icons/icon32.png"), style: "margin-right: 3px;"})
-    const iframe = E.iframe({src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "yes"});
+    const img = E.img({ src: chrome.runtime.getURL("images/icons/icon32.png"), style: "margin-right: 3px;" })
+    const iframe = E.iframe({ src: popup, style: "width: 100%; height: 100%;", frameborder: "0", scrolling: "yes" });
     const dialog = alertify.Beyond20Settings(img.outerHTML + title, iframe);
     const width = Math.min(720, window.innerWidth / 2); // 720px width or 50% on small screens
     dialog.set('padding', false).set('resizable', true).set('overflow', false).resizeTo(width, "80%");
@@ -171,7 +175,7 @@ function isObjectEqual(obj1, obj2) {
 // replaces matchAll, requires a non global regexp
 function reMatchAll(regexp, string) {
     const matches = string.match(new RegExp(regexp, "gm"));
-    if ( matches) {
+    if (matches) {
         let start = 0;
         return matches.map(group0 => {
             const match = group0.match(regexp);
@@ -195,7 +199,7 @@ function cleanupAlertifyComments() {
 
 E = new Proxy({}, {
     get: function (obj, name) {
-        return new Proxy(function () {}, {
+        return new Proxy(function () { }, {
             apply: (target, thisArg, argumentsList) => {
                 const attributes = argumentsList[0] || {};
                 const children = argumentsList.slice(1);
@@ -214,7 +218,7 @@ E = new Proxy({}, {
 function initializeAlertify() {
     alertify.set("alert", "title", "Beyond 20");
     alertify.set("notifier", "position", "top-center");
-    
+
     alertify.defaults.transition = "zoom";
     if (alertify.Beyond20Prompt === undefined) {
         const factory = function () {
@@ -274,11 +278,11 @@ function initializeAlertify() {
         }
         alertify.dialog('Beyond20Prompt', factory, false, "prompt");
     }
-    
-    
+
+
     if (alertify.Beyond20Roll === undefined)
         alertify.dialog('Beyond20Roll', function () { return {}; }, false, "alert");
-    
+
 }
 
 const bouncedFallbackRenders = {};
@@ -330,5 +334,5 @@ function forwardMessageToDOM(request) {
             delete bouncedFallbackRenders[reqHash];
             sendCustomEvent("RenderedRoll", [request]);
         }
-    } 
+    }
 }

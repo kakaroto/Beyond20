@@ -1,8 +1,12 @@
 
 
+const fvtt_isNewer = foundry && foundry.utils && foundry.utils.isNewerVersion ? foundry.utils.isNewerVersion : isNewerVersion;
+const fvtt_Die = foundry && foundry.dice && foundry.dice.terms && foundry.dice.terms.Die ? foundry.dice.terms.Die : Die;
+const fvtt_PoolTerm = foundry && foundry.dice && foundry.dice.terms && foundry.dice.terms.PoolTerm ? foundry.dice.terms.PoolTerm : PoolTerm;
+
 class Beyond20 {
     static getMyActor() {
-        return game.actors.find(a => a.isOwner && a.getFlag("beyond20", "user") === game.userId);
+        return game.actors.find(a => a.isOwner && a.getFlag("beyond20", "user") === (game.user?.id || game.userId));
     }
     static async getUpdatedActor(request, items=[]) {
         const actorData = await this.createActorData(request, items);
@@ -38,13 +42,13 @@ class Beyond20 {
             },
         };
         // In v10, permission field was changed into ownership
-        if (isNewerVersion(game.version || game.data.version, "10")) {
+        if (fvtt_isNewer(game.version || game.data.version, "10")) {
             baseAttributes["ownership"] = {
-                [game.userId]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
+                [game.user?.id || game.userId]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
             }
         } else {
             baseAttributes["permission"] = {
-                [game.userId]: CONST.DOCUMENT_PERMISSION_LEVELS.OWNER
+                [game.user?.id || game.userId]: CONST.DOCUMENT_PERMISSION_LEVELS.OWNER
             }
         }
         if (!["Character", "Monster", "Creature"].includes(request.character.type)) {
@@ -182,7 +186,7 @@ class Beyond20 {
         let token = null;
         if (request.character.name) {
             const name = request.character.name.toLowerCase().trim();
-            token = canvas.tokens.placeables.find((t) => t.owner && t.name.toLowerCase().trim() == name);
+            token = canvas.tokens.placeables.find((t) => ('isOwner' in t ? t.isOwner : t.owner) && t.name.toLowerCase().trim() == name);
         }
         return token || canvas.tokens.controlled[0];
     }
@@ -435,7 +439,7 @@ class Beyond20 {
 
     static async rollInitiative(request) {
         const characterName = request.character.name.toLowerCase().trim();
-        const characterTokens = canvas.tokens.placeables.filter((t) => t.owner && t.name.toLowerCase().trim() == characterName);
+        const characterTokens = canvas.tokens.placeables.filter((t) => ('isOwner' in t ? t.isOwner : t.owner) && t.name.toLowerCase().trim() == characterName);
         const tokens = characterTokens.length > 0 ? characterTokens : canvas.tokens.controlled;
         if (tokens.length === 0) {
             ui.notifications.warn("Beyond20: No tokens found to roll initiative for");
@@ -639,7 +643,13 @@ class Beyond20 {
 
     static handleBeyond20Request(action, request) {
         if (action !== "roll") return;
-        if (!game.settings.get("beyond20", "nativeRolls")) return;
+        let nativeRolls = false;
+        try {
+            nativeRolls = game.settings.get("beyond20", "nativeRolls");
+        } catch (err) {
+            nativeRolls = false;
+        }
+        if (!nativeRolls) return;
         // return false to interrupt the beyond20 
         switch (request.type) {
             case "skill":
@@ -666,7 +676,14 @@ class Beyond20 {
      * Add Chat Damage buttons to Beyond20 chat messages;
      */
     static handleChatMessage(message, html, data) {
-        if (!game.settings.get("beyond20", "damageButtons")) return;
+        let showButtons = false;
+        try {
+            showButtons = game.settings.get("beyond20", "damageButtons");
+        } catch (err) {
+            showButtons = false;
+        }
+        if (!showButtons) return;
+        if (!(html instanceof jQuery)) html = $(html);
         const damages = html.find(".beyond20-message .beyond20-roll-damage, .beyond20-message .beyond20-total-damage");
         if (damages.length === 0) return;
         for (let i = 0; i < damages.length; i++) {
@@ -759,7 +776,7 @@ class Beyond20CreateNativeActorsApplication extends FormApplication {
                     }
                 }
                 // In v10, permission field was changed into ownership
-                if (isNewerVersion(game.version || game.data.version, "10")) {
+                if (fvtt_isNewer(game.version || game.data.version, "10")) {
                     actorData["ownership"] = {
                         [user.id]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER
                     }
@@ -777,7 +794,8 @@ class Beyond20CreateNativeActorsApplication extends FormApplication {
 }
 
 Hooks.on('beyond20Request', (action, request) => Beyond20.handleBeyond20Request(action, request))
-Hooks.on("renderChatMessage", (message, html, data) => Beyond20.handleChatMessage(message, html, data));
+const chatHook = fvtt_isNewer(game.version || game.data.version, "13") ? "renderChatMessageHTML" : "renderChatMessage";
+Hooks.on(chatHook, (message, html, data) => Beyond20.handleChatMessage(message, html, data));
 
 Hooks.on('init', function () {
     const foundryVersion = game.version || game.data.version;
@@ -809,7 +827,7 @@ Hooks.on('init', function () {
         type: Boolean,
         onChange: async (v) => {
             if (!v) return;
-            if (!isNewerVersion(foundryVersion, "10")) {
+            if (!fvtt_isNewer(foundryVersion, "10")) {
                 ui.notifications.warn(`Cannot enable Beyond20 native rolls on Foundry VTT v${foundryVersion}. Please upgrade to version 10 or newer.`);
                 return game.settings.set("beyond20", "nativeRolls", false);
             }
@@ -839,7 +857,7 @@ Hooks.on('ready', function () {
         }
     }
     // Disable native rolls if Foundry is pre v10
-    if (game.settings.get("beyond20", "nativeRolls") && !isNewerVersion(foundryVersion, "10")) {
+    if (game.settings.get("beyond20", "nativeRolls") && !fvtt_isNewer(foundryVersion, "10")) {
         ui.notifications.warn(`Disabled Beyond20 native rolls feature as it is incompatible with Foundry VTT v${foundryVersion}. Please upgrade to version 10 or newer.`, {permanent: true});
         game.settings.set("beyond20", "nativeRolls", false);
     }

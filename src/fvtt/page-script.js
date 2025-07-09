@@ -1,15 +1,27 @@
-var settings = null;
+var settings = getDefaultSettings();
 var extension_url = "/modules/beyond20/";
 var fvttVersion = game.version || game.data?.version;
 //isNewerVersion is deprecated in Foundry 12
 const fvtt_isNewer = window.foundry && foundry.utils && foundry.utils.isNewerVersion ? (v1, v0) => foundry.utils.isNewerVersion(v1, v0) : isNewerVersion;
+// getProperty is deprecated in Foundry 13
+const fvtt_getProperty = window.foundry && foundry.utils && foundry.utils.getProperty ? (obj, path) => foundry.utils.getProperty(obj, path) : getProperty;
+// Die and PoolTerm moved under foundry.dice.terms in Foundry 13
+const fvtt_Die = window.foundry && foundry.dice?.terms?.Die ? foundry.dice.terms.Die : Die;
+const fvtt_PoolTerm = window.foundry && foundry.dice?.terms?.PoolTerm ? foundry.dice.terms.PoolTerm : PoolTerm;
 // v10 uses .document for Placeables (tokens), or the Base object itself, instead of .data field
 // We use the new fields to avoid spamming the log with deprecation warnings
 const docData = (doc) => fvtt_isNewer(fvttVersion, "10") ? doc.document || doc : doc.data;
+// Determine ownership of a Foundry document without triggering deprecated getters
+const docIsOwner = (doc) => {
+    if (doc && 'isOwner' in doc) return doc.isOwner;
+    return doc?.owner;
+};
 
 class FVTTDisplayer {
     postHTML(request, title, html, character, whisper, play_sound, source, attributes, description, attack_rolls, roll_info, damage_rolls, total_damages, open) {
-        Hooks.once('renderChatMessage', (chat_message, html, data) => {
+        const hookName = fvtt_isNewer(fvttVersion, "13") ? 'renderChatMessageHTML' : 'renderChatMessage';
+        Hooks.once(hookName, (chat_message, html, data) => {
+            if (!(html instanceof jQuery)) html = $(html);
             const icon = extension_url + "images/icons/badges/custom20.png";
             html.find(".ct-beyond20-custom-icon").attr('src', icon);
             html.find(".ct-beyond20-custom-roll").on('click', (event) => {
@@ -27,20 +39,21 @@ class FVTTDisplayer {
     }
 
     _postChatMessage(message, character, whisper, play_sound = false, attack_rolls, damage_rolls) {
-        const MESSAGE_TYPES = CONST.CHAT_MESSAGE_TYPES || CHAT_MESSAGE_TYPES;
+        const MESSAGE_STYLES = CONST.CHAT_MESSAGE_STYLES || CONST.CHAT_MESSAGE_TYPES || CHAT_MESSAGE_STYLES || CHAT_MESSAGE_TYPES;
+        const styleProp = fvtt_isNewer(fvttVersion, "13") ? "style" : "type";
         const data = {
             "content": message,
-            "user": game.user._id,
+            "user": game.user?.id || game.user?._id,
             "speaker": this._getSpeakerByName(character)
         }
         const rollMode = this._whisperToRollMode(whisper);
         if (["gmroll", "blindroll"].includes(rollMode)) {
             data["whisper"] = (ChatMessage.getWhisperRecipients || ChatMessage.getWhisperIDs).call(ChatMessage, "GM");
-            data['type'] = MESSAGE_TYPES.WHISPER;
+            data[styleProp] = MESSAGE_STYLES.WHISPER;
             if (rollMode == "blindroll")
                 data["blind"] = true;
         } else {
-            data['type'] = MESSAGE_TYPES.OOC;
+            data[styleProp] = MESSAGE_STYLES.OOC;
         }
         if (play_sound)
             data["sound"] = CONFIG.sounds.dice;
@@ -82,7 +95,7 @@ class FVTTDisplayer {
                                 options: {}
                             };
                         }
-                        if (term.class !== "OperatorTerm" && 
+                        if (term.class !== "OperatorTerm" &&
                             parts.length > 0 && parts[parts.length - 1].class !== "OperatorTerm") {
                             parts.push({
                                 class: "OperatorTerm",
@@ -143,7 +156,7 @@ class FVTTDisplayer {
             } else if (fvtt_isNewer(fvttVersion, "0.8")) {
                 // Foundry 0.8.x API
                 // This will accept backware compatible fvttRolls format
-                const pool = PoolTerm.fromRolls(fvttRolls);
+                const pool = fvtt_PoolTerm.fromRolls(fvttRolls);
                 data.roll = Roll.fromTerms([pool]);
             } else if (fvtt_isNewer(fvttVersion, "0.7")) {
                 // Foundry 0.7.x API
@@ -167,7 +180,9 @@ class FVTTDisplayer {
                 pool_roll._rolled = true;
                 data.roll = pool_roll;
             }
-            data.type = MESSAGE_TYPES.ROLL;
+            if (!fvtt_isNewer(fvttVersion, "13")) {
+                data[styleProp] = MESSAGE_STYLES.ROLL;
+            }
         }
         return ChatMessage.create(data, {rollMode});
     }
@@ -175,7 +190,7 @@ class FVTTDisplayer {
     _getSpeakerByName(name) {
         if (name === null)
             return ChatMessage.getSpeaker();
-        const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
+        const actors = game.actors?.contents || game.actors?.entities || game.actors; // v13 compatibility
         const actor = actors.find((actor) => docData(actor).name.toLowerCase() == name.toLowerCase());
         const speaker = ChatMessage.getSpeaker({ actor });
         speaker.alias = name;
@@ -235,7 +250,7 @@ class FVTTRoll extends Beyond20BaseRoll {
         // 0.7.x Dice Roll API is different
         if (fvtt_isNewer(fvttVersion, "0.8")) {
             return this._roll.terms.map(t => {
-                if (t instanceof Die) {
+                if (t instanceof fvtt_Die) {
                     return {
                         amount: t.amount || t.number,
                         faces: t.faces,
@@ -243,7 +258,7 @@ class FVTTRoll extends Beyond20BaseRoll {
                         total: t.total,
                         rolls: t.results.map(r => ({discarded: r.discarded || r.rerolled, roll: r.result}))
                     }
-                } else if (t instanceof PoolTerm) {
+                } else if (t instanceof fvtt_PoolTerm) {
                     const dice = t.rolls[0]?.dice[0];
                     // A DicePool means a "minX", so don't include it in the roll results
                     const results = t.results.slice(0, t.results.length - 1);
@@ -261,7 +276,7 @@ class FVTTRoll extends Beyond20BaseRoll {
             });
         } else if (fvtt_isNewer(fvttVersion, "0.7")) {
             return this._roll.terms.map(t => {
-                if (t instanceof Die) {
+                if (t instanceof fvtt_Die) {
                     return {
                         amount: t.amount || t.number,
                         faces: t.faces,
@@ -303,12 +318,20 @@ class FVTTRoll extends Beyond20BaseRoll {
     }
 
     async roll() {
-        await this._roll.roll({async: true});
+        if (typeof this._roll.evaluate === "function") {
+            await this._roll.evaluate();
+        } else {
+            await this._roll.roll();
+        }
         return this;
     }
 
     async reroll() {
-        this._roll = await this._roll.reroll({async: true});
+        if (typeof this._roll.reroll === "function") {
+            this._roll = await this._roll.reroll();
+        } else if (typeof this._roll.evaluate === "function") {
+            await this._roll.evaluate();
+        }
         return this;
     }
 }
@@ -371,7 +394,8 @@ function popAvatar(request, sendToDiscord=true) {
 async function addInitiativeToCombat(roll) {
     if (canvas.tokens.controlled.length > 0) {
         if (game.combat) {
-            if (game.combat.scene.id != canvas.scene.id) {
+            // Known Issue game.combat.scene are not longer set so you can add combatants from other scenes by mistake
+            if (!fvtt_isNewer(fvttVersion, "13") && (game.combat.scene?.id != canvas.scene.id)) {
                 ui.notifications.warn("Cannot add initiative to tracker: Encounter was not created for this scene");
             } else {
                 for (let token of canvas.tokens.controlled) {
@@ -425,9 +449,9 @@ function handleRenderedRoll(request) {
     }
 
     roll_renderer._displayer.postHTML(request.request, request.title,
-        request.html, request.character, request.whisper, 
-        request.play_sound, request.source, request.attributes, 
-        request.description, request.attack_rolls, request.roll_info, 
+        request.html, request.character, request.whisper,
+        request.play_sound, request.source, request.attributes,
+        request.description, request.attack_rolls, request.roll_info,
         request.damage_rolls, request.total_damages, request.open);
     if (request.request.type === "initiative" && settings["initiative-tracker"]) {
         const initiative = request.attack_rolls.find((roll) => !roll.discarded);
@@ -440,7 +464,7 @@ function updateHP(name, current, total, temp) {
     console.log(`Updating HP for ${name} : (${current} + ${temp})/${total}`);
     name = name.toLowerCase().trim();
 
-    const tokens = canvas.tokens.placeables.filter((t) => (t.owner || t.isOwner) && t.name.toLowerCase().trim() == name);
+    const tokens = canvas.tokens.placeables.filter((t) => docIsOwner(t) && t.name.toLowerCase().trim() == name);
 
     const prefix = fvtt_isNewer(fvttVersion, "10") ? "system": "data";
     const dnd5e_data = {
@@ -453,21 +477,21 @@ function updateHP(name, current, total, temp) {
         [`${prefix}.health.max`]: total
     }
     if (tokens.length == 0) {
-        const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
-        const actor = actors.find((a) => (a.owner || a.isOwner) && a.name.toLowerCase().trim() == name);
+        const actors = game.actors?.contents || game.actors?.entities || game.actors; // v13 compatibility
+        const actor = actors.find((a) => docIsOwner(a) && a.name.toLowerCase().trim() == name);
         const systemData = fvtt_isNewer(fvttVersion, "10") ? actor?.system : actor?.data?.data;
-        if (actor && getProperty(systemData, "attributes.hp") !== undefined) {
+        if (actor && fvtt_getProperty(systemData, "attributes.hp") !== undefined) {
             actor.update(dnd5e_data);
-        } else if (actor && getProperty(systemData, "health") !== undefined) {
+        } else if (actor && fvtt_getProperty(systemData, "health") !== undefined) {
             actor.update(sws_data);
         }
     }
 
     for (let token of tokens) {
         const systemData = fvtt_isNewer(fvttVersion, "10") ? token.actor?.system : token.actor?.data?.data;
-        if (token.actor && getProperty(systemData, "attributes.hp") !== undefined) {
+        if (token.actor && fvtt_getProperty(systemData, "attributes.hp") !== undefined) {
             token.actor.update(dnd5e_data);
-        } else if (token.actor && getProperty(systemData, "health") !== undefined) {
+        } else if (token.actor && fvtt_getProperty(systemData, "health") !== undefined) {
             token.actor.update(sws_data);
         }
     }
@@ -480,12 +504,13 @@ function updateConditions(request, name, conditions, exhaustion) {
     if (exhaustion > 0)
         display_conditions = conditions.concat(["Exhausted (Level " + exhaustion + ")"]);
     const message = name + (display_conditions.length == 0 ? " has no active condition" : " is : " + display_conditions.join(", "));
-    const MESSAGE_TYPES = CONST.CHAT_MESSAGE_TYPES || CHAT_MESSAGE_TYPES;
+    const MESSAGE_STYLES = CONST.CHAT_MESSAGE_STYLES || CONST.CHAT_MESSAGE_TYPES || CHAT_MESSAGE_STYLES || CHAT_MESSAGE_TYPES;
+    const styleProp = fvtt_isNewer(fvttVersion, "13") ? "style" : "type";
     ChatMessage.create({
         "content": message,
-        "user": game.user._id,
+        "user": game.user?.id || game.user?._id,
         "speaker": roll_renderer._displayer._getSpeakerByName(name),
-        "type": MESSAGE_TYPES.EMOTE
+        [styleProp]: MESSAGE_STYLES.EMOTE
     });
 
     // Check for the beyond20 module, if (it's there, we can use its status effects.;
@@ -496,8 +521,8 @@ function updateConditions(request, name, conditions, exhaustion) {
 
         const tokens = canvas.tokens.placeables.filter((t) => docData(t).name.toLowerCase().trim() === name);
         // look for an actor with the character name and search for a linked token to that actor
-        const actors = game.actors.entities ? game.actors.entities : game.actors; // v9 compatibility
-        const actor = actors.find((a) => (a.owner || a.isOwner) && a.name.toLowerCase().trim() === name);
+        const actors = game.actors?.contents || game.actors?.entities || game.actors; // v13 compatibility
+        const actor = actors.find((a) => docIsOwner(a) && a.name.toLowerCase().trim() === name);
         if (actor) {
             const linkedTokens = canvas.tokens.placeables.filter((t) => t.actor && t.actor.id === actor.id);
             // Only add linked tokens that do not name match to avoid duplicate operations
@@ -560,26 +585,26 @@ function disconnectAllEvents() {
 }
 
 function setTitle() {
-    const chatControls = $("#chat-controls");
+    // Look for the chat-controls (pre-v13) or chat-message (v13+) container
+    const chatControls = $("#chat-controls, #chat-message");
     if (chatControls.length) {
         const title = document.getElementsByTagName("title")[0];
-        const worldTitle = game.world.title || game.world.data?.title || "";
+        const worldTitle = game.world?.title || game.world?.data?.title || "";
         // Make sure the mutation gets triggerred if we reload the extension
         title.textContent = "Foundry Virtual Tabletop";
-        title.textContent = worldTitle + " • Foundry Virtual Tabletop";
+        title.textContent = `${worldTitle} • Foundry Virtual Tabletop`;
     } else {
         // Wait for the world and UI to be loaded;
         Hooks.once("renderChatLog", setTitle);
     }
-    if (game) {
-        game.beyond20 = {loaded: true};
-    }
+    // Mark Beyond20 as loaded as soon as game is defined
+    if (game) game.beyond20 = {loaded: true};
     // Re-set the game version on ready in case the game data wasn't initialized on Beyond20 load
     Hooks.on("ready", () => {
         fvttVersion = game.version || game.data?.version;
         game.beyond20 = {loaded: true};
     });
-}
+  }
 
 console.log("Beyond20: Foundry VTT Page Script loaded");
 const registered_events = [];
