@@ -131,6 +131,10 @@
 
 .beyond20-roll-cell,
 .beyond20-roll-die-result {
+    /* positioning */
+    position: relative !important;
+    overflow: visible !important;
+    
     flex: 1 0 auto;
     margin: 1px;
 
@@ -192,8 +196,10 @@
     border: 2px solid #6f6c66;
 
     /* Position the tooltip */
-    position: absolute;
-    z-index: 1;
+    position: fixed !important; /* take it out of the message flow entirely */
+    z-index: 10000 !important;
+    top: auto !important;
+    left: auto !important;
 }
 
 span.dice-roll.beyond20-tooltip-content {
