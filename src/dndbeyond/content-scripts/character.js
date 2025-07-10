@@ -476,8 +476,9 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
     // enhanced unarmed strike
     if(to_hit !== null && 
         character.hasFeat("Tavern Brawler 2024") &&
-        action_name.toLocaleLowerCase() === "enhanced unarmed strike") {
+        ["enhanced unarmed strike", "unarmed strike", "flurry of blows"].includes(action_name.toLocaleLowerCase())) {
         damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=1");
+        effects.push("Tavern Brawler");
     }
 
     // Charger Feat
@@ -1282,11 +1283,27 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             damages[0] = applyGWFIfRequired(action_name, properties, damages[0]);
         }
 
-        const isMeleeAttack = action_name.includes("Polearm Master") || action_name.includes("Pole Strike") || action_name.includes("Unarmed Strike") || action_name.includes("Tavern Brawler Strike")
-        || action_name.includes("Psychic Blade") || action_name.includes("Bite") || action_name.includes("Claws") || action_name.includes("Tail")
-        || action_name.includes("Ram") || action_name.includes("Horns") || action_name.includes("Hooves") || action_name.includes("Talons") 
-        || action_name.includes("Thunder Gauntlets") || action_name.includes("Unarmed Fighting") || action_name.includes("Arms of the Astral Self")
-        || action_name.includes("Shadow Blade") || action_name.includes("Predatory Strike");
+        const isMeleeAttack = [
+            "polearm master",
+            "pole strike",
+            "unarmed strike",
+            "tavern brawler strike",
+            "psychic blade",
+            "bite",
+            "claws",
+            "tail",
+            "ram",
+            "horns",
+            "hooves",
+            "talons",
+            "thunder gauntlets",
+            "unarmed fighting",
+            "arms of the astral self",
+            "shadow blade",
+            "predatory strike",
+            "enhanced unarmed strike",
+            "flurry of blows"
+        ].some(action => action_name.toLocaleLowerCase().includes(action));
         
         const isRangedAttack = action_name.includes("Lightning Launcher");
 
