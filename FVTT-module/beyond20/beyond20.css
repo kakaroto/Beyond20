@@ -129,11 +129,6 @@
     padding: 0;
 }
 
-.beyond20-roll-cell {
-  position: relative !important;
-  overflow: visible !important;
-}
-
 .beyond20-roll-cell,
 .beyond20-roll-die-result {
     flex: 1 0 auto;
@@ -183,6 +178,11 @@
     opacity: 0.5;
 }
 
+.chat-message .message-content,
+.chat-message .beyond20-message {
+  overflow: visible !important;
+}
+
 .beyond20-tooltip .beyond20-tooltip-content {
     display: none;
     background: url(/ui/parchment.jpg) repeat;
@@ -191,18 +191,14 @@
     border-radius: 6px;
     padding: 5px 10px;
     margin: 10px;
+    width: 90%;
     top: -50%;
     left: 0;
     border: 2px solid #6f6c66;
 
     /* Position the tooltip */
-    position: fixed !important; /* take it out of the message flow entirely */
-    z-index: 10000 !important;
-    top: auto !important;
-    left: auto !important;
-    width: max-content;
-    max-width: 90vw;
-    min-width: 250px;
+    position: absolute;
+    z-index: 1;
 }
 
 span.dice-roll.beyond20-tooltip-content {
