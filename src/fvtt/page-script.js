@@ -306,6 +306,7 @@ class FVTTRoll extends Beyond20BaseRoll {
     }
 
     cleanupFormula(formula) {
+        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/g, "r$1$2");
         formula = formula.replace(/(^|\s)+(\d+d\d+)min(\d+)([^\s\+\-]*)/g, "$1{$2$4, $3}kh1");
         return super.cleanupFormula(formula);
     }
