@@ -973,7 +973,8 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
 
         // 2024 brutal strike
         if (character.getSetting("brutal-strike") && character.hasClassFeature("Brutal Strike"))  {  
-            let strikeDieCount = character.hasClassFeature("Improved Brutal Strike") ? 2 : 1; 
+            // Brutal Strike is a class feature of Barbarian at level 13 and level 17 but it only increases the damage die at level 17
+            let strikeDieCount = character.hasClassFeature("Improved Brutal Strike") && character.getClassLevel("Barbarian") >= 17 ? 2 : 1; 
             let brutal_strike_dmg = `${strikeDieCount}d10`;
             
             brutal_strike_dmg = applyGWFIfRequired(item_name, properties, brutal_strike_dmg);
