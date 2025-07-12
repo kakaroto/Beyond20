@@ -606,7 +606,8 @@ class Beyond20RollRenderer {
         let is_critical = false;
         if (request.rollAttack && request["to-hit"] !== undefined) {
             const custom = custom_roll_dice == "" ? "" : (" + " + custom_roll_dice);
-            const to_hit_mod = " + " + request["to-hit"] + custom;
+            const to_hit_mod = (request["to-hit"]?.trim() ? (["+", "-"].includes(request["to-hit"].trim()[0]) ? " " : " + ") + request["to-hit"].trim() : "") + (custom?.trim() ||
+ "");
             const {rolls} = this.getToHit(request, to_hit_mod)
             to_hit.push(...rolls);
             all_rolls.push(...rolls);
