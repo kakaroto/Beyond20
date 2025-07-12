@@ -306,18 +306,7 @@ class FVTTRoll extends Beyond20BaseRoll {
     }
 
     cleanupFormula(formula) {
-        // Fix any rogue reroll operators
-        formula = formula.replace(/ro(=|<|<=|>|>=)([0-9]+)/g, "r$1$2");
-
-        // Step 1: Add a space *before* arithmetic symbols if they follow min expressions
-        // This prevents "+4" from being bundled with the dice
-        formula = formula.replace(/min(\d+)(?=[\+\-\*\/])/g, "min$1 ");
-
-        // Step 2: Transform dice with min syntax (e.g. 1d6min3 -> {1d6,3}kh1)
-        // This ensures only the dice part is inside the {}
-        formula = formula.replace(/(^|\s)(\d+d\d+)\s*min\s*(\d+)/g, "$1{$2,$3}kh1");
-
-        // Finally, return the cleaned formula
+        formula = formula.replace(/(^|\s)+(\d+d\d+)min(\d+)([^\s\+\-]*)/g, "$1{$2$4, $3}kh1");
         return super.cleanupFormula(formula);
     }
 
