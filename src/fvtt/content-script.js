@@ -47,12 +47,23 @@ function titleSet(mutations, observer) {
 function injectSettingsButton() {
     $(".beyond20-settings").remove();
 
-    icon = chrome.runtime.getURL("images/icons/badges/normal24.png");
-    button = E.div({ class: "beyond20-settings", style: "flex: 0 0 32px;" },
+    const icon = chrome.runtime.getURL("images/icons/badges/normal24.png");
+    // pre-v13
+    let button = E.div({ class: "beyond20-settings", style: "flex: 0 0 32px;" },
         E.img({ class: "beyond20-settings-logo", src: icon, style: "margin: 0px 5px; border: 0px;" })
     );
     $("#chat-controls").append(button);
     $(button).on('click', (event) => alertQuickSettings());
+    // post-v13
+    button = E.button({ class: "beyond20-settings ui-control", style: "flex: 0 0 32px;" },
+        E.img({ class: "beyond20-settings-logo", src: icon, style: "margin: 0px 5px; border: 0px;" })
+    );
+    $("#chat .chat-controls .control-buttons").append(button);
+    $(button).on('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        alertQuickSettings();
+    });
 }
 
 const observer = new window.MutationObserver(titleSet);
