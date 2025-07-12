@@ -382,11 +382,20 @@ function rollInitiative(request, custom_roll_dice = "") {
 }
 
 function popAvatar(request, sendToDiscord=true) {
-    new ImagePopout(request.character.avatar, {
-        "shareable": false,
-        "title": (request.whisper !== WhisperType.NO) ? settings["hidden-monster-replacement"] : request.character.name,
-        "entity": { "type": "User", "id": game.user.id }
-    }).render(true).shareImage(true);
+    const popout = fvtt_isNewer(fvttVersion, "13") ? 
+        new foundry.applications.apps.ImagePopout({
+            "src": request.character.avatar,
+            "shareable": false,
+            "window": {"title": (request.whisper !== WhisperType.NO) ? settings["hidden-monster-replacement"] : request.character.name},
+            "entity": { "type": "User", "id": game.user.id }
+        }) :
+        new ImagePopout(request.character.avatar, {
+            "shareable": false,
+            "title": (request.whisper !== WhisperType.NO) ? settings["hidden-monster-replacement"] : request.character.name,
+            "entity": { "type": "User", "id": game.user.id }
+        });
+    popout.render(true)
+    popout.shareImage(true);
     if (sendToDiscord) {
         roll_renderer.displayAvatarToDiscord(request);
     }
