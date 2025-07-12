@@ -48,6 +48,10 @@
 }
 
 /* Ensure hover tooltips aren't clipped by surrounding elements */
+.chat-message .message-content:has(> .beyond20-message) {
+    overflow: visible;
+}
+
 .beyond20-message,
 .beyond20-tooltip {
     overflow: visible;
