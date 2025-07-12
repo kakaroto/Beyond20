@@ -65,7 +65,8 @@ class DigitalDice {
         const dicenotation = result.find(".dice_result__info__dicenotation").text();
 
         const diceMatches = reMatchAll(/([0-9]*)d([0-9]+)(kh1|kl1)?/, dicenotation) || [];
-        const results = breakdown.split("+");
+        // Remove parenthesis around dice results from breakdown, which get added by AboveVTT extension
+        const results = breakdown.replace(/^\(|\)$/g, "").split("+");
         this._dice.forEach(d => d._rolls = []);
         for (let match of diceMatches) {
             const amount = parseInt(match[1]);
