@@ -622,6 +622,17 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
+    "barbarian-reckless": {
+        "title": "Barbarian: Reckless Attack",
+        "description": "Attack recklessly, giving advantage on your attack rolls, but granting advantage to attacks against you",
+        "type": "bool",
+        "default": false,
+        "lock": "barbarian-reckless-lock"
+    },
+    "barbarian-reckless-lock": {
+        "type": "bool",
+        "default": false
+    },
     "bloodhunter-crimson-rite": {
         "title": "Bloodhunter: Crimson Rite",
         "description": "Add Crimson Rite damage",

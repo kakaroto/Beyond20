@@ -411,6 +411,17 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
             damages.push(String(rage_damage));
             damage_types.push("Rage");
             effects.push("Rage");
+            if (character.getSetting("barbarian-reckless", false)) {
+                effects.push("Reckless Attack");
+                const isLocked = character.getSetting("barbarian-reckless-lock", false);
+                if(!isLocked) settings_to_change["barbarian-reckless"] = false;
+                if (character.hasClassFeature("Frenzy")) {
+                    damages.push(`${rage_damage}d6`);
+                    damage_types.push("Frenzy");
+                    effects.push("Frenzy");
+                }
+
+            }
         }
     }
 
@@ -1115,7 +1126,9 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
 
             const isLocked = character.getSetting("rogue-assassinate-lock", false);
             if(!isLocked) settings_to_change["rogue-assassinate"] = false;
-            
+        }
+        if (effects.includes("Reckless Attack")) {
+            roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
         }
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
