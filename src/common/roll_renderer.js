@@ -499,6 +499,9 @@ class Beyond20RollRenderer {
         let is_monster = character.type() == "Monster" || character.type() == "Vehicle";
         if (is_monster && whisper_monster != WhisperType.NO)
             whisper = whisper_monster;
+        if (digitalRoll.whisper) {
+            whisper = WhisperType.YES;
+        }
         if (whisper === WhisperType.QUERY) {
             whisper = await this.queryWhisper(digitalRoll.name || "Custom Roll", is_monster);
             if (whisper === null) return; // query was cancelled

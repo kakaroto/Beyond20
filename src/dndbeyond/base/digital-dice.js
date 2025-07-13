@@ -270,10 +270,15 @@ class DigitalDiceManager {
         }
     }
     static _parseCustomRoll(notification) {
-        const name = $(`#${notification} .dice_result .dice_result__info__title`).text();
-        const formula = $(`#${notification} .dice_result .dice_result__info__dicenotation`).text();
+        const name = $(`#${notification} .dice_result .dice_result__info__title`).eq(0).text().trim();
+        const formula = $(`#${notification} .dice_result .dice_result__info__dicenotation`).text().trim();
+        const target = $(`#${notification} .dice_result .dice_result__info__targetdetail`).text().toLowerCase();
+        if (target.includes("self")) {
+            console.log("Digital Dice rolled to self, not sending to VTT");
+            return;
+        }
         const roll = new DNDBRoll(formula)
-        const digitalRoll = new DigitalDice(name, [roll])
+        const digitalRoll = new DigitalDice(name, [roll], {whisper: target !== ""});
         digitalRoll.parseNotification(notification, true);
         return digitalRoll;
     }
