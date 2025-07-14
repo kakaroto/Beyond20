@@ -1,3 +1,20 @@
+v2.15.0 (July 13th 2025)
+===
+
+Hi,
+
+Time for another Beyond20 update, with many fixes and some exciting new features as well!
+
+In this update, we're adding support for Foundry v13, which was recently released. I know many of you have been eager to use Beyond20 with the new v13 update! Thanks to [@sirrio](https://github.com/sirrio) for contributing the fix!
+
+Another cool feature I'm excited about is the ability to lock/unlock some of the per-character settings. This feature, brought to you by [@dmportella](https://github.com/dmportella), would allow you, for example, to enable Sneak Attack only for the next roll, or enable Great Weapon Master permanently, so it doesn't reset after each attack.
+
+There are many other improvements in this release, check out the full [Changelog](/Changelog#v2150) to see all the changes.
+
+As usual, a big thank you to our contributors, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
+
+Have fun!
+
 
 v2.14.0 (May 3rd 2025)
 ===

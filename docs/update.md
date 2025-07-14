@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.14.0
+Congratulations! Beyond20 was just updated to the latest version : v2.15.0
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -42,18 +42,23 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-v2.14.0 (May 3rd 2025)
+v2.15.0 (July 13th 2025)
 ===
-- **Feature**: Add the ability to lock/unlock some character specific options instead of resetting after use (by [@dmportella](https://github.com/dmportella))
-- **Feature**: Added option to hide the Beyond20 roll results from D&D Beyond when using Digital Dice
-- **Feature**: Added support for Great Weapon Master 2024 ranged weapons with heavy property (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix detection of 2024 features with the new source reference change in DDB (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix display of character's avatar (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix parsing of character's speed (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix display of Sacred Weapon option in per-character settings (by [@ibaaske](https://github.com/ibaaske))
-- **Bugfix**: Fix bug preventing the "hide results when whispering to Discord" to work as expected
-- **Bugfix**: Fix missing abilities from the initial `hp-update` message to VTTs on page open
-- **Misc**: Update documentation
+- **Feature**: *FVTT*: Add support for Foundry v13 and dnd5e system 5.x+ (by [@sirrio](https://github.com/sirrio))
+- **Feature**: Add a new locking system for some per-character settings (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Add support for Psionic warrior actions (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Add support for rolling both types of damages with Toll the Dead (by [@dmportella](https://github.com/dmportella))
+- **Feature**: Add support for Barbarian's Reckless Attack
+- **Feature**: Add support for Barbarian's Frenzy attack
+- **Feature**: Add support for whispering when using custom digital dice rolls
+- **Bugfix**: Fix support for Sacred Weapon (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for 2014 vs 2024 source book references, which broke some special features (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix Tavern Brawler 2024 not applying to all unarmed strike actions (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix Great Weapon Fighting Style damage calculation (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix incompatibility issue with AboveVTT extension
+- **Bugfix**: Fix Barbarian's Improved Brutal Strike not increasing dice count until level 17
+- **Bugfix**: *FVTT*: Fix deprecation warnings on Foundry v13 (by [@sirrio](https://github.com/sirrio))
+- **Misc**: Misc fixes and code cleanup
 
 ---
 
