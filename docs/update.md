@@ -17,23 +17,23 @@ Thank you all for your support!
 
 # Release Notes
 
-v2.14.0 (May 3rd 2025)
+v2.15.0 (July 13th 2025)
 ===
 
-Hi everyone,
+Hi,
 
-I'm excited about today's release as it brings a much requested feature to Beyond20: The ability to lock certain character specific options!
+Time for another Beyond20 update, with many fixes and some exciting new features as well!
 
-Thanks to the work by [@dmportella](https://github.com/dmportella), all options which previously had "apply to next roll only" (like Sharpshooter, Dread Ambusher, etc..) will have a lock icon next to them so you can lock the option so it doesn't reset automatically after use.
-We've also added the lock feature to the Sneak Attack option (locked by default) so you can have the Sneak Attack option only apply to the next roll if you wish it to behave that way.
+In this update, we're adding support for Foundry v13, which was recently released. I know many of you have been eager to use Beyond20 with the new v13 update! Thanks to [@sirrio](https://github.com/sirrio) for contributing the fix!
 
-Apart form that, this release also brings many small bugfixes, continuing to catch up to changes to the D&D Beyond website that continue to break Beyond20 functionality. 
+Another cool feature I'm excited about is the ability to lock/unlock some of the per-character settings. This feature, brought to you by [@dmportella](https://github.com/dmportella), would allow you, for example, to enable Sneak Attack only for the next roll, or enable Great Weapon Master permanently, so it doesn't reset after each attack.
 
-Check out the full [Changelog](/Changelog#v2140) to see all the changes added in this release.
+There are many other improvements in this release, check out the full [Changelog](/Changelog#v2150) to see all the changes.
 
-As usual, a big thank you to [@dmportella](https://linktr.ee/dmportella) for the work they've done, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
+As usual, a big thank you to our contributors, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
 
 Have fun!
+
 
 
 ---
