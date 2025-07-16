@@ -210,7 +210,6 @@ gulp.task("copy-misc", () => {
 });
 
 gulp.task("build-base", gulp.parallel([
-    "copy-src",
     "copy-dist",
     "copy-misc",
     "copy-libs",
