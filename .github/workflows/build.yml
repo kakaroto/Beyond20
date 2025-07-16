@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: '20'
+          node-version: '22'
       - name: Install build dependencies
         run: npm install
       - name: Build Beyond20
