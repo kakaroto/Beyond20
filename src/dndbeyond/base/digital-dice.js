@@ -66,7 +66,8 @@ class DigitalDice {
 
         const diceMatches = reMatchAll(/([0-9]*)d([0-9]+)(kh1|kl1)?/, dicenotation) || [];
         // Remove parenthesis around dice results from breakdown, which get added by AboveVTT extension
-        const results = breakdown.replace(/^\(|\)$/g, "").split("+");
+        const results = breakdown.replace(/^\(([^()]*)\)/, "$1").split(/\s*\+\s*/);
+        
         this._dice.forEach(d => d._rolls = []);
         for (let match of diceMatches) {
             const amount = parseInt(match[1]);
@@ -76,8 +77,8 @@ class DigitalDice {
                 let rolls = [];
                 if (mod) {
                     const result = results.shift();
-                    if (result.match(/\([0-9,]+\)/)) {
-                        rolls = result.slice(1, -1).split(",").map(r => ({roll: parseInt(r)}));
+                    if (result.match(/(?:\([0-9,]+\)|[0-9,]+)/)) {
+                        rolls = result.split(",").map(r => ({roll: parseInt(r)}));
                         // Don't try to parse the result of the results as if we had just parsed the first dice roll
                         i += rolls.length - 1;
                         if (mod === "kh1") {
