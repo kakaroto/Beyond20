@@ -404,23 +404,23 @@ function isItemAnInstruction(item_name, item_tags) {
 function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, settings_to_change={}, { to_hit, action_name="", effects=[] }={}) {
     if (character.hasClass("Barbarian")) {
         // Barbarian: Rage
+        const barbarian_level = character.getClassLevel("Barbarian");
+        const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
         if (character.hasClassFeature("Rage") &&
             character.getSetting("barbarian-rage", false)) {
-            const barbarian_level = character.getClassLevel("Barbarian");
-            const rage_damage = barbarian_level < 9 ? 2 : (barbarian_level < 16 ? 3 : 4);
             damages.push(String(rage_damage));
             damage_types.push("Rage");
             effects.push("Rage");
-            if (character.getSetting("barbarian-reckless", false)) {
-                effects.push("Reckless Attack");
-                const isLocked = character.getSetting("barbarian-reckless-lock", false);
-                if(!isLocked) settings_to_change["barbarian-reckless"] = false;
-                if (character.hasClassFeature("Frenzy")) {
-                    damages.push(`${rage_damage}d6`);
-                    damage_types.push("Frenzy");
-                    effects.push("Frenzy");
-                }
-
+        }
+        if (character.getSetting("barbarian-reckless", false)) {
+            effects.push("Reckless Attack");
+            const isLocked = character.getSetting("barbarian-reckless-lock", false);
+            if(!isLocked) settings_to_change["barbarian-reckless"] = false;
+            if (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false) && 
+                character.hasClassFeature("Frenzy 2024")) {
+                damages.push(`${rage_damage}d6`);
+                damage_types.push("Frenzy");
+                effects.push("Frenzy");
             }
         }
     }
