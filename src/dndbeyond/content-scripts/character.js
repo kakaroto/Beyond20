@@ -580,8 +580,8 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
     }
 
     // Class Specific
-    if (character.hasClass("Fighter") && action_name) {
-        if(character.hasClassFeature("Psionic Power")) {
+    if (character.hasClass("Fighter")) {
+        if(character.hasClassFeature("Psionic Power") && action_name) {
             // HACK ALERT: fixes dndbeyond missing mods but incase they are added in the future we ensure the mod is applied if not present if it is present it is not applied
             const intelligence = character.getAbility("INT") || {mod: 0};
             const mod = parseInt(intelligence.mod) || 0;
