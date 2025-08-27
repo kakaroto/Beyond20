@@ -324,6 +324,13 @@ function rollInitiative() {
         // Render initiative as a string that begins with '+' || '-';
         initiative = initiative >= 0 ? '+' + initiative.toFixed(2) : initiative.toFixed(2);
     }
+    if (character.hasClassFeature("Assassinate 2024") &&
+        character.getSetting("rogue-assassinate-2024", false)) {
+        advantage = true;
+
+        const isLocked = character.getSetting("rogue-assassinate-lock", false);
+        if(!isLocked) character.mergeCharacterSettings({"rogue-assassinate-2024": false});
+    }
 
     const roll_properties = { "initiative": initiative }
     if (advantage)
@@ -838,9 +845,10 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
             name.includes("Psychic Blade") ||
             name.includes("Shadow Blade"))) {
             const sneakDieCount = Math.ceil(character._classes["Rogue"] / 2);
-            const sneak_attack = `${sneakDieCount}d6`;
+            let sneak_attack = `${sneakDieCount}d6`;
             damages.push(sneak_attack);
             damage_types.push("Sneak Attack");
+            effects.push("Sneak Attack");
 
             const isLocked = character.getSetting("rogue-sneak-attack-lock", false);
             if(!isLocked) settings_to_change["rogue-sneak-attack"] = false;
@@ -1046,11 +1054,12 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
         // Capitalize all Damage Types to ensure consistency for later processing
         damage_types = damage_types.map(t => capitalize(t.trim()));
 
-        to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, item_name});
-
-        to_hit = handleSpecialWeaponAttacks(damages, damage_types, properties, settings_to_change, {item_customizations, item_type, to_hit, item_name});
-
         const effects = [];
+
+        to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, item_name, effects});
+
+        to_hit = handleSpecialWeaponAttacks(damages, damage_types, properties, settings_to_change, {item_customizations, item_type, to_hit, item_name, effects});
+
         if (properties["Attack Type"] == "Melee") {
             to_hit = handleSpecialMeleeAttacks(damages, damage_types, properties, settings_to_change, { to_hit, effects });
         }
@@ -1126,6 +1135,13 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
 
             const isLocked = character.getSetting("rogue-assassinate-lock", false);
             if(!isLocked) settings_to_change["rogue-assassinate"] = false;
+        }
+        if (character.hasClassFeature("Assassinate 2024") &&
+            character.getSetting("rogue-assassinate-2024", false)) {
+            roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+
+            const isLocked = character.getSetting("rogue-assassinate-lock", false);
+            if(!isLocked) settings_to_change["rogue-assassinate-2024"] = false;
         }
         if (effects.includes("Reckless Attack")) {
             roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
@@ -1396,6 +1412,13 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             
             const isLocked = character.getSetting("rogue-assassinate-lock", false);
             if(!isLocked) settings_to_change["rogue-assassinate"] = false;
+        }
+        if (character.hasClassFeature("Assassinate 2024") &&
+            character.getSetting("rogue-assassinate-2024", false)) {
+            roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+
+            const isLocked = character.getSetting("rogue-assassinate-lock", false);
+            if(!isLocked) settings_to_change["rogue-assassinate-2024"] = false;
         }
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
@@ -1786,6 +1809,13 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
             
             const isLocked = character.getSetting("rogue-assassinate-lock", false);
             if(!isLocked) settings_to_change["rogue-assassinate"] = false;
+        }
+        if (character.hasClassFeature("Assassinate 2024") &&
+            character.getSetting("rogue-assassinate-2024", false)) {
+            roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+
+            const isLocked = character.getSetting("rogue-assassinate-lock", false);
+            if(!isLocked) settings_to_change["rogue-assassinate-2024"] = false;
         }
         // Sorcerer: Clockwork Soul - Trance of Order
         if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))

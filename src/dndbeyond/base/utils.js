@@ -201,13 +201,23 @@ async function applyRogueSneakAttack(character, name, properties, damages,
         if(!isLocked) settings_to_change["rogue-cunning-strike"] = false;
     }
 
-    const sneak_attack = sneakDieCount > 0 ? `${sneakDieCount}d6` : "0";
+    let sneak_attack = sneakDieCount > 0 ? `${sneakDieCount}d6` : "0";
+    // Assassinate adds damage to the sneak attack in 2024 ruleset
+    if (character.hasClassFeature("Assassinate 2024") &&
+        character.getSetting("rogue-assassinate-2024", false)) {
+
+        sneak_attack += ` + ${character.getClassLevel("Rogue")}`;
+        const isLocked = character.getSetting("rogue-assassinate-lock", false);
+        if(!isLocked) character.mergeCharacterSettings({"rogue-assassinate-2024": false});
+        addEffect(roll_properties, "Assassinate");
+    }
     if (name.includes("Sneak Attack")) {
         damages[0] = sneak_attack;
     } else {
         damages.push(sneak_attack);
         damage_types.push("Sneak Attack");
     }
+    addEffect(roll_properties, "Sneak Attack");
 
     const isLocked = character.getSetting("rogue-sneak-attack-lock", false);
     if(!isLocked) settings_to_change["rogue-sneak-attack"] = false;

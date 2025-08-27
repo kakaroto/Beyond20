@@ -793,6 +793,13 @@ const character_settings = {
         "default": false,
         "lock": "rogue-assassinate-lock"
     },
+    "rogue-assassinate-2024": {
+        "title": "Rogue: Assassin: Assassinate Attack (Apply to next roll only, unless locked)",
+        "description": "Roll with advantage and with extra damage.",
+        "type": "bool",
+        "default": false,
+        "lock": "rogue-assassinate-lock"
+    },
     "rogue-assassinate-lock": {
         "type": "bool",
         "default": false

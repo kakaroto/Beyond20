@@ -299,7 +299,8 @@ class Character extends CharacterBase {
                 feat_name.toLowerCase() === "additional fighting style" ||
                 feat_name.toLowerCase() === "great weapon fighting" ||
                 feat_name.toLowerCase() === "sneak attack" ||
-                feat_name.toLowerCase() === "frenzy"
+                feat_name.toLowerCase() === "frenzy" ||
+                feat_name.toLowerCase() === "assassinate"
             ) && ( 
                 feat_reference.toLowerCase().includes("2024")) ||
                 feat_reference.toLowerCase().includes("free-rules")

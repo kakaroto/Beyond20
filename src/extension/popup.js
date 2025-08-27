@@ -245,6 +245,10 @@ function populateCharacter(response) {
             e = createHTMLOption("rogue-assassinate", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Assassinate 2024")) {
+            e = createHTMLOption("rogue-assassinate-2024", false, character_settings);
+            options.append(e);
+        }
         if (response["class-features"].includes("Giant’s Might")) {
             e = createHTMLOption("fighter-giant-might", false, character_settings);
             options.append(e);
