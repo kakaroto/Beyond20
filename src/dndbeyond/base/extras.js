@@ -255,9 +255,11 @@ class MonsterExtras extends CharacterBase {
                     activateTooltipListeners(digitalDiceBox, "down", beyond20_tooltip, () => this.rollAbilityCheck(abbr));
                 } else {
                     const margins = this.type() == "Monster";
-                    addIconButton(this, () => this.rollAbilityCheck(abbr), elementAbilityDiceRoll, { prepend: !is2024StatBlock, append: is2024StatBlock, margins: margins });
+                    const button = addIconButton(this, () => this.rollAbilityCheck(abbr), elementAbilityDiceRoll, { prepend: !is2024StatBlock, append: is2024StatBlock, margins: margins });
+                    $(button).css({"display": "block"});
                     if(is2024StatBlock) {
-                        addIconButton(this, () => this.rollSavingThrow(abbr), elementSaveDiceRoll, { append: true, margins: margins });
+                        const button = addIconButton(this, () => this.rollSavingThrow(abbr), elementSaveDiceRoll, { append: true, margins: margins });
+                        $(button).css({"display": "block"});
                     }
                 }
                 if (abbr == "DEX") {
