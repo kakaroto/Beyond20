@@ -1,3 +1,17 @@
+v2.16.0 (August 31st 2025)
+===
+
+Hi,
+
+We're releasing today a small Beyond20 update which has fixes for Psy Warrior attacks, Reckless Attacks as well as fixing rolls made with D&D Beyond's interface for rolling with advantage/disadvantage.
+
+This update also adds support for the Rogue's Assassinate class feature from the 2024 rules, which behaves differently from the 2014 PHB rules for Assassinate.
+
+As usual, a big thank you to [@dmportella](https://github.com/dmportella) for his changes, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
+
+Enjoy!
+
+
 v2.15.0 (July 13th 2025)
 ===
 

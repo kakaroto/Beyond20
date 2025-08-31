@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.15.0
+Congratulations! Beyond20 was just updated to the latest version : v2.16.0
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -17,23 +17,18 @@ Thank you all for your support!
 
 # Release Notes
 
-v2.15.0 (July 13th 2025)
+v2.16.0 (August 31st 2025)
 ===
 
 Hi,
 
-Time for another Beyond20 update, with many fixes and some exciting new features as well!
+We're releasing today a small Beyond20 update which has fixes for Psy Warrior attacks, Reckless Attacks as well as fixing rolls made with D&D Beyond's interface for rolling with advantage/disadvantage.
 
-In this update, we're adding support for Foundry v13, which was recently released. I know many of you have been eager to use Beyond20 with the new v13 update! Thanks to [@sirrio](https://github.com/sirrio) for contributing the fix!
+This update also adds support for the Rogue's Assassinate class feature from the 2024 rules, which behaves differently from the 2014 PHB rules for Assassinate.
 
-Another cool feature I'm excited about is the ability to lock/unlock some of the per-character settings. This feature, brought to you by [@dmportella](https://github.com/dmportella), would allow you, for example, to enable Sneak Attack only for the next roll, or enable Great Weapon Master permanently, so it doesn't reset after each attack.
+As usual, a big thank you to [@dmportella](https://github.com/dmportella) for his changes, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
 
-There are many other improvements in this release, check out the full [Changelog](/Changelog#v2150) to see all the changes.
-
-As usual, a big thank you to our contributors, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
-
-Have fun!
-
+Enjoy!
 
 
 ---
@@ -42,23 +37,14 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-v2.15.0 (July 13th 2025)
+v2.16.0 (August 31st 2025)
 ===
-- **Feature**: *FVTT*: Add support for Foundry v13 and dnd5e system 5.x+ (by [@sirrio](https://github.com/sirrio))
-- **Feature**: Add a new locking system for some per-character settings (by [@dmportella](https://github.com/dmportella))
-- **Feature**: Add support for Psionic warrior actions (by [@dmportella](https://github.com/dmportella))
-- **Feature**: Add support for rolling both types of damages with Toll the Dead (by [@dmportella](https://github.com/dmportella))
-- **Feature**: Add support for Barbarian's Reckless Attack
-- **Feature**: Add support for Barbarian's Frenzy attack
-- **Feature**: Add support for whispering when using custom digital dice rolls
-- **Bugfix**: Fix support for Sacred Weapon (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix support for 2014 vs 2024 source book references, which broke some special features (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix Tavern Brawler 2024 not applying to all unarmed strike actions (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix Great Weapon Fighting Style damage calculation (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix incompatibility issue with AboveVTT extension
-- **Bugfix**: Fix Barbarian's Improved Brutal Strike not increasing dice count until level 17
-- **Bugfix**: *FVTT*: Fix deprecation warnings on Foundry v13 (by [@sirrio](https://github.com/sirrio))
-- **Misc**: Misc fixes and code cleanup
+- **Feature**: Add support for Rogue: Assassinate from PHB 2024 rules
+- **Bugfix**: Fix dice calculation when using DDB's interface to roll with advantage/disadvantage (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix using reckless attacks without enabling Rage (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix Psy Warrior attacks (by [@dmportella](https://github.com/dmportella))
+- **Misc**: Fix Beyond 20 button style for ability/saving throws in 2024 monster stat blocks so it's more consistent
+
 
 ---
 

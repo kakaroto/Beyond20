@@ -1,3 +1,12 @@
+v2.16.0 (August 31st 2025)
+===
+- **Feature**: Add support for Rogue: Assassinate from PHB 2024 rules
+- **Bugfix**: Fix dice calculation when using DDB's interface to roll with advantage/disadvantage (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix using reckless attacks without enabling Rage (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix Psy Warrior attacks (by [@dmportella](https://github.com/dmportella))
+- **Misc**: Fix Beyond 20 button style for ability/saving throws in 2024 monster stat blocks so it's more consistent
+
+
 v2.15.0 (July 13th 2025)
 ===
 - **Feature**: *FVTT*: Add support for Foundry v13 and dnd5e system 5.x+ (by [@sirrio](https://github.com/sirrio))
