@@ -540,7 +540,7 @@ function IsHeavy(properties) {
     return ((properties["Properties"] && properties["Properties"].includes("Heavy")) && properties["Proficient"] == "Yes");
 }
 
-function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, settings_to_change={}, { to_hit, action_name="", effects=[] }={}) {
+function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, settings_to_change={}, { to_hit, action_name="", effects=[]}={}) {
     // Feats
     // Sharpshooter Feat
     if (to_hit !== null && 
@@ -570,7 +570,7 @@ function handleSpecialRangedAttacks(damages=[], damage_types=[], properties, set
     return to_hit;
 }
 
-function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {to_hit, action_name, item_name, spell_name, spell_level}={}) {
+function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {to_hit, action_name, item_name, spell_name, spell_level, effects=[]}={}) {
     // Racial Traits
     //Protector Aasimar: Radiant Soul Damage
     if (character.hasRacialTrait("Radiant Soul") &&
@@ -2844,7 +2844,7 @@ function documentModified(mutations, observer) {
                 const paneClass = SPECIAL_PANES.initiative;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
-            } else if (sidebar.find("span[class*='ddbc-action-name']").length > 0) {
+            } else if (sidebar.find("span[class*='ddbc-action-name']").length > 0 || sidebar.parent().find("div[class*='ct-item-detail']").length > 0) {
                 const paneClass = SPECIAL_PANES.action;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
