@@ -1,3 +1,8 @@
+v2.16.1 (September 2nd 2025)
+===
+- **Bugfix**: Fix rolling attacks with Sneak Attack option enabled (by [@dmportella](https://github.com/dmportella))
+
+
 v2.16.0 (August 31st 2025)
 ===
 - **Feature**: Add support for Rogue: Assassinate from PHB 2024 rules

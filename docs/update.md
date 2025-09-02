@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.16.0
+Congratulations! Beyond20 was just updated to the latest version : v2.16.1
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -16,6 +16,11 @@ Thank you all for your support!
 {% include_relative known_issues.md %}
 
 # Release Notes
+
+v2.16.1 (September 2nd 2025)
+===
+
+This is a small hotfix for yesterday's release, due to a bug when rolling attacks with the Rogue's Sneak Attack option enabled.
 
 v2.16.0 (August 31st 2025)
 ===
@@ -36,6 +41,10 @@ Enjoy!
 Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
+
+v2.16.1 (September 2nd 2025)
+===
+- **Bugfix**: Fix rolling attacks with Sneak Attack option enabled (by [@dmportella](https://github.com/dmportella))
 
 v2.16.0 (August 31st 2025)
 ===

@@ -1,3 +1,9 @@
+v2.16.1 (September 2nd 2025)
+===
+
+This is a small hotfix for yesterday's release, due to a bug when rolling attacks with the Rogue's Sneak Attack option enabled.
+
+
 v2.16.0 (August 31st 2025)
 ===
 
