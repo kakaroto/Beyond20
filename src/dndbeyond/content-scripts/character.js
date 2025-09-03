@@ -873,21 +873,21 @@ function capitalize(str) {
 }
 
 async function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, force_versatile = false, spell_group = null) {
-    const prop_list = $(".ct-item-pane .ct-item-detail [role=list] > div");
+    const prop_list = $(".b20-item-pane .ct-item-detail [role=list] > div");
     const properties = propertyListToDict(prop_list);
     properties["Properties"] = properties["Properties"] || "";
     //console.log("Properties are : " + String(properties));
-    const item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name, .ct-item-pane .ct-sidebar__heading span[class*='styles_itemName']")[0].firstChild.textContent;
+    const item_name = $(".b20-item-pane .ct-sidebar__heading .ct-item-name,.b20-item-pane .ct-sidebar__heading .ddbc-item-name, .b20-item-pane .ct-sidebar__heading span[class*='styles_itemName']")[0].firstChild.textContent;
     const item_type = $(".ct-item-detail__intro").text();
     const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
-    const item_customizations = $(".ct-item-pane .ct-item-detail__class-customize-item .ddbc-checkbox--is-enabled .ddbc-checkbox__label").toArray().map(e => e.textContent);
+    const item_customizations = $(".b20-item-pane .ct-item-detail__class-customize-item .ddbc-checkbox--is-enabled .ddbc-checkbox__label").toArray().map(e => e.textContent);
     const source = item_type.trim().toLowerCase();
     const is_tool = isItemATool(item_name, source);
     const is_instrument = isItemAnInstruction(item_name, item_tags);
-    const description = descriptionToString(`.ct-item-detail__description, .ct-item-pane div[class*='styles_description']`);
-    const quantity = $(".ct-item-pane .ct-simple-quantity .ct-simple-quantity__value .ct-simple-quantity__input").val();
-    const is_infused = $(".ct-item-pane .ct-item-detail__infusion");
-    const has_mastery = $(".ct-item-pane div[class*='styles_action'] div[class*='styles_label']");
+    const description = descriptionToString(`.ct-item-detail__description, .b20-item-pane div[class*='styles_description']`);
+    const quantity = $(".b20-item-pane .ct-simple-quantity .ct-simple-quantity__value .ct-simple-quantity__input").val();
+    const is_infused = $(".b20-item-pane .ct-item-detail__infusion");
+    const has_mastery = $(".b20-item-pane div[class*='styles_action'] div[class*='styles_label']");
     if(has_mastery.length >0){
         const regex = /Mastery:\s+(.+)/;
         const match = has_mastery.text().trim().match(regex);
@@ -901,7 +901,7 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
         force_display = true;
     }
     if (!force_display && Object.keys(properties).includes("Damage")) {
-        const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name, .ct-item-pane .ct-sidebar__heading span[class*='styles_itemName']").text();
+        const item_full_name = $(".b20-item-pane .ct-sidebar__heading .ct-item-name,.b20-item-pane .ct-sidebar__heading .ddbc-item-name, .b20-item-pane .ct-sidebar__heading span[class*='styles_itemName']").text();
         let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
         const settings_to_change = {}
 
@@ -913,81 +913,55 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
         else
             to_hit = character._getToHitCache(item_full_name);
 
-        const damages = [];
-        let damage_types = [];
-        for (let i = 0; i < prop_list.length; i++) {
-            const prop = propertyListToDict(prop_list.eq(i));
-            if (Object.keys(prop)[0] == "Damage") {
-                const value = prop_list.eq(i).find("> p").filter((idx, el) => el.textContent === prop["Damage"]);
-                let damage = value.find(".ct-damage__value,.ddbc-damage__value").text();
-                let damage_type = properties["Damage Type"] || "";
-                let versatile_damage = value.find(".ct-item-detail__versatile-damage,.ddbc-item-detail__versatile-damage").text().slice(1, -1);
+        let damages = properties["Damage"];
+        let damage_types = properties["Damage Type"];
+        let versatile_damage = properties["Versatile Damage"];
 
-                if(damages.length == 0) {
-                    if (versatile_damage != "") {
-                        versatile_damage = applyGWFIfRequired(item_name, properties, versatile_damage);
-                    } else {
-                        damage = applyGWFIfRequired(item_name, properties, damage);
-                    }
+        // for all effects
+        const effects = [];
+        
+        if(damages.length !== 0) {
+            // set ranger and any other main weapon damage overrides here
+            if (character.hasClass("Ranger") &&
+                character.hasClassFeature("Planar Warrior") &&
+                character.getSetting("ranger-planar-warrior", false)) {
+                    damage_types[0] = "Force";
+                    effects.push("Planar Warrior");
                 }
 
-                if (character.hasClass("Ranger") &&
-                    character.hasClassFeature("Planar Warrior") &&
-                    character.getSetting("ranger-planar-warrior", false))
-                    damage_type = "Force";
-
-                if (versatile_damage != "" && damage_type != "--") {
-                    let versatile_choice = character.getSetting("versatile-choice", "both");
-                    if (key_modifiers.versatile_one_handed)
-                        versatile_choice = "one"
-                    if (key_modifiers.versatile_two_handed)
-                        versatile_choice = "two";
-                    if (force_versatile) {
-                        versatile_choice = "two";
-                    }
-                    if (versatile_choice == "one") {
-                        damages.push(damage);
-                        if (character.getGlobalSetting("weapon-handedness", false)){
-                            damage_types.push(damage_type + " (1-Hand)");
-                        } else {
-                            damage_types.push(damage_type);
-                        }
-                    } else if (versatile_choice == "two") {
-                        damages.push(versatile_damage);
-                        if (character.getGlobalSetting("weapon-handedness", false)){
-                            damage_types.push(damage_type + " (2-Hand)");
-                        } else {
-                            damage_types.push(damage_type);
-                        }
-                    } else {
-                        damages.push(damage);
-                        damage_types.push(damage_type + " (1-Hand)");
-                        damages.push(versatile_damage);
-                        damage_types.push(damage_type + " (2-Hand)");
-                        is_versatile = true;
-                    }
-                } else if (damage != "" && damage_type != "--") {
-                    damages.push(damage);
-                    damage_types.push(damage_type);
+            if(versatile_damage){
+                let versatile_choice = character.getSetting("versatile-choice", "both");
+                if (key_modifiers.versatile_one_handed)
+                    versatile_choice = "one"
+                if (key_modifiers.versatile_two_handed)
+                    versatile_choice = "two";
+                if (force_versatile) {
+                    versatile_choice = "two";
                 }
-                const additional_damages = value.find(".ct-item-detail__additional-damage,.ddbc-item-detail__additional-damage");
-                for (let j = 0; j < additional_damages.length; j++) {
-                    let dmg = additional_damages.eq(j).text();
-                    let dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip,.ddbc-damage-type-icon .ddbc-tooltip").attr("data-original-title");
-                    const dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info,.ddbc-item-detail__additional-damage-info").text();
-                    if (dmg != "") {
-                        dmg = dmg.replace(dmg_info, "");
-                        if (dmg_info != "")
-                            dmg_type += " (" + dmg_info + ")";
 
-                        dmg = applyGWFIfRequired(item_name, properties, dmg);
-
-                        damages.push(dmg);
-                        damage_types.push(dmg_type);
+                // swap damages depending on versatile choice
+                if (versatile_choice == "one") {
+                    if (character.getGlobalSetting("weapon-handedness", false)){
+                        damage_types[0] = damage_types[0] + " (1-Hand)";
                     }
+                } else if (versatile_choice == "two") {
+                    damages[0] = versatile_damage;
+                    if (character.getGlobalSetting("weapon-handedness", false)){
+                        damage_types[0] = damage_types[0] + " (2-Hand)";
+                    }
+                } else {
+                    // fix versatile damage type 
+                    const mainDmgType = damage_types[0];
+                    damage_types[0] = mainDmgType + " (1-Hand)";
+                    damage_types.splice(1, 0, mainDmgType + " (2-Hand)");
+                    // splice versatiole damage after the main damge
+                    damages.splice(1, 0, versatile_damage);
+                    is_versatile = true;
                 }
-                break;
             }
+
+            // apply gwf to all weapon damage
+            damages.forEach((_, i, a) => a[i] = applyGWFIfRequired(item_name, properties, a[i]));
         }
 
         // 2024 brutal strike
@@ -1002,6 +976,8 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
             damage_types.push("Brutal Strike");
 
             settings_to_change["brutal-strike"] = false;
+            
+            effects.push("Brutal Strike");
         }
 
         // Handle Dragon Wing * Ranged Weapons
@@ -1047,14 +1023,14 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
             handleSpecialSpells(group_name, spell_damages, spell_damage_types, {spell_source: group_origin});
             damages.push(...spell_damages);
             damage_types.push(...spell_damage_types.map(t => `${t} (${group_name})`));
+
+            effects.push("Booming Blade");
         }
 
         addCustomDamages(character, damages, damage_types);
 
         // Capitalize all Damage Types to ensure consistency for later processing
         damage_types = damage_types.map(t => capitalize(t.trim()));
-
-        const effects = [];
 
         to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, item_name, effects});
 
@@ -1282,8 +1258,10 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
         const damages = [];
         let damage_types = [];
         if (Object.keys(properties).includes("Damage")) {
-            damages.push(properties["Damage"]);
-            damage_types.push(properties["Damage Type"] || "");
+            const dmgArr = Array.isArray(properties["Damage"]) ? properties["Damage"] : [properties["Damage"]];
+            damages.push(...dmgArr);
+            const arr = Array.isArray(properties["Damage Type"]) ? properties["Damage Type"] : [properties["Damage Type"]];
+            damage_types.push(...arr);
         }
 
         const weapon_damage_length = damages.length;
@@ -1993,7 +1971,7 @@ async function execute(paneClass, {force_to_hit_only = false, force_damages_only
                 await rollSavingThrow();
             else if (paneClass == "b20-initiative-pane")
                 await rollInitiative();
-            else if (paneClass == "ct-item-pane")
+            else if (paneClass == "b20-item-pane")
                 await rollItem(false, force_to_hit_only, force_damages_only, force_versatile, spell_group);
             else if (["b20-action-pane", "ct-custom-action-pane", "b20-custom-action-pane"].includes(paneClass))
                 await rollAction(paneClass, force_to_hit_only, force_damages_only);
@@ -2012,7 +1990,7 @@ function displayPanel(paneClass) {
     console.log("Beyond20: Displaying panel : " + paneClass);
     try {
         pauseHotkeyHandling();
-        if (paneClass == "ct-item-pane")
+        if (paneClass == "b20-item-pane")
             return displayItem();
         else if (paneClass == "ct-infusion-choice-pane")
             return displayInfusion();
@@ -2147,19 +2125,19 @@ function injectRollButton(paneClass) {
         if (isRollButtonAdded())
             return;
         addRollButtonEx(paneClass, ".ct-sidebar__heading", { image: false });
-    } else if (paneClass == "ct-item-pane") {
-        const item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name, .ct-item-pane .ct-sidebar__heading span[class*='styles_itemName']").text();
+    } else if (paneClass == "b20-item-pane") {
+        const item_name = $(".b20-item-pane .ct-sidebar__heading .ct-item-name,.b20-item-pane .ct-sidebar__heading .ddbc-item-name, .b20-item-pane .ct-sidebar__heading span[class*='styles_itemName']").text();
         if (isRollButtonAdded() && item_name == lastItemName)
             return;
         lastItemName = item_name;
         removeRollButtons(pane);
 
         checkAndInjectDiceToRolls(".ct-item-detail__description", item_name);
-        const properties = propertyListToDict($(".ct-item-pane .ct-item-detail [role=list] > div"));
+        const properties = propertyListToDict($(".b20-item-pane .ct-item-detail [role=list] > div"));
         if (Object.keys(properties).includes("Damage")) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true });
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
-            const spell_damage_groups = $(".ct-item-pane .ct-item-detail__spell-damage-group");
+            const spell_damage_groups = $(".b20-item-pane .ct-item-detail__spell-damage-group");
             for (const group of spell_damage_groups.toArray()) {
                 const header = $(group).find(".ct-item-detail__spell-damage-group-header");
                 addRollButton(character, () => execute(paneClass, {spell_group: group}), header, {small: true, append: true});
@@ -2664,7 +2642,7 @@ function activateQuickRolls() {
             let pane = null;
             let paneClass = null;
             // Need to check all types of panes to find the right one;
-            for (paneClass of ["ct-item-pane", "b20-action-pane", "ct-custom-action-pane", "b20-custom-action-pane", "ct-spell-pane"]) {
+            for (paneClass of ["b20-item-pane", "b20-action-pane", "ct-custom-action-pane", "b20-custom-action-pane", "ct-spell-pane"]) {
                 pane = $("." + paneClass);
                 if (pane.length > 0)
                     break;
@@ -2780,7 +2758,6 @@ function documentModified(mutations, observer) {
         "ct-skill-pane",
         "ct-racial-trait-pane",
         "ct-trait-pane",
-        "ct-item-pane",
         "ct-infusion-choice-pane",
         "ct-custom-action-pane",
         "ct-spell-pane",
@@ -2803,7 +2780,8 @@ function documentModified(mutations, observer) {
         character: "b20-character-manage-pane",
         creature: "b20-creature-pane",
         background: "b20-background-pane",
-        healthManager: "b20-health-manage-pane"
+        healthManager: "b20-health-manage-pane",
+        itemPanel: "b20-item-pane"
     }
 
     function handlePane(paneClass) {
@@ -2848,8 +2826,12 @@ function documentModified(mutations, observer) {
                 const paneClass = SPECIAL_PANES.initiative;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
-            } else if (sidebar.find("span[class*='ddbc-action-name']").length > 0 || sidebar.parent().find("div[class*='ct-item-detail']").length > 0) {
+            } else if (sidebar.find("span[class*='ddbc-action-name']").length > 0) {
                 const paneClass = SPECIAL_PANES.action;
+                markPane(sidebar, paneClass);
+                handlePane(paneClass);
+            } else if (sidebar.parent().find("div[class*='ct-item-detail']").length > 0) {
+                const paneClass = SPECIAL_PANES.itemPanel;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
             } else if (sidebar.parent().find(".ct-custom-action-pane__actions").length > 0) {

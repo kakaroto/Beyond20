@@ -42,22 +42,112 @@ function abbreviationToAbility(abbr) {
 
 
 function propertyListToDict(propList) {
-    const properties = {}
+    const properties = {};
     for (let i = 0; i < propList.length; i++) {
         const prop = propList.eq(i);
+
         let labelElement = prop.find(".ct-property-list__property-label,.ddbc-property-list__property-label,[class*='InfoItem_label']");
         let valueElement = prop.find(".ct-property-list__property-content,.ddbc-property-list__property-content,[class*='InfoItem_value']");
-        // April 2024 website redesign now uses dynamic class names with styled components
+
+        // Fallback for dynamic class names
         if (labelElement.length === 0 || valueElement.length === 0) {
-            labelElement = prop.children().filter((i, el) => el.className.toLowerCase().includes("label"));
-            valueElement = prop.children().filter((i, el) => el.className.toLowerCase().includes("value"));
+            labelElement = prop.children().filter((i, el) => (el.className || "").toLowerCase().includes("label"));
+            valueElement = prop.children().filter((i, el) => (el.className || "").toLowerCase().includes("value"));
         }
+
         if (labelElement.length > 0 && valueElement.length > 0) {
             let label = labelElement.text().trim();
-            const value = valueElement.text().trim();
-            if (label.endsWith(":")) {
-                label = label.slice(0, -1);
+            if (label.endsWith(":")) label = label.slice(0, -1); // normalize label
+
+            // Default value
+            let value = valueElement.text().trim();
+
+            if (/^damage type$/i.test(label)) {
+                const arr = Array.isArray(properties["Damage Type"]) ? properties["Damage Type"] : [];
+                properties["Damage Type"] = [value, ...arr];
+                continue;
             }
+
+            // === DAMAGE SPECIAL HANDLING ===
+            if (/^damage$/i.test(label)) {
+                const newDmgEl = valueElement.find(".ddbc-damage__value").first();
+                const mainDamageEl = newDmgEl.length != 0 ? newDmgEl : valueElement; // get new value or use old one
+                const additionalDivs = valueElement.find(".ct-item-detail__additional-damage");
+
+                // Helper: extract only the raw text (dice/flat) from an additional-damage div
+                const getOwnText = (node) => {
+                    const $clone = $(node).clone();
+                    $clone.find("*").remove();     // strip icons/tooltips entirely
+                    return $clone.text().trim();   // e.g., "2d6" or "1d6"
+                };
+
+                // Helper: extract damage type from the icon (class suffix preferred, with fallbacks)
+                const getType = ($div) => {
+                    const typeEl = $div.find(".ddbc-damage-type-icon,[class*='ddbc-damage-type-icon--']").first();
+                    if (!typeEl.length) return null;
+
+                    const cls = typeEl.attr("class") || "";
+                    const m = cls.match(/ddbc-damage-type-icon--([a-z-]+)/i);
+                    if (m && m[1]) return m[1].toLowerCase();
+
+                    // Fallbacks: aria-label: "cold damage", data-original-title: "cold"
+                    let t = (typeEl.attr("data-original-title") || typeEl.attr("aria-label") || "").trim();
+                    t = t.replace(/\s*damage\s*$/i, "").toLowerCase();
+                    return t || null;
+                };
+
+                const main = mainDamageEl.length ? mainDamageEl.text().trim() : "";
+
+                const extras = [];
+                const additionalDamageTypes = [];
+
+                additionalDivs.each((_, div) => {
+                    const $div = $(div);
+
+                    // Dice text (strip all children so the icon text doesn’t pollute it)
+                    const diceRaw = getOwnText($div);
+                    const dice = diceRaw.replace(/\s+/g, ""); // normalize spaces -> "2d6" or "1d6"
+                    if (dice) extras.push(dice);
+
+                    // Type from icon
+                    const type = getType($div);
+                    if (type) additionalDamageTypes.push(type);
+                });
+
+                // Assemble the final value string
+                value = [main, ...extras].filter(Boolean);
+
+                // Merge/initialize the Damage Type array with additional types
+                if (additionalDamageTypes.length) {
+                    if (Array.isArray(properties["Damage Type"])) {
+                        // Append while keeping order and avoiding duplicates
+                        const existing = properties["Damage Type"];
+                        const merged = [...existing];
+                        for (const t of additionalDamageTypes) {
+                        if (!merged.includes(t)) merged.push(t);
+                        }
+                        properties["Damage Type"] = merged;
+                    } else {
+                        properties["Damage Type"] = additionalDamageTypes.slice();
+                    }
+                }
+
+                // Versatile damage: capture any alternate roll(s)
+                const versatileSpans = valueElement.find(".ct-item-detail__versatile-damage");
+                if (versatileSpans.length) {
+                    const versatileList = versatileSpans.map((_, el) => {
+                        // strip parentheses and spaces, preserve +/- and dice
+                        return $(el).text().replace(/[()]/g, "").replace(/\s+/g, "").trim();
+                    }).get().filter(Boolean);
+
+                    if (versatileList.length === 1) {
+                        properties["Versatile Damage"] = versatileList[0];     // e.g., "1d10-1"
+                    } else if (versatileList.length > 1) {
+                        properties["Versatile Damage"] = versatileList.slice(); // array if multiple are present
+                    }
+                }
+            }
+
             properties[label] = value;
         }
     }
