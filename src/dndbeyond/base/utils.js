@@ -258,7 +258,7 @@ async function applyRogueSneakAttack(character, name, properties, damages,
                                      damage_types, roll_properties,
                                      settings_to_change) {
     if (!(character.hasClass("Rogue") &&
-          (character.hasClassFeature("Sneak Attack 2024") || character.hasClassFeature("Sneak Attack")) &&
+          character.hasClassFeature("Sneak Attack 2024") &&
           !name.includes("Psionic Power: Psychic Whispers") &&
           (
               character.getSetting("rogue-sneak-attack", false) ||
