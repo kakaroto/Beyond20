@@ -278,9 +278,15 @@ async function buildAttackRoll(character, attack_source, name, description, prop
             if (choice === null) return null; // Query was cancelled;
         } else if (roll_properties.name === "Sorcerous Burst") {
             // HACK ALERT: temporarily use acid damage....
-            damages = damages.map(m => damages[0]); // set everything to the correct acid dmg
+            const KNOWN_TYPES = new Set(["Acid","Cold","Fire","Lightning","Poison","Psychic","Thunder"]);
+            const desired = damages[0]; // e.g., match Acid’s current damage
+            damages = damages.map((dmg, i) => {
+                const t = damage_types[i];
+                return (t && t !== "Custom" && KNOWN_TYPES.has(t)) ? desired : dmg;
+            });
+
             roll_properties["damages"] = damages; // reset roll_properties
-            const choice = await queryDamageTypeFromArray(roll_properties.name, damages, damage_types, ["Acid", "Cold", "Fire", "Lightning", "Poison", "Psychic", "Thunder"]);
+            const choice = await queryDamageTypeFromArray(roll_properties.name, damages, damage_types, KNOWN_TYPES);
             if (choice === null) return null; // Query was cancelled;
         } else if (roll_properties.name === "Dragon's Breath") {
             const choice = await queryDamageTypeFromArray(roll_properties.name, damages, damage_types, ["Acid", "Cold", "Fire", "Lightning", "Poison"]);
