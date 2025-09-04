@@ -1,3 +1,8 @@
+v2.16.2 (September 4th 2025)
+===
+- **Bugfix**: Fix rolling items after DDB site update (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix formula of additional custom damage when using Sorcerous Burst (by [@dmportella](https://github.com/dmportella))
+
 v2.16.1 (September 2nd 2025)
 ===
 - **Bugfix**: Fix rolling attacks with Sneak Attack option enabled (by [@dmportella](https://github.com/dmportella))

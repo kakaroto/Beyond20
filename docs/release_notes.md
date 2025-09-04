@@ -1,3 +1,8 @@
+v2.16.2 (September 4th 2025)
+===
+
+Another small hotfix update, as D&D Beyond updated their character sheet which broke rolling items about 30 minutes after we published the last update.
+
 v2.16.1 (September 2nd 2025)
 ===
 

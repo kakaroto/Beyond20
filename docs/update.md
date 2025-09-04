@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.16.1
+Congratulations! Beyond20 was just updated to the latest version : v2.16.2
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -16,6 +16,11 @@ Thank you all for your support!
 {% include_relative known_issues.md %}
 
 # Release Notes
+
+v2.16.2 (September 4th 2025)
+===
+
+Another small hotfix update, as D&D Beyond updated their character sheet which broke rolling items about 30 minutes after we published the last update.
 
 v2.16.1 (September 2nd 2025)
 ===
@@ -41,6 +46,11 @@ Enjoy!
 Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
+
+v2.16.2 (September 4th 2025)
+===
+- **Bugfix**: Fix rolling items after DDB site update (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix formula of additional custom damage when using Sorcerous Burst (by [@dmportella](https://github.com/dmportella))
 
 v2.16.1 (September 2nd 2025)
 ===
