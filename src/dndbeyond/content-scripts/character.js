@@ -873,21 +873,21 @@ function capitalize(str) {
 }
 
 async function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, force_versatile = false, spell_group = null) {
-    const prop_list = $(".ct-item-pane .ct-item-detail [role=list] > div");
+    const prop_list = $(".b20-item-pane .ct-item-detail [role=list] > div");
     const properties = propertyListToDict(prop_list);
     properties["Properties"] = properties["Properties"] || "";
     //console.log("Properties are : " + String(properties));
-    const item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name, .ct-item-pane .ct-sidebar__heading span[class*='styles_itemName']")[0].firstChild.textContent;
+    const item_name = $(".b20-item-pane .ct-sidebar__heading .ct-item-name,.b20-item-pane .ct-sidebar__heading .ddbc-item-name, .b20-item-pane .ct-sidebar__heading span[class*='styles_itemName']")[0].firstChild.textContent;
     const item_type = $(".ct-item-detail__intro").text();
     const item_tags = $(".ct-item-detail__tags-list .ct-item-detail__tag").toArray().map(elem => elem.textContent);
-    const item_customizations = $(".ct-item-pane .ct-item-detail__class-customize-item .ddbc-checkbox--is-enabled .ddbc-checkbox__label").toArray().map(e => e.textContent);
+    const item_customizations = $(".b20-item-pane .ct-item-detail__class-customize-item .ddbc-checkbox--is-enabled .ddbc-checkbox__label").toArray().map(e => e.textContent);
     const source = item_type.trim().toLowerCase();
     const is_tool = isItemATool(item_name, source);
     const is_instrument = isItemAnInstruction(item_name, item_tags);
-    const description = descriptionToString(`.ct-item-detail__description, .ct-item-pane div[class*='styles_description']`);
-    const quantity = $(".ct-item-pane .ct-simple-quantity .ct-simple-quantity__value .ct-simple-quantity__input").val();
-    const is_infused = $(".ct-item-pane .ct-item-detail__infusion");
-    const has_mastery = $(".ct-item-pane div[class*='styles_action'] div[class*='styles_label']");
+    const description = descriptionToString(`.ct-item-detail__description, .b20-item-pane div[class*='styles_description']`);
+    const quantity = $(".b20-item-pane .ct-simple-quantity .ct-simple-quantity__value .ct-simple-quantity__input").val();
+    const is_infused = $(".b20-item-pane .ct-item-detail__infusion");
+    const has_mastery = $(".b20-item-pane div[class*='styles_action'] div[class*='styles_label']");
     if(has_mastery.length >0){
         const regex = /Mastery:\s+(.+)/;
         const match = has_mastery.text().trim().match(regex);
@@ -901,7 +901,7 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
         force_display = true;
     }
     if (!force_display && Object.keys(properties).includes("Damage")) {
-        const item_full_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name, .ct-item-pane .ct-sidebar__heading span[class*='styles_itemName']").text();
+        const item_full_name = $(".b20-item-pane .ct-sidebar__heading .ct-item-name,.b20-item-pane .ct-sidebar__heading .ddbc-item-name, .b20-item-pane .ct-sidebar__heading span[class*='styles_itemName']").text();
         let to_hit = properties["To Hit"] !== undefined && properties["To Hit"] !== "--" ? properties["To Hit"] : null;
         const settings_to_change = {}
 
@@ -1989,7 +1989,7 @@ async function execute(paneClass, {force_to_hit_only = false, force_damages_only
                 await rollSavingThrow();
             else if (paneClass == "b20-initiative-pane")
                 await rollInitiative();
-            else if (paneClass == "ct-item-pane")
+            else if (paneClass == "b20-item-pane")
                 await rollItem(false, force_to_hit_only, force_damages_only, force_versatile, spell_group);
             else if (["b20-action-pane", "ct-custom-action-pane", "b20-custom-action-pane"].includes(paneClass))
                 await rollAction(paneClass, force_to_hit_only, force_damages_only);
@@ -2008,7 +2008,7 @@ function displayPanel(paneClass) {
     console.log("Beyond20: Displaying panel : " + paneClass);
     try {
         pauseHotkeyHandling();
-        if (paneClass == "ct-item-pane")
+        if (paneClass == "b20-item-pane")
             return displayItem();
         else if (paneClass == "ct-infusion-choice-pane")
             return displayInfusion();
@@ -2143,19 +2143,19 @@ function injectRollButton(paneClass) {
         if (isRollButtonAdded())
             return;
         addRollButtonEx(paneClass, ".ct-sidebar__heading", { image: false });
-    } else if (paneClass == "ct-item-pane") {
-        const item_name = $(".ct-item-pane .ct-sidebar__heading .ct-item-name,.ct-item-pane .ct-sidebar__heading .ddbc-item-name, .ct-item-pane .ct-sidebar__heading span[class*='styles_itemName']").text();
+    } else if (paneClass == "b20-item-pane") {
+        const item_name = $(".b20-item-pane .ct-sidebar__heading .ct-item-name,.b20-item-pane .ct-sidebar__heading .ddbc-item-name, .b20-item-pane .ct-sidebar__heading span[class*='styles_itemName']").text();
         if (isRollButtonAdded() && item_name == lastItemName)
             return;
         lastItemName = item_name;
         removeRollButtons(pane);
 
         checkAndInjectDiceToRolls(".ct-item-detail__description", item_name);
-        const properties = propertyListToDict($(".ct-item-pane .ct-item-detail [role=list] > div"));
+        const properties = propertyListToDict($(".b20-item-pane .ct-item-detail [role=list] > div"));
         if (Object.keys(properties).includes("Damage")) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true });
             addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
-            const spell_damage_groups = $(".ct-item-pane .ct-item-detail__spell-damage-group");
+            const spell_damage_groups = $(".b20-item-pane .ct-item-detail__spell-damage-group");
             for (const group of spell_damage_groups.toArray()) {
                 const header = $(group).find(".ct-item-detail__spell-damage-group-header");
                 addRollButton(character, () => execute(paneClass, {spell_group: group}), header, {small: true, append: true});
@@ -2660,7 +2660,7 @@ function activateQuickRolls() {
             let pane = null;
             let paneClass = null;
             // Need to check all types of panes to find the right one;
-            for (paneClass of ["ct-item-pane", "b20-action-pane", "ct-custom-action-pane", "b20-custom-action-pane", "ct-spell-pane"]) {
+            for (paneClass of ["b20-item-pane", "b20-action-pane", "ct-custom-action-pane", "b20-custom-action-pane", "ct-spell-pane"]) {
                 pane = $("." + paneClass);
                 if (pane.length > 0)
                     break;
@@ -2776,7 +2776,6 @@ function documentModified(mutations, observer) {
         "ct-skill-pane",
         "ct-racial-trait-pane",
         "ct-trait-pane",
-        "ct-item-pane",
         "ct-infusion-choice-pane",
         "ct-custom-action-pane",
         "ct-spell-pane",
@@ -2799,7 +2798,8 @@ function documentModified(mutations, observer) {
         character: "b20-character-manage-pane",
         creature: "b20-creature-pane",
         background: "b20-background-pane",
-        healthManager: "b20-health-manage-pane"
+        healthManager: "b20-health-manage-pane",
+        itemPanel: "b20-item-pane"
     }
 
     function handlePane(paneClass) {
@@ -2851,6 +2851,10 @@ function documentModified(mutations, observer) {
             } else if (sidebar.parent().find(".ct-custom-action-pane__actions").length > 0) {
                 // In case DDB remove the ct-custom-action-pane class from the sidebar
                 const paneClass = SPECIAL_PANES.customAction;
+                markPane(sidebar, paneClass);
+                handlePane(paneClass);
+            } else if (sidebar.parent().find("div[class*='ct-item-detail']").length > 0) {
+                const paneClass = SPECIAL_PANES.itemPanel;
                 markPane(sidebar, paneClass);
                 handlePane(paneClass);
             } else if (sidebar.parent().find(".ct-feature-snippet--feat").length > 0) {
