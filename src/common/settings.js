@@ -938,6 +938,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "druid-circle-of-mutation-circle-forms": {
+        "title": "Druid: Circle of Mutation - Circle Forms",
+        "description": "Predator's Strike. When you hit a creature with an attack roll using a Beast form's attack in Wild Shape, you add +2 to the damage dealt.",
+        "type": "bool",
+        "default": false
+    },
     "discord-target": {
         "title": "Discord Destination",
         "description": "Send rolls to a character specific Discord channel",

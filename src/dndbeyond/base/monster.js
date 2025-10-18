@@ -625,6 +625,22 @@ class Monster extends CharacterBase {
                                 roll_properties["damage-types"].push("Rage");
                                 addEffect(roll_properties, "Rage");
                             }
+
+                            if(this._parent_character.hasClass("Druid")) {
+                                if(this._parent_character.hasClassFeature("Improved Lunar Radiance", true) && this._parent_character.getSetting("druid-improved-lunar-radiance", false))
+                                {
+                                    roll_properties["damages"].push(String("2d10"));
+                                    roll_properties["damage-types"].push("Lunar Radiance");
+                                }
+                                if(this._parent_character.hasClassFeature("Druid Subclass: Circle of Mutation", true) 
+                                    && this._parent_character.hasClassFeature("Circle Forms", true) 
+                                    && this._parent_character.getSetting("druid-circle-of-mutation-circle-forms", false))
+                                {
+                                    roll_properties["damages"].push(String("2"));
+                                    roll_properties["damage-types"].push("Predator's Strike");
+                                }
+                            }
+
                             // Add custom damages to wild shape attacks
                             addCustomDamages(character, roll_properties["damages"], roll_properties["damage-types"]);
                         } else if (roll_properties["damages"] && roll_properties["damages"].length > 0) {
