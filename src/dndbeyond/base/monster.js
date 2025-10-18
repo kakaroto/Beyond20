@@ -625,22 +625,26 @@ class Monster extends CharacterBase {
                                 roll_properties["damage-types"].push("Rage");
                                 addEffect(roll_properties, "Rage");
                             }
-                            // Add custom damages to wild shape attacks
-                            addCustomDamages(character, roll_properties["damages"], roll_properties["damage-types"]);
-                        }
-                        if (roll_properties["damages"] && roll_properties["damages"].length > 0) {
-                            for (const key in key_modifiers) {
-                                if (!key.startsWith("custom_damage:") || !key_modifiers[key]) continue;
-                                const custom_damage = key.slice("custom_damage:".length);
-                                if (custom_damage.includes(":")) {
-                                    const parts = custom_damage.split(":", 2);
-                                    roll_properties["damages"].push(parts[1].trim());
-                                    roll_properties["damage-types"].push(parts[0].trim());
-                                } else {
-                                    roll_properties["damages"].push(custom_damage.trim());
-                                    roll_properties["damage-types"].push("Custom");
+
+                            if(this._parent_character.hasClass("Druid")) {
+                                if(this._parent_character.hasClassFeature("Improved Lunar Radiance", true) && this._parent_character.getSetting("druid-improved-lunar-radiance", false))
+                                {
+                                    roll_properties["damages"].push(String("2d10"));
+                                    roll_properties["damage-types"].push("Lunar Radiance");
+                                }
+                                if(this._parent_character.hasClassFeature("Druid Subclass: Circle of Mutation", true) 
+                                    && this._parent_character.hasClassFeature("Circle Forms", true) 
+                                    && this._parent_character.getSetting("druid-circle-of-mutation-circle-forms", false))
+                                {
+                                    roll_properties["damages"].push(String("2"));
+                                    roll_properties["damage-types"].push("Predator's Strike");
                                 }
                             }
+
+                            // Add custom damages to wild shape attacks
+                            addCustomDamages(character, roll_properties["damages"], roll_properties["damage-types"]);
+                        } else if (roll_properties["damages"] && roll_properties["damages"].length > 0) {
+                            addCustomDamages(character, roll_properties["damages"], roll_properties["damage-types"]);
                         }
                         if (roll_properties["to-hit"]) {
                             for (const key in key_modifiers) {
