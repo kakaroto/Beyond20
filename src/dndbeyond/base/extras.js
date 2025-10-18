@@ -570,20 +570,8 @@ class MonsterExtras extends CharacterBase {
                             }
                             // Add custom damages to wild shape attacks
                             addCustomDamages(character, roll_properties["damages"], roll_properties["damage-types"]);
-                        }
-                        if (roll_properties["damages"] && roll_properties["damages"].length > 0) {
-                            for (const key in key_modifiers) {
-                                if (!key.startsWith("custom_damage:") || !key_modifiers[key]) continue;
-                                const custom_damage = key.slice("custom_damage:".length);
-                                if (custom_damage.includes(":")) {
-                                    const parts = custom_damage.split(":", 2);
-                                    roll_properties["damages"].push(parts[1].trim());
-                                    roll_properties["damage-types"].push(parts[0].trim());
-                                } else {
-                                    roll_properties["damages"].push(custom_damage.trim());
-                                    roll_properties["damage-types"].push("Custom");
-                                }
-                            }
+                        } else if (roll_properties["damages"] && roll_properties["damages"].length > 0) {
+                            addCustomDamages(character, roll_properties["damages"], roll_properties["damage-types"]);
                         }
                         if (roll_properties["to-hit"]) {
                             for (const key in key_modifiers) {
