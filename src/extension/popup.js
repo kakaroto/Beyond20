@@ -362,6 +362,10 @@ function populateCharacter(response) {
             e = createHTMLOption("druid-improved-lunar-radiance", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Druid Subclass: Circle of Mutation") && response["class-features"].includes("Circle Forms")) {
+            e = createHTMLOption("druid-circle-of-mutation-circle-forms", false, character_settings);
+            options.append(e);
+        }
     }
     $('.beyond20-option-input').off('change', save_settings);
     $('.beyond20-option-input').change(save_settings);
