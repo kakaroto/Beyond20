@@ -414,7 +414,7 @@ async function addInitiativeToCombat(roll) {
                         if (combatant) {
                             await game.combat.updateEmbeddedDocuments("Combatant", [{ "_id": docData(combatant)._id, "initiative": roll.total }]);
                         } else {
-                            await game.combat.createEmbeddedDocuments("Combatant", [{ "tokenId": token.id, "hidden": docData(token).hidden, "initiative": roll.total }]);
+                            await game.combat.createEmbeddedDocuments("Combatant", [{ "tokenId": token.id, "hidden": docData(token).hidden, "initiative": roll.total, "actorId": token.actor.id, "sceneId": token.scene.id, "img": token.actor.img }]);
                         }
                     } else {
                         if (combatant) {
