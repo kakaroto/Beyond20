@@ -172,7 +172,7 @@ class DigitalDiceManager {
             dice.click()
         return amount || 0;
     }
-    static _makeRoll(roll) {
+    static async _makeRoll(roll) {
         // New DDB roll button has 2 buttons, one to roll, one to select target, so pick the first one only.
         if (dndbeyondDiceRoller._settings["roll-to-game-log"]) {
             sendCustomEvent("MBPendingRoll", [roll.toJSON()]);
@@ -182,18 +182,8 @@ class DigitalDiceManager {
         }
         let rolled = false;
         if (roll.whisper) {
-            $(".dice-toolbar__roll, .dice-toolbar.rollable button.dice-toolbar__target-menu-button").click();
-            const options = $("#options-menu ul ul > div");
-            const texts = options.toArray().map(d => d.textContent);
-            const toDM = texts.findIndex(t => t === "Dungeon Master");
-            const toSelf = texts.findIndex(t => t === "Self");
-            if (toDM >= 0) {
-                options.eq(toDM).click();
-                rolled = true;
-            } else if (toSelf >= 0) {
-                options.eq(toSelf).click();
-                rolled = true;
-            }
+        // Use the menu button + retry to pick DM/Self
+            rolled = await DigitalDiceManager._selectWhisperTargetWithRetry();
         }
         // Roll normally (to everyone) or fallback if we can't find the whisper option
         if (!rolled) {
@@ -221,6 +211,49 @@ class DigitalDiceManager {
         };
 
         tryClick(retries);
+    }
+    static _selectWhisperTargetWithRetry(retries = 5, delay = 50) {
+        return new Promise((resolve) => {
+            const menuButton = document.querySelector(".dice-toolbar.rollable button.dice-toolbar__target-menu-button");
+            if (!menuButton) {
+                console.warn("DigitalDiceManager: target menu button not found");
+                return resolve(false);
+            }
+
+            // Open the target selection menu
+            menuButton.click();
+
+            const trySelect = (remaining) => {
+                const $options = $("#options-menu ul ul > div");
+
+                if ($options.length > 0) {
+                    const texts = $options.toArray().map(d => d.textContent.trim());
+                    const toDM   = texts.findIndex(t => t === "Dungeon Master");
+                    const toSelf = texts.findIndex(t => t === "Self");
+
+                    if (toDM >= 0) {
+                        $options.eq(toDM).click();
+                        return resolve(true);
+                    } else if (toSelf >= 0) {
+                        $options.eq(toSelf).click();
+                        return resolve(true);
+                    }
+
+                    console.warn("DigitalDiceManager: no 'Dungeon Master' or 'Self' option found");
+                    return resolve(false);
+                }
+
+                if (remaining > 0) {
+                    // Wait a bit, then try again
+                    setTimeout(() => trySelect(remaining - 1), delay);
+                } else {
+                    console.warn("DigitalDiceManager: options menu did not appear");
+                    resolve(false);
+                }
+            };
+
+            trySelect(retries);
+        });
     }
     static isEnabled() {
         const toolbar = $(".dice-toolbar");
