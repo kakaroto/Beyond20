@@ -193,24 +193,22 @@ class DigitalDiceManager {
         }
     }
     static _clickRollButtonWithRetry(retries = 5, delay = 50) {
-        const tryClick = (remaining) => {
-            const $rollButton = $(".dice-toolbar.rollable .dice-toolbar__target button")
-                .not(".dice-toolbar__target-menu-button")
-                .first();
+        const tryClick = (remaining, _delay) => {
+            const $rollButton = $(".dice-toolbar.rollable .dice-toolbar__target button:not(.dice-toolbar__target-menu-button)").first();
 
             if ($rollButton.length) {
-                $rollButton[0].click();
+                $rollButton.click();
                 return;
             }
 
             if (remaining > 0) {
-                setTimeout(() => tryClick(remaining - 1), delay);
+                setTimeout(() => tryClick(remaining - 1, _delay), _delay);
             } else {
                 console.warn("DigitalDiceManager: roll button not found after retries");
             }
         };
 
-        tryClick(retries);
+        tryClick(retries, delay);
     }
     static _selectWhisperTargetWithRetry(retries = 5, delay = 50) {
         return new Promise((resolve) => {
@@ -223,7 +221,7 @@ class DigitalDiceManager {
             // Open the target selection menu
             menuButton.click();
 
-            const trySelect = (remaining) => {
+            const trySelect = (remaining, _delay) => {
                 const $options = $("#options-menu ul ul > div");
 
                 if ($options.length > 0) {
@@ -245,14 +243,14 @@ class DigitalDiceManager {
 
                 if (remaining > 0) {
                     // Wait a bit, then try again
-                    setTimeout(() => trySelect(remaining - 1), delay);
+                    setTimeout(() => trySelect(remaining - 1, _delay), _delay);
                 } else {
                     console.warn("DigitalDiceManager: options menu did not appear");
                     resolve(false);
                 }
             };
 
-            trySelect(retries);
+            trySelect(retries, delay);
         });
     }
     static isEnabled() {
