@@ -197,8 +197,30 @@ class DigitalDiceManager {
         }
         // Roll normally (to everyone) or fallback if we can't find the whisper option
         if (!rolled) {
-            $(".dice-toolbar__roll, .dice-toolbar.rollable button:not(.dice-toolbar__target-menu-button)").click();
+            // At the moment _makeRoll runs, React/MUI hasn’t finished updating the DOM for that toolbar yet.
+            // so the roll buttons doesnt exist yet. We need to retry to roll the button a few times until it is done.
+            DigitalDiceManager._clickRollButtonWithRetry();
         }
+    }
+    static _clickRollButtonWithRetry(retries = 5, delay = 50) {
+        const tryClick = (remaining) => {
+            const $rollButton = $(".dice-toolbar.rollable .dice-toolbar__target button")
+                .not(".dice-toolbar__target-menu-button")
+                .first();
+
+            if ($rollButton.length) {
+                $rollButton[0].click();
+                return;
+            }
+
+            if (remaining > 0) {
+                setTimeout(() => tryClick(remaining - 1), delay);
+            } else {
+                console.warn("DigitalDiceManager: roll button not found after retries");
+            }
+        };
+
+        tryClick(retries);
     }
     static isEnabled() {
         const toolbar = $(".dice-toolbar");
