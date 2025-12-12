@@ -955,9 +955,9 @@ function handleMessage(request, sender, sendResponse) {
         }
     } else if (request.action == "roll") {
         const isOGL = $("#isOGL").val() === "1";
-        if (settings["roll20-template"] === "default" ||
+        if (request.type !== "avatar" && (settings["roll20-template"] === "default" ||
             settings["roll20-template"] === "beyond20" ||
-            !isOGL) {
+            !isOGL)) {
             return roll_renderer.handleRollRequest(request);
         }
         if (request.type == "avatar") {
