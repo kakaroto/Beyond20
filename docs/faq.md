@@ -11,6 +11,7 @@ You can also check out the [changelog](Changelog) for recent fixes or additions 
 * [I have a \<Class feature/Feat\> that the Features page says is supported but I don't see the option to use it](#i-have-a-class-featurefeat-that-the-features-page-says-is-supported-sharpshooter-feat-for-example-but-i-dont-see-the-option-to-use-it)
 * [Why doesn't it roll to hit when I click on my weapon attack?](#why-doesnt-it-roll-to-hit-when-i-click-on-my-weapon-attack)
 * [Why is Beyond20 rolling too many damage dice on Roll20?](#why-is-beyond20-rolling-too-many-damage-dice-on-roll20)
+* [Why am I seeing double rolls in Roll20?](#why-am-i-seeing-double-rolls-in-roll20)
 * [How can I add Bless/Guidance bonus or use Elemental Weapon?](#how-can-i-add-blessguidance-bonus-or-use-elemental-weapon)
 * [How can I use this non-standard spell or feature?](#how-can-i-use-this-non-standard-spell-or-feature)
 * [Why isn't the attack button appearing for my homebrew monster?](#why-isnt-the-attack-button-appearing-for-my-homebrew-monster)
@@ -87,6 +88,49 @@ Beyond20 only has access to the information displayed on the page. If you are in
 That's probably because you have enabled 3D dice in your Roll20 settings. The extra damage dice you see are the dice rolled in case of a critical hit, which is information that is sent to Roll20 at the same time. If you use the Roll20 character sheet and have enabled the "Auto roll damage and crits" in it, then it will behave the same.
 
 If it's an issue, the best way to avoid it is to either disable 3D dice, or go to Beyond20 settings and disable the 'Auto roll Damage and Dice' option.
+
+#### How to Fix Double Rolls on HIT/DC Rolls (When attacking with a Weapon)
+
+1. Click on the **Beyond 20** extension
+2. Click Beyond20 Options
+3. Find the option **Use D&D Beyond's** Digital Dice
+4. Ensure that this is **disabled**
+5. This should fix the issue. 
+
+This should work for the integration between D&D Beyond and Roll20 whether you are using the D&D 5e (2014) or the D&D 5e (2024) Character Sheet in Roll20.
+
+After you disable **Digital Dice** refresh your browser tabs and then try a roll from D&D Beyond and Roll20 should now receive the roll as normal. 
+
+#### What This Changes
+
+✅ **You Keep:**
+- All Beyond20 functionality
+- Roll results in chat with formatting
+- Character sheet integration  
+- HP sync
+- Combat tracker
+- All roll information
+
+❌ **You Lose:**
+- 3D dice animations in Roll20
+- Visual dice tumbling effects
+
+#### Still Broken?
+
+If you've disabled Digital Dice and still see doubles:
+
+1. **Hard refresh:** Ctrl+F5 (Windows) or Cmd+Shift+R (Mac)
+2. **Try different template:** In Beyond20 settings, change "Roll20 Template" from "Roll20" to "Default"
+3. **Verify it saved:** Re-open Game Settings and confirm Digital Dice is unchecked
+4. **Clear cache:** Clear browser data for the past hour
+5. **Full restart:** All players leave game, close all Roll20 tabs, rejoin
+
+#### Note: This is Different from Extra Crit Dice
+
+If you're seeing extra damage dice appear alongside your normal damage (but NOT duplicate complete rolls), that's the [previous FAQ question](#why-is-beyond20-rolling-too-many-damage-dice-on-roll20). Those extra dice are for critical hits and are normal behavior.
+
+The issue described here is about **complete duplicate rolls** with different results, not additional critical damage dice.
+
 
 ### How can I add Bless/Guidance bonus or use Elemental Weapon?
 
