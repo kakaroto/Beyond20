@@ -8,10 +8,15 @@ const ROLL20_ADD_GENERIC_DAMAGE_DMG_QUERY = "?{Add %dmgType% damage?|No,0|Yes,%d
 var settings = getDefaultSettings();
 
 function postChatMessage(message, character = null) {
-    const chat = document.getElementById("textchat-input");
-    const txt = chat.getElementsByTagName("textarea")[0];
-    const btn = chat.getElementsByTagName("button")[0];
-    const speakingas = document.getElementById("speakingas");
+    const chat = document.getElementById("textchat-input"),
+        txt = chat?.querySelector("textarea"),
+        btn = chat?.querySelector("button"),
+        speakingas = document.getElementById("speakingas");
+    if (!chat || !txt || !btn || !speakingas) 
+    {
+        console.log("Error: Unabled to post message to chat.")
+        return;
+    }
     let set_speakingas = true;
     const old_as = speakingas.value;
     if (character) {
