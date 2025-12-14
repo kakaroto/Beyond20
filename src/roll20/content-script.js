@@ -904,6 +904,7 @@ function injectSettingsButton() {
     if (img)
         img.remove();
     img = E.img({ id: "beyond20-settings", src: icon, style: "margin-left: 5px;" });
+    const btn = document.querySelector("#textchat-input button");
     btn.after(img);
     img.onclick = alertQuickSettings;
 }
