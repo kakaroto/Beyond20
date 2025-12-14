@@ -193,7 +193,11 @@ class DigitalDiceManager {
         }
         return rolled;
     }
-    static async _clickRollButtonWithRetry(retries = 5, delay = 50) {
+    // the menu appears with a small delay after clicking the button, so we retry for 500ms until the DOM updates before
+    // being able to click the roll button.
+    // I assume it actually happens on the next update, so a `setTimeout(0)` or `afterTick` equivalent would probably work as well
+    // but this is more robust, just in case the assumption is wrong.
+    static async _clickRollButtonWithRetry(retries = 50, delay = 10) {
         return new Promise((resolve) => {
             const tryClick = (remaining, _delay) => {
                 const $rollButton = $(".dice-toolbar.rollable .dice-toolbar__target button:not(.dice-toolbar__target-menu-button)").first();
@@ -214,7 +218,7 @@ class DigitalDiceManager {
             tryClick(retries, delay);
         });
     }
-    static async _selectWhisperTargetWithRetry(retries = 5, delay = 50) {
+    static async _selectWhisperTargetWithRetry(retries = 50, delay = 10) {
         return new Promise((resolve) => {
             const menuButton = document.querySelector(".dice-toolbar.rollable button.dice-toolbar__target-menu-button");
             if (!menuButton) {
