@@ -189,28 +189,32 @@ class DigitalDiceManager {
         if (!rolled) {
             // At the moment _makeRoll runs, React/MUI hasn’t finished updating the DOM for that toolbar yet.
             // so the roll buttons doesnt exist yet. We need to retry to roll the button a few times until it is done.
-            DigitalDiceManager._clickRollButtonWithRetry();
+            rolled = await DigitalDiceManager._clickRollButtonWithRetry();
         }
+        return rolled;
     }
-    static _clickRollButtonWithRetry(retries = 5, delay = 50) {
-        const tryClick = (remaining, _delay) => {
-            const $rollButton = $(".dice-toolbar.rollable .dice-toolbar__target button:not(.dice-toolbar__target-menu-button)").first();
+    static async _clickRollButtonWithRetry(retries = 5, delay = 50) {
+        return new Promise((resolve) => {
+            const tryClick = (remaining, _delay) => {
+                const $rollButton = $(".dice-toolbar.rollable .dice-toolbar__target button:not(.dice-toolbar__target-menu-button)").first();
 
-            if ($rollButton.length) {
-                $rollButton.click();
-                return;
-            }
+                if ($rollButton.length) {
+                    $rollButton.click();
+                    return resolve(true);
+                }
 
-            if (remaining > 0) {
-                setTimeout(() => tryClick(remaining - 1, _delay), _delay);
-            } else {
-                console.warn("DigitalDiceManager: roll button not found after retries");
-            }
-        };
+                if (remaining > 0) {
+                    setTimeout(() => tryClick(remaining - 1, _delay), _delay);
+                } else {
+                    console.warn("DigitalDiceManager: roll button not found after retries");
+                    return resolve(false);
+                }
+            };
 
-        tryClick(retries, delay);
+            tryClick(retries, delay);
+        });
     }
-    static _selectWhisperTargetWithRetry(retries = 5, delay = 50) {
+    static async _selectWhisperTargetWithRetry(retries = 5, delay = 50) {
         return new Promise((resolve) => {
             const menuButton = document.querySelector(".dice-toolbar.rollable button.dice-toolbar__target-menu-button");
             if (!menuButton) {
