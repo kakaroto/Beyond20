@@ -8,7 +8,8 @@ v2.17.0 (December 13th 2025)
 - **Bugfix**: Fix custom damages being added twice when rolling a Wild Shape Extra
 - **Bugfix**: *FVTT*: Fix "Unknown Combatant" being displayed in the combat tracker
 - **Bugfix**: *Roll20*: Make it more resilient to page updates by dynamically looking up the chat window on every message
-
+- **Bugfix**: *Roll20*: Fix displaying of avatars if not using OGL sheet
+- **Bugfix**: *Roll20*: Fix missing Cunning Strike description from rolls to roll20
 
 v2.16.2 (September 4th 2025)
 ===
