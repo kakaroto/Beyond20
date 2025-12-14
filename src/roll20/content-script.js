@@ -610,6 +610,9 @@ function displayExtraInfo(request) {
     if (Array.isArray(request["effects"]) && request["effects"].length > 0) {
         extra += "Effects: " + request["effects"].join(", ") + "\n";
     }
+    if (request["cunning-strike-effects"]) {
+        extra += "Cunning Strike: " + request["cunning-strike-effects"] + "\n";
+    }
     if (extra != "") {
         return "\n" + template(request, "desc", { desc: extra });
     }
