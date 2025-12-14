@@ -1,3 +1,20 @@
+v2.17.0 (December 13th 2025)
+===
+
+Hi everyone,
+
+This week, an update to D&D Beyond's website broke our ability to roll using Digital Dice. This update fixes that, as well as many other fixes and additional support for special class features.
+
+You can read the full [Changelog](/Changelog#v2170) to see all the changes included in this release.
+
+A big thank you to [@dmportella](https://github.com/dmportella) for making this release, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
+
+This is also the perfect moment to wish everyone happy holidays, and a happy new year!
+
+Enjoy!
+
+
+
 v2.16.2 (September 4th 2025)
 ===
 
