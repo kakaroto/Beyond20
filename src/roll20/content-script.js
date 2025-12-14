@@ -5,14 +5,18 @@ const ROLL20_ADVANTAGE_QUERY = "{{query=1}} ?{Advantage?|Normal Roll,&#123&#123n
 const ROLL20_INITIATIVE_ADVANTAGE_QUERY = "?{Roll Initiative with advantage?|Normal Roll,1d20|Advantage,2d20kh1|Disadvantage,2d20kl1|Super Advantage,3d20kh1|Super Disadvantage,3d20kl1}"
 const ROLL20_ADD_GENERIC_DAMAGE_DMG_QUERY = "?{Add %dmgType% damage?|No,0|Yes,%dmg%}"
 
-
-const chat = document.getElementById("textchat-input");
-const txt = chat.getElementsByTagName("textarea")[0];
-const btn = chat.getElementsByTagName("button")[0];
-const speakingas = document.getElementById("speakingas");
 var settings = getDefaultSettings();
 
 function postChatMessage(message, character = null) {
+    const chat = document.getElementById("textchat-input"),
+        txt = chat?.querySelector("textarea"),
+        btn = chat?.querySelector("button"),
+        speakingas = document.getElementById("speakingas");
+    if (!chat || !txt || !btn || !speakingas) 
+    {
+        console.log("Error: Unabled to post message to chat.")
+        return;
+    }
     let set_speakingas = true;
     const old_as = speakingas.value;
     if (character) {
@@ -939,6 +943,7 @@ function handleMessage(request, sender, sendResponse) {
             let em_command = `/emas "${character_name}" `;
             if (!is_gm) {
                 // Add character name only if we can't speak as them
+                const speakingas = document.getElementById("speakingas");
                 const availableAs = Array.from(speakingas.children).map(c => c.text.toLowerCase())
                 if (availableAs.includes(character_name.toLowerCase()))
                     em_command = "/em ";
