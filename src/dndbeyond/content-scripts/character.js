@@ -2154,7 +2154,7 @@ function injectRollButton(paneClass) {
         const properties = propertyListToDict($(".b20-item-pane .ct-item-detail [role=list] > div"));
         if (Object.keys(properties).includes("Damage")) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true });
-            addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
+            addDisplayButtonEx(paneClass, ".ct-sidebar__header .ct-beyond20-roll");
             const spell_damage_groups = $(".b20-item-pane .ct-item-detail__spell-damage-group");
             for (const group of spell_damage_groups.toArray()) {
                 const header = $(group).find(".ct-item-detail__spell-damage-group-header");
@@ -2167,7 +2167,7 @@ function injectRollButton(paneClass) {
             const is_instrument =  item_tags.includes("Instrument");
             if (is_tool || is_instrument) {
                 addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true, text: `Use ${is_tool? "Tool" : "Instrument"}` });
-                addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
+                addDisplayButtonEx(paneClass, ".ct-sidebar__header .ct-beyond20-roll");
             } else {
                 addDisplayButtonEx(paneClass, ".ct-sidebar__heading", { append: false, small: false });
             }
@@ -2195,7 +2195,7 @@ function injectRollButton(paneClass) {
             action_name.includes("Blood Curse of the Eyeless") ||
             (properties["Damage"] !== undefined || to_hit !== null || properties["Attack/Save"] !== undefined)) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { small: true });
-            addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
+            addDisplayButtonEx(paneClass, ".ct-sidebar__header .ct-beyond20-roll");
         } else {
             addRollButtonEx(paneClass, ".ct-sidebar__heading");
         }
@@ -2222,7 +2222,7 @@ function injectRollButton(paneClass) {
 
         if (damages.length > 0 || healings.length > 0 || to_hit !== null || properties["Attack/Save"] !== undefined) {
             addRollButtonEx(paneClass, ".ct-sidebar__heading", { text: "Cast on VTT", small: true });
-            addDisplayButtonEx(paneClass, ".ct-beyond20-roll");
+            addDisplayButtonEx(paneClass, ".ct-sidebar__header .ct-beyond20-roll");
         } else {
             //addRollButtonEx(paneClass, ".ct-sidebar__heading", text="Cast on VTT", image=false);
             addDisplayButtonEx(paneClass, ".ct-sidebar__heading", { append: false, small: false });
