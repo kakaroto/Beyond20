@@ -718,14 +718,15 @@ function addRollButton(character, callback, where, { small = false, append = fal
         )
     )
 
+    const $where = $(where).eq(0);
     if (append)
-        $(where).append(button);
+        $where.append(button);
     else if (prepend)
-        $(where).prepend(button);
+        $where.prepend(button);
     else if (before)
-        $(where).before(button);
+        $where.before(button);
     else
-        $(where).after(button);
+        $where.after(button);
 
     $(`#${id}`).css({
         "float": "right",
@@ -743,10 +744,11 @@ function addDisplayButton(callback, where, { text = "Display in VTT", append = t
             E.span({ class: "ct-button__content" }, text)
         )
     );
+    const $where = $(where).eq(0);
     if (append)
-        $(where).append(button);
+        $where.append(button);
     else
-        $(where).after(button);
+        $where.after(button);
 
     $(".ct-beyond20-roll-display").css({
         "margin-left": "auto",
@@ -784,12 +786,13 @@ function addIconButton(character, callback, where, { append = false, prepend = f
         E.img({ class: "ct-beyond20-" + (custom ? "custom-icon" : "icon"), src: icon })
     );
 
+    const $where = $(where).eq(0);
     if (append)
-        $(where).append(button);
+        $where.append(button);
     else if (prepend)
-        $(where).prepend(button);
+        $where.prepend(button);
     else
-        $(where).after(button);
+        $where.after(button);
     $(`#${id}`).on('click', (event) => callback());
     return button;
 }
@@ -802,7 +805,7 @@ function addRollTableButton(character, where, table) {
             "Roll Table to VTT"
         )
     );
-    $(where).before(button);
+    $(where).eq(0).before(button);
     $(button).css({
         "float": "left",
         "display": "inline-block"
