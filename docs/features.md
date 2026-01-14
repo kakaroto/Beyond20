@@ -111,6 +111,7 @@ See the [Screenshots](screenshots) page for a video tour of some of the features
 * Fighter: Rune Knight's Giant Might (UA)
 * Fighter: Remarkable Athlete
 * Fighting Style: Great Weapon Fighting
+* Fighting Style: Dueling
 * Paladin: Legendary Strike (UA)
 * Paladin: Improved Divine Smite
 * Paladin: Invincible Conqueror
