@@ -306,6 +306,14 @@ function populateCharacter(response) {
             e = createHTMLOption("sorcerer-trance-of-order", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Fighting Style: Dueling") ||
+            response["class-features"].includes("Additional Fighting Style: Dueling") ||
+            response["feats"].includes("Fighting Initiate: Dueling") ||
+            response["class-features"].includes("Fighting Style 2024: Dueling") ||
+            response["class-features"].includes("Additional Fighting Style 2024: Dueling")) {
+            e = createHTMLOption("fighting-style-dueling", false, character_settings);
+            options.append(e);
+        }
         if (response["class-features"].includes("Symbiotic Entity")) {
             e = createHTMLOption("druid-symbiotic-entity", false, character_settings);
             options.append(e);
