@@ -409,6 +409,33 @@ function isItemAnInstruction(item_name, item_tags) {
 }
 
 function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, settings_to_change={}, { to_hit, action_name="", effects=[] }={}) {
+    // Dueling Fighting Style
+    const hasDueling = character.hasClassFeature("Fighting Style: Dueling") ||
+            character.hasClassFeature("Additional Fighting Style: Dueling") ||
+            character.hasFeat("Fighting Initiate: Dueling") ||
+            character.hasClassFeature("Fighting Style 2024: Dueling") ||
+            character.hasClassFeature("Additional Fighting Style 2024: Dueling");
+
+    if (hasDueling &&
+        character.getSetting("fighting-style-dueling", "true") &&
+        properties["Attack Type"] === "Melee" &&
+        !properties["Properties"].includes("Two-Handed") &&
+        damages.length > 0) {
+
+        const isVersatile = properties["Properties"].includes("Versatile");
+        const versatileChoice = character.getSetting("versatile-choice", "both");
+
+        if (isVersatile && versatileChoice === "two") {
+            // Don't apply Dueling
+        } else if (isVersatile && versatileChoice === "both") {
+            damages[0] += " + 2";
+            effects.push("Dueling");
+        } else {
+            // Not versatile, or choice "one"
+            damages.push("2");
+            damage_types.push("Dueling");
+        }
+    }
     if (character.hasClass("Barbarian")) {
         // Barbarian: Rage
         const barbarian_level = character.getClassLevel("Barbarian");
