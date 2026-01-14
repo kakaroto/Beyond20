@@ -657,6 +657,12 @@ const character_settings = {
         "type": "bool",
         "default": true
     },
+    "fighting-style-dueling": {
+        "title": "Fighting Style: Dueling",
+        "description": "When you’re holding a Melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon.",
+        "type": "bool",
+        "default": true
+    },
     "druid-symbiotic-entity": {
         "title": "Druid: Circle of Spores: Symbiotic Entity",
         "description": "Your symbiotic entity lends its power to your melee weapon strikes.",
