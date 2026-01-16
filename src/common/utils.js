@@ -35,11 +35,8 @@ function cleanRoll(rollText) {
 function getBrowser() {
     const ua = navigator.userAgent;
 
-    if (typeof browser !== "undefined" && browser.runtime && browser.runtime.getBrowserInfo) {
-        return "Firefox";
-    }
-
-    if (/Edg\//.test(ua)) return "Edge";
+    if (/Firefox\//.test(ua)) return "Firefox";
+    if (/Edge\//.test(ua)) return "Edge";
     if (
         (/Brave\//.test(ua) || (navigator.brave && typeof navigator.brave.isBrave === "function")) ||
         (/OPR\//.test(ua)) ||
@@ -47,7 +44,7 @@ function getBrowser() {
         (/Chrome\//.test(ua))
      ) return "Chrome"; // if brave, opera, safari or chrome just return chrome
     
-    return "Unknown";
+    return "Chrome";
 }
 
 function getPlatform() {
