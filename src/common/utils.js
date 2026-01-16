@@ -30,18 +30,22 @@ function cleanRoll(rollText) {
     return rollText;
 }
 
-// Taken from https://stackoverflow.com/questions/45985198/the-best-practice-to-detect-whether-a-browser-extension-is-running-on-chrome-or;
+// Taken from https://stackoverflow.com/questions/45985198/the-best-practice-to-detect-whether-a-browser-extension-is-running-on-chrome-or; No Longer works
+// new browser detection using user agent now
 function getBrowser() {
-    if (typeof (chrome) !== "undefined") {
-        if (typeof (browser) !== "undefined") {
-            return "Firefox";
-        } else {
-            return "Chrome";
-        }
-    } else {
-        return "Edge";
+    const ua = navigator.userAgent;
 
-    }
+    if (/Firefox\//.test(ua)) return "Firefox";
+    // 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'
+    if (/Edg\//.test(ua)) return "Edge";
+    if (
+        (/Brave\//.test(ua) || (navigator.brave && typeof navigator.brave.isBrave === "function")) ||
+        (/OPR\//.test(ua)) ||
+        (/Safari\//.test(ua) && !/Chrome\//.test(ua) && !/Chromium\//.test(ua)) ||
+        (/Chrome\//.test(ua))
+     ) return "Chrome"; // if brave, opera, safari or chrome just return chrome
+    
+    return "Chrome";
 }
 
 function getPlatform() {
