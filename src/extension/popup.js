@@ -298,8 +298,12 @@ function populateCharacter(response) {
             e = createHTMLOption("paladin-sacred-weapon", false, character_settings);
             options.append(e);
         }
-        if (response["class-features"].includes("Blessed Strikes")) {
+        if (response["class-features"].includes("Blessed Strikes 2024: Divine Strike")) {
             e = createHTMLOption("cleric-blessed-strikes", false, character_settings);
+            options.append(e);
+        }
+        if (response["class-features"].includes("Blessed Strikes")) {
+            e = createHTMLOption("cleric-blessed-strikes-tasha", false, character_settings);
             options.append(e);
         }
         if (response["class-features"].includes("Trance of Order")) {

@@ -607,14 +607,30 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
     }
 
     if (character.hasClass("Cleric")) {
-        // Cleric: Blessed Strikes
+        // Cleric: Blessed Strikes 2024
         const action = item_name || action_name;
         if ((action && to_hit != null) && !["Unarmed Strike"].includes(action) &&
-            character.hasClassFeature("Blessed Strikes") &&
+            character.hasClassFeature("Blessed Strikes 2024") &&
+            character.hasClassFeature("Blessed Strikes 2024: Divine Strike") &&
             character.getSetting("cleric-blessed-strikes", false)) {
+            if(character.hasClassFeature("Improved Blessed Strikes 2024")) damages.push("2d8");
+            else damages.push("1d8");
+            damage_types.push("Blessed Strikes");
+
+            const isLocked = character.getSetting("cleric-blessed-strikes-lock", false);
+            if(!isLocked) settings_to_change["cleric-blessed-strikes"] = false;
+        }
+
+        // Cleric: Blessed Strikes 2014 tasha optional rule
+        if (((action && to_hit != null) || (spell_name && spell_level.includes("Cantrip"))) &&
+            character.hasClassFeature("Blessed Strikes") &&
+            character.getSetting("cleric-blessed-strikes-tasha", false)) {
             if(character.hasClassFeature("Improved Blessed Strikes")) damages.push("2d8");
             else damages.push("1d8");
             damage_types.push("Blessed Strikes");
+
+            const isLocked = character.getSetting("cleric-blessed-strikes-tasha-lock", false);
+            if(!isLocked) settings_to_change["cleric-blessed-strikes-tasha"] = false;
         }
     }
 
@@ -760,12 +776,15 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
     }
     
     if (character.hasClass("Cleric")) {
-        // Cleric: Divine Strike
+        // Cleric: Divine Strike 2014
         if (character.hasClassFeature("Divine Strike") &&
             character.getSetting("cleric-divine-strike", true)) {
             const cleric_level = character.getClassLevel("Cleric");
             damages.push(cleric_level < 14 ? "1d8" : "2d8");
             damage_types.push("Divine Strike");
+
+            const isLocked = character.getSetting("cleric-divine-strike-lock", false);
+            if(!isLocked) settings_to_change["cleric-divine-strike"] = false;
         }
     }
 
