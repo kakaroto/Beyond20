@@ -640,10 +640,26 @@ const character_settings = {
         "default": false
     },
     "cleric-blessed-strikes": {
-        "title": "Cleric: Blessed Strikes",
-        "description": "Deal an extra 1d8 damage on damaging cantrips and weapon attacks",
+        "title": "Cleric: Blessed Strikes 2024: Divine Strike",
+        "description": "Once on each of your turns when you hit a creature with an attack roll using a weapon, you can cause it to take an extra 1d8 Necrotic or Radiant damage (your choice). This Damage goes to 2d8 with Improved Blessed Strikes.",
         "type": "bool",
-        "default": true
+        "default": false,
+        "lock": "cleric-blessed-strikes-lock"
+    },
+    "cleric-blessed-strikes-lock": {
+        "type": "bool",
+        "default": false
+    },
+    "cleric-blessed-strikes-tasha": {
+        "title": "Cleric: Blessed Strikes 2014: Optional Rule",
+        "description": "When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you cant use this feature again until the start of your next turn.",
+        "type": "bool",
+        "default": false,
+        "lock": "cleric-blessed-strikes-tasha-lock"
+    },
+    "cleric-blessed-strikes-tasha-lock": {
+        "type": "bool",
+        "default": false
     },
     "cleric-circle-of-mortality": {
         "title": "Cleric: Grave Domain: Circle of Mortality",
@@ -655,7 +671,12 @@ const character_settings = {
         "title": "Cleric: Divine Strike",
         "description": "Deal an extra 1d8 (2d8 at level 14) damage to weapon attacks",
         "type": "bool",
-        "default": true
+        "default": false,
+        "lock": "cleric-divine-strike-lock"
+    },
+    "cleric-divine-strike-lock": {
+        "type": "bool",
+        "default": false
     },
     "druid-symbiotic-entity": {
         "title": "Druid: Circle of Spores: Symbiotic Entity",
