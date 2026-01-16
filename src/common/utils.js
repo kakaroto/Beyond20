@@ -36,7 +36,8 @@ function getBrowser() {
     const ua = navigator.userAgent;
 
     if (/Firefox\//.test(ua)) return "Firefox";
-    if (/Edge\//.test(ua)) return "Edge";
+    // 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0'
+    if (/Edg\//.test(ua)) return "Edge";
     if (
         (/Brave\//.test(ua) || (navigator.brave && typeof navigator.brave.isBrave === "function")) ||
         (/OPR\//.test(ua)) ||
