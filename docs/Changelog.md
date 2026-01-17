@@ -1,3 +1,9 @@
+v2.17.1 (January 16th 2025)
+===
+- **Feature**: Add support for Blessed Strikes 2024 and differenciate with the Tasha's version of Blessed Strikes (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: *Chrome*: Fix browser detection on latest version of Chrome (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix the "Display to VTT" button on spells which include a roll table (like Confusion)
+
 v2.17.0 (December 13th 2025)
 ===
 - **Feature**: Add support for 2024 version of Remarkable Athlete

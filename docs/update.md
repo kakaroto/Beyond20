@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.17.0
+Congratulations! Beyond20 was just updated to the latest version : v2.17.1
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -16,6 +16,24 @@ Thank you all for your support!
 {% include_relative known_issues.md %}
 
 # Release Notes
+
+v2.17.1 (January 16th 2025)
+===
+
+Hi everyone,
+
+I hope everyone managed to get some rest during the holidays, enough rest at least to face what 2026 has brought upon us already.
+
+Today, we're releasing a small bugfix release which fixes an issue on the Chrome browser since its latest version update, which prevented rolling digital dice and processing monster stat blocks.
+
+We've also fixed a bug which caused the Confusion spell not to display to VTT and differentiating between the 2014 and 2024 versions of the Cleric's Blessed Strikes.
+
+You can read the full [Changelog](/Changelog#v2171) to see all the changes included in this release.
+
+As usual, a big thank you to [@dmportella](https://github.com/dmportella) for his work, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
+
+Enjoy!
+
 
 v2.17.0 (December 13th 2025)
 ===
@@ -38,6 +56,12 @@ Enjoy!
 Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
+
+v2.17.1 (January 16th 2025)
+===
+- **Feature**: Add support for Blessed Strikes 2024 and differenciate with the Tasha's version of Blessed Strikes (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: *Chrome*: Fix browser detection on latest version of Chrome (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix the "Display to VTT" button on spells which include a roll table (like Confusion)
 
 v2.17.0 (December 13th 2025)
 ===
