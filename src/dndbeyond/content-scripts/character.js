@@ -494,7 +494,9 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
     // enhanced unarmed strike
     if(to_hit !== null && 
         character.hasFeat("Tavern Brawler 2024") &&
-        ["enhanced unarmed strike", "unarmed strike", "flurry of blows"].includes(action_name.toLocaleLowerCase())) {
+        ["enhanced unarmed strike", "unarmed strike", "flurry of blows"].some(
+            a => action_name.toLocaleLowerCase().includes(a)
+        )) {
         damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=1");
         effects.push("Tavern Brawler");
     }
