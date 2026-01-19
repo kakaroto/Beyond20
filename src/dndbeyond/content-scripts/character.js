@@ -1361,7 +1361,7 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             "predatory strike",
             "enhanced unarmed strike",
             "flurry of blows"
-        ].some(action => action_name.toLocaleLowerCase().includes(action));
+        ].includes(normalizeActionName(action_name))
         
         const isRangedAttack = action_name.includes("Lightning Launcher");
 
