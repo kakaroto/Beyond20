@@ -495,7 +495,7 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
     if(to_hit !== null && 
         character.hasFeat("Tavern Brawler 2024") &&
         ["enhanced unarmed strike", "unarmed strike", "flurry of blows"].includes(
-            action_name.toLocaleLowerCase().trim().replace(/[\s*]+$/, "")
+            normalizeActionName(action_name)
         )
     ) {
         damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=1");
@@ -893,6 +893,11 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
 
 function capitalize(str) {
     return str.replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+// Transform lowercase, remove trailing asterisk and spaces
+function normalizeActionName(action_name) {
+    return action_name.toLocaleLowerCase().trim().replace(/[\s*]+$/, "");
 }
 
 async function rollItem(force_display = false, force_to_hit_only = false, force_damages_only = false, force_versatile = false, spell_group = null) {
