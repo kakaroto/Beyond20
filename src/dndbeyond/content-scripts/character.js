@@ -1336,7 +1336,7 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             damages[0] = applyGWFIfRequired(action_name, properties, damages[0]);
         }
 
-        const isMeleeAttack = [
+        const meleeActions = [
             "polearm master",
             "pole strike",
             "unarmed strike",
@@ -1356,7 +1356,8 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             "predatory strike",
             "enhanced unarmed strike",
             "flurry of blows"
-        ].includes(normalizeActionName(action_name))
+        ];
+        const isMeleeAttack = includesNormalized(meleeActions, action_name);
         
         const isRangedAttack = action_name.includes("Lightning Launcher");
 
