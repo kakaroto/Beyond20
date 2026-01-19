@@ -1068,3 +1068,8 @@ function getQuickRollTooltip() {
     }
     return beyond20_tooltip;
 }
+
+// Transform lowercase, remove trailing asterisk and spaces
+function normalizeActionName(action_name) {
+    return action_name.toLocaleLowerCase().trim().replace(/[\s*]+$/, "");
+}
