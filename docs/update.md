@@ -17,7 +17,7 @@ Thank you all for your support!
 
 # Release Notes
 
-v2.17.1 (January 16th 2025)
+v2.17.1 (January 16th 2026)
 ===
 
 Hi everyone,
@@ -35,7 +35,7 @@ As usual, a big thank you to [@dmportella](https://github.com/dmportella) for hi
 Enjoy!
 
 
-v2.17.0 (December 13th 2025)
+v2.17.0 (December 13th 2026)
 ===
 
 Hi everyone,
@@ -57,7 +57,7 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-v2.17.1 (January 16th 2025)
+v2.17.1 (January 16th 2026)
 ===
 - **Feature**: Add support for Blessed Strikes 2024 and differenciate with the Tasha's version of Blessed Strikes (by [@dmportella](https://github.com/dmportella))
 - **Bugfix**: *Chrome*: Fix browser detection on latest version of Chrome (by [@dmportella](https://github.com/dmportella))

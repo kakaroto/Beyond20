@@ -1,4 +1,4 @@
-v2.17.1 (January 16th 2025)
+v2.17.1 (January 16th 2026)
 ===
 - **Feature**: Add support for Blessed Strikes 2024 and differenciate with the Tasha's version of Blessed Strikes (by [@dmportella](https://github.com/dmportella))
 - **Bugfix**: *Chrome*: Fix browser detection on latest version of Chrome (by [@dmportella](https://github.com/dmportella))
