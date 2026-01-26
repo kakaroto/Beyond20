@@ -1616,6 +1616,17 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
 }
     
 function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {spell_source="", spell_level="Cantrip", castas, settings_to_change}={}) {
+    // Feat: Healer
+    if (
+        character.hasFeat("Healer") &&
+        character.getVersion() === 2024 &&
+        character.getSetting("healer-rerolls-feat-2024", "false")
+    ) {
+        console.log("are we hitting this?")
+        damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=1")
+        damage_types.push("Healer")
+    }
+
     // Artificer
     if (character.hasClass("Artificer")) {
         if (character.hasClassFeature("Alchemical Savant") &&
