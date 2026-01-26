@@ -606,4 +606,8 @@ class Character extends CharacterBase {
             "version": this._version
         }
     }
+
+    getVersion() {
+        return this._version;
+    }
 }
