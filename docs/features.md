@@ -90,6 +90,7 @@ See the [Screenshots](screenshots) page for a video tour of some of the features
 * Feat: Elven Accuracy (Via super advantage option)
 * Feat: Flames of Phlegethos
 * Feat: Polearm Master
+* Feat: Healer 2024
 * Aasimar: Radiant Soul
 * Artificer: Arcane Firearm
 * Artificer: Alchemical Savant
