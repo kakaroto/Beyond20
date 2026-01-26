@@ -890,6 +890,13 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "healer-rerolls-feat-2024": {
+        "title": "Feat: Healer - Healing Rerolls",
+        "description": "Whenever you roll a die to determine the number of Hit Points you restore with a spell or " +
+            "with this feat’s Battle Medic benefit, you can reroll the die if it rolls a 1, and you must use the new roll.",
+        "type": "bool",
+        "default": false,
+    },
     "great-weapon-master": {
         "title": "Feat: Great Weapon Master (Apply to next roll only, unless locked)",
         "description": "Apply Great Weapon Master -5 penalty to roll and +10 to damage",
