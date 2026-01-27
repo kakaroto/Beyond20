@@ -1622,7 +1622,6 @@ function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {sp
         character.getVersion() === 2024 &&
         character.getSetting("healer-rerolls-feat-2024", "false")
     ) {
-        console.log("are we hitting this?")
         damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=1")
         damage_types.push("Healer")
     }
