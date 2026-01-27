@@ -193,7 +193,8 @@ function populateCharacter(response) {
             e = createHTMLOption("great-weapon-master-2024", false, character_settings);
             options.append(e);
         }
-        if (response["feats"].includes("Healer") && response["version"] === 2024) {
+        console.log("response", response)
+        if (response["feats"].includes("Healer 2024")) {
             e = createHTMLOption("healer-rerolls-feat-2024", false, character_settings);
             options.append(e);
         }
