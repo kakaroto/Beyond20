@@ -1622,7 +1622,6 @@ function handleSpecialHealingSpells(spell_name, damages=[], damage_types=[], {sp
         character.getSetting("healer-rerolls-feat-2024", "false")
     ) {
         damages[0] = damages[0].replace(/[0-9]*d[0-9]+/g, "$&ro<=1")
-        damage_types.push("Healer")
     }
 
     // Artificer
