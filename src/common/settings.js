@@ -602,7 +602,8 @@ const character_settings = {
     },
     "bard-psychic-blades-lock": {
         "type": "bool",
-        "default": false
+        "default": false,
+        "hidden": true
     },
     "bard-spiritual-focus": {
         "title": "Bard: College of Spirits: Spiritual Focus",
@@ -631,7 +632,8 @@ const character_settings = {
     },
     "barbarian-reckless-lock": {
         "type": "bool",
-        "default": false
+        "default": false,
+        "hidden": true
     },
     "bloodhunter-crimson-rite": {
         "title": "Bloodhunter: Crimson Rite",
@@ -648,7 +650,8 @@ const character_settings = {
     },
     "cleric-blessed-strikes-lock": {
         "type": "bool",
-        "default": false
+        "default": false,
+        "hidden": true
     },
     "cleric-blessed-strikes-tasha": {
         "title": "Cleric: Blessed Strikes 2014: Optional Rule",
@@ -659,7 +662,8 @@ const character_settings = {
     },
     "cleric-blessed-strikes-tasha-lock": {
         "type": "bool",
-        "default": false
+        "default": false,
+        "hidden": true
     },
     "cleric-circle-of-mortality": {
         "title": "Cleric: Grave Domain: Circle of Mortality",
@@ -676,7 +680,8 @@ const character_settings = {
     },
     "cleric-divine-strike-lock": {
         "type": "bool",
-        "default": false
+        "default": false,
+        "hidden": true
     },
     "druid-symbiotic-entity": {
         "title": "Druid: Circle of Spores: Symbiotic Entity",
@@ -753,7 +758,8 @@ const character_settings = {
     },
     "ranger-dread-ambusher-lock": {
         "type": "bool",
-        "default": false
+        "default": false,
+        "hidden": true
     },
     "ranger-planar-warrior": {
         "title": "Ranger: Horizon Walker: Planar Warrior",
@@ -794,7 +800,8 @@ const character_settings = {
     },
     "rogue-sneak-attack-lock": {
         "type": "bool",
-        "default": true
+        "default": true,
+        "hidden": true
     },
     "rogue-cunning-strike": {
         "title": "Rogue: Cunning Strike (Apply to next roll only, unless locked)",
@@ -805,7 +812,8 @@ const character_settings = {
     },
     "rogue-cunning-strike-lock": {
         "type": "bool",
-        "default": false
+        "default": false,
+        "hidden": true
     },
     "rogue-assassinate": {
         "title": "Rogue: Assassin: Assassinate Surprise Attack (Apply to next roll only, unless locked)",
@@ -823,7 +831,8 @@ const character_settings = {
     },
     "rogue-assassinate-lock": {
         "type": "bool",
-        "default": false
+        "default": false,
+        "hidden": true
     },
     "sorcerer-trance-of-order": {
         "title": "Sorcerer: Clockwork Soul: Trance of Order",
@@ -888,7 +897,8 @@ const character_settings = {
     },
     "charger-feat-lock": {
         "type": "bool",
-        "default": false
+        "default": false,
+        "hidden": true
     },
     "great-weapon-master": {
         "title": "Feat: Great Weapon Master (Apply to next roll only, unless locked)",
@@ -899,7 +909,8 @@ const character_settings = {
     },
     "great-weapon-master-lock": {
         "type": "bool",
-        "default": false
+        "default": false,
+        "hidden": true
     },
     "great-weapon-master-2024": {
         "title": "Feat: Great Weapon Master 2024 (Apply to next roll only, unless locked)",
@@ -910,7 +921,8 @@ const character_settings = {
     },
     "great-weapon-master-2024-lock": {
         "type": "bool",
-        "default": false
+        "default": false,
+        "hidden": true
     },
     "sharpshooter": {
         "title": "Feat: Sharpshooter (Apply to next roll only, unless locked)",
@@ -921,7 +933,8 @@ const character_settings = {
     },
     "sharpshooter-lock": {
         "type": "bool",
-        "default": false
+        "default": false,
+        "hidden": true
     },
     "brutal-critical": {
         "title": "Brutal Critical/Savage Attacks: Roll extra die",
