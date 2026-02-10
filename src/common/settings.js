@@ -33,6 +33,7 @@ class CriticalRules {
 // combobox extra options:;
 //                        choices: {value: string}
 // special extra options:;
+//                        hidden: boolean; // hides options from hotkeys dialogs;
 //                        createHTMLElement: function;
 //                        set: function;
 //                        get: function;
