@@ -2553,6 +2553,68 @@ function injectSettingsButton() {
     updateHotkeysList(hotkeys_popup);
 }
 
+let previousButton = null;
+function injectCustomRollButton() {
+    if (!DigitalDiceManager.isEnabled()) // nothing to do when digital dice menu does not exist
+        return;
+
+    let menuButton = document.querySelector(".dice-toolbar .dice-toolbar__target-menu-button"),
+        rollButton = document.querySelector(".dice-toolbar .dice-toolbar__target button:not(.dice-toolbar__target-menu-button)");
+
+    if (!menuButton || !rollButton) // buttons are not directly available at page load, so try again at a later mutation event
+        return;
+
+    const currentlyInjected = previousButton !== null && rollButton.dataset.b20roll !== undefined;
+    if (!settings['use-digital-dice']) { // inject or update button
+        if (!currentlyInjected) {
+            // store a reference to the previous button so we can revert our changes if the user switches the setting off again
+            previousButton = rollButton;
+
+            // remove existing click event by replacing element with itself
+            rollButton.replaceWith(rollButton.cloneNode(true));
+
+            // refresh reference which still points to the old element
+            rollButton = document.querySelector(".dice-toolbar .dice-toolbar__target button:not(.dice-toolbar__target-menu-button)");
+
+            // add our custom handler
+            rollButton.addEventListener("click", async () => {
+                const selectedDice = DigitalDiceManager.parseCurrentSelection();
+
+                if (!selectedDice) {
+                    // This should not happen unless DDB page changes as button is hidden when no dice are selected
+                    console.warn("Roll button clicked but no dice were selected. Ignoring.");
+                    return;
+                }
+
+                await sendRollWithCharacter("custom", selectedDice.join(" + "), { name: "custom: roll" });
+                DigitalDiceManager.clear();
+            });
+
+            // set a flag so we can later determine whether we have already injected our custom event handler
+            rollButton.dataset.b20roll = "1";
+
+            // hide the roll menu button. We've got our own settings for whispering rolls
+            menuButton.style.display = "none";
+        }
+
+        // update label
+        let label = "To: Everyone";
+        if (key_modifiers.whisper || character.getGlobalSetting("whisper-type") === WhisperType.YES.toString())
+            label = "To: GM";
+        else if (character.getGlobalSetting("whisper-type") === WhisperType.QUERY.toString())
+            label = "To: (ask)";
+
+        const labelElement = document.querySelector(".dice-toolbar .dice-toolbar__target-user");
+        if (labelElement && labelElement.textContent !== label)
+            labelElement.textContent = label;
+
+    } else if (currentlyInjected) { // revert custom button we injected previously
+        rollButton.replaceWith(previousButton);
+        previousButton = null;
+        menuButton.style.display = "";
+    }
+}
+
 var quick_roll = false;
 var quick_roll_force_attack = false;
 var quick_roll_force_damage = false;
@@ -2779,6 +2841,7 @@ function documentModified(mutations, observer) {
     injectRollToSpellAttack();
     injectRollToSnippets();
     injectSettingsButton();
+    injectCustomRollButton();
     activateQuickRolls();
     if (character._features_needs_refresh && !character._features_refresh_warning_displayed) {
         character._features_refresh_warning_displayed = true;
