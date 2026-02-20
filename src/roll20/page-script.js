@@ -6,6 +6,7 @@ async function loadCharacterAttributes(character) {
     }
 }
 
+let initialChange = true;
 async function updateHP(name, current, total, temp) {
     console.log(`Updating HP for ${name} : (${current} + ${temp})/${total}`);
     name = name.toLowerCase().trim();
@@ -34,6 +35,47 @@ async function updateHP(name, current, total, temp) {
                 temp_hp.save();
                 character.updateTokensByName("hp_temp", temp_hp.id);
             }
+        }
+        // Roll20 Jumpgate version uses a generic "store" attribute for managing HP, so, check that as well.
+        const store = character.attribs.models.find(m => m.attributes.name === "store");
+        if (store) {
+            const updateStoreAttributes = (current, total, temp) => {
+                let valueUpdated = false;
+                const currentStoreValues = store.get("current"),
+                    maxHpIntegrantKey = Object.entries(currentStoreValues.integrants?.integrants ?? {}).find(([_, v]) => v.type === "Hit Points" && v.hitpointType === "Maximum")?.[0],
+                    tmpHpIntegrantKey = Object.entries(currentStoreValues.integrants?.integrants ?? {}).find(([_, v]) => v.type === "Hit Points" && v.hitpointType === "Temporary")?.[0];
+
+                if (currentStoreValues.hitpoints?.currentHP !== undefined && currentStoreValues.hitpoints.currentHP !== current) {
+                    currentStoreValues.hitpoints.currentHP = current;
+                    valueUpdated = true;
+                }
+
+                if (maxHpIntegrantKey && currentStoreValues.integrants.integrants[maxHpIntegrantKey].valueFormula?.flatValue !== total) {
+                    currentStoreValues.integrants.integrants[maxHpIntegrantKey].valueFormula = { flatValue: total };
+                    valueUpdated |= true;
+                }
+
+                if (tmpHpIntegrantKey && currentStoreValues.integrants.integrants[tmpHpIntegrantKey].valueFormula?.flatValue !== temp) {
+                    currentStoreValues.integrants.integrants[tmpHpIntegrantKey].valueFormula = { flatValue: temp };
+                    valueUpdated |= true;
+                }
+
+                if (valueUpdated) {
+                    // this makes the changes appear on the token if linked
+                    store.set("current", currentStoreValues);
+                    store.save();
+                    character.updateTokensByName("store", store.id);
+                }
+            };
+
+            if (initialChange) {
+                // When it's the first change after a page reload, the token does not update.
+                // The current (ugly) workaround is to simply repeat the update when it occurs for the first time with modified values, so the second change triggers.
+                updateStoreAttributes(current + 1, total + 1, temp + 1);
+                initialChange = false;
+            }
+
+            updateStoreAttributes(current, total, temp);
         }
     }
 }
