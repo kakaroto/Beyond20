@@ -344,6 +344,19 @@ class DigitalDiceManager {
         digitalRoll.parseNotification(notification, true);
         return digitalRoll;
     }
+    static parseCurrentSelection() {
+        let formulas = [];
+
+        for (const dieCountElement of document.querySelectorAll(".dice-toolbar .dice-die-button__count")) {
+            const $dieTypeElement = $(dieCountElement).parents("[data-dice]");
+            if (!$dieTypeElement.length)
+                continue;
+
+            formulas.push(dieCountElement.textContent + $dieTypeElement[0].dataset.dice);
+        }
+
+        return formulas;
+    }
 }
 DigitalDiceManager._pendingRolls = [];
 DigitalDiceManager._notificationIds = DigitalDiceManager._getNotificationIds()

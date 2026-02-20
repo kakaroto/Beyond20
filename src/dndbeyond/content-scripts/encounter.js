@@ -12,6 +12,8 @@ function documentModified(mutations, observer) {
         return;
     }
 
+    injectCustomRollButton();
+
     const monster = $(".encounter-details-monster-summary-info-panel,.encounter-details__content-section--monster-stat-block,.combat-tracker-page__content-section--monster-stat-block,.monster-details-modal__body");
     const monster_name = monster.find(".mon-stat-block__name").text();
     if (settings["sync-combat-tracker"]) {
@@ -83,6 +85,12 @@ function handleMessage(request, sender, sendResponse) {
     } else if (request.action == "open-options") {
         alertFullSettings();
     }
+}
+
+// This function is used for custom rolls when DDB's Digital Dice are disabled.
+function sendRollWithCharacter(rollType, fallback, args) {
+    // In case we currently don't have a character (monster) selected in the encounter view, we create a dummy charater so we have something to send to VTT.
+    return sendRoll(character ?? new CharacterBase("Character", settings), rollType, fallback, args);
 }
 
 updateSettings();

@@ -2779,6 +2779,7 @@ function documentModified(mutations, observer) {
     injectRollToSpellAttack();
     injectRollToSnippets();
     injectSettingsButton();
+    injectCustomRollButton();
     activateQuickRolls();
     if (character._features_needs_refresh && !character._features_refresh_warning_displayed) {
         character._features_refresh_warning_displayed = true;
