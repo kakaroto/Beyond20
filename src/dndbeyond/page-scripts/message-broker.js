@@ -207,7 +207,7 @@ function fulfilledRoll(rollData) {
     lastMessage = lastMessage || {
         data: {
             context: messageBroker.getContext(lastCharacter),
-            rollId: messageBroker.uuid()
+            rollId: uuidv4()
         }
     };
     const toSelf = isWhispered(rollData);
@@ -231,7 +231,7 @@ function fulfilledRoll(rollData) {
         }
     });
     // Avoid overwriting the old roll in case a roll generates multiple fulfilled rolls (critical hit)
-    lastMessage.data.rollId = messageBroker.uuid();
+    lastMessage.data.rollId = uuidv4();
 }
 
 function disconnectAllEvents() {

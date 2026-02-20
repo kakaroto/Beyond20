@@ -11,12 +11,6 @@ class DDBMessageBroker {
         // Bridge flag used by window.postMessage so content scripts can receive dice roll events
         this.B20_DDB_DICE_MB_BRIDGE = "__b20_ddb_dice_mb_bridge__";
     }
-    uuid() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
-    }
     register() {
         if (this._mb) return;
         const key = Symbol.for('@dndbeyond/message-broker-lib')
@@ -154,7 +148,7 @@ class DDBMessageBroker {
     postMessage(data) {
         this.register();
         if (!this._mb) return;
-        data.id = data.id || this.uuid(),
+        data.id = data.id || uuidv4(),
         data.dateTime = String(data.dateTime || Date.now());
         data.source = data.source || "Beyond20";
         data.persist = data.persist || false;
