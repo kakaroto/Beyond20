@@ -1,9 +1,58 @@
+// Read-only MB bridge flag for window.postMessage consumers (content script / isolated world)
+const B20_DDB_DICE_MB_BRIDGE = "__b20_ddb_dice_mb_bridge__";
+
+// IMPORTANT:
+// You said: "we will NOT be publishing any events to dndbeyond mb".
+// Set this to true to disable all Beyond20->DDB MB publishing/replacing logic below.
+// If you later want the old "roll-to-game-log" behavior back, set this to false.
+const B20_DISABLE_DDB_MB_PUBLISH = true;
+
+function forwardDdbDiceMbMessage(message) {
+    // Forward dice roll messages out of the page context so content scripts can listen
+    // without needing direct access to window[Symbol.for("@dndbeyond/message-broker-lib")].
+    //
+    // NOTE: This is read-only. We are NOT dispatching to the DDB message broker here.
+    try {
+        // postMessage requires structured-cloneable data. JSON cloning is safest.
+        const safe = JSON.parse(JSON.stringify(message));
+        window.postMessage({ [B20_DDB_DICE_MB_BRIDGE]: true, message: safe }, "*");
+    } catch (e) {
+        // Fallback: forward a minimal subset in case cloning fails
+        try {
+            window.postMessage({
+                [B20_DDB_DICE_MB_BRIDGE]: true,
+                message: {
+                    id: message?.id,
+                    eventType: message?.eventType,
+                    dateTime: message?.dateTime,
+                    userId: message?.userId,
+                    source: message?.source,
+                    data: message?.data
+                }
+            }, "*");
+        } catch (e2) {
+            // ignore
+        }
+    }
+}
+
 const messageBroker = new DDBMessageBroker();
 messageBroker.register();
 console.log("Registered Beyond20 message broker");
 
+// Read-only subscription: forward ALL incoming dice roll messages for digital dice parsing
+// This does not modify or block DDB behavior.
+messageBroker.on(null, (message) => {
+    if (!message || typeof message.eventType !== "string") return;
+    if (!message.eventType.startsWith("dice/roll/")) return;
+    forwardDdbDiceMbMessage(message);
+}, { once: false, send: false, recv: true });
+
 let lastCharacter = null;
 function sendRollToGameLog(request) {
+    // You requested: do NOT publish any events to the DDB message broker.
+    if (B20_DISABLE_DDB_MB_PUBLISH) return;
+
 	const message = {
         persist: false,
     };
@@ -114,6 +163,10 @@ function isWhispered(rollData) {
 }
 let lastMessage = null;
 function pendingRoll(rollData) {
+    // You requested: do NOT publish any events to the DDB message broker.
+    // Also: do NOT block fulfilled events (we want to read the real dice/roll/fulfilled from DDB).
+    if (B20_DISABLE_DDB_MB_PUBLISH) return;
+
     //console.log("rolling ", rollData);
     const toSelf = isWhispered(rollData);
     messageBroker.on("dice/roll/pending", (message) => {
@@ -140,9 +193,15 @@ function pendingRoll(rollData) {
         // Stop propagation
         return false;
     }, {once: true, send: true, recv: false});
-    messageBroker.blockMessages({type: "dice/roll/fulfilled", once: true});
+
+    // Previously this blocked the next dice/roll/fulfilled so Beyond20 could replace it.
+    // We are NOT replacing messages anymore, and we DO want the real fulfilled for digital dice parsing.
+    // messageBroker.blockMessages({type: "dice/roll/fulfilled", once: true});
 }
 function fulfilledRoll(rollData) {
+    // do NOT publish any events to the DDB message broker.
+    if (B20_DISABLE_DDB_MB_PUBLISH) return;
+
     //console.log("fulfilled roll ", rollData);
     // In case digital dice are disabled, and we have no previous pending roll message
     // we need to construct a valid one for DDB to parse
