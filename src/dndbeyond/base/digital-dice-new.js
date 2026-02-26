@@ -58,6 +58,82 @@ class DigitalDice {
     parseNotification(myId, passive=false) {
         return;
     }
+
+    /**
+     * Parse a D&D Beyond Message Broker "dice/roll/fulfilled" payload and map its dice results
+     * back into Beyond20 dice objects.
+     *
+     * This replaces the old noty parsing and avoids game log parsing entirely.
+     *
+     * @param {Object} brokerData  msg.data from the bridged MB message
+     * @param {Boolean} passive    If set, calculate totals right away (manager will still call handleCompletedRoll)
+     */
+    parseMessageBrokerRoll(brokerData, passive=false) {
+        try {
+            const byFaces = new Map(); // faces -> [values...]
+            const mbRolls = (brokerData && brokerData.rolls) ? brokerData.rolls : [];
+
+            for (const mbRoll of mbRolls) {
+                const sets = mbRoll?.diceNotation?.set || [];
+                for (const s of sets) {
+                    const dieType = (s && s.dieType) ? String(s.dieType) : "";
+                    const faces = parseInt(dieType.replace(/^d/i, ""), 10);
+                    if (!Number.isFinite(faces)) continue;
+
+                    const diceArr = Array.isArray(s.dice) ? s.dice : [];
+                    const values = [];
+                    for (const d of diceArr) {
+                        const v = (d && typeof d.dieValue !== "undefined") ? parseInt(d.dieValue, 10) : NaN;
+                        if (Number.isFinite(v)) values.push(v);
+                    }
+
+                    if (!byFaces.has(faces)) byFaces.set(faces, []);
+                    byFaces.get(faces).push(...values);
+                }
+            }
+
+            // Reset rolls before re-assigning
+            this._dice.forEach(d => {
+                d._rolls = [];
+            });
+
+            // Fill Beyond20 dice objects in insertion order (this._dice already preserves original roll order)
+            for (const dice of this._dice) {
+                const faces = Number(dice.faces);
+                const amount = Number(dice.amount || 0);
+
+                if (!Array.isArray(dice._rolls)) dice._rolls = [];
+                dice._rolls.length = 0;
+
+                const pool = byFaces.get(faces) || [];
+                for (let i = 0; i < amount; i++) {
+                    const value = pool.length ? pool.shift() : 0;
+                    dice._rolls.push({ roll: value });
+                }
+                byFaces.set(faces, pool);
+            }
+
+            // Optional debug: leftover values (usually should be 0 if matching worked)
+            const leftovers = [];
+            for (const [faces, vals] of byFaces.entries()) {
+                if (vals && vals.length) leftovers.push({ faces, remaining: vals.slice() });
+            }
+            if (leftovers.length) {
+                console.warn("DigitalDice parseMessageBrokerRoll: leftover dice values after assignment", leftovers);
+            }
+
+            if (passive) {
+                this._dice.forEach(dice => dice.calculateTotal());
+                this._rolls.forEach(roll => roll.calculateTotal());
+            }
+
+            return true;
+        } catch (err) {
+            console.warn("DigitalDice parseMessageBrokerRoll: failed to parse broker payload", err, brokerData);
+            return false;
+        }
+    }
+
     /**
      * Parse a new D&D Beyond Game Log entry and map its dice results back into Beyond20 dice objects.
      * 
@@ -246,6 +322,154 @@ class DigitalDiceManager {
     static clearResults() {
         // No notification UI anymore (old .noty_bar flow is gone)
     }
+
+    static _wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Bridge listener: the page-context broker forwards dice/roll/* as window.postMessage
+    static _ensureDiceBrokerBridgeListenerInstalled() {
+        if (this._diceBridgeInstalled) return;
+        this._diceBridgeInstalled = true;
+
+        window.addEventListener("message", (ev) => {
+            try {
+                if (ev.source !== window) return;
+                const data = ev.data;
+                if (!data || data.__b20_ddb_dice_mb_bridge__ !== true) return;
+
+                const msg = data.message;
+                if (!msg || typeof msg.eventType !== "string") return;
+                if (!msg.eventType.startsWith("dice/roll/")) return;
+
+                this._handleDiceBrokerMessage(msg);
+            } catch (e) {
+                // ignore
+            }
+        });
+    }
+
+    static _normalizeDiceKey(k) {
+        return String(k || "").toLowerCase();
+    }
+
+    static _extractDiceQuantitiesFromBrokerData(brokerData) {
+        const actual = {};
+        const mbRolls = brokerData?.rolls || [];
+        for (const mbRoll of mbRolls) {
+            const sets = mbRoll?.diceNotation?.set || [];
+            for (const s of sets) {
+                const dieType = this._normalizeDiceKey(s?.dieType);
+                if (!dieType) continue;
+
+                // Prefer dice array length (it reflects actual rolled values)
+                const diceArr = Array.isArray(s?.dice) ? s.dice : [];
+                const count = diceArr.length;
+
+                actual[dieType] = (actual[dieType] || 0) + (count || 0);
+            }
+        }
+        return actual;
+    }
+
+    static _diceQuantitiesEqual(expected, actual) {
+        const keys = new Set([...Object.keys(expected || {}), ...Object.keys(actual || {})]);
+        for (const k of keys) {
+            const e = Number((expected && expected[k]) || 0);
+            const a = Number((actual && actual[k]) || 0);
+            if (e !== a) return false;
+        }
+        return true;
+    }
+
+    static _getExpectedDiceQuantitiesForRoll(roll) {
+        const expected = {};
+        for (const dice of roll._dice || []) {
+            const key = this._normalizeDiceKey(`d${dice.faces}`);
+            expected[key] = (expected[key] || 0) + (dice.amount || 0);
+        }
+        return expected;
+    }
+
+    static _getPendingMeta(pending) {
+        if (!pending) return null;
+        if (!pending[3]) pending[3] = {};
+        return pending[3];
+    }
+
+    static _clearPendingTimeout(pending) {
+        const meta = this._getPendingMeta(pending);
+        if (!meta) return;
+        if (meta.timeoutId) {
+            clearTimeout(meta.timeoutId);
+            meta.timeoutId = null;
+        }
+    }
+
+    static _startPendingTimeout(pending, ms = 15000) {
+        const meta = this._getPendingMeta(pending);
+        if (!meta) return;
+
+        this._clearPendingTimeout(pending);
+
+        meta.timeoutId = setTimeout(() => {
+            const stillActive = this._pendingRolls.length > 0 && this._pendingRolls[0] === pending;
+            if (!stillActive) return;
+
+            console.warn("DigitalDiceManager: timed out waiting for MB fulfilled roll");
+            this._finishPendingRoll(new Error("DigitalDiceManager: MB roll timeout"));
+        }, ms);
+    }
+
+    static _handleDiceBrokerMessage(msg) {
+        const pending = this._pendingRolls[0];
+        if (!pending) return;
+
+        const [roll] = pending;
+        const meta = this._getPendingMeta(pending);
+
+        // If we haven't started a roll click yet, ignore
+        if (!meta || !meta.startedAtMs) return;
+
+        const eventType = String(msg.eventType || "");
+
+        // Optional: bind rollId on deferred if it matches dice + time
+        if (eventType === "dice/roll/deferred" && !meta.rollId) {
+            const msgTime = parseInt(msg?.dateTime, 10);
+            const timeOk = !Number.isFinite(msgTime) || msgTime >= (meta.startedAtMs - 1000);
+
+            const expectedDice = meta.expectedDice || this._getExpectedDiceQuantitiesForRoll(roll);
+            const actualDice = this._extractDiceQuantitiesFromBrokerData(msg.data);
+
+            if (timeOk && this._diceQuantitiesEqual(expectedDice, actualDice) && msg?.data?.rollId) {
+                meta.rollId = msg.data.rollId;
+            }
+            return;
+        }
+
+        if (eventType !== "dice/roll/fulfilled") return;
+
+        // If we bound rollId, require it
+        if (meta.rollId && msg?.data?.rollId && meta.rollId !== msg.data.rollId) return;
+
+        const msgTime = parseInt(msg?.dateTime, 10);
+        if (Number.isFinite(msgTime) && msgTime < (meta.startedAtMs - 1000)) return;
+
+        const expectedDice = meta.expectedDice || this._getExpectedDiceQuantitiesForRoll(roll);
+        const actualDice = this._extractDiceQuantitiesFromBrokerData(msg.data);
+
+        if (!this._diceQuantitiesEqual(expectedDice, actualDice)) {
+            return;
+        }
+
+        const parsed = roll.parseMessageBrokerRoll(msg.data, true);
+        if (!parsed) {
+            return this._finishPendingRoll(new Error("DigitalDiceManager: failed to parse MB fulfilled roll"));
+        }
+
+        this._finishPendingRoll();
+    }
+
     static async rollDice(amount, type) {
         if (!amount) return 0;
 
@@ -270,14 +494,12 @@ class DigitalDiceManager {
 
         return amount || 0;
     }
+
     static async _makeRoll(roll) {
         // New DDB roller is popup-based. We set target first (Self/Everyone) and then click Roll.
         //
         // IMPORTANT:
-        // Sending MBPendingRoll here breaks the new DDB digital dice flow when roll-to-game-log is enabled.
-        // We no longer dispatch MBPendingRoll during the roll.
-        // If you need roll-to-game-log, let it happen after the digital dice + game log parsing finishes
-        // (e.g. via MBFulfilledRoll from the roller pipeline).
+        // We no longer parse toasts/game log. Results are captured via the Message Broker bridge.
         let opened = await DigitalDiceManager._ensureRollerOpenWithRetry();
         if (!opened) return false;
 
@@ -292,9 +514,7 @@ class DigitalDiceManager {
         const rolled = await DigitalDiceManager._clickRollButtonWithRetry();
         return rolled;
     }
-    static _wait(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+
     static _normalizeText(text) {
         return String(text || "").replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim();
     }
@@ -445,20 +665,14 @@ class DigitalDiceManager {
             })
         };
     }
+
     static _getPopupDieQuantity(type) {
         const $btn = $(`button[data-testid="${type}"], button#${type}`).first();
         if (!$btn.length) return 0;
         const q = parseInt($btn.attr("data-quantity") || "0", 10);
         return Number.isFinite(q) ? q : 0;
     }
-    static _getExpectedDiceQuantitiesForRoll(roll) {
-        const expected = {};
-        for (const dice of roll._dice || []) {
-            const key = `d${dice.faces}`;
-            expected[key] = (expected[key] || 0) + (dice.amount || 0);
-        }
-        return expected;
-    }
+
     static _getCurrentPopupDiceQuantities(types = ["d4","d6","d8","d10","d12","d20","d100"]) {
         const actual = {};
         for (const type of types) {
@@ -467,6 +681,7 @@ class DigitalDiceManager {
         }
         return actual;
     }
+
     static async _waitForDiceSelectionToSettle(expectedDice, retries = 200, delay = 50) {
         const startedAt = Date.now();
         const expectedTypes = Object.keys(expectedDice);
@@ -510,6 +725,7 @@ class DigitalDiceManager {
 
         return false;
     }
+
     static _isRollTargetAlreadySelected(whisper) {
         // DDB shows a label like "Rolling to DM" or "Rolling to everyone".
         // Use that label if present so we don't toggle target state unnecessarily.
@@ -526,22 +742,7 @@ class DigitalDiceManager {
         }
         return /rolling to everyone/i.test(labelText);
     }
-    static _getGameLogButtonElement() {
-        // Important: in campaigns there is also a "Launch Game" button next to Game Log
-        // and they share some button-group classes. Only target the actual Game Log control.
-        let el = document.querySelector('[role="button"][aria-roledescription="Game Log"]');
-        if (el) return el;
 
-        // Fallback through the tooltip wrapper text/title if DDB shuffles class names.
-        el = document.querySelector('[data-original-title="Game Log"] [role="button"]');
-        if (el) return el;
-
-        // Last fallback: the notification wrapper that hosts the Game Log button.
-        el = document.querySelector('.tss-1r5d1qn-Notification [role="button"]');
-        if (el && (el.getAttribute("aria-roledescription") || "").toLowerCase() === "game log") return el;
-
-        return null;
-    }
     // The new dice roller lives in a popup. We must click the floating dice button first,
     // then wait for the popup contents to mount.
     static async _ensureRollerOpenWithRetry(retries = 50, delay = 20) {
@@ -560,6 +761,7 @@ class DigitalDiceManager {
         console.warn("DigitalDiceManager: dice roller popup not found after retries");
         return false;
     }
+
     static async _resetDiceWithRetry(retries = 20, delay = 20) {
         for (let i = 0; i <= retries; i++) {
             const $clearButton = $('button[data-testid="diceClearButton"]');
@@ -591,6 +793,7 @@ class DigitalDiceManager {
         console.warn("DigitalDiceManager: clear/reset button not found after retries");
         return false;
     }
+
     // The roll button appears inside the popup and can be disabled while no dice are selected.
     static async _clickRollButtonWithRetry(retries = 200, delay = 50) {
         const startedAt = Date.now();
@@ -619,6 +822,7 @@ class DigitalDiceManager {
         console.warn("DigitalDiceManager: failed to click DDB roll button → popup/selector race", debug);
         return false;
     }
+
     static async _selectRollTargetWithRetry(whisper, retries = 50, delay = 20) {
         const targetTestId = whisper ? "diceRollToSelfButton" : "diceRollToEveryoneButton";
 
@@ -647,361 +851,35 @@ class DigitalDiceManager {
         console.warn(`DigitalDiceManager: target button not found (${targetTestId})`);
         return false;
     }
-    static _isGameLogOpen() {
-        return $('[data-testid="gamelog-pane"], .glc-game-log').length > 0;
-    }
-    static async _openGameLogWithRetry(retries = 50, delay = 20) {
-        for (let i = 0; i <= retries; i++) {
-            if (this._isGameLogOpen()) return true;
 
-            const gameLogBtn = this._getGameLogButtonElement();
-            if (gameLogBtn) {
-                gameLogBtn.click();
-            }
-
-            await this._wait(delay);
-        }
-
-        console.warn("DigitalDiceManager: game log pane not found after retries", {
-            foundGameLogButton: !!this._getGameLogButtonElement()
-        });
-        return false;
-    }
-    static async _closeGameLogWithRetry(retries = 50, delay = 20) {
-        for (let i = 0; i <= retries; i++) {
-            if (!this._isGameLogOpen()) return true;
-
-            // Try toggling the Game Log button first (least invasive)
-            const gameLogBtn = this._getGameLogButtonElement();
-            if (gameLogBtn) gameLogBtn.click();
-
-            await this._wait(delay);
-            if (!this._isGameLogOpen()) return true;
-
-            // Fallbacks for different sidebar states
-            const collapseEl = $(".ct-sidebar__control--collapse, .sidebar__control:has(.sidebar__control--collaspe)").first().get(0);
-            if (collapseEl) collapseEl.click();
-
-            await this._wait(delay);
-            if (!this._isGameLogOpen()) return true;
-
-            const maskEl = $('.ct-sidebar__portal [class*="mask"]').first().get(0);
-            if (maskEl) maskEl.click();
-
-            await this._wait(delay);
-            if (!this._isGameLogOpen()) return true;
-        }
-
-        console.warn("DigitalDiceManager: could not close game log pane after retries");
-        return false;
-    }
-    static _getCurrentCharacterName() {
-        // Prefer explicit character object when available
-        if (typeof character !== "undefined" && character?.name) {
-            return String(character.name).trim();
-        }
-        if (typeof window !== "undefined" && window.character?.name) {
-            return String(window.character.name).trim();
-        }
-
-        // Fallback to character sheet heading
-        const fromHeader = $(".ddbc-character-tidbits__heading h1").first().text().trim();
-        if (fromHeader) return fromHeader;
-
-        return "";
-    }
-    static _getGameLogEntries() {
-        return $('.glc-game-log ol li').toArray().filter(li => {
-            const $li = $(li);
-            return $li.find('[class*="Sender"]').length > 0 && $li.find('[class*="DiceResultContainer"]').length > 0;
-        });
-    }
-    static _getCharacterGameLogEntries() {
-        const characterName = this._getCurrentCharacterName().toLowerCase();
-        const entries = this._getGameLogEntries();
-
-        if (!characterName) return entries;
-
-        return entries.filter(li => {
-            const sender = ($(li).find('[class*="Sender"]').first().text() || "").trim().toLowerCase();
-            return sender === characterName;
-        });
-    }
-    static _getGameLogEntriesBottomUp() {
-        // User observed newest entries are typically appended at the bottom; scan bottom-up.
-        return this._getGameLogEntries().slice().reverse();
-    }
-    static _getCharacterGameLogEntriesBottomUp() {
-        const characterName = this._getCurrentCharacterName().toLowerCase();
-        const entries = this._getGameLogEntriesBottomUp();
-
-        if (!characterName) return entries;
-
-        return entries.filter(li => {
-            const sender = ($(li).find('[class*="Sender"]').first().text() || "").trim().toLowerCase();
-            return sender === characterName;
-        });
-    }
-    static _getGameLogEntryTotal(entryEl) {
-        const txt = ($(entryEl).find('[class*="Total"] span').last().text() || "").trim();
-        const n = parseInt(txt, 10);
-        return Number.isFinite(n) ? n : null;
-    }
-    static _getGameLogEntryAction(entryEl) {
-        return (($(entryEl).find('[class*="Action"]').first().text()) || "").trim().toLowerCase();
-    }
-    static _getGameLogEntryNotation(entryEl) {
-        const entry = $(entryEl);
-
-        // Prefer a notation that is inside a block with breakdown (expanded result)
-        const scoped = entry.find('[class*="DiceResultContainer"]').filter((_, el) => {
-            const $el = $(el);
-            return $el.find('[class*="Line-Breakdown"]').length > 0 && $el.find('[class*="Line-Notation"]').length > 0;
-        }).first();
-
-        const text = (
-            (scoped.length ? scoped : entry).find('[class*="Line-Notation"] span').first().text() ||
-            (scoped.length ? scoped : entry).find('[class*="Line-Notation"]').first().text() ||
-            ""
-        ).trim();
-
-        return this._normalizeDiceNotation(text);
-    }
-    static _getGameLogEntryTimeMs(entryEl) {
-        const dt = ($(entryEl).find("time").attr("datetime") || "").trim();
-        if (!dt) return null;
-        const ms = Date.parse(dt);
-        return Number.isFinite(ms) ? ms : null;
-    }
-    static async _expandGameLogEntryIfNeeded(entryEl, retries = 10, delay = 20) {
-        const entry = $(entryEl);
-
-        const hasBreakdown = () =>
-            entry.find('[class*="Line-Breakdown"]').length > 0 &&
-            entry.find('[class*="Line-Notation"]').length > 0;
-
-        if (hasBreakdown()) return true;
-
-        const clickable =
-            entry.find('[class*="Message-Collapsed"]').first().length
-                ? entry.find('[class*="Message-Collapsed"]').first()
-                : entry.find('[class*="DiceResultContainer"]').first().length
-                    ? entry.find('[class*="DiceResultContainer"]').first()
-                    : entry;
-
-        const clickableEl = clickable.get(0);
-        if (clickableEl) clickableEl.click();
-
-        for (let i = 0; i <= retries; i++) {
-            if (hasBreakdown()) return true;
-            await this._wait(delay);
-        }
-
-        return false;
-    }
-    static _findRollToast() {
-        const charName = this._getCurrentCharacterName().toLowerCase();
-
-        // DDB toast DOM has changed across builds, so check span/div MessageContent
-        const $contents = $('span[class*="MessageContent"], div[class*="MessageContent"]');
-        const candidates = $contents.toArray().reverse(); // newest DOM first
-
-        for (const el of candidates) {
-            const $content = $(el);
-            const text = this._normalizeText($content.text());
-
-            if (!/ rolled /i.test(text)) continue;
-
-            const m = text.match(/^(.*?)\s+rolled\b/i);
-            const sender = this._normalizeText(m ? m[1] : "");
-            if (charName && sender.toLowerCase() !== charName) continue;
-
-            const action = this._normalizeText($content.find('span[class*="RollAction"]').first().text()).toLowerCase();
-            const totalText = this._normalizeText($content.find('span[class*="MessageTotal"]').first().text());
-            const total = parseInt(totalText, 10);
-
-            return {
-                sender,
-                action,
-                total: Number.isFinite(total) ? total : null,
-                text
-            };
-        }
-
-        return null;
-    }
-    static async _waitForRollToast(retries = 200, delay = 50) {
-        const startedAt = Date.now();
-
-        for (let i = 0; i <= retries; i++) {
-            const toast = this._findRollToast();
-            if (toast) return toast;
-            await this._wait(delay);
-        }
-
-        console.warn(
-            "DigitalDiceManager: roll toast not detected → timeout too short (or selector issue)",
-            {
-                elapsedMs: Date.now() - startedAt,
-                ...this._getToastDebugInfo()
-            }
-        );
-        return null;
-    }
-    static _getCandidateGameLogEntriesForRoll({toast, startedAtMs}) {
-        // Scan bottom-up as requested.
-        let candidates = this._getCharacterGameLogEntriesBottomUp();
-
-        if (!candidates.length) return [];
-
-        const threshold = startedAtMs ? startedAtMs - 30000 : null;
-
-        if (threshold != null) {
-            const recent = candidates.filter(entryEl => {
-                const t = this._getGameLogEntryTimeMs(entryEl);
-                // If no datetime is present, keep it in; otherwise require it to be recent
-                return t == null || t >= threshold;
-            });
-            if (recent.length) candidates = recent;
-        }
-
-        if (toast) {
-            const action = (toast.action || "").toLowerCase();
-            const total = toast.total;
-
-            const byActionAndTotal = candidates.filter(entryEl => {
-                const entryAction = this._getGameLogEntryAction(entryEl);
-                const entryTotal = this._getGameLogEntryTotal(entryEl);
-                const actionMatch = !action || !entryAction || entryAction === action;
-                const totalMatch = total == null || entryTotal === total;
-                return actionMatch && totalMatch;
-            });
-            if (byActionAndTotal.length) return byActionAndTotal;
-
-            const byTotal = candidates.filter(entryEl => {
-                const entryTotal = this._getGameLogEntryTotal(entryEl);
-                return total == null || entryTotal === total;
-            });
-            if (byTotal.length) return byTotal;
-
-            const byAction = candidates.filter(entryEl => {
-                const entryAction = this._getGameLogEntryAction(entryEl);
-                return !action || !entryAction || entryAction === action;
-            });
-            if (byAction.length) return byAction;
-        }
-
-        return candidates;
-    }
-    static async _waitForGameLogResultAndParse(roll, {toast=null, startedAtMs=null}={}, retries = 200, delay = 50) {
-        const opened = await this._openGameLogWithRetry();
-        if (!opened) return false;
-
-        const startedAt = Date.now();
-
-        const expectedNotationRaw = this._getExpectedDiceNotationForRoll(roll);
-        const expectedNotation = this._canonicalizeDiceNotation(expectedNotationRaw);
-
-        console.log("DigitalDiceManager: waiting for game log parse", {
-            expectedNotation,
-            expectedNotationRaw,
-            incomingFormulas: (roll?.rolls || []).map(r => r?.formula),
-            toast,
-            startedAtMs
-        });
-
-        for (let i = 0; i <= retries; i++) {
-            const candidates = this._getCandidateGameLogEntriesForRoll({toast, startedAtMs});
-
-            for (const candidate of candidates) {
-                const beforeExpandNotation = this._getGameLogEntryNotation(candidate);
-
-                // Expand if needed so notation/breakdown is present
-                await this._expandGameLogEntryIfNeeded(candidate);
-
-                const candidateNotationRaw = this._getGameLogEntryNotation(candidate);
-                const candidateNotation = this._canonicalizeDiceNotation(candidateNotationRaw);
-                const candidateAction = this._getGameLogEntryAction(candidate);
-                const candidateTotal = this._getGameLogEntryTotal(candidate);
-                const candidateTime = ($(candidate).find("time").attr("datetime") || "").trim();
-
-                if (expectedNotation && candidateNotation && candidateNotation !== expectedNotation) {
-                    console.log("DigitalDiceManager: skipping game log candidate (notation mismatch)", {
-                        expectedNotation,
-                        expectedNotationRaw,
-                        candidateNotation,
-                        candidateNotationRaw,
-                        candidateAction,
-                        candidateTotal,
-                        candidateTime,
-                        beforeExpandNotation
-                    });
-                    continue;
-                }
-
-                const parsed = roll.parseGameLogEntry(candidate);
-                if (parsed) {
-                    console.log("DigitalDiceManager: parsed game log entry", {
-                        expectedNotation,
-                        expectedNotationRaw,
-                        candidateNotation,
-                        candidateNotationRaw,
-                        candidateAction,
-                        candidateTotal,
-                        candidateTime
-                    });
-                    return true;
-                }
-
-                console.log("DigitalDiceManager: candidate found but parseGameLogEntry returned false", {
-                    expectedNotation,
-                    expectedNotationRaw,
-                    candidateNotation,
-                    candidateNotationRaw,
-                    candidateAction,
-                    candidateTotal,
-                    candidateTime
-                });
-            }
-
-            await this._wait(delay);
-        }
-
-        console.warn(
-            "DigitalDiceManager: game log result not parsed → likely opened too early, stale toast, or parse timing issue",
-            {
-                elapsedMs: Date.now() - startedAt,
-                expectedNotation,
-                expectedNotationRaw,
-                toast,
-                startedAtMs,
-                ...this._getGameLogDebugInfo()
-            }
-        );
-        return false;
-    }
     static isEnabled() {
         const panel = $(".dice-rolling-panel");
         return panel.length > 0;
     }
+
     static _getNotificationIds() {
         // Old noty notifications were removed; keep method for compatibility.
         return [];
     }
+
     static updateNotifications() {
         // Notification flow removed in the new DDB roller.
-        // Results are now read from the Game Log.
+        // Results are captured via the Message Broker bridge.
         return;
     }
+
     static _handleNewNotification(notification) {
         // Notification flow removed in the new DDB roller.
         return;
     }
+
     static _finishPendingRoll(error=null) {
         const pending = this._pendingRolls.shift();
         if (!pending) return;
 
         const [roll, resolver, rejecter] = pending;
+
+        this._clearPendingTimeout(pending);
 
         if (error) {
             rejecter(error);
@@ -1014,19 +892,31 @@ class DigitalDiceManager {
             this._submitRoll(nextRoll);
         }
     }
+
     static async rollDigitalDice(roll) {
+        this._ensureDiceBrokerBridgeListenerInstalled();
+
         let resolver = null;
         let rejecter = null;
         const promise = new Promise((resolve, reject) => {
             resolver = resolve;
             rejecter = reject;
         });
-        this._pendingRolls.push([roll, resolver, rejecter]);
+
+        const meta = {
+            startedAtMs: 0,
+            expectedDice: null,
+            rollId: null,
+            timeoutId: null
+        };
+
+        this._pendingRolls.push([roll, resolver, rejecter, meta]);
         if (this._pendingRolls.length === 1) {
             this._submitRoll(roll);
         }
         return promise;
     }
+
     static async _submitRoll(roll) {
         try {
             await this._ensureRollerOpenWithRetry();
@@ -1050,34 +940,24 @@ class DigitalDiceManager {
                 // One more short settle pause before the Roll button click
                 await this._wait(100);
 
-                const startedAtMs = Date.now();
+                const pending = this._pendingRolls[0];
+                const meta = this._getPendingMeta(pending);
+                if (meta) {
+                    meta.startedAtMs = Date.now();
+                    meta.expectedDice = expectedDice;
+                    meta.rollId = null;
+                }
+
                 const rolled = await this._makeRoll(roll);
 
                 if (!rolled) {
                     throw new Error("DigitalDiceManager: failed to click DDB roll button");
                 }
 
-                // Do not open the game log prematurely. Wait for the toast first, then open/parse/close.
-                const toast = await this._waitForRollToast();
-
-                if (!toast) {
-                    throw new Error("DigitalDiceManager: roll toast not detected");
-                }
-
-                const wasOpen = this._isGameLogOpen();
-                try {
-                    const parsed = await this._waitForGameLogResultAndParse(roll, {toast, startedAtMs});
-                    if (!parsed) {
-                        throw new Error("DigitalDiceManager: game log result not parsed");
-                    }
-                } finally {
-                    // Close only if we opened it as part of this parsing flow
-                    if (!wasOpen) {
-                        await this._closeGameLogWithRetry();
-                    }
-                }
-
-                this._finishPendingRoll();
+                // Wait for the Message Broker "dice/roll/fulfilled" via the bridge listener.
+                // Completion happens in _handleDiceBrokerMessage -> _finishPendingRoll().
+                this._startPendingTimeout(pending, 15000);
+                return;
             } else {
                 await this._resetDiceWithRetry();
                 this._finishPendingRoll()
@@ -1087,10 +967,13 @@ class DigitalDiceManager {
             this._finishPendingRoll(err);
         }
     }
+
     static _parseCustomRoll(notification) {
         // Custom roll parsing via notification is no longer available in the new roller.
         return;
     }
 }
+
 DigitalDiceManager._pendingRolls = [];
 DigitalDiceManager._notificationIds = DigitalDiceManager._getNotificationIds();
+DigitalDiceManager._diceBridgeInstalled = false;
