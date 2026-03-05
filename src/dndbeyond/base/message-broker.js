@@ -1,4 +1,3 @@
-
 class DDBMessageBroker {
     constructor() {
         this._mb = null;
@@ -8,6 +7,9 @@ class DDBMessageBroker {
         this._characterId = (window.location.pathname.match(/\/characters\/([0-9]+)/) || [])[1];
         this.saveMessages = false;
         this._debug = false;
+
+        // Bridge flag used by window.postMessage so content scripts can receive dice roll events
+        this.B20_DDB_DICE_MB_BRIDGE = "__b20_ddb_dice_mb_bridge__";
     }
     uuid() {
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -58,10 +60,47 @@ class DDBMessageBroker {
         }
         return stopPropagation;
     }
+
+    _forwardDiceRollEvent(message) {
+        // Forward dice roll messages out of the page context so content scripts can listen
+        // without needing direct access to window[Symbol.for("@dndbeyond/message-broker-lib")].
+        //
+        // NOTE: This is read-only. We are NOT dispatching to the DDB message broker here.
+        try {
+            // postMessage requires structured-cloneable data. JSON cloning is safest.
+            const safe = JSON.parse(JSON.stringify(message));
+            window.postMessage({ [this.B20_DDB_DICE_MB_BRIDGE]: true, message: safe }, "*");
+        } catch (e) {
+            // Fallback: forward a minimal subset in case cloning fails
+            try {
+                window.postMessage({
+                    [this.B20_DDB_DICE_MB_BRIDGE]: true,
+                    message: {
+                        id: message?.id,
+                        eventType: message?.eventType,
+                        dateTime: message?.dateTime,
+                        userId: message?.userId,
+                        source: message?.source,
+                        data: message?.data
+                    }
+                }, "*");
+            } catch (e2) {
+                // ignore
+            }
+        }
+    }
+
     _onMessage(message) {
         // Check if we unregistered
         if (!this._mb) return;
         if (this._debug) console.log("Received ", message);
+
+        // Forward dice roll events for the digital dice integration to consume
+        // (dice/roll/deferred, dice/roll/fulfilled, etc)
+        if (message && typeof message.eventType === "string" && message.eventType.startsWith("dice/roll/")) {
+            this._forwardDiceRollEvent(message);
+        }
+
         if (this.saveMessages) {
             this._messageQueue.push(message);
         }
