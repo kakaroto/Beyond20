@@ -742,20 +742,23 @@ class MonsterExtras extends CharacterBase {
         if (this.type() != "Creature" && this.type() != "Extra-Vehicle") return;
         // Creature name could change/be between.includes(customized) calls;
         this._name = this._stat_block.find("section[class*='styles_creatureBlock'] > h1[class*='styles_header']").text().trim();
-        let hp = null;
-        let max_hp = null;
-        let temp_hp = null;
-        const groups = $(".b20-creature-pane .ddbc-collapsible__content div[class*='styles_adjusterGroup']");
-        for (let item of groups.toArray()) {
-            const label = $(item).find("div[class*='styles_adjusterLabel']").text();
-            if (label == "Current HP") {
-                hp = parseInt($(item).find("div[class*='styles_adjusterValue']").text());
-            } else if (label == "Max HP") {
-                max_hp = parseInt($(item).find("div[class*='styles_adjusterValue']").text());
-            } else if (label == "Temp HP") {
-                temp_hp = parseInt($(item).find("div[class*='styles_adjusterValue'] input").val());
-            }
+        
+        const $currentHp = $(".b20-creature-pane [data-testid='current-hp-input'], .b20-creature-pane input[data-testid='current-hp-input'], .b20-creature-pane input[id][class*='styles_input']").first();
+        const $maxHp = $(".b20-creature-pane [data-testid='max-hp'], .b20-creature-pane div[class*='styles_maxContainer'] span").first();
+        const $tempHp = $(".b20-creature-pane [data-testid='temp-hp-input'], .b20-creature-pane div[class*='styles_temp'] input").first();
+        
+        if (!$currentHp.length || !$maxHp.length || !$tempHp.length) {
+            return;
         }
+
+        const hp      = parseInt($currentHp.val(), 10);
+        const max_hp  = parseInt($maxHp.text(), 10);
+        const temp_hp = parseInt($tempHp.val(), 10);
+
+        if (Number.isNaN(hp) || Number.isNaN(max_hp) || Number.isNaN(temp_hp)) {
+            return;
+        }
+
         if (hp !== null && max_hp !== null && (this._hp != hp || this._max_hp != max_hp || this._temp_hp != temp_hp)) {
             this._hp = hp;
             this._max_hp = max_hp;
