@@ -30,6 +30,13 @@ function postBridge(message) {
     }
 }
 
+function normalizeActionName(name) {
+    const s = String(name || "").trim();
+    // For initiative to work in the Encounter builder, it needs to have the action name "Initiative"
+    // and not "Initiative(+x)" that B20 sends
+    return /^Initiative\b/i.test(s) ? "Initiative" : s;
+}
+
 const messageBroker = new DDBMessageBroker();
 messageBroker.register();
 console.log("Registered Beyond20 message broker");
@@ -443,7 +450,7 @@ function _dispatchOverrideFulfilled(entry, idx) {
         }
 
         patched.data = patched.data || {};
-        patched.data.action = entry.action || patched.data.action;
+        patched.data.action = normalizeActionName(entry.action || patched.data.action);
 
         patched.data.rolls = b20BuildDdbRollsForGameLog(entry.rollData.rolls || [], patched.data.action, entry.rollData);
         patched.data[B20_OVERRIDE_MARKER] = true;
@@ -471,7 +478,7 @@ function pendingRoll(rollData) {
     _installB20OverrideHooksOnce();
 
     b20OverrideQueue.push({
-        action: rollData.name || "Beyond20",
+        action: normalizeActionName(rollData.name || "Beyond20"),
         rollId: null,
         rollData: null,
         ddbFulfilled: null,
