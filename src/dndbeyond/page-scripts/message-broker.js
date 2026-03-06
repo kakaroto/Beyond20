@@ -1,10 +1,8 @@
 // Read-only MB bridge flag for window.postMessage consumers (content script / isolated world)
 const B20_DDB_DICE_MB_BRIDGE = "__b20_ddb_dice_mb_bridge__";
 
-// IMPORTANT:
-// Set this to true to disable all Beyond20->DDB MB publishing/replacing logic below.
-// If you later want the old "roll-to-game-log" behavior back, set this to false.
-const B20_DISABLE_DDB_MB_PUBLISH = true;
+// Keep publishing enabled (we only publish when the extension triggers MBPendingRoll/MBFulfilledRoll)
+const B20_DISABLE_DDB_MB_PUBLISH = false;
 
 function forwardDdbDiceMbMessage(message) {
     // Forward dice roll messages out of the page context so content scripts can listen
@@ -48,11 +46,14 @@ messageBroker.on(null, (message) => {
 }, { once: false, send: false, recv: true });
 
 let lastCharacter = null;
+
 function sendRollToGameLog(request) {
-    // used not to publish any events to the DDB message broker.
+    // Keep the old custom/beyond20/* messages if you want them,
+    // but they show as "custom" entries and aren't the proper dice log rendering.
+    // Leaving this function intact, but it doesn't solve the dice log issue by itself.
     if (B20_DISABLE_DDB_MB_PUBLISH) return;
 
-	const message = {
+    const message = {
         persist: false,
     };
     if (request.action === "roll") {
@@ -70,11 +71,11 @@ function sendRollToGameLog(request) {
         }
         // Save the character to be used when creating the default roll data context
         lastCharacter = request.character;
-	} else {
+    } else {
         // Unknown action type
         return;
     }
-	messageBroker.postMessage(message);
+    messageBroker.postMessage(message);
 }
 
 function rollToDDBRoll(roll, forceResults=false) {
@@ -120,7 +121,6 @@ function rollToDDBRoll(roll, forceResults=false) {
         "initiative": "check",
         "saving-throw": "save",
         "death-save": "save",
-
     }
 
     const data = {
@@ -132,9 +132,7 @@ function rollToDDBRoll(roll, forceResults=false) {
         rollKind: rollToKind[roll.type] || "",
         rollType: rollToType[roll.type] || "roll"
     }
-    // diceOperation options: 0 = sum, 1 = min, 2 = max
-    // rollKind options : "" = none, advantage, disadvantage, critical hit
-    // rollType options : roll, to hit, damage, heal, spell, save, check
+
     if (forceResults || results.length > 0) {
         data.result = {
             constant,
@@ -156,69 +154,176 @@ function isWhispered(rollData) {
     // Fallback messages to the roll renderer will set whisper to 0 but
     // will store the original whisper setting under 'original-whisper' field
     const whisper = rollData.request["original-whisper"] === undefined
-            ? rollData.request.whisper
-            : rollData.request["original-whisper"];
-    return whisper !== 0;
-}
-let lastMessage = null;
-function pendingRoll(rollData) {
-    // used not NOT to publish any events to the DDB message broker.
-    // Also: NOT blocking fulfilled events (we want to read the real dice/roll/fulfilled from DDB).
-    if (B20_DISABLE_DDB_MB_PUBLISH) return;
+        ? rollData.request.whisper
+        : rollData.request["original-whisper"];
 
-    //console.log("rolling ", rollData);
-    const toSelf = isWhispered(rollData);
+    // IMPORTANT: undefined/null should be treated as NO whisper
+    return Number(whisper || 0) !== 0;
+}
+
+/**
+ * === Minimal re-application of master behavior, adapted for new roller ===
+ *
+ * We do NOT try to "post a brand new gamelog roll".
+ * Instead, when roll-to-game-log is enabled, DigitalDiceManager triggers MBPendingRoll.
+ * We then:
+ *  - wait for DDB to dispatch its own dice/roll/(deferred|pending) -> capture rollId
+ *  - intercept the next dice/roll/fulfilled DISPATCH
+ *  - re-dispatch a patched copy (same rollId/results) but with Beyond20 action/name
+ * This makes the gamelog update, because it *was already expecting that roll chain*.
+ */
+const B20_PATCH_MARKER = "__b20PatchedFulfilled__";
+const b20RenameQueue = [];
+let renameHooksInstalled = false;
+
+function installRenameHooksOnce() {
+    if (renameHooksInstalled) return;
+    renameHooksInstalled = true;
+
+    const bindRollIdIfNeeded = (message) => {
+        if (!b20RenameQueue.length) return;
+        const head = b20RenameQueue[0];
+        if (head.rollId) return;
+        const rid = message?.data?.rollId;
+        if (!rid) return;
+        head.rollId = rid;
+    };
+
+    // Bind on either new or old "pending" flavor
+    messageBroker.on("dice/roll/deferred", (message) => {
+        bindRollIdIfNeeded(message);
+    }, { once: false, send: true, recv: false });
+
     messageBroker.on("dice/roll/pending", (message) => {
-        lastMessage = message;
-        // If no roll data, then simply stop propagation but don't replace it
-        if (!rollData) return false;
-        messageBroker.postMessage({
-            persist: false,
-            eventType: "dice/roll/pending",
-            entityType: message.entityType,
-            entityId: message.entityId,
-            gameId: message.gameId,
-            messageScope: toSelf ? "userId" : "gameId",
-            messageTarget: toSelf ?  message.userId : message.gameId,
-            userId: message.userId,
-            data: {
-                action: rollData.name,
-                context: message.data.context,
-                rollId: message.data.rollId,
-                rolls: rollData.rolls.map(r => rollToDDBRoll(r)),
-                setId: message.data.setId
-            }
-        });
-        // Stop propagation
-        return false;
-    }, {once: true, send: true, recv: false});
+        bindRollIdIfNeeded(message);
+    }, { once: false, send: true, recv: false });
 
-    // Previously this blocked the next dice/roll/fulfilled so Beyond20 could replace it.
-    // We are NOT replacing messages anymore, and we DO want the real fulfilled for digital dice parsing.
-    // messageBroker.blockMessages({type: "dice/roll/fulfilled", once: true});
+    // Patch fulfilled BEFORE it hits the gamelog pipeline
+    messageBroker.on("dice/roll/fulfilled", (message) => {
+        if (!b20RenameQueue.length) return;
+
+        // Avoid infinite loop if we re-dispatch
+        if (message?.data && message.data[B20_PATCH_MARKER]) return;
+
+        // Find matching entry (prefer rollId match if we bound one)
+        const rid = message?.data?.rollId;
+        let idx = -1;
+        if (rid) {
+            idx = b20RenameQueue.findIndex(e => e.rollId === rid);
+        }
+        if (idx === -1) {
+            // Fallback: if we haven't bound rollId yet, assume the head
+            idx = 0;
+        }
+
+        const entry = b20RenameQueue[idx];
+        if (!entry) return;
+
+        // If we have a bound rollId and this doesn't match, ignore
+        if (entry.rollId && rid && entry.rollId !== rid) return;
+
+        // Clone + patch action/name, keep everything else identical
+        let patched;
+        try {
+            patched = JSON.parse(JSON.stringify(message));
+        } catch (e) {
+            // If cloning fails, mutate a shallow copy
+            patched = Object.assign({}, message);
+            patched.data = Object.assign({}, message.data);
+        }
+
+        patched.data = patched.data || {};
+        patched.data.action = entry.action || patched.data.action;
+        patched.data[B20_PATCH_MARKER] = true;
+
+        // Stop original dispatch and dispatch our patched one instead
+        // IMPORTANT: dispatch via the original underlying broker dispatch to avoid recursion
+        try {
+            if (messageBroker._mbDispatch) {
+                messageBroker._mbDispatch(patched);
+            } else if (messageBroker._mb && typeof messageBroker._mb.dispatch === "function") {
+                messageBroker._mb.dispatch(patched);
+            }
+        } catch (e) {
+            console.warn("Beyond20: failed to dispatch patched fulfilled", e);
+        } finally {
+            // Remove this entry (one-shot)
+            b20RenameQueue.splice(idx, 1);
+        }
+
+        // Returning false stops propagation of the original fulfilled
+        return false;
+    }, { once: false, send: true, recv: false });
 }
-function fulfilledRoll(rollData) {
-    // do NOT publish any events to the DDB message broker.
+
+let lastMessage = null;
+
+/**
+ * MBPendingRoll is triggered by DigitalDiceManager (only when roll-to-game-log is enabled).
+ * We DO NOT post anything here — we only queue a rename so the next DDB fulfilled is patched.
+ */
+function pendingRoll(rollData) {
     if (B20_DISABLE_DDB_MB_PUBLISH) return;
 
-    //console.log("fulfilled roll ", rollData);
+    if (!rollData || !rollData.name) return;
+
+    installRenameHooksOnce();
+
+    // Queue action rename for the next DDB digital dice roll chain
+    b20RenameQueue.push({
+        action: rollData.name,
+        rollId: null,
+        createdAt: Date.now()
+    });
+}
+
+/**
+ * MBFulfilledRoll is triggered after the Beyond20 roll is resolved.
+ * For DIGITAL DICE we prefer the patching above (it updates the real DDB entry).
+ * For NON-digital rolls, we still attempt to post a deferred+fulfilled chain.
+ */
+function fulfilledRoll(rollData) {
+    if (B20_DISABLE_DDB_MB_PUBLISH) return;
+
+    // If we still have a rename queued, we expect DDB to emit fulfilled and be patched;
+    // do not spam additional gamelog posts.
+    if (b20RenameQueue.length > 0) return;
+
     // In case digital dice are disabled, and we have no previous pending roll message
     // we need to construct a valid one for DDB to parse
     lastMessage = lastMessage || {
         data: {
             context: messageBroker.getContext(lastCharacter),
-            rollId: uuidv4()
+            rollId: (typeof uuidv4 === "function" ? uuidv4() : messageBroker.uuid())
         }
     };
+
     const toSelf = isWhispered(rollData);
+
     // For initiative to work in the Encounter builder, it needs to have the action name "Initiative" and not "Initiative(+x)" that B20 sends
     const action = /^Initiative/.test(rollData.name) ? "Initiative" : rollData.name;
+
+    // Post a deferred first (newer DDB expects a chain)
     messageBroker.postMessage({
+        source: "Web",
+        persist: false,
+        eventType: "dice/roll/deferred",
+        messageScope: toSelf ? "userId" : "gameId",
+        messageTarget: toSelf ? lastMessage.userId : lastMessage.gameId,
+        userId: lastMessage.userId,
+        data: {
+            action,
+            rolls: rollData.rolls.map(r => rollToDDBRoll(r, false)),
+            context: lastMessage.data.context,
+            rollId: lastMessage.data.rollId,
+            setId: lastMessage.data.setId || "02401"
+        }
+    });
+
+    messageBroker.postMessage({
+        source: "Web",
         persist: true,
         eventType: "dice/roll/fulfilled",
-        entityType: lastMessage.entityType,
-        entityId: lastMessage.entityId,
-        gameId: lastMessage.gameId,
         messageScope: toSelf ? "userId" : "gameId",
         messageTarget: toSelf ? lastMessage.userId : lastMessage.gameId,
         userId: lastMessage.userId,
@@ -227,11 +332,12 @@ function fulfilledRoll(rollData) {
             rolls: rollData.rolls.map(r => rollToDDBRoll(r, true)),
             context: lastMessage.data.context,
             rollId: lastMessage.data.rollId,
-            setId: lastMessage.data.setId || "8201337" // Not setting it makes it use "Basic Black" by default. Using an invalid value is better
+            setId: lastMessage.data.setId || "02401"
         }
     });
+
     // Avoid overwriting the old roll in case a roll generates multiple fulfilled rolls (critical hit)
-    lastMessage.data.rollId = uuidv4();
+    lastMessage.data.rollId = (typeof uuidv4 === "function" ? uuidv4() : messageBroker.uuid());
 }
 
 function disconnectAllEvents() {

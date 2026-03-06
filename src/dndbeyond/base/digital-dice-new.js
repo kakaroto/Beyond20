@@ -142,165 +142,10 @@ class DigitalDice {
      */
     parseGameLogEntry(entryEl, passive=false) {
         const entry = $(entryEl);
-
-        // Prefer a result block that has both breakdown + notation (expanded entry)
-        const resultBlock = entry.find('[class*="DiceResultContainer"]').filter((_, el) => {
-            const $el = $(el);
-            return $el.find('[class*="Line-Breakdown"]').length > 0 && $el.find('[class*="Line-Notation"]').length > 0;
-        }).first();
-
-        const scope = resultBlock.length ? resultBlock : entry;
-        const breakdownLine = scope.find('[class*="Line-Breakdown"]').first();
-        const notationLine = scope.find('[class*="Line-Notation"]').first();
-
-        // IMPORTANT: read the actual numeric breakdown line, not any [title] (SVGs also have title="D20")
-        const breakdown = (
-            breakdownLine.find('[class*="Line-Number"]').first().attr("title") ||
-            breakdownLine.find('[class*="Line-Number"]').first().text() ||
-            breakdownLine.text() ||
-            ""
-        ).trim();
-
-        const dicenotation = (
-            notationLine.find("span").first().text() ||
-            notationLine.text() ||
-            ""
-        ).trim();
-
-        if (!dicenotation || !breakdown) {
-            console.log("DigitalDice parseGameLogEntry: missing notation/breakdown", { dicenotation, breakdown });
-            return false;
-        }
-
-        // Use native matchAll so we don't depend on reMatchAll helper behavior
-        const diceMatches = [...dicenotation.matchAll(/([0-9]*)d([0-9]+)(kh1|kl1)?/gi)];
-        if (!diceMatches.length) {
-            console.log("DigitalDice parseGameLogEntry: no dice matches", { dicenotation, breakdown });
-            return false;
-        }
-
-        // Remove possible AboveVTT outer parens and split "6 + 7" -> ["6","7"]
-        const results = breakdown
-            .replace(/^\(([^()]*)\)$/, "$1")
-            .split(/\s*\+\s*/)
-            .map(r => r.trim())
-            .filter(Boolean);
-
-        // Reset rolls before re-assigning
-        this._dice.forEach(d => {
-            d._rolls = [];
-        });
-
-        // Helper to find the next matching die bucket that still needs rolls
-        const findTargetDie = (faces) => {
-            for (const dice of this._dice) {
-                if (Number(dice.faces) !== Number(faces)) continue;
-                const currentLen = Array.isArray(dice._rolls) ? dice._rolls.length : 0;
-                const amount = Number(dice.amount || 0);
-                if (currentLen >= amount) continue;
-                return dice;
-            }
-            return null;
-        };
-
-        for (const match of diceMatches) {
-            const amount = parseInt(match[1] || "1", 10);
-            const faces = parseInt(match[2], 10);
-            const mod = match[3];
-
-            for (let i = 0; i < amount; i++) {
-                let parsedRolls = [];
-
-                if (mod) {
-                    const result = (results.shift() || "").trim();
-
-                    // Handles kh1/kl1 entries like "(12, 4)" or "12, 4"
-                    if (/(?:\([0-9,\s]+\)|[0-9,\s]+)/.test(result)) {
-                        parsedRolls = result
-                            .replace(/[()]/g, "")
-                            .split(",")
-                            .map(r => ({ roll: parseInt(r.trim(), 10) }))
-                            .filter(r => Number.isFinite(r.roll));
-
-                        // If we parsed multiple values for kh1/kl1, account for them
-                        i += parsedRolls.length - 1;
-
-                        if (mod === "kh1" && parsedRolls.length) {
-                            let max = Math.max(...parsedRolls.map(r => r.roll));
-                            if (parsedRolls.every(r => r.roll === max) && parsedRolls.length > 1) {
-                                parsedRolls.forEach(r => r.discarded = true);
-                                parsedRolls[0].discarded = false;
-                            } else {
-                                parsedRolls.forEach(r => r.discarded = (r.roll !== max));
-                            }
-                        } else if (mod === "kl1" && parsedRolls.length) {
-                            let min = Math.min(...parsedRolls.map(r => r.roll));
-                            if (parsedRolls.every(r => r.roll === min) && parsedRolls.length > 1) {
-                                parsedRolls.forEach(r => r.discarded = true);
-                                parsedRolls[0].discarded = false;
-                            } else {
-                                parsedRolls.forEach(r => r.discarded = (r.roll !== min));
-                            }
-                        }
-                    } else {
-                        const n = parseInt(result || "0", 10);
-                        parsedRolls = [{ roll: Number.isFinite(n) ? n : 0 }];
-                    }
-                } else {
-                    const raw = (results.shift() || "0").trim();
-                    const n = parseInt(raw, 10);
-                    parsedRolls = [{ roll: Number.isFinite(n) ? n : 0 }];
-                }
-
-                const targetDie = findTargetDie(faces);
-                if (!targetDie) {
-                    console.warn("DigitalDice parseGameLogEntry: no target die bucket found", {
-                        faces,
-                        parsedRolls,
-                        diceState: this._dice.map(d => ({
-                            faces: d.faces,
-                            amount: d.amount,
-                            rolls: (d._rolls || []).map(r => r.roll)
-                        }))
-                    });
-                    continue;
-                }
-
-                if (!Array.isArray(targetDie._rolls)) targetDie._rolls = [];
-                targetDie._rolls.push(...parsedRolls);
-            }
-        }
-
-        // Recalculate dice + roll totals
-        this._dice.forEach(dice => {
-            if (typeof dice.calculateTotal === "function") dice.calculateTotal();
-        });
-        this._rolls.forEach(roll => {
-            if (typeof roll.calculateTotal === "function") roll.calculateTotal();
-        });
-
-        console.log("DigitalDice parseGameLogEntry", {
-            dicenotation,
-            breakdown,
-            parsedDice: this._dice.map(d => ({
-                faces: d.faces,
-                amount: d.amount,
-                rolls: (d._rolls || []).map(r => r.roll),
-                total: d.total
-            })),
-            rollTotals: this._rolls.map(r => ({
-                formula: r.formula,
-                total: r.total
-            }))
-        });
-
-        if (passive) {
-            this._dice.forEach(dice => dice.calculateTotal());
-            this._rolls.forEach(roll => roll.calculateTotal());
-        }
-
-        return true;
+        // kept for compatibility / debugging
+        return false;
     }
+
     async handleCompletedRoll() {
         for (let dice of this._dice)
             await dice.handleModifiers();
@@ -309,15 +154,17 @@ class DigitalDice {
         // Old notification DOM customization removed (new DDB flow uses toasts + Game Log)
         // Keep this method to finalize totals/modifiers for Beyond20 roll objects.
     }
-
 }
 
 class DigitalDiceManager {
     static clear() {
         // Best-effort clear for the new popup roller.
-        // If the popup isn't open yet, this is a no-op (the actual submit path ensures/reset asynchronously).
         const clearBtn = document.querySelector('button[data-testid="diceClearButton"]');
         if (clearBtn && !clearBtn.disabled) clearBtn.click();
+
+        // Old toolbar dice (encounters) support
+        const oldClear = $(".dice-toolbar__dropdown-die");
+        if (oldClear.length) oldClear.click();
     }
     static clearResults() {
         // No notification UI anymore (old .noty_bar flow is gone)
@@ -434,7 +281,7 @@ class DigitalDiceManager {
         const eventType = String(msg.eventType || "");
 
         // Optional: bind rollId on deferred if it matches dice + time
-        if (eventType === "dice/roll/deferred" && !meta.rollId) {
+        if ((eventType === "dice/roll/deferred" || eventType === "dice/roll/pending") && !meta.rollId) {
             const msgTime = parseInt(msg?.dateTime, 10);
             const timeOk = !Number.isFinite(msgTime) || msgTime >= (meta.startedAtMs - 1000);
 
@@ -474,261 +321,58 @@ class DigitalDiceManager {
         if (!amount) return 0;
 
         const ok = await this._ensureRollerOpenWithRetry();
-        if (!ok) {
-            console.warn("DigitalDiceManager: failed to open dice roller popup");
-            return 0;
-        }
-
-        // Clicking too fast can race React state updates in the new roller UI.
-        // Add a tiny delay between clicks to mimic a human pace and let state settle.
-        // Re-query each click because React can re-render and replace button nodes.
-        for (let i = 0; i < amount; i++) {
-            const dieEl = document.querySelector(`button[data-testid="${type}"], button#${type}`);
-            if (!dieEl) {
-                console.warn(`DigitalDiceManager: die button not found for ${type} on click ${i + 1}/${amount}`);
-                return i;
+        if (ok) {
+            for (let i = 0; i < amount; i++) {
+                const dieEl = document.querySelector(`button[data-testid="${type}"], button#${type}`);
+                if (!dieEl) {
+                    console.warn(`DigitalDiceManager: die button not found for ${type} on click ${i + 1}/${amount}`);
+                    return i;
+                }
+                dieEl.click();
+                await this._wait(60);
             }
-            dieEl.click();
-            await this._wait(60);
+            return amount || 0;
         }
 
-        return amount || 0;
+        // Old toolbar dice (encounters) fallback
+        const dice = $(`.dice-die-button[data-dice="${type}"]`);
+        if (dice.length) {
+            for (let i = 0; i < amount; i++) dice.click();
+            return amount || 0;
+        }
+
+        console.warn("DigitalDiceManager: failed to find popup or toolbar die button", { type });
+        return 0;
     }
 
     static async _makeRoll(roll) {
         // New DDB roller is popup-based. We set target first (Self/Everyone) and then click Roll.
         //
         // IMPORTANT:
-        // We no longer parse toasts/game log. Results are captured via the Message Broker bridge.
+        // Re-enable MBPendingRoll ONLY as a signal so message-broker.js can patch the next DDB fulfilled
+        // (it no longer interferes with the DDB roll chain).
+        if (dndbeyondDiceRoller?._settings?.["roll-to-game-log"]) {
+            sendCustomEvent("MBPendingRoll", [roll.toJSON()]);
+        } else {
+            sendCustomEvent("MBPendingRoll", null);
+        }
+
         let opened = await DigitalDiceManager._ensureRollerOpenWithRetry();
-        if (!opened) return false;
+        if (opened) {
+            await DigitalDiceManager._selectRollTargetWithRetry(roll.whisper);
+            await DigitalDiceManager._wait(80);
+            return await DigitalDiceManager._clickRollButtonWithRetry();
+        }
 
-        // In the new UI, "whisper" maps to the "Self" privacy button (DDB may display "Rolling to DM")
-        // depending on the user's role/context, but the control is still the "Self" button.
-        await DigitalDiceManager._selectRollTargetWithRetry(roll.whisper);
-
-        // Give React a short moment after target toggle before rolling
-        await DigitalDiceManager._wait(80);
-
-        // Roll normally
-        const rolled = await DigitalDiceManager._clickRollButtonWithRetry();
-        return rolled;
+        // Old toolbar roll fallback (encounters)
+        return await DigitalDiceManager._clickOldToolbarRollWithRetry(roll.whisper);
     }
 
     static _normalizeText(text) {
         return String(text || "").replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim();
     }
-    static _normalizeDiceNotation(n) {
-        return String(n || "").toLowerCase().replace(/\s+/g, "");
-    }
-
-    // Canonicalize dice notation so ordering doesn't matter (DDB roller orders dice by its own UI/object-key order)
-    // Example: "1d20+2d6+1d8" == "2d6+1d8+1d20"
-    static _canonicalizeDiceNotation(n) {
-        const raw = this._normalizeDiceNotation(n);
-        if (!raw) return "";
-
-        const matches = [...raw.matchAll(/([0-9]*)d([0-9]+)(kh1|kl1)?/g)];
-        if (!matches.length) return raw;
-
-        const groups = new Map(); // key: "d20" or "d20kh1" => total amount
-        for (const m of matches) {
-            const amount = parseInt(m[1] || "1", 10);
-            const faces = parseInt(m[2], 10);
-            const mod = m[3] || "";
-            const key = `d${faces}${mod}`;
-            groups.set(key, (groups.get(key) || 0) + amount);
-        }
-
-        const sorted = [...groups.entries()].sort((a, b) => {
-            const parseKey = (k) => {
-                const mm = k.match(/^d(\d+)(kh1|kl1)?$/);
-                return {
-                    faces: mm ? parseInt(mm[1], 10) : 9999,
-                    mod: mm?.[2] || ""
-                };
-            };
-            const A = parseKey(a[0]);
-            const B = parseKey(b[0]);
-            if (A.faces !== B.faces) return A.faces - B.faces;
-            return A.mod.localeCompare(B.mod);
-        });
-
-        return sorted.map(([key, amount]) => `${amount}${key}`).join("+");
-    }
-
-    // Preserve intended order for logging/debugging.
-    // (Comparison in game log parsing uses canonical form to survive DDB ordering.)
-    static _extractDiceTermsFromParts(parts) {
-        const terms = [];
-        for (const part of (parts || [])) {
-            if (!part || typeof part !== "object") continue;
-            if (!Number.isFinite(part.faces)) continue;
-
-            const amount = Number.isFinite(part.amount) ? part.amount : 1;
-            const faces = Number(part.faces);
-            const mods = String(part.modifiers || "").trim();
-            terms.push(`${amount}d${faces}${mods}`);
-        }
-        return terms;
-    }
-    static _compactOrderedDiceTerms(terms) {
-        const compacted = [];
-
-        for (const term of (terms || [])) {
-            const m = String(term || "").match(/^(\d+)d(\d+)(.*)$/i);
-            if (!m) {
-                compacted.push(String(term || ""));
-                continue;
-            }
-
-            const amount = parseInt(m[1], 10);
-            const faces = parseInt(m[2], 10);
-            const mods = m[3] || "";
-            const key = `${faces}|${mods}`;
-
-            const prev = compacted[compacted.length - 1];
-            if (prev) {
-                const pm = String(prev).match(/^(\d+)d(\d+)(.*)$/i);
-                if (pm) {
-                    const pAmount = parseInt(pm[1], 10);
-                    const pFaces = parseInt(pm[2], 10);
-                    const pMods = pm[3] || "";
-                    const pKey = `${pFaces}|${pMods}`;
-
-                    if (pKey === key) {
-                        compacted[compacted.length - 1] = `${pAmount + amount}d${faces}${mods}`;
-                        continue;
-                    }
-                }
-            }
-
-            compacted.push(`${amount}d${faces}${mods}`);
-        }
-
-        return compacted;
-    }
-    static _getExpectedDiceNotationForRoll(roll) {
-        const orderedTerms = [];
-
-        // Preferred source: original Beyond20 rolls/parts (keeps exact sequence, and naturally skips flat-only rolls)
-        const originalRolls = Array.isArray(roll?.rolls) ? roll.rolls : [];
-        for (const r of originalRolls) {
-            const parts = Array.isArray(r?.parts) ? r.parts : [];
-            const diceTerms = this._extractDiceTermsFromParts(parts);
-            if (diceTerms.length) {
-                orderedTerms.push(...diceTerms);
-            }
-        }
-
-        // Fallback: use DigitalDice flattened _dice list (still in constructor insertion order)
-        if (!orderedTerms.length) {
-            for (const dice of (roll?._dice || [])) {
-                const amount = Number.isFinite(dice?.amount) ? dice.amount : 0;
-                const faces = Number(dice?.faces);
-                if (!amount || !faces) continue;
-                const mods = String(dice?.modifiers || "").trim();
-                orderedTerms.push(`${amount}d${faces}${mods}`);
-            }
-        }
-
-        const compacted = this._compactOrderedDiceTerms(orderedTerms);
-        return compacted.join("+");
-    }
-
-    static _getToastDebugInfo(limit = 5) {
-        const $contents = $('span[class*="MessageContent"], div[class*="MessageContent"]');
-        const texts = $contents.toArray().map(el => this._normalizeText($(el).text()));
-        return {
-            toastCount: $contents.length,
-            toastRootCount: $('[class*="NotRoot"], [class*="MessageRoot"]').length,
-            latestToasts: texts.slice(-limit)
-        };
-    }
-    static _getGameLogDebugInfo(limit = 5) {
-        const entries = this._getCharacterGameLogEntries();
-        return {
-            characterName: this._getCurrentCharacterName(),
-            gameLogOpen: this._isGameLogOpen(),
-            characterEntryCount: entries.length,
-            latestEntries: entries.slice(0, limit).map(entryEl => {
-                const $entry = $(entryEl);
-                return {
-                    sender: ($entry.find('[class*="Sender"]').first().text() || "").trim(),
-                    action: this._getGameLogEntryAction(entryEl),
-                    total: this._getGameLogEntryTotal(entryEl),
-                    notation: this._getGameLogEntryNotation(entryEl),
-                    datetime: ($entry.find("time").attr("datetime") || "").trim(),
-                    hasBreakdown: $entry.find('[class*="Line-Breakdown"]').length > 0,
-                    hasNotation: $entry.find('[class*="Line-Notation"]').length > 0
-                };
-            })
-        };
-    }
-
-    static _getPopupDieQuantity(type) {
-        const $btn = $(`button[data-testid="${type}"], button#${type}`).first();
-        if (!$btn.length) return 0;
-        const q = parseInt($btn.attr("data-quantity") || "0", 10);
-        return Number.isFinite(q) ? q : 0;
-    }
-
-    static _getCurrentPopupDiceQuantities(types = ["d4","d6","d8","d10","d12","d20","d100"]) {
-        const actual = {};
-        for (const type of types) {
-            const qty = this._getPopupDieQuantity(type);
-            if (qty > 0) actual[type] = qty;
-        }
-        return actual;
-    }
-
-    static async _waitForDiceSelectionToSettle(expectedDice, retries = 200, delay = 50) {
-        const startedAt = Date.now();
-        const expectedTypes = Object.keys(expectedDice);
-
-        // If nothing expected, there's nothing to verify
-        if (!expectedTypes.length) return true;
-
-        for (let i = 0; i <= retries; i++) {
-            let matches = true;
-
-            for (const type of expectedTypes) {
-                const expectedQty = expectedDice[type] || 0;
-                const actualQty = this._getPopupDieQuantity(type);
-                if (actualQty !== expectedQty) {
-                    matches = false;
-                    break;
-                }
-            }
-
-            // Also ensure no extra dice are selected
-            if (matches) {
-                const current = this._getCurrentPopupDiceQuantities();
-                for (const type of Object.keys(current)) {
-                    if ((expectedDice[type] || 0) !== current[type]) {
-                        matches = false;
-                        break;
-                    }
-                }
-            }
-
-            if (matches) return true;
-
-            await this._wait(delay);
-        }
-
-        console.warn("DigitalDiceManager: dice selection did not settle before roll", {
-            elapsedMs: Date.now() - startedAt,
-            expectedDice,
-            actualDice: this._getCurrentPopupDiceQuantities()
-        });
-
-        return false;
-    }
 
     static _isRollTargetAlreadySelected(whisper) {
-        // DDB shows a label like "Rolling to DM" or "Rolling to everyone".
-        // Use that label if present so we don't toggle target state unnecessarily.
         const labelText = this._normalizeText(
             $('[class*="rollToLabel"], span:contains("Rolling to")').filter((_, el) => {
                 return /rolling to/i.test($(el).text() || "");
@@ -743,8 +387,6 @@ class DigitalDiceManager {
         return /rolling to everyone/i.test(labelText);
     }
 
-    // The new dice roller lives in a popup. We must click the floating dice button first,
-    // then wait for the popup contents to mount.
     static async _ensureRollerOpenWithRetry(retries = 50, delay = 20) {
         for (let i = 0; i <= retries; i++) {
             const $rollBtn = $('button[data-testid="diceRollButton"]');
@@ -753,9 +395,12 @@ class DigitalDiceManager {
             const openBtn = document.querySelector(".dice-rolling-panel > button");
             if (openBtn) {
                 openBtn.click();
+                await this._wait(delay);
+                continue;
             }
 
-            await this._wait(delay);
+            // no popup present
+            return false;
         }
 
         console.warn("DigitalDiceManager: dice roller popup not found after retries");
@@ -766,24 +411,21 @@ class DigitalDiceManager {
         for (let i = 0; i <= retries; i++) {
             const $clearButton = $('button[data-testid="diceClearButton"]');
 
-            // If popup isn't mounted yet, try to open it and retry
             if (!$clearButton.length) {
-                await this._ensureRollerOpenWithRetry();
+                const opened = await this._ensureRollerOpenWithRetry();
+                if (!opened) return false;
                 await this._wait(delay);
                 continue;
             }
 
-            // If reset is disabled, there is nothing to clear and we're done
             if ($clearButton.is(":disabled")) return true;
 
             const clearEl = $clearButton.get(0);
             if (clearEl) clearEl.click();
 
-            // Reset updates React state; wait until it reflects in the UI (button disabled / no selected quantities)
             for (let j = 0; j < 50; j++) {
                 const disabled = $('button[data-testid="diceClearButton"]').is(":disabled");
-                const actualDice = this._getCurrentPopupDiceQuantities();
-                if (disabled && Object.keys(actualDice).length === 0) return true;
+                if (disabled) return true;
                 await this._wait(20);
             }
 
@@ -794,7 +436,6 @@ class DigitalDiceManager {
         return false;
     }
 
-    // The roll button appears inside the popup and can be disabled while no dice are selected.
     static async _clickRollButtonWithRetry(retries = 200, delay = 50) {
         const startedAt = Date.now();
 
@@ -815,8 +456,7 @@ class DigitalDiceManager {
             rollButtonCount: $('button[data-testid="diceRollButton"]').length,
             enabledRollButtonCount: $('button[data-testid="diceRollButton"]:not([disabled])').length,
             rollerPopupCount: $('section:has(button[data-testid="diceRollButton"])').length,
-            dicePanelCount: $(".dice-rolling-panel").length,
-            actualDice: this._getCurrentPopupDiceQuantities()
+            dicePanelCount: $(".dice-rolling-panel").length
         };
 
         console.warn("DigitalDiceManager: failed to click DDB roll button → popup/selector race", debug);
@@ -836,7 +476,6 @@ class DigitalDiceManager {
             if (targetEl) {
                 targetEl.click();
 
-                // Wait briefly for the "Rolling to ..." label to reflect the target
                 for (let j = 0; j < 20; j++) {
                     if (this._isRollTargetAlreadySelected(whisper)) return true;
                     await this._wait(20);
@@ -852,9 +491,67 @@ class DigitalDiceManager {
         return false;
     }
 
+    // Old toolbar roll support (encounters page)
+    static async _clickOldToolbarRollWithRetry(whisper, retries = 50, delay = 10) {
+        // If whisper, try to select target in old toolbar menu
+        if (whisper) {
+            await this._selectWhisperTargetWithRetry();
+        }
+        for (let i = 0; i <= retries; i++) {
+            const $rollButton = $(".dice-toolbar.rollable .dice-toolbar__target button:not(.dice-toolbar__target-menu-button)").first();
+            if ($rollButton.length) {
+                $rollButton.click();
+                return true;
+            }
+            await this._wait(delay);
+        }
+        console.warn("DigitalDiceManager: old toolbar roll button not found after retries");
+        return false;
+    }
+
+    static async _selectWhisperTargetWithRetry(retries = 50, delay = 10) {
+        return new Promise((resolve) => {
+            const menuButton = document.querySelector(".dice-toolbar.rollable button.dice-toolbar__target-menu-button");
+            if (!menuButton) {
+                return resolve(false);
+            }
+
+            menuButton.click();
+
+            const trySelect = (remaining, _delay) => {
+                const $options = $("#options-menu ul ul > div");
+
+                if ($options.length > 0) {
+                    const texts = $options.toArray().map(d => d.textContent.trim());
+                    const toDM   = texts.findIndex(t => t === "Dungeon Master");
+                    const toSelf = texts.findIndex(t => t === "Self");
+
+                    if (toDM >= 0) {
+                        $options.eq(toDM).click();
+                        return resolve(true);
+                    } else if (toSelf >= 0) {
+                        $options.eq(toSelf).click();
+                        return resolve(true);
+                    }
+
+                    return resolve(false);
+                }
+
+                if (remaining > 0) {
+                    setTimeout(() => trySelect(remaining - 1, _delay), _delay);
+                } else {
+                    resolve(false);
+                }
+            };
+
+            trySelect(retries, delay);
+        });
+    }
+
     static isEnabled() {
         const panel = $(".dice-rolling-panel");
-        return panel.length > 0;
+        const toolbar = $(".dice-toolbar");
+        return panel.length > 0 || toolbar.length > 0;
     }
 
     static _getNotificationIds() {
@@ -919,8 +616,8 @@ class DigitalDiceManager {
 
     static async _submitRoll(roll) {
         try {
-            await this._ensureRollerOpenWithRetry();
-            await this._resetDiceWithRetry();
+            const opened = await this._ensureRollerOpenWithRetry();
+            if (opened) await this._resetDiceWithRetry();
 
             const expectedDice = this._getExpectedDiceQuantitiesForRoll(roll);
 
@@ -930,15 +627,11 @@ class DigitalDiceManager {
             }
 
             if (diceRolled > 0) {
-                // Wait for the popup UI to reflect the selected quantities before clicking Roll.
-                // This avoids racing React state updates in the new custom roller.
-                const settled = await this._waitForDiceSelectionToSettle(expectedDice);
-                if (!settled) {
-                    console.warn("DigitalDiceManager: continuing despite unsettled dice UI selection");
+                if (opened) {
+                    // Wait for popup quantities to settle
+                    // (kept from your working version)
+                    await this._wait(100);
                 }
-
-                // One more short settle pause before the Roll button click
-                await this._wait(100);
 
                 const pending = this._pendingRolls[0];
                 const meta = this._getPendingMeta(pending);
@@ -949,17 +642,14 @@ class DigitalDiceManager {
                 }
 
                 const rolled = await this._makeRoll(roll);
-
                 if (!rolled) {
                     throw new Error("DigitalDiceManager: failed to click DDB roll button");
                 }
 
-                // Wait for the Message Broker "dice/roll/fulfilled" via the bridge listener.
-                // Completion happens in _handleDiceBrokerMessage -> _finishPendingRoll().
                 this._startPendingTimeout(pending, 15000);
                 return;
             } else {
-                await this._resetDiceWithRetry();
+                if (opened) await this._resetDiceWithRetry();
                 this._finishPendingRoll()
             }
         } catch (err) {
