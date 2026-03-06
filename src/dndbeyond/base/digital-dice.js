@@ -161,7 +161,7 @@ class DigitalDice {
 
 class DigitalDiceManager {
     static clear() {
-        $(".dice-toolbar__dropdown-die").click()
+        $(".dice-rolling-panel > button").click()
     }
     static clearResults() {
         $(".dice_notification_controls__clear").click()
@@ -262,7 +262,7 @@ class DigitalDiceManager {
         });
     }
     static isEnabled() {
-        const toolbar = $(".dice-toolbar");
+        const toolbar = $(".dice-rolling-panel");
         return toolbar.length > 0;
     }
     static _getNotificationIds() {
@@ -343,6 +343,18 @@ class DigitalDiceManager {
         const digitalRoll = new DigitalDice(name, [roll], {whisper: target !== ""});
         digitalRoll.parseNotification(notification, true);
         return digitalRoll;
+    }
+    static parseCurrentSelection() {
+        let formulas = [];
+
+        for (const dieButton of document.querySelectorAll("#d4, #d6, #d8, #d10, #d12, #d20, #d100")) {
+            if (!dieButton.dataset.quantity)
+                continue;
+
+            formulas.push(dieButton.dataset.quantity + dieButton.id);
+        }
+
+        return formulas;
     }
 }
 DigitalDiceManager._pendingRolls = [];
