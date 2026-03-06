@@ -116,12 +116,11 @@ async function updateHP(name, current, total, temp) {
                 },
             });
 
-            // set HP & temp HP using the property setter.
-            await character.characterSheet.headlessRelay.setComputed({
-                characterId: character.id,
-                property: "hp",
-                args: [current],
-            });
+            // set HP using the property setter
+
+            /* **TEMPORARY WORKAROUND**
+               Using the property setter is currently broken on Roll20's end, as they use the wrong key for storing the temporary HP (temp vs tempHP).
+               So, the current workaround is to just forgo the setter and change the store value directly, where we can determine the key ourselves.
 
             // If we wanted to auto-hide the bar when temp is zero, we'd have to manually edit the temporary HP integrant's value and set it to an empty string (ref. changing max HP).
             // The property setter that's used with setComputed automatically converts values to integers, so an empty string remains zero and the bar is still visible.
@@ -131,6 +130,33 @@ async function updateHP(name, current, total, temp) {
                 property: "hp_temp",
                 args: [temp],
             });
+            */
+            const tempHpIntegrantKey = Object.entries(store.integrants.integrants).find(([_, v]) => v.hitpointType === "Temporary")?.[0],
+                tempHPIntegrantUpdatePayload = tempHpIntegrantKey ? { integrants: { integrants: { [tempHpIntegrantKey]: { valueFormula: { flatValue: temp } } } } } : {};
+            character.characterSheet.headlessRelay.postMessage({
+                type: "change",
+                character: {
+                    id: character.id,
+                    attributes: {
+                        store: {
+                            hitpoints: {
+                                temp,
+                                tempHP: temp,
+                            },
+                            ...tempHPIntegrantUpdatePayload,
+                        },
+                    },
+                },
+            });
+            /* **END OF TEMPORARY WORKAROUND** */
+
+            // set HP using the property setter
+            await character.characterSheet.headlessRelay.setComputed({
+                characterId: character.id,
+                property: "hp",
+                args: [current],
+            });
+
         }
         // make sure all tokens resemble the new values
         character.updateTokensForAdvancedSheets();
