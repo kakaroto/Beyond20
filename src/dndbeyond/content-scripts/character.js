@@ -2964,9 +2964,156 @@ function handleMessage(request, sender, sendResponse) {
     }
 }
 
+let ddbRollHijackInstalled = false;
+
+function swallowRollEvent(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof event.stopImmediatePropagation === "function") {
+        event.stopImmediatePropagation();
+    }
+}
+
+function handleCombatAttackIntegratedDie(button) {
+    const row = button.closest(".ct-combat-attack, .ddbc-combat-attack");
+    if (!row) return false;
+
+    const isToHit = !!button.closest(".ct-combat-attack__tohit, .ddbc-combat-attack__tohit");
+    const damageCell = button.closest(".ct-combat-attack__damage, .ddbc-combat-attack__damage");
+    const isDamage = !!damageCell;
+    const forceVersatile = !!(damageCell && damageCell.previousElementSibling);
+
+    const name = $(row)
+        .find(".ct-combat-attack__name .ct-combat-attack__label, .ddbc-combat-attack__name .ddbc-combat-attack__label")
+        .first()
+        .text()
+        .trim();
+
+    let pane = null;
+    let paneClass = null;
+
+    for (paneClass of ["b20-item-pane", "b20-action-pane", "ct-custom-action-pane", "b20-custom-action-pane", "ct-spell-pane"]) {
+        pane = $("." + paneClass);
+        if (pane.length > 0) break;
+    }
+
+    const paneName = pane && pane.length
+        ? pane.find(".ct-sidebar__heading").text().trim()
+        : "";
+
+    if (name && paneName === name && paneClass) {
+        execute(paneClass, {
+            force_to_hit_only: isToHit,
+            force_damages_only: isDamage,
+            force_versatile: forceVersatile
+        });
+    } else {
+        quick_roll_force_attack = isToHit;
+        quick_roll_force_damage = isDamage;
+        quick_roll_force_versatile = forceVersatile;
+        quick_roll = true;
+
+        $(row)
+            .find(".ct-combat-attack__name .ct-combat-attack__label, .ddbc-combat-attack__name .ddbc-combat-attack__label")
+            .first()
+            .trigger("click");
+    }
+
+    return true;
+}
+
+function handleSpellIntegratedDie(button) {
+    const row = button.closest(".ct-spells-spell, .ddbc-spells-spell");
+    if (!row) return false;
+
+    const isToHit = !!button.closest(".ct-spells-spell__tohit, .ddbc-spells-spell__tohit");
+    const isDamage = !!button.closest(".ct-spells-spell__damage, .ddbc-spells-spell__damage");
+
+    const nameElement = $(row)
+        .find(".ct-spell-name, .ddbc-spell-name, span[class*='styles_spellName']")
+        .first();
+
+    const spellName = nameElement.text().trim();
+    const paneName = $(".ct-spell-pane .ct-sidebar__heading .ct-spell-name, .ct-spell-pane .ct-sidebar__heading .ddbc-spell-name, .ct-spell-pane .ct-sidebar__heading span[class*='styles_spellName']")
+        .text()
+        .trim();
+
+    if (spellName && spellName === paneName) {
+        const castas = $(".ct-spell-caster__casting-level-current").text();
+        const level = $(row).closest(".ct-content-group").find(".ct-content-group__header-content").text();
+        const paneLevel = castas === "" ? "Cantrip" : `${castas} Level`;
+
+        if (paneLevel.toLowerCase() === level.toLowerCase()) {
+            execute("ct-spell-pane", {
+                force_to_hit_only: isToHit,
+                force_damages_only: isDamage
+            });
+        } else {
+            $(".ddbc-character-tidbits__menu-callout").trigger("click");
+            nameElement.trigger("click");
+
+            quick_roll_force_attack = isToHit;
+            quick_roll_force_damage = isDamage;
+            quick_roll_force_versatile = false;
+            quick_roll = true;
+        }
+    } else {
+        quick_roll_force_attack = isToHit;
+        quick_roll_force_damage = isDamage;
+        quick_roll_force_versatile = false;
+        quick_roll = true;
+
+        nameElement.trigger("click");
+    }
+
+    return true;
+}
+
+function installDDBRollHijack() {
+    if (ddbRollHijackInstalled) return;
+    ddbRollHijackInstalled = true;
+
+    const selector = "button.integrated-dice__container.beyond20-quick-roll-area";
+
+    const intercept = (event) => {
+        const button = event.target.closest(selector);
+        if (!button) return;
+
+        // limit interception to the places you actually want to own
+        const isAttackButton = !!button.closest(".ct-combat-attack, .ddbc-combat-attack");
+        const isSpellButton = !!button.closest(".ct-spells-spell, .ddbc-spells-spell");
+
+        if (!isAttackButton && !isSpellButton) return;
+
+        swallowRollEvent(event);
+
+        if (handleCombatAttackIntegratedDie(button)) return;
+        if (handleSpellIntegratedDie(button)) return;
+    };
+
+    ["pointerdown", "mousedown", "mouseup", "click"].forEach((type) => {
+        document.addEventListener(type, intercept, true);
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+
+        const button = event.target.closest(selector);
+        if (!button) return;
+
+        swallowRollEvent(event);
+
+        if (handleCombatAttackIntegratedDie(button)) return;
+        if (handleSpellIntegratedDie(button)) return;
+    }, true);
+
+    console.log("Beyond20: DDB integrated dice hijack installed.");
+}
+
 var settings = getDefaultSettings();
 var character = new Character(settings);
 var creature = null;
+installDDBRollHijack();
 updateSettings();
 chrome.runtime.onMessage.addListener(handleMessage);
 observer = new window.MutationObserver(documentModified);
