@@ -40,6 +40,26 @@ function abbreviationToAbility(abbr) {
     return abbr;
 }
 
+function normalizeAbilityName(value = "") {
+    const token = value.trim().split(/\s+/)[0].toLowerCase();
+
+    const map = {
+        strength: "STR",
+        dexterity: "DEX",
+        constitution: "CON",
+        intelligence: "INT",
+        wisdom: "WIS",
+        charisma: "CHA",
+        str: "STR",
+        dex: "DEX",
+        con: "CON",
+        int: "INT",
+        wis: "WIS",
+        cha: "CHA"
+    };
+
+    return map[token];
+}
 
 function propertyListToDict(propList) {
     const properties = {}
