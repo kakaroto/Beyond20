@@ -25,6 +25,17 @@ const DNDBEYOND_PAGE_DEPS = [
     "src/generic-site/renderer.js",
 ];
 
+const DNDBEYOND_CHARACTER_PAGE_DEPS = [
+    ...ROLL_RENDERER_DEPS,
+    "src/dndbeyond/base/digital-dice-new.js",
+    "src/dndbeyond/base/dice.js",
+    "src/dndbeyond/base/base.js",
+    "src/dndbeyond/base/hotkeys.js",
+    "src/dndbeyond/base/utils.js",
+    // Second renderer on DDB pages to allow rednering roll to the DOM
+    "src/generic-site/renderer.js",
+];
+
 const SRC_FILES = {
     background: [
         "src/common/constants.js",
@@ -121,7 +132,7 @@ const SRC_FILES = {
         "src/dndbeyond/content-scripts/vehicle.js",
     ],
     dndbeyond_character: [
-        ...DNDBEYOND_PAGE_DEPS,
+        ...DNDBEYOND_CHARACTER_PAGE_DEPS,
         "src/dndbeyond/base/spell.js",
         "src/dndbeyond/base/monster.js",
         "src/dndbeyond/base/extras.js",

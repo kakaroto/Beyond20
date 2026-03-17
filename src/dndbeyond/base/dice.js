@@ -79,7 +79,12 @@ class DNDBRoller {
         
         if (dndbeyondDiceRoller._settings['use-digital-dice'] && DigitalDiceManager.isEnabled()) {
             const digital = new DigitalDice(name, rolls, {whisper: request.whisper === WhisperType.YES});
-            await digital.roll();
+            try {
+                await digital.roll();
+            } catch (err) {
+                console.warn("DNDBRoller: digital dice failed, falling back to native roll", err);
+                await Promise.all(rolls.map(roll => roll.roll()))
+            }
         } else {
             await Promise.all(rolls.map(roll => roll.roll()))
         }

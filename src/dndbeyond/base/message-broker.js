@@ -1,7 +1,7 @@
-
 class DDBMessageBroker {
     constructor() {
         this._mb = null;
+        this._mbDispatch = null;
         this._messageQueue = [];
         this._blockMessages = [];
         this._registered = false;
@@ -9,11 +9,15 @@ class DDBMessageBroker {
         this._characterId = (window.location.pathname.match(/\/characters\/([0-9]+)/) || [])[1];
         this.saveMessages = false;
         this._debug = false;
+
+        // Bridge flag used by window.postMessage so content scripts can receive dice roll events
+        this.B20_DDB_DICE_MB_BRIDGE = "__b20_ddb_dice_mb_bridge__";
     }
+
     register() {
         if (this._registered) return;
 
-        const key = Symbol.for('@dndbeyond/message-broker-lib');
+        const key = Symbol.for("@dndbeyond/message-broker-lib");
         if (key) this._mb = window[key];
         if (!this._mb) return;
 
@@ -25,6 +29,7 @@ class DDBMessageBroker {
         this._mb.dispatch = this._onDispatchBound;
         this._registered = true;
     }
+
     unregister() {
         if (!this._registered || !this._mb) return;
 
@@ -33,6 +38,7 @@ class DDBMessageBroker {
             this._mbDispatch = null;
         }
 
+        // We still can't unsubscribe from _onMessage
         this._registered = false;
         this._mb = null;
     }
@@ -40,11 +46,12 @@ class DDBMessageBroker {
     /**
      * Hook on events from the message broker of a particular type
      */
-    on(event, callback, {once=false, send=true, recv=true}={}) {
+    on(event, callback, { once = false, send = true, recv = true } = {}) {
         const callbacks = this._hooks[event] || [];
-        callbacks.push({callback, once, send, recv});
+        callbacks.push({ callback, once, send, recv });
         this._hooks[event] = callbacks;
     }
+
     _dispatchHooks(eventType, message, recv) {
         let stopPropagation = false;
         const hooks = this._hooks[eventType] || [];
@@ -61,18 +68,56 @@ class DDBMessageBroker {
         }
         return stopPropagation;
     }
+
+    _forwardDiceRollEvent(message) {
+        // Forward dice roll messages out of the page context so content scripts can listen
+        // without needing direct access to window[Symbol.for("@dndbeyond/message-broker-lib")].
+        //
+        // NOTE: This is read-only. We are NOT dispatching to the DDB message broker here.
+        try {
+            const safe = JSON.parse(JSON.stringify(message));
+            window.postMessage({ [this.B20_DDB_DICE_MB_BRIDGE]: true, message: safe }, "*");
+        } catch (e) {
+            try {
+                window.postMessage({
+                    [this.B20_DDB_DICE_MB_BRIDGE]: true,
+                    message: {
+                        id: message?.id,
+                        eventType: message?.eventType,
+                        dateTime: message?.dateTime,
+                        userId: message?.userId,
+                        source: message?.source,
+                        data: message?.data
+                    }
+                }, "*");
+            } catch (e2) {
+                // ignore
+            }
+        }
+    }
+
     _onMessage(message) {
         // Check if we unregistered
         if (!this._mb) return;
         if (this._debug) console.log("Received ", message);
+
+        // Forward dice roll events for the digital dice integration to consume
+        // (dice/roll/deferred, dice/roll/fulfilled, etc)
+        if (message && typeof message.eventType === "string" && message.eventType.startsWith("dice/roll/")) {
+            this._forwardDiceRollEvent(message);
+        }
+
         if (this.saveMessages) {
             this._messageQueue.push(message);
         }
+
         if (this._dispatchHooks(message.eventType, message, true)) return;
         this._dispatchHooks(null, message, true);
     }
+
     _onDispatchMessage(message) {
         if (this._debug) console.log("Dispatching ", message);
+
         const blockIndex = this._blockMessages.findIndex(msg => msg.type === message.eventType);
         if (blockIndex !== -1) {
             if (this._blockMessages[blockIndex].once) {
@@ -81,49 +126,63 @@ class DDBMessageBroker {
             if (this._debug) console.log("Dropped message ", message);
             return;
         }
+
         if (this._dispatchHooks(message.eventType, message, false)) return;
         if (this._dispatchHooks(null, message, false)) return;
+
         this._mbDispatch(message);
     }
+
     blockMessages(msg) {
         this.register();
         this._blockMessages.push(msg);
     }
+
     getPendingMessages(type) {
         this.register();
         return this._messageQueue.filter(m => m.eventType === type);
     }
+
     getContext(character) {
         const context = {};
-        context.messageScope = this._mb.gameId == '0' ? "userId" : "gameId";
+        context.messageScope = this._mb.gameId == "0" ? "userId" : "gameId";
+
         if (context.messageScope === "gameId") {
             context.messageTarget = this._mb.gameId;
         }
         if (context.messageScope === "userId") {
             context.messageTarget = this._mb.userId;
         }
+
         context.entityType = this._characterId ? "character" : "user";
+
         if (context.entityType === "character" && this._characterId) {
             context.entityId = this._characterId;
         }
         if (context.entityType === "user") {
             context.entityId = this._mb.userId;
         }
+
         if (character) {
             context.name = character.name;
             context.avatarUrl = character.avatar;
         }
+
         return context;
     }
+
     postMessage(data) {
         this.register();
         if (!this._mb) return;
-        data.id = data.id || uuidv4(),
+
+        data.id = data.id || uuidv4();
         data.dateTime = String(data.dateTime || Date.now());
         data.source = data.source || "Beyond20";
         data.persist = data.persist || false;
-        const defaultScope = this._mb.gameId == '0' ? "userId" : "gameId";
+
+        const defaultScope = this._mb.gameId == "0" ? "userId" : "gameId";
         const defaultType = this._characterId ? "character" : "user";
+
         data.messageScope = data.messageScope || defaultScope;
         if (data.messageScope === "gameId") {
             data.messageTarget = data.messageTarget || this._mb.gameId;
@@ -131,6 +190,7 @@ class DDBMessageBroker {
         if (data.messageScope === "userId") {
             data.messageTarget = data.messageTarget || this._mb.userId;
         }
+
         data.entityType = data.entityType || defaultType;
         if (data.entityType === "character" && this._characterId) {
             data.entityId = data.entityId || this._characterId;
@@ -138,17 +198,21 @@ class DDBMessageBroker {
         if (data.entityType === "user") {
             data.entityId = data.entityId || this._mb.userId;
         }
-        if (this._mb.gameId != '0') {
+
+        if (this._mb.gameId != "0") {
             data.gameId = data.gameId || this._mb.gameId;
         }
+
         data.userId = data.userId || this._mb.userId;
         this._mb.dispatch(this._cleanupPostData(data));
     }
+
     _cleanupPostData(data) {
         // Beyond20 requests will have character's class features and `Thieves' Cant` or `Hexblade's Curse`
         // uses a non-ascii character (’) which gets corrupted when sent over the message broker
-        return JSON.parse(JSON.stringify(data).replace(/’/g, "'"))
+        return JSON.parse(JSON.stringify(data).replace(/’/g, "'"));
     }
+
     flush() {
         this._messageQueue.length = 0;
     }
