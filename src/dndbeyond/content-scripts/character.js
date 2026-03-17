@@ -231,11 +231,13 @@ function applyAbilityOrSavingThrowEffects({ rollType, ability_name, ability, mod
             ["STR", "DEX", "CON"].includes(ability)
         ) {
             mod += Math.ceil(character._proficiency / 2);
+            addEffect(roll_properties, "Remarkable Athlete");
         } else if (
             character.hasClassFeature("Jack of All Trades") &&
             character.getSetting("bard-joat", false)
         ) {
             mod += Math.floor(character._proficiency / 2);
+            addEffect(roll_properties, "Jack of All Trades");
         }
 
         if (character.getSetting("custom-ability-modifier", "")) {
@@ -251,6 +253,7 @@ function applyAbilityOrSavingThrowEffects({ rollType, ability_name, ability, mod
             ability === "CHA"
         ) {
             mod += Math.max(character.getAbility("WIS").mod, 1);
+            addEffect(roll_properties, "Otherworldly Glamour");
         }
 
         modifier = mod >= 0 ? `+${mod}` : `${mod}`;
@@ -271,6 +274,7 @@ function applyAbilityOrSavingThrowEffects({ rollType, ability_name, ability, mod
     if (character.hasClassFeature("Indomitable Might") && ability === "STR") {
         const min = character.getAbility("STR").score - parseInt(modifier);
         roll_properties.d20 = `1d20min${min}`;
+        addEffect(roll_properties, "Indomitable Might");
     }
 
     // Concentration checks
@@ -292,10 +296,12 @@ function applyAbilityOrSavingThrowEffects({ rollType, ability_name, ability, mod
                     mod = parseInt(modifier) + bladesongMod;
                     modifier = mod >= 0 ? `+${mod}` : `${mod}`;
                     roll_properties.modifier = modifier;
+                    addEffect(roll_properties, "Bladesong");
                 }
 
                 if (has_warcaster) {
                     roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+                    addEffect(roll_properties, "Warcaster");
                 }
             }
         }
@@ -310,6 +316,7 @@ function applyAbilityOrSavingThrowEffects({ rollType, ability_name, ability, mod
         mod = parseInt(roll_properties.modifier) + 2;
         modifier = mod >= 0 ? `+${mod}` : `${mod}`;
         roll_properties.modifier = modifier;
+        addEffect(roll_properties, "Durable Magic");
     }
 
     // Sorcerer: Clockwork Soul - Trance of Order
@@ -318,6 +325,7 @@ function applyAbilityOrSavingThrowEffects({ rollType, ability_name, ability, mod
         character.getSetting("sorcerer-trance-of-order", false)
     ) {
         roll_properties.d20 = "1d20min10";
+        addEffect(roll_properties, "Trance of Order");
     }
 
     return sendRollWithCharacter(rollType, "1d20" + roll_properties.modifier, roll_properties);
