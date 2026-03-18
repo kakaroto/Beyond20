@@ -61,7 +61,7 @@ async function rollSkillCheck(paneClass) {
             if (modifier != "--" && modifier != "+0")
                 mod += parseInt(modifier);
             modifier = mod >= 0 ? `+${mod}` : `${mod}`;
-        }
+        } else { return; } // cancel roll
     }
     //console.log("Skill " + skill_name + " (" + ability + ") : " + modifier);
     const roll_properties = {
