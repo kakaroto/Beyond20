@@ -411,6 +411,56 @@ async function rollSavingThrowFromRow(row) {
     });
 }
 
+function rollAbilityCheckFromRow(row) {
+    const $row = $(row);
+
+    let ability_name = $row
+        .find(".ct-ability-summary__heading .ct-ability-summary__label, .ddbc-ability-summary__heading .ddbc-ability-summary__label")
+        .first()
+        .text()
+        .trim();
+
+    let ability = normalizeAbilityName(ability_name);
+
+    if (!ability) {
+        const abbr = $row
+            .find(".ct-ability-summary__heading .ct-ability-summary__abbr, .ddbc-ability-summary__heading .ddbc-ability-summary__abbr")
+            .first()
+            .text()
+            .trim()
+            .toUpperCase();
+
+        if (abbr) {
+            ability = normalizeAbilityName(abbr);
+            if (!ability_name) {
+                ability_name = abbreviationToAbility(abbr);
+            }
+        }
+    }
+
+    const modifier = $row.find(
+        ".ct-ability-summary__primary .ct-signed-number, " +
+        ".ct-ability-summary__primary .ddbc-signed-number, " +
+        ".ct-ability-summary__primary span[class*='styles_numberDisplay'], " +
+        ".ddbc-ability-summary__primary .ct-signed-number, " +
+        ".ddbc-ability-summary__primary .ddbc-signed-number, " +
+        ".ddbc-ability-summary__primary span[class*='styles_numberDisplay'], " +
+        ".ct-ability-summary__secondary .ct-signed-number, " +
+        ".ct-ability-summary__secondary .ddbc-signed-number, " +
+        ".ct-ability-summary__secondary span[class*='styles_numberDisplay'], " +
+        ".ddbc-ability-summary__secondary .ct-signed-number, " +
+        ".ddbc-ability-summary__secondary .ddbc-signed-number, " +
+        ".ddbc-ability-summary__secondary span[class*='styles_numberDisplay']"
+    ).first().text().replace(/\s+/g, "");
+
+    return applyAbilityOrSavingThrowEffects({
+        rollType: "ability",
+        ability_name,
+        ability,
+        modifier
+    });
+}
+
 function rollAbilityCheck() {
     rollAbilityOrSavingThrow("b20-ability-pane", "ability");
 }
@@ -2696,7 +2746,7 @@ function deactivateQuickRolls() {
     let abilities = $(".ddbc-ability-summary .ddbc-ability-summary__primary .integrated-dice__container");
     // If digital dice are disabled, look up where the modifier is
     if (abilities.length === 0)
-        abilities = $(".ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary .ddbc-signed-number, .ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__primary .ddbc-signed-number, .ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary span[class*='styles_numberDisplay'], .ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__primary span[class*='styles_numberDisplay']");
+        abilities = $(".ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary .ddbc-signed-number, .ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__primary .ddbc-signed-number, .ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary span[class*='styles_numberDisplay'], .ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__primary span[class*='styles_numberDisplay'], .ct-main-mobile__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary .ddbc-signed-number, .ct-main-mobile__abilities .ddbc-ability-summary .ddbc-ability-summary__primary .ddbc-signed-number, .ct-main-mobile__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary span[class*='styles_numberDisplay'], .ct-main-mobile__abilities .ddbc-ability-summary .ddbc-ability-summary__primary span[class*='styles_numberDisplay']");
     const saving_throws = $(".ct-saving-throws-summary__ability .ct-saving-throws-summary__ability-modifier,.ddbc-saving-throws-summary__ability .ddbc-saving-throws-summary__ability-modifier");
     const skills = $(".ct-skills .ct-skills__list .ct-skills__col--modifier,.ddbc-skills .ddbc-skills__list .ddbc-skills__col--modifier");
     const actions = $(".ct-combat-attack .ct-combat-attack__icon,.ddbc-combat-attack .ddbc-combat-attack__icon");
@@ -2753,15 +2803,10 @@ function activateQuickRolls() {
     });
     for (let ability of abilities.toArray()) {
         activateTooltipListeners($(ability), 'down', beyond20_tooltip, (el) => {
-            const name = el.closest(".ct-ability-summary,.ddbc-ability-summary")
-                .find(".ct-ability-summary__heading .ct-ability-summary__label,.ddbc-ability-summary__heading .ddbc-ability-summary__label")
-                .trigger('click').text();
-            // If same item, clicking will be a noop && it won't modify the document;
-            const pane_name = $(".b20-ability-pane .ct-sidebar__heading").text().split(" ")[0];
-            if (name == pane_name)
-                execute("b20-ability-pane");
-            else
-                quick_roll = true;
+            const row = el.closest(".ct-ability-summary,.ddbc-ability-summary");
+            if (row.length > 0) {
+                rollAbilityCheckFromRow(row[0]);
+            }
         });
     }
 
@@ -3195,22 +3240,8 @@ function handleAbilityIntegratedDie(target) {
     const row = target.closest(".ct-ability-summary, .ddbc-ability-summary");
     if (!row) return false;
 
-    const label = $(row)
-        .find(".ct-ability-summary__heading .ct-ability-summary__label, .ddbc-ability-summary__heading .ddbc-ability-summary__label")
-        .first();
-
-    const name = label.text().trim();
-    const paneName = $(".b20-ability-pane .ct-sidebar__heading").text().trim();
-
-    if (name && paneName && name === paneName) {
-        resetHijackQuickRollState();
-        execute("b20-ability-pane");
-    } else {
-        resetHijackQuickRollState();
-        quick_roll = true;
-        label.trigger("click");
-    }
-
+    resetHijackQuickRollState();
+    rollAbilityCheckFromRow(row);
     return true;
 }
 
@@ -3332,7 +3363,11 @@ function installDDBRollHijack() {
         ".ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary .ddbc-signed-number",
         ".ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__primary .ddbc-signed-number",
         ".ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary span[class*='styles_numberDisplay']",
-        ".ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__primary span[class*='styles_numberDisplay']"
+        ".ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__primary span[class*='styles_numberDisplay']",
+        ".ct-main-mobile__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary .ddbc-signed-number",
+        ".ct-main-mobile__abilities .ddbc-ability-summary .ddbc-ability-summary__primary .ddbc-signed-number",
+        ".ct-main-mobile__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary span[class*='styles_numberDisplay']",
+        ".ct-main-mobile__abilities .ddbc-ability-summary .ddbc-ability-summary__primary span[class*='styles_numberDisplay']"
     ].join(", ");
 
     const routeTarget = (target) => {
