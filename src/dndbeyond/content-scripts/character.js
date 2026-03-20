@@ -61,7 +61,7 @@ async function rollSkillCheck(paneClass) {
             if (modifier != "--" && modifier != "+0")
                 mod += parseInt(modifier);
             modifier = mod >= 0 ? `+${mod}` : `${mod}`;
-        }
+        } else { return; } // cancel roll
     }
     //console.log("Skill " + skill_name + " (" + ability + ") : " + modifier);
     const roll_properties = {
@@ -199,99 +199,216 @@ async function rollSkillCheck(paneClass) {
     return sendRollWithCharacter("skill", "1d20" + modifier, roll_properties);
 }
 
-function rollAbilityOrSavingThrow(paneClass, rollType) {
-    const ability_string = $("." + paneClass + " .ct-sidebar__heading").text();
-    const ability_name = ability_string.split(" ")[0];
-    const ability = ability_abbreviations[ability_name];
-    let modifier = $(`.${paneClass}__modifier .ct-signed-number,.${paneClass}__modifier .ddbc-signed-number, .${paneClass} span[class*='styles_modifier'] span[class*='styles_numberDisplay']`).text();
-
-    if (rollType == "ability") {
-        // Remarkable Athelete and Jack of All Trades don't stack, we give priority to RA instead of JoaT because
-        // it's rounded up instead of rounded down.
-        if (character.hasClassFeature("Remarkable Athlete") && character.getSetting("champion-remarkable-athlete", false) &&
-            ["STR","DEX", "CON"].includes(ability)) {
-            const remarkable_athlete_mod = Math.ceil(character._proficiency / 2);
-            modifier = parseInt(modifier) + remarkable_athlete_mod;
-            modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-        } else if (character.hasClassFeature("Jack of All Trades") && character.getSetting("bard-joat", false)) {
-            const JoaT = Math.floor(character._proficiency / 2);
-            modifier = parseInt(modifier) + JoaT;
-            modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-        }
-        if (character.getSetting("custom-ability-modifier", "")) {
-            const custom = parseInt(character.getSetting("custom-ability-modifier", "0")) || 0;
-            if (custom != 0)  {
-                modifier = parseInt(modifier) + custom;
-                modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-            }
-        }
-    }
-
+function applyAbilityOrSavingThrowEffects({ rollType, ability_name, ability, modifier, proficiency }) {
+    let mod = parseInt(modifier);
     const roll_properties = {
-        "name": ability_name,
-        "ability": ability,
-        "modifier": modifier
-    }
+        name: ability_name,
+        ability: ability,
+        modifier: modifier
+    };
 
     if (rollType === "saving-throw") {
-        const proficiency = $(`.ddbc-saving-throws-summary__ability--${ability.toLowerCase()}
-                                .ddbc-saving-throws-summary__ability-proficiency .ddbc-tooltip`).attr("data-original-title");
-        roll_properties["proficiency"] = proficiency;
+        roll_properties.proficiency = proficiency;
     }
 
-    if (ability == "STR" &&
-        ((character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
-            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false)))) {
+    if (!ability) {
+        console.warn("Beyond20: could not resolve ability", {
+            rollType,
+            ability_name,
+            ability,
+            modifier,
+            proficiency
+        });
+        return;
+    }
+
+    if (rollType === "ability") {
+        // Remarkable Athlete and Jack of All Trades don't stack.
+        // Give priority to Remarkable Athlete because it rounds up.
+        if (
+            character.hasClassFeature("Remarkable Athlete") &&
+            character.getSetting("champion-remarkable-athlete", false) &&
+            ["STR", "DEX", "CON"].includes(ability)
+        ) {
+            mod += Math.ceil(character._proficiency / 2);
+            addEffect(roll_properties, "Remarkable Athlete");
+        } else if (
+            character.hasClassFeature("Jack of All Trades") &&
+            character.getSetting("bard-joat", false)
+        ) {
+            mod += Math.floor(character._proficiency / 2);
+            addEffect(roll_properties, "Jack of All Trades");
+        }
+
+        if (character.getSetting("custom-ability-modifier", "")) {
+            const custom = parseInt(character.getSetting("custom-ability-modifier", "0")) || 0;
+            if (custom !== 0) {
+                mod += custom;
+            }
+        }
+
+        // Fey Wanderer Ranger - Otherworldly Glamour
+        if (
+            character.hasClassFeature("Otherworldly Glamour") &&
+            ability === "CHA"
+        ) {
+            mod += Math.max(character.getAbility("WIS").mod, 1);
+            addEffect(roll_properties, "Otherworldly Glamour");
+        }
+
+        modifier = mod >= 0 ? `+${mod}` : `${mod}`;
+        roll_properties.modifier = modifier;
+    }
+
+    if (
+        ability === "STR" &&
+        (
+            (character.hasClassFeature("Rage") && character.getSetting("barbarian-rage", false)) ||
+            (character.hasClassFeature("Giant’s Might") && character.getSetting("fighter-giant-might", false))
+        )
+    ) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
         addEffect(roll_properties, "Rage");
     }
-    if (character.hasClassFeature("Indomitable Might") && ability == "STR") {
+
+    if (character.hasClassFeature("Indomitable Might") && ability === "STR") {
         const min = character.getAbility("STR").score - parseInt(modifier);
-        roll_properties.d20 = `1d20min${min}`
+        roll_properties.d20 = `1d20min${min}`;
+        addEffect(roll_properties, "Indomitable Might");
     }
 
     // Concentration checks
-    if (rollType == "saving-throw" && ability == "CON") {
+    if (rollType === "saving-throw" && ability === "CON") {
         const has_warcaster = character.hasFeat("War Caster");
-        const has_bladesong = character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false);
+        const has_bladesong =
+            character.hasClassFeature("Bladesong") &&
+            character.getSetting("wizard-bladesong", false);
+
         if (has_warcaster || has_bladesong) {
-            const confirmation = has_bladesong ? 'Your Bladesong whispers: "Is this a Concentration Check?"' : 'Is this a Concentration Check?';
-            // Using confirm because the parent function is not async
+            const confirmation = has_bladesong
+                ? 'Your Bladesong whispers: "Is this a Concentration Check?"'
+                : "Is this a Concentration Check?";
+
             if (confirm(confirmation)) {
-                // Wizard Bladesong Concentration Check Bonus
                 if (has_bladesong) {
-                    const intelligence = character.getAbility("INT") || {mod: 0};
-                    const mod = Math.max((parseInt(intelligence.mod) || 0), 1);
-                    modifier = parseInt(modifier) + mod;
-                    modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-                    roll_properties["modifier"] = modifier;
+                    const intelligence = character.getAbility("INT") || { mod: 0 };
+                    const bladesongMod = Math.max((parseInt(intelligence.mod) || 0), 1);
+                    mod = parseInt(modifier) + bladesongMod;
+                    modifier = mod >= 0 ? `+${mod}` : `${mod}`;
+                    roll_properties.modifier = modifier;
+                    addEffect(roll_properties, "Bladesong");
                 }
-                // Feat - War Caster - Concentration Check Bonus
+
                 if (has_warcaster) {
                     roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+                    addEffect(roll_properties, "Warcaster");
                 }
             }
         }
     }
-    
-    // Wizard - War Magic - Saving Throw Bonus
-    if (character.hasClassFeature("Durable Magic") && character.getSetting("wizard-durable-magic", false) &&
-        rollType == "saving-throw") {
-        modifier = parseInt(modifier) + 2;
-        modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-        roll_properties["modifier"] = modifier;
+
+    // Wizard - War Magic - Durable Magic
+    if (
+        rollType === "saving-throw" &&
+        character.hasClassFeature("Durable Magic") &&
+        character.getSetting("wizard-durable-magic", false)
+    ) {
+        mod = parseInt(roll_properties.modifier) + 2;
+        modifier = mod >= 0 ? `+${mod}` : `${mod}`;
+        roll_properties.modifier = modifier;
+        addEffect(roll_properties, "Durable Magic");
     }
-    // Fey Wanderer Ranger - Otherworldly Glamour
-    if (rollType == "ability" && character.hasClassFeature("Otherworldly Glamour") && ability == "CHA") {
-        modifier = parseInt(modifier) + Math.max(character.getAbility("WIS").mod,1);
-        modifier = modifier >= 0 ? `+${modifier}` : `${modifier}`;
-        roll_properties["modifier"] = modifier;
-    }
+
     // Sorcerer: Clockwork Soul - Trance of Order
-    if (character.hasClassFeature("Trance of Order") && character.getSetting("sorcerer-trance-of-order", false))
-            roll_properties.d20 = "1d20min10";
-   
-    return sendRollWithCharacter(rollType, "1d20" + modifier, roll_properties);
+    if (
+        character.hasClassFeature("Trance of Order") &&
+        character.getSetting("sorcerer-trance-of-order", false)
+    ) {
+        roll_properties.d20 = "1d20min10";
+        addEffect(roll_properties, "Trance of Order");
+    }
+
+    return sendRollWithCharacter(rollType, "1d20" + roll_properties.modifier, roll_properties);
+}
+
+function rollAbilityOrSavingThrow(paneClass, rollType) {
+    const ability_string = $("." + paneClass + " .ct-sidebar__heading").text().trim();
+    const ability_name = ability_string.split(/\s+/)[0] || "";
+    const ability =
+        (typeof ability_abbreviations !== "undefined" && ability_abbreviations[ability_name]) ||
+        normalizeAbilityName(ability_name);
+
+    const modifier = $(
+        `.${paneClass}__modifier .ct-signed-number,` +
+        `.${paneClass}__modifier .ddbc-signed-number,` +
+        ` .${paneClass} span[class*='styles_modifier'] span[class*='styles_numberDisplay']`
+    ).text().replace(/\s+/g, "");
+
+    let proficiency;
+    if (rollType === "saving-throw" && ability) {
+        proficiency = $(
+            `.ddbc-saving-throws-summary__ability--${ability.toLowerCase()} ` +
+            `.ddbc-saving-throws-summary__ability-proficiency .ddbc-tooltip`
+        ).attr("data-original-title");
+    }
+
+    return applyAbilityOrSavingThrowEffects({
+        rollType,
+        ability_name,
+        ability,
+        modifier,
+        proficiency
+    });
+}
+
+async function rollSavingThrowFromRow(row) {
+    const $row = $(row);
+    const abbr = $row
+        .find(".ct-saving-throws-summary__ability-name abbr, .ddbc-saving-throws-summary__ability-name abbr")
+        .first();
+
+    let ability_name = (abbr.attr("title") || "").trim();
+    let ability = (abbr.text() || "").trim().toUpperCase();
+
+    if (!ability_name && ability) {
+        const fullNames = {
+            STR: "Strength",
+            DEX: "Dexterity",
+            CON: "Constitution",
+            INT: "Intelligence",
+            WIS: "Wisdom",
+            CHA: "Charisma"
+        };
+        ability_name = fullNames[ability] || ability;
+    }
+
+    if (!ability) {
+        ability = normalizeAbilityName(ability_name);
+    }
+
+    const modifier = $row.find(
+        ".ct-saving-throws-summary__ability-modifier .ct-signed-number, " +
+        ".ct-saving-throws-summary__ability-modifier .ddbc-signed-number, " +
+        ".ddbc-saving-throws-summary__ability-modifier .ct-signed-number, " +
+        ".ddbc-saving-throws-summary__ability-modifier .ddbc-signed-number, " +
+        ".ct-saving-throws-summary__ability-modifier span[class*='styles_numberDisplay'], " +
+        ".ddbc-saving-throws-summary__ability-modifier span[class*='styles_numberDisplay']"
+    ).text().replace(/\s+/g, "");
+
+    const proficiency = $row.find(
+        ".ct-saving-throws-summary__ability-proficiency .ct-tooltip, " +
+        ".ct-saving-throws-summary__ability-proficiency .ddbc-tooltip, " +
+        ".ddbc-saving-throws-summary__ability-proficiency .ct-tooltip, " +
+        ".ddbc-saving-throws-summary__ability-proficiency .ddbc-tooltip"
+    ).attr("data-original-title");
+
+    return applyAbilityOrSavingThrowEffects({
+        rollType: "saving-throw",
+        ability_name,
+        ability,
+        modifier,
+        proficiency
+    });
 }
 
 function rollAbilityCheck() {
@@ -299,7 +416,12 @@ function rollAbilityCheck() {
 }
 
 function rollSavingThrow() {
-    rollAbilityOrSavingThrow("b20-ability-saving-throws-pane", "saving-throw");
+    const row = $(".ct-saving-throws-summary__ability.beyond20-active-roll, .ddbc-saving-throws-summary__ability.beyond20-active-roll").first();
+    if (row.length) {
+        return rollSavingThrowFromRow(row[0]);
+    }
+
+    return rollAbilityOrSavingThrow("b20-ability-saving-throws-pane", "saving-throw");
 }
 
 function rollInitiative() {
@@ -2964,10 +3086,315 @@ function handleMessage(request, sender, sendResponse) {
     }
 }
 
+let ddbRollHijackInstalled = false;
+
+function swallowRollEvent(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof event.stopImmediatePropagation === "function") {
+        event.stopImmediatePropagation();
+    }
+}
+
+function handleCombatAttackIntegratedDie(button) {
+    const row = button.closest(".ct-combat-attack, .ddbc-combat-attack");
+    if (!row) return false;
+
+    const isToHit = !!button.closest(".ct-combat-attack__tohit, .ddbc-combat-attack__tohit");
+    const damageCell = button.closest(".ct-combat-attack__damage, .ddbc-combat-attack__damage");
+    const isDamage = !!damageCell;
+    const forceVersatile = !!(damageCell && damageCell.previousElementSibling);
+
+    const name = $(row)
+        .find(".ct-combat-attack__name .ct-combat-attack__label, .ddbc-combat-attack__name .ddbc-combat-attack__label")
+        .first()
+        .text()
+        .trim();
+
+    let pane = null;
+    let paneClass = null;
+
+    for (paneClass of ["b20-item-pane", "b20-action-pane", "ct-custom-action-pane", "b20-custom-action-pane", "ct-spell-pane"]) {
+        pane = $("." + paneClass);
+        if (pane.length > 0) break;
+    }
+
+    const paneName = pane && pane.length
+        ? pane.find(".ct-sidebar__heading").text().trim()
+        : "";
+
+    if (name && paneName === name && paneClass) {
+        execute(paneClass, {
+            force_to_hit_only: isToHit,
+            force_damages_only: isDamage,
+            force_versatile: forceVersatile
+        });
+    } else {
+        quick_roll_force_attack = isToHit;
+        quick_roll_force_damage = isDamage;
+        quick_roll_force_versatile = forceVersatile;
+        quick_roll = true;
+
+        $(row)
+            .find(".ct-combat-attack__name .ct-combat-attack__label, .ddbc-combat-attack__name .ddbc-combat-attack__label")
+            .first()
+            .trigger("click");
+    }
+
+    return true;
+}
+
+function handleSpellIntegratedDie(button) {
+    const row = button.closest(".ct-spells-spell, .ddbc-spells-spell");
+    if (!row) return false;
+
+    const isToHit = !!button.closest(".ct-spells-spell__tohit, .ddbc-spells-spell__tohit");
+    const isDamage = !!button.closest(".ct-spells-spell__damage, .ddbc-spells-spell__damage");
+
+    const nameElement = $(row)
+        .find(".ct-spell-name, .ddbc-spell-name, span[class*='styles_spellName']")
+        .first();
+
+    const spellName = nameElement.text().trim();
+    const paneName = $(".ct-spell-pane .ct-sidebar__heading .ct-spell-name, .ct-spell-pane .ct-sidebar__heading .ddbc-spell-name, .ct-spell-pane .ct-sidebar__heading span[class*='styles_spellName']")
+        .text()
+        .trim();
+
+    if (spellName && spellName === paneName) {
+        const castas = $(".ct-spell-caster__casting-level-current").text();
+        const level = $(row).closest(".ct-content-group").find(".ct-content-group__header-content").text();
+        const paneLevel = castas === "" ? "Cantrip" : `${castas} Level`;
+
+        if (paneLevel.toLowerCase() === level.toLowerCase()) {
+            execute("ct-spell-pane", {
+                force_to_hit_only: isToHit,
+                force_damages_only: isDamage
+            });
+        } else {
+            $(".ddbc-character-tidbits__menu-callout").trigger("click");
+            nameElement.trigger("click");
+
+            quick_roll_force_attack = isToHit;
+            quick_roll_force_damage = isDamage;
+            quick_roll_force_versatile = false;
+            quick_roll = true;
+        }
+    } else {
+        quick_roll_force_attack = isToHit;
+        quick_roll_force_damage = isDamage;
+        quick_roll_force_versatile = false;
+        quick_roll = true;
+
+        nameElement.trigger("click");
+    }
+
+    return true;
+}
+
+function handleAbilityIntegratedDie(target) {
+    const row = target.closest(".ct-ability-summary, .ddbc-ability-summary");
+    if (!row) return false;
+
+    const label = $(row)
+        .find(".ct-ability-summary__heading .ct-ability-summary__label, .ddbc-ability-summary__heading .ddbc-ability-summary__label")
+        .first();
+
+    const name = label.text().trim();
+    const paneName = $(".b20-ability-pane .ct-sidebar__heading").text().trim();
+
+    if (name && paneName && name === paneName) {
+        resetHijackQuickRollState();
+        execute("b20-ability-pane");
+    } else {
+        resetHijackQuickRollState();
+        quick_roll = true;
+        label.trigger("click");
+    }
+
+    return true;
+}
+
+function handleSavingThrowIntegratedDie(target) {
+    const row = target.closest(".ct-saving-throws-summary__ability, .ddbc-saving-throws-summary__ability");
+    if (!row) return false;
+
+    resetHijackQuickRollState();
+
+    $(".ct-saving-throws-summary__ability.beyond20-active-roll, .ddbc-saving-throws-summary__ability.beyond20-active-roll")
+        .removeClass("beyond20-active-roll");
+
+    $(row).addClass("beyond20-active-roll");
+
+    rollSavingThrowFromRow(row);
+    return true;
+}
+
+function handleSkillIntegratedDie(target) {
+    const row = target.closest(".ct-skills__item, .ddbc-skills__item");
+    if (!row) return false;
+
+    const label = $(row)
+        .find(".ct-skills__col--skill, .ddbc-skills__col--skill")
+        .first();
+
+    const name = label.text().trim();
+
+    let pane = null;
+    let paneClass = null;
+
+    for (const cls of ["ct-skill-pane", "ct-custom-skill-pane"]) {
+        const found = $("." + cls);
+        if (found.length > 0) {
+            pane = found;
+            paneClass = cls;
+            break;
+        }
+    }
+
+    const paneName = pane && paneClass
+        ? pane.find(".ct-sidebar__heading ." + paneClass + "__header-name").text().trim()
+        : "";
+
+    if (name && paneName && name === paneName && paneClass) {
+        resetHijackQuickRollState();
+        execute(paneClass);
+    } else {
+        resetHijackQuickRollState();
+        quick_roll = true;
+        label.trigger("click");
+    }
+
+    return true;
+}
+
+function handleInitiativeIntegratedDie(target) {
+    const row = target.closest(
+        ".ct-combat__summary-group--initiative, " +
+        ".ct-combat-tablet__extra--initiative, " +
+        ".ct-combat-mobile__extras > section[class*='styles_boxMobile']"
+    );
+    if (!row) return false;
+
+    if ($(".b20-initiative-pane").length) {
+        resetHijackQuickRollState();
+        execute("b20-initiative-pane");
+    } else {
+        resetHijackQuickRollState();
+        quick_roll = true;
+
+        const valueContainer = target.closest("div[class*='styles_value']");
+        if (valueContainer) {
+            $(valueContainer).trigger("click");
+        } else {
+            $(target).trigger("click");
+        }
+    }
+
+    return true;
+}
+
+function resetHijackQuickRollState() {
+    quick_roll = false;
+    quick_roll_force_attack = false;
+    quick_roll_force_damage = false;
+    quick_roll_force_versatile = false;
+
+    if (quick_roll_timeout > 0) {
+        clearTimeout(quick_roll_timeout);
+        quick_roll_timeout = 0;
+    }
+}
+
+let ddbHijackPointerHandled = false;
+
+function installDDBRollHijack() {
+    if (ddbRollHijackInstalled) return;
+    ddbRollHijackInstalled = true;
+
+    const selector = [
+        "button.integrated-dice__container.beyond20-quick-roll-area",
+        "button.integrated-dice__container",
+
+        ".ct-saving-throws-summary__ability .ct-saving-throws-summary__ability-modifier",
+        ".ddbc-saving-throws-summary__ability .ddbc-saving-throws-summary__ability-modifier",
+
+        ".ct-skills .ct-skills__list .ct-skills__col--modifier",
+        ".ddbc-skills .ddbc-skills__list .ddbc-skills__col--modifier",
+
+        ".ct-combat__summary-group--initiative .integrated-dice__container",
+        ".ct-combat__summary-group--initiative span[class*='styles_numberDisplay']",
+        ".ct-combat-tablet__extra--initiative .integrated-dice__container",
+        ".ct-combat-tablet__extra--initiative span[class*='styles_numberDisplay']",
+        ".ct-combat-mobile__extras > section[class*='styles_boxMobile'] .integrated-dice__container",
+        ".ct-combat-mobile__extras > section[class*='styles_boxMobile'] span[class*='styles_numberDisplay']",
+
+        ".ddbc-ability-summary .ddbc-ability-summary__primary .integrated-dice__container",
+        ".ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary .ddbc-signed-number",
+        ".ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__primary .ddbc-signed-number",
+        ".ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__secondary span[class*='styles_numberDisplay']",
+        ".ct-quick-info__abilities .ddbc-ability-summary .ddbc-ability-summary__primary span[class*='styles_numberDisplay']"
+    ].join(", ");
+
+    const routeTarget = (target) => {
+        if (!target) return false;
+        if (handleCombatAttackIntegratedDie(target)) return true;
+        if (handleSpellIntegratedDie(target)) return true;
+        if (handleInitiativeIntegratedDie(target)) return true;
+        if (handleAbilityIntegratedDie(target)) return true;
+        if (handleSavingThrowIntegratedDie(target)) return true;
+        if (handleSkillIntegratedDie(target)) return true;
+        return false;
+    };
+
+    const interceptPointer = (event) => {
+        const target = event.target.closest(selector);
+        if (!target) return;
+
+        ddbHijackPointerHandled = true;
+        swallowRollEvent(event);
+
+        const handled = routeTarget(target);
+        if (!handled) {
+            ddbHijackPointerHandled = false;
+        }
+    };
+
+    const interceptClick = (event) => {
+        const target = event.target.closest(selector);
+        if (!target) return;
+
+        if (ddbHijackPointerHandled) {
+            swallowRollEvent(event);
+            ddbHijackPointerHandled = false;
+            return;
+        }
+
+        swallowRollEvent(event);
+        routeTarget(target);
+    };
+
+    window.addEventListener("pointerdown", interceptPointer, true);
+
+    window.addEventListener("click", interceptClick, true);
+
+    window.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+
+        const target = event.target.closest(selector);
+        if (!target) return;
+
+        swallowRollEvent(event);
+        routeTarget(target);
+    }, true);
+
+    console.log("Beyond20: DDB roll hijack installed.");
+}
+
 var settings = getDefaultSettings();
 var character = new Character(settings);
 var creature = null;
 updateSettings();
+installDDBRollHijack();
 chrome.runtime.onMessage.addListener(handleMessage);
 observer = new window.MutationObserver(documentModified);
 observer.observe(document, { subtree: true, childList: true, characterData: true });
