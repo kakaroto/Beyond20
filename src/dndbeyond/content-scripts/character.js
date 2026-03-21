@@ -3169,11 +3169,26 @@ function handleCombatAttackIntegratedDie(button) {
         : "";
 
     if (name && paneName === name && paneClass) {
-        execute(paneClass, {
-            force_to_hit_only: isToHit,
-            force_damages_only: isDamage,
-            force_versatile: forceVersatile
-        });
+        const waitForPane = async () => {
+            const paneSelectors = {
+                "b20-item-pane": ".ct-item-detail",
+                "b20-action-pane": ".ct-available-actions",
+                "ct-custom-action-pane": ".ct-custom-action-pane",
+                "b20-custom-action-pane": ".ct-available-actions",
+                "ct-spell-pane": ".ct-spell-details"
+            };
+            const selector = paneSelectors[paneClass];
+            for (let i = 0; i < 5; i++) {
+                if ($(selector).length > 0) break;
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+            execute(paneClass, {
+                force_to_hit_only: isToHit,
+                force_damages_only: isDamage,
+                force_versatile: forceVersatile
+            });
+        };
+        waitForPane();
     } else {
         quick_roll_force_attack = isToHit;
         quick_roll_force_damage = isDamage;
@@ -3211,10 +3226,17 @@ function handleSpellIntegratedDie(button) {
         const paneLevel = castas === "" ? "Cantrip" : `${castas} Level`;
 
         if (paneLevel.toLowerCase() === level.toLowerCase()) {
-            execute("ct-spell-pane", {
-                force_to_hit_only: isToHit,
-                force_damages_only: isDamage
-            });
+            const waitForSpellPane = async () => {
+                for (let i = 0; i < 5; i++) {
+                    if ($(".ct-spell-details").length > 0) break;
+                    await new Promise(resolve => setTimeout(resolve, 50));
+                }
+                execute("ct-spell-pane", {
+                    force_to_hit_only: isToHit,
+                    force_damages_only: isDamage
+                });
+            };
+            waitForSpellPane();
         } else {
             $(".ddbc-character-tidbits__menu-callout").trigger("click");
             nameElement.trigger("click");
@@ -3382,6 +3404,7 @@ function installDDBRollHijack() {
     };
 
     const interceptPointer = (event) => {
+        if (event.button !== 0) return;
         const target = event.target.closest(selector);
         if (!target) return;
 
@@ -3395,6 +3418,7 @@ function installDDBRollHijack() {
     };
 
     const interceptClick = (event) => {
+        if (event.button !== 0) return;
         const target = event.target.closest(selector);
         if (!target) return;
 
