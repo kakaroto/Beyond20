@@ -238,33 +238,26 @@ class DigitalDiceManager {
         return expected;
     }
 
-    static _getPendingMeta(pending) {
-        if (!pending) return null;
-        if (!pending[3]) pending[3] = {};
-        return pending[3];
+    static _getMeta(pending) {
+        if (pending && !pending[3]) pending[3] = {};
+        return pending?.[3];
     }
 
     static _clearPendingTimeout(pending) {
-        const meta = this._getPendingMeta(pending);
-        if (!meta) return;
-        if (meta.timeoutId) {
-            clearTimeout(meta.timeoutId);
-            meta.timeoutId = null;
-        }
+        clearTimeout(this._getMeta(pending)?.timeoutId);
+        if (this._getMeta(pending)) this._getMeta(pending).timeoutId = null;
     }
 
     static _startPendingTimeout(pending, ms = 15000) {
-        const meta = this._getPendingMeta(pending);
+        const meta = this._getMeta(pending);
         if (!meta) return;
 
         this._clearPendingTimeout(pending);
-
         meta.timeoutId = setTimeout(() => {
-            const stillActive = this._pendingRolls.length > 0 && this._pendingRolls[0] === pending;
-            if (!stillActive) return;
-
-            console.warn("DigitalDiceManager: timed out waiting for MB fulfilled roll");
-            this._finishPendingRoll(new Error("DigitalDiceManager: MB roll timeout"));
+            if (this._pendingRolls[0] === pending) {
+                console.warn("DigitalDiceManager: timed out waiting for MB fulfilled roll");
+                this._finishPendingRoll(new Error("DigitalDiceManager: MB roll timeout"));
+            }
         }, ms);
     }
 
@@ -273,7 +266,7 @@ class DigitalDiceManager {
         if (!pending) return;
 
         const [roll] = pending;
-        const meta = this._getPendingMeta(pending);
+        const meta = this._getMeta(pending);
 
         // If we haven't started a roll click yet, ignore
         if (!meta || !meta.startedAtMs) return;
@@ -619,38 +612,27 @@ class DigitalDiceManager {
             const opened = await this._ensureRollerOpenWithRetry();
             if (opened) await this._resetDiceWithRetry();
 
-            const expectedDice = this._getExpectedDiceQuantitiesForRoll(roll);
-
             let diceRolled = 0;
-            for (let dice of roll._dice) {
+            for (const dice of roll._dice) {
                 diceRolled += await this.rollDice(dice.amount, `d${dice.faces}`);
             }
 
             if (diceRolled > 0) {
-                if (opened) {
-                    // Wait for popup quantities to settle
-                    // (kept from your working version)
-                    await this._wait(100);
-                }
+                if (opened) await this._wait(100);
 
                 const pending = this._pendingRolls[0];
-                const meta = this._getPendingMeta(pending);
+                const meta = this._getMeta(pending);
                 if (meta) {
                     meta.startedAtMs = Date.now();
-                    meta.expectedDice = expectedDice;
-                    meta.rollId = null;
+                    meta.expectedDice = this._getExpectedDiceQuantitiesForRoll(roll);
                 }
 
                 const rolled = await this._makeRoll(roll);
-                if (!rolled) {
-                    throw new Error("DigitalDiceManager: failed to click DDB roll button");
-                }
-
+                if (!rolled) throw new Error("DigitalDiceManager: failed to click DDB roll button");
                 this._startPendingTimeout(pending, 15000);
-                return;
             } else {
                 if (opened) await this._resetDiceWithRetry();
-                this._finishPendingRoll()
+                this._finishPendingRoll();
             }
         } catch (err) {
             console.warn("DigitalDiceManager: digital roll failed, rejecting for native fallback", err);

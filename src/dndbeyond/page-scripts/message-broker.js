@@ -75,12 +75,10 @@ if (!window.__beyond20_mb2_initialized__) {
 
             if (!part?.formula) continue;
 
-            let operation = 0; // sum
-            if ((part.modifiers || "").includes("kl") || (part.modifiers || "").includes("dh")) {
-                operation = 1; // min
-            } else if ((part.modifiers || "").includes("kh") || (part.modifiers || "").includes("dl")) {
-                operation = 2; // max
-            }
+            const mods = part.modifiers || "";
+            let operation = 0;
+            if (mods.includes("kl") || mods.includes("dh")) operation = 1;
+            else if (mods.includes("kh") || mods.includes("dl")) operation = 2;
 
             const faces = Number(part.faces);
             const dieType = [4, 6, 8, 10, 12, 20, 100].includes(faces) ? `d${faces}` : "d100";
@@ -89,7 +87,6 @@ if (!window.__beyond20_mb2_initialized__) {
                 count: parseInt(part.amount, 10) * signMultiplier,
                 dieType,
                 operation,
-                // Keep all dice so kh/kl style rolls still carry the full raw data
                 dice: (part.rolls || []).map(r => ({
                     dieType,
                     dieValue: r.roll || 0
@@ -150,8 +147,62 @@ if (!window.__beyond20_mb2_initialized__) {
         return data;
     }
 
-    function b20BuildDdbRollsForGameLog(b20Rolls) {
-        return (Array.isArray(b20Rolls) ? b20Rolls : []).map(r => rollToDDBRoll(r, true));
+    function b20BuildDdbRollsForGameLog(b20Rolls, request = {}) {
+        const rolls = Array.isArray(b20Rolls) ? b20Rolls : [];
+        if (!rolls.length) return [];
+
+        const advantage = request.advantage;
+        const isAdvantage = advantage === 3;
+        const isDisadvantage = advantage === 4;
+        const isSuperAdvantage = advantage === 6;
+        const isSuperDisadvantage = advantage === 7;
+
+        if (!isAdvantage && !isDisadvantage && !isSuperAdvantage && !isSuperDisadvantage) {
+            return rolls.map(r => rollToDDBRoll(r, true));
+        }
+
+        const [d20Rolls, otherRolls] = [[], []];
+        for (const roll of rolls) {
+            ((roll.parts || []).some(p => p?.faces === 20) ? d20Rolls : otherRolls).push(roll);
+        }
+
+        const isAdv = isAdvantage || isSuperAdvantage;
+        return [
+            ...(d20Rolls.length ? [combineD20Rolls(d20Rolls, isAdv, isSuperAdvantage || isSuperDisadvantage)] : []),
+            ...otherRolls.map(r => rollToDDBRoll(r, true))
+        ];
+    }
+
+    function combineD20Rolls(d20Rolls, isAdvantage, isSuper = false) {
+        let constant = 0;
+        const allDice = [];
+
+        for (let i = 0; i < d20Rolls.length; i++) {
+            for (const part of (d20Rolls[i]?.parts || [])) {
+                if (typeof part === "number") {
+                    if (i === 0) constant += part;
+                } else if (part?.faces === 20) {
+                    allDice.push(...(part.rolls || []).map(r => ({ dieType: "d20", dieValue: r.roll || 0 })));
+                }
+            }
+        }
+
+        const keepHighest = isAdvantage;
+        const operation = keepHighest ? 2 : 1;
+        const count = allDice.length;
+
+        return {
+            diceNotation: { constant, set: [{ count, dieType: "d20", operation, dice: allDice }] },
+            diceNotationStr: `${count}d20${keepHighest ? "kh" : "kl"}${isSuper ? "1" : ""}`,
+            rollKind: keepHighest ? "advantage" : "disadvantage",
+            rollType: "to hit",
+            result: {
+                constant,
+                text: `(${allDice.map(d => d.dieValue).join(",")})+${constant}`,
+                total: constant + Math[keepHighest ? "max" : "min"](...allDice.map(d => d.dieValue)),
+                values: allDice.map(d => d.dieValue)
+            }
+        };
     }
 
     function _dispatchOriginalFulfilled(entry, idx) {
@@ -180,7 +231,10 @@ if (!window.__beyond20_mb2_initialized__) {
             const patched = cloneMessage(base);
             patched.data = patched.data || {};
             patched.data.action = normalizeActionName(entry.action || patched.data.action);
-            patched.data.rolls = b20BuildDdbRollsForGameLog(entry.rollData.rolls || []);
+            patched.data.rolls = b20BuildDdbRollsForGameLog(
+                entry.rollData.rolls || [],
+                entry.request || {}
+            );
             patched.data[B20_OVERRIDE_MARKER] = true;
 
             if (messageBroker._mbDispatch) messageBroker._mbDispatch(patched);
@@ -263,7 +317,8 @@ if (!window.__beyond20_mb2_initialized__) {
             rollData: null,
             ddbFulfilled: null,
             fallbackTimer: null,
-            createdAt: Date.now()
+            createdAt: Date.now(),
+            request: rollData.request || {}
         });
     }
 
@@ -273,6 +328,10 @@ if (!window.__beyond20_mb2_initialized__) {
 
         const entry = b20OverrideQueue[0];
         entry.rollData = rollData;
+
+        if (rollData.request) {
+            entry.request = { ...entry.request, ...rollData.request };
+        }
 
         if (entry.ddbFulfilled) {
             _dispatchOverrideFulfilled(entry, 0);
