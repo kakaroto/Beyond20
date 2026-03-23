@@ -709,11 +709,11 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
         damage_types.push("Radiant Soul");
     }
     
-    // MotM Bugbear: Suprise Attack
-    if (character.hasRacialTrait("Bugbear: Suprise Attack") &&
-        character.getSetting("motm-bugbear-suprise-attack", false)) {
+    // MotM Bugbear: Surprise Attack
+    if (character.hasRacialTrait("Bugbear: Surprise Attack") &&
+        character.getSetting("motm-bugbear-surprise-attack", false)) {
         damages.push("2d6");
-        damage_types.push("Bugbear - Suprise Attack");
+        damage_types.push("Bugbear - Surprise Attack");
     }
 
     // Class Specific

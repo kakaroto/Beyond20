@@ -279,8 +279,8 @@ function populateCharacter(response) {
             e = createHTMLOption("motm-aasimar-radiant-soul", false, character_settings);
             options.append(e);
         }
-        if (response["racial-traits"].includes("Bugbear: Suprise Attack")) {
-            e = createHTMLOption("motm-bugbear-suprise-attack", false, character_settings);
+        if (response["racial-traits"].includes("Bugbear: Surprise Attack")) {
+            e = createHTMLOption("motm-bugbear-surprise-attack", false, character_settings);
             options.append(e);
         }
         if (response["class-features"].includes("Bladesong")) {
