@@ -279,6 +279,10 @@ function populateCharacter(response) {
             e = createHTMLOption("motm-aasimar-radiant-soul", false, character_settings);
             options.append(e);
         }
+        if (response["racial-traits"].includes("Bugbear: Suprise Attack")) {
+            e = createHTMLOption("motm-bugbear-suprise-attack", false, character_settings);
+            options.append(e);
+        }
         if (response["class-features"].includes("Bladesong")) {
             e = createHTMLOption("wizard-bladesong", false, character_settings);
             options.append(e);
