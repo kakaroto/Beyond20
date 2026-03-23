@@ -710,7 +710,7 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
     }
     
     // MotM Bugbear: Surprise Attack
-    if (character.hasRacialTrait("Bugbear: Surprise Attack") &&
+    if (character.hasRacialTrait("Surprise Attack") &&
         character.getSetting("motm-bugbear-surprise-attack", false)) {
         damages.push("2d6");
         damage_types.push("Bugbear - Surprise Attack");
