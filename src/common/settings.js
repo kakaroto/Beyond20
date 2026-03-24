@@ -996,8 +996,14 @@ const character_settings = {
         "title": "Bugbear: Surprise Attack",
         "description": "When you hit a creature with an attack roll, the creature takes an extra 2d6 damage if it hasn't taken a turn yet in the current combat.",
         "type": "bool",
-        "default": false
+        "default": false,
+        "lock": "motm-bugbear-surprise-attack-lock"
     },
+    "motm-bugbear-surprise-attack-lock": {
+        "type": "bool",
+        "default": false,
+        "hidden": true
+    }
 }
 
 

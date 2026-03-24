@@ -713,7 +713,9 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
     if (character.hasRacialTrait("Surprise Attack") &&
         character.getSetting("motm-bugbear-surprise-attack", false)) {
         damages.push("2d6");
-        damage_types.push("Bugbear - Surprise Attack");
+        damage_types.push("Surprise Attack");
+        const isLocked = character.getSetting("motm-bugbear-surprise-attack-lock", false);
+        if(!isLocked) settings_to_change["motm-bugbear-surprise-attack"] = false;
     }
 
     // Class Specific
