@@ -92,6 +92,7 @@ See the [Screenshots](screenshots) page for a video tour of some of the features
 * Feat: Polearm Master
 * Feat: Healer 2024
 * Aasimar: Radiant Soul
+* Bugbear: Surprise Attack
 * Artificer: Arcane Firearm
 * Artificer: Alchemical Savant
 * Artificer: Armorer Power Armor
