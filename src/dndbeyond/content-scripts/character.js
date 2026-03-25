@@ -2744,6 +2744,103 @@ function injectSettingsButton() {
     updateHotkeysList(hotkeys_popup);
 }
 
+let previousButton = null;
+function injectCustomRollButton() {
+    if (!DigitalDiceManager.isEnabled()) // nothing to do when digital dice menu does not exist
+        return;
+
+    let rollButton = document.querySelector("button[data-testid=diceRollButton]"),
+        resetButton = document.querySelector("button[data-testid=diceClearButton]");
+
+    // We have to wait until dice menu is completely initialized.
+    if (!rollButton)
+        return;
+
+    const currentlyInjected = previousButton !== null && rollButton.dataset.b20roll !== undefined;
+    if (!settings["use-digital-dice"]) { // inject or update button
+        if (!currentlyInjected) {
+            // store a reference to the previous button so we can revert our changes if the user switches the setting off again
+            previousButton = rollButton;
+
+            // remove existing click event by replacing element with itself
+            const newButton = rollButton.cloneNode(true);
+            rollButton.replaceWith(newButton);
+            rollButton = newButton;
+
+            const resetButtonClicked = () => {
+                // make sure the reset button's event handler has run so we don't get the old disabled attribute
+                requestAnimationFrame(() => {
+                    // update button enabled state
+                    const newDisabledState = resetButton.disabled || !DigitalDiceManager.parseCurrentSelection().length;
+                    rollButton.disabled = rollButton.ariaDisabled = newDisabledState;
+                });
+            };
+
+            // add an additional event handler to the reset button to sync the buttons' disabled states
+            if(resetButton) {
+                resetButton.removeEventListener("click", resetButtonClicked);
+                resetButton.addEventListener("click", resetButtonClicked);
+            }
+
+            // add our custom click handler for rolling
+            rollButton.addEventListener("click", async () => {
+                const selectedDice = DigitalDiceManager.parseCurrentSelection();
+
+                if (!selectedDice.length) {
+                    // This should not happen unless DDB page changes as button is hidden when no dice are selected
+                    console.warn("Roll button clicked but no dice were selected. Ignoring.");
+                    return;
+                }
+
+                await sendRollWithCharacter("custom", selectedDice.join(" + "), { name: "custom: roll" });
+
+                // close the panel again
+                $(".dice-rolling-panel > button").click();
+            });
+
+            // set a flag so we can later determine whether we have already injected our custom event handler
+            rollButton.dataset.b20roll = "1";
+
+            // hide the whisper toggle buttons if they exist. We've got our own settings for whispering rolls
+            const toggleContainer = document.querySelector("button[data-testid=diceRollToSelfButton]")?.parentNode;
+            toggleContainer && (toggleContainer.style.display = "none");
+
+            // hide the 3D dice settings container as those dice won't get used
+            const diceSettingsContainer = document.querySelector("div[class*=_shared3dDiceContainer]"); // cannot use '.class' selector as class is prefixed with a random value
+            diceSettingsContainer && (diceSettingsContainer.style.display = "none");
+        }
+
+        // update label
+        const labelElement = document.querySelector("span[class*=_rollToLabel]");
+        if (labelElement) {
+            let label = "Rolling to everyone";
+            if (key_modifiers.whisper || settings["whisper-type"] === WhisperType.YES.toString())
+                label = "Rolling to DM";
+            else if (settings["whisper-type"] === WhisperType.QUERY.toString())
+                label = "Rolling to (ask)";
+
+            if (labelElement.textContent !== label)
+                labelElement.textContent = label;
+        }
+
+        // update button enabled state
+        const newDisabledState = resetButton && resetButton.disabled || !DigitalDiceManager.parseCurrentSelection().length;
+        rollButton.disabled = rollButton.ariaDisabled = newDisabledState;
+
+    } else if (currentlyInjected) { // revert custom button we injected previously
+        rollButton.replaceWith(previousButton);
+        previousButton = null;
+
+        // show the whisper toggle buttons again
+        const toggleContainer = document.querySelector("button[data-testid=diceRollToSelfButton]")?.parentNode
+        toggleContainer && (toggleContainer.style.display = "");
+
+        // show the 3D dice settings container again
+        const diceSettingsContainer = document.querySelector("div[class*=_shared3dDiceContainer]");
+        diceSettingsContainer && (diceSettingsContainer.style.display = "");
+    }
+}
+
 var quick_roll = false;
 var quick_roll_force_attack = false;
 var quick_roll_force_damage = false;
@@ -2965,6 +3062,7 @@ function documentModified(mutations, observer) {
     injectRollToSpellAttack();
     injectRollToSnippets();
     injectSettingsButton();
+    injectCustomRollButton();
     activateQuickRolls();
     if (character._features_needs_refresh && !character._features_refresh_warning_displayed) {
         character._features_refresh_warning_displayed = true;

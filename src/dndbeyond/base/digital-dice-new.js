@@ -644,6 +644,18 @@ class DigitalDiceManager {
         // Custom roll parsing via notification is no longer available in the new roller.
         return;
     }
+    static parseCurrentSelection() {
+        let formulas = [];
+
+        for (const dieButton of document.querySelectorAll("#d4, #d6, #d8, #d10, #d12, #d20, #d100")) {
+            if (!dieButton.dataset.quantity)
+                continue;
+
+            formulas.push(dieButton.dataset.quantity + dieButton.id);
+        }
+
+        return formulas;
+    }
 }
 
 DigitalDiceManager._pendingRolls = [];

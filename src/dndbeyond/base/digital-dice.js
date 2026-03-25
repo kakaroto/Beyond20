@@ -161,7 +161,7 @@ class DigitalDice {
 
 class DigitalDiceManager {
     static clear() {
-        $(".dice-toolbar__dropdown-die").click()
+        $(".dice-rolling-panel .dice-toolbar__dropdown-die").click()
     }
     static clearResults() {
         $(".dice_notification_controls__clear").click()
@@ -343,6 +343,19 @@ class DigitalDiceManager {
         const digitalRoll = new DigitalDice(name, [roll], {whisper: target !== ""});
         digitalRoll.parseNotification(notification, true);
         return digitalRoll;
+    }
+    static parseCurrentSelection() {
+        let formulas = [];
+
+        for (const dieCountElement of document.querySelectorAll(".dice-toolbar .dice-die-button__count")) {
+            const $dieTypeElement = $(dieCountElement).parents("[data-dice]");
+            if (!$dieTypeElement.length)
+                continue;
+
+            formulas.push(dieCountElement.textContent + $dieTypeElement[0].dataset.dice);
+        }
+
+        return formulas;
     }
 }
 DigitalDiceManager._pendingRolls = [];
