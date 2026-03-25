@@ -1,19 +1,21 @@
-v2.17.2 (March 24th 2026)
+v2.18.0 (March 24th 2026)
 ===
 
 Hi everyone,
 
-Today, we're releasing v2.17.2, a small update with a mix of new feature support and bug fixes for both Roll20 and D&D Beyond.
+Today, we're releasing v2.18.0, a small update with a mix of new features and bug fixes for both Roll20 and D&D Beyond.
 
 This release adds support for HP sync with the 2024 Roll20 character sheet templates, as well as support for the 2024 Healer feat and the bugbear's Surprise Attack racial feature on D&D Beyond.
 
-On the bugfix side, we've resolved issues related to the new Digital Dice support, improved action matching for action customisation entries, and fixed Extras HP sync for familiars, summons, and similar creatures. We've also corrected the code hijacking used for digital dice rolling and finally added support for custom rolls when the digital dice is disabled.
+On the bugfix side, we've resolved issues related to the new Digital Dice support, improved action matching for action customisation entries, and fixed Extras HP sync for familiars, summons, and similar creatures. We've also changed the way we integrate with D&D Beyond's Digital Dice to better support the feature and finally we added support for custom rolls when the digital dice is disabled.
 
-You can read the full [Changelog](/Changelog#v2172) to see all the changes included in this release.
+You can read the full [Changelog](/Changelog#v2180) to see all the changes included in this release.
 
-As usual, a big thank you to [@dmportella](https://github.com/dmportella), additionally for our first time contributors [@kristiandueholm](https://github.com/kristiandueholm), [@TyReg88](https://github.com/TyReg88), and [@nox404](https://github.com/nox-4O4), as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
+As usual, a big thank you to [@dmportella/Gothyl](https://github.com/dmportella), who handled this release in its entirety! He also received help from our first time contributors [@kristiandueholm](https://github.com/kristiandueholm), [@TyReg88](https://github.com/TyReg88), and [@nox404](https://github.com/nox-4O4), making this release the one with the most contributions from the community so far!
+Thank you as well to our generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
 
 Enjoy!
+
 
 v2.17.1 (January 16th 2026)
 ===

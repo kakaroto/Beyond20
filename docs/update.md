@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.17.1
+Congratulations! Beyond20 was just updated to the latest version : v2.18.0
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -17,53 +17,21 @@ Thank you all for your support!
 
 # Release Notes
 
-v2.17.2 (March 24th 2026)
+v2.18.0 (March 24th 2026)
 ===
 
 Hi everyone,
 
-Today, we're releasing v2.17.2, a small update with a mix of new feature support and bug fixes for both Roll20 and D&D Beyond.
+Today, we're releasing v2.18.0, a small update with a mix of new features and bug fixes for both Roll20 and D&D Beyond.
 
 This release adds support for HP sync with the 2024 Roll20 character sheet templates, as well as support for the 2024 Healer feat and the bugbear's Surprise Attack racial feature on D&D Beyond.
 
-On the bugfix side, we've resolved issues related to the new Digital Dice support, improved action matching for action customisation entries, and fixed Extras HP sync for familiars, summons, and similar creatures. We've also corrected the code hijacking used for digital dice rolling and finally added support for custom rolls when the digital dice is disabled.
+On the bugfix side, we've resolved issues related to the new Digital Dice support, improved action matching for action customisation entries, and fixed Extras HP sync for familiars, summons, and similar creatures. We've also changed the way we integrate with D&D Beyond's Digital Dice to better support the feature and finally we added support for custom rolls when the digital dice is disabled.
 
-You can read the full [Changelog](/Changelog#v2172) to see all the changes included in this release.
+You can read the full [Changelog](/Changelog#v2180) to see all the changes included in this release.
 
-As usual, a big thank you to [@dmportella](https://github.com/dmportella), additionally for our first time contributors [@kristiandueholm](https://github.com/kristiandueholm), [@TyReg88](https://github.com/TyReg88), and [@nox404](https://github.com/nox-4O4), as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
-
-Enjoy!
-
-v2.17.1 (January 16th 2026)
-===
-
-Hi everyone,
-
-I hope everyone managed to get some rest during the holidays, enough rest at least to face what 2026 has brought upon us already.
-
-Today, we're releasing a small bugfix release which fixes an issue on the Chrome browser since its latest version update, which prevented rolling digital dice and processing monster stat blocks.
-
-We've also fixed a bug which caused the Confusion spell not to display to VTT and differentiating between the 2014 and 2024 versions of the Cleric's Blessed Strikes.
-
-You can read the full [Changelog](/Changelog#v2171) to see all the changes included in this release.
-
-As usual, a big thank you to [@dmportella](https://github.com/dmportella) for his work, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
-
-Enjoy!
-
-
-v2.17.0 (December 13th 2026)
-===
-
-Hi everyone,
-
-This week, an update to D&D Beyond's website broke our ability to roll using Digital Dice. This update fixes that, as well as many other fixes and additional support for special class features.
-
-You can read the full [Changelog](/Changelog#v2170) to see all the changes included in this release.
-
-A big thank you to [@dmportella](https://github.com/dmportella) for making this release, as well as to my generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters. 
-
-This is also the perfect moment to wish everyone happy holidays, and a happy new year!
+As usual, a big thank you to [@dmportella/Gothyl](https://github.com/dmportella), who handled this release in its entirety! He also received help from our first time contributors [@kristiandueholm](https://github.com/kristiandueholm), [@TyReg88](https://github.com/TyReg88), and [@nox404](https://github.com/nox-4O4), making this release the one with the most contributions from the community so far!
+Thank you as well to our generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
 
 Enjoy!
 
@@ -74,24 +42,16 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-v2.17.1 (January 16th 2026)
+v2.18.0 (March 24th 2026)
 ===
-- **Feature**: Add support for Blessed Strikes 2024 and differenciate with the Tasha's version of Blessed Strikes (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: *Chrome*: Fix browser detection on latest version of Chrome (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: Fix the "Display to VTT" button on spells which include a roll table (like Confusion)
-
-v2.17.0 (December 13th 2025)
-===
-- **Feature**: Add support for 2024 version of Remarkable Athlete
-- **Feature**: Add support for Druid's Circle of Mutation's Predatory Strikes
-- **Bugfix**: Fix issue rolling on DDB with Digital Dice due to asynchronous page updates
-- **Bugfix**: Fix differentiating between 2014 and 2024 version of Remarkable Athlete
-- **Bugfix**: Fix Great Weapon Fighting damage being incorrectly calculated in some situations
-- **Bugfix**: Fix custom damages being added twice when rolling a Wild Shape Extra
-- **Bugfix**: *FVTT*: Fix "Unknown Combatant" being displayed in the combat tracker
-- **Bugfix**: *Roll20*: Make it more resilient to page updates by dynamically looking up the chat window on every message
-- **Bugfix**: *Roll20*: Fix displaying of avatars if not using OGL sheet
-- **Bugfix**: *Roll20*: Fix missing Cunning Strike description from rolls to roll20
+- **Feature**: *Roll20*: Add support for HP sync with the 2024 character sheet templates (by [@nox404](https://github.com/nox-4O4))
+- **Feature**: *dndbeyond*: Add support for 2024 Healer Feat (by [@kristiandueholm](https://github.com/kristiandueholm))
+- **Feature**: *dndbeyond*: Add support for bugbear Surprise Attack racial feature (by [@TyReg88](https://github.com/TyReg88))
+- **Feature**: *dndbeyond*: Use native dice for custom rolls when DDB's Digital Dice are disabled (by [@nox404](https://github.com/nox-4O4))
+- **Bugfix**: *dndbeyond*: Fix support for the new Digital Dice interface (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: *dndbeyond*: Fix support for actions with user customisations '*' (by [@kristiandueholm](https://github.com/kristiandueholm))
+- **Bugfix**: *dndbeyond*: Fix Extras HP Sync for familiars, summons etc (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: *dndbeyond*: Fix support for handling rolls made with DDB's Digital Dice (by [@dmportella](https://github.com/dmportella))
 
 ---
 
