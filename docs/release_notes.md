@@ -7,7 +7,7 @@ Today, we're releasing v2.17.2, a small update with a mix of new feature support
 
 This release adds support for HP sync with the 2024 Roll20 character sheet templates, as well as support for the 2024 Healer feat and the bugbear's Surprise Attack racial feature on D&D Beyond.
 
-On the bugfix side, we've resolved issues related to the new Digital Dice support, improved action matching for action customisation entries, and fixed Extras HP sync for familiars, summons, and similar creatures. We've also corrected the code hijacking used for digital dice rolling.
+On the bugfix side, we've resolved issues related to the new Digital Dice support, improved action matching for action customisation entries, and fixed Extras HP sync for familiars, summons, and similar creatures. We've also corrected the code hijacking used for digital dice rolling and finally added support for custom rolls when the digital dice is disabled.
 
 You can read the full [Changelog](/Changelog#v2172) to see all the changes included in this release.
 
