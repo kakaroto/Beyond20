@@ -459,6 +459,33 @@ class Character extends CharacterBase {
         return this._class_features.filter(f => f.startsWith(`${name}:`)).map(m => m.replace(`${name}: `, ""))
     }
 
+    getCrimsonRiteDamageTypes() {
+        if (!this._settings?.["bloodhunter-crimson-rite"]) return [];
+
+        const features =
+            this._settings?.["class-features"] ??
+            this._class_features ??
+            [];
+
+        const damageTypes = new Set();
+
+        for (const feature of features) {
+            if (typeof feature !== "string") continue;
+            if (!feature.startsWith("Crimson Rite:")) continue;
+            if (!feature.includes("The extra damage dealt by your rite is")) continue;
+
+            const match = feature.match(
+            /The extra damage dealt by your rite is (\w+) damage\b/i
+            );
+
+            if (match) {
+            damageTypes.add(match[1].toLowerCase());
+            }
+        }
+
+        return [...damageTypes];
+    }
+
     getSneakAttackActions() {
         // Define the regex only once
         const regex = /(?:Sneak Attack: )(.*?) \(Cost: (\d+)[dD]\d+\)/;
