@@ -319,6 +319,7 @@ class Beyond20RollRenderer {
             add_totals = false;
         }
         const total_damages = {}
+        let conditionalFormula = "";
         for (let [roll_name, roll, flags] of damage_rolls) {
             const is_total = !add_totals && (flags & DAMAGE_FLAGS.CRITICAL) == 0;
             let roll_html = "";
@@ -336,14 +337,19 @@ class Beyond20RollRenderer {
             html += `<div class='${dmg_classes}'><b>${roll_name}</b>${roll_html}</div>`;
             if (add_totals && typeof (roll) !== "string") {
                 let kind_of_damage = "";
-                if (flags & DAMAGE_FLAGS.REGULAR) {
+                if (flags & DAMAGE_FLAGS.CONDITIONAL) {
+                    if (conditionalFormula === "") {
+                        conditionalFormula = String(roll.total);
+                    } else {
+                        conditionalFormula += " + " + String(roll.total);
+                    }
+                    continue;
+                } else if (flags & DAMAGE_FLAGS.REGULAR) {
                     kind_of_damage = flags & DAMAGE_FLAGS.CRITICAL ? "Critical Damage" : "Damage";
                 } else if (flags & DAMAGE_FLAGS.VERSATILE) {
                     kind_of_damage = flags & DAMAGE_FLAGS.CRITICAL ? "Critical 2-Handed Damage" : "2-Handed Damage";
                 } else if (flags & DAMAGE_FLAGS.HEALING) {
                     kind_of_damage = "Healing";
-                } else if (flags & DAMAGE_FLAGS.CONDITIONAL) {
-                    continue;
                 } else if (flags & DAMAGE_FLAGS.ADDITIONAL) {
                     // HACK Alert: crappy code;
                     const regular = flags & DAMAGE_FLAGS.CRITICAL ? "Critical Damage" : "Damage";
@@ -361,6 +367,10 @@ class Beyond20RollRenderer {
                 else
                     total_damages[kind_of_damage] = String(roll.total);
             }
+        }
+        
+        if (conditionalFormula !== "") {
+            total_damages["Conditional"] = conditionalFormula;
         }
 
         if (Object.keys(total_damages).length > 0) {
@@ -415,7 +425,7 @@ class Beyond20RollRenderer {
             }
             if (regularKey && criticalKey) {
                 const combinedFormula = `${total_damages[regularKey]} + ${total_damages[criticalKey]}`;
-                total_damages["Combined Total"] = combinedFormula;
+                total_damages["Combined"] = combinedFormula;
             }
             
             html += "<div class='beyond20-roll-result'><b><hr/></b></div>";
@@ -431,9 +441,9 @@ class Beyond20RollRenderer {
             const roll_html = await this.rollToDetails(roll, is_total);
             let total_classes = "beyond20-total-damage";
             if (key.includes("Critical")) total_classes += " beyond20-critical-damage";
-            if (key === "Combined Total") total_classes += " beyond20-combined-damage";
-            const total_label = key === "Combined Total" ? "Combined Total" : `Total ${key}`;
-            html += `<div class='${total_classes}'><b>${total_label}: </b>${roll_html}</div>`;
+            if (key === "Combined") total_classes += " beyond20-combined-damage";
+            if (key === "Conditional") total_classes += " beyond20-conditional-total";
+            html += `<div class='${total_classes}'><b>Total ${key}: </b>${roll_html}</div>`;
         }
 
         if (request.damages && request.damages.length > 0 && 

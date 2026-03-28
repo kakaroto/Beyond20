@@ -75,6 +75,14 @@
     background: rgba(123, 79, 184, 0.1);
 }
 
+.beyond20-total-damage.beyond20-conditional-total {
+    border: 2px solid #2a9d8f;
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-top: 4px;
+    background: rgba(42, 157, 143, 0.1);
+}
+
 .beyond20-dice-roller-content {
     background-color: #ddeedd;
     border-radius: 10px;
