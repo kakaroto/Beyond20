@@ -33,6 +33,7 @@
     background: rgba(0, 0, 0, 0.1);
     border: 1px solid #999;
     margin-bottom: 3px;
+    position: relative;
 }
 
 .beyond20-critical-damage {
