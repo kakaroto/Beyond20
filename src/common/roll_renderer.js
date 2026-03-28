@@ -5,6 +5,7 @@ class DAMAGE_FLAGS {
     static get ADDITIONAL() { return 4; }
     static get HEALING() { return 8; }
     static get CRITICAL() { return 0x10; }
+    static get CONDITIONAL() { return 0x20; }
 }
 
 class Beyond20RollRenderer {
@@ -331,6 +332,7 @@ class Beyond20RollRenderer {
             let dmg_classes = "beyond20-roll-result beyond20-roll-damage";
             if (flags & DAMAGE_FLAGS.CRITICAL) dmg_classes += " beyond20-critical-damage";
             if (flags & DAMAGE_FLAGS.HEALING) dmg_classes += " beyond20-healing";
+            if (flags & DAMAGE_FLAGS.CONDITIONAL) dmg_classes += " beyond20-conditional-damage";
             html += `<div class='${dmg_classes}'><b>${roll_name}</b>${roll_html}</div>`;
             if (add_totals && typeof (roll) !== "string") {
                 let kind_of_damage = "";
@@ -340,6 +342,8 @@ class Beyond20RollRenderer {
                     kind_of_damage = flags & DAMAGE_FLAGS.CRITICAL ? "Critical 2-Handed Damage" : "2-Handed Damage";
                 } else if (flags & DAMAGE_FLAGS.HEALING) {
                     kind_of_damage = "Healing";
+                } else if (flags & DAMAGE_FLAGS.CONDITIONAL) {
+                    continue;
                 } else if (flags & DAMAGE_FLAGS.ADDITIONAL) {
                     // HACK Alert: crappy code;
                     const regular = flags & DAMAGE_FLAGS.CRITICAL ? "Critical Damage" : "Damage";
@@ -621,7 +625,20 @@ class Beyond20RollRenderer {
             const damage_types = request["damage-types"];
             const critical_damages = request["critical-damages"];
             const critical_damage_types = request["critical-damage-types"];
+            
+            const seen_spell_damages = {};
+            const seen_other_damages = {};
+            const spell_damage_counts = {};
 
+            for (let i = 0; i < (damages.length); i++) {
+                const dmg_type = damage_types[i];
+                if (dmg_type.includes("(Booming Blade)") || dmg_type.includes("(Green-Flame Blade)")) {
+                    const base_type = dmg_type.replace(/\s*\(Booming Blade\)/, "").replace(/\s*\(Green-Flame Blade\)/, "");
+                    spell_damage_counts[base_type] = (spell_damage_counts[base_type] || 0) + 1;
+                }
+            }
+
+            const spell_damage_position = {};
             for (let i = 0; i < (damages.length); i++) {
                 const dmg_type = damage_types[i];
                 let damage_flags = DAMAGE_FLAGS.REGULAR;
@@ -633,6 +650,29 @@ class Beyond20RollRenderer {
                     damage_flags = DAMAGE_FLAGS.VERSATILE;
                 } else {
                     damage_flags = DAMAGE_FLAGS.ADDITIONAL;
+                }
+
+                if (dmg_type.includes("(Booming Blade)") || dmg_type.includes("(Green-Flame Blade)")) {
+                    const base_type = dmg_type.replace(/\s*\(Booming Blade\)/, "").replace(/\s*\(Green-Flame Blade\)/, "");
+                    spell_damage_position[base_type] = (spell_damage_position[base_type] || 0) + 1;
+                    if (spell_damage_position[base_type] < spell_damage_counts[base_type]) {
+                    } else {
+                        damage_flags = DAMAGE_FLAGS.CONDITIONAL;
+                    }
+                } else if (dmg_type.includes("(") && dmg_type.includes(")")) {
+                    const base_type = dmg_type.split("(")[0].trim();
+                    if (seen_other_damages[base_type]) {
+                        damage_flags = DAMAGE_FLAGS.CONDITIONAL;
+                    }
+                    seen_other_damages[base_type] = true;
+                } else if (request.name && request.name.toLowerCase().includes("booming blade")) {
+                    if (dmg_type === "Thunder") {
+                        damage_flags = DAMAGE_FLAGS.CONDITIONAL;
+                    }
+                } else if (request.name && request.name.toLowerCase().includes("green flame blade")) {
+                    if (dmg_type === "Fire") {
+                        damage_flags = DAMAGE_FLAGS.CONDITIONAL;
+                    }
                 }
                 const suffix = !(damage_flags & DAMAGE_FLAGS.HEALING) ? " Damage" : "";
                 // Avoid adding an empty string
@@ -692,6 +732,16 @@ class Beyond20RollRenderer {
             }
             if (is_critical) {
                 const critical_damage_rolls = []
+                const seen_critical_other_damages = {};
+                const critical_spell_damage_counts = {};
+                for (let i = 0; i < (critical_damages.length); i++) {
+                    const dmg_type = critical_damage_types[i];
+                    if (dmg_type.includes("(Booming Blade)") || dmg_type.includes("(Green-Flame Blade)")) {
+                        const base_type = dmg_type.replace(/\s*\(Booming Blade\)/, "").replace(/\s*\(Green-Flame Blade\)/, "");
+                        critical_spell_damage_counts[base_type] = (critical_spell_damage_counts[base_type] || 0) + 1;
+                    }
+                }
+                const critical_spell_damage_position = {};
                 for (let i = 0; i < (critical_damages.length); i++) {
                     const roll = this._roller.roll(critical_damages[i]);
                     roll.setRollType("critical-damage");
@@ -707,6 +757,30 @@ class Beyond20RollRenderer {
                     } else {
                         damage_flags = DAMAGE_FLAGS.ADDITIONAL;
                     }
+
+                    if (dmg_type.includes("(Booming Blade)") || dmg_type.includes("(Green-Flame Blade)")) {
+                        const base_type = dmg_type.replace(/\s*\(Booming Blade\)/, "").replace(/\s*\(Green-Flame Blade\)/, "");
+                        critical_spell_damage_position[base_type] = (critical_spell_damage_position[base_type] || 0) + 1;
+                        if (critical_spell_damage_position[base_type] < critical_spell_damage_counts[base_type]) {
+                        } else {
+                            damage_flags = DAMAGE_FLAGS.CONDITIONAL;
+                        }
+                    } else if (dmg_type.includes("(") && dmg_type.includes(")")) {
+                        const base_type = dmg_type.split("(")[0].trim();
+                        if (seen_critical_other_damages[base_type]) {
+                            damage_flags = DAMAGE_FLAGS.CONDITIONAL;
+                        }
+                        seen_critical_other_damages[base_type] = true;
+                    } else if (request.name && request.name.toLowerCase().includes("booming blade")) {
+                        if (dmg_type === "Thunder") {
+                            damage_flags = DAMAGE_FLAGS.CONDITIONAL;
+                        }
+                    } else if (request.name && request.name.toLowerCase().includes("green flame blade")) {
+                        if (dmg_type === "Fire") {
+                            damage_flags = DAMAGE_FLAGS.CONDITIONAL;
+                        }
+                    }
+
                     const suffix = !(damage_flags & DAMAGE_FLAGS.HEALING) ? " Critical Damage" : "";
                     damage_rolls.push([dmg_type + suffix, roll, damage_flags | DAMAGE_FLAGS.CRITICAL]);
                 }

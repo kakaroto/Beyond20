@@ -99,6 +99,13 @@
     box-shadow: 0 0 2px #0b6900c2 inset;
 }
 
+.beyond20-conditional-damage {
+    font-style: italic;
+    opacity: 0.85;
+    border-left: 2px dashed #666;
+    padding-left: 3px;
+}
+
 .beyond20-dice-roller-content {
     background-color: #ddeedd;
     border-radius: 10px;
