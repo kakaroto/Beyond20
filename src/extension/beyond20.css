@@ -106,6 +106,14 @@
     padding-left: 3px;
 }
 
+.beyond20-combined-damage {
+    border: 2px solid #7b4fb8;
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-top: 4px;
+    background: rgba(123, 79, 184, 0.1);
+}
+
 .beyond20-dice-roller-content {
     background-color: #ddeedd;
     border-radius: 10px;

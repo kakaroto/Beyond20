@@ -396,6 +396,28 @@ class Beyond20RollRenderer {
                     delete total_damages["Critical 2-Handed Damage"];
                 }
             }
+            
+            const regularDamageKeys = ["Full HP Damage", "Missing HP Damage", "2-Handed Damage", "1-Handed Damage", "Damage"];
+            const criticalDamageKeys = ["Critical Full HP Damage", "Critical Missing HP Damage", "Critical 2-Handed Damage", "Critical 1-Handed Damage", "Critical Damage"];
+            let regularKey = null;
+            let criticalKey = null;
+            for (const key of regularDamageKeys) {
+                if (total_damages[key]) {
+                    regularKey = key;
+                    break;
+                }
+            }
+            for (const key of criticalDamageKeys) {
+                if (total_damages[key]) {
+                    criticalKey = key;
+                    break;
+                }
+            }
+            if (regularKey && criticalKey) {
+                const combinedFormula = `${total_damages[regularKey]} + ${total_damages[criticalKey]}`;
+                total_damages["Combined Total"] = combinedFormula;
+            }
+            
             html += "<div class='beyond20-roll-result'><b><hr/></b></div>";
         }
 
@@ -409,7 +431,9 @@ class Beyond20RollRenderer {
             const roll_html = await this.rollToDetails(roll, is_total);
             let total_classes = "beyond20-total-damage";
             if (key.includes("Critical")) total_classes += " beyond20-critical-damage";
-            html += `<div class='beyond20-roll-result ${total_classes}'><b>Total ${key}: </b>${roll_html}</div>`;
+            if (key === "Combined Total") total_classes += " beyond20-combined-damage";
+            const total_label = key === "Combined Total" ? "Combined Total" : `Total ${key}`;
+            html += `<div class='${total_classes}'><b>${total_label}: </b>${roll_html}</div>`;
         }
 
         if (request.damages && request.damages.length > 0 && 
@@ -730,6 +754,14 @@ class Beyond20RollRenderer {
             } else {
                 is_critical = request.rollCritical;
             }
+            
+            const conditional_indices = new Set();
+            for (let i = 0; i < damage_rolls.length; i++) {
+                if (damage_rolls[i][2] & DAMAGE_FLAGS.CONDITIONAL) {
+                    conditional_indices.add(i);
+                }
+            }
+            
             if (is_critical) {
                 const critical_damage_rolls = []
                 const seen_critical_other_damages = {};
@@ -743,6 +775,9 @@ class Beyond20RollRenderer {
                 }
                 const critical_spell_damage_position = {};
                 for (let i = 0; i < (critical_damages.length); i++) {
+                    if (conditional_indices.has(i)) {
+                        continue;
+                    }
                     const roll = this._roller.roll(critical_damages[i]);
                     roll.setRollType("critical-damage");
                     critical_damage_rolls.push(roll);
