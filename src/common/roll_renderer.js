@@ -432,7 +432,23 @@ class Beyond20RollRenderer {
         }
 
         let roll = null;
-        for (let key in total_damages) {
+        const outputOrder = [];
+        const keys = Object.keys(total_damages);
+        const hasCritical = keys.some(k => k.includes("Critical"));
+        const hasConditional = keys.includes("Conditional");
+        
+        if (!hasCritical && hasConditional) {
+            for (const key of keys) {
+                if (key === "Conditional") outputOrder.unshift(key);
+                else outputOrder.push(key);
+            }
+        } else {
+            for (const key of keys) {
+                outputOrder.push(key);
+            }
+        }
+        
+        for (const key of outputOrder) {
             const is_total = (roll === null);
             roll = this._roller.roll(total_damages[key]);
             roll.setRollType("damage");
