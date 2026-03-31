@@ -8,7 +8,7 @@ class DDBMessageBroker {
         this._hooks = {};
         this._characterId = (window.location.pathname.match(/\/characters\/([0-9]+)/) || [])[1];
         this.saveMessages = false;
-        this._debug = true;
+        this._debug = false;
 
         // Bridge flag used by window.postMessage so content scripts can receive dice roll events
         this.B20_DDB_DICE_MB_BRIDGE = "__b20_ddb_dice_mb_bridge__";
