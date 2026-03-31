@@ -398,45 +398,47 @@ if (!window.__beyond20_mb2_initialized__) {
         messageBroker.on("dice/roll/pending", bindRollIdIfNeeded, { once: false, send: true, recv: false });
 
         // Intercept fulfilled BEFORE it reaches the DDB game log.
-        // We manually forward it to the digital-dice bridge first so dice parsing still works.
+        // Block raw DDB messages, allow our modified messages through.
         messageBroker.on("dice/roll/fulfilled", (message) => {
-            if (!b20OverrideQueue.length) return;
-            if (message?.data && message.data[B20_OVERRIDE_MARKER]) return;
+            // Allow Beyond20 override messages through
+            if (message?.data && message.data[B20_OVERRIDE_MARKER]) {
+                return;
+            }
 
-            const rid = message?.data?.rollId;
-            let idx = (rid ? b20OverrideQueue.findIndex(e => e.rollId === rid) : -1);
-            if (idx === -1) idx = 0;
-
-            const entry = b20OverrideQueue[idx];
-            if (!entry) return;
-
-            entry.ddbFulfilled = message;
-            if (!entry.rollId && rid) entry.rollId = rid;
-
-            // Preserve digital dice result parsing even though we suppress the native fulfilled
-            try {
-                if (typeof messageBroker._forwardDiceRollEvent === "function") {
-                    messageBroker._forwardDiceRollEvent(message);
+            // If we have a queue entry with rollData, dispatch our override
+            if (b20OverrideQueue.length) {
+                const entry = b20OverrideQueue[0];
+                const rid = message?.data?.rollId;
+                
+                // Preserve digital dice result parsing
+                try {
+                    if (typeof messageBroker._forwardDiceRollEvent === "function") {
+                        messageBroker._forwardDiceRollEvent(message);
+                    }
+                } catch (e) {
+                    console.warn("Beyond20: failed to forward fulfilled message to dice bridge", e);
                 }
-            } catch (e) {
-                console.warn("Beyond20: failed to forward fulfilled message to dice bridge", e);
+
+                if (!entry.rollId && rid) entry.rollId = rid;
+                entry.ddbFulfilled = message;
+
+                if (entry.rollData) {
+                    _dispatchOverrideFulfilled(entry, 0);
+                    return false;
+                }
+
+                // No rollData yet, start fallback timer
+                if (!entry.fallbackTimer) {
+                    entry.fallbackTimer = setTimeout(() => {
+                        entry.fallbackTimer = null;
+                        _dispatchOriginalFulfilled(entry, 0);
+                    }, 2000);
+                }
             }
 
-            if (entry.rollData) {
-                _dispatchOverrideFulfilled(entry, idx);
-                return false;
-            }
-
-            if (!entry.fallbackTimer) {
-                entry.fallbackTimer = setTimeout(() => {
-                    entry.fallbackTimer = null;
-                    _dispatchOriginalFulfilled(entry, idx);
-                }, 2000);
-            }
-
-            // Always suppress the native fulfilled from reaching the DDB game log directly
+            // Block all other messages (raw DDB messages from other players)
             return false;
-        }, { once: false, send: true, recv: false });
+        }, { once: false, send: true, recv: true });
     }
 
     function pendingRoll(rollData) {
@@ -500,4 +502,7 @@ if (!window.__beyond20_mb2_initialized__) {
     registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
 
     window[EVENTS_KEY] = registered_events;
+    
+    // Install hooks immediately so we can intercept messages from other players
+    _installB20OverrideHooksOnce();
 }
