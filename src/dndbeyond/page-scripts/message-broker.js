@@ -54,7 +54,7 @@ if (!window.__beyond20_mb2_initialized__) {
         messageBroker.postMessage(message);
     }
 
-    function rollToDDBRoll(roll, forceResults = false) {
+    function rollToDDBRoll(roll, forceResults = false, damageType = null) {
         let constant = 0;
         let lastOperation = "+";
         const sets = [];
@@ -117,6 +117,11 @@ if (!window.__beyond20_mb2_initialized__) {
             "death-save": "save",
         };
 
+        let rollType = rollToType[roll.type] || "roll";
+        if (damageType && (roll.type === "damage" || roll.type === "critical-damage")) {
+            rollType = damageType;
+        }
+
         const data = {
             diceNotation: {
                 constant,
@@ -124,7 +129,7 @@ if (!window.__beyond20_mb2_initialized__) {
             },
             diceNotationStr: roll.formula,
             rollKind: rollToKind[roll.type] || "",
-            rollType: rollToType[roll.type] || "roll"
+            rollType: rollType
         };
 
         if (forceResults || results.length > 0) {
@@ -156,9 +161,16 @@ if (!window.__beyond20_mb2_initialized__) {
         const isDisadvantage = advantage === 4;
         const isSuperAdvantage = advantage === 6;
         const isSuperDisadvantage = advantage === 7;
+        
+        const damageTypes = request["damage-types"] || [];
 
         if (!isAdvantage && !isDisadvantage && !isSuperAdvantage && !isSuperDisadvantage) {
-            return rolls.map(r => rollToDDBRoll(r, true));
+            let damageTypeIndex = 0;
+            return rolls.map((r) => {
+                const isDamageRoll = r.type === "damage" || r.type === "critical-damage";
+                const dt = isDamageRoll ? damageTypes[damageTypeIndex++] : null;
+                return rollToDDBRoll(r, true, dt);
+            });
         }
 
         const [d20Rolls, otherRolls] = [[], []];
@@ -167,9 +179,14 @@ if (!window.__beyond20_mb2_initialized__) {
         }
 
         const isAdv = isAdvantage || isSuperAdvantage;
+        let damageTypeIndex = 0;
         return [
             ...(d20Rolls.length ? [combineD20Rolls(d20Rolls, isAdv, isSuperAdvantage || isSuperDisadvantage)] : []),
-            ...otherRolls.map(r => rollToDDBRoll(r, true))
+            ...otherRolls.map((r) => {
+                const isDamageRoll = r.type === "damage" || r.type === "critical-damage";
+                const dt = isDamageRoll ? damageTypes[damageTypeIndex++] : null;
+                return rollToDDBRoll(r, true, dt);
+            })
         ];
     }
 
