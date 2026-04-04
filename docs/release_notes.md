@@ -7,7 +7,7 @@ Today, we're releasing v2.18.1, a small D&D Beyond-focused update with a mix of 
 
 This release adds support for the Blood Hunter's Crimson Rite feature, as well as support for conditional damage handling for Booming Blade and Green-Flame Blade on D&D Beyond.
 
-On the bugfix side, we've fixed critical damage handling for Booming Blade and Green-Flame Blade, and resolved several issues affecting the D&D Beyond Game Log to improve roll display and messaging.
+On the bugfix side, we've fixed critical damage handling for Booming Blade and Green-Flame Blade, and resolved several issues affecting the D&D Beyond Game Log and Roll20 to improve roll display and messaging.
 
 You can read the full [Changelog](/Changelog#v2181) to see all the changes included in this release.
 
