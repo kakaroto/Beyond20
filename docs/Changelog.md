@@ -4,6 +4,7 @@ v2.18.1 (April 8th 2026)
 - **Feature**: *dndbeyond*: Add support for Conditional Damage support Booming Blade and Green-Flame Blade (by [@dmportella](https://github.com/dmportella))
 - **BugFix**: *dndbeyond*: Fix support for Booming Blade and Green-Flame Blade critical Damage (by [@dmportella](https://github.com/dmportella))
 - **Bugfix**: *dndbeyond*: Fix support for the D&D Beyond Game Log (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: *roll20*: Fix support for roll tool tip (by [@dmportella](https://github.com/dmportella))
 
 v2.18.0 (March 24th 2026)
 ===
