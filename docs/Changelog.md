@@ -1,3 +1,10 @@
+v2.18.1 (April 8th 2026)
+===
+- **Feature**: *dndbeyond*: Add support for Crimson Rite feature from Blood Hunter (by [@dmportella](https://github.com/dmportella))
+- **Feature**: *dndbeyond*: Add support for Conditional Damage support Booming Blade and Green-Flame Blade (by [@dmportella](https://github.com/dmportella))
+- **BugFix**: *dndbeyond*: Fix support for Booming Blade and Green-Flame Blade critical Damage (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: *dndbeyond*: Fix support for the D&D Beyond Game Log (by [@dmportella](https://github.com/dmportella))
+
 v2.18.0 (March 24th 2026)
 ===
 - **Feature**: *Roll20*: Add support for HP sync with the 2024 character sheet templates (by [@nox404](https://github.com/nox-4O4))
