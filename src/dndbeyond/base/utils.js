@@ -150,6 +150,50 @@ async function queryDamageTypeFromArray(name, damages, damage_types, possible_ty
     return choice;
 }
 
+function capitalizeDamageType(type) {
+    if (!type) return type;
+    return type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
+}
+
+async function queryDamageTypeForPlaceholder(name, damages, damage_types, placeholder_type, possible_types) {
+    const idx = damage_types.findIndex(t => t === placeholder_type);
+    if (idx === -1) return;
+
+    const normalized_types = [...new Set(
+        possible_types
+            .filter(Boolean)
+            .map(capitalizeDamageType)
+    )];
+
+    if (normalized_types.length === 0) return;
+
+    const labelFor = (type) => `${placeholder_type} (${type})`;
+
+    // Only one selected rite, so no need to ask
+    if (normalized_types.length === 1) {
+        const label = labelFor(normalized_types[0]);
+        damage_types[idx] = label;
+        return label;
+    }
+
+    const damage_choices = {};
+    for (const type of normalized_types) {
+        damage_choices[labelFor(type)] = damages[idx];
+    }
+
+    const id = `dmg-${name.replace(/[^a-zA-Z0-9]/g, '-')}-${placeholder_type.replace(/[^a-zA-Z0-9]/g, '-')}`;
+    const choice = await dndbeyondDiceRoller.queryDamageType(
+        `${name}: ${placeholder_type}`,
+        damage_choices,
+        id
+    );
+
+    if (choice === null) return null; // query was cancelled
+
+    damage_types[idx] = choice;
+    return choice;
+}
+
 async function queryCunningStrike() {
     const selection = [];
     // Sneak Attack free-rules, pg. 129
@@ -339,6 +383,22 @@ async function buildAttackRoll(character, attack_source, name, description, prop
                 damages[0] = damages[0].replace("d8", ttd_dice);
                 damage_types[0] = damage_types[0] + (ttd_dice === "d8" ? ' (Full HP)' : ' (Missing HP)');
             }
+        } else if (character.hasClass("Blood Hunter") && 
+                (character.getSetting("bloodhunter-crimson-rite", false) &&
+                character.hasClassFeature("Crimson Rite") &&
+                ((properties["Attack Type"] == "Ranged" || properties["Attack Type"] == "Melee") ||
+                action_name.includes("Predatory Strike") || action_name.includes("Polearm Master")))) {
+                    const selectedRiteTypes = character.getCrimsonRiteDamageTypes();
+
+                    const choice = await queryDamageTypeForPlaceholder(
+                    roll_properties.name,
+                    damages,
+                    damage_types,
+                    "Crimson Rite",
+                    selectedRiteTypes
+                    );
+
+                    if (choice === null) return null;
         }  else if (roll_properties.name === "Spirit Shroud") {
             const choice = await queryDamageTypeFromArray(roll_properties.name, damages, damage_types, ["Cold", "Necrotic", "Radiant"]);
             if (choice === null) return null; // Query was cancelled;
