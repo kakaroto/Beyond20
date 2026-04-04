@@ -54,7 +54,7 @@ if (!window.__beyond20_mb2_initialized__) {
         messageBroker.postMessage(message);
     }
 
-    function rollToDDBRoll(roll, forceResults = false) {
+    function rollToDDBRoll(roll, forceResults = false, damageType = null) {
         let constant = 0;
         let lastOperation = "+";
         const sets = [];
@@ -117,6 +117,11 @@ if (!window.__beyond20_mb2_initialized__) {
             "death-save": "save",
         };
 
+        let rollType = rollToType[roll.type] || "roll";
+        if (damageType && (roll.type === "damage" || roll.type === "critical-damage")) {
+            rollType = damageType;
+        }
+
         const data = {
             diceNotation: {
                 constant,
@@ -124,7 +129,7 @@ if (!window.__beyond20_mb2_initialized__) {
             },
             diceNotationStr: roll.formula,
             rollKind: rollToKind[roll.type] || "",
-            rollType: rollToType[roll.type] || "roll"
+            rollType: rollType
         };
 
         if (forceResults || results.length > 0) {
@@ -156,9 +161,16 @@ if (!window.__beyond20_mb2_initialized__) {
         const isDisadvantage = advantage === 4;
         const isSuperAdvantage = advantage === 6;
         const isSuperDisadvantage = advantage === 7;
+        
+        const damageTypes = request["damage-types"] || [];
 
         if (!isAdvantage && !isDisadvantage && !isSuperAdvantage && !isSuperDisadvantage) {
-            return rolls.map(r => rollToDDBRoll(r, true));
+            let damageTypeIndex = 0;
+            return rolls.map((r) => {
+                const isDamageRoll = r.type === "damage" || r.type === "critical-damage";
+                const dt = isDamageRoll ? damageTypes[damageTypeIndex++] : null;
+                return rollToDDBRoll(r, true, dt);
+            });
         }
 
         const [d20Rolls, otherRolls] = [[], []];
@@ -167,42 +179,180 @@ if (!window.__beyond20_mb2_initialized__) {
         }
 
         const isAdv = isAdvantage || isSuperAdvantage;
+        let damageTypeIndex = 0;
         return [
             ...(d20Rolls.length ? [combineD20Rolls(d20Rolls, isAdv, isSuperAdvantage || isSuperDisadvantage)] : []),
-            ...otherRolls.map(r => rollToDDBRoll(r, true))
+            ...otherRolls.map((r) => {
+                const isDamageRoll = r.type === "damage" || r.type === "critical-damage";
+                const dt = isDamageRoll ? damageTypes[damageTypeIndex++] : null;
+                return rollToDDBRoll(r, true, dt);
+            })
         ];
     }
 
-    function combineD20Rolls(d20Rolls, isAdvantage, isSuper = false) {
-        let constant = 0;
-        const allDice = [];
+    function combineD20Rolls(d20Rolls, isAdvantage, isSuper = false, options = {}) {
+        const {
+            rollType = "to hit",   // "to hit" | "save" | "check"
+            includeDebug = false
+        } = options;
 
-        for (let i = 0; i < d20Rolls.length; i++) {
-            for (const part of (d20Rolls[i]?.parts || [])) {
-                if (typeof part === "number") {
-                    if (i === 0) constant += part;
-                } else if (part?.faces === 20) {
-                    allDice.push(...(part.rolls || []).map(r => ({ dieType: "d20", dieValue: r.roll || 0 })));
-                }
-            }
+        const keepHighest = !!isAdvantage;
+        const operation = keepHighest ? 2 : 1;
+
+        function formatSigned(value) {
+            if (!value) return "";
+            return value > 0 ? `+${value}` : `${value}`;
         }
 
-        const keepHighest = isAdvantage;
-        const operation = keepHighest ? 2 : 1;
-        const count = allDice.length;
+        function parseRoll(roll) {
+            let sign = 1;
 
-        return {
-            diceNotation: { constant, set: [{ count, dieType: "d20", operation, dice: allDice }] },
-            diceNotationStr: `${count}d20${keepHighest ? "kh" : "kl"}${isSuper ? "1" : ""}`,
+            let numericConstant = 0;   // only literal numbers like -1, +3
+            let d20Total = 0;          // sum of d20s in this branch
+            let extraDiceTotal = 0;    // sum of non-d20 dice in this branch
+
+            const d20Values = [];
+
+            for (const part of roll?.parts || []) {
+                if (typeof part === "string") {
+                    const op = part.trim();
+                    if (op === "+") sign = 1;
+                    else if (op === "-") sign = -1;
+                    continue;
+                }
+
+                if (typeof part === "number") {
+                    numericConstant += sign * part;
+                    sign = 1;
+                    continue;
+                }
+
+                if (part && typeof part === "object" && Array.isArray(part.rolls)) {
+                    const values = (part.rolls || []).map(r => Number(r?.roll) || 0);
+                    const subtotal = values.reduce((sum, v) => sum + v, 0);
+
+                    if (part.faces === 20) {
+                        d20Values.push(...values);
+                        d20Total += sign * subtotal;
+                    } else {
+                        extraDiceTotal += sign * subtotal;
+                    }
+
+                    sign = 1;
+                }
+            }
+
+            const reconstructedTotal = d20Total + extraDiceTotal + numericConstant;
+            const total = typeof roll?.total === "number" ? roll.total : reconstructedTotal;
+
+            // This is the branch value WITHOUT the flat numeric modifier.
+            // It still includes bless/bane/etc, because those are rolled per branch for the extension.
+            const displayValue = total - numericConstant;
+
+            return {
+                raw: roll,
+                total,
+                numericConstant,
+                d20Total,
+                extraDiceTotal,
+                d20Values,
+                displayValue
+            };
+        }
+
+        function buildDiceNotationStr(d20Count, flatConstant, keepHighest) {
+            const base = `${d20Count}d20${keepHighest ? "kh1" : "kl1"}`;
+            return `${base}${formatSigned(flatConstant)}`;
+        }
+
+        if (!Array.isArray(d20Rolls) || d20Rolls.length === 0) {
+            return {
+                diceNotation: {
+                    constant: 0,
+                    set: []
+                },
+                diceNotationStr: "",
+                rollKind: keepHighest ? "advantage" : "disadvantage",
+                rollType,
+                result: {
+                    constant: 0,
+                    text: "",
+                    total: 0,
+                    values: []
+                }
+            };
+        }
+
+        const parsedRolls = d20Rolls.map(parseRoll);
+        const allD20Values = parsedRolls.flatMap(r => r.d20Values);
+
+        // Pick the winning FULL branch total.
+        const selectedRoll = parsedRolls.reduce((best, current) => {
+            if (!best) return current;
+            return keepHighest
+                ? current.total > best.total ? current : best
+                : current.total < best.total ? current : best;
+        }, null);
+
+        // In normal use these should all match, since the formula is the same for each branch.
+        // We keep the selected branch's numeric constant to stay safe.
+        const flatConstant = selectedRoll?.numericConstant ?? 0;
+
+        // Show values WITHOUT the flat numeric constant, but WITH per-branch rolled dice like bless.
+        const displayValues = parsedRolls.map(r => r.total - flatConstant);
+
+        const resultText = `(${displayValues.join(",")})${formatSigned(flatConstant)}`;
+        const resultSummary = `${resultText} = ${selectedRoll?.total ?? 0}`;
+
+        const payload = {
+            diceNotation: {
+                constant: flatConstant,
+                set: [
+                    {
+                        count: allD20Values.length,
+                        dieType: "d20",
+                        operation,
+                        dice: allD20Values.map(v => ({
+                            dieType: "d20",
+                            dieValue: v
+                        }))
+                    }
+                ]
+            },
+
+            // Helpful for debugging/other consumers.
+            // DDB itself seems to rebuild from diceNotation, not this string.
+            diceNotationStr: buildDiceNotationStr(
+                allD20Values.length,
+                flatConstant,
+                keepHighest
+            ),
+
+            // Keep native wording even for super advantage/disadvantage.
+            // The 3d20 visual comes from count, not a different rollKind.
             rollKind: keepHighest ? "advantage" : "disadvantage",
-            rollType: "to hit",
+            rollType,
+
             result: {
-                constant,
-                text: `(${allDice.map(d => d.dieValue).join(",")})+${constant}`,
-                total: constant + Math[keepHighest ? "max" : "min"](...allDice.map(d => d.dieValue)),
-                values: allDice.map(d => d.dieValue)
+                constant: flatConstant,
+                text: resultText,
+                summary: resultSummary,
+                total: selectedRoll?.total ?? 0,
+                values: displayValues
             }
         };
+
+        if (includeDebug) {
+            payload.__nativeDowngrade__ = true;
+            payload.__isSuper__ = !!isSuper;
+            payload.__rawD20Values__ = allD20Values;
+            payload.__branchTotals__ = parsedRolls.map(r => r.total);
+            payload.__branchDisplayValues__ = displayValues;
+            payload.__selectedBranchTotal__ = selectedRoll?.total ?? 0;
+            payload.__selectedFlatConstant__ = flatConstant;
+        }
+
+        return payload;
     }
 
     function _dispatchOriginalFulfilled(entry, idx) {
@@ -265,22 +415,29 @@ if (!window.__beyond20_mb2_initialized__) {
         messageBroker.on("dice/roll/pending", bindRollIdIfNeeded, { once: false, send: true, recv: false });
 
         // Intercept fulfilled BEFORE it reaches the DDB game log.
-        // We manually forward it to the digital-dice bridge first so dice parsing still works.
+        // Block rolls we initiated (we have queue entry), allow dice toolbox rolls through.
         messageBroker.on("dice/roll/fulfilled", (message) => {
-            if (!b20OverrideQueue.length) return;
-            if (message?.data && message.data[B20_OVERRIDE_MARKER]) return;
+            // Allow Beyond20 override messages through
+            if (message?.data && message.data[B20_OVERRIDE_MARKER]) {
+                return;
+            }
 
             const rid = message?.data?.rollId;
-            let idx = (rid ? b20OverrideQueue.findIndex(e => e.rollId === rid) : -1);
-            if (idx === -1) idx = 0;
-
-            const entry = b20OverrideQueue[idx];
-            if (!entry) return;
-
-            entry.ddbFulfilled = message;
-            if (!entry.rollId && rid) entry.rollId = rid;
-
-            // Preserve digital dice result parsing even though we suppress the native fulfilled
+            
+            // Check if this rollId matches any of our queue entries
+            let queueIdx = -1;
+            if (rid && b20OverrideQueue.length) {
+                queueIdx = b20OverrideQueue.findIndex(e => e.rollId === rid);
+            }
+            
+            // If no matching queue entry, this is a dice toolbox roll - allow through
+            if (queueIdx === -1) {
+                return;
+            }
+            
+            const entry = b20OverrideQueue[queueIdx];
+            
+            // Preserve digital dice result parsing
             try {
                 if (typeof messageBroker._forwardDiceRollEvent === "function") {
                     messageBroker._forwardDiceRollEvent(message);
@@ -289,21 +446,25 @@ if (!window.__beyond20_mb2_initialized__) {
                 console.warn("Beyond20: failed to forward fulfilled message to dice bridge", e);
             }
 
+            if (!entry.rollId && rid) entry.rollId = rid;
+            entry.ddbFulfilled = message;
+
             if (entry.rollData) {
-                _dispatchOverrideFulfilled(entry, idx);
+                _dispatchOverrideFulfilled(entry, queueIdx);
                 return false;
             }
 
+            // No rollData yet, start fallback timer
             if (!entry.fallbackTimer) {
                 entry.fallbackTimer = setTimeout(() => {
                     entry.fallbackTimer = null;
-                    _dispatchOriginalFulfilled(entry, idx);
+                    _dispatchOriginalFulfilled(entry, queueIdx);
                 }, 2000);
             }
-
-            // Always suppress the native fulfilled from reaching the DDB game log directly
+            
+            // Block while we wait for rollData
             return false;
-        }, { once: false, send: true, recv: false });
+        }, { once: false, send: true, recv: true });
     }
 
     function pendingRoll(rollData) {
@@ -367,4 +528,7 @@ if (!window.__beyond20_mb2_initialized__) {
     registered_events.push(addCustomEventListener("disconnect", disconnectAllEvents));
 
     window[EVENTS_KEY] = registered_events;
+    
+    // Install hooks immediately so we can intercept messages from other players
+    _installB20OverrideHooksOnce();
 }
