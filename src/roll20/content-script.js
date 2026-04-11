@@ -561,8 +561,8 @@ async function rollRollTable(request) {
     return createTable(request, `${request.name}: [[${table.total} [${request.formula}]]]`, results);
 }
 
-function convertRollToText(whisper, roll, standout=false) {
-    if (typeof (roll) === "string")
+function convertRollToText(whisper, roll, standout = false) {
+    if (typeof roll === "string")
         return roll;
     const total = roll.total || 0;
     const prefix = (standout && !roll.discarded) ? '{' : '';
@@ -571,36 +571,45 @@ function convertRollToText(whisper, roll, standout=false) {
     const formula = roll.formula || "";
     const parts = roll.parts || [];
     let critfail = "";
-    if (roll['critical-success'] || roll['critical-failure'])
-        critfail = ` + 1d0cs>${roll['critical-success'] ? '0' : '1'}cf>${roll['critical-failure'] ? '0' : '1'}`
+    if (roll['critical-success'] || roll['critical-failure']) {
+        critfail = ` + 1d0cs>${roll['critical-success'] ? '0' : '1'}cf>${roll['critical-failure'] ? '0' : '1'}`;
+    }
+
     let result = `${prefix}[[ ${total}${critfail} [${formula}] = `;
     let plus = '';
     for (let part of parts) {
         if (part.rolls) {
-            result += `${plus}(`
+            result += `${plus}(`;
             let part_plus = '';
             for (let die of part.rolls) {
-                result += die.discarded ? `~${part_plus}${die.roll}~` : `${part_plus}${die.roll}`;
+                result += die.discarded
+                    ? `~${part_plus}${die.roll}~`
+                    : `${part_plus}${die.roll}`;
                 part_plus = ' + ';
             }
-            result += ')';
-        } else {
-            if (['+', '-'].includes(String(part).trim())) {
-                plus = ` ${part} `;
-            } else {
-                part = isNaN(part) ? part : Number(part);
-                if (part < 0) {
-                    part = -1 * part;
-                    plus = ' - ';
-                }
-                result += `${plus}${part}`;
-            }
+            result += `)`;
+            plus = ' + ';
+            continue;
         }
+
+        const token = String(part).trim();
+        if (token === '+' || token === '-') {
+            plus = ` ${token} `;
+            continue;
+        }
+
+        part = isNaN(part) ? part : Number(part);
+        if (typeof part === "number" && part < 0) {
+            part = -part;
+            plus = ' - ';
+        }
+
+        result += `${plus}${part}`;
         plus = ' + ';
     }
     result += `]]${suffix}`;
     return result;
-};
+}
 
 function displayExtraInfo(request) {
     let extra = "";
