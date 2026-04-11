@@ -72,6 +72,7 @@
     background: rgba(0, 0, 0, 0.1);
     border: 1px solid #999;
     margin-bottom: 3px;
+    position: relative;
 }
 
 .beyond20-critical-damage {
@@ -97,6 +98,29 @@
     border: 1px solid rgb(0 125 10);
     background: rgb(40 255 0 / 10%);
     box-shadow: 0 0 2px #0b6900c2 inset;
+}
+
+.beyond20-conditional-damage {
+    font-style: italic;
+    opacity: 0.85;
+    border-left: 2px dashed #666;
+    padding-left: 3px;
+}
+
+.beyond20-combined-damage {
+    border: 2px solid #7b4fb8;
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-top: 4px;
+    background: rgba(123, 79, 184, 0.1);
+}
+
+.beyond20-total-damage.beyond20-conditional-total {
+    border: 2px solid #2a9d8f;
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-top: 4px;
+    background: rgba(42, 157, 143, 0.1);
 }
 
 .beyond20-dice-roller-content {

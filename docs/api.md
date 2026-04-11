@@ -770,6 +770,7 @@ The damage flags will help determine what kind of damage it is. It is a bitfield
 - `4`: Additonal damage (anything other than the first damage from the weapon/spell)
 - `8`: Healing
 - `16`: Critical damage
+- `32`: Conditional damage (e.g., Booming Blade movement damage, Green-Flame Blade splash damage). This damage is excluded from totals and not doubled on critical hits.
 
 
 ## The DOM API
