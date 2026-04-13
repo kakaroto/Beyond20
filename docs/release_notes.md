@@ -1,17 +1,17 @@
-v2.18.1 (April 8th 2026)
+v2.19.0 (April 12th 2026)
 ===
 
 Hi everyone,
 
-Today, we're releasing v2.18.1, a small D&D Beyond-focused update with a mix of new features and bug fixes.
+Today, we're releasing v2.19.0, a small D&D Beyond-focused update with a mix of new features and bug fixes.
 
 This release adds support for the Blood Hunter's Crimson Rite feature, as well as support for conditional damage handling for Booming Blade and Green-Flame Blade on D&D Beyond.
 
-On the bugfix side, we've fixed critical damage handling for Booming Blade and Green-Flame Blade, and resolved several issues affecting the D&D Beyond Game Log and Roll20 to improve roll display and messaging.
+On the bugfix side, we've resolved several issues affecting the D&D Beyond Game Log and Roll20 to improve roll display and messaging, as well as we've fixed critical damage handling for Booming Blade and Green-Flame Blade.
 
-You can read the full [Changelog](/Changelog#v2181) to see all the changes included in this release.
+You can read the full [Changelog](/Changelog#v2190) to see all the changes included in this release.
 
-As usual, a big thank you to [@dmportella/Gothyl](https://github.com/dmportella)!
+As usual, a big thank you to [@dmportella/Gothyl](https://github.com/dmportella) who made the release!
 Thank you as well to our generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
 
 Enjoy!
