@@ -313,11 +313,6 @@ class Beyond20RollRenderer {
         // - and the 2 non-critical damages are not 1 handed + 2 handed
         let add_totals = damage_rolls.filter((r) => (r[2] & DAMAGE_FLAGS.CRITICAL) == 0).length > 1 ||
                         damage_rolls.filter((r) => (r[2] & DAMAGE_FLAGS.CRITICAL) != 0).length > 1;
-        if (add_totals && damage_rolls.length === 2 &&
-            (damage_rolls[0][2] & DAMAGE_FLAGS.REGULAR) != 0 &&
-            (damage_rolls[1][2] & DAMAGE_FLAGS.VERSATILE) != 0) {
-            add_totals = false;
-        }
         const total_damages = {}
         let conditionalFormula = "";
         for (let [roll_name, roll, flags] of damage_rolls) {
@@ -409,23 +404,43 @@ class Beyond20RollRenderer {
             
             const regularDamageKeys = ["Full HP Damage", "Missing HP Damage", "2-Handed Damage", "1-Handed Damage", "Damage"];
             const criticalDamageKeys = ["Critical Full HP Damage", "Critical Missing HP Damage", "Critical 2-Handed Damage", "Critical 1-Handed Damage", "Critical Damage"];
-            let regularKey = null;
-            let criticalKey = null;
-            for (const key of regularDamageKeys) {
-                if (total_damages[key]) {
-                    regularKey = key;
-                    break;
-                }
+            
+            const has1Handed = total_damages["1-Handed Damage"] || total_damages["Full HP Damage"];
+            const has2Handed = total_damages["2-Handed Damage"] || total_damages["Missing HP Damage"];
+            const hasCritical1Handed = total_damages["Critical 1-Handed Damage"] || total_damages["Critical Full HP Damage"];
+            const hasCritical2Handed = total_damages["Critical 2-Handed Damage"] || total_damages["Critical Missing HP Damage"];
+            const conditional = total_damages["Conditional"];
+            
+            if (has1Handed && hasCritical1Handed) {
+                let formula = `${total_damages["1-Handed Damage"] || total_damages["Full HP Damage"]} + ${total_damages["Critical 1-Handed Damage"] || total_damages["Critical Full HP Damage"]}`;
+                if (conditional) formula += ` + ${conditional}`;
+                total_damages["Combined 1 Handed"] = formula;
             }
-            for (const key of criticalDamageKeys) {
-                if (total_damages[key]) {
-                    criticalKey = key;
-                    break;
-                }
+            if (has2Handed && hasCritical2Handed) {
+                let formula = `${total_damages["2-Handed Damage"] || total_damages["Missing HP Damage"]} + ${total_damages["Critical 2-Handed Damage"] || total_damages["Critical Missing HP Damage"]}`;
+                if (conditional) formula += ` + ${conditional}`;
+                total_damages["Combined 2 Handed"] = formula;
             }
-            if (regularKey && criticalKey) {
-                const combinedFormula = `${total_damages[regularKey]} + ${total_damages[criticalKey]}`;
-                total_damages["Combined"] = combinedFormula;
+            
+            if (!has1Handed && !has2Handed) {
+                let regularKey = null;
+                let criticalKey = null;
+                for (const key of regularDamageKeys) {
+                    if (total_damages[key]) {
+                        regularKey = key;
+                        break;
+                    }
+                }
+                for (const key of criticalDamageKeys) {
+                    if (total_damages[key]) {
+                        criticalKey = key;
+                        break;
+                    }
+                }
+                if (regularKey && criticalKey) {
+                    const combinedFormula = `${total_damages[regularKey]} + ${total_damages[criticalKey]}`;
+                    total_damages["Combined"] = combinedFormula;
+                }
             }
             
             html += "<div class='beyond20-roll-result'><b><hr/></b></div>";
@@ -457,9 +472,14 @@ class Beyond20RollRenderer {
             const roll_html = await this.rollToDetails(roll, is_total);
             let total_classes = "beyond20-total-damage";
             if (key.includes("Critical")) total_classes += " beyond20-critical-damage";
-            if (key === "Combined") total_classes += " beyond20-combined-damage";
+            if (key.includes("Combined")) total_classes += " beyond20-combined-damage";
             if (key === "Conditional") total_classes += " beyond20-conditional-total";
-            html += `<div class='${total_classes}'><b>Total ${key}: </b>${roll_html}</div>`;
+            let label = key;
+            if (key === "Combined 1 Handed" || key === "Combined 2 Handed") {
+                const rest = key.substring(9);
+                label = `Total${rest} Combined`;
+            }
+            html += `<div class='${total_classes}'><b>${label}: </b>${roll_html}</div>`;
         }
 
         if (request.damages && request.damages.length > 0 && 
@@ -711,10 +731,13 @@ class Beyond20RollRenderer {
                     }
                 } else if (dmg_type.includes("(") && dmg_type.includes(")")) {
                     const base_type = dmg_type.split("(")[0].trim();
-                    if (seen_other_damages[base_type]) {
-                        damage_flags = DAMAGE_FLAGS.CONDITIONAL;
+                    const isVersatileHand = dmg_type.includes("(1-Hand)") || dmg_type.includes("(2-Hand)");
+                    if (!isVersatileHand) {
+                        if (seen_other_damages[base_type]) {
+                            damage_flags = DAMAGE_FLAGS.CONDITIONAL;
+                        }
+                        seen_other_damages[base_type] = true;
                     }
-                    seen_other_damages[base_type] = true;
                 } else if (request.name && request.name.toLowerCase().includes("booming blade")) {
                     if (dmg_type === "Thunder") {
                         damage_flags = DAMAGE_FLAGS.CONDITIONAL;
@@ -828,10 +851,13 @@ class Beyond20RollRenderer {
                         }
                     } else if (dmg_type.includes("(") && dmg_type.includes(")")) {
                         const base_type = dmg_type.split("(")[0].trim();
-                        if (seen_critical_other_damages[base_type]) {
-                            damage_flags = DAMAGE_FLAGS.CONDITIONAL;
+                        const isVersatileHand = dmg_type.includes("(1-Hand)") || dmg_type.includes("(2-Hand)");
+                        if (!isVersatileHand) {
+                            if (seen_critical_other_damages[base_type]) {
+                                damage_flags = DAMAGE_FLAGS.CONDITIONAL;
+                            }
+                            seen_critical_other_damages[base_type] = true;
                         }
-                        seen_critical_other_damages[base_type] = true;
                     } else if (request.name && request.name.toLowerCase().includes("booming blade")) {
                         if (dmg_type === "Thunder") {
                             damage_flags = DAMAGE_FLAGS.CONDITIONAL;
