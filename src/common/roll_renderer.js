@@ -411,15 +411,19 @@ class Beyond20RollRenderer {
             const hasCritical2Handed = total_damages["Critical 2-Handed Damage"] || total_damages["Critical Missing HP Damage"];
             const conditional = total_damages["Conditional"];
             
-            if (has1Handed && hasCritical1Handed) {
-                let formula = `${total_damages["1-Handed Damage"] || total_damages["Full HP Damage"]} + ${total_damages["Critical 1-Handed Damage"] || total_damages["Critical Full HP Damage"]}`;
-                if (conditional) formula += ` + ${conditional}`;
-                total_damages["Combined 1 Handed"] = formula;
-            }
-            if (has2Handed && hasCritical2Handed) {
-                let formula = `${total_damages["2-Handed Damage"] || total_damages["Missing HP Damage"]} + ${total_damages["Critical 2-Handed Damage"] || total_damages["Critical Missing HP Damage"]}`;
-                if (conditional) formula += ` + ${conditional}`;
-                total_damages["Combined 2 Handed"] = formula;
+            const hasAttackRolls = attack_rolls && attack_rolls.length > 0;
+            
+            if (hasAttackRolls) {
+                if (has1Handed && hasCritical1Handed) {
+                    let formula = `${total_damages["1-Handed Damage"] || total_damages["Full HP Damage"]} + ${total_damages["Critical 1-Handed Damage"] || total_damages["Critical Full HP Damage"]}`;
+                    if (conditional) formula += ` + ${conditional}`;
+                    total_damages["Combined 1 Handed"] = formula;
+                }
+                if (has2Handed && hasCritical2Handed) {
+                    let formula = `${total_damages["2-Handed Damage"] || total_damages["Missing HP Damage"]} + ${total_damages["Critical 2-Handed Damage"] || total_damages["Critical Missing HP Damage"]}`;
+                    if (conditional) formula += ` + ${conditional}`;
+                    total_damages["Combined 2 Handed"] = formula;
+                }
             }
             
             if (!has1Handed && !has2Handed) {
@@ -732,7 +736,8 @@ class Beyond20RollRenderer {
                 } else if (dmg_type.includes("(") && dmg_type.includes(")")) {
                     const base_type = dmg_type.split("(")[0].trim();
                     const isVersatileHand = dmg_type.includes("(1-Hand)") || dmg_type.includes("(2-Hand)");
-                    if (!isVersatileHand) {
+                    const isHpVariant = dmg_type.includes("(Full HP)") || dmg_type.includes("(Missing HP)");
+                    if (!isVersatileHand && !isHpVariant) {
                         if (seen_other_damages[base_type]) {
                             damage_flags = DAMAGE_FLAGS.CONDITIONAL;
                         }
@@ -852,7 +857,8 @@ class Beyond20RollRenderer {
                     } else if (dmg_type.includes("(") && dmg_type.includes(")")) {
                         const base_type = dmg_type.split("(")[0].trim();
                         const isVersatileHand = dmg_type.includes("(1-Hand)") || dmg_type.includes("(2-Hand)");
-                        if (!isVersatileHand) {
+                        const isHpVariant = dmg_type.includes("(Full HP)") || dmg_type.includes("(Missing HP)");
+                        if (!isVersatileHand && !isHpVariant) {
                             if (seen_critical_other_damages[base_type]) {
                                 damage_flags = DAMAGE_FLAGS.CONDITIONAL;
                             }
