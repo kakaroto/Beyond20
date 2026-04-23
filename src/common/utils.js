@@ -1,4 +1,7 @@
-const DICE_REGEXP = /(^|[^\w])(?:(?:(?:(\d*[dD]\d+(?:ro(?:=|<|<=|>|>=)[0-9]+)?(?:min[0-9]+)?)((?:(?:\s*[-−+]\s*\d+)|(?:\s*[0+]\s*\d*[dD]\d+))*))|((?:[-−+]\s*\d+)+)))($|[^\w])/gm;
+// Dice core matches either `NdM` (explicit count, any M) or bare `dM`/`DM` where M is 2..9 or two-plus digits.
+// The bare form excludes d0 and d1, which are never real dice and produce false positives on
+// sourcebook labels like "D1" (e.g. Vecna: Eve of Ruin map door labels).
+const DICE_REGEXP = /(^|[^\w])(?:(?:(?:((?:\d+[dD]\d+|[dD](?:[2-9]|\d{2,}))(?:ro(?:=|<|<=|>|>=)[0-9]+)?(?:min[0-9]+)?)((?:(?:\s*[-−+]\s*\d+)|(?:\s*[0+]\s*(?:\d+[dD]\d+|[dD](?:[2-9]|\d{2,}))))*))|((?:[-−+]\s*\d+)+)))($|[^\w])/gm;
 
 function replaceRollsCallback(match, replaceCB) {
     let dice = match[2];
