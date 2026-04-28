@@ -1754,7 +1754,7 @@ function handleSpecialSpells(spell_name, damages=[], damage_types=[], {spell_sou
     // Check for Draconic Sorcerer's Elemental Affinity;
     let elementalAffinity = null;
     for (let feature of character._class_features) {
-        const match = feature.match("Elemental Affinity \\((.*)\\)");
+        const match = feature.match("Elemental Affinity \\((.*)\\)") || feature.match("Elemental Affinity: (.*) Damage");
         if (match) {
             elementalAffinity = match[1];
             break;
