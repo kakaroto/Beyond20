@@ -1,4 +1,4 @@
-const ROLL20_URL = "*://app.roll20.net/editor/*";
+const ROLL20_URL = "*://app.roll20.net/editor*";
 const FVTT_URL = "*://*/*game";
 const DNDBEYOND_CHARACTER_URL = "*://*.dndbeyond.com/*characters/*";
 const DNDBEYOND_MONSTER_URL = "*://*.dndbeyond.com/monsters/*";
@@ -75,4 +75,3 @@ const BUTTON_STYLE_CSS = `
     vertical-align: middle;
 }
 `;
-
