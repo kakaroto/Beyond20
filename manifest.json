@@ -11,7 +11,8 @@
     ],
     "host_permissions": [
 		"*://beyond20.kicks-ass.org/roll",
-		"*://app.roll20.net/editor/",
+		"*://app.roll20.net/editor/*",
+		"*://app.roll20.net/editor",
 		"*://*.dndbeyond.com/*",
 		"*://*.forge-vtt.com/game"
 	],
@@ -179,7 +180,8 @@
 		},
 		{
 			"matches": [
-				"*://app.roll20.net/editor/*"
+				"*://app.roll20.net/editor/*",
+				"*://app.roll20.net/editor"
 			],
 			"css": [
 				"libs/css/alertify.css",
