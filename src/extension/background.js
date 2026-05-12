@@ -1,6 +1,7 @@
 var settings = getDefaultSettings()
 var fvtt_tabs = []
 var custom_tabs = []
+var roll20_tabs = []
 var tabRemovalTimers = {};
 var currentPermissions = {origins: []};
 var openedChangelog = false;
@@ -63,6 +64,12 @@ function sendMessageToRoll20(request, limit = null, failure = null) {
         const vtt = limit.vtt || "roll20"
         if (vtt == "roll20") {
             chrome.tabs.query({ "url": ROLL20_URL }, (tabs) => {
+                // Also check tracked roll20 tabs (e.g., no-slash variant injected via permission flow)
+                for (let rtab of roll20_tabs) {
+                    if (!tabs.find(t => t.id === rtab.id)) {
+                        tabs.push(rtab);
+                    }
+                }
                 let found = filterVTTTab(request, limit, tabs, roll20Title)
                 if (failure)
                     failure(!found)
@@ -71,7 +78,16 @@ function sendMessageToRoll20(request, limit = null, failure = null) {
             failure(true)
         }
     } else {
-        sendMessageTo(ROLL20_URL, request, failure);
+        sendMessageTo(ROLL20_URL, request, (failed) => {
+            if (failed && roll20_tabs.length > 0) {
+                for (let tab of roll20_tabs) {
+                    sendMessageWithLog(tab.id, request)
+                }
+                if (failure) failure(false)
+            } else {
+                if (failure) failure(failed)
+            }
+        });
     }
 }
 
@@ -158,6 +174,27 @@ function removeCustomTab(id) {
         }
     }
 }
+
+function isRoll20TabAdded(tab) {
+    return !!roll20_tabs.find(t => t.id === tab.id);
+}
+
+function addRoll20Tab(tab) {
+    if (isRoll20TabAdded(tab)) return;
+    roll20_tabs.push(tab);
+    console.log("Added ", tab.id, " to roll20 tabs.");
+}
+
+function removeRoll20Tab(id) {
+    for (let t of roll20_tabs) {
+        if (t.id == id) {
+            roll20_tabs = roll20_tabs.filter(tab => tab !== t);
+            console.log("Removed ", id, " from roll20 tabs.");
+            return;
+        }
+    }
+}
+
 function onRollFailure(request, sendResponse) {
     console.log("Failure to find a VTT")
     chrome.tabs.query({ "url": FVTT_URL }, (tabs) => {
@@ -179,10 +216,28 @@ function onRollFailure(request, sendResponse) {
                 "error": "Found a Foundry VTT tab that has not been activated. Please click on the Beyond20 icon in the browser's toolbar of that tab in order to give Beyond20 access."
             })
         } else {
-            sendResponse({
-                "success": false, "vtt": null, "request": request,
-                "error": "No VTT found that matches your settings. Open a VTT window, or check that the settings don't restrict access to a specific campaign."
-            })
+            // Check if there's a Roll20 editor tab without trailing slash
+            chrome.tabs.query({}, (allTabs) => {
+                const roll20Tab = allTabs.find(tab =>
+                    tab.url && urlMatches(tab.url, ROLL20_URL_NO_SLASH) && isRoll20(tab.title)
+                );
+                if (roll20Tab) {
+                    // Found a Roll20 tab that doesn't match the /editor/* pattern
+                    // The content script won't auto-run here due to manifest match pattern
+                    sendResponse({
+                        "success": false, "vtt": null, "request": request,
+                        "error": "Beyond20 detected your Roll20 editor tab but needs permission to enable Beyond20 on it. Would you like to grant access?",
+                        "roll20TabFound": true,
+                        "roll20TabUrl": roll20Tab.url,
+                        "roll20TabId": roll20Tab.id
+                    });
+                } else {
+                    sendResponse({
+                        "success": false, "vtt": null, "request": request,
+                        "error": "No VTT found that matches your settings. Open a VTT window, or check that the settings don't restrict access to a specific campaign."
+                    })
+                }
+            });
         }
     });
 }
@@ -246,6 +301,9 @@ function onMessage(request, sender, sendResponse) {
         } else if ((isCustomDomainUrl(tab) || isSupportedVTT(tab)) && !isCustomTabAdded(tab)) {
             injectGenericSiteScripts([tab]);
         }
+        if (isRoll20(tab.title) && !isRoll20TabAdded(tab)) {
+            addRoll20Tab(tab);
+        }
         // maybe open the changelog
         if (!openedChangelog) {
             // Mark it true regardless of whether we opened it, so we don't check every time and avoid race conditions on setting save
@@ -270,6 +328,49 @@ function onMessage(request, sender, sendResponse) {
             // The previous listener, if there was one, would have been removed automatically at this point
             webNavigationReady = false;
         }
+    } else if (request.action == "roll20-permission-granted") {
+        chrome.tabs.query({}, (tabs) => {
+            const roll20Tab = tabs.find(tab =>
+                tab.url && (urlMatches(tab.url, ROLL20_URL) || urlMatches(tab.url, ROLL20_URL_NO_SLASH)) && isRoll20(tab.title)
+            );
+            if (!roll20Tab) {
+                console.log("No Roll20 editor tab found for permission grant.");
+                sendResponse({success: false, error: "No Roll20 editor tab found."});
+                return;
+            }
+            // Both Chrome (MV3) and Firefox need a user gesture for permissions.request,
+            // so we open a popup window to let the click handler provide the gesture.
+            const popupWidth = 600, popupHeight = 350;
+            chrome.windows.getLastFocused((win) => {
+                const left = Math.round(win.left + (win.width - popupWidth) / 2);
+                const top = Math.round(win.top + (win.height - popupHeight) / 2);
+                chrome.windows.create({
+                    url: chrome.runtime.getURL("popup.html") + "?grant=roll20&tabId=" + roll20Tab.id,
+                    type: "popup",
+                    width: popupWidth,
+                    height: popupHeight,
+                    left: Math.max(0, left),
+                    top: Math.max(0, top),
+                    focused: true
+                }, (window) => {
+                    if (chrome.runtime.lastError) {
+                        console.error("Failed to open permission grant popup:", chrome.runtime.lastError.message);
+                        sendResponse({success: false, error: chrome.runtime.lastError.message});
+                        return;
+                    }
+                    console.log("Opened permission grant popup window", window?.id);
+                    sendResponse({success: true, popup: true});
+                });
+            });
+        });
+        return true;
+    } else if (request.action == "inject-roll20-scripts") {
+        chrome.tabs.get(request.tabId, (tab) => {
+            injectRoll20Scripts([tab]);
+            addRoll20Tab(tab);
+            sendResponse({success: true});
+        });
+        return true;
     } else if (request.action == "reload-me") {
         chrome.tabs.reload(sender.tab.id)
     } else if (request.action == "load-alertify") {
@@ -349,6 +450,10 @@ function onTabsUpdated(id, changes, tab) {
         // 100ms should be fast enough for page script but not so slow that a reload on a localhost would
         // fail to remove/add the tab, as it should
         tabRemovalTimers[id] = setTimeout(() => removeCustomTab(id), 100);
+    } else if (isRoll20TabAdded(tab) &&
+        ((changes.url && !urlMatches(changes.url, ROLL20_URL) && !urlMatches(changes.url, ROLL20_URL_NO_SLASH)) ||
+         (changes["status"] == "loading"))) {
+        tabRemovalTimers[id] = setTimeout(() => removeRoll20Tab(id), 100);
     }
     /* Load Beyond20 on custom urls that have been added to our permissions */
     if (changes["status"] === "complete" &&
@@ -377,6 +482,7 @@ function onTabsUpdated(id, changes, tab) {
 function onTabRemoved(id, info) {
     removeFVTTTab(id)
     removeCustomTab(id)
+    removeRoll20Tab(id)
 }
 
 function onPermissionsUpdated() {
