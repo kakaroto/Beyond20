@@ -64,6 +64,7 @@ function sendMessageToRoll20(request, limit = null, failure = null) {
         const vtt = limit.vtt || "roll20"
         if (vtt == "roll20") {
             chrome.tabs.query({ "url": ROLL20_URL }, (tabs) => {
+                console.log("[Roll20] limit path: tabs from URL query:", tabs.length, "tracked roll20_tabs:", roll20_tabs.length);
                 // Also check tracked roll20 tabs (e.g., no-slash variant injected via permission flow)
                 for (let rtab of roll20_tabs) {
                     if (!tabs.find(t => t.id === rtab.id)) {
@@ -79,6 +80,7 @@ function sendMessageToRoll20(request, limit = null, failure = null) {
         }
     } else {
         sendMessageTo(ROLL20_URL, request, (failed) => {
+            console.log("[Roll20] non-limit path: query failed:", failed, "roll20_tabs:", roll20_tabs.length);
             if (failed && roll20_tabs.length > 0) {
                 for (let tab of roll20_tabs) {
                     sendMessageWithLog(tab.id, request)
@@ -186,17 +188,11 @@ function addRoll20Tab(tab) {
 }
 
 function removeRoll20Tab(id) {
-    for (let t of roll20_tabs) {
-        if (t.id == id) {
-            roll20_tabs = roll20_tabs.filter(tab => tab !== t);
-            console.log("Removed ", id, " from roll20 tabs.");
-            return;
-        }
-    }
+    roll20_tabs = roll20_tabs.filter(tab => tab.id !== id);
 }
 
 function onRollFailure(request, sendResponse) {
-    console.log("Failure to find a VTT")
+    console.log("Failure to find a VTT", request.action)
     chrome.tabs.query({ "url": FVTT_URL }, (tabs) => {
         let found = false
         for (let tab of tabs) {
@@ -217,11 +213,30 @@ function onRollFailure(request, sendResponse) {
             })
         } else {
             // Check if there's a Roll20 editor tab without trailing slash
-            chrome.tabs.query({}, (allTabs) => {
-                const roll20Tab = allTabs.find(tab =>
-                    tab.url && urlMatches(tab.url, ROLL20_URL_NO_SLASH) && isRoll20(tab.title)
-                );
+            chrome.tabs.query({ "url": ROLL20_URL_NO_SLASH }, (roll20Tabs) => {
+                const roll20Tab = roll20Tabs.find(tab => isRoll20(tab.title));
                 if (roll20Tab) {
+                    // Check if permission has already been granted
+                    const hasRoll20Permission = currentPermissions.origins.some(pattern =>
+                        urlMatches("https://app.roll20.net/", pattern)
+                    );
+                    console.log("[Roll20] no-slash tab found:", roll20Tab.url, "hasPermission:", hasRoll20Permission);
+                    if (hasRoll20Permission) {
+                        // Already have permission; inject scripts and resend the roll
+                        injectRoll20Scripts([roll20Tab]);
+                        addRoll20Tab(roll20Tab);
+                        sendMessageToRoll20(request, settings["vtt-tab"], (failed) => {
+                            if (!failed) {
+                                sendResponse({success: true, vtt: ["roll20"], error: null, request: request});
+                            } else {
+                                sendResponse({
+                                    "success": false, "vtt": null, "request": request,
+                                    "error": "Something went wrong with your roll, please try again."
+                                });
+                            }
+                        });
+                        return;
+                    }
                     // Found a Roll20 tab that doesn't match the /editor/* pattern
                     // The content script won't auto-run here due to manifest match pattern
                     sendResponse({
@@ -328,49 +343,7 @@ function onMessage(request, sender, sendResponse) {
             // The previous listener, if there was one, would have been removed automatically at this point
             webNavigationReady = false;
         }
-    } else if (request.action == "roll20-permission-granted") {
-        chrome.tabs.query({}, (tabs) => {
-            const roll20Tab = tabs.find(tab =>
-                tab.url && (urlMatches(tab.url, ROLL20_URL) || urlMatches(tab.url, ROLL20_URL_NO_SLASH)) && isRoll20(tab.title)
-            );
-            if (!roll20Tab) {
-                console.log("No Roll20 editor tab found for permission grant.");
-                sendResponse({success: false, error: "No Roll20 editor tab found."});
-                return;
-            }
-            // Both Chrome (MV3) and Firefox need a user gesture for permissions.request,
-            // so we open a popup window to let the click handler provide the gesture.
-            const popupWidth = 600, popupHeight = 350;
-            chrome.windows.getLastFocused((win) => {
-                const left = Math.round(win.left + (win.width - popupWidth) / 2);
-                const top = Math.round(win.top + (win.height - popupHeight) / 2);
-                chrome.windows.create({
-                    url: chrome.runtime.getURL("popup.html") + "?grant=roll20&tabId=" + roll20Tab.id,
-                    type: "popup",
-                    width: popupWidth,
-                    height: popupHeight,
-                    left: Math.max(0, left),
-                    top: Math.max(0, top),
-                    focused: true
-                }, (window) => {
-                    if (chrome.runtime.lastError) {
-                        console.error("Failed to open permission grant popup:", chrome.runtime.lastError.message);
-                        sendResponse({success: false, error: chrome.runtime.lastError.message});
-                        return;
-                    }
-                    console.log("Opened permission grant popup window", window?.id);
-                    sendResponse({success: true, popup: true});
-                });
-            });
-        });
-        return true;
-    } else if (request.action == "inject-roll20-scripts") {
-        chrome.tabs.get(request.tabId, (tab) => {
-            injectRoll20Scripts([tab]);
-            addRoll20Tab(tab);
-            sendResponse({success: true});
-        });
-        return true;
+
     } else if (request.action == "reload-me") {
         chrome.tabs.reload(sender.tab.id)
     } else if (request.action == "load-alertify") {
@@ -401,7 +374,6 @@ function injectRoll20Scripts(tabs, frame_id = 0) {
     insertCSSs(tabs, ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css", "dist/beyond20.css"], undefined, frame_id)
     executeScripts(tabs, ["libs/alertify.min.js", "libs/jquery-3.4.1.min.js", "dist/roll20.js"], undefined, frame_id)
 }
-
 function insertCSSs(tabs, css_files, callback, frame_id = 0) {
     for (let tab of tabs) {
         // Use new Manifest V3 scripting API 
@@ -457,7 +429,7 @@ function onTabsUpdated(id, changes, tab) {
     }
     /* Load Beyond20 on custom urls that have been added to our permissions */
     if (changes["status"] === "complete" &&
-        (isFVTT(tab.title) || isCustomDomainUrl(tab) || isSupportedVTT(tab))) {
+        (isFVTT(tab.title) || isRoll20(tab.title) || isCustomDomainUrl(tab) || isSupportedVTT(tab))) {
         // Cancel tab removal if we go back to complete within 100ms as the page script loads
         if (tabRemovalTimers[id]) {
             clearTimeout(tabRemovalTimers[id]);
@@ -470,7 +442,11 @@ function onTabsUpdated(id, changes, tab) {
             if (hasPermission) {
                 if (isFVTT(tab.title)) {
                     executeScripts([tab], ["dist/fvtt_test.js"]);
-                } else {
+                } else if (isRoll20(tab.title) && !urlMatches(tab.url, ROLL20_URL)) {
+                    console.log("[Roll20] Auto-injecting into no-slash tab:", tab.id, tab.url);
+                    injectRoll20Scripts([tab]);
+                    addRoll20Tab(tab);
+                } else if (!isRoll20(tab.title)) {
                     injectGenericSiteScripts([tab])
                 }
             }

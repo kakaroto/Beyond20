@@ -1025,37 +1025,6 @@ function beyond20SendMessageFailure(character, response) {
         return;
     console.log("Received response : ", response);
     if (["roll", "rendered-roll"].includes(response.request.action)  && ((response.vtt && response.vtt[0] == "dndbeyond") || response.error)) {
-        if (response.roll20TabFound) {
-            // A Roll20 editor tab was found but lacks the content script (no trailing slash).
-            // Prompt the user to grant permission.
-            dndbeyondDiceRoller._prompter.prompt(
-                "Beyond 20",
-                "<p>Beyond20 detected a Roll20 editor tab but doesn't have the necessary permissions to load on it.</p>" +
-                "<p>Would you like to grant Beyond20 access to the Roll20 editor tab?</p>",
-                "Grant Access",
-                "Cancel"
-            ).then((result) => {
-                if (result) {
-                    chrome.runtime.sendMessage({action: "roll20-permission-granted"}, (resp) => {
-                        if (resp && resp.success) {
-                            if (resp.popup) {
-                                // Chrome: permission dialog popup was opened
-                                alertify.success("A permission dialog has been opened. Please grant access in the popup window, then roll again.");
-                            } else {
-                                // Firefox: permission was granted and scripts injected
-                                alertify.success("Beyond20 is now active on your Roll20 editor tab. Please roll again.");
-                            }
-                        } else {
-                            alertify.error("Beyond20: " + (resp?.error || "Failed to grant permission. Please open the Roll20 tab and click the Beyond20 icon."));
-                            dndbeyondDiceRoller.handleRollError(response.request, response.error);
-                        }
-                    });
-                } else {
-                    dndbeyondDiceRoller.handleRollError(response.request, response.error);
-                }
-            });
-            return;
-        }
         dndbeyondDiceRoller.handleRollError(response.request, response.error);
     } else if (response.error) {
         alertify.error("<strong>Beyond 20 : </strong>" + response.error);

@@ -9,54 +9,7 @@ function sendMessageToTab(tab_id, message, callback) {
 var character = null;
 var settings = null;
 
-// Roll20 permission grant flow (triggered from DDB page when no-slash Roll20 tab is found)
-(function checkGrantFlow() {
-    var params = new URLSearchParams(window.location.search);
-    if (params.get('grant') !== 'roll20') {
-        window.__beyond20_grantFlow = false;
-        return;
-    }
-    window.__beyond20_grantFlow = true;
-    var grantTabId = parseInt(params.get('tabId'));
-    document.body.innerHTML = [
-        '<div style="padding: 20px; font-family: sans-serif; text-align: center;">',
-        '<h2 style="color: #333; margin-top: 0;">Grant Beyond20 Access</h2>',
-        '<p style="color: #666; margin: 15px 0;">Beyond20 needs permission to access app.roll20.net to work on your Roll20 editor tab.</p>',
-        '<div style="margin-top: 20px;">',
-        '<button id="beyond20-grant-btn" style="padding: 10px 30px; font-size: 16px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Grant Access</button>',
-        '<button id="beyond20-grant-cancel-btn" style="padding: 10px 30px; font-size: 16px; background: #888; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">Cancel</button>',
-        '</div>',
-        '<p id="beyond20-grant-status" style="margin-top: 15px; color: #666;"></p>',
-        '</div>'
-    ].join('\n');
-    var statusEl = document.getElementById('beyond20-grant-status');
-    var grantBtn = document.getElementById('beyond20-grant-btn');
-    var cancelBtn = document.getElementById('beyond20-grant-cancel-btn');
-    var setStatus = function(msg) { statusEl.textContent = msg; };
-    var disableBtns = function() { grantBtn.disabled = true; cancelBtn.disabled = true; };
-    grantBtn.addEventListener('click', function() {
-        var chromeOrBrowser = getBrowser() === "Firefox" ? browser : chrome;
-        chromeOrBrowser.permissions.request({origins: ["*://app.roll20.net/*"]}).then(function(granted) {
-            if (granted) {
-                setStatus('Permission granted! Activating Beyond20...');
-                disableBtns();
-                chrome.runtime.sendMessage({action: "inject-roll20-scripts", tabId: grantTabId}, function(resp) {
-                    if (resp && resp.success) {
-                        setStatus('✓ Beyond20 is now active! You can close this window.');
-                        setTimeout(function() { window.close(); }, 3000);
-                    } else {
-                        setStatus('✗ Failed to inject scripts. Please click the Beyond20 icon on the Roll20 tab.');
-                    }
-                });
-            } else {
-                setStatus('Permission was refused.');
-            }
-        }).catch(function(err) {
-            setStatus('Error: ' + err.message);
-        });
-    });
-    cancelBtn.addEventListener('click', function() { window.close(); });
-})();
+
 
 function gotSettings(stored_settings) {
     settings = stored_settings;
@@ -558,12 +511,10 @@ function actOnCurrentTab(tab) {
 }
 
 
-if (!window.__beyond20_grantFlow) {
-    setupHTML();
-    // Check if the popup is in the browser action or open in alertify from within an active DDB/VTT page
-    if (chrome.tabs != undefined) {
-        chrome.tabs.query({ "active": true, "currentWindow": true }, (tabs) => actOnCurrentTab(tabs[0]));
-    } else {
-        chrome.runtime.sendMessage({ "action": "get-current-tab" }, actOnCurrentTab);
-    }
+setupHTML();
+// Check if the popup is in the browser action or open in alertify from within an active DDB/VTT page
+if (chrome.tabs != undefined) {
+    chrome.tabs.query({ "active": true, "currentWindow": true }, (tabs) => actOnCurrentTab(tabs[0]));
+} else {
+    chrome.runtime.sendMessage({ "action": "get-current-tab" }, actOnCurrentTab);
 }
