@@ -26,6 +26,8 @@ function cleanRoll(rollText) {
     //clean adjacent '+'s (Roll20 treats it as a d20);
     //eg: (1d10 + + 2 + 3) -> (1d10 + 2 + 3);
     rollText = (rollText || "").toString();
+    // Replace Unicode minus sign (U+2212) with ASCII hyphen-minus (U+002D)
+    rollText = rollText.replace(/\u2212/g, "-");
     rollText = rollText.replace(/\+ \+/g, '+').replace(/\+ \-/g, '-');
     return rollText;
 }

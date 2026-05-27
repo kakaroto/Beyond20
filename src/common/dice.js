@@ -41,10 +41,12 @@ class Beyond20BaseRoll {
     }
 
     cleanupFormula(formula) {
+        // Replace Unicode minus sign (U+2212) with ASCII hyphen-minus (U+002D)
+        formula = formula.replace(/\u2212/g, "-");
         const cleaned = formula
             .replace(/(?:\+\s*)+([+-])/g, "$1") // Change + + and + - into + and - respectively
             .replace(/(?:\-\s*\-)+/g, "+") // Change - - into +
-            .replace(/(?:\-\s*\+)+/g, "-") // Change - - into -
+            .replace(/(?:\-\s*\+)+/g, "-") // Change - + into -
             .replace(/\s+/g, " ") // trim double spaces
         if (cleaned != formula) {
             // Clean it recursively due to order of operations, we may end up with 
