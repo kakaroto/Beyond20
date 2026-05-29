@@ -80,15 +80,10 @@ function sendMessageToRoll20(request, limit = null, failure = null) {
         }
     } else {
         sendMessageTo(ROLL20_URL, request, (failed) => {
-            console.log("[Roll20] non-limit path: query failed:", failed, "roll20_tabs:", roll20_tabs.length);
-            if (failed && roll20_tabs.length > 0) {
-                for (let tab of roll20_tabs) {
-                    sendMessageWithLog(tab.id, request)
-                }
-                if (failure) failure(false)
-            } else {
-                if (failure) failure(failed)
+            for (let tab of roll20_tabs) {
+                sendMessageWithLog(tab.id, request)
             }
+            if (failure) failure(failed && roll20_tabs.length === 0)
         });
     }
 }
@@ -237,21 +232,11 @@ function onRollFailure(request, sendResponse) {
                         });
                         return;
                     }
-                    // Found a Roll20 tab that doesn't match the /editor/* pattern
-                    // The content script won't auto-run here due to manifest match pattern
-                    sendResponse({
-                        "success": false, "vtt": null, "request": request,
-                        "error": "Beyond20 detected your Roll20 editor tab but needs permission to enable Beyond20 on it. Would you like to grant access?",
-                        "roll20TabFound": true,
-                        "roll20TabUrl": roll20Tab.url,
-                        "roll20TabId": roll20Tab.id
-                    });
-                } else {
-                    sendResponse({
-                        "success": false, "vtt": null, "request": request,
-                        "error": "No VTT found that matches your settings. Open a VTT window, or check that the settings don't restrict access to a specific campaign."
-                    })
                 }
+                sendResponse({
+                    "success": false, "vtt": null, "request": request,
+                    "error": "No VTT found that matches your settings. Open a VTT window, or check that the settings don't restrict access to a specific campaign."
+                })
             });
         }
     });
