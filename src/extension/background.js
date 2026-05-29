@@ -217,8 +217,6 @@ function onRollFailure(request, sendResponse) {
                     );
                     console.log("[Roll20] no-slash tab found:", roll20Tab.url, "hasPermission:", hasRoll20Permission);
                     if (hasRoll20Permission) {
-                        // Already have permission; inject scripts and resend the roll
-                        injectRoll20Scripts([roll20Tab]);
                         addRoll20Tab(roll20Tab);
                         sendMessageToRoll20(request, settings["vtt-tab"], (failed) => {
                             if (!failed) {
