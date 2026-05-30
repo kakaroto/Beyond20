@@ -277,13 +277,22 @@ async function routeRoll(request, attackResults, damageResults) {
     // when there's an actual dice term — a display (item/feature) sends roll "0".
     if (request.roll && /d\d/i.test(`${request.roll}`)) {
         const dice = [].concat(attackResults || [], damageResults || []);
+        // Hit dice: D&D Beyond rolls, heals, and decrements the die on its own
+        // side (HP syncs back via hp-update), so just DISPLAY the roll. Realm's
+        // "hitdie" handler would deduct/heal using a Realm-specific hitDieField we
+        // can't supply — erroring ("No Hit Die Remaining") and double-healing — so
+        // send it as a plain chat roll labelled "Hit Die" instead.
+        const isHitDie = realmRollType === "hitdie";
+        const type = isHitDie ? "chat" : realmRollType;
+        const metadata = buildRollMeta(type, request, character, tokenInfo);
+        if (isHitDie) metadata.rollName = "Hit Die";
         return T.sendRoll(
             Object.assign(
                 {
                     rollString: M.applyAdvantage(request.roll, request.advantage),
-                    rollType: realmRollType,
+                    rollType: type,
                     audience,
-                    metadata: buildRollMeta(realmRollType, request, character, tokenInfo)
+                    metadata
                 },
                 tokenInfo
             ),
