@@ -125,18 +125,10 @@ function buildRollMeta(realmRollType, request, character, tokenInfo) {
 
 // ---- Action handlers ------------------------------------------------------
 
-// Beyond20 marks an attack Melee/Ranged via "attack-type" (and range/reach).
-function isRangedAttack(request) {
-    const at = request["attack-type"] || request.attackType;
-    if (at) return /ranged/i.test(String(at));
-    if (request.range && !request.reach) return true;
-    return false;
-}
-
 // Roll-card icon: spells get the wand, ranged the bow, else a sword.
 function attackIcon(request) {
     if (M.isSpellRequest(request)) return "IconWand";
-    return isRangedAttack(request) ? "IconBow" : "IconSword";
+    return M.isRangedAttack(request) ? "IconBow" : "IconSword";
 }
 
 // Post a spell card to chat (description + save/damage buttons + tags), mirroring
@@ -162,6 +154,7 @@ async function sendDamageRoll(request, character, tokenInfo, audience, damageStr
     const metadata = buildRollMeta("damage", request, character, tokenInfo);
     if (request.name) metadata.attack = request.name;
     metadata.icon = attackIcon(request);
+    metadata.isRanged = M.isRangedAttack(request);
     return T.sendRoll(
         Object.assign(
             { rollString: damageStr, rollType: "damage", audience, metadata },
@@ -233,6 +226,7 @@ async function sendAttack(request, character, tokenInfo, audience, providedResul
     metadata.attack = request.name;
     if (damageStr && withDamageButton !== false) metadata.damage = damageStr;
     metadata.icon = attackIcon(request);
+    metadata.isRanged = M.isRangedAttack(request);
     return T.sendRoll(
         Object.assign(
             {

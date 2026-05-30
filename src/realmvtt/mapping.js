@@ -170,6 +170,14 @@ RealmVTT.mapping = (function () {
         }
     }
 
+    // Beyond20 marks an attack Melee/Ranged via "attack-type" (and range/reach).
+    function isRangedAttack(request) {
+        const at = request && (request["attack-type"] || request.attackType);
+        if (at) return /ranged/i.test(String(at));
+        if (request && request.range && !request.reach) return true;
+        return false;
+    }
+
     // ---- Spell cards --------------------------------------------------------
 
     // A request is spell-related if its type mentions "spell" or it carries the
@@ -220,7 +228,7 @@ RealmVTT.mapping = (function () {
 
     // A clickable spell-attack button that rolls the spell's to-hit as a Realm
     // "attack" roll (carrying the damage so its own card gets a Damage button).
-    function attackButtonMacro(name, toHit, damageStr) {
+    function attackButtonMacro(name, toHit, damageStr, isRanged) {
         const n = String(name || "Spell").replace(/'/g, "\\'");
         const formula =
             toHit !== undefined && toHit !== null && `${toHit}` !== ""
@@ -228,7 +236,8 @@ RealmVTT.mapping = (function () {
                 : "1d20";
         const d = damageStr ? String(damageStr).replace(/'/g, "\\'") : "";
         const meta =
-            "{ rollName: '" + n + "', attack: '" + n + "', icon: 'IconWand'" +
+            "{ rollName: '" + n + "', attack: '" + n + "', icon: 'IconWand', source: 'beyond20'" +
+            (isRanged ? ", isRanged: true" : "") +
             (d ? ", damage: '" + d + "'" : "") + " }";
         return [
             "```Roll_Attack",
@@ -299,7 +308,7 @@ RealmVTT.mapping = (function () {
         }
         const toHit = request && request["to-hit"];
         if (toHit !== undefined && toHit !== null && `${toHit}` !== "")
-            lines.push(attackButtonMacro(name, toHit, damageStr));
+            lines.push(attackButtonMacro(name, toHit, damageStr, isRangedAttack(request)));
         const dc = request && request["save-dc"];
         const ability = request && request["save-ability"];
         const saveBtn = dc && ability ? saveButtonMacro(ability, dc) : "";
@@ -359,6 +368,7 @@ RealmVTT.mapping = (function () {
         D20_TYPES,
         realmEffectName,
         CONDITION_NAMES,
+        isRangedAttack,
         isSpellRequest,
         saveButtonMacro,
         damageButtonMacro,
