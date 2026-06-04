@@ -1,3 +1,19 @@
+v2.20.0 (June 4th 2026)
+===
+
+Hi everyone,
+
+Today's release adds a few small bugfixes to Beyond20, but also tackles a recent issue with the Roll20 website now using two slightly different URLs for the games.
+
+This should get rid of the warning users would see, when they access their games through the new URL, which prevented Beyond20 from sending rolls to Roll20. 
+
+You can read the full [Changelog](/Changelog#v2200) below to see all the changes included in this release.
+
+As usual, a big thank you to [@dmportella/Gothyl](https://github.com/dmportella) and to[@raystuart](https://github.com/raystuart) for their work on this release!
+Thank you as well to our generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
+
+Enjoy!
+
 v2.19.0 (April 12th 2026)
 ===
 

@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.19.0
+Congratulations! Beyond20 was just updated to the latest version : v2.20.0
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -17,20 +17,18 @@ Thank you all for your support!
 
 # Release Notes
 
-v2.19.0 (April 12th 2026)
+v2.20.0 (June 4th 2026)
 ===
 
 Hi everyone,
 
-Today, we're releasing v2.19.0, a small D&D Beyond-focused update with a mix of new features and bug fixes.
+Today's release adds a few small bugfixes to Beyond20, but also tackles a recent issue with the Roll20 website now using two slightly different URLs for the games.
 
-This release adds support for the Blood Hunter's Crimson Rite feature, as well as support for conditional damage handling for Booming Blade and Green-Flame Blade on D&D Beyond.
+This should get rid of the warning users would see, when they access their games through the new URL, which prevented Beyond20 from sending rolls to Roll20. 
 
-On the bugfix side, we've resolved several issues affecting the D&D Beyond Game Log and Roll20 to improve roll display and messaging, as well as we've fixed critical damage handling for Booming Blade and Green-Flame Blade.
+You can read the full [Changelog](/Changelog#v2200) below to see all the changes included in this release.
 
-You can read the full [Changelog](/Changelog#v2190) to see all the changes included in this release.
-
-As usual, a big thank you to [@dmportella/Gothyl](https://github.com/dmportella) who made the release!
+As usual, a big thank you to [@dmportella/Gothyl](https://github.com/dmportella) and to[@raystuart](https://github.com/raystuart) for their work on this release!
 Thank you as well to our generous [Patrons](https://patreon.com/kakaroto) and [Ko-fi/Github](/rations) supporters.
 
 Enjoy!
@@ -41,13 +39,14 @@ Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
 
-v2.19.0 (April 12th 2026)
+v2.20.0 (June 4th 2026)
 ===
-- **Feature**: *dndbeyond*: Add support for Crimson Rite feature from Blood Hunter (by [@dmportella](https://github.com/dmportella))
-- **Feature**: *dndbeyond*: Add support for Conditional Damage support Booming Blade and Green-Flame Blade (by [@dmportella](https://github.com/dmportella))
-- **BugFix**: *dndbeyond*: Fix support for Booming Blade and Green-Flame Blade critical Damage (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: *dndbeyond*: Fix support for the D&D Beyond Game Log (by [@dmportella](https://github.com/dmportella))
-- **Bugfix**: *roll20*: Fix support for roll tool tip (by [@dmportella](https://github.com/dmportella))
+- **Feature**: *Roll20*: Add detection and support for the new Roll20 game URL without a trailing slash (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for new Elemental Affinity formula damage (by [@raystuart](https://github.com/raystuart))
+- **BugFix**: Fix dice formula parsing when it uses a unicode character for the negative sign (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for Versatile weapons and conditional damage for spells (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix display for Toll the Dead spell (by [@dmportella](https://github.com/dmportella))
+
 
 ---
 

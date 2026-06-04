@@ -1,3 +1,12 @@
+v2.20.0 (June 4th 2026)
+===
+- **Feature**: *Roll20*: Add detection and support for the new Roll20 game URL without a trailing slash (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for new Elemental Affinity formula damage (by [@raystuart](https://github.com/raystuart))
+- **BugFix**: Fix dice formula parsing when it uses a unicode character for the negative sign (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix support for Versatile weapons and conditional damage for spells (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix display for Toll the Dead spell (by [@dmportella](https://github.com/dmportella))
+
+
 v2.19.0 (April 12th 2026)
 ===
 - **Feature**: *dndbeyond*: Add support for Crimson Rite feature from Blood Hunter (by [@dmportella](https://github.com/dmportella))
