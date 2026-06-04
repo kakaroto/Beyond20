@@ -9,6 +9,8 @@ function sendMessageToTab(tab_id, message, callback) {
 var character = null;
 var settings = null;
 
+
+
 function gotSettings(stored_settings) {
     settings = stored_settings;
     $("ul").removeClass("disabled");
