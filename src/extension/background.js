@@ -79,11 +79,24 @@ function sendMessageToRoll20(request, limit = null, failure = null) {
             failure(true)
         }
     } else {
-        sendMessageTo(ROLL20_URL, request, (failed) => {
-            for (let tab of roll20_tabs) {
-                sendMessageWithLog(tab.id, request)
+        // Dedup by tab id: the URL query and the tracked roll20_tabs array can
+        // both reference the same tab (e.g. when activate-icon adds a slash-URL
+        // Roll20 tab to roll20_tabs). Without this, every roll sent to Roll20
+        // with no pinned VTT would be delivered twice — issue #1391, regression
+        // from #1386. The limit path above already dedups the same way.
+        chrome.tabs.query({ "url": ROLL20_URL }, (urlTabs) => {
+            const sentIds = new Set();
+            for (const tab of urlTabs) {
+                if (sentIds.has(tab.id)) continue;
+                sentIds.add(tab.id);
+                sendMessageWithLog(tab.id, request);
             }
-            if (failure) failure(failed && roll20_tabs.length === 0)
+            for (const tab of roll20_tabs) {
+                if (sentIds.has(tab.id)) continue;
+                sentIds.add(tab.id);
+                sendMessageWithLog(tab.id, request);
+            }
+            if (failure) failure(sentIds.size === 0);
         });
     }
 }
