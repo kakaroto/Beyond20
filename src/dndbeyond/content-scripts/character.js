@@ -2988,7 +2988,16 @@ function activateQuickRolls() {
         activateQRAction(action, true, false);
     }
     for (let action of actions_damage.toArray()) {
-        activateQRAction(action, false, true, action.previousElementSibling !== null);
+        // force_versatile = true only when this is the 2-handed damage button,
+        // i.e. the second dice container in the weapon's damage area. Using
+        // previousElementSibling alone breaks when DDB renders any label/icon
+        // node ahead of the first container (issue #1388).
+        const damageArea = action.closest(".ddbc-combat-attack__damage");
+        const containers = damageArea
+            ? damageArea.querySelectorAll(".integrated-dice__container")
+            : [];
+        const isVersatile = containers.length > 1 && containers[containers.length - 1] === action;
+        activateQRAction(action, false, true, isVersatile);
     }
 
     const activateQRSpell = (spell, force_to_hit_only, force_damages_only) => {
