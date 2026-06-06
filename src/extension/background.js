@@ -79,11 +79,16 @@ function sendMessageToRoll20(request, limit = null, failure = null) {
             failure(true)
         }
     } else {
-        sendMessageTo(ROLL20_URL, request, (failed) => {
-            for (let tab of roll20_tabs) {
+        chrome.tabs.query({ "url": ROLL20_URL }, (tabs) => {
+            for (let rtab of roll20_tabs) {
+                if (!tabs.find(t => t.id === rtab.id)) {
+                    tabs.push(rtab);
+                }
+            }
+            for (let tab of tabs) {
                 sendMessageWithLog(tab.id, request)
             }
-            if (failure) failure(failed && roll20_tabs.length === 0)
+            if (failure) failure(tabs.length === 0)
         });
     }
 }
