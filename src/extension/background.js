@@ -477,9 +477,26 @@ chromeOrBrowser.permissions.getAll((permissions) => {
             // Skip if it's not a FVTT or custom tab
             const fvttTabs = tabs.filter(tab => isFVTT(tab.title));
             const customTabs = tabs.filter(tab => isCustomDomainUrl(tab) || isSupportedVTT(tab));
-            console.log("Permissions : ", pattern, fvttTabs, customTabs);
+            // No-slash Roll20 tabs (issue #1381): the manifest content_scripts
+            // pattern is *://app.roll20.net/editor/* so a tab at /editor with
+            // no trailing slash is not auto-injected. On Firefox the origin
+            // *://app.roll20.net/* permission is normally already granted, so
+            // inject explicitly here. Without this, users who had Roll20 open
+            // at /editor before the extension started (install, browser
+            // restart, MV3 service-worker wake) end up with an unwired tab
+            // and every roll falls through to "No VTT found". PR #1386 handles
+            // the on-navigation case via onTabsUpdated; this covers the
+            // startup-scan case it left open.
+            const roll20NoSlashTabs = tabs.filter(tab =>
+                isRoll20(tab.title) && !urlMatches(tab.url, ROLL20_URL)
+            );
+            console.log("Permissions : ", pattern, fvttTabs, customTabs, roll20NoSlashTabs);
             executeScripts(fvttTabs, ["dist/fvtt_test.js"]);
             injectGenericSiteScripts(customTabs);
+            if (roll20NoSlashTabs.length > 0) {
+                injectRoll20Scripts(roll20NoSlashTabs);
+                for (const tab of roll20NoSlashTabs) addRoll20Tab(tab);
+            }
         })
     }
 });
