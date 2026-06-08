@@ -1,3 +1,15 @@
+v2.20.1 (June 7th 2026)
+===
+
+Hi everyone,
+
+This time we're releasing a small hotfix for an issue introduced in the previous release. Users on Chrome who had duplicate rolls on Roll20 or who couldn't get their rolls sent to Roll20 after the extension is reloaded (such as after an update), should not be affected by those bugs anymore.
+
+Thank you to [@dmportella/Gothyl](https://github.com/dmportella) and to[@0xguy07](https://github.com/0xguy07) who fixed the issues in this hotfix.
+
+Have fun!
+
+
 v2.20.0 (June 4th 2026)
 ===
 

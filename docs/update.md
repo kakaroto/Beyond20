@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.20.0
+Congratulations! Beyond20 was just updated to the latest version : v2.20.1
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -17,6 +17,17 @@ Thank you all for your support!
 
 # Release Notes
 
+v2.20.1 (June 7th 2026)
+===
+
+Hi everyone,
+
+This time we're releasing a small hotfix for an issue introduced in the previous release. Users on Chrome who had duplicate rolls on Roll20 or who couldn't get their rolls sent to Roll20 after the extension is reloaded (such as after an update), should not be affected by those bugs anymore.
+
+Thank you to [@dmportella/Gothyl](https://github.com/dmportella) and to[@0xguy07](https://github.com/0xguy07) who fixed the issues in this hotfix.
+
+Have fun!
+=
 v2.20.0 (June 4th 2026)
 ===
 
@@ -38,6 +49,11 @@ Enjoy!
 Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
+
+v2.20.1 (June 7th 2026)
+===
+- **Bugfix**: *Roll20*: Fix duplicate messages in Chrome for Roll20 (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: *Roll20*: Fix detection of some Roll20 tabs when reloading the extension while the Roll20 tab is already open (by [@0xguy07](https://github.com/0xguy07))
 
 v2.20.0 (June 4th 2026)
 ===
