@@ -6,6 +6,7 @@
         "doc": "docs"
     },
     "scripts": {
+        "test": "node test/dice_regex.test.js",
         "gulp": "gulp",
         "clean": "gulp clean",
         "build": "run-s clean build:*",

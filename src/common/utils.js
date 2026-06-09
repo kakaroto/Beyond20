@@ -1,4 +1,8 @@
-const DICE_REGEXP = /(^|[^\w])(?:(?:(?:(\d*[dD]\d+(?:ro(?:=|<|<=|>|>=)[0-9]+)?(?:min[0-9]+)?)((?:(?:\s*[-−+]\s*\d+)|(?:\s*[0+]\s*\d*[dD]\d+))*))|((?:[-−+]\s*\d+)+)))($|[^\w])/gm;
+// Bare-die forms `dN`/`DN` are only accepted when N is 2-9 or has two-or-more digits.
+// This excludes `D0`/`D1`, which are not real dice and produced false positives on
+// sourcebook map labels (issue #1126: "doors: A2, B1, C1, D1"). Forms with an explicit
+// count (`0d1`, `1d1`, `2d0`, ...) are unchanged so existing behavior is preserved.
+const DICE_REGEXP = /(^|[^\w])(?:(?:(?:((?:\d+[dD]\d+|[dD](?:[2-9]|\d{2,}))(?:ro(?:=|<|<=|>|>=)[0-9]+)?(?:min[0-9]+)?)((?:(?:\s*[-−+]\s*\d+)|(?:\s*[0+]\s*(?:\d+[dD]\d+|[dD](?:[2-9]|\d{2,}))))*))|((?:[-−+]\s*\d+)+)))($|[^\w])/gm;
 
 function replaceRollsCallback(match, replaceCB) {
     let dice = match[2];
