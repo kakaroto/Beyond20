@@ -151,7 +151,13 @@ updateSettings();
 injectCSS(BUTTON_STYLE_CSS);
 chrome.runtime.onMessage.addListener(handleMessage);
 const observer = new window.MutationObserver(documentModified);
-observer.observe(document, { "subtree": true, "childList": true, attributes: true, });
+// childList + subtree only. The documentModified callback ignores its
+// `mutations` parameter and re-scans the DOM from scratch, so attribute
+// notifications add no information but cost a full re-scan per fire. DDB
+// toggles class/style attributes constantly in the combat tracker
+// (drag highlights, focus states, animation classes), which would otherwise
+// drive hundreds of useless callback invocations per turn.
+observer.observe(document, { "subtree": true, "childList": true });
 chrome.runtime.sendMessage({ "action": "activate-icon" });
 sendCustomEvent("disconnect");
 injectPageScript(chrome.runtime.getURL('dist/dndbeyond_mb.js'));
