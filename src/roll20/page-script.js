@@ -25,9 +25,13 @@ async function updateHP(name, current, total, temp) {
         D&D 5E 2014                           | ogl5e
         D&D 5e (New!) - 2024 / 2014           | dnd2024byroll20
         D&D 5E (Community Contributed)        | dnd5e
+
+        Legacy Games do not have characterSheet set at all, so need fallback to 2014 sheets if window.vttEngine === "legacy" and character.characterSheet is undefined.
+
+        We will default to 2014 sheets prior to 2024 sheet support being added.
      */
 
-    if (character.characterSheet?.shortName === "ogl5e" || character.characterSheet?.shortName === "dnd5e") { // 2014 sheet versions
+    if (window.vttEngine === "legacy" || (character.characterSheet?.shortName === "ogl5e" || character.characterSheet?.shortName === "dnd5e")) { // 2014 sheet versions
         const hp = character.attribs.find((a) => a.attributes.name === "hp");
         if (hp) {
             //console.log("Found attribute : ", hp);
