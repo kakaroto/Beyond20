@@ -2060,6 +2060,30 @@ async function rollSpell(force_display = false, force_to_hit_only = false, force
         }
         if (castas != "" && !level.startsWith(castas))
             roll_properties["cast-at"] = castas;
+        // Carry the roll data (to-hit / save / damages) so a VTT can build the
+        // same attack/save/damage buttons a Cast would. Other VTTs ignore these
+        // on a spell-card (roll_renderer.buildSpellCard reads none of them).
+        if (to_hit !== null)
+            roll_properties["to-hit"] = to_hit;
+        if (properties["Attack/Save"] !== undefined) {
+            const [save_ability, save_dc] = properties["Attack/Save"].split(" ");
+            roll_properties["save-ability"] = abbreviationToAbility(save_ability);
+            roll_properties["save-dc"] = save_dc;
+        }
+        const disp_damages = [];
+        const disp_damage_types = [];
+        for (let modifier of damage_modifiers.toArray()) {
+            const dmg = $(modifier).find(".ct-spell-caster__modifier-amount,.ddbc-spell-caster__modifier-amount").text();
+            const dmgtype = $(modifier).find(".ct-damage-type-icon .ct-tooltip,.ddbc-damage-type-icon .ddbc-tooltip").attr("data-original-title") || "";
+            if (dmg) {
+                disp_damages.push(dmg);
+                disp_damage_types.push(capitalize(dmgtype.trim()));
+            }
+        }
+        if (disp_damages.length > 0) {
+            roll_properties["damages"] = disp_damages;
+            roll_properties["damage-types"] = disp_damage_types;
+        }
         return sendRollWithCharacter("spell-card", 0, roll_properties);
     }
 }

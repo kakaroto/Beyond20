@@ -98,6 +98,14 @@ const SRC_FILES = {
         "src/generic-site/renderer.js",
         "src/generic-site/content-script.js"
     ],
+    realmvtt: [
+        "src/common/utils.js",
+        "libs/FileSaver.min.js",
+        "src/common/settings.js",
+        "src/realmvtt/mapping.js",
+        "src/realmvtt/transport.js",
+        "src/realmvtt/content-script.js"
+    ],
     dndbeyond_spell: [
         ...DNDBEYOND_PAGE_DEPS,
         "src/dndbeyond/base/spell.js",
