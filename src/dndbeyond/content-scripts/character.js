@@ -20,6 +20,59 @@ function addEffect(rollProperties, effect) {
     }
 }
 
+/**
+ * Which Bladesong version is currently active.
+ * @returns {(2014|2024|null)} The active version, or null if the Bladesong is not up
+ */
+function getActiveBladesong() {
+    if (character.hasClassFeature("Bladesong 2024") && character.getSetting("wizard-bladesong-2024", false))
+        return 2024;
+    if (character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false))
+        return 2014;
+    return null;
+}
+
+/**
+ * The ability modifier D&D Beyond already used for a weapon attack: Dexterity for
+ * ranged, the better of Strength/Dexterity for Finesse, Strength otherwise.
+ */
+function getWeaponAbilityModifier(properties) {
+    const str_mod = parseInt(character.getAbility("STR").mod) || 0;
+    const dex_mod = parseInt(character.getAbility("DEX").mod) || 0;
+    if (properties["Attack Type"] == "Ranged") return dex_mod;
+    if ((properties["Properties"] || "").includes("Finesse")) return Math.max(str_mod, dex_mod);
+    return str_mod;
+}
+
+/**
+ * Folds a flat bonus into a formula's trailing modifier so it renders as a single
+ * number ("1d6+2" + 1 becomes "1d6+3") instead of a separate term.
+ */
+function mergeFlatBonus(formula, bonus) {
+    const trailing = /([+-])\s*(\d+)\s*$/.exec(formula);
+    if (!trailing) return `${formula}${bonus >= 0 ? "+" : ""}${bonus}`;
+    const total = parseInt(`${trailing[1]}${trailing[2]}`) + bonus;
+    return formula.slice(0, trailing.index) + (total >= 0 ? `+${total}` : `${total}`);
+}
+
+/** Whether the two-handed damage is the one being rolled for a weapon. */
+function usesTwoHandedDamage(properties) {
+    const weapon_properties = properties["Properties"] || "";
+    let versatile_choice = character.getSetting("versatile-choice", "both");
+    if (key_modifiers.versatile_one_handed) versatile_choice = "one";
+    if (key_modifiers.versatile_two_handed) versatile_choice = "two";
+    return (weapon_properties.includes("Versatile") && versatile_choice != "one") ||
+        weapon_properties.includes("Two-Handed");
+}
+
+/**
+ * Whether an attack uses two hands, which ends the Bladesong. Unlike the Great Weapon
+ * Fighting check, this isn't melee-only: two-handed ranged weapons use two hands too.
+ */
+function isTwoHandedAttack(properties, action_name = "") {
+    return usesTwoHandedDamage(properties) || IsPoleArmMasterAttack(properties, action_name);
+}
+
 async function rollSkillCheck(paneClass) {
     const skill_name = $("." + paneClass + "__header-name").text();
     let ability = $("." + paneClass + "__header-ability").text();
@@ -101,8 +154,10 @@ async function rollSkillCheck(paneClass) {
             addEffect(roll_properties, "Rage");
         }
     }
-    if (skill_name == "Acrobatics" && character.hasClassFeature("Bladesong") && character.getSetting("wizard-bladesong", false)) {
+    // Wizard: Bladesinger: Bladesong - Agility
+    if (skill_name == "Acrobatics" && getActiveBladesong() !== null) {
         roll_properties["advantage"] = RollType.OVERRIDE_ADVANTAGE;
+        addEffect(roll_properties, "Bladesong");
     }
     roll_properties.d20 = "1d20";
     // Set Reliable Talent flag if character has the feature and skill is proficient/expertise
@@ -280,9 +335,8 @@ function applyAbilityOrSavingThrowEffects({ rollType, ability_name, ability, mod
     // Concentration checks
     if (rollType === "saving-throw" && ability === "CON") {
         const has_warcaster = character.hasFeat("War Caster");
-        const has_bladesong =
-            character.hasClassFeature("Bladesong") &&
-            character.getSetting("wizard-bladesong", false);
+        const bladesong = getActiveBladesong();
+        const has_bladesong = bladesong !== null;
 
         if (has_warcaster || has_bladesong) {
             const confirmation = has_bladesong
@@ -292,7 +346,9 @@ function applyAbilityOrSavingThrowEffects({ rollType, ability_name, ability, mod
             if (confirm(confirmation)) {
                 if (has_bladesong) {
                     const intelligence = character.getAbility("INT") || { mod: 0 };
-                    const bladesongMod = Math.max((parseInt(intelligence.mod) || 0), 1);
+                    const intelligenceMod = parseInt(intelligence.mod) || 0;
+                    // 2024 Focus adds the raw modifier, the 2014 minimum of +1 does not apply
+                    const bladesongMod = bladesong === 2024 ? intelligenceMod : Math.max(intelligenceMod, 1);
                     mod = parseInt(modifier) + bladesongMod;
                     modifier = mod >= 0 ? `+${mod}` : `${mod}`;
                     roll_properties.modifier = modifier;
@@ -628,8 +684,9 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
 
     if (character.hasClass("Wizard")) {
         // Wizard: Bladesinging: Song of Victory
+        // 2014 only: the 2024 Bladesong substitutes Intelligence through Bladework instead
         if (character.hasClassFeature("Song of Victory") &&
-            character.getSetting("wizard-bladesong", false)) {
+            getActiveBladesong() === 2014) {
             const intelligence = character.getAbility("INT") || {mod: 0};
             const mod = parseInt(intelligence.mod) || 0;
             damages.push(String(Math.max(mod, 1)));
@@ -684,10 +741,9 @@ function handleSpecialMeleeAttacks(damages=[], damage_types=[], properties, sett
         character.getSetting("charger-feat")) {
             let charge_dmg = "1d8";
             // apply GWF if needed
-            if(((properties["Attack Type"] == "Melee" && ((properties["Properties"].includes("Versatile") && character.getSetting("versatile-choice") != "one") || 
-                properties["Properties"].includes("Two-Handed"))) ||
+            if((properties["Attack Type"] == "Melee" && usesTwoHandedDamage(properties)) ||
                 action_name == "Polearm Master - Bonus Attack" ||
-                action_name == "Pole Strike")) {
+                action_name == "Pole Strike") {
                 if(character.hasGreatWeaponFighting(2014)) {
                     charge_dmg += "ro<=2";
                 } else if(character.hasGreatWeaponFighting(2024)) {
@@ -1064,6 +1120,28 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
             const charisma_damage_mod =  Math.max(character.getAbility("CHA").mod, 1);
             damages.push(`${charisma_damage_mod}`);
             damage_types.push("Lifedrinker");
+        }
+    }
+
+    if (character.hasClass("Wizard")) {
+        // Wizard: Bladesinging: Bladesong - Bladework (2024)
+        // Uses Intelligence for the attack and damage rolls instead of Strength or Dexterity.
+        // Two-handed attacks end the Bladesong, so they don't benefit from it.
+        if (to_hit !== null &&
+            getActiveBladesong() === 2024 &&
+            properties["Proficient"] == "Yes" &&
+            ["Melee", "Ranged"].includes(properties["Attack Type"]) &&
+            !isTwoHandedAttack(properties, action_name)) {
+            const intelligence_mod = parseInt(character.getAbility("INT").mod) || 0;
+            // Bladework is optional, so only use it when it beats the weapon's own ability
+            const bladework = intelligence_mod - getWeaponAbilityModifier(properties);
+            if (bladework > 0) {
+                // Replaces the weapon's ability modifier, so it merges into the rolls
+                // rather than showing up as a separate bonus
+                to_hit = mergeFlatBonus(to_hit, bladework);
+                if (damages.length > 0) damages[0] = mergeFlatBonus(damages[0], bladework);
+                effects.push("Bladesong");
+            }
         }
     }
 

@@ -286,6 +286,8 @@ class Character extends CharacterBase {
     getFeatureVersionName(feat_name, feat_reference) {
         if (!feat_reference) return feat_name;
         let is2024 = false;
+        // Sources using the 2024 rules whose reference doesn't say "2024"
+        const is2024Source = ["2024", "frhof"].some(src => feat_reference.toLowerCase().includes(src));
         if (
             (
                 feat_name.toLowerCase() === "great weapon master" ||
@@ -304,9 +306,9 @@ class Character extends CharacterBase {
                 feat_name.toLowerCase() === "remarkable athlete" ||
                 feat_name.toLowerCase() === "blessed strikes" ||
                 feat_name.toLowerCase() === "improved blessed strikes" ||
-                feat_name.toLowerCase() === "healer"
-            ) && ( 
-                feat_reference.toLowerCase().includes("2024")) ||
+                feat_name.toLowerCase() === "healer" ||
+                feat_name.toLowerCase() === "bladesong"
+            ) && is2024Source ||
                 feat_reference.toLowerCase().includes("free-rules")
          ) {
             is2024 = true;
