@@ -887,7 +887,7 @@ function handleSpecialGeneralAttacks(damages=[], damage_types=[], properties, se
     return to_hit;
 }
 
-function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {action_name="", item_customizations=[], item_type="", item_name="", to_hit, effects=[]}={}) {
+async function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, settings_to_change={}, {action_name="", item_customizations=[], item_type="", item_name="", to_hit, effects=[], weapon_damage_length}={}) {
     // Class Specific
     if (character.hasClass("Artificer")) {
         //Artificer: Battlemaster: Arcane Jolt
@@ -1064,6 +1064,40 @@ function handleSpecialWeaponAttacks(damages=[], damage_types=[], properties, set
             const charisma_damage_mod =  Math.max(character.getAbility("CHA").mod, 1);
             damages.push(`${charisma_damage_mod}`);
             damage_types.push("Lifedrinker");
+        }
+    }
+
+    // Feat: Savage Attacker (2014 & 2024)
+    const savageSetting = character.getSetting("savage-attacker", "query");
+    const hasFeat = character.hasFeat("Savage Attacker") || character.hasFeat("Savage Attacker 2024");
+    
+    let useSavage = false;
+    if (hasFeat && savageSetting !== "disabled") {
+        if (savageSetting === "enabled") {
+            useSavage = true;
+        } else if (savageSetting === "query") {
+            const savageChoice = await dndbeyondDiceRoller.queryGeneric(
+                "Savage Attacker",
+                "Use Savage Attacker (1/Turn) on this attack?",
+                {
+                    "yes": "Use Savage Attacker (1/Turn)",
+                    "no": "Do Not Use"
+                },
+                "use_savage_attacker",
+                ["yes", "no"]
+            );
+            if (savageChoice === "yes") {
+                useSavage = true;
+            }
+        }
+    }
+
+    if (useSavage && damages.length > 0) {
+        const baseCount = weapon_damage_length !== undefined ? weapon_damage_length : damages.length;
+        for (let i = 0; i < baseCount; i++) {
+            if (damages[i]) {
+                damages[i] = applySavageAttackerToFormula(damages[i]);
+            }
         }
     }
 
@@ -1258,9 +1292,11 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
 
         const effects = [];
 
+        const weapon_damage_length = damages.length;
+
         to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, item_name, effects});
 
-        to_hit = handleSpecialWeaponAttacks(damages, damage_types, properties, settings_to_change, {item_customizations, item_type, to_hit, item_name, effects});
+        to_hit = await handleSpecialWeaponAttacks(damages, damage_types, properties, settings_to_change, {item_customizations, item_type, to_hit, item_name, effects, weapon_damage_length});
 
         if (properties["Attack Type"] == "Melee") {
             to_hit = handleSpecialMeleeAttacks(damages, damage_types, properties, settings_to_change, { to_hit, effects });
@@ -1543,7 +1579,7 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
         to_hit = handleSpecialGeneralAttacks(damages, damage_types, properties, settings_to_change, {to_hit, action_name});
 
         if (isMeleeAttack || isRangedAttack) {
-            to_hit = handleSpecialWeaponAttacks(damages, damage_types, properties, settings_to_change, {to_hit, action_name});
+            to_hit = await handleSpecialWeaponAttacks(damages, damage_types, properties, settings_to_change, {to_hit, action_name});
             if (character.hasClassFeature("Improved Critical"))
                 critical_limit = 19;
             if (character.hasClassFeature("Invincible Conqueror") &&

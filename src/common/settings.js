@@ -479,6 +479,17 @@ const character_settings = {
         "hidden": true,
         "default": false
     },
+    "savage-attacker": {
+        "title": "Savage Attacker Feat",
+        "description": "Once per turn when you hit with a weapon attack, roll the weapon's damage dice twice and use the higher roll.",
+        "type": "combobox",
+        "default": "query",
+        "choices": {
+            "query": "Query on each weapon attack",
+            "enabled": "Always use Savage Attacker",
+            "disabled": "Disabled"
+        }
+    },
     "versatile-choice": {
         "title": "Versatile weapon choice",
         "description": "How to roll damage for Versatile weapons",

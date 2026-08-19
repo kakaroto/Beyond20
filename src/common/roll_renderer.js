@@ -737,7 +737,7 @@ class Beyond20RollRenderer {
                     const base_type = dmg_type.split("(")[0].trim();
                     const isVersatileHand = dmg_type.includes("(1-Hand)") || dmg_type.includes("(2-Hand)");
                     const isHpVariant = dmg_type.includes("(Full HP)") || dmg_type.includes("(Missing HP)");
-                    if (!isVersatileHand && !isHpVariant) {
+                    if (!isVersatileHand && !isHpVariant && !dmg_type.includes("Savage Attacker")) {
                         if (seen_other_damages[base_type]) {
                             damage_flags = DAMAGE_FLAGS.CONDITIONAL;
                         }
@@ -858,7 +858,7 @@ class Beyond20RollRenderer {
                         const base_type = dmg_type.split("(")[0].trim();
                         const isVersatileHand = dmg_type.includes("(1-Hand)") || dmg_type.includes("(2-Hand)");
                         const isHpVariant = dmg_type.includes("(Full HP)") || dmg_type.includes("(Missing HP)");
-                        if (!isVersatileHand && !isHpVariant) {
+                        if (!isVersatileHand && !isHpVariant && !dmg_type.includes("Savage Attacker")) {
                             if (seen_critical_other_damages[base_type]) {
                                 damage_flags = DAMAGE_FLAGS.CONDITIONAL;
                             }

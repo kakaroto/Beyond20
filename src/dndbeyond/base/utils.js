@@ -116,7 +116,7 @@ function damagesToCrits(character, damages) {
     if (rule == CriticalRules.HOMEBREW_REROLL || rule == CriticalRules.HOMEBREW_MOD)
         return damages.slice();
     for (let damage of damages) {
-        const damage_matches = reMatchAll(/([0-9]*)d([0-9]+)(?:ro<=[0-9]+)?(?:min[0-9]+)?/, damage) || [];
+        const damage_matches = reMatchAll(/([0-9]*)d([0-9]+)(?:ro<=[0-9]+)?(?:min[0-9]+)?(?:kh[0-9]+)?(?:kl[0-9]+)?/, damage) || [];
         const damage_parts = damage_matches.map(match => {
             if (rule == CriticalRules.HOMEBREW_MAX) {
                 dice = parseInt(match[1] || 1);
@@ -529,6 +529,18 @@ function applyGWFIfRequired(action_name, properties, damage) {
         }
     }
     return damage;
+}
+
+function applySavageAttackerToFormula(formula) {
+    if (!formula) return formula;
+    return formula.replace(/(\d*)d(\d+)([^\s+-]*)/g, (match, countStr, faces, rollMods) => {
+        const count = parseInt(countStr) || 1;
+        const array = [];
+        for (let k = 0; k < count; k++) {
+            array.push(`2d${faces}${rollMods}kh1`);
+        }
+        return array.join(" + ");
+    });
 }
 
 function addCustomDamages(character, damages, damage_types) {
