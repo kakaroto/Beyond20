@@ -1175,17 +1175,22 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                 const additional_damages = value.find(".ct-item-detail__additional-damage,.ddbc-item-detail__additional-damage");
                 for (let j = 0; j < additional_damages.length; j++) {
                     let dmg = additional_damages.eq(j).text();
-                    let dmg_type = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip,.ddbc-damage-type-icon .ddbc-tooltip").attr("data-original-title");
-                    const dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info,.ddbc-item-detail__additional-damage-info").text();
+                    let dmg_el = additional_damages.eq(j).find(".ct-damage-type-icon .ct-tooltip,.ddbc-damage-type-icon .ddbc-tooltip,[class*='damage-type'],[class*='damageType']");
+                    let dmg_type = dmg_el.attr("data-original-title") || dmg_el.attr("title") || dmg_el.attr("aria-label") || dmg_el.text().trim();
+                    if (dmg_type) dmg_type = dmg_type.replace(/\s*Damage\s*$/i, "").trim();
+                    const dmg_info = additional_damages.eq(j).find(".ct-item-detail__additional-damage-info,.ddbc-item-detail__additional-damage-info").text().trim();
                     if (dmg != "") {
                         dmg = dmg.replace(dmg_info, "");
+                        if (!dmg_type || dmg_type === "undefined") {
+                            dmg_type = (dmg_info.toLowerCase().includes("ablaze") || item_name.includes("Flame Tongue")) ? "Fire" : "";
+                        }
                         if (dmg_info != "")
-                            dmg_type += " (" + dmg_info + ")";
+                            dmg_type = (dmg_type ? dmg_type : "") + " (" + dmg_info + ")";
 
                         dmg = applyGWFIfRequired(item_name, properties, dmg);
 
                         damages.push(dmg);
-                        damage_types.push(dmg_type);
+                        damage_types.push(dmg_type.trim());
                     }
                 }
                 break;
