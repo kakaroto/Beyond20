@@ -1,3 +1,7 @@
+Unreleased
+===
+- **Misc**: Add vtt.roll-drauf.de as a recognized VTT which natively supports Beyond20 (rolls, hp-update, conditions-update and update-combat)
+
 v2.20.1 (June 7th 2026)
 ===
 - **Bugfix**: *Roll20*: Fix duplicate messages in Chrome for Roll20 (by [@dmportella](https://github.com/dmportella))
