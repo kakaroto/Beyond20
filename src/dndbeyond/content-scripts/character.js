@@ -1532,6 +1532,7 @@ async function rollAction(paneClass, force_to_hit_only = false, force_damages_on
             "unarmed fighting",
             "fighting style: unarmed fighting (armed)",
             "fighting style: unarmed fighting",
+            "unarmed fighting (no weapons/shield)",
             "arms of the astral self",
             "shadow blade",
             "predatory strike",
