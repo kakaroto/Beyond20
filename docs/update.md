@@ -1,6 +1,6 @@
 ## Beyond20 has just been installed or updated
 
-Congratulations! Beyond20 was just updated to the latest version : v2.20.1
+Congratulations! Beyond20 was just updated to the latest version : v2.21.0
 
 I hope you like the new features, and hopefully the killer feature you were waiting for was just added.
 
@@ -17,6 +17,21 @@ Thank you all for your support!
 
 # Release Notes
 
+v2.21.0 (August 25th 2026)
+===
+
+Hi everyone,
+
+Today, we're releasing v2.21.0 with a new 2024 Bladesong option for Bladesinger wizards, as well as support for the Unarmed Fighting fighting style on D&D Beyond.
+
+We've also fixed versatile weapon quick-rolls, HP updates for legacy Roll20 games, and false-positive dice parsing for sourcebook labels such as D1 and D0.
+
+You can read the full [Changelog](/Changelog#v2210) below to see all the changes included in this release.
+
+As usual, a big thank you to [@dmportella/Gothyl](https://github.com/dmportella), [@jugarrit](https://github.com/jugarrit), and [@0xguy07](https://github.com/0xguy07) for their work on this release!
+
+Enjoy!
+=
 v2.20.1 (June 7th 2026)
 ===
 
@@ -49,6 +64,14 @@ Enjoy!
 Click [here](/release_notes) for the full release notes from previous versions.
 
 # Changelog
+
+v2.20.2 (August 25th 2026)
+===
+- **Feature**: *dndbeyond*: Add support for the 2024 Wizard: Bladesinger: Bladesong feature (by [@jugarrit](https://github.com/jugarrit))
+- **Feature**: *dndbeyond*: Add support for the Unarmed Fighting fighting style (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: *dndbeyond*: Fix versatile weapon quick-rolls selecting the wrong damage type (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: *Roll20*: Fix HP updates for legacy games (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: Fix false-positive dice parsing for bare D1 and D0 labels (by [@0xguy07](https://github.com/0xguy07))
 
 v2.20.1 (June 7th 2026)
 ===
