@@ -31,7 +31,7 @@ async function updateHP(name, current, total, temp) {
         We will default to 2014 sheets prior to 2024 sheet support being added.
      */
 
-    if (window.vttEngine === "legacy" || (character.characterSheet?.shortName === "ogl5e" || character.characterSheet?.shortName === "dnd5e")) { // 2014 sheet versions
+    if ((window.vttEngine === "legacy" || !character.characterSheet) || (character.characterSheet?.shortName === "ogl5e" || character.characterSheet?.shortName === "dnd5e")) { // 2014 sheet versions
         const hp = character.attribs.find((a) => a.attributes.name === "hp");
         if (hp) {
             //console.log("Found attribute : ", hp);
