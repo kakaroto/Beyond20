@@ -1144,8 +1144,10 @@ async function rollItem(force_display = false, force_to_hit_only = false, force_
                         versatile_choice = "one"
                     if (key_modifiers.versatile_two_handed)
                         versatile_choice = "two";
-                    if (force_versatile) {
+                    if (force_versatile === "two") {
                         versatile_choice = "two";
+                    } else if (force_versatile === "one") {
+                        versatile_choice = "one";
                     }
                     if (versatile_choice == "one") {
                         damages.push(damage);
@@ -2988,7 +2990,11 @@ function activateQuickRolls() {
         activateQRAction(action, true, false);
     }
     for (let action of actions_damage.toArray()) {
-        activateQRAction(action, false, true, action.previousElementSibling !== null);
+        const parent = action.parentElement;
+        const containers = parent ? parent.querySelectorAll(".integrated-dice__container") : [];
+        const idx = Array.prototype.indexOf.call(containers, action);
+        const force = containers.length > 1 ? (idx === containers.length - 1 ? "two" : "one") : false;
+        activateQRAction(action, false, true, force);
     }
 
     const activateQRSpell = (spell, force_to_hit_only, force_damages_only) => {
@@ -3255,7 +3261,13 @@ function handleCombatAttackIntegratedDie(button) {
     const isToHit = !!button.closest(".ct-combat-attack__tohit, .ddbc-combat-attack__tohit");
     const damageCell = button.closest(".ct-combat-attack__damage, .ddbc-combat-attack__damage");
     const isDamage = !!damageCell;
-    const forceVersatile = !!(damageCell && damageCell.previousElementSibling);
+    let forceVersatile = false;
+    if (damageCell) {
+        const parent = button.parentElement;
+        const containers = parent ? parent.querySelectorAll(".integrated-dice__container") : [];
+        const idx = Array.prototype.indexOf.call(containers, button);
+        forceVersatile = containers.length > 1 ? (idx === containers.length - 1 ? "two" : "one") : false;
+    }
 
     const name = $(row)
         .find(".ct-combat-attack__name .ct-combat-attack__label, .ddbc-combat-attack__name .ddbc-combat-attack__label")
