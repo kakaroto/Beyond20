@@ -877,6 +877,12 @@ const character_settings = {
         "type": "bool",
         "default": false
     },
+    "wizard-bladesong-2024": {
+        "title": "Wizard: Bladesinger: Bladesong (2024)",
+        "description": "Activate your Bladesong: Advantage on Acrobatics checks, Intelligence for weapon attack and damage rolls, and Intelligence added to Concentration saves",
+        "type": "bool",
+        "default": false
+    },
     "empowered-evocation": {
         "title": "Wizard: Evocation Wizard: Empowered Evocation",
         "description": "Your prowess in Evocation lends power to your Evocation spells",

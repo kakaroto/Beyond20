@@ -289,6 +289,10 @@ function populateCharacter(response) {
             e = createHTMLOption("wizard-bladesong", false, character_settings);
             options.append(e);
         }
+        if (response["class-features"].includes("Bladesong 2024")) {
+            e = createHTMLOption("wizard-bladesong-2024", false, character_settings);
+            options.append(e);
+        }
         if (response["class-features"].includes("Dreadful Strikes")) {
             e = createHTMLOption("fey-wanderer-dreadful-strikes", false, character_settings);
             options.append(e);
