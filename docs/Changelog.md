@@ -3,6 +3,7 @@ v2.21.0 (August 25th 2026)
 - **Feature**: *dndbeyond*: Add support for the 2024 Wizard: Bladesinger: Bladesong feature (by [@jugarrit](https://github.com/jugarrit))
 - **Feature**: *dndbeyond*: Add support for the Unarmed Fighting fighting style (by [@dmportella](https://github.com/dmportella))
 - **Bugfix**: *dndbeyond*: Fix versatile weapon quick-rolls selecting the wrong damage type (by [@dmportella](https://github.com/dmportella))
+- **Bugfix**: *dndbeyond*: Fix grave touch so it respect lock mechanism (by [@Devlin1991](https://github.com/Devlin1991))
 - **Bugfix**: *Roll20*: Fix HP updates for legacy games (by [@dmportella](https://github.com/dmportella))
 - **Bugfix**: Fix false-positive dice parsing for bare D1 and D0 labels (by [@0xguy07](https://github.com/0xguy07))
 

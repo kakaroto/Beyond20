@@ -3,7 +3,7 @@ v2.21.0 (August 25th 2026)
 
 Hi everyone,
 
-Today, we're releasing v2.21.0 with a new 2024 Bladesong option for Bladesinger wizards, as well as support for the Unarmed Fighting fighting style on D&D Beyond.
+Today, we're releasing v2.21.0 with a new 2024 Bladesong option for Bladesinger wizards, as well as support for the Unarmed Fighting fighting style, and grave touch lock is not working on D&D Beyond.
 
 We've also fixed versatile weapon quick-rolls, HP updates for legacy Roll20 games, and false-positive dice parsing for sourcebook labels such as D1 and D0.
 
