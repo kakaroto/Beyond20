@@ -86,13 +86,23 @@ function propertyListToDict(propList) {
 
 function descriptionToString(selector) {
     // strip tags : https://www.sitepoint.com/jquery-strip-html-tags-div/;
-    return ($(selector).html() || "").replace(/<\/?[^>]+>/gi, '')
+    // Convert block-level boundaries to newlines BEFORE stripping the remaining
+    // tags, so the text keeps its paragraph/list structure instead of collapsing
+    // into a single blob.
+    return ($(selector).html() || "")
+        .replace(/<\s*br\s*\/?>/gi, "\n")
+        .replace(/<\s*li[^>]*>/gi, "\n- ")
+        .replace(/<\/\s*(p|div|li|h[1-6]|tr|ul|ol)\s*>/gi, "\n")
+        .replace(/<\/?[^>]+>/gi, '')
         .replace(/&nbsp;/g, " ")
         .replace(/&amp;/g, "&")
         .replace(/&quot;/g, "\"")
         .replace(/&apos;/g, "\'")
         .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">");
+        .replace(/&gt;/g, ">")
+        .replace(/[ \t]+\n/g, "\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
 }
 
 function findToHit(name_to_match, items_selector, name_selector, tohit_selector) {

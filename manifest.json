@@ -7,16 +7,22 @@
 		"activeTab",
 		"tabs",
 		"storage",
-        "scripting"
-    ],
-    "host_permissions": [
+		"scripting"
+	],
+	"host_permissions": [
 		"*://beyond20.kicks-ass.org/roll",
 		"*://app.roll20.net/editor/",
 		"*://*.dndbeyond.com/*",
-		"*://*.forge-vtt.com/game"
+		"*://*.forge-vtt.com/game",
+		"*://play.realmvtt.com/*",
+		"*://server.realmvtt.com/*"
 	],
-    "optional_host_permissions": ["*://*/*"],
-	"optional_permissions": ["webNavigation"],
+	"optional_host_permissions": [
+		"*://*/*"
+	],
+	"optional_permissions": [
+		"webNavigation"
+	],
 	"icons": {
 		"16": "images/icons/icon16.png",
 		"24": "images/icons/icon24.png",
@@ -32,29 +38,33 @@
 	},
 	"action": {
 		"default_popup": "default_popup.html",
-        "default_icon": {
+		"default_icon": {
 			"16": "images/icons/icon16.png",
 			"24": "images/icons/icon24.png",
 			"32": "images/icons/icon32.png"
-        }
+		}
 	},
-	"web_accessible_resources": [{
-        "resources": [
-            "images/*",
-            "libs/css/alertify.css",
-            "libs/css/alertify-themes/default.css",
-            "libs/css/alertify-themes/beyond20.css",
-            "libs/alertify.min.js",
-            "libs/jquery-3.4.1.min.js",
-            "libs/lz-string.min.js",
-            "dist/roll20_script.js",
-            "dist/fvtt_script.js",
-            "dist/dndbeyond_mb.js",
-            "popup.html",
-            "options.html"
-        ],
-        "matches": ["*://*/*"]
-    }],
+	"web_accessible_resources": [
+		{
+			"resources": [
+				"images/*",
+				"libs/css/alertify.css",
+				"libs/css/alertify-themes/default.css",
+				"libs/css/alertify-themes/beyond20.css",
+				"libs/alertify.min.js",
+				"libs/jquery-3.4.1.min.js",
+				"libs/lz-string.min.js",
+				"dist/roll20_script.js",
+				"dist/fvtt_script.js",
+				"dist/dndbeyond_mb.js",
+				"popup.html",
+				"options.html"
+			],
+			"matches": [
+				"*://*/*"
+			]
+		}
+	],
 	"background": {
 		"service_worker": "dist/background.js"
 	},
@@ -162,12 +172,12 @@
 				"*://*.dndbeyond.com/species/*",
 				"*://*.dndbeyond.com/backgrounds/*"
 			],
-            "exclude_matches": [
+			"exclude_matches": [
 				"*://*.dndbeyond.com/classes/*/edit",
 				"*://*.dndbeyond.com/races/*/edit",
 				"*://*.dndbeyond.com/species/*/edit",
 				"*://*.dndbeyond.com/backgrounds/*/edit"
-            ],
+			],
 			"css": [
 				"dist/beyond20.css"
 			],
@@ -190,6 +200,22 @@
 				"libs/alertify.min.js",
 				"libs/jquery-3.4.1.min.js",
 				"dist/roll20.js"
+			]
+		},
+		{
+			"matches": [
+				"*://play.realmvtt.com/*"
+			],
+			"css": [
+				"libs/css/alertify.css",
+				"libs/css/alertify-themes/default.css",
+				"libs/css/alertify-themes/beyond20.css"
+			],
+			"js": [
+				"libs/alertify.min.js",
+				"libs/jquery-3.4.1.min.js",
+				"libs/socket.io.min.js",
+				"dist/realmvtt.js"
 			]
 		}
 	]
