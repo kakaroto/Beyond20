@@ -477,11 +477,30 @@ function updateHP(name, current, total, temp) {
     const tokens = canvas.tokens.placeables.filter((t) => docIsOwner(t) && t.name.toLowerCase().trim() == name);
 
     const prefix = fvtt_isNewer(fvttVersion, "10") ? "system": "data";
-    const dnd5e_data = {
-        [`${prefix}.attributes.hp.value`]: current,
-        [`${prefix}.attributes.hp.temp`]: temp,
-        [`${prefix}.attributes.hp.max`]: total
-    }
+
+    // dnd5e stores Max HP modifiers (Aid, Heroes' Feast, Specter's life-drain, etc.)
+    // in `attributes.hp.tempmax`, NOT in `attributes.hp.max`. Foundry derives the
+    // effective max as `max + tempmax`. Previously we overwrote `.max` with DDB's
+    // total, permanently changing the actor's base max every sync and losing the
+    // distinction between a real level-up and a temporary buff (issue #1158).
+    //
+    // Surface the modifier as `tempmax = total - existing_max` and leave `.max`
+    // alone. When the actor's max is 0 (uninitialized — never opened in Foundry),
+    // fall back to writing `.max = total` so the first sync still gives the actor
+    // a usable value.
+    const buildDnd5eUpdate = (actorMax) => {
+        const update = {
+            [`${prefix}.attributes.hp.value`]: current,
+            [`${prefix}.attributes.hp.temp`]: temp,
+        };
+        if (actorMax > 0) {
+            update[`${prefix}.attributes.hp.tempmax`] = total - actorMax;
+        } else {
+            update[`${prefix}.attributes.hp.max`] = total;
+        }
+        return update;
+    };
+
     const sws_data = {
         [`${prefix}.health.value`]: current + temp,
         [`${prefix}.health.max`]: total
@@ -491,7 +510,8 @@ function updateHP(name, current, total, temp) {
         const actor = actors.find((a) => docIsOwner(a) && a.name.toLowerCase().trim() == name);
         const systemData = fvtt_isNewer(fvttVersion, "10") ? actor?.system : actor?.data?.data;
         if (actor && fvtt_getProperty(systemData, "attributes.hp") !== undefined) {
-            actor.update(dnd5e_data);
+            const actorMax = Number(fvtt_getProperty(systemData, "attributes.hp.max")) || 0;
+            actor.update(buildDnd5eUpdate(actorMax));
         } else if (actor && fvtt_getProperty(systemData, "health") !== undefined) {
             actor.update(sws_data);
         }
@@ -500,7 +520,8 @@ function updateHP(name, current, total, temp) {
     for (let token of tokens) {
         const systemData = fvtt_isNewer(fvttVersion, "10") ? token.actor?.system : token.actor?.data?.data;
         if (token.actor && fvtt_getProperty(systemData, "attributes.hp") !== undefined) {
-            token.actor.update(dnd5e_data);
+            const actorMax = Number(fvtt_getProperty(systemData, "attributes.hp.max")) || 0;
+            token.actor.update(buildDnd5eUpdate(actorMax));
         } else if (token.actor && fvtt_getProperty(systemData, "health") !== undefined) {
             token.actor.update(sws_data);
         }
