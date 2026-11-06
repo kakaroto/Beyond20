@@ -138,6 +138,16 @@ function urlMatches(url, matching) {
     return url.match(matching.replace(/\*/g, "[^]*")) !== null;
 }
 
+// Browsers disagree on whether ports are part of a permission origin (Firefox rejects them),
+// so permission patterns are compared without their port: "http://localhost:8787/*" -> "http://localhost/*"
+function stripPatternPort(pattern) {
+    return pattern.replace(/^([^:/]+:\/\/[^/:]+):\d+(?=\/|$)/, "$1");
+}
+
+function hasOriginPermission(origin, permission_patterns) {
+    return permission_patterns.some(pattern => urlMatches(origin, stripPatternPort(pattern)));
+}
+
 function isCustomDomainUrl(tab) {
     // FVTT is handled separately from custom domains
     if (isFVTT(tab.title)) return false;
