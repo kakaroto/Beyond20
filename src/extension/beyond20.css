@@ -165,7 +165,7 @@
     font-family: "Modesto Condensed", "Roboto Condensed", "Palatino Linotype", serif;
     font-size: 20px;
     font-weight: 700;
-    color: #4b4a44;
+    color: var(--b20-title, #4b4a44);
     padding-top: 3px;
     border-top: 2px groove #fff;
     border-bottom: 2px groove #fff;
@@ -225,19 +225,38 @@
 }
 
 .beyond20-roll-detail-crit {
-    color: darkgreen;
+    color: var(--b20-crit, darkgreen);
     font-weight: bold;
 }
 .beyond20-roll-detail-fail {
-    color: darkred;
+    color: var(--b20-fail, darkred);
     font-weight: bold;
 }
 .beyond20-roll-detail-crit-fail {
-    color: darkblue;
+    color: var(--b20-crit-fail, darkblue);
     font-weight: bold;
 }
 .beyond20-roll-detail-normal {
-    color: black;
+    color: var(--b20-text, black);
+}
+
+/* Foundry's dark UI theme: the card text colors above are tuned for a light background.
+ * Only the --b20-* variables change, so the light theme is untouched. */
+.theme-dark .beyond20-message {
+    --b20-title: var(--color-text-primary, #e0e0e0);
+    --b20-text: var(--color-text-primary, #e0e0e0);
+    --b20-crit: #6fdc8c;
+    --b20-fail: #ff8a80;
+    --b20-crit-fail: #82b1ff;
+}
+/* The hover tooltip keeps its light parchment background, so restore the light-theme colors there */
+.theme-dark .beyond20-message .beyond20-tooltip-content {
+    --b20-title: #4b4a44;
+    --b20-text: black;
+    --b20-crit: darkgreen;
+    --b20-fail: darkred;
+    --b20-crit-fail: darkblue;
+    color: #191813;
 }
 .beyond20-roll-detail-discarded {
     color: grey;
