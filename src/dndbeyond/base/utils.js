@@ -560,6 +560,24 @@ function addCustomDamages(character, damages, damage_types) {
     }
 }
 
+/**
+ * Replaces every dice term of a formula with its maximum possible value, e.g. "2d6+3" -> "12+3".
+ * Honors keep/drop (kh/kl/dh/dl) and min modifiers; rerolls can't change a maximum.
+ */
+function maximizeDiceFormula(formula) {
+    return formula.replace(/(?<!\w)(\d*)d(\d+)((?:ro?(?:=|<=|<|>=|>)\d+|(?:dl|dh|kl|kh)\d*|min\d*)*)/gi,
+        (match, amount, faces, modifiers) => {
+            let count = amount === "" ? 1 : parseInt(amount);
+            const dk = modifiers.match(/(dl|dh|kl|kh)(\d*)/i);
+            if (dk) {
+                const dk_amount = dk[2] === "" ? 1 : parseInt(dk[2]);
+                count = dk[1].toLowerCase().startsWith("k") ? Math.min(count, dk_amount) : Math.max(count - dk_amount, 0);
+            }
+            const min = modifiers.match(/min(\d*)/i);
+            return String(Math.max(count * parseInt(faces), min ? parseInt(min[1] || 0) : 0));
+        });
+}
+
 async function sendRoll(character, rollType, fallback, args) {
     let whisper = parseInt(character.getGlobalSetting("whisper-type", WhisperType.NO));
     const whisper_monster = parseInt(character.getGlobalSetting("whisper-type-monsters", WhisperType.YES));
@@ -647,6 +665,14 @@ async function sendRoll(character, rollType, fallback, args) {
     if (req.advantage === RollType.QUERY) {
         req.advantage = await dndbeyondDiceRoller.queryAdvantage(args.name || rollType, req["advantage-query"]);
         if (req.advantage === null) return; // Query was cancelled
+    }
+    if (key_modifiers.max_damage && req.damages && req.damages.length > 0) {
+        req.damages = req.damages.map(maximizeDiceFormula);
+        if (req["critical-damages"])
+            req["critical-damages"] = req["critical-damages"].map(maximizeDiceFormula);
+        req["effects"] = req["effects"] || [];
+        if (!req["effects"].includes("Max Damage"))
+            req["effects"].push("Max Damage");
     }
     if (character.getGlobalSetting("weapon-force-critical", false) || key_modifiers.force_critical) {
         req["rollCritical"] = true;

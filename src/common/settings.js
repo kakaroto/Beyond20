@@ -1675,6 +1675,7 @@ const BINDING_NAMES = {
     dont_whisper: "Don't Whisper Rolls",
     whisper_hide_names: "Hide Monster Name & Attack",
     force_critical: "Force Critical Hit Attack/Damage",
+    max_damage: "Maximize Damage Dice (no damage roll)",
     versatile_one_handed: "Use Versatile Weapon One-handed",
     versatile_two_handed: "Use Versatile Weapon Two-handed",
     custom_modifier: "Custom Modifier",
