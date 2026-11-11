@@ -1,0 +1,27 @@
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+name: Test Beyond20
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # The tests only use Node built-ins, so no npm install is needed
+      - name: Run unit tests
+        run: npm test
