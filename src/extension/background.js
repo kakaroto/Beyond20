@@ -335,8 +335,8 @@ function onMessage(request, sender, sendResponse) {
     } else if (request.action == "reload-me") {
         chrome.tabs.reload(sender.tab.id)
     } else if (request.action == "load-alertify") {
-        insertCSSs([sender.tab], ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css"]);
-        executeScripts([sender.tab], ["libs/alertify.min.js"], sendResponse);
+        insertCSSs([sender.tab], ["libs/css/alertify.css", "libs/css/alertify-themes/default.css", "libs/css/alertify-themes/beyond20.css"], undefined, sender.frameId);
+        executeScripts([sender.tab], ["libs/alertify.min.js"], sendResponse, sender.frameId);
         return true
     } else if (request.action == "get-current-tab") {
         sendResponse(sender.tab)
