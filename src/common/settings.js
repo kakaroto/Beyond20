@@ -2005,7 +2005,9 @@ function createCustomDomainsSetting(name, short) {
                 alertify.error("Cannot request permissions. Please open the extension's options page and try again");
                 return;
             }
-            chromeOrBrowser.permissions.request({origins: [url]}).then((response) => {
+            // Request the origin without its port, like the popup does: Firefox won't inject into
+            // a tab covered only by a pattern with a port. The tab must still match this entry.
+            chromeOrBrowser.permissions.request({origins: [stripPatternPort(url)]}).then((response) => {
                 if (response) {
                     console.log("Permission was granted");
                     alertify.success(`Beyond20 will now load automatically on ${url}`);
