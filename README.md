@@ -1,7 +1,7 @@
 Beyond20: D&D Beyond & Roll20/Foundry VTT Integration
 ==
 
-[Beyond20](https://beyond20.here-for-more.info/) is a browser extension that integrates the Character Sheet from D&D Beyond into Roll20, Foundry VTT & Discord.
+[Beyond20](https://beyond20.here-for-more.info/) is a browser extension that integrates the Character Sheet from D&D Beyond into Roll20, Foundry VTT & Discord. It also supports several other virtual tabletops, and any site you add as a custom domain in the options. See the [features page](https://beyond20.here-for-more.info/features) for what it can roll.
 
 # Install and Use
 
@@ -9,11 +9,15 @@ Beyond20: D&D Beyond & Roll20/Foundry VTT Integration
 
 ### Chrome
 
-To install Beyond 20 on Chrome, simply head over to the [Chrome Web Store](https://chrome.google.com/webstore/detail/beyond-20/gnblbpbepfbfmoobegdogkglpbhcjofh) and click "Add to Chrome" to get it installed.
+To install Beyond 20 on Chrome, simply head over to the [Chrome Web Store](https://chromewebstore.google.com/detail/beyond-20/gnblbpbepfbfmoobegdogkglpbhcjofh) and click "Add to Chrome" to get it installed.
 
 ### Firefox
 
-To install Beyond 20 on Firefox, simply head over to [Firefox Extensions](https://addons.mozilla.org/en-CA/firefox/addon/beyond-20/) and click "Add to Firefox" to get it installed.
+To install Beyond 20 on Firefox, simply head over to [Firefox Extensions](https://addons.mozilla.org/en-US/firefox/addon/beyond-20/) and click "Add to Firefox" to get it installed.
+
+### Microsoft Edge
+
+To install Beyond 20 on Edge, head over to [Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/beyond-20/pdjnkppffhaiimjopdpdkdaddgcmnbpp) and click "Get".
 
 ## Use 
 
@@ -25,12 +29,18 @@ If a spell/item/action/feat description contains a dice formula (`2d10 + 3` for 
 
 If you click on the Beyond20 button in the toolbar, it will pop open the quick settings menu. Note that the quick settings menu will be different whether you are on the VTT tab or D&D Beyond tab, and it will contain the per-character configuration.
 
+## Help
+
+If something doesn't work, check the [FAQ](https://beyond20.here-for-more.info/faq) and the [known issues](https://beyond20.here-for-more.info/known_issues), then search the [issue tracker](https://github.com/kakaroto/Beyond20/issues) before opening a new issue.
+
 # Build
 
-You need to install the build dependencies by running in Beyond20's source directory: 
+You need [Node.js](https://nodejs.org/) (the CI builds use version 22). Install the build dependencies by running in Beyond20's source directory:
 `npm install`
 
-You can then build the files using the command `npm run build`
+You can then build the files using the command `npm run build`. To build a single browser, use `npm run build:chrome` or `npm run build:firefox`. The output goes to `build/chrome` and `build/firefox`.
+
+Run the unit tests with `npm test`.
 
 # Developer Mode Installation
 
@@ -39,6 +49,8 @@ All you need is to load the extension from the source :
 0. If you already have Beyond20 installed from the Chrome or Firefox stores, disable it.
 1. Download the extension for either [Chrome](https://github.com/kakaroto/Beyond20/releases/download/latest/chrome.zip) or [Firefox](https://github.com/kakaroto/Beyond20/releases/download/latest/firefox.zip)
 2. Extract the zip file in a directory of your choice
+
+If you built Beyond20 yourself, skip steps 1 and 2 and use the `build/chrome` or `build/firefox` directory instead.
 
 ## Chrome
 
@@ -52,6 +64,20 @@ All you need is to load the extension from the source :
 3. Open "[about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox)" in Firefox
 4. Click "Load Temporary Add-on"
 5. Select the `manifest.json` file from the extension's directory
+
+# Contributing
+
+Bug reports and feature requests are welcome in the [issue tracker](https://github.com/kakaroto/Beyond20/issues), using the issue templates.
+
+For pull requests:
+
+- Fill in the pull request template, including the AI usage disclosure, which is required.
+- Run `npm test` and test your change in a browser, and say in the pull request what you tested.
+- Chat card styles appear in both `src/extension/beyond20.css` and `FVTT-module/beyond20/beyond20.css`. If you change one, check whether the other needs the same change.
+
+If you're building a VTT or tool that talks to Beyond20, see the [API documentation](https://beyond20.here-for-more.info/api).
+
+To report a security vulnerability, see [SECURITY.md](SECURITY.md) instead of opening a public issue.
 
 # License
 
