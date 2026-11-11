@@ -426,7 +426,7 @@ function onTabsUpdated(id, changes, tab) {
             // We cannot use the url or its origin, because Firefox, in its great magnificent wisdom
             // decided that ports in the origin would break the whole permissions system
             const origin = `${new URL(tab.url).protocol}//${new URL(tab.url).hostname}/*`;
-            const hasPermission = currentPermissions.origins.some(pattern => urlMatches(origin, pattern));
+            const hasPermission = hasOriginPermission(origin, currentPermissions.origins);
             if (hasPermission) {
                 if (isFVTT(tab.title)) {
                     executeScripts([tab], ["dist/fvtt_test.js"]);
