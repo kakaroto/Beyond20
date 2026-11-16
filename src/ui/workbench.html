@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Beyond20 Svelte + TS Workbench</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f1217;
+      color: #e6edf3;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 20px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+    .brand img { width: 24px; height: 24px; }
+    .controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    select, button {
+      background: #21262d;
+      color: #e6edf3;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    main {
+      flex: 1;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(560px, 1fr));
+      gap: 20px;
+      align-items: start;
+    }
+    .panel {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 10px 14px;
+      background: #1c2128;
+      border-bottom: 1px solid #30363d;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+    }
+    iframe { border: none; width: 100%; height: 660px; display: block; }
+    #popup-frame { max-width: 600px; margin: 0 auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="/images/icons/icon32.png" alt="Beyond20" />
+      <span>Beyond20 Svelte + TypeScript Workbench (HMR)</span>
+    </div>
+    <div class="controls">
+      <select id="ctx">
+        <option value="character">D&amp;D Beyond — Character (Aria Stormwind)</option>
+        <option value="monster">D&amp;D Beyond — Monster</option>
+        <option value="roll20">Roll20 Editor</option>
+        <option value="fvtt">Foundry VTT</option>
+        <option value="default">Standby / Default Popup</option>
+      </select>
+      <button id="reload">↻ Reload</button>
+      <button id="reset">Reset Mock Storage</button>
+    </div>
+  </header>
+  <main>
+    <section class="panel">
+      <div class="panel-header"><span>Unified Extension Popup (Svelte 5 + TS)</span></div>
+      <div style="background:#0d1117;padding:12px;">
+        <iframe id="popup-frame" title="Popup"></iframe>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-header">
+        <span>Tool Window (Drag &amp; Drop / Discord / Domains)</span>
+        <select id="tool-select" style="padding:2px 8px;font-size:12px;">
+          <option value="restore">Restore Settings (Drag &amp; Drop)</option>
+          <option value="discord">Discord Channels</option>
+          <option value="domains">Custom Domains</option>
+        </select>
+      </div>
+      <iframe id="options-frame" src="/src/ui/tool.html?tool=restore" title="Tool Window"></iframe>
+    </section>
+    <section class="panel">
+      <div class="panel-header"><span>In-Page Components (beyond20.css)</span></div>
+      <iframe id="inpage-frame" src="/dev-preview/inpage-preview.html" title="In-Page Components" style="background:#1c2026;"></iframe>
+    </section>
+  </main>
+  <script>
+    const ctx = document.getElementById("ctx");
+    const toolSelect = document.getElementById("tool-select");
+    const popupFrame = document.getElementById("popup-frame");
+    const optionsFrame = document.getElementById("options-frame");
+    const inpageFrame = document.getElementById("inpage-frame");
+    function update() {
+      const val = ctx.value;
+      popupFrame.src = "/src/ui/popup.html?context=" + encodeURIComponent(val);
+      optionsFrame.src = "/src/ui/tool.html?tool=" + encodeURIComponent(toolSelect.value) + "&context=" + encodeURIComponent(val);
+      inpageFrame.src = "/dev-preview/inpage-preview.html?context=" + encodeURIComponent(val);
+    }
+    ctx.addEventListener("change", update);
+    toolSelect.addEventListener("change", update);
+    document.getElementById("reload").addEventListener("click", update);
+    document.getElementById("reset").addEventListener("click", () => {
+      Object.keys(localStorage).forEach((k) => {
+        if (k.startsWith("b20_preview_")) localStorage.removeItem(k);
+      });
+      update();
+    });
+    update();
+  </script>
+</body>
+</html>

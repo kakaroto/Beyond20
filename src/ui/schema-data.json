@@ -1,0 +1,910 @@
+{
+  "options_list": {
+    "whisper-type": {
+      "short": "Whisper rolls",
+      "title": "Whisper rolls to the DM",
+      "description": "Determines if the rolls will be whispered to the DM.\nIn the case of Foundry VTT, the 'ask every time' option will use the setting in the chat box.",
+      "type": "combobox",
+      "default": 0,
+      "choices": {
+        "0": "Never whisper",
+        "1": "Always whisper",
+        "2": "Ask every time"
+      }
+    },
+    "whisper-type-monsters": {
+      "title": "Whisper monster rolls to the DM",
+      "description": "Overrides the global whisper setting from monster stat blocks",
+      "type": "combobox",
+      "default": 1,
+      "choices": {
+        "0": "Use general whisper setting",
+        "1": "Always whisper monster rolls",
+        "2": "Ask every time",
+        "3": "Hide monster and attack name"
+      }
+    },
+    "custom-domains": {
+      "title": "List of custom domains to load Beyond20",
+      "description": "Enter a list of custom domain URLs to load Beyond20 into.\nOne domain per line, you must include the http:// or https:// protocol and you can use wildcards for subdomains and path.\nThis can be used to send Beyond20 requests to sites that may independently support Beyond20.\nFor example: https://my-new-custom-vtt.com/*/game",
+      "type": "special",
+      "default": [],
+      "advanced": true
+    },
+    "roll20-discord-activity": {
+      "title": "Support Roll20 Discord Activity",
+      "description": "Integrate with Roll20's Discord Activity.\nThis requires opening Discord in the browser so Beyond20 can be loaded and communicate with the activity.",
+      "type": "special",
+      "default": null,
+      "advanced": true
+    },
+    "hide-results-on-whisper-to-discord": {
+      "title": "Hide roll results on D&D Beyond when whispering to Discord",
+      "description": "Don't show the roll results on D&D Beyond when using whisper and sending results to \"D&D Beyond Dice Roller & Discord\"",
+      "type": "bool",
+      "default": false,
+      "advanced": true
+    },
+    "hide-results-with-digital-dice": {
+      "title": "Hide roll results on D&D Beyond when using Digital Dice",
+      "description": "If using Digital Dice and no VTT is found, don't show the roll results on D&D Beyond.",
+      "type": "bool",
+      "default": false,
+      "advanced": true
+    },
+    "roll-type": {
+      "short": "Type of Roll",
+      "title": "Type of Roll (Advantange/Disadvantage)",
+      "description": "Determines if rolls should be with advantage, disadvantage, double rolls or user queries",
+      "short_description": "Hold Shift/Ctrl/Alt to override for Advantage/Disadvantage/Regular rolls",
+      "type": "combobox",
+      "default": 0,
+      "choices": {
+        "0": "Normal Roll",
+        "1": "Always roll twice",
+        "2": "Ask every time",
+        "3": "Roll with Advantage",
+        "4": "Roll with Disadvantage",
+        "5": "Always roll thrice (limited support on Roll20)",
+        "6": "Roll with Super Advantage",
+        "7": "Roll with Super Disadvantage"
+      }
+    },
+    "quick-rolls": {
+      "short": "Add Quick Roll areas",
+      "title": "Add Quick Rolls areas to main page",
+      "description": "Listen to clicks in specific areas of the abilities, skills, actions and spells to quickly roll them.",
+      "type": "bool",
+      "default": true,
+      "advanced": true
+    },
+    "use-digital-dice": {
+      "short": "Use D&D Beyond's Digital Dice",
+      "title": "Use D&D Beyond's Digital Dice",
+      "description": "Integrate with D&D Beyond's Digital Dice, rolling the dice on the screen and sending the pre-calculated results to the VTT.",
+      "type": "bool",
+      "default": true
+    },
+    "auto-roll-damage": {
+      "title": "Auto roll Damage and Crit",
+      "description": "Always roll damage and critical hit dice when doing an attack",
+      "type": "bool",
+      "default": true
+    },
+    "initiative-tracker": {
+      "title": "Add initiative roll to the Turn Tracker",
+      "description": "Adds the result of the initiative roll to the turn tracker.\nThis requires you to have a token selected in the VTT\nIf using Roll20, it will also change the way the output of 'Advantage on initiative' rolls appear.",
+      "type": "bool",
+      "default": true
+    },
+    "initiative-tiebreaker": {
+      "title": "Add tiebreaker to initiative rolls",
+      "description": "Adds the dexterity score as a decimal to initiative rolls to break any initiative ties.",
+      "type": "bool",
+      "default": false,
+      "advanced": true
+    },
+    "critical-homebrew": {
+      "title": "Critical hit rule",
+      "description": "Determines how the additional critical hit damages are determined",
+      "type": "combobox",
+      "default": "0",
+      "choices": {
+        "0": "Standard PHB Rules (reroll dice)",
+        "1": "Homebrew: Perfect rolls",
+        "2": "Homebrew: Reroll all damages"
+      }
+    },
+    "weapon-force-critical": {
+      "title": "Force all attacks/damage rolls as Critical Hits",
+      "description": "Forces all attacks to be considered as critical hits. Useful for melee attacks against paralyzed enemies or using adamantine weapons against objects",
+      "short": "Force Critical Hits",
+      "short_description": "Useful for crit damage rolls or melee attacks against paralyzed enemies or using adamantine weapons against objects",
+      "type": "bool",
+      "default": false
+    },
+    "update-hp": {
+      "title": "Update VTT Token HP",
+      "description": "When changing HP in D&D Beyond, update it in the VTT tokens and sheets",
+      "type": "bool",
+      "default": true
+    },
+    "display-conditions": {
+      "title": "Display Condition updates to VTT",
+      "description": "When updating character conditions in D&D Beyond, display a message in the VTT chat.\nIf using Foundry VTT with the Beyond20 module, it will also update the token's status icons appropriately.",
+      "type": "bool",
+      "default": true
+    },
+    "template": {
+      "type": "migrate",
+      "to": "roll20-template",
+      "default": "roll20"
+    },
+    "hotkeys-bindings": {
+      "title": "Define custom hotkeys",
+      "description": "Set custom hotkeys for controlling Beyond20's behavior.",
+      "type": "special",
+      "default": null
+    },
+    "sticky-hotkeys": {
+      "title": "Sticky Hotkeys: no need to hold the button",
+      "description": "Allows you to press a hotkey instead of holding it to toggle the assigned ability for the next roll.",
+      "type": "bool",
+      "default": false
+    },
+    "roll20-template": {
+      "title": "Roll20 Character Sheet Setting",
+      "description": "Select the Character Sheet Template that you use in Roll20\nIf the template does not match the campaign setting, it will default to the Beyond20 Roll Renderer.",
+      "type": "combobox",
+      "default": "roll20",
+      "choices": {
+        "roll20": "D&D 5E By Roll20",
+        "default": "Default Roll20 template",
+        "beyond20": "Beyond20 Roll Renderer"
+      },
+      "advanced": true
+    },
+    "notes-to-vtt": {
+      "title": "Send custom text to the VTT",
+      "description": "In the \"Notes\" or \"Description\" section of any item, action, or spell on the D&D Beyond Character Sheet, you may add your own custom text to be sent to the VTT as a message when you use that element's roll action.\nTo do this, format the text you wish to send as follows:\n[[msg-type]] Put text you wish to send HERE[[/msg-type]]\nReplace \"msg-type\" with one of the following: \"before\", \"after\", or \"replace\" depending on how you want to affect the message or action that would normally be sent to the VTT.",
+      "type": "info",
+      "advanced": true
+    },
+    "subst-roll20": {
+      "type": "migrate",
+      "to": "subst-vtt",
+      "default": true
+    },
+    "subst-vtt": {
+      "title": "Replace Dices formulas in the VTT",
+      "description": "In Roll20 or Foundry VTT, if a spell card or an item or a feat has a dice formula in its description,\nenabling this will make the formula clickable to generate the roll in chat.",
+      "type": "bool",
+      "default": true
+    },
+    "subst-dndbeyond": {
+      "title": "Replace Dices formulas in D&D Beyond (Spells & Character Sheet)",
+      "description": "In the D&D Beyond Spell page or Character sheet side panel, if a spell, item, feat or action has a dice formula in its description,\nenabling this will add a dice icon next to the formula to allow you to roll it.",
+      "type": "bool",
+      "default": true,
+      "advanced": true
+    },
+    "subst-dndbeyond-stat-blocks": {
+      "title": "Replace Dices formulas in D&D Beyond (Stat blocks)",
+      "description": "In D&D Beyond, if a dice formula is found in the stat block of a creature, monster, vehicle,\nenabling this will add a dice icon next to the formula to allow you to roll it.",
+      "type": "bool",
+      "default": true,
+      "advanced": true
+    },
+    "handle-stat-blocks": {
+      "title": "Add roll buttons to stat blocks",
+      "description": "In D&D Beyond, adds roll buttons for abilities/saving throws/skills/actions to the stat block of a creature, monster or vehicle.",
+      "type": "bool",
+      "default": true,
+      "advanced": true
+    },
+    "crit-prefix": {
+      "title": "Critical Hit Prefix",
+      "description": "Prefix to add to the Critical Hit dice result.\nIt might be less confusing to explicitely show the crit damage",
+      "type": "string",
+      "default": "Crit: ",
+      "advanced": true
+    },
+    "components-display": {
+      "title": "Components to display in spell attacks",
+      "description": "When doing a spell attack, what components to show alongside the spell roll.",
+      "type": "combobox",
+      "default": "all",
+      "choices": {
+        "all": "All components",
+        "material": "Only material components",
+        "none": "Do not display anything"
+      },
+      "advanced": true
+    },
+    "component-prefix": {
+      "title": "Component Prefix",
+      "description": "Prefix to the components display of a spell attack.\nIf displaying material components only, you may want to set it to 'Materials used :' for example",
+      "type": "string",
+      "default": "Components: ",
+      "advanced": true
+    },
+    "hidden-monster-replacement": {
+      "title": "Hidden monster name",
+      "description": "Text to use to replace the monster name and attack name for hidden monsters (whisper type)",
+      "type": "string",
+      "default": "???",
+      "advanced": true
+    },
+    "combat-unknown-monster-name": {
+      "title": "Unknown monster name replacement in encounters",
+      "description": "Replace monster names in the combat tracker when they can't be mapped to tokens. Leave empty to not replace it.",
+      "type": "string",
+      "default": "Unknown Creature",
+      "advanced": true
+    },
+    "roll20-spell-details-display": {
+      "title": "Display Spell Details in spell attacks",
+      "description": "When doing a spell attack, display the spell's details (Roll20 only toggle)",
+      "type": "bool",
+      "default": false
+    },
+    "roll20-spell-description-display": {
+      "title": "Display Spell Descriptions in spell attacks",
+      "description": "When doing a spell attack, display the spell's full description (Roll20 only toggle)",
+      "type": "bool",
+      "default": false
+    },
+    "weapon-handedness": {
+      "title": "Always Show Weapon Handedness",
+      "description": "On Versatile weapons, always show weapon-handedness, even if 1-handed or 2-handed is selected",
+      "type": "bool",
+      "default": false,
+      "advanced": true
+    },
+    "roll-to-game-log": {
+      "title": "Send Beyond20 roll results to game log",
+      "description": "Send the roll results made by Beyond20 (not in the VTT) to the D&D Beyond Game Log",
+      "type": "bool",
+      "default": true,
+      "advanced": true
+    },
+    "roll20-tab": {
+      "type": "migrate",
+      "to": "vtt-tab",
+      "default": null
+    },
+    "vtt-tab": {
+      "title": "Select the VTT tab or Game to send rolls to",
+      "description": "Select the tab to send rolls to or the specific Game.\nYou can select the Game or tab from the extension's popup menu in the VTT tab itself.\nAfter a specific tab is selected and that tab is closed, it will revert to sending rolls to the same Game.",
+      "type": "special",
+      "default": null
+    },
+    "discord-integration": {
+      "title": "Discord Integration",
+      "description": "You can get rolls sent to Discord by enabling Discord Integration!\nClick the link, follow the instructions and enter your secret key below.",
+      "type": "link",
+      "default": "https://beyond20.here-for-more.info/discord",
+      "icon": "/images/discord-logo.png",
+      "icon-height": "100%",
+      "icon-width": "auto"
+    },
+    "discord-secret": {
+      "type": "migrate",
+      "to": "discord-channels",
+      "default": ""
+    },
+    "discord-channels": {
+      "title": "Discord Default Destination Channel",
+      "description": "Default Discord destination channel to send rolls to",
+      "type": "special",
+      "default": null
+    },
+    "show-changelog": {
+      "title": "Show Changelog when installing a new version",
+      "description": "When a new version is released and the extension has been updated,\nopen the changelog in a new window",
+      "type": "bool",
+      "default": true,
+      "advanced": true
+    },
+    "last-version": {
+      "description": "Last version that was installed. Used to check if an update just happened",
+      "type": "string",
+      "hidden": true,
+      "default": ""
+    },
+    "migrated-sync-settings": {
+      "description": "Whether the user settings were migrated from sync storage to local storage",
+      "type": "bool",
+      "hidden": true,
+      "default": false
+    },
+    "last-whisper-query": {
+      "description": "Last user selection for query whispers",
+      "type": "int",
+      "hidden": true,
+      "default": 0
+    },
+    "last-advantage-query": {
+      "description": "Last user selection for query roll type",
+      "type": "int",
+      "hidden": true,
+      "default": 0
+    },
+    "sync-combat-tracker": {
+      "title": "Synchronize the Combat Tracker with the VTT",
+      "description": "Overwrites the VTT's combat tracker with the details from D&D Beyond's Encounter tool (Roll20 only, GM only)",
+      "type": "bool",
+      "default": true
+    },
+    "discord-display-description": {
+      "title": "Display description in Discord",
+      "description": "Display the roll's description in the Discord message",
+      "type": "bool",
+      "default": false,
+      "advanced": true
+    },
+    "backup-settings": {
+      "title": "Backup Beyond20 settings",
+      "description": "Export your Beyond20 settings to a file for backup",
+      "type": "special",
+      "advanced": true,
+      "default": null
+    },
+    "restore-settings": {
+      "title": "Restore Beyond20 settings",
+      "description": "Import your Beyond20 settings from a previously exported backup file",
+      "type": "special",
+      "advanced": true,
+      "default": null
+    },
+    "donate": {
+      "short": "Buy rations (1 day) to feed my familiar",
+      "title": "Become a patron of the art of software development!",
+      "description": "If you wish to support my work on Beyond 20 or my other D&D related project, subscribe to my patreon or donate via paypal!\nI am grateful for your generosity!",
+      "type": "link",
+      "default": "https://beyond20.here-for-more.info/rations",
+      "icon": "/images/donate.png",
+      "icon-width": "64",
+      "icon-height": "64"
+    },
+    "donate-advanced": {
+      "short": "Buy rations (1 day) to feed my familiar",
+      "title": "Become a patron of the art of software development!",
+      "description": "If you wish to support my work on Beyond 20 or my other D&D related project, subscribe to my patreon or donate via paypal!\nI am grateful for your generosity!",
+      "type": "link",
+      "default": "https://beyond20.here-for-more.info/rations",
+      "icon": "/images/donate.png",
+      "icon-width": "64",
+      "icon-height": "64",
+      "advanced": true
+    }
+  },
+  "character_settings": {
+    "migrated-sync-settings": {
+      "description": "Whether the user settings were migrated from sync storage to local storage",
+      "type": "bool",
+      "hidden": true,
+      "default": false
+    },
+    "versatile-choice": {
+      "title": "Versatile weapon choice",
+      "description": "How to roll damage for Versatile weapons",
+      "type": "combobox",
+      "default": "both",
+      "choices": {
+        "both": "Roll both damages separately",
+        "one": "Use weapon One-handed",
+        "two": "Use weapon Two-handed"
+      }
+    },
+    "toll-choice": {
+      "title": "Toll the Dead choice",
+      "description": "How to roll damage for toll the Dead",
+      "type": "combobox",
+      "default": "query",
+      "choices": {
+        "both": "Roll both damages separately",
+        "query": "Query Damage"
+      }
+    },
+    "custom-roll-dice": {
+      "title": "Custom Roll dice formula bonus",
+      "description": "Add custom formula to d20 rolls (Bless, Guidance, Bane, Magic Weapon, etc..)",
+      "type": "string",
+      "default": ""
+    },
+    "custom-damage-dice": {
+      "title": "Custom Damage dice formula bonus",
+      "description": "Add custom dice to damage rolls (Magic Weapon, Elemental Weapon, Green-flame Blade, etc..). Use a comma to separate multiple independent rolls.",
+      "type": "string",
+      "default": ""
+    },
+    "custom-ability-modifier": {
+      "title": "Custom magical modifier to raw ability checks",
+      "description": "Add a custom modifier from magical items (Stone of Good Luck for example) to raw ability checks.",
+      "type": "string",
+      "default": ""
+    },
+    "custom-critical-limit": {
+      "title": "Custom Critical limit",
+      "description": "Set a custom threshold for the critical hit limit (if using homebrew magical items)",
+      "type": "string",
+      "default": ""
+    },
+    "effects-exhaustion-2024": {
+      "title": "Effect: Exhaustion 2024",
+      "description": "Applies 2024 rules for exhaustion. This condition is cumulative and effects all D20 rolls applying a -2 * exhaustion level modifier to the roll.",
+      "type": "bool",
+      "default": false
+    },
+    "effects-exhaustion-2014": {
+      "title": "Effect: Exhaustion 2014",
+      "description": "Applies 2014 rules for exhaustion. This condition is cumulative and applies disadvantage on ability checks at exhaustion >= 1 and disadvantage on attacks and saving throws on exhaustion >= 3.",
+      "type": "bool",
+      "default": false
+    },
+    "effects-bless": {
+      "title": "Effect: Bless",
+      "description": "Whenever a target makes an attack roll or a saving throw before the spell ends, the target adds 1d4 to the attack roll or save.",
+      "type": "bool",
+      "default": false
+    },
+    "effects-bane": {
+      "title": "Effect: Bane",
+      "description": "Whenever a target makes an attack roll or a saving throw before the spell ends, the target subtracks 1d4 to the attack roll or save.",
+      "type": "bool",
+      "default": false
+    },
+    "effects-enlarge": {
+      "title": "Effect: Enlarge",
+      "description": "Until the spell ends, the target also has advantage on Strength checks and Strength saving throws. While these weapons are enlarged, the target's attack with them deal 1d4 extra damage.",
+      "type": "bool",
+      "default": false
+    },
+    "effects-reduce": {
+      "title": "Effect: Reduce",
+      "description": "Until the spell ends, the target also has disadvantage on Strength checks and Strength saving throws. While these weapons are reduced, the target's attacks with them deal 1d4 less damage (this can't reduce the damage below 1).",
+      "type": "bool",
+      "default": false
+    },
+    "artificer-alchemical-savant": {
+      "title": "Artificer: Alchemist: Alchemical Savant",
+      "description": "Use your Alchemist's supplies as spellcasting focus, dealing extra damage or healing equal to your Intelligence Modifier",
+      "type": "bool",
+      "default": true
+    },
+    "artificer-arcane-firearm": {
+      "title": "Artificer: Artillerist: Use Arcane Firearm",
+      "description": "Use an Arcane Firearm for your Artificer spells. Deals extra 1d8 damage",
+      "type": "bool",
+      "default": false
+    },
+    "artificer-arcane-jolt": {
+      "title": "Artificer: Battle Smith: Arcane Jolt",
+      "description": "Apply an Arcane Jolt to you or your Steel Defender's Weapon Attacks. Deals extra 2d6 damage, or 4d6 at Artificer Level 15+",
+      "type": "bool",
+      "default": false
+    },
+    "bard-joat": {
+      "title": "Bard: Jack of All Trades",
+      "description": "Add JoaT bonus to raw ability checks",
+      "type": "bool",
+      "default": true
+    },
+    "bard-psychic-blades": {
+      "title": "Bard: College of Whispers: Psychic Blades (Apply to next roll only, unless locked)",
+      "description": "Use your Bardic Inspiration to deal extra psychic damage.",
+      "type": "bool",
+      "default": false,
+      "lock": "bard-psychic-blades-lock"
+    },
+    "bard-psychic-blades-lock": {
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    "bard-spiritual-focus": {
+      "title": "Bard: College of Spirits: Spiritual Focus",
+      "description": "Use your Spiritual Focus to deal extra psychic damage, or apply extra healing",
+      "type": "bool",
+      "default": true
+    },
+    "barbarian-rage": {
+      "title": "Barbarian: Rage! You are raging, ARRGGHHHHHH",
+      "description": "Add Rage damage to melee attacks and add advantage to Strength checks and saving throws",
+      "type": "bool",
+      "default": false
+    },
+    "barbarian-divine-fury": {
+      "title": "Barbarian: Path of the Zealot: Divine Fury",
+      "description": "Add Divine Fury damage to your attack (when raging)",
+      "type": "bool",
+      "default": true
+    },
+    "barbarian-reckless": {
+      "title": "Barbarian: Reckless Attack",
+      "description": "Attack recklessly, giving advantage on your attack rolls, but granting advantage to attacks against you",
+      "type": "bool",
+      "default": false,
+      "lock": "barbarian-reckless-lock"
+    },
+    "barbarian-reckless-lock": {
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    "bloodhunter-crimson-rite": {
+      "title": "Bloodhunter: Crimson Rite",
+      "description": "Add Crimson Rite damage",
+      "type": "bool",
+      "default": false
+    },
+    "cleric-blessed-strikes": {
+      "title": "Cleric: Blessed Strikes 2024: Divine Strike",
+      "description": "Once on each of your turns when you hit a creature with an attack roll using a weapon, you can cause it to take an extra 1d8 Necrotic or Radiant damage (your choice). This Damage goes to 2d8 with Improved Blessed Strikes.",
+      "type": "bool",
+      "default": false,
+      "lock": "cleric-blessed-strikes-lock"
+    },
+    "cleric-blessed-strikes-lock": {
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    "cleric-blessed-strikes-tasha": {
+      "title": "Cleric: Blessed Strikes 2014: Optional Rule",
+      "description": "When a creature takes damage from one of your cantrips or weapon attacks, you can also deal 1d8 radiant damage to that creature. Once you deal this damage, you cant use this feature again until the start of your next turn.",
+      "type": "bool",
+      "default": false,
+      "lock": "cleric-blessed-strikes-tasha-lock"
+    },
+    "cleric-blessed-strikes-tasha-lock": {
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    "cleric-circle-of-mortality": {
+      "title": "Cleric: Grave Domain: Circle of Mortality",
+      "description": "Manipulating the line between life and death, your healing on a creature with 0 hp is maximized",
+      "type": "bool",
+      "default": false
+    },
+    "cleric-divine-strike": {
+      "title": "Cleric: Divine Strike",
+      "description": "Deal an extra 1d8 (2d8 at level 14) damage to weapon attacks",
+      "type": "bool",
+      "default": false,
+      "lock": "cleric-divine-strike-lock"
+    },
+    "cleric-divine-strike-lock": {
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    "druid-symbiotic-entity": {
+      "title": "Druid: Circle of Spores: Symbiotic Entity",
+      "description": "Your symbiotic entity lends its power to your melee weapon strikes.",
+      "type": "bool",
+      "default": false
+    },
+    "wildfire-spirit-enhanced-bond": {
+      "title": "Druid: Circle of Wildfire: Enhanced Bond",
+      "description": "The bond with your wildfire spirit enhances your destructive and restorative spells.",
+      "type": "bool",
+      "default": false
+    },
+    "champion-remarkable-athlete": {
+      "title": "Fighter: Champion: Remarkable Athlete",
+      "description": "Add Remarkable Athlete bonus to Strength/Dexterity/Constitution ability checks",
+      "type": "bool",
+      "default": true
+    },
+    "fighter-giant-might": {
+      "title": "Fighter: Rune Knight: Giant’s Might",
+      "description": "Activate Giant’s Might to get advantage on Strength checks and saving throws and deal 1d6 extra damage",
+      "type": "bool",
+      "default": false
+    },
+    "monk-diamond-soul": {
+      "title": "Monk: Diamond Soul",
+      "description": "Your proficiency with ki aids you even against the grasp of death",
+      "type": "bool",
+      "default": true
+    },
+    "paladin-improved-divine-smite": {
+      "title": "Paladin: Improved Divine Smite",
+      "description": "Roll an extra 1d8 radiant damage whenever you hit with a melee weapon",
+      "type": "bool",
+      "default": true
+    },
+    "paladin-radiant-strikes": {
+      "title": "Paladin: Radiant Strikes",
+      "description": "Roll an extra 1d8 radiant damage whenever you hit with a melee weapon or an unarmed strike",
+      "type": "bool",
+      "default": true
+    },
+    "paladin-invincible-conqueror": {
+      "title": "Paladin: Oath of Conquest: Invincible Conqueror",
+      "description": "You can harness extraordinary martial prowess for 1 minute.",
+      "type": "bool",
+      "default": false
+    },
+    "paladin-sacred-weapon": {
+      "title": "Paladin: Oath of Devotion: Sacred Weapon",
+      "description": "Your charisma and deity guide your attacks",
+      "type": "bool",
+      "default": false
+    },
+    "ranger-favored-foe": {
+      "title": "Ranger: Favored Foe",
+      "description": "You mark an enemy and your attacks hurt them to an increased degree",
+      "type": "bool",
+      "default": false
+    },
+    "fey-wanderer-dreadful-strikes": {
+      "title": "Ranger: Fey Wanderer: Dreadful Strikes",
+      "description": "Imbue your weapons and deal psychic damage to your the minds of your enemies.",
+      "type": "bool",
+      "default": false
+    },
+    "ranger-dread-ambusher": {
+      "title": "Ranger: Gloom Stalker: Dread Ambusher (Apply to next roll only, unless locked)",
+      "description": "You skills in ambushing your enemies lend more damage to your initial strike",
+      "type": "bool",
+      "default": false,
+      "lock": "ranger-dread-ambusher-lock"
+    },
+    "ranger-dread-ambusher-lock": {
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    "ranger-planar-warrior": {
+      "title": "Ranger: Horizon Walker: Planar Warrior",
+      "description": "Use your Planar Warrior ability to deal extra Force damage",
+      "type": "bool",
+      "default": false
+    },
+    "ranger-colossus-slayer": {
+      "title": "Ranger: Hunter's Prey: Colossus Slayer",
+      "description": "Use your Colossus Slayer ability and add 1d8 damage to your target",
+      "type": "bool",
+      "default": true
+    },
+    "ranger-slayers-prey": {
+      "title": "Ranger: Monster Slayer: Slayer's Prey",
+      "description": "Use your Slayer's Prey ability and add 1d6 damage to your target",
+      "type": "bool",
+      "default": false
+    },
+    "ranger-natural-explorer": {
+      "title": "Ranger: Natural Explorer",
+      "description": "Your familiarity with the current region aids in your exploration",
+      "type": "bool",
+      "default": false
+    },
+    "ranger-gathered-swarm": {
+      "title": "Ranger: Swarmkeeper: Gathered Swarm",
+      "description": "Use your Gathered Swarm ability to add extra Force damage to your attacks",
+      "type": "bool",
+      "default": false
+    },
+    "rogue-sneak-attack": {
+      "title": "Rogue: Sneak Attack (Apply to next roll only, unless locked)",
+      "description": "Send Sneak Attack damage with each attack roll",
+      "type": "bool",
+      "default": true,
+      "lock": "rogue-sneak-attack-lock"
+    },
+    "rogue-sneak-attack-lock": {
+      "type": "bool",
+      "default": true,
+      "hidden": true
+    },
+    "rogue-cunning-strike": {
+      "title": "Rogue: Cunning Strike (Apply to next roll only, unless locked)",
+      "description": "When you deal Sneak Attack damage, you can add Cunning Strike effects to the roll.",
+      "type": "bool",
+      "default": false,
+      "lock": "rogue-cunning-strike-lock"
+    },
+    "rogue-cunning-strike-lock": {
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    "rogue-assassinate": {
+      "title": "Rogue: Assassin: Assassinate Surprise Attack (Apply to next roll only, unless locked)",
+      "description": "Roll with advantage and roll critical damage dice.",
+      "type": "bool",
+      "default": false,
+      "lock": "rogue-assassinate-lock"
+    },
+    "rogue-assassinate-2024": {
+      "title": "Rogue: Assassin: Assassinate Attack (Apply to next roll only, unless locked)",
+      "description": "Roll with advantage and with extra damage.",
+      "type": "bool",
+      "default": false,
+      "lock": "rogue-assassinate-lock"
+    },
+    "rogue-assassinate-lock": {
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    "sorcerer-trance-of-order": {
+      "title": "Sorcerer: Clockwork Soul: Trance of Order",
+      "description": "Align your conciousness to the calculations of Mechanus. You enter a heightened state.",
+      "type": "bool",
+      "default": false
+    },
+    "eldritch-invocation-lifedrinker": {
+      "title": "Warlock: Eldritch Invocation: Lifedrinker",
+      "description": "Your pact weapon drips with necrotic energy, lending extra damage to your strikes",
+      "type": "bool",
+      "default": false
+    },
+    "warlock-the-celestial-radiant-soul": {
+      "title": "Warlock: The Celestial: Radiant Soul",
+      "description": "The pact with your Celestial enhances your radiant and fire spells.",
+      "type": "bool",
+      "default": true
+    },
+    "genies-vessel": {
+      "title": "Warlock: The Genie: Genie's Wrath",
+      "description": "You genie patron lends their wrath to your attacks.",
+      "type": "bool",
+      "default": true
+    },
+    "warlock-hexblade-curse": {
+      "title": "Warlock: The Hexblade: Hexblade's Curse",
+      "description": "Apply the Hexblade's Curse extra damage on attack rolls and score critical hits on rolls of 19 and 20",
+      "type": "bool",
+      "default": false
+    },
+    "warlock-grave-touched": {
+      "title": "Warlock: The Undead: Grave Touched",
+      "description": "Your attacks become necrotic, and apply extra damage",
+      "type": "bool",
+      "default": false
+    },
+    "wizard-bladesong": {
+      "title": "Wizard: Bladesinger: Bladesong",
+      "description": "Activate your Bladesong and make your weapon sing with magic",
+      "type": "bool",
+      "default": false
+    },
+    "wizard-bladesong-2024": {
+      "title": "Wizard: Bladesinger: Bladesong (2024)",
+      "description": "Activate your Bladesong: Advantage on Acrobatics checks, Intelligence for weapon attack and damage rolls, and Intelligence added to Concentration saves",
+      "type": "bool",
+      "default": false
+    },
+    "empowered-evocation": {
+      "title": "Wizard: Evocation Wizard: Empowered Evocation",
+      "description": "Your prowess in Evocation lends power to your Evocation spells",
+      "type": "bool",
+      "default": true
+    },
+    "wizard-durable-magic": {
+      "title": "Wizard: War Magic: Durable Magic",
+      "description": "While concenctrating on a spell, your savings throws are fortified",
+      "type": "bool",
+      "default": false
+    },
+    "charger-feat": {
+      "title": "Feat: Charger Extra Damage (Apply to next roll only, unless locked)",
+      "description": "You charge into battle, lending weight to your blow!",
+      "type": "bool",
+      "default": false,
+      "lock": "charger-feat-lock"
+    },
+    "charger-feat-lock": {
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    "healer-rerolls-feat-2024": {
+      "title": "Feat: Healer - Healing Rerolls",
+      "description": "Whenever you roll a die to determine the number of Hit Points you restore with a spell or with this feat’s Battle Medic benefit, you can reroll the die if it rolls a 1, and you must use the new roll.",
+      "type": "bool",
+      "default": true
+    },
+    "great-weapon-master": {
+      "title": "Feat: Great Weapon Master (Apply to next roll only, unless locked)",
+      "description": "Apply Great Weapon Master -5 penalty to roll and +10 to damage",
+      "type": "bool",
+      "default": false,
+      "lock": "great-weapon-master-lock"
+    },
+    "great-weapon-master-lock": {
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    "great-weapon-master-2024": {
+      "title": "Feat: Great Weapon Master 2024 (Apply to next roll only, unless locked)",
+      "description": "Heavy Weapon Mastery. Apply extra damage equals your Proficiency Bonus.",
+      "type": "bool",
+      "default": true,
+      "lock": "great-weapon-master-2024-lock"
+    },
+    "great-weapon-master-2024-lock": {
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    "sharpshooter": {
+      "title": "Feat: Sharpshooter (Apply to next roll only, unless locked)",
+      "description": "Apply Sharpshooter -5 penalty to roll and +10 to damage",
+      "type": "bool",
+      "default": false,
+      "lock": "sharpshooter-lock"
+    },
+    "sharpshooter-lock": {
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    "brutal-critical": {
+      "title": "Brutal Critical/Savage Attacks: Roll extra die",
+      "description": "Roll extra damage die on crit for Brutal Critical and Savage Attacks features",
+      "type": "bool",
+      "default": true
+    },
+    "brutal-strike": {
+      "title": "Brutal Strike: Roll extra die",
+      "description": "If you use Reckless Attack, you can forgo any Advantage on one Strength-based attack roll of your choice on your turn.",
+      "type": "bool",
+      "default": false
+    },
+    "protector-aasimar-radiant-soul": {
+      "title": "Aasimar: Protector: Radiant Soul",
+      "description": "Unleash your divine soul to deal extra radiant damage equal to your level.",
+      "type": "bool",
+      "default": false
+    },
+    "motm-aasimar-radiant-soul": {
+      "title": "Aasimar: Celestial Revelation: Radiant Soul",
+      "description": "Unleash your divine soul to deal extra radiant damage equal to your proficiency.",
+      "type": "bool",
+      "default": false
+    },
+    "halfling-lucky": {
+      "title": "Halfling: Lucky",
+      "description": "The luck of your people guides your steps",
+      "type": "bool",
+      "default": true
+    },
+    "druid-improved-lunar-radiance": {
+      "title": "Druid: Improved Lunar Radiance",
+      "description": "Once per turn, you can deal an extra 2d10 Radiant damage to a target you hit with a Wild Shape forms attack.",
+      "type": "bool",
+      "default": false
+    },
+    "druid-circle-of-mutation-circle-forms": {
+      "title": "Druid: Circle of Mutation - Circle Forms",
+      "description": "Predator's Strike. When you hit a creature with an attack roll using a Beast form's attack in Wild Shape, you add +2 to the damage dealt.",
+      "type": "bool",
+      "default": false
+    },
+    "discord-target": {
+      "title": "Discord Destination",
+      "description": "Send rolls to a character specific Discord channel",
+      "type": "special",
+      "default": null
+    },
+    "motm-bugbear-surprise-attack": {
+      "title": "Bugbear: Surprise Attack",
+      "description": "When you hit a creature with an attack roll, the creature takes an extra 2d6 damage if it hasn't taken a turn yet in the current combat.",
+      "type": "bool",
+      "default": false,
+      "lock": "motm-bugbear-surprise-attack-lock"
+    },
+    "motm-bugbear-surprise-attack-lock": {
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    }
+  }
+}

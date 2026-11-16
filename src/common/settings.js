@@ -1130,65 +1130,77 @@ function createHTMLOptionEx(name, option, short = false, {advanced=false}={}) {
     if (option.type == "bool") {
         e = E.li({ class: "list-group-item beyond20-option beyond20-option-bool" },
             E.label({ class: "list-content", for: name },
-                E.h4({}, title),
-                ...description_p,
-                ...(lock ? [lockDiv] : []),
-                E.div({ class: 'material-switch pull-right' },
-                    E.input({ id: name, class: "beyond20-option-input", name, type: "checkbox" }),
-                    E.label({ for: name, class: "label-default" })
+                E.div({ class: "b20-option-info" },
+                    E.h4({}, title),
+                    ...description_p
+                ),
+                E.div({ class: "b20-option-controls" },
+                    ...(lock ? [lockDiv] : []),
+                    E.div({ class: 'material-switch' },
+                        E.input({ id: name, class: "beyond20-option-input", name, type: "checkbox" }),
+                        E.label({ for: name, class: "label-default" })
+                    )
                 )
             )
         );
     } else if (option.type == "string") {
         e = E.li({ class: "list-group-item beyond20-option beyond20-option-string" },
             E.label({ class: "list-content", for: name },
-                E.h4({}, title),
-                ...description_p,
-                E.div({ class: "right-entry" },
+                E.div({ class: "b20-option-info" },
+                    E.h4({}, title),
+                    ...description_p
+                ),
+                E.div({ class: "b20-option-controls right-entry" },
                     E.input({ id: name, class: "beyond20-option-input", name, type: "text" })
                 )
             )
         );
     } else if (option.type == "combobox") {
-        const dropdown_options = Object.values(option.choices).map(o => E.li({}, E.a({ href: "#" }, o)));
-        for (let p of description_p) {
-            p.classList.add("select");
-        }
+        const select_options = Object.entries(option.choices).map(([key, label]) =>
+            E.option({ value: key, selected: key === option.default ? true : undefined }, label)
+        );
         e = E.li({ class: "list-group-item beyond20-option beyond20-option-combobox" },
             E.label({ class: "list-content", for: name },
-                E.h4({ class: "select" }, title),
-                ...description_p,
-                E.div({ class: "button-group" },
-                    E.a({ id: name, class: "input select beyond20-option-input", href: "" }, option.choices[option.default]),
-                    E.ul({ class: "dropdown-menu" },
-                        ...dropdown_options),
-                    E.i({ id: `${name}--icon`, class: "icon select" })
+                E.div({ class: "b20-option-info" },
+                    E.h4({ class: "select" }, title),
+                    ...description_p
+                ),
+                E.div({ class: "b20-option-controls" },
+                    E.select({ id: name, class: "beyond20-option-input beyond20-select", name },
+                        ...select_options
+                    )
                 )
             )
         );
     } else if (option.type == "link") {
         e = E.li({ class: "list-group-item beyond20-option beyond20-option-link" },
             E.label({ class: "list-content", id: name },
-                E.a({ href: option.default },
-                    E.h4({}, title)),
-                ...description_p,
-                E.a({ href: option.default },
-                    E.div({ class: "image-link" },
-                        E.img({
-                            class: "link-image",
-                            width: option['icon-width'],
-                            height: option['icon-height'],
-                            src: option.icon.startsWith("/") ? chrome.runtime.getURL(option.icon) : option.icon
-                        })
+                E.div({ class: "b20-option-info" },
+                    E.a({ href: option.default },
+                        E.h4({}, title)),
+                    ...description_p
+                ),
+                E.div({ class: "b20-option-controls" },
+                    E.a({ href: option.default },
+                        E.div({ class: "image-link" },
+                            E.img({
+                                class: "link-image",
+                                width: option['icon-width'],
+                                height: option['icon-height'],
+                                src: option.icon.startsWith("/") ? chrome.runtime.getURL(option.icon) : option.icon
+                            })
+                        )
                     )
                 )
             )
         );
     } else if (option.type == "info") {
         e = E.li({ class: "list-group-item beyond20-option beyond20-option-info" },
-            E.label({ class: "list-content", for: name, style: "background-color: LightCyan;"},
-                E.h4({}, title),
-                ...description_p
+            E.label({ class: "list-content", for: name },
+                E.div({ class: "b20-option-info" },
+                    E.h4({}, title),
+                    ...description_p
+                )
             )
         );
     } else if (option.type == "special") {
@@ -1248,8 +1260,11 @@ function initializeMarkaGroup(group) {
 function initializeMarka() {
     const groups = $('.beyond20-option-combobox');
 
-    for (let group of groups.toArray())
-        initializeMarkaGroup(group);
+    for (let group of groups.toArray()) {
+        if ($(group).find('.button-group').length > 0) {
+            initializeMarkaGroup(group);
+        }
+    }
 }
 
 function extractSettingsData(_list = options_list) {
@@ -1261,12 +1276,16 @@ function extractSettingsData(_list = options_list) {
             if (o_type == "bool") {
                 settings[option] = e.prop('checked');
             } else if (o_type == "combobox") {
-                const val = e.text();
-                const choices = _list[option].choices;
-                for (let key in choices) {
-                    if (choices[key] == val) {
-                        settings[option] = key;
-                        break;
+                if (e.is("select")) {
+                    settings[option] = e.val();
+                } else {
+                    const val = e.text();
+                    const choices = _list[option].choices;
+                    for (let key in choices) {
+                        if (choices[key] == val) {
+                            settings[option] = key;
+                            break;
+                        }
                     }
                 }
             } else if (o_type == "string") {
@@ -1290,8 +1309,13 @@ loadSettings(settings, _list = options_list) {
             $("#" + option).prop('checked', settings[option]);
         } else if (o_type == "combobox") {
             const val = settings[option];
-            const choices = _list[option].choices;
-            $("#" + option).text(choices[val]);
+            const el = $("#" + option);
+            if (el.is("select")) {
+                el.val(val);
+            } else {
+                const choices = _list[option].choices;
+                el.text(choices[val]);
+            }
         } else if (o_type == "string") {
             $("#" + option).val(settings[option]);
         } else if (o_type == "special") {

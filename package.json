@@ -7,9 +7,12 @@
     },
     "scripts": {
         "test": "node test/dice_regex.test.js",
+        "dev:ui": "vite",
+        "build:ui": "vite build",
+        "typecheck": "tsc --noEmit",
         "gulp": "gulp",
         "clean": "gulp clean",
-        "build": "run-s clean build:*",
+        "build": "run-s clean build:ui build:chrome build:firefox",
         "build:firefox": "gulp build-firefox",
         "build:chrome": "gulp build-chrome",
         "package": "run-s build package:*",
@@ -31,13 +34,17 @@
     },
     "homepage": "https://beyond20.here-for-more.info",
     "devDependencies": {
+        "@sveltejs/vite-plugin-svelte": "^7.3.1",
         "cross-var": "^1.1.0",
         "gulp": "^4.0.2",
         "gulp-clean": "^0.4.0",
         "gulp-concat": "^2.6.1",
         "gulp-rename": "^2.0.0",
         "npm-run-all": "^4.1.5",
+        "svelte": "^5.57.3",
         "transform-runtime": "^0.0.0",
+        "typescript": "^7.0.2",
+        "vite": "^8.3.8",
         "web-ext": "^4.2.0"
     }
 }

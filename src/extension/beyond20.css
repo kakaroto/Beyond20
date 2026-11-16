@@ -161,14 +161,14 @@
     flex: 1;
     font-style: normal;
     margin: 2px 0px;
-    line-height: 36px;
-    font-family: "Modesto Condensed", "Roboto Condensed", "Palatino Linotype", serif;
-    font-size: 20px;
+    line-height: 1.35;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px;
     font-weight: 700;
-    color: #4b4a44;
-    padding-top: 3px;
-    border-top: 2px groove #fff;
-    border-bottom: 2px groove #fff;
+    color: #1e2430;
+    padding: 6px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .beyond20-message .beyond20-description,
@@ -199,17 +199,16 @@
 .beyond20-roll-cell,
 .beyond20-roll-die-result {
     flex: 1 0 auto;
-    margin: 1px;
-
-    line-height: 24px;
+    margin: 3px;
+    padding: 6px 8px;
+    line-height: 1.3;
     text-align: center;
-    background: rgba(0, 0, 0, 0.1);
-    border: 1px solid #999;
-    border-radius: 3px;
-    box-shadow: 0 0 2px #fff inset;
-    font-size: 20px;
-    font-weight: bold;
-    font-family: "Signika", "Roboto", serif;
+    background: rgba(15, 23, 42, 0.06);
+    border: 1px solid rgba(15, 23, 42, 0.15);
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 .beyond20-dice-roller-content .beyond20-roll-dice-formula {
@@ -368,14 +367,49 @@ span.dice-roll.beyond20-tooltip-content {
     background-color: rgb(129, 22, 22) !important;
 }
 
+:root {
+    --b20-inpage-accent: #c53131;
+    --b20-inpage-accent-hover: #a82626;
+    --b20-inpage-popover-bg: #181c24;
+    --b20-inpage-popover-border: #303642;
+}
+
+[data-vtt="roll20"] {
+    --b20-inpage-accent: #d90b7d;
+    --b20-inpage-accent-hover: #b80869;
+}
+
+[data-vtt="fvtt"] {
+    --b20-inpage-accent: #ff6a13;
+    --b20-inpage-accent-hover: #e05600;
+    --b20-inpage-popover-bg: #1f1b18;
+    --b20-inpage-popover-border: #3d352e;
+}
+
+[data-vtt="default"] {
+    --b20-inpage-accent: #4f46e5;
+    --b20-inpage-accent-hover: #4338ca;
+}
+
 .beyond20-hotkeys-list {
-    min-width: 300px;
-    background-color: black;
+    min-width: 290px;
+    background: var(--b20-inpage-popover-bg);
+    color: #e6edf3;
     z-index: 1000;
     position: absolute;
-    border: 1px solid rgb(95, 0, 0);
+    border: 1px solid var(--b20-inpage-popover-border);
+    border-radius: 10px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
     padding: 10px;
     top: 16px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 13px;
+}
+
+.beyond20-hotkeys-list hr {
+    border: none;
+    border-top: 1px solid #2c3340;
+    margin: 8px 0;
 }
 
 .ct-character-header-mobile__group--beyond20-hotkeys > .beyond20-hotkeys-list {
@@ -384,25 +418,42 @@ span.dice-roll.beyond20-tooltip-content {
 .beyond20-hotkey-toggle {
     cursor: pointer;
     border: 1px solid transparent;
-    padding-left: 3px;
-    padding-right: 3px;
+    border-radius: 6px;
+    padding: 5px 8px;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 .beyond20-hotkey-checkmark {
     float: right;
-    color: green;
+    color: #4ade80;
+    font-weight: 700;
 }
 .beyond20-hotkey-toggle:hover {
-    background-color: rgb(155, 208, 243);
-    border: 1px solid darkblue;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
 }
 .beyond20-hotkeys-roll-types {
+    display: flex;
+    gap: 4px;
     text-align: center;
-    display: block;
     width: 100%;
+    background: #101319;
+    padding: 3px;
+    border-radius: 8px;
 }
-.beyond20-hotkey-enabled {
-    font-weight: bold;
-    color: yellow;
+.beyond20-hotkeys-roll-types .beyond20-hotkey-toggle {
+    flex: 1;
+    font-size: 12px;
+    font-weight: 600;
+}
+.beyond20-hotkey-enabled,
+.beyond20-hotkey-toggle-checked {
+    font-weight: 600;
+    color: #ffffff;
+    background-color: var(--b20-inpage-accent);
+}
+.beyond20-hotkey-enabled:hover,
+.beyond20-hotkey-toggle-checked:hover {
+    background-color: var(--b20-inpage-accent-hover);
 }
 
 .beyond20-manage-hotkeys {

@@ -31,11 +31,11 @@
 		"256": "images/icons/icon256.png"
 	},
 	"options_ui": {
-		"page": "options.html",
+		"page": "popup.html",
 		"open_in_tab": false
 	},
 	"browser_action": {
-		"default_popup": "default_popup.html",
+		"default_popup": "popup.html",
         "default_icon": {
 			"16": "images/icons/icon16.png",
 			"24": "images/icons/icon24.png",
@@ -54,7 +54,9 @@
 		"dist/fvtt_script.js",
         "dist/dndbeyond_mb.js",
 		"popup.html",
-		"options.html"
+		"options.html",
+		"tool.html",
+		"assets/*"
 	],
 	"background": {
 		"persistent": true,
