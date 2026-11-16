@@ -220,12 +220,37 @@ gulp.task("copy-misc", () => {
         .pipe(gulp.dest('./build/base/'));
 });
 
-gulp.task("build-base", gulp.parallel([
-    "copy-dist",
-    "copy-misc",
-    "copy-libs",
-    "copy-images",
-]));
+gulp.task("copy-ui-assets", () => {
+    return gulp.src("./dist/ui/assets/**", { allowEmpty: true })
+        .pipe(gulp.dest('./build/base/assets/'));
+});
+
+gulp.task("copy-ui-html", (done) => {
+    const fs = require('fs');
+    const path = require('path');
+    const uiDir = path.join(__dirname, 'dist', 'ui', 'src', 'ui');
+    const outDir = path.join(__dirname, 'build', 'base');
+    fs.mkdirSync(outDir, { recursive: true });
+    for (const file of ['popup.html', 'default_popup.html', 'options.html', 'tool.html']) {
+        const src = path.join(uiDir, file);
+        if (fs.existsSync(src)) {
+            const html = fs.readFileSync(src, 'utf8').replace(/\.\.\/\.\.\/assets\//g, './assets/');
+            fs.writeFileSync(path.join(outDir, file), html);
+        }
+    }
+    done();
+});
+
+gulp.task("build-base", gulp.series(
+    gulp.parallel([
+        "copy-dist",
+        "copy-misc",
+        "copy-libs",
+        "copy-images",
+        "copy-ui-assets"
+    ]),
+    "copy-ui-html"
+));
 
 // Creates the specific folders for Chrome and Firefox
 

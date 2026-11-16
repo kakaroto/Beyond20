@@ -1,4 +1,18 @@
 var advancedOptions = false;
+var savePillTimer = null;
+
+function filterOptions() {
+    const query = ($("#b20-search").val() || "").trim().toLowerCase();
+    const items = $(".beyond20-options > .beyond20-option");
+    if (!query) {
+        items.show();
+        return;
+    }
+    items.each(function () {
+        const text = $(this).text().toLowerCase();
+        $(this).toggle(text.indexOf(query) !== -1);
+    });
+}
 
 function createOptionList() {
     $("main .beyond20-options").remove();
@@ -9,6 +23,7 @@ function createOptionList() {
             options.push(child);
     }
     $("main").prepend(E.ul({ class: "list-group beyond20-options" }, ...options));
+    filterOptions();
 }
 
 function save_settings() {
@@ -17,8 +32,17 @@ function save_settings() {
             console.log('Chrome Runtime Error', chrome.runtime.lastError.message);
         } else {
             chrome.runtime.sendMessage({ "action": "settings", "type": "general", "settings": settings });
-            $('.success').toggleClass('show');
-            setTimeout(() => $('.success').toggleClass('show'), 3000);
+            const pill = $("#b20-save-pill");
+            if (pill.length) {
+                pill.text("Saved ✓").addClass("is-saved");
+                clearTimeout(savePillTimer);
+                savePillTimer = setTimeout(() => {
+                    pill.text("Auto-saved").removeClass("is-saved");
+                }, 1800);
+            } else {
+                $('.success').toggleClass('show');
+                setTimeout(() => $('.success').toggleClass('show'), 3000);
+            }
         }
     });
 }
@@ -33,9 +57,9 @@ function setupHTML() {
     initializeSettings(gotSettings);
     $('.beyond20-option-input').change(save_settings);
     $(".beyond20-options").on("markaChanged", save_settings);
-    $(document).on('click', 'a', function (ev) {
+    $(document).off('click.b20links').on('click.b20links', 'a', function (ev) {
         const href = this.getAttribute('href');
-        if (href.length > 0 && href != "#") 
+        if (href && href.length > 0 && href != "#") 
             window.open(this.href);
         return false;
     });
@@ -44,9 +68,12 @@ function setupHTML() {
 function setupOptionsMenu() {
     setupHTML();
     $('#save').on('click', save_settings);
+    $('#b20-search').on('input', filterOptions);
     $('#advanced').on('click', (ev) => {
         advancedOptions = !advancedOptions;
-        $(ev.target).text(advancedOptions ? "Basic Options" : "Advanced Options");
+        $(ev.currentTarget)
+            .text(advancedOptions ? "Basic Options" : "Advanced Options")
+            .toggleClass("active", advancedOptions);
         setupHTML();
     });
 }

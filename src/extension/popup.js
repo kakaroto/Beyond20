@@ -16,6 +16,24 @@ function gotSettings(stored_settings) {
     $("ul").removeClass("disabled");
 }
 
+function setActivePopupTab(tabName) {
+    $("#b20-popup-tabs .b20-tab").each(function () {
+        const isActive = $(this).data("tab") === tabName;
+        $(this).toggleClass("active", isActive).attr("aria-selected", isActive ? "true" : "false");
+    });
+    const allItems = $(".beyond20-options > li");
+    if (tabName === "effects") {
+        allItems.hide();
+        $(".beyond20-options .effects-option").show();
+    } else if (tabName === "advanced") {
+        allItems.hide();
+        $(".beyond20-options .advanced-option").show();
+    } else {
+        allItems.show();
+        $(".beyond20-options .effects-option, .beyond20-options .advanced-option").hide();
+    }
+}
+
 function createOptionList() {
     const options = [];
     for (let option in options_list) {
@@ -25,41 +43,18 @@ function createOptionList() {
         }
     }
     $("main").prepend(E.ul({ class: "list-group beyond20-options" }, ...options));
-    $(".beyond20-options").append(
-        E.li({ class: "list-group-item beyond20-option" },
-            E.div({ class: "list-content", style: "padding-right: 0px;"},
-                E.span({style: "display: flex;"},
-                    E.a({ id: "openOptions", href: '#', style: "flex-grow: 1;" },
-                        E.h4({}, "More Options")
-                    ),
-                    E.a({ id: "openEffects", href: '#', style: "flex-grow: 1;" },
-                        E.h4({}, "▼ Effects")
-                    ),
-                    E.a({ id: "toggleAdvanced", href: '#', style: "display: none;" },
-                        E.h4({}, "▼ Advanced Options")
-                    )
-                )
-            )
-        )
-    );
     const img = $("#donate").find("img");
     img.attr({
         "src": img.attr("src").replace("donate.png", "donate32.png"),
         "width": 32,
         "height": 32
     });
-    $("#openOptions").on('click', (ev) => {
+    $("#openOptions").on('click', () => {
         chrome.runtime.openOptionsPage();
     });
 
-    $("#openEffects").on('click', (ev) => {
-        $(".beyond20-options .effects-option").toggle();
-        $(".beyond20-options .advanced-option").hide();
-    }).hide();
-
-    $("#toggleAdvanced").on('click', () => {
-        $(".beyond20-options .advanced-option").toggle();
-        $(".beyond20-options .effects-option").hide();
+    $("#b20-popup-tabs .b20-tab").on('click', function () {
+        setActivePopupTab($(this).data("tab"));
     });
 }
 
@@ -100,14 +95,14 @@ function populateCharacter(response) {
     character = response;
     if (response) {
         console.log("Received character: ", response);
+        $("#b20-context-badge").text(response.name).show();
         options.append(
             E.li({
-                class: "list-group-item beyond20-option",
-                id: "character-option",
-                style: "text-align: center; padding: 10px 15px;"
+                class: "b20-section-header",
+                id: "character-option"
             },
-                E.h4({ style: "margin: 0px;" }, " == Character Specific Options =="),
-                E.p({ style: "margin: 0px;" }, response.name))
+                E.span({}, "Character Options"),
+                E.span({ class: "b20-section-sub" }, response.name))
         );
 
         let e = createHTMLOption("custom-roll-dice", false, character_settings);
@@ -141,6 +136,7 @@ function populateCharacter(response) {
         e = createHTMLOption("effects-reduce", false, character_settings);
         e.classList.add("effects-option");
         options.append(e);
+        $("#b20-popup-tabs").show();
         $("#openEffects").show();
 
         e = createHTMLOption("versatile-choice", false, character_settings);
@@ -407,19 +403,21 @@ function populateCharacter(response) {
         }
         options.find(".effects-option").hide();
         options.find(".advanced-option").hide();
+        $("#b20-popup-tabs").show();
         $("#toggleAdvanced").show();
     });
 }
 
 function addMonsterOptions() {
+    $("#b20-context-badge").text("Stat Block").show();
     const option = options_list["whisper-type-monsters"];
     option["short"] = "Whisper monster rolls";
     let e = createHTMLOptionEx("whisper-type-monsters", option, true);
     $(e).insertAfter($("#whisper-type").parents("li"));
     const options = $(".beyond20-options");
     options.append(
-        E.li({ class: "list-group-item beyond20-option", style: "text-align: center; padding: 10px;" },
-            E.h4({}, " == Stat Block Specific Options ==")
+        E.li({ class: "b20-section-header" },
+            E.span({}, "Stat Block Options")
         )
     );
 
@@ -445,10 +443,11 @@ function actOnCurrentTab(tab) {
     setCurrentTab(tab);
     if (isRoll20(tab.title) || isFVTT(tab.title)) {
         const vtt = isFVTT(tab.title) ? "Foundry VTT" : "Roll20";
+        $("#b20-context-badge").text(vtt).show();
         const options = $(".beyond20-options");
         options.append(
-            E.li({ class: "list-group-item beyond20-option", style: "text-align: center; margin: 10px;" },
-                E.h4({}, ` == ${vtt} Tab Specific Options ==`)
+            E.li({ class: "b20-section-header" },
+                E.span({}, `${vtt} Tab Options`)
             )
         );
         let e = null;

@@ -1,0 +1,156 @@
+:root,
+[data-color-scheme="light"] {
+  --b20-bg: #f4f5f7;
+  --b20-surface: #ffffff;
+  --b20-surface-hover: #f9fafb;
+  --b20-surface-subtle: #eef0f4;
+  --b20-border: #e2e5eb;
+  --b20-text: #181c23;
+  --b20-text-muted: #5c6473;
+  --b20-accent: #c53131;
+  --b20-accent-hover: #a82626;
+  --b20-accent-soft: rgba(197, 49, 49, 0.12);
+  --b20-switch-off: #cbd2dc;
+  --b20-info-bg: #e8f4fd;
+  --b20-info-border: #b6dcfc;
+  --b20-info-text: #154c79;
+  --b20-success: #16a34a;
+  --b20-success-bg: #dcfce7;
+  --b20-success-text: #166534;
+  --b20-warn: #d97706;
+  --b20-error: #dc2626;
+  --b20-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --b20-shadow-md: 0 10px 28px rgba(16, 24, 40, 0.16);
+  --b20-radius: 10px;
+}
+
+/* Dark tokens: active when explicitly set OR when OS prefers dark and not forced light */
+[data-color-scheme="dark"] {
+  --b20-bg: #111419;
+  --b20-surface: #1a1f27;
+  --b20-surface-hover: #212731;
+  --b20-surface-subtle: #252c37;
+  --b20-border: #2e3644;
+  --b20-text: #f0f3f8;
+  --b20-text-muted: #9aa4b5;
+  --b20-accent: #e04444;
+  --b20-accent-hover: #ef5858;
+  --b20-accent-soft: rgba(224, 68, 68, 0.18);
+  --b20-switch-off: #3c4556;
+  --b20-info-bg: rgba(56, 189, 248, 0.12);
+  --b20-info-border: rgba(56, 189, 248, 0.3);
+  --b20-info-text: #bae6fd;
+  --b20-success: #4ade80;
+  --b20-success-bg: rgba(34, 197, 94, 0.18);
+  --b20-success-text: #86efac;
+  --b20-warn: #fbbf24;
+  --b20-error: #f87171;
+  --b20-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --b20-shadow-md: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-color-scheme="auto"] {
+    --b20-bg: #111419;
+    --b20-surface: #1a1f27;
+    --b20-surface-hover: #212731;
+    --b20-surface-subtle: #252c37;
+    --b20-border: #2e3644;
+    --b20-text: #f0f3f8;
+    --b20-text-muted: #9aa4b5;
+    --b20-accent: #e04444;
+    --b20-accent-hover: #ef5858;
+    --b20-accent-soft: rgba(224, 68, 68, 0.18);
+    --b20-switch-off: #3c4556;
+    --b20-info-bg: rgba(56, 189, 248, 0.12);
+    --b20-info-border: rgba(56, 189, 248, 0.3);
+    --b20-info-text: #bae6fd;
+    --b20-success: #4ade80;
+    --b20-success-bg: rgba(34, 197, 94, 0.18);
+    --b20-success-text: #86efac;
+    --b20-warn: #fbbf24;
+    --b20-error: #f87171;
+    --b20-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+    --b20-shadow-md: 0 12px 32px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* VTT-Specific Accent Themes */
+[data-vtt="roll20"] {
+  --b20-accent: #d90b7d;
+  --b20-accent-hover: #b80869;
+  --b20-accent-soft: rgba(217, 11, 125, 0.14);
+}
+
+[data-vtt="roll20"][data-color-scheme="dark"] {
+  --b20-accent: #f0389b;
+  --b20-accent-hover: #ff5cb3;
+  --b20-accent-soft: rgba(240, 56, 155, 0.2);
+}
+
+[data-vtt="fvtt"] {
+  --b20-accent: #e05600;
+  --b20-accent-hover: #c44a00;
+  --b20-accent-soft: rgba(224, 86, 0, 0.14);
+}
+
+[data-vtt="fvtt"][data-color-scheme="dark"] {
+  --b20-bg: #141210;
+  --b20-surface: #1f1b18;
+  --b20-surface-hover: #27221e;
+  --b20-surface-subtle: #2c2622;
+  --b20-border: #3d352e;
+  --b20-accent: #ff6a13;
+  --b20-accent-hover: #ff8238;
+  --b20-accent-soft: rgba(255, 106, 19, 0.2);
+}
+
+[data-vtt="default"] {
+  --b20-accent: #4f46e5;
+  --b20-accent-hover: #4338ca;
+  --b20-accent-soft: rgba(79, 70, 229, 0.14);
+}
+
+[data-vtt="default"][data-color-scheme="dark"] {
+  --b20-accent: #818cf8;
+  --b20-accent-hover: #a5b4fc;
+  --b20-accent-soft: rgba(129, 140, 248, 0.2);
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-vtt="roll20"][data-color-scheme="auto"] {
+    --b20-accent: #f0389b;
+    --b20-accent-hover: #ff5cb3;
+    --b20-accent-soft: rgba(240, 56, 155, 0.2);
+  }
+  [data-vtt="fvtt"][data-color-scheme="auto"] {
+    --b20-bg: #141210;
+    --b20-surface: #1f1b18;
+    --b20-surface-hover: #27221e;
+    --b20-surface-subtle: #2c2622;
+    --b20-border: #3d352e;
+    --b20-accent: #ff6a13;
+    --b20-accent-hover: #ff8238;
+    --b20-accent-soft: rgba(255, 106, 19, 0.2);
+  }
+  [data-vtt="default"][data-color-scheme="auto"] {
+    --b20-accent: #818cf8;
+    --b20-accent-hover: #a5b4fc;
+    --b20-accent-soft: rgba(129, 140, 248, 0.2);
+  }
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--b20-text);
+  background: var(--b20-bg);
+  -webkit-font-smoothing: antialiased;
+}

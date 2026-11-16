@@ -1,11 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Beyond20: D&amp;D Beyond to VTT Integration</title>
   <link rel="stylesheet" href="options.css" />
 </head>
-<body style="min-width:450px;">
-  <main>
+<body class="b20-popup-body">
+  <header class="b20-header">
+    <div class="b20-header-brand">
+      <img src="images/icons/icon32.png" alt="Beyond20" class="b20-logo" />
+      <div class="b20-header-titles">
+        <span class="b20-title">Beyond20</span>
+        <span class="b20-context-badge">Standby</span>
+      </div>
+    </div>
+  </header>
+  <main class="b20-main">
+    <ul class="list-group beyond20-options">
+      <li class="list-group-item beyond20-option beyond20-option-info">
+        <div class="list-content">
+          <div class="b20-option-info">
+            <h4>Not a D&amp;D Beyond or VTT page</h4>
+            <p class="description">Beyond20 activates automatically on D&amp;D Beyond, Roll20, and Foundry VTT pages.</p>
+          </div>
+        </div>
+      </li>
+      <li class="list-group-item beyond20-option beyond20-option-link">
+        <a class="list-content" target="_blank" rel="noopener noreferrer" href="https://beyond20.here-for-more.info/support">
+          <div class="b20-option-info">
+            <h4>Donate</h4>
+            <p class="description">Support Beyond20 development</p>
+          </div>
+          <div class="b20-option-controls">
+            <div class="image-link">
+              <img class="link-image" src="images/donate32.png" width="32" height="32" alt="Donate" />
+            </div>
+          </div>
+        </a>
+      </li>
+      <li class="list-group-item beyond20-option">
+        <a class="list-content" id="openOptions" href="#">
+          <div class="b20-option-info">
+            <h4>Beyond20 Options</h4>
+            <p class="description">Configure Beyond20's global settings</p>
+          </div>
+          <div class="b20-option-controls">
+            <span class="b20-chevron" aria-hidden="true">→</span>
+          </div>
+        </a>
+      </li>
+    </ul>
   </main>
   <script src="libs/jquery-3.4.1.min.js" charset="UTF-8"></script>
   <script src="libs/marka.js" charset="UTF-8"></script>

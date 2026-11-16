@@ -1,17 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Beyond20: D&amp;D Beyond to VTT Integration</title>
   <link rel="stylesheet" href="options.css" />
   <link rel="stylesheet" href="libs/css/alertify.css" />
   <link rel="stylesheet" href="libs/css/alertify-themes/default.css" />
 </head>
-<body style="min-width:500px;">
-  <main>
-    <div class="save">
-    <button id="save" class="btn">Save</button>
-    <button id="advanced" class="btn">Advanced Options</button>
+<body class="b20-options-body">
+  <header class="b20-header b20-options-header">
+    <div class="b20-header-brand">
+      <img src="images/icons/icon32.png" alt="Beyond20" class="b20-logo" />
+      <div class="b20-header-titles">
+        <span class="b20-title">Beyond20 Options</span>
+        <span class="b20-save-pill" id="b20-save-pill" aria-live="polite">Auto-saved</span>
+      </div>
     </div>
+    <div class="b20-header-actions">
+      <button id="advanced" class="b20-pill-btn" type="button">Advanced Options</button>
+      <button id="save" class="b20-pill-btn b20-pill-btn-primary" type="button" style="display: none;">Save</button>
+    </div>
+  </header>
+  <div class="b20-search-bar">
+    <input type="search" id="b20-search" class="b20-search-input" placeholder="Search settings..." aria-label="Search settings" />
+  </div>
+  <main class="b20-main">
     <div class="success">
       <p>Saved</p>
     </div>
