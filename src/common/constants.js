@@ -39,6 +39,7 @@ const SUPPORTED_VTT_URLS = [
     "https://dscryb.com/*",
     "https://codex.dragonshorn.com/*",
     "*://*.osrbeyond.com/*",
+    "https://vvd.world/*",
     ...DISCORD_ACTIVITY_DOMAINS
 ];
 
